@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<script type="text/javascript" src="../../js/d3.v5.min.js"></script>
+<script type="text/javascript" src="../../js/showdown.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.min.js"></script>
+<script type="text/javascript" src="../../js/localsite.js"></script>
+<script type="text/javascript" src="../../js/navigation.js"></script>
+<link type="text/css" href="../../css/base.css" rel="stylesheet" />
+
+<!--
+<link rel="stylesheet" href="../../css/search-filters.css" />
+-->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto complete sample</title>
+  <!--
+  <script
+  src="https://code.jquery.com/jquery-3.5.1.min.js"
+  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+  crossorigin="anonymous"></script>
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <!-- Load Google API key fron config.json -->
+  <!-- https://developers.google.com/maps/documentation/javascript/overview?hl=en_US -->
+  <script>
+    var GOOGLE_MAP_KEY;
+    $.getJSON("./config.json", function(json) {
+      GOOGLE_MAP_KEY = json.googleAPIKey;
+      loadGoogleScript();
+    });
+    
+    function loadGoogleScript() {
+      var script = document.createElement('script');
+      script.src = 'https://maps.googleapis.com/maps/api/js' + '?key=' + GOOGLE_MAP_KEY +'&libraries=places';
+      document.head.appendChild(script);
+    }
+  
+    //window.onload = loadScript;
+  </script>
+  <style>
+     .headerImage{display: none;}
+  </style>
+</head>
+<body>
+
+  <!-- bug: with search-filters.css above, class filterBubble combinatiion of position:absolute and z-index hides autocomplete box -->
+  
+  <div class="filterBubble" style="position:relative"> 
+  <div style="position:relative">
+ 
+
+  <div id="app">
+
+    <div 
+      class="place_details"
+      style="width: 60vw; margin: 0 auto; padding-top: 2rem;"
+      >
+      <h1>Autocomplete Sample</h1>
+      Inactive on localhost to prevent overuse of API key.<br><br>
+      
+    <input 
+      class="filterClick"
+      id="searchloc"
+      style="max-width:300px; float:left; display: block; width: 60vw; font-size: 1rem; font-weight: 400; line-height: 2rem; text-align: center;"
+      placeholder="Search"
+      onfocus="value = ''" 
+      type="text" />
+      <br><br>
+    
+      <h3 class>Latitude: &nbsp; {{ lat }}</h3>
+      <h3>Longitude: &nbsp; {{ lng }}</h3>
+      <h3>Address: &nbsp; {{ address }}</h3>
+      <h3>State: &nbsp; {{ state }}</h3>
+      <h3>Phone: &nbsp; {{ phone }}</h3>
+      <h3>Website: &nbsp; {{ website }}</h3>
+
+      <div id="readmeDiv"></div>
+    </div>
+
+  </div>
+
+ </div>
+​  </div>
+  
+  
+
+  <script>
+    var app = new Vue({ 
+      el: '#app',
+      mounted() {
+        // Give Google script time to load before calling google.maps.places.Autocomplete
+        setTimeout(() => {
+          this.autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('searchloc'),
+            {types: ['establishment', 'geocode']}
+          );
+          this.autocomplete.addListener('place_changed', this.getPlaceData);
+        },1000)
+      },
+      data: {
+        lat: '',
+        lng: '',
+        address: '',
+        phone: '',
+        website: '',
+        state: ''
+      },
+      methods: {
+        deriveState (addr_components) {
+          for (let c of addr_components) {
+            if (c.types.includes('administrative_area_level_1')) return c.short_name;
+          }
+        },
+        getPlaceData () {
+          const place = this.autocomplete.getPlace();
+          this.lat = place.geometry.location.lat();
+          this.lng = place.geometry.location.lng();
+          this.address = place.formatted_address;
+          this.state = this.deriveState(place.address_components);
+          this.phone = place.formatted_phone_number;
+          this.website = place.website;
+        }
+      }
+    });
+  </script>
+​
+  <script>
+    loadMarkdown("README.md", "readmeDiv", "_parent");
+  </script>
+
+</body>
+</html>

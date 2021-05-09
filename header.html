@@ -1,0 +1,265 @@
+<style>
+/*
+Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
+*/
+</style>
+
+<div id="menuHolder" style="background:#333; display:none">
+
+	<!--
+	<div style="float:right;">
+	      <div class="expandToFullscreen" style="border:0px; padding: 10px; cursor: pointer; color:#ccc">
+	          <span style="font-size:34px;line-height:34px;padding-right:4px">&#10064;</span>
+	      </div>
+	      <div class="reduceFromFullscreen" style="display:none; border:0px; padding: 10px; cursor: pointer">
+	          <span style="font-size:33px;line-height:34px;padding-right:4px">&#10066;</span>
+	      </div>
+    </div>
+	-->
+
+	<div id="menuTop">
+		<div class="hideMenu"><span class="hideMenuInner" style="color:#aaa">✕</span></div>
+	</div>
+	<div style="clearX:both"></div>
+	
+	<div id="menuNav">
+
+		<!-- Right Links -->
+        <div style="padding-top:10px;" class="local hideMobile">
+          
+          <!-- move to naics section
+          <div class="local downloadbutton showDownload pagebutton" href="#" style="float:left; display:none">
+            
+            <div style="float:left">
+              <i class="material-icons" style="font-size:15pt;padding-top:8px">&#xE2C4;</i>
+            </div>
+            
+            <div class="downloadtext" style="margin:10px 5px 0 3px;white-space: nowrap; float:left"> 
+            Download
+            </div>
+          </div>
+          -->
+          
+        <!--
+        <div class="local addlisting pagebutton greenbutton" href="#" style="float:left; display:none">
+          
+          <div class="hideMobile" style="margin:10px 5px 0 3px;white-space: nowrap; float:left"> 
+          Add Listing
+          </div>
+          <div class="showMobile" style="display:none;"><i class="material-icons" style="font-size:19pt;padding-top:4px">&#xE145;</i></div>
+
+        </div>
+        <div class="local partnertools pagebutton" href="#" style="float:left; display:none">
+          <div style="margin:10px 5px 0 3px;white-space: nowrap; float:left"> 
+          Partner Tools
+          </div>
+        </div>
+        -->
+
+        <div class="showInfo showInfoButton1 pagebutton" style="float: left; padding: 3px 3px 3px 4px; color:#fff; display:none;"><i class="material-icons" style="font-size:28px;">&#xE88F;</i>
+        </div>
+
+        <div class="showApps local" style="display:none;float:left;">
+          	<div style="display:none" class="showMobile">
+          	<i class="material-icons georgiaorg-hide" style="color:#fff">&#xE5C3;</i>
+      	  	</div>
+        </div>
+      </div>
+      <!-- /Right Links -->
+
+
+
+		<!-- Side Nav -->
+
+		<div class="neighborhood" style="display:none">
+			<a href="../"><b>Neighborhood</b></a>
+			<hr>
+		</div>
+
+		<div class="earth" style="display:none">
+			<a href="../community/tools"><b><span class="siteTitleShort"></span></b></a>
+		</div>
+		<div class="georgia" style="display:none">
+			<a href="../io/"><b><span class="siteTitleShort"></span></b></a>
+		</div>
+
+		<a href="../io/charts/">IO Widgets</a>
+		<a href="../io/communities/">Communities</a>
+		<a href="../io/coders/">Coders & Designers</a>
+		<a href="../io/learn/">Teachers & Students</a>	
+		<a href="../io/projects">Web Applications</a>
+		
+
+		<!--<a href="start/dataset">Goods & Services</a>-->
+		
+		<hr>
+		<a href="../community/challenge/"><b>Web Challenge</b></a>
+		<a href="../community/">Project Areas</a>
+		<a href="../localsite/info/">Local Industries</a>
+		<a href="../community/start/">Starter Samples</a>
+		<!--
+		<a href="../community/start/maps/">Map Samples</a>
+		<a href="../community/start/charts/">Chart Starters</a>
+		-->
+		<!--
+		<a href="start/maps/counties/counties.html">Regions & Counties</a>
+		-->
+		<hr>
+
+		<!--
+		<a href="https://github.com/modelearth/community" target="_parent"><b>Git Involved!</b></a> 
+		-->
+		<a href="../localsite/info/input/" target="_parent">Send Input</a>
+
+	</div>
+</div>
+
+<div id="headerbar" class="headerbar headerbarheight" style="width:100%;position:fixed;overflow:visible;z-index:1002;">
+
+	<div class="upperIcons noprint" style="float:right;">
+		<div class="showSearch local" style="display:none;float:left">
+			<!-- To do: use javascript to retain the current window.location.search value from URL when on a search page. 
+			add -active rollover
+			-->
+			<img src="../localsite/img/icon/search.png" style="width:27px; opacity:0.5">
+			<!--
+			<div style="font-size:18pt;padding:2px 4px 0 2px;">&#128269;</div>
+			-->
+		</div>
+
+		<div class="hideMobile" style="float:left;">
+		      <div class="expandToFullscreen" style="border:0px; padding: 3px 3px; cursor: pointer;">
+		      	  <img src="../localsite/img/icon/fullscreen.png" style="width:22px; opacity:0.5">
+		          <!--span style="font-size:34px;line-height:34px;padding-right:4px; color:#777">&#10064;</span-->
+		      </div>
+		      <div class="reduceFromFullscreen" style="display:none; border:0px; padding: 3px 3px; cursor: pointer">
+		      	  <img src="../localsite/img/icon/minimize.png" style="width:25px; opacity:0.5">
+		      	  <!--
+		          <span style="font-size:33px;line-height:34px;padding-right:4px; color:#777">&#10066;</span>
+		      		-->
+		      </div>
+	    </div>
+
+		<!--
+		<div class="showApps local" style="display:none; float:left;">
+			<i class="material-icons" style="font-size:30px; color:#ccc; padding:5px 4px 4px 0px">&#xE5C3;</i>
+		</div>
+		-->
+
+		<div class="showMenu" style="float:left;font-size:24px; color:#999;">
+			<img src="../localsite/img/icon/hamburger.png" style="width:30px; opacity:0.5">
+			<!--
+			<div style="font-size: 28px; color:#999; padding: 2px 6px 0 2px; margin-top:-5px">☰</div>
+			-->
+		</div>
+	</div>
+
+	<div class="contentpadding" style="padding-top:0px">
+		<div id="logospace" class="headerbarheight">
+			<div id="logoholder">
+				
+				<div id="headerLogo">
+				</div>
+
+				<div id="headerLocTitleHolder">
+					<span id="headerSiteTitle"></span>
+					<div style="padding-top:8px; float:right; display:none" class="mock-up">
+						<div class="arrowdown"></div>
+					</div>
+					<div class="headerDropdown mock-up">
+						<span class='arrownext' style='margin:10px 10px 0 10px'></span>
+					</div>
+					<a href="../community/tools" class="logolink">
+					<span id="headerLocTitle"></span>
+					</a>
+				</div>
+
+			</div>
+		</div>		
+	</div>
+
+</div>
+<!-- Also update headerbar and headerOffset -->
+<div id="headeroffset" class="headerbarheight" style="height:100px;"></div>
+
+<script>
+$(document).ready(function () {
+    $('.expandToFullscreen, .reduceFromFullscreen').click(function(event) {
+      toggleFullScreen();  
+    });
+  	$('.showSearch').click(function(event) {		
+		showSearchClick();
+	});
+  	if (location.host.indexOf('model') >= 0) {
+		$(".showSearch").show();
+		$(".showSearch").removeClass("local");
+  	}
+
+	function showSearchClick() {
+		if (!$("#filterFieldsHolder").length) { // Doesn't exist
+			window.location = "/localsite/info/" + window.location.hash;
+			return;
+		}
+		console.log("showSearchClick")
+		if ($("#filterFieldsHolder").is(':visible')) {
+			$("#filterFieldsHolder").hide();
+			$(".headerOffset2").hide();
+			//$("#pageLinksHolder").hide();
+		} else {
+			$("#filterFieldsHolder").show();
+			$(".headerOffset2").show();
+			$(".hideWhenPop").show();
+		}
+	    return;
+
+
+	    // NOT CURRENTLY USED
+
+
+	    //$(".filterFields").hide();
+		
+
+	    //$(".moduleBackgroundImage").addClass("moduleBackgroundImageDarken"); // Not needed since filters are not over image.
+	    //$(".siteHeaderImage").addClass("siteHeaderImageDarken"); // Not needed since filters are not over image.
+
+	    //$('.topButtons').show(); // Avoid showing bar when no layer.
+	    $(".layerContent").show(); // For main page, over video.
+
+	    //$(".showFilters").hide(); // Avoid hiding because title jumps.
+	    //$(".hideFilters").show();
+
+	    // Coming soon - Select if searching Georgia.org or Georgia.gov
+	    //$(".searchModuleIconLinks").show();
+	    $(".hideWhenFilters").hide();
+
+	    $(".filterPanelHolder").show();
+	    //$(".filterPanelWidget").show();
+	    $("#filterPanel").show(); // Don't use "normal", causes overflow:hidden.
+	    $(".searchHeader").show();
+	    $("#panelHolder").show();
+
+
+	    $(".showFiltersClick").hide();
+	    $(".hideFiltersClick").show();
+
+	    // Would remove active from Overview Map
+	    $(".horizontalButtons .layoutTab").removeClass("active");
+	    $(".showFiltersButton").addClass("active");
+
+	    $(".hideSearch").show();
+	    //$(".hideFilters").show(); // X not needed since magnifying glass remains visible now.
+	    //$("#hideSearch").show();
+	    if ($(".settingsPanel").is(':visible')) {
+	        hideSettings();
+	    }
+	    if ($("#menuHolder").is(':visible')) {
+	        $('.hideMetaMenu').trigger("click");
+	    }
+	    //updateOffsets();
+
+	    // Hide because map is displayed, causing overlap.
+	    // Could be adjusted to reside left of search filters.
+	    //$(".quickMenu").hide();
+	}
+});
+</script>

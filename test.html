@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+  </head>
+  <body>
+    <button onclick="getGeolocation()">
+      Get my coordinates!
+    </button>
+    <div id="demo"></div>
+
+    <script>
+      const demo = document.getElementById('demo');
+      function error(err) {
+          demo.innerHTML = `Failed to locate. Error: ${err.message}`;
+      }
+
+      function success(pos) {
+          demo.innerHTML = 'Located.';
+          alert(`${pos.coords.latitude}, ${pos.coords.longitude}`);
+      }
+
+      function getGeolocation() {
+          if (navigator.geolocation) {
+              demo.innerHTML = 'Locating…';
+              navigator.geolocation.getCurrentPosition(success, error);
+          } else { 
+              demo.innerHTML = 'Geolocation is not supported by this browser.';
+          }
+      }
+   </script>
+   
+  </body>
+</html>
+
+
+
+
+<script>
+/*
+var options = {
+  enableHighAccuracy: true,
+  timeout: 5000,
+  maximumAge: 0
+};
+
+function success(pos) {
+  var crd = pos.coords;
+
+  console.log('Your current position is:');
+  console.log(`Latitude : ${crd.latitude}`);
+  console.log(`Longitude: ${crd.longitude}`);
+  console.log(`More or less ${crd.accuracy} meters.`);
+}
+
+function error(err) {
+  console.warn(`ERROR(${err.code}): ${err.message}`);
+}
+
+navigator.geolocation.getCurrentPosition(success, error, options);
+
+
+
+
+//https://stackoverflow.com/questions/10077606/check-if-geolocation-was-allowed-and-get-lat-lon
+function getCoords() {
+  return new Promise((resolve, reject) =>
+    navigator.permissions ?
+
+      // Permission API is implemented
+      navigator.permissions.query({
+        name: 'geolocation'
+      }).then(permission =>
+        // is geolocation granted?
+        permission.state === "granted"
+          ? navigator.geolocation.getCurrentPosition(pos => resolve(pos.coords)) 
+          : resolve(null)
+      ) :
+
+    // Permission API was not implemented
+    reject(new Error("Permission API is not supported"))
+  )
+}
+
+getCoords().then(coords => alert(coords))
+*/
+</script>
