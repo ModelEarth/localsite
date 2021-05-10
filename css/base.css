@@ -339,13 +339,8 @@ summary::-webkit-details-marker {
 }
 .pageColumnInside {
   position: relative;
-  padding-left: 22px;
-  /* padding-right:22px; */ /* Matches .pageColumns above */
-
   margin-right:30px;
-
   line-height: 1.55;
-  /* color: #777; */
   border: 1px solid rgba(255,255,255,0);
   /* overflow: hidden; */ /* Covers indicator bar */
 }

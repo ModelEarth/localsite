@@ -1,6 +1,6 @@
-## Cross-site Integration
+## Integration between Websites
 
-JavaScript methods for sharing functionality between widgets  
+JavaScript for sharing sustainability projects between websites.  
 
 **hashChangeEvent** - triggers independent widgets when the URL hash is changed both programmatically and by the user.    
 
