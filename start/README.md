@@ -1,8 +1,17 @@
 # Getting Started  
 
 <!--
+
+	Not using curretnly, made a physcial copy instead
 	https://github.com/ModelGeorgia/io/compare/master...modelearth:master
+
+	Removed domain model.georgia.org from GitHub pages.
+
 	https://github.com/modelearth/localsite/compare/master...localsite:master
+
+	Georgia Data
+	https://github.com/GeorgiaData/io/compare/master...modelearth:master
+	https://github.com/GeorgiaData/localsite/compare/master...modelearth:master
 -->
 ### Create a website using markdown with free GitHub hosting  
 
