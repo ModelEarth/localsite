@@ -31,7 +31,7 @@
 		hiddenhash.show = "industries";
 	}
 	if (!hiddenhash.indicators) {
-		hiddenhash.indicators = "GHG";
+		hiddenhash.indicators = "GHG,NNRG,WATR,SMOG";
 	}
 	//hiddenhash.debug = true;
 </script>
@@ -778,18 +778,21 @@ Georgia-specific input-output dataset is being developed by the EPA.<br><br>
 			<option value="VADD">&nbsp; &nbsp;Value Added (VADD)</option>
 
 
-			<option value="ENRG,LAND,WATR">Resource Use</option>
+			<option value="ENRG,LAND,MNRL,WATR">Resource Use</option>
 
 			<option value="ENRG" title="Energy Use (ENRG): 
 			Energy Use is an indicator of the life cycle total amount of primary energy used as defined by heat value in a combusted resource or the available energy in a renewable resource to a converting device such as a wind turbine or water turbine. This indicator is a combination of the NNRG and RNRG indicators. This indicator is expressed in megajoules (MJ).">&nbsp; &nbsp;Energy Use (ENRG)</option>
 
-			<option value="WATR" title="Water Use (WATR): 
-			Water Use is an indicator of the life cycle total amount (m3) of freshwater withdrawn from surface and groundwater sources in order to provide a given good or service to society.">&nbsp; &nbsp;Water Use (WATR)</option>
-
 			<option value="LAND" title="Land Use (LAND): 
 			Nearly every process requires some amount of land for factories, offices, or roads. This land is often converted from existing natural habitats for wildlife. Habitat loss is the leading cause of wildlife extinctions worldwide and additional habitat conversion could lead to further loss of species. This indicator tracks the total area of usable land occupied to allow for the process. This indicator is expressed in square meters for a year (m2*yr).">&nbsp; &nbsp;Land Use (LAND)</option>
 
-			<option value="">Adverse Impacts</option>
+			<option value="MNRL">&nbsp; &nbsp;Minerals and Metals Use (MNRL)</option>
+
+			<option value="WATR" title="Water Use (WATR): 
+			Water Use is an indicator of the life cycle total amount (m3) of freshwater withdrawn from surface and groundwater sources in order to provide a given good or service to society.">&nbsp; &nbsp;Water Use (WATR)</option>
+
+
+			<option value="ACID,ETOX,EUTR,GHG,HRSP,HTOX,OZON,SMOG">Adverse Impacts</option>
 
 			<option value="ACID" title="Acid Rain (ACID): 
 			Acid rain occurs when acid-precursors are absorbed from the atmosphere by clouds and dissolved in falling rain. Acid rain, while not directly dangerous to people, causes millions of dollars in damage to infrastructure by very slowly dissolving the exposed surfaces of roads, buildings, drains, and even statues. Acid rain is also detrimental to natural life: acidic soils make it difficult or impossible for plants to survive and grow and acidic runoff can disrupt the delicate chemical balance in natural bodies of water. In this indicator, emissions are expressed in sulfur dioxide (SO2) equivalents. The source of the factors for this indicator is TRACI 2.1 (Bare 2012).">&nbsp; &nbsp;Acid Rain (ACID)</option>
@@ -806,12 +809,11 @@ Georgia-specific input-output dataset is being developed by the EPA.<br><br>
 			Hazardous wastes are wastes with properties that make them dangerous or capable of having a harmful effect on human health or the environment. Hazardous waste is generated from many sources, ranging from industrial manufacturing process wastes to batteries and may come in many forms, including liquids, solids, gases and sludges. EPA identifies hazardous waste and collects information on quantities generated through its Biennial Hazardous Waste Report. Individual states can identify hazardous waste beyond what EPA identifies. Unless otherwise specified, quantities reflected in this indicator come from EPA's Biennial Report. This indicator is expressed in kilograms (kg).">&nbsp; &nbsp;Commercial RCRA Hazardous Waste (CRHW)</option>
 			-->
 
+			<option value="ETOX" title="Freshwater Aquatic Ecotoxicity (ETOX): 
+			Like humans, wildlife can be harmed by exposure to toxic chemicals and substances. An ever-expanding list of common chemicals have been assessed for their tendency to cause ecological damage when released in to the air, water, or soil. In this indicator, emissions are expressed in terms of their contribution to ecological damage in the water column of freshwater bodies. A standardized Comparative Toxicity Unit is used. The source of the factors for this indicator is TRACI 2.1 (Bare 2012) which uses USETox 1.0 (Rosenbaum et al. 2008).">&nbsp; &nbsp;Freshwater Aquatic Ecotoxicity (ETOX)</option>
 
 			<option value="EUTR" title="Eutrophication (EUTR): 
 			Aquatic life is frequently limited by access to mineral nutrients, but the most common limiting nutrients are in both agricultural fertilizers and sewage. When these nutrients are carried in to natural water bodies, usually by rain or pipe, they can cause massive blooms of algae. These algae can choke out other life in the water by rapidly taking up oxygen, blocking sunlight, or even releasing toxic chemicals. After the bloom, the algae die and leave behind a devastated ecosystem. In this indicator, emissions are expressed as their equivalent in kilograms of bioavailable nitrogen, based on the emission in question's potential to reach a body of water and its resultant impacts on algal growth. The source of the factors for this indicator is TRACI 2.1 (Bare 2012).">&nbsp; &nbsp;Eutrophication (EUTR)</option>
-
-			<option value="ETOX" title="Freshwater Aquatic Ecotoxicity (ETOX): 
-			Like humans, wildlife can be harmed by exposure to toxic chemicals and substances. An ever-expanding list of common chemicals have been assessed for their tendency to cause ecological damage when released in to the air, water, or soil. In this indicator, emissions are expressed in terms of their contribution to ecological damage in the water column of freshwater bodies. A standardized Comparative Toxicity Unit is used. The source of the factors for this indicator is TRACI 2.1 (Bare 2012) which uses USETox 1.0 (Rosenbaum et al. 2008).">&nbsp; &nbsp;Freshwater Aquatic Ecotoxicity (ETOX)</option>
 
 			<!-- hiddenhash.indicators = "GHG" is also set above on page init. -->
 			<option value="GHG" selectedX title="Greenhouse Gases (GHG): 
@@ -823,9 +825,10 @@ Georgia-specific input-output dataset is being developed by the EPA.<br><br>
 			<option value="HTOX" title="Human Health Toxicity (HTOX): 
 			Millions of tons of chemicals are used in commerce that a human can be exposed to with potential detrimental effect. Exposure to certain chemicals can increase the likelihood of cancer or other illness in humans. In this indicator, emissions are expressed in terms of their contribution to the incidence of cancer and illness in humans. A standardized Comparative Toxicity Unit (CTU) is used. This indicator is a combination of the HCAN and HNCN indicators. The source of the factors for this indicator is TRACI 2.1 (Bare 2012) which uses USETox 1.0 (Rosenbaum et al. 2008).">&nbsp; &nbsp;Human Health Toxicity (HTOX)</option>
 
-			
+			<!--
 			<option value="MINE" title="Minerals and Metals Use (MINE): 
 			Minerals and Metals Use is an indicator of the life cycle total mass of nonmetallic and metallic minerals extracted for use measured in kilograms (kg).">&nbsp; &nbsp;Minerals and Metals Use (MINE)</option>
+			-->
 
 			<option value="OZON" title="Ozone Depletion (OZON): 
 			The earth is surrounded by a protective layer of atmospheric ozone that filters out harmful radiation from the sun. Certain chemicals, when released in to the air, have the ability to react with and destroy large quantities of the ozone layer, allowing more harmful radiation to reach us. Some chemicals are more long lasting or more likely to interact with ozone than others, so they have different destructive potentials. In this indicator, emissions are expressed as their equivalent in kilograms of CFC-11, an extremely harmful gas formerly used as a common refrigerant capable of destroying thousands of times its mass in ozone. The source of the factors for this indicator is TRACI 2.1 (Bare 2012).">&nbsp; &nbsp;Ozone Depletion (OZON)</option>
@@ -833,8 +836,11 @@ Georgia-specific input-output dataset is being developed by the EPA.<br><br>
 			<option value="SMOG" title="Smog Formation (SMOG): 
 			Smog formation is a complex process by which a group of inorganic gases, typically released by the burning of fossil fuels, react with another group of organic substances, typically released by plant-life, to create ozone at the ground-level. Ozone created at the ground level can cause respiratory disease in humans and stresses plant life, making them more susceptible to disease. Ground-level ozone is also generally broken down and destroyed before it can rise up to join the protective atmospheric ozone layer. In this indicator, emissions are expressed in terms of how much they will contribute to the creation of ground-level ozone (O3), units are kg O3 -equivalents. The source of the factors for this indicator is TRACI 2.1 (Bare 2012).">&nbsp; &nbsp;Smog Formation (SMOG)</option>
 
-			<option value="METL,PEST">Chemical Releases</option>
+			<option value="METL,HAPS,PEST">Chemical Releases</option>
+			<!--
 			<option value="METL">&nbsp; &nbsp;Metal (METL)</option>
+			-->
+			<option value="HAPS">&nbsp; &nbsp;Hazardous Air Pollutants (HAPS)</option>
 			<option value="PEST">&nbsp; &nbsp;Pesticides (PEST)</option>
 
 			</select>

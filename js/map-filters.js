@@ -2122,17 +2122,17 @@ function hashChanged() {
 		//window.location.reload();
 	}
 
-    if (param.catsort) {
-		$("#catsort").val(param.catsort);
+    if (hash.catsort) {
+		$("#catsort").val(hash.catsort);
 	}
-	if (param.catsize) {
-		$("#catsize").val(param.catsize);
+	if (hash.catsize) {
+		$("#catsize").val(hash.catsize);
 	}
-	if (param.catmethod) {
-		$("#catmethod").val(param.catmethod);
+	if (hash.catmethod) {
+		$("#catmethod").val(hash.catmethod);
 	}
-	if (param.indicators) {
-		$("#indicators").val(param.indicators);
+	if (hash.indicators) {
+		$("#indicators").val(hash.indicators);
 	}
 	
 	if (hash.show != priorHash.show) {
