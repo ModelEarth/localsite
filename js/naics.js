@@ -88,11 +88,12 @@ console.log("fips" + fips)
 console.log("dataObject.stateshown" + dataObject.stateshown)
 
 
+// POORLY DESIGNED - No need to load all datasets.
+// Calls promisesReady when completed.
 function loadIndustryData() {
     $("#econ_list").html("<img src='/localsite/img/icon/loading.gif' style='margin:40px; width:120px'><br>");
     stateAbbr = params.state || defaultState;
     dataObject.stateshown=stateID[stateAbbr];
-    //alert("stateAbbr " + stateAbbr)
 
     console.log("No function " + stateAbbr + " " + dataObject.stateshown + " Promises");
 
@@ -145,6 +146,9 @@ function refreshNaicsWidget() {
     } else if (priorHash_naicspage.naics != hash.naics) {
         //alert("hash.naics " + hash.naics);
         loadIndustryData();
+    } else {
+        console.log("No industry list filter");
+        applyIO("");
     }
     priorHash_naicspage = getHash();
 }
@@ -153,6 +157,7 @@ function refreshNaicsWidget() {
 function promisesReady(values) {
 
     console.log("promisesReady - promises loaded")
+    $("#industryListHolder").show();
     d3.csv(dual_map.community_data_root() + "us/id_lists/state_fips.csv").then( function(consdata) {
         var filteredData = consdata.filter(function(d) {
             if(d["FIPS"]==String(dataObject.stateshown)) {
@@ -233,15 +238,7 @@ function promisesReady(values) {
                 statelength=dataObject.counties.length
                 [fips,dataObject.stateshown]=getStateFips(params)
 
-
                 renderIndustryChart(dataObject,values,params);
-                // $(document).ready was here
-                
-
-    // No luck
-    //$(window).on('locationchange', function() {
-    //    alert('The hash has changed!');
-    //});
             }
         })
     })
@@ -407,8 +404,9 @@ function geoChanged(dataObject,params){
 
     // REMOVE
 
-
     return;
+
+
 
     if (!params) {
         params = loadParams(location.search,location.hash); // Pull from updated hash
@@ -852,7 +850,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                         
                         // INDUSTRY ROWS
                         y=Math.min(catcount, top_data_ids.length)
-                        naicshash=""
+                        let naicshash = "";
                         $("#econ_list").html("<div><br>No results found.</div><br>");
                         for (i = 0; i < y; i++) { // Naics
                             rightCol="";
@@ -1333,7 +1331,7 @@ function applyIO(naics) { // Called from naics.js
     //hiddenhash.indicators = indicatorCodes;
     //hiddenhash.count = 10;
 
-    console.log("hiddenhash.naics set in naics.js " + hiddenhash.naics);
+    //console.log("hiddenhash.naics set in naics.js " + hiddenhash.naics);
 
     /*
     hiddenhash = {

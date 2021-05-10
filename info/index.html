@@ -25,18 +25,21 @@
 	// Used by script that follow, including naics.js
 	let hash = getHash();
 	if (!hash.state && !hash.geo) {
-		hiddenhash.state = "GA"; // Temp until triggered by domains and map prompt.
+		//hiddenhash.state = "GA"; // Temp until triggered by domains and map prompt.
 	}
 	if (!hiddenhash.show) {
-		hiddenhash.show = "industries";
+		//hiddenhash.show = "industries";
 	}
 	if (!hiddenhash.indicators) {
-		hiddenhash.indicators = "GHG,NNRG,WATR,SMOG";
+		//hiddenhash.indicators = "GHG,NNRG,WATR,SMOG";
 	}
 	//hiddenhash.debug = true;
 </script>
 
 <script type="text/javascript" src="/localsite/js/map-filters.js" id="/localsite/js/map-filters.js"></script>
+
+<!-- Resides before naics.js -->
+<script src="../../io/build/lib/useeio_widgets.js"></script>
 
 <!-- Resides before useeio_widgets.js, resides after map-filters.js so hiddenhash.naics is avalable -->
 <script type="text/javascript" src="../js/naics.js"></script>
@@ -49,7 +52,7 @@
 -->
 <link rel="stylesheet" type="text/css" href="../../io/build/widgets.css">
 <link rel="stylesheet" type="text/css" href="../../io/build/slider.css">
-<script src="../../io/build/lib/useeio_widgets.js"></script>
+
 
 <!-- After USEEIO to alter css -->
 <!--
@@ -466,7 +469,7 @@ To do: make the links below an optional widget
 <div id="pageLinks"></div>
 -->
 
-<div style="border-bottom:1px solid #ccc; padding-top:0px; padding-bottom:0px">
+<div id="industryListHolder" style="display:none; border-bottom:1px solid #ccc; padding-top:0px; padding-bottom:0px">
 
 <div id="top-content-columns" class="content contentpadding noprint" style="margin-top:20px; padding-top:0px; padding-bottom:0px">
 
