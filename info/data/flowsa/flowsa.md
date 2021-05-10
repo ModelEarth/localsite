@@ -22,7 +22,7 @@ The updates below will be used by the county industry lists on our [industry com
 
 ## Using Machine Learning to Fill Gaps
 
-When a 6-digit naics is missing employee and payroll data, use its parent 5, 4, 3 or 2-digit naics to genearte an estimate.  
+When a 6-digit naics is missing employee and payroll data, use its parent 5, 4, 3 or 2-digit naics to generate an estimate.  
 
 Use attributes in the impact data used by the [USEEIO widgets](../../../../io/charts/) to sharpen predictions.  
 
