@@ -494,6 +494,8 @@ function keyFound(this_key, cat_filter, params) {
 
     if (this_key <= 1) {
         return false;
+    } else if (cat_filter == undefined) { // No filter
+        return true;
     } else if (cat_filter.length == 0) { // No filter
         return true;
     } else if (params.show == "bioeconomy" && (this_key.startsWith("11") || this_key.startsWith("311"))) { // Quick hack, always include Agriculture
@@ -1409,6 +1411,9 @@ function applyIO(naics) { // Called from naics.js
         model: model,
         selector: '#iogrid',
     });
+    config.withDefaults({
+        count: 20,
+    })
     config.join(ioGrid);
 
 
@@ -1442,11 +1447,12 @@ function applyIO(naics) { // Called from naics.js
         model: model,
         selector: '.sector-list',
     });
-    config.join(sectorList);
-    config.update({
+    config.withDefaults({
         view: ["mosaic"],
         count: 50,
-    });
-    // End Copied from sector_list.html
+    })
+    config.join(sectorList);
+
+    // End Copied from sector_list.html, and changed to use withDefaults
 
 }
