@@ -33,7 +33,7 @@ Also lacks CHARM.  Far from comprehensive.
 Post comments in our Recycling Google Sheet to submit changes.  
 
 <a href="https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing" target="google-recycling">Google Sheet Tabs</a><br> 
-<a href="https://github.com/localsite/localsite/" target="_parent">GitHub Repo for Map Interface Updates</a><br>
+<a href="https://github.com/modelearth/localsite/" target="_parent">GitHub Repo for Map Interface Updates</a><br>
 <hr>
 <a href="../../neighborhood/" target="_parent">About Maps from Google Sheets</a>
 <!--

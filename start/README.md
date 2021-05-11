@@ -17,7 +17,7 @@
 
 The Localsite Framework is designed to allow multiple Github repos (using JQuery, React,&nbsp;Vue, etc.) to communicate using hash values.  
 
-[Edit in Github](https://github.com/localsite/localsite/blob/master/start/README.md) - 
+[Edit in Github](https://github.com/modelearth/localsite/blob/master/start/README.md) - 
 [Edit in StackEdit](https://stackedit.io/app#providerId=githubWorkspace&owner=localsite&repo=localsite&branch=) - Click folder icon in upper right within StackEdit. ([Direct links are not yet available in StackEdit](https://community.stackedit.io/t/open-file-from-github-using-a-link/495))
 
 ## 1. Start a localhost server on your computer
@@ -48,7 +48,7 @@ ON A PC: [Install IIS](https://www.techwalla.com/articles/how-to-circumvent-mcaf
 
 ## 2. Clone the "localsite" repo into your webroot 
 
-Place the <a href='https://github.com/localsite/localsite/'>localsite repo</a> within the root of your local web folder, along with other repos that reference&nbsp;it.  
+Place the <a href='https://github.com/modelearth/localsite/'>localsite repo</a> within the root of your local web folder, along with other repos that reference&nbsp;it.  
 
 Click the green "Code" button on the page above to clone the repo.  
 
@@ -135,7 +135,7 @@ To activate GitHub Pages on your fork’s settings page, set the Github Pages So
 - Wait 2 to 10 minutes for new GitHub Pages site to become available.
 - Activate GitHub Pages for each additional repo residing within the primary account. These can be forks from other accounts.  
 - Avoid putting referenced files in your [github username].github.io root repo because it won't be the root of your site when you view on localhost.  
-- Make a fork of the current "[localsite](https://github.com/localsite/localsite/)" repo to include it's functionality in your site design.  
+- Make a fork of the current "[localsite](https://github.com/modelearth/localsite/)" repo to include it's functionality in your site design.  
 
 
 ## 5. Update your forked repos

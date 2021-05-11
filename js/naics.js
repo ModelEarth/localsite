@@ -1125,7 +1125,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
 
                     /*
                     if (params.show == "bioeconomy") {
-                        $(".regiontitle").text("Bioeconomy and Petroleum Industries");
+                        $(".regiontitle").text("Bioeconomy and Energy");
                     } else if (params.show == "parts") {
                         $(".regiontitle").text("Parts Manufacturing");
                     } else if (params.show == "manufacturing") {
@@ -1195,7 +1195,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
 
                         /*
                         if (params.show == "bioeconomy") {
-                            $(".regiontitle").text("Bioeconomy and Petroleum Industries");
+                            $(".regiontitle").text("Bioeconomy and Energy");
                         } else if (params.show == "parts") {
                             //$(".regiontitle").text("Parts Manufacturing");
                         } else if (params.show == "manufacturing") {
