@@ -1,3 +1,5 @@
+[Projects](../../../community/)  
+
 # Data Setup
 
 Our summer 2021 Georgia Tech intern is pulling U.S. Bureau of Labor Statistics (BLS) data from the EPA's Flowsa API for use in calculations of county-level 6-digit naics industry projections. The algorithms developed will be shared in the Fall 2021 edition of Applied Science.  
