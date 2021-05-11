@@ -1,20 +1,18 @@
-[Data Commons](../)  
+[Data Setup](../)  
 
-# Install DataCommons.org Lite
+# Install Data Commons Lite
 
-### Start with the "website" repo developer guide - Lite steps
+You'll be running a local copy of the [datacommons.org](https://datacommons.org) website, but without local data.
 
-To view the "tools" repo samples locally, you'll need to initiate a server from the "website" repo first. (Looking for an alternative to this, or maybe "tools" should be a submodule of "website" so all the routes continue working for both "website" and "tools".)  
+Clone the Google Data Commons "[website](https://github.com/datacommonsorg/website/)" repo and run commands within your cloned folder.  
 
-[Developer Guide](https://github.com/datacommonsorg/website/blob/master/docs/developer_guide.md) - scroll to Develop with Flask (simple/lite)  
+On the website [Developer Guide](https://github.com/datacommonsorg/website/blob/master/docs/developer_guide.md) page, scroll down to "Develop with Flask (simple/lite)". Get your gcloud connection working using the lite steps.  
 
-First get your gcloud connection working by following the "lite" steps halfway down on the [datacommonsorg/website](https://github.com/datacommonsorg/website/blob/master/docs/developer_guide.md) repo readme page.  Clone the "website" repo and run commands within your local "website" folder.  
-
-After cloning website repo, run to load submodule "mixer":  
+After cloning the website repo, run to load submodule "mixer":  
 
 	git submodule foreach git pull origin master
 
-You may need to [update node.js](https://nodejs.org/en/download/current/) if you are older than 10.0.0. Run to check:
+You may need to [update node.js](https://nodejs.org/en/download/current/) if your local version is older than 10.0.0. Run to check:
 
 	node -v  
 
@@ -40,9 +38,13 @@ Launch the lite server. This may also provide steps to activate your DataCommons
 
 For machine learning projects, use the full install with [Minikube](https://minikube.sigs.k8s.io/docs/start/) plus [Skaffold](https://skaffold.dev/docs/install/) and [Run GPU workloads on minikube](https://cloud.google.com/blog/products/containers-kubernetes/easier-kubernetes-development-from-your-laptop?utm_source=newsletter&utm_medium=email&utm_campaign=2019-january-gcp-newsletter-en)  
 
-## Install "tools" repo
+## Optional: Install "tools" repo
 
 ### For covid19-dashboard sample
+
+NOTE: To view the "tools" repo samples locally, you'll need to initiate a server from the "website" repo first. (Looking for an alternative to this, or maybe "tools" should be a submodule of "website" so all the routes continue working for both "website" and "tools".)  
+
+The Tools repos was created by a previous Google intern using React Web starter.  
 
 To view and edit the tools repo locally, clone [datacommonsorg/tools](https://github.com/datacommonsorg/tools) repo or the [ModelEarth fork](https://github.com/modelearth/tools)  
 
