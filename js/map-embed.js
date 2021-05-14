@@ -699,7 +699,7 @@ strVar += "<option value=\"CT\" stateid=\"09\" lat=\"41.5799\" lon=\"-72.7467\" 
 strVar += "<option value=\"DE\" stateid=\"10\" lat=\"38.9986\" lon=\"-75.4416\" km=\"5047\">Delaware<\/option>";
 strVar += "<option value=\"DC\" stateid=\"11\" lat=\"38.9042\" lon=\"-77.0165\" km=\"158\" style=\"display:none\">District of Columbia<\/option>";
 strVar += "<option value=\"FL\" stateid=\"12\" lat=\"28.4574\" lon=\"-82.4091\" km=\"138947\">Florida<\/option>";
-strVar += "<option value=\"GA\" stateid=\"13\" lat=\"32.6296\" lon=\"-83.4235\" km=\"149485\">Georgia<\/option>";
+strVar += "<option value=\"GA\" stateid=\"13\" lat=\"32.6296\" lon=\"-83.4235\" km=\"149485\" selected>Georgia<\/option>";
 strVar += "<option value=\"GU\" stateid=\"66\" lat=\"13.4417\" lon=\"144.7719\" km=\"544\" style=\"display:none\">Guam<\/option>";
 strVar += "<option value=\"HI\" stateid=\"15\" lat=\"19.5978\" lon=\"-155.5024\" km=\"16634\">Hawaii<\/option>";
 strVar += "<option value=\"ID\" stateid=\"16\" lat=\"44.3484\" lon=\"-114.5589\" km=\"214050\">Idaho<\/option>";

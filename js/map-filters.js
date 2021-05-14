@@ -1826,7 +1826,9 @@ function getNaics_setHiddenHash(go) {
 
     if (go){
 
-        if (go == "bioeconomy") {
+    	if (go == "opendata") {
+    		states = "GA";
+    	} else if (go == "bioeconomy") {
         	showtab = "Bioeconomy and Energy";
         	showtitle = "Bioeconomy and Energy Industries";
             cat_filter = (bio_input + bio_output + green_energy + fossil_energy).split(',');
@@ -1856,6 +1858,7 @@ function getNaics_setHiddenHash(go) {
         	showtab = "Recycling";
         	showtitle = "Recycling Processors (B2B)";
             cat_filter = (recycling).split(',');
+            states = "GA";
         } else if (go == "transfer") {
         	showtab = "Transfer Stations";
         	showtitle = "Recycling Transfer Stations (B2B)";
