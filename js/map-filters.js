@@ -243,7 +243,7 @@ $(document).ready(function () {
     });
 	
  	$('#state_select').on('change', function() {
-	    goHash({'filter':'','state':this.value}); // triggers renderMapShapes("geomap", hash); // County select map
+	    goHash({'name':'','state':this.value}); // triggers renderMapShapes("geomap", hash); // County select map
 	    $("#filterLocations").hide(); // So state appears on map immediately
 	    /*
 	    if (this.value == "GA") {
@@ -252,6 +252,11 @@ $(document).ready(function () {
 	    	$("#geoPicker").hide();
 	    }
 	    */
+	});
+	$('.selected_state').on('change', function() {
+		//alert("selected_state " + this.getAttribute("id"))
+		$("#state_select").val(this.getAttribute("id"));
+	    goHash({'name':'','state':this.getAttribute("id")}); // triggers renderMapShapes("geomap", hash); // County select map
 	});
  	$('#region_select').on('change', function() {
  		//alert($(this).attr("geo"))
@@ -448,84 +453,11 @@ $(document).ready(function () {
 		);
    	});
 
-	function productList(startRange, endRange, text) {
-		// Displays Harmonized System (HS) subcategories
-		// To Do: Lazyload file when initially requested - when #catSearch is clicked.
 
-		if (!$("#productCodes").length) {
-			return;
-		}
-		$("#productSubcats").html("");
-		$("#productCatTitle").html("");
-		console.log("productList " + startRange + ' to ' + endRange + " " + text);
-		$("#subcatHeader").html(text);
-
-		console.log("pcodes: " + $("#productCodes").val())
-		var productcodes = $("#productCodes").val().replace(";",",");
-		var productcode_array = productcodes.split(/\s*,\s*/); // Removes space when splitting on comma
-		//alert("productcode_array " + productcode_array[0].length);
-
-		if (catArray.length > 0) {
-			$("#catRowCount").html(catArray.length);
-			$("#botWelcome").show();
-		}
-		//console.log("catArray " + catArray)
-		var checkProductBox;
-		catArray.forEach(function(entry) {
-			checkProductBox = false;
-			for(var i = 0; i < productcode_array.length; i++) {
-				if (productcode_array[i].length > 0) {
-					if (isInt(productcode_array[i])) { // Int
-							// Reduce to four digits
-							productcode_truncated = productcode_array[i].substring(0,4);
-							//console.log("Does " + entry[0] + " start with " + productcode_truncated);
-
-							if (entry[0].startsWith(productcode_truncated)) { // If columns values start with search values.
-								$("#productCatTitle").append(entry[0] + " - " + entry[1] + "<br>");
-								checkProductBox = true;
-								// To activate on list of HS types is displayed.
-								$("#catSearchHolder").removeClass("localonly");
-							} else {
-								//console.log("Not Found");
-							}
-						
-					} else {
-						console.log("Alert: productcode " + productcode_array[i] + " not integer.")
-						//productMatchFound++;
-					}
-				}
-			}
-
-			if (entry[0] > (startRange*100) && entry[0] < (endRange*100+99)) {
-		    	//console.log(entry[0]);
-		    	var ischecked = "";
-		    	if (checkProductBox) {
-		    		ischecked = "checked";
-		    	}
-		    	$("#productSubcats").append( "<div><div><input name='hs' type='checkbox' " + ischecked + " value='" + entry[0] + "'> " + entry[0] + "</div><div>" + entry[1] + "</div></div>" );
-			}
-		});
-		if ($(window).width() < 600) {
-			//$('#mainCats').hide();
-		}
-		
-		$('#productSubcats > div').click(function () {
-	    	$(this).find('input[type=checkbox]').prop("checked", !$(this).find('input[type=checkbox]').prop("checked")); // toggle
-	    	let hsCodes = $('#productSubcats input:checked').map(function() {return this.value;}).get().join(','); // Note use of value instead of id.
-	    	updateHash({"hs":hsCodes});
-	        event.stopPropagation();
-	    });
-
-	    //$('#productSubcats > div:first-child').click(function () {
-		//	$('#mainCats').show();
-		//	$('.backArrow').hide();
-	    //    event.stopPropagation();
-	    //});
-	}
 	
 	// From Export Directory - Remove this function below
 	//loadHtmlTable(true);
-
+	/*
 	document.addEventListener('hashChangeEvent', function (elem) {
 	//$(window).on('hashchange', function() { // Refresh param values when user changes the URL after #.
 		//clearFields();
@@ -536,7 +468,83 @@ $(document).ready(function () {
 		productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 	//});
 	}, false);
+	*/
 });
+
+function productList(startRange, endRange, text) {
+	// Displays Harmonized System (HS) subcategories
+	// To Do: Lazyload file when initially requested - when #catSearch is clicked.
+
+	if (!$("#productCodes").length) {
+		return;
+	}
+	$("#productSubcats").html("");
+	$("#productCatTitle").html("");
+	console.log("productList " + startRange + ' to ' + endRange + " " + text);
+	$("#subcatHeader").html(text);
+
+	console.log("pcodes: " + $("#productCodes").val())
+	var productcodes = $("#productCodes").val().replace(";",",");
+	var productcode_array = productcodes.split(/\s*,\s*/); // Removes space when splitting on comma
+	//alert("productcode_array " + productcode_array[0].length);
+
+	if (catArray.length > 0) {
+		$("#catRowCount").html(catArray.length);
+		$("#botWelcome").show();
+	}
+	//console.log("catArray " + catArray)
+	var checkProductBox;
+	catArray.forEach(function(entry) {
+		checkProductBox = false;
+		for(var i = 0; i < productcode_array.length; i++) {
+			if (productcode_array[i].length > 0) {
+				if (isInt(productcode_array[i])) { // Int
+						// Reduce to four digits
+						productcode_truncated = productcode_array[i].substring(0,4);
+						//console.log("Does " + entry[0] + " start with " + productcode_truncated);
+
+						if (entry[0].startsWith(productcode_truncated)) { // If columns values start with search values.
+							$("#productCatTitle").append(entry[0] + " - " + entry[1] + "<br>");
+							checkProductBox = true;
+							// To activate on list of HS types is displayed.
+							$("#catSearchHolder").removeClass("localonly");
+						} else {
+							//console.log("Not Found");
+						}
+					
+				} else {
+					console.log("Alert: productcode " + productcode_array[i] + " not integer.")
+					//productMatchFound++;
+				}
+			}
+		}
+
+		if (entry[0] > (startRange*100) && entry[0] < (endRange*100+99)) {
+	    	//console.log(entry[0]);
+	    	var ischecked = "";
+	    	if (checkProductBox) {
+	    		ischecked = "checked";
+	    	}
+	    	$("#productSubcats").append( "<div><div><input name='hs' type='checkbox' " + ischecked + " value='" + entry[0] + "'> " + entry[0] + "</div><div>" + entry[1] + "</div></div>" );
+		}
+	});
+	if ($(window).width() < 600) {
+		//$('#mainCats').hide();
+	}
+	
+	$('#productSubcats > div').click(function () {
+    	$(this).find('input[type=checkbox]').prop("checked", !$(this).find('input[type=checkbox]').prop("checked")); // toggle
+    	let hsCodes = $('#productSubcats input:checked').map(function() {return this.value;}).get().join(','); // Note use of value instead of id.
+    	updateHash({"hs":hsCodes});
+        event.stopPropagation();
+    });
+
+    //$('#productSubcats > div:first-child').click(function () {
+	//	$('#mainCats').show();
+	//	$('.backArrow').hide();
+    //    event.stopPropagation();
+    //});
+}
 
 function filterClickLocation() {
 	console.log("show location filters");
@@ -667,7 +675,8 @@ function locationFilterChange(selectedValue,selectedGeo) {
         }
     }
     if (selectedValue == 'counties') {
-    	showCounties(0);
+    	// Not necessary to show when not displayed yet
+    	//showCounties(0);
     }
     if (selectedValue == 'city') {
         $("#distanceField").show();
@@ -710,7 +719,6 @@ function locClick(which) {
 	goHash({"geo":geo,"regiontitle":regiontitle});
 }
 function showCounties(attempts) {
-
 	if (typeof d3 !== 'undefined') {
 
 		let hash = getHash();
@@ -871,27 +879,27 @@ function showCounties(attempts) {
 	}
 }
 function updateGeoFilter(geo) {
-  //alert("updateGeoFilter")
-  $(".geo").prop('checked', false);
-  if (geo) {
-    //locationFilterChange("counties");
-    let sectors = geo.split(",");
-        for(var i = 0 ; i < sectors.length ; i++) {
-          $("#" + sectors[i]).prop('checked', true);
-        }
-    
-    }
-    console.log('ALERT: Change to support multiple states as GEO. Current geo: ' + geo)
-    if (geo && geo.length > 4) // Then county or multiple states - Bug
-    {
-        $(".state-view").hide();
-        $(".county-view").show();
-        //$(".industry_filter_settings").show(); // temp
-    } else {
-        $(".county-view").hide();
-        $(".state-view").show();
-        //$(".industry_filter_settings").hide(); // temp
-    }
+ 	$(".geo").prop('checked', false);
+ 	if (geo && geo.length > 0) {
+
+		//locationFilterChange("counties");
+		let sectors = geo.split(",");
+	    for(var i = 0 ; i < sectors.length ; i++) {
+	      $("#" + sectors[i]).prop('checked', true);
+	    }
+
+	}
+	console.log('ALERT: Change to support multiple states as GEO. Current geo: ' + geo)
+	if (geo && geo.length > 4) // Then county or multiple states - Bug
+	{
+	    $(".state-view").hide();
+	    $(".county-view").show();
+	    //$(".industry_filter_settings").show(); // temp
+	} else {
+	    $(".county-view").hide();
+	    $(".state-view").show();
+	    //$(".industry_filter_settings").hide(); // temp
+	}
 }
 function applyStupidTable(count) {
 	console.log("applyStupidTable attempt " + count);
@@ -1719,8 +1727,8 @@ function googlePlacesApiLoaded(count) {
 		console.log("ERROR: googlePlacesApiLoaded exceeded 100 attempts.");
 	}
 }
-
-googlePlacesApiLoaded(1);
+googlePlacesApiLoaded(1); // Initiate calling function above until "google" found. 
+// BUGBUG - above could break if another script is already loaded containing "google"
 
 
   // Uses https://cdn.jsdelivr.net/npm/vue above.
@@ -1728,13 +1736,14 @@ googlePlacesApiLoaded(1);
     el: '#app',
     mounted() {
       // BUG Give Google script time to load before calling google.maps.places.Autocomplete
+      // Rework this - too much time. Move into loop above.
       setTimeout(() => {
         this.autocomplete = new google.maps.places.Autocomplete(
           document.getElementById('searchloc'),
           {types: ['establishment', 'geocode']}
         );
         this.autocomplete.addListener('place_changed', this.getPlaceData);
-      },6000)
+      },30000)
     },
     data: {
       lat: '',
@@ -1794,7 +1803,8 @@ if(typeof hiddenhash == 'undefined') {
 function getNaics_setHiddenHash(go) {
 	let showtitle, showtab;
     let cat_filter = [];
-    
+    let states = "";
+
     // NAICS FROM community/projects/biotech
     var bio_input = "113000,321113,113310,32121,32191,562213,322121,322110,"; // Omitted 541620
     var bio_output = "325211,325991,3256,335991,325120,326190,";
@@ -1837,6 +1847,7 @@ function getNaics_setHiddenHash(go) {
         } else if (go == "ppe") {
         	showtitle = "Healthcare Industries";
             cat_filter = (ppe_suppliers).split(',');
+            states = "GA";
         } else if (go == "vehicles") {
         	showtab = "Automotive"
         	showtitle = "Vehicles and Vehicle Parts";
@@ -1849,18 +1860,22 @@ function getNaics_setHiddenHash(go) {
         	showtab = "Transfer Stations";
         	showtitle = "Recycling Transfer Stations (B2B)";
         	cat_filter = (recycling).split(',');
+        	states = "GA";
         } else if (go == "recyclers") {
         	showtab = "Recyclers";
         	showtitle = "Companies that Recycle during Manufacturing";
         	cat_filter = (recycling).split(',');
+        	states = "GA";
         } else if (go == "inert") {
         	showtab = "Inert Waste Landfills";
         	showtitle = "Inert Waste Landfills";
         	cat_filter = (recycling).split(',');
+        	states = "GA";
         } else if (go == "landfills") {
         	showtab = "Landfills";
         	showtitle = "Landfills";
         	cat_filter = (recycling).split(',');
+        	states = "GA";
         } else if (go=="manufacturing") {
         	showtitle = "Manufacturing";
         	cat_filter=["manufacturing placeholder"];
@@ -1898,6 +1913,11 @@ function getNaics_setHiddenHash(go) {
 			$(".layerclass.opendata").hide();
 		}
 
+		if ($("#sidecolumn .catList").is(":visible")) {
+			$("#selected_states").hide();
+		} else if (states.length <= 0) { // All states
+			$("#selected_states").show();
+		}
     } else if (param.naics) {
     	showtitle = "Top Industries";
     	//
@@ -1922,15 +1942,17 @@ function getNaics_setHiddenHash(go) {
 
 
 function hashChanged() {
-  	// This function does NOT invoke loadMap1. Only updates display of map filter widgets
-
-
+  	// This function now invoke loadMap1 - replaces index.html and map-embed.js.
+  	
 	let reloadedMap = false;
 	param = mix(param,loadParams(location.search,location.hash)); // param is declared in localsite.js. Give priority to param updates within code.
 
 	let hash = getHash();
+	//alert("hash.state " + hash.state);
 	console.log("hashChanged from prior geo: " + priorHash.geo + " to " + hash.geo);
 	
+	populateFieldsFromHash();
+	productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 
 	// NOTE: params after ? are not included, just the hash.
 	if (hash.show != priorHash.show) {
@@ -2052,24 +2074,52 @@ function hashChanged() {
 			//}
 		//}
 	}
-	if (hash.state != priorHash.state) {
-		let hash = getHash();
-   		renderMapShapes("geomap", hash); // County select map
-	}
 
+	let mapCenter = [];
+	if (hash.state != priorHash.state) {
+		// If map is already loaded, recenter map.  See same thing below
+   		// Get lat/lon from state dropdown #state_select
+
+   		let theState = $("#state_select").find(":selected").val();
+        if (theState != "") {
+          let kilometers_wide = $("#state_select").find(":selected").attr("km");
+          //zoom = 1/kilometers_wide * 1800000;
+  
+          if (theState == "HI") { // Hawaii
+              zoom = 6
+          } else if (kilometers_wide > 1000000) { // Alaska
+              zoom = 4
+          }
+          let lat = $("#state_select").find(":selected").attr("lat");
+          let lon = $("#state_select").find(":selected").attr("lon");
+          mapCenter = [lat,lon];
+        }
+	}
 
 	// Before hash.state to utilize initial lat/lon
 	if (hash.lat != priorHash.lat || hash.lon != priorHash.lon) {
 	    $("#lat").val(hash.lat);
 	    $("#lon").val(hash.lon);
-	    let pagemap_center = [hash.lat,hash.lon];
-	    let pagemap = document.querySelector('#map1')._leaflet_map; // Recall existing map
+	    mapCenter = [hash.lat,hash.lon];
+	}
+	if (mapCenter.length > 0 && typeof L != "undefined") {
+		//alert(mapCenter)
+	 	let pagemap = document.querySelector('#map1')._leaflet_map; // Recall existing map
 	    let pagemap_container = L.DomUtil.get(pagemap);
 	    if (pagemap_container != null) {
-	      pagemap.flyTo(pagemap_center, 10);
+	      pagemap.flyTo(mapCenter, 5);
 	    }
-	 }
+	    let pagemap2 = document.querySelector('#map2')._leaflet_map; // Recall existing map
+	    let pagemap_container2 = L.DomUtil.get(pagemap2);
+	    if (pagemap_container2 != null) {
+	      pagemap2.flyTo(mapCenter, 5);
+	    }
+	}
 	if (hash.state != priorHash.state) {
+		if($("#geomap").is(':visible')){
+			renderMapShapes("geomap", hash); // County select map
+		}
+
 		if(location.host.indexOf('model.georgia') >= 0) {
 			if (hash.state != "" && hash.state.toUpperCase() != "GA") { // If viewing other state, use model.earth
 				let goModelEarth = "https://model.earth" + window.location.pathname + window.location.search + window.location.hash;
@@ -2134,10 +2184,16 @@ function hashChanged() {
 	if (hash.indicators) {
 		$("#indicators").val(hash.indicators);
 	}
-	
+	/*
+	// Moved back to map.js
 	if (hash.show != priorHash.show) {
 		//applyIO(hiddenhash.naics);
+		loadMap1("hashChanged() in map-filters.js", hash.show);
+	} else if (hash.state && hash.state != priorHash.state) {
+		// Why are new map points not appearing
+		loadMap1("hashChanged() in map-filters.js new state " + hash.state, hash.show);
 	}
+	*/
 	priorHash = getHash();
 }
 

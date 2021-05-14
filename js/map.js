@@ -61,10 +61,37 @@ var localsite_map = localsite_map || (function(){
 }());
 */
 
+/* Allows map to remove selected shapes when backing up. */
+document.addEventListener('hashChangeEvent', function (elem) {
+  console.log("map.js detects URL hashChangeEvent");
+  hashChangedMap();
+}, false);
+document.addEventListener('hiddenhashChangeEvent', function (elem) {
+  console.log("map.js detects hiddenhashChangeEvent");
+  hashChangedMap();
+}, false);
+
+var priorHashMap = {};
+function hashChangedMap() {
+  let hash = getHash();
+  if (hash.show != priorHashMap.show) {
+    //applyIO(hiddenhash.naics);
+    loadMap1("hashChanged() in map-filters.js", hash.show);
+  } else if (hash.state && hash.state != priorHashMap.state) {
+    // Why are new map points not appearing
+    loadMap1("hashChanged() in map-filters.js new state " + hash.state, hash.show);
+  }
+  priorHashMap = getHash();
+}
+$(document).ready(function () {
+  hashChangedMap();
+});
+
 function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback) {
   // To Do: Map background could be loaded while waiting for D3 file. 
   // Move "d3.csv(dp.dataset).then" further down into a new function that starts with the following line.
 
+  console.log('loadFromSheet ' + whichmap);
   // Even without dataset, set titles since NAICS industries are still loaded.
   let defaults = {};
   defaults.zoom = 7;
@@ -685,7 +712,7 @@ function addIcons(dp,map,map2) {
     if (element.property_link) {
       output += "<a href='" + element.property_link + "'>Property Details</a><br>";
     } else if (element["name"]) {
-      output += "<a href='#show=" + param["show"] + "&name=" + element["name"].replace(/\ /g,"_") + "''>View Details</a><br>";
+      output += "<a href='#show=" + hash.show + "&name=" + element["name"].replace(/\ /g,"_") + "''>View Details</a><br>";
     }
     // ADD POPUP BUBBLES TO MAP POINTS
     if (circle) {
@@ -882,17 +909,19 @@ var tabletop; // Allows us to wait for tabletop to load.
 
 function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js and map-filters.js
 
-  //alert('loadMap1 calledBy ' + calledBy);
+  console.log('loadMap1 calledBy ' + calledBy + ' show: ' + show);
   if (!show) {
     show = param["show"];
   }
-  if (!show && param["go"]) {
-    show = param["go"].toLowerCase();
-  }
+
+  let hash = getHash();
+  //if (!show && param["go"]) {
+  //  show = param["go"].toLowerCase();
+  //}
   if (show != showprevious) {
     changeCat(""); // Clear side
   }
-  $("#list_main").hide(); // Hide list and map2 until displayed by state-specific data
+  //$("#list_main").hide(); // Hide list and map2 until displayed by state-specific data
 
   // To do: limit to when layer changes
   //$(".layerclass").hide(); // Hides suppliers, and other layer-specific css
@@ -964,7 +993,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   let community_root = dual_map.community_data_root();
   //let state_root = "/georgia-data/";
   //let state_root = dual_map.custom_data_root();
-  let state_abbreviation = param.state || "GA";
+  let state_abbreviation = hash.state || "GA";
 
   let dp1 = {}
   // Might use when height is 280px
@@ -1008,7 +1037,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   //if (dp && dp[0]) { // Parameters set in page or layer json
   if (dp && dp.dataset) { // Parameters set in page or layer json
     dp1 = dp;
-  } else if (show == "farmfresh") {
+  } else if (show == "farmfresh" && state_abbreviation) {
     dp1.listTitle = "USDA Farm Produce";
     //if (location.host.indexOf('localhost') >= 0) {
       dp1.valueColumn = "type";
@@ -1042,6 +1071,8 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   } else if (show == "brigades") {
     dp1.listTitle = "Coding Brigades";
     dp1.dataset = "https://neighborhood.org/brigade-information/organizations.json";
+
+    dp1.listInfo = "<a href='https://neighborhood.org/brigade-information/'>Source</a> and upcoming: <a href='https://neighborhood.org/brigade-project-index/get-indexed/'>Brigade Project Index</a>"
 
     // , "In Address": "address", "In County Name": "county", "In Website URL": "website"
     dp1.search = {"In Location Name": "name"};
@@ -1291,7 +1322,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
         dp1.listLocation = true;
 
       } else {
-        console.log("no show text match for listing map");
+        console.log("no show text match for listing map: " + show);
       }
 
   } // end state GA
@@ -1299,7 +1330,10 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   // Load the map using settings above
 
   // INIT - geo fetches the county for filtering. This will be limited to datasets that contain County columns
-  let hash = getHash();
+  if(typeof hash == 'undefined') {
+    let hash = {};
+  }
+  hash = getHash();
   if (hash.geo) {
     loadGeos(hash.geo,0,function(results) {
       loadFromSheet('map1','map2', dp1, basemaps1, basemaps2, 0, function(results) {
@@ -1353,9 +1387,17 @@ function initialHighlight(hash) {
   }
 }
 
-jQuery.fn.scrollTo = function(elem) { 
-    $(this).scrollTop($(this).scrollTop() - $(this).offset().top + $(elem).offset().top); 
-    return this; 
+jQuery.fn.scrollTo = function(elem) {
+
+    // BUG Reactivate test with http://localhost:8887/localsite/info/#show=ppe&name=Code_the_South
+    /*
+    if (typeof $(elem) !== "undefined" && typeof $(this) !== "undefined") { // Exists
+      $(this).scrollTop($(this).scrollTop() - $(this).offset().top + $(elem).offset().top);
+      return this;
+    } else {
+      // element does not exist
+    }
+    */
 };
 
 function onTabletopLoad(dp1) {
@@ -1599,7 +1641,7 @@ function showList(dp,map) {
     dp.data = data_sorted;
   }
 
-  //console.log(dp.data); //TEMP
+  //alert(dp.data); //TEMP
   let hash = getHash(); 
 
   dp.data.forEach(function(elementRaw) {
@@ -2036,8 +2078,6 @@ function showList(dp,map) {
         $("#detaillist").append(output);
       }
     }
-    
-
   });
   console.log("Total " + dp.dataTitle + " " + count);
 

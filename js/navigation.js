@@ -42,7 +42,7 @@ $(document).ready(function(){
  		$("body").prepend( "<div id='sidecolumn' class='hideprint'></div>\r" );
  	}
  	$("body").addClass("flexbody"); // For footer to stick at bottom on short pages
- 	$("body").wrapInner( "<main class='flexmain'></main>"); // To stick footer to bottom
+ 	$("body").wrapInner( "<main class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
  	$("body").prepend( "<div id='header' class='flexheader hideprint'></div>\r" );
 		
 
