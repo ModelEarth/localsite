@@ -724,7 +724,7 @@ function showCounties(attempts) {
 		let hash = getHash();
 		let theState = $("#state_select").find(":selected").val();
 		if (hash.state) {
-			theState = hash.state;
+			theState = hash.state.toUpperCase();
 		}
 		if (theState.length <= 0) {
 			// BUGBUG Hack - Need to set the state from geo value(s)

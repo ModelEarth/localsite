@@ -27,9 +27,9 @@ var dual_map = dual_map || (function(){
         },
         community_data_root : function() { // General US states and eventually some international
             let root = location.protocol + '//' + location.host + '/community-data/';
-            if (location.host.indexOf('localhost') < 0) {
+            //if (location.host.indexOf('localhost') < 0) {
               root = "https://model.earth/community-data/"; 
-            }
+            //}
             return (root);
         },
         modelearth_data_root : function() { // General US states and eventually some international
@@ -224,6 +224,10 @@ function updateHiddenhash(hashObject) {
 
         // To Do: Populate hiddenhash div instead.
         
+        // Temp - remove these two lines after activating hiddenhash div.
+        var event = new CustomEvent('hiddenhashChangeEvent');
+        document.dispatchEvent(event); // Dispatch the event
+
     }
   }
   return;

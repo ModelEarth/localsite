@@ -21,13 +21,13 @@ function getKeyByValue(object, value) {
 if (params.geo){
     fip=params.geo.split("US")[1]   
     if(fip.startsWith("0")){
-        dataObject.stateshown=params.geo.split("US0")[1]
+        dataObject.stateshown = params.geo.split("US0")[1]
     }else{
-        dataObject.stateshown=params.geo.split("US")[1]
+        dataObject.stateshown = params.geo.split("US")[1]
     }
-    
 }
-[fips,dataObject.stateshown]=getStateFips(params)
+[fips,dataObject.stateshown]=getStateFips(params);
+
 function getStateFips(params){
     if (params.geo) {
         //if (params.geo.includes(",")) {
@@ -92,11 +92,9 @@ console.log("dataObject.stateshown" + dataObject.stateshown)
 // Calls promisesReady when completed.
 function loadIndustryData() {
     $("#econ_list").html("<img src='/localsite/img/icon/loading.gif' style='margin:40px; width:120px'><br>");
-    stateAbbr = params.state || defaultState;
-    dataObject.stateshown=stateID[stateAbbr];
-
-    console.log("No function " + stateAbbr + " " + dataObject.stateshown + " Promises");
-
+    stateAbbr = params.state.toUpperCase() || defaultState;
+    dataObject.stateshown=stateID[stateAbbr.toUpperCase()];
+    
     var promises = [
         d3.csv(dual_map.community_data_root() + "us/id_lists/industry_id_list.csv"),
         d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics2_all.tsv"),
@@ -119,7 +117,7 @@ refreshNaicsWidget();
 
 document.addEventListener('hashChangeEvent', function (elem) {
     if (hiddenhash.debug && location.host.indexOf('localhost') >= 0) {
-        alert('Localhost Alert: hashChangeEvent invoked by naics.js'); // Invoked twice by iogrid inflow-outflow chart
+        //alert('Localhost Alert: hashChangeEvent invoked by naics.js'); // Invoked twice by iogrid inflow-outflow chart
     }
     //let params = loadParams(location.search,location.hash);
     refreshNaicsWidget();                    
@@ -287,7 +285,7 @@ $(document).ready(function() {
 
             clearHash("geo,regiontitle");
 
-            alert('clearButton');
+            console.log('clearButton clicked (but disabled)');
 
             // BUGBUG - This causes industry list removal and commodity list reduction.
             // Problem occurred before adding applyIO function and the newer script it contains.
@@ -319,7 +317,7 @@ $(document).ready(function() {
 function renderIndustryChart(dataObject,values,params) {
 
     stateAbbr = params.state || "GA"; // Previously used +d['Postal Code']+
-    dataObject.stateshown=stateID[stateAbbr];
+    dataObject.stateshown=stateID[stateAbbr.toUpperCase()];
 
     if(!params.catsort){
         params.catsort = "payann";
@@ -825,7 +823,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                     totalLabel = "Total Payroll ($)";
                 }
                 d3.csv(dual_map.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {
-                    d3.csv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/" + stateAbbr + "counties.csv").then( function(latdata) {
+                    d3.csv(dual_map.community_data_root() + "us/state/" + stateAbbr.toUpperCase() + "/" + stateAbbr.toUpperCase() + "counties.csv").then( function(latdata) {
                          // TABLE HEADER ROW
 
                         if(Array.isArray(fips) && statelength != fips.length){

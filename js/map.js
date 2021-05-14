@@ -1006,8 +1006,8 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   dp1.zoom = 7;
 
   let theState = $("#state_select").find(":selected").val();
-  if (!theState) {
-    theState = param["state"];
+  if (!theState && param["state"]) {
+    theState = param["state"].toUpperCase();
   }
   if (!theState) {
     theState = "GA";
