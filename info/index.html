@@ -46,7 +46,9 @@
 <link type="text/css" href="../css/naics.css" rel="stylesheet" />
 
 <script>
-	applyIO("");
+	if(!hash.state) {
+		applyIO("");
+	}
 </script>
 
 <!-- PRODUCTION -->

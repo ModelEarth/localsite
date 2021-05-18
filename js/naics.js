@@ -87,127 +87,6 @@ console.log("fips" + fips)
 console.log("dataObject.stateshown" + dataObject.stateshown)
 
 
-// POORLY DESIGNED - No need to load all 3 naics datasets for state.
-// Calls promisesReady when completed.
-function loadIndustryData() {
-    let stateAbbr;
-    let hash = getHash(); // Includes hiddenhash
-    if (hash.state) {
-        stateAbbr = hash.state.toUpperCase();
-    }
-    $("#econ_list").html("<img src='/localsite/img/icon/loading.gif' style='margin:40px; width:120px'><br>");
-    
-    
-    if(stateAbbr) {
-        //alert("stateAbbr1: " + stateAbbr);
-        dataObject.stateshown=stateID[stateAbbr.toUpperCase()];
-        var promises = [
-            d3.csv(dual_map.community_data_root() + "us/id_lists/industry_id_list.csv"),
-            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics2_all.tsv"),
-            //d3.tsv(dual_map.community_data_root() + "data/c3.tsv"),
-            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics4_all.tsv"),
-            //d3.tsv(dual_map.community_data_root() + "data/c5.tsv"),
-            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics6_all.tsv"),
-            d3.csv(dual_map.community_data_root() + "us/id_lists/county_id_list.csv"),
-            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics2_state_all.tsv"),
-            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics4_state_all.tsv"),
-            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics6_state_all.tsv"),
-            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/" + stateAbbr + "counties.csv")
-        ]
-        Promise.all(promises).then(promisesReady);
-    }
-}
-function promisesReady(values) {
-
-    console.log("promisesReady - promises loaded")
-    $("#industryListHolder").show();
-    d3.csv(dual_map.community_data_root() + "us/id_lists/state_fips.csv").then( function(consdata) {
-        var filteredData = consdata.filter(function(d) {
-            if(d["FIPS"]==String(dataObject.stateshown)) {
-                //let params = loadParams(location.search,location.hash);
-                let lastParams = {};
-                
-                let industryData ={}
-                subsetKeys = ['emp_reported','emp_est1','emp_est3', 'payann_reported','payann_est1','payann_est3', 'estab', 'NAICS2012_TTL','GEO_TTL','state','COUNTY','relevant_naics','estimate_est1','estimate_est3']
-                subsetKeys_state = ['emp_agg', 'payann_agg', 'estab_agg', 'NAICS2012_TTL','GEO_TTL','state','COUNTY','relevant_naics']
-                subsetKeys_state_api = ['emp_api', 'payann_api', 'estab_api', 'NAICS2012_TTL','GEO_TTL','state','COUNTY','relevant_naics']
-                dataObject.subsetKeys=subsetKeys
-                dataObject.subsetKeys_state=subsetKeys_state
-                dataObject.subsetKeys_state_api=subsetKeys_state_api
-                
-
-
-                console.log("tttttt" + params.census_scope)
-                industryData = {
-                    'ActualRate': formatIndustryData(values[params.catsize/2],dataObject.subsetKeys),
-                }
-                dataObject.industryData = industryData;
-                //console.log(dataObject.industryData)
-                if (params.catsize==2){
-                    industryDataState = {
-                        'ActualRate': formatIndustryData(values[5],dataObject.subsetKeys_state)
-                    }
-                }else if (params.catsize==4){
-                    industryDataState = {
-                        'ActualRate': formatIndustryData(values[6],dataObject.subsetKeys_state)
-                    }
-                }else if (params.catsize==6){
-                    industryDataState = {
-                        'ActualRate': formatIndustryData(values[7],dataObject.subsetKeys_state)
-                    }
-                } else {
-                    // Default to 6-digit naics
-                    industryDataState = {
-                        'ActualRate': formatIndustryData(values[7],dataObject.subsetKeys_state)
-                    }
-                }
-                    
-                dataObject.industryDataState = industryDataState;
-
-                console.log(dataObject.industryDataState)
-                if (params.catsize==2){
-                    industryDataStateApi = {
-                        'ActualRate': formatIndustryData(values[5],dataObject.subsetKeys_state_api)
-                    }
-                }else if(params.catsize==4){
-                    industryDataStateApi = {
-                        'ActualRate': formatIndustryData(values[6],dataObject.subsetKeys_state_api)
-                    }
-                }else if(params.catsize==6){
-                    industryDataStateApi = {
-                        'ActualRate': formatIndustryData(values[7],dataObject.subsetKeys_state_api)
-                    }
-                } else {
-                    // Default to 6-digit naics
-                    industryDataStateApi = {
-                        'ActualRate': formatIndustryData(values[7],dataObject.subsetKeys_state_api)
-                    }
-                }
-                    
-                dataObject.industryDataStateApi=industryDataStateApi;
-                
-                industryNames = {}
-                values[0].forEach(function(item){
-                    industryNames[+item.relevant_naics] = item.industry_detail
-                })
-                dataObject.industryNames=industryNames;
-                counties = []
-                values[4].forEach(function(item){
-                    if(item.abvr ==d['Name']){
-                        counties.push(item.id)
-                    }
-                })
-                dataObject.counties=counties;
-                statelength=dataObject.counties.length
-                [fips,dataObject.stateshown]=getStateFips(params)
-
-                renderIndustryChart(dataObject,values,params);
-            }
-        })
-    })
-
-}
-
 // INIT
 let priorHash_naicspage = {};
 refreshNaicsWidget();
@@ -239,6 +118,7 @@ function refreshNaicsWidget() {
     }
 
     if (hash.state != priorHash_naicspage.state) {
+        //alert("hash change call loadIndustryData()")
         loadIndustryData(); // Occurs on INIT
     } else if (hash.geo != priorHash_naicspage.geo) {
         //alert("hash.geo " + hash.geo);
@@ -400,6 +280,139 @@ function getNaics_setHiddenHash2(go) {
     });
     return cat_filter;
 }
+
+
+
+
+// POORLY DESIGNED - No need to load all 3 naics datasets for state.
+// Calls promisesReady when completed.
+function loadIndustryData() {
+    let stateAbbr;
+    let hash = getHash(); // Includes hiddenhash
+    if (hash.state) {
+        stateAbbr = hash.state.toUpperCase();
+    }
+    $("#econ_list").html("<img src='/localsite/img/icon/loading.gif' style='margin:40px; width:120px'><br>");
+    
+    
+    if(!stateAbbr) {
+        // Load US data here
+        // TODO: When acivating, in info/index.html remove applyIO("")
+        //alert("update for no state");
+        delete hiddenhash.naics;
+        delete hash.naics;
+        applyIO("");
+    } else {
+        //alert("stateAbbr1: " + stateAbbr);
+        dataObject.stateshown=stateID[stateAbbr.toUpperCase()];
+        var promises = [
+            d3.csv(dual_map.community_data_root() + "us/id_lists/industry_id_list.csv"),
+            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics2_all.tsv"),
+            //d3.tsv(dual_map.community_data_root() + "data/c3.tsv"),
+            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics4_all.tsv"),
+            //d3.tsv(dual_map.community_data_root() + "data/c5.tsv"),
+            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics6_all.tsv"),
+            d3.csv(dual_map.community_data_root() + "us/id_lists/county_id_list.csv"),
+            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics2_state_all.tsv"),
+            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics4_state_all.tsv"),
+            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics6_state_all.tsv"),
+            d3.tsv(dual_map.community_data_root() + "us/state/" + stateAbbr + "/" + stateAbbr + "counties.csv")
+        ]
+        Promise.all(promises).then(promisesReady);
+    }
+}
+function promisesReady(values) {
+
+    console.log("promisesReady - promises loaded")
+    $("#industryListHolder").show();
+    d3.csv(dual_map.community_data_root() + "us/id_lists/state_fips.csv").then( function(consdata) {
+        var filteredData = consdata.filter(function(d) {
+            if(d["FIPS"]==String(dataObject.stateshown)) {
+                //let params = loadParams(location.search,location.hash);
+                let lastParams = {};
+                
+                let industryData ={}
+                subsetKeys = ['emp_reported','emp_est1','emp_est3', 'payann_reported','payann_est1','payann_est3', 'estab', 'NAICS2012_TTL','GEO_TTL','state','COUNTY','relevant_naics','estimate_est1','estimate_est3']
+                subsetKeys_state = ['emp_agg', 'payann_agg', 'estab_agg', 'NAICS2012_TTL','GEO_TTL','state','COUNTY','relevant_naics']
+                subsetKeys_state_api = ['emp_api', 'payann_api', 'estab_api', 'NAICS2012_TTL','GEO_TTL','state','COUNTY','relevant_naics']
+                dataObject.subsetKeys=subsetKeys
+                dataObject.subsetKeys_state=subsetKeys_state
+                dataObject.subsetKeys_state_api=subsetKeys_state_api
+                
+
+
+                console.log("tttttt" + params.census_scope)
+                industryData = {
+                    'ActualRate': formatIndustryData(values[params.catsize/2],dataObject.subsetKeys),
+                }
+                dataObject.industryData = industryData;
+                //console.log(dataObject.industryData)
+                if (params.catsize==2){
+                    industryDataState = {
+                        'ActualRate': formatIndustryData(values[5],dataObject.subsetKeys_state)
+                    }
+                }else if (params.catsize==4){
+                    industryDataState = {
+                        'ActualRate': formatIndustryData(values[6],dataObject.subsetKeys_state)
+                    }
+                }else if (params.catsize==6){
+                    industryDataState = {
+                        'ActualRate': formatIndustryData(values[7],dataObject.subsetKeys_state)
+                    }
+                } else {
+                    // Default to 6-digit naics
+                    industryDataState = {
+                        'ActualRate': formatIndustryData(values[7],dataObject.subsetKeys_state)
+                    }
+                }
+                    
+                dataObject.industryDataState = industryDataState;
+
+                console.log(dataObject.industryDataState)
+                if (params.catsize==2){
+                    industryDataStateApi = {
+                        'ActualRate': formatIndustryData(values[5],dataObject.subsetKeys_state_api)
+                    }
+                }else if(params.catsize==4){
+                    industryDataStateApi = {
+                        'ActualRate': formatIndustryData(values[6],dataObject.subsetKeys_state_api)
+                    }
+                }else if(params.catsize==6){
+                    industryDataStateApi = {
+                        'ActualRate': formatIndustryData(values[7],dataObject.subsetKeys_state_api)
+                    }
+                } else {
+                    // Default to 6-digit naics
+                    industryDataStateApi = {
+                        'ActualRate': formatIndustryData(values[7],dataObject.subsetKeys_state_api)
+                    }
+                }
+                    
+                dataObject.industryDataStateApi=industryDataStateApi;
+                
+                industryNames = {}
+                values[0].forEach(function(item){
+                    industryNames[+item.relevant_naics] = item.industry_detail
+                })
+                dataObject.industryNames=industryNames;
+                counties = []
+                values[4].forEach(function(item){
+                    if(item.abvr ==d['Name']){
+                        counties.push(item.id)
+                    }
+                })
+                dataObject.counties=counties;
+                statelength=dataObject.counties.length
+                [fips,dataObject.stateshown]=getStateFips(params)
+
+                renderIndustryChart(dataObject,values,params);
+            }
+        })
+    })
+
+}
+
+
 
 
 $(document).ready(function() {
@@ -1270,10 +1283,12 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                         // Send to USEEIO Widget
                         //$('#industry-list').attr('data-naics', naicshash);
                         
-                        if (!$.trim( $('#iogrid').html() ).length) { // If empty, otherwise triggered by hash change.
+                        // Problem, this will call a second time if there is a state in hash
+
+                        //if (!$.trim( $('#iogrid').html() ).length) { // If empty, otherwise triggered by hash change.
                             //alert("call applyIO B")
                             applyIO(naicshash);
-                        }
+                        //}
                         
                         // To Remove - Moveed into applyIO below instead. BugBug
                         //updateMosic(naicshash);
