@@ -1965,6 +1965,10 @@ function hashChanged() {
 	productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 
 	// NOTE: params after ? are not included, just the hash.
+	if (hash.state) {
+		// Apply early since may be used by changes to geo
+		$("#state_select").val(hash.state.toUpperCase());
+	}
 	if (hash.show != priorHash.show) {
 		//if (hash.show == priorHash.show) {
 		//	hash.show = ""; // Clear the suppliers display
@@ -1999,13 +2003,13 @@ function hashChanged() {
 
 	}
 	if (hash.geomap) {
-		$("#infoColumn").show();
+		//$("#infoColumn").show();
         $(".mainColumn1").show();
 	}
 	if (hash.geomap != priorHash.geomap) {
 		//if (hash.geomap) {
 			$("#aboutToolsDiv").hide();
-			$("#infoColumn").show();
+			//$("#infoColumn").show();
 			$("#geomap").show();
 			
 			// DOES NOT WORK - document.querySelector(whichmap)._leaflet_map not found
@@ -2293,7 +2297,7 @@ function renderMapShapes(whichmap, hash) { // whichGeoRegion is not yet applied.
 			        // https://github.com/modelearth/topojson/blob/master/countries/us-states/AL-01-alabama-counties.json
 
 			        //var url = dual_map.custom_data_root() + '/counties/GA-13-georgia-counties.json';
-			        var url = dual_map.modelearth_data_root() + "/topojson/countries/us-states/" + param.state + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + "-counties.json";
+			        var url = dual_map.modelearth_data_root() + "/topojson/countries/us-states/" + hash.state + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + "-counties.json";
 			        //url = dual_map.modelearth_data_root() + "/opojson/countries/us-states/GA-13-georgia-counties.json";
 			        // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
 			    //}
