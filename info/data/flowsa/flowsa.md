@@ -6,19 +6,20 @@ The updates below will be used by the county industry lists on our [industry com
 
 1. Create a Python Pipeline similar to the [tree data pipeline](https://github.com/Public-Tree-Map/public-tree-map-data-pipeline) used by the [Public Tree Map](https://neighborhood.org/public-tree-map/)  
 
-2. Include a pipeline step that generates CSV files for all states using BLS data pulled from the [EPA's Flowsa API](https://github.com/USEPA/flowsa).  Use logic from the Google CoLab below and output with these [simple column names](https://drive.google.com/drive/u/0/folders/1EoWDvNoaKO8xLclX4fr5exw83jJkkJIy).  
+2. Include a pipeline step that generates CSV files for all states using BLS data pulled from the [EPA's Flowsa API](https://github.com/USEPA/flowsa). Create 3 files per state. One for 2-digit naics, one for 4-digits and one for 6-digits.  Use logic from the Google CoLab below and output these with [simple column names](https://drive.google.com/drive/u/0/folders/1EoWDvNoaKO8xLclX4fr5exw83jJkkJIy).  
+
+	- fips - Location (fips for county)  
+	- naics - ActivityProducedBy (6-digit naics)  
+	- employees - Employment FlowAmount (Number of Employees)  
+	- wages - Money (Annual Wages)
+	- firms - Other (Number of Extablishments)<br><br>  
+
 
 3. Save [state data files](https://github.com/modelearth/community-data/tree/master/us/state) in the same folder as our prior process. The prior BEA Data Preparation process resides at the bottom of the current page. Reuse existing [process for state folders](https://github.com/modelearth/community-data/tree/master/process/python/bea).
 
-4. Output 5 columns with names: fips, naics, employees, wages and firms (establishment count) - This is already done by the Google CoLab below.  
+4. Output 3 similar files containing 2,4 and 6 digit naics values for the entire US in a new folder called "all" in the [community-data/us](https://github.com/modelearth/community-data/tree/master/us) folder.  
 
-- fips - Location (fips for county)  
-- naics - ActivityProducedBy (6-digit naics)  
-- employees - Employment FlowAmount (Number of Employees)  
-- wages - Money (Annual Wages)
-- firms - Other (Number of Extablishments)  
-
-
+5. Update this [USEEIO_indicators.ipynb Python](https://github.com/modelearth/io/blob/master/charts/bubble/data/USEEIO_indicators.ipynb) used to generate indicators_sectors_GA and indicators_sectors to use the USEEIO 2.0 API.  
 
 ## Using Machine Learning to Fill Gaps
 
@@ -26,7 +27,12 @@ When a 6-digit naics is missing employee and payroll data, use its parent 5, 4, 
 
 Use attributes in the impact data used by the [USEEIO widgets](../../../../io/charts/) to sharpen predictions.  
 
-The following confirmed that gaps resided in Automotive Manufacturing at the county level.  To resolve using actual values, a [Google Sheet](https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit#gid=0) provides [auto manufacturing employment levels](../../../info/#show=vehicles) exported from state DOL data.  
+Our [Google Sheet](https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit#gid=0) provides [auto manufacturing employment levels](../../../info/#show=vehicles) exported from state DOL data.  
+
+We'll work with the EPA to ensure that Flowsa loads the most recently available annual data.
+
+The following confirmed that gaps resided in Automotive Manufacturing at the county level.  
+
 
 ## BLS Data Preparation 
 
