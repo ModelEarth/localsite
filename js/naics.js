@@ -258,8 +258,6 @@ function getNaics_setHiddenHash2(go) {
         cat_filter = param.naics.split(',');
     }
 
-    //hiddenhash.showtitle = showtitle; // This was sending to the URL hash.
-
     // BUGBUG - Not sure where this sends the naics to the URL hash, which might be good until widget updates are tested.
     // Problem, naics in URL is not updated after initial load.
     console.log("Start hiddenhash.naics")
@@ -269,7 +267,9 @@ function getNaics_setHiddenHash2(go) {
     console.log("call applyIO from naics change");
     applyIO(hiddenhash.naics);
 
-
+    if (hiddenhash.loctitle) {
+        showtitle = hiddenhash.loctitle + " - " + showtitle;
+    }
     $("#showAppsText").text(showtab);
     $("#showAppsText").attr("title",showtab); // Swaps in when viewing app thumbs
     $(".regiontitle").text(showtitle);

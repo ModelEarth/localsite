@@ -784,7 +784,7 @@ strVar += "              onfocus=\"value = ''\" ";
 strVar += "              type=\"text\" \/>";
 strVar += "            <br><br>";
 strVar += "          ";
-strVar += "            <div class=\"local\" style=\"display:none\">";
+strVar += "            <div class=\"localX\" style=\"display:none\">";
 strVar += "            <h3 class>Latitude: &nbsp; {{ lat }}<\/h3>";
 strVar += "            <h3>Longitude: &nbsp; {{ lng }}<\/h3>";
 strVar += "            <h3>Address: &nbsp; {{ address }}<\/h3>";

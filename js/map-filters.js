@@ -1775,7 +1775,7 @@ googlePlacesApiLoaded(1); // Initiate calling function above until "google" foun
 
         //alert(place.geometry.location.lat());
         $("#coordFields").show();
-        goHash({"lat":place.geometry.location.lat(),"lon":place.geometry.location.lng()});
+        goHash({"lat":place.geometry.location.lat(),"lon":place.geometry.location.lng(),"zoom":"10"});
         $("#filterLocations").hide();
         $("#filterClickLocation").removeClass("filterClickActive");
       }
@@ -1945,6 +1945,9 @@ function getNaics_setHiddenHash(go) {
 
 	$("#showAppsText").text(showtab);
 	$("#showAppsText").attr("title",showtab); // Swaps in when viewing app thumbs
+	if (hiddenhash.loctitle) {
+		showtitle = loctitle + " - " + showtitle;
+	}
 	$(".regiontitle").text(showtitle);
 	
     return cat_filter;
@@ -2050,6 +2053,7 @@ function hashChanged() {
 		if(!hash.regiontitle) {
 
 		} else {
+			hiddenhash.loctitle = hash.regiontitle;
 			if (hash.show) {
 				$(".regiontitle").text(hash.regiontitle + " - " + hash.show.toTitleCase());
 			} else {
