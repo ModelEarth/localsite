@@ -45,6 +45,10 @@
 <script type="text/javascript" src="../js/naics.js"></script>
 <link type="text/css" href="../css/naics.css" rel="stylesheet" />
 
+<script>
+	applyIO("");
+</script>
+
 <!-- PRODUCTION -->
 <!-- resides before base.css -->
 <!--
@@ -717,9 +721,9 @@ Georgia-specific input-output dataset is being developed by the EPA.<br><br>
     </div>
 
 	<span style="font-size:14px">
-	Select an impact area above and move sliders below to view impacts of different production levels and green tech.<br>
+	Select an impact area above and move sliders below to emulate the effects of changes to levels and technologies.<br>
 	Use the commodities sort menu to choose multiple impact areas. (Center column below, upper right)<br>
-	<span style='color:red'>Values are currently national rather than state-specific.</span><br><br>
+	<span style="color:red; display:none" class="showforstates">Values are currently national rather than state-specific.</span><br><br>
 	</span>
 	<div id="iogrid"></div>
 
@@ -947,7 +951,11 @@ config.join(sectorList);
 
   	<br><br>
   	NOTE: Indicators like Greenhouse Gases are not currently working in the bubble chart above since we 
-	need to regenerate the <a href="https://github.com/modelearth/community-data/tree/master/us/indicators">indicators-sectors</a> file for USEEEIOv2.0.<br><br>
+	need to <a href="https://github.com/modelearth/io/blob/master/charts/bubble/data/USEEIO_indicators.ipynb">regenerate</a> the <a href="https://github.com/modelearth/community-data/tree/master/us/indicators">indicators-sectors</a> file for USEEEIOv2.0.
+	<!--
+	#5: https://model.earth/localsite/info/data/flowsa/
+	-->
+	<br><br>
 
   	<!-- Reactivate following improvements to industry spotlight below
   	<button onclick="clearBubbleSelection()">Clear Selection</button>
@@ -971,7 +979,8 @@ config.join(sectorList);
 	<script type="text/javascript" src="../../io/charts/bubble/js/bubble.js"></script>
 	<script>
 	  $(document).ready(function () {
-	    // HACK - call a second time so rollovers work.
+	    // HACK - call twice so rollovers work.
+	    displayImpactBubbles();
 	    displayImpactBubbles();
 	  });
 	</script>

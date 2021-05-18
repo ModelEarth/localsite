@@ -165,7 +165,7 @@
       <div id="logoholderbar" style="display:none;float:left;">
       </div>
 
-      <div class="hideMobile" style="float:left;">
+      <div class="hideMobile" style="float:right;">
         <div class="filterLabel">
             <div class="filterLabelMain">
             </div>
@@ -799,7 +799,7 @@
 <option value="DE" stateid="10" lat="38.9986" lon="-75.4416" km="5047">Delaware</option>
 <option value="DC" stateid="11" lat="38.9042" lon="-77.0165" km="158" style="display:none">District of Columbia</option>
 <option value="FL" stateid="12" lat="28.4574" lon="-82.4091" km="138947">Florida</option>
-<option value="GA" stateid="13" lat="32.6296" lon="-83.4235" km="149485" selected>Georgia</option>
+<option value="GA" stateid="13" lat="32.6296" lon="-83.4235" km="149485">Georgia</option>
 <option value="GU" stateid="66" lat="13.4417" lon="144.7719" km="544" style="display:none">Guam</option>
 <option value="HI" stateid="15" lat="19.5978" lon="-155.5024" km="16634">Hawaii</option>
 <option value="ID" stateid="16" lat="44.3484" lon="-114.5589" km="214050">Idaho</option>
@@ -871,36 +871,39 @@
         </style>
         <div id="app">
 
-          <div class="place_details input-output" style="float:left;margin-bottom:15px">
-          
-            <b style="margin-top:0px">Address Lookup</b><br>
-          
-            <input 
-              class="filterClick"
-              id="searchloc"
-              style="max-width:400px; float:left; display: block; width: 60vw; font-size: 1rem; font-weight: 400; line-height: 2rem;"
-              placeholder="Enter an address, city, state, county or zip"
-              onfocus="value = ''" 
-              type="text" />
-            <br><br>
-          
-            <div style="display:none">
-            <h3 class>Latitude: &nbsp; {{ lat }}</h3>
-            <h3>Longitude: &nbsp; {{ lng }}</h3>
-            <h3>Address: &nbsp; {{ address }}</h3>
-            <h3>State: &nbsp; {{ state }}</h3>
-            <h3>Phone: &nbsp; {{ phone }}</h3>
-            <h3>Website: &nbsp; {{ website }}</h3>
+          <div class="local" style="display:none">
+            <div class="place_details input-output" style="float:left;margin-bottom:15px">
+            
+              <b style="margin-top:0px">Address Lookup</b><br>
+            
+              <input 
+                class="filterClick"
+                id="searchloc"
+                style="max-width:400px; float:left; display: block; width: 60vw; font-size: 1rem; font-weight: 400; line-height: 2rem;"
+                placeholder="Enter an address, city, state, county or zip"
+                onfocus="value = ''" 
+                type="text" />
+              <br><br>
+            
+              <div class="local" style="display:none">
+              <h3 class>Latitude: &nbsp; {{ lat }}</h3>
+              <h3>Longitude: &nbsp; {{ lng }}</h3>
+              <h3>Address: &nbsp; {{ address }}</h3>
+              <h3>State: &nbsp; {{ state }}</h3>
+              <h3>Phone: &nbsp; {{ phone }}</h3>
+              <h3>Website: &nbsp; {{ website }}</h3>
+              </div>
+
+              <div id="readmeDiv"></div>
             </div>
 
-            <div id="readmeDiv"></div>
+            <!--
+            <input id="searchX" autocomplete="off" style="width:100%;max-width:400px;padding-right:27px;margin-bottom:10px" class="filterClick mobileWide textInput si-input" type="text" value="" 
+            placeholder="Address Lookup"
+            onkeyupX="return SearchEnter(event);" />
+            -->
           </div>
 
-          <!--
-          <input id="searchX" autocomplete="off" style="width:100%;max-width:400px;padding-right:27px;margin-bottom:10px" class="filterClick mobileWide textInput si-input" type="text" value="" 
-          placeholder="Address Lookup"
-          onkeyupX="return SearchEnter(event);" />
-          -->
         </div>
 
         
@@ -1007,7 +1010,7 @@
 
         <div style="clear:both"></div>
 
-        <div id="geoPicker">
+        <div id="geoPicker" style="display:none">
           <div style="float:left">
             <!-- Must be displayed initiallly so tiles are visible -->
               <div id="geomap" style="width:440px; height:530px; margin:0 30px 30px 0; border:1px solid blue; position: relative">

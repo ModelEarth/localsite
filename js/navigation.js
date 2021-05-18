@@ -106,7 +106,9 @@ $(document).ready(function(){
 		 		document.title = "Code for Atlanta - " + document.title
 		 		// BUGBUG - error in console
 		 		//changeFavicon("https://lh3.googleusercontent.com/HPVBBuNWulVbWxHAT3Nk_kIhJPFpFObwNt4gU2ZtT4m89tqjLheeRst_cMnO8mSrVt7FOSlWXCdg6MGcGV6kwSyjBVxk5-efdw")
-		 	} else if (location.host.indexOf('localhost') >= 0 || param.startTitle == "Georgia.org" || location.host.indexOf('georgia') >= 0) {
+		 	// localhost will be removed from the following. Currently allows Georgia branding during testing.
+		 	// location.host.indexOf('localhost') >= 0 || 
+		 	} else if (param.startTitle == "Georgia.org" || location.host.indexOf('georgia') >= 0) {
 		 		$(".siteTitleShort").text("Model Georgia");
 		 		param.titleArray = [];
 		 		//param.headerLogo = "<a href='https://georgia.org'><img src='" + modelpath + "../community/img/logo/georgia_usa_gray.png' style='width:130px;padding-top:4px'></a>";
@@ -115,7 +117,9 @@ $(document).ready(function(){
 		 		changeFavicon("https://www.georgia.org/sites/default/files/logo-georgia-peach-notext_0.png")
 		 		$('.georgia').css('display', 'inline');
 		 		$('.georgia-hide').css('display', 'none');
-		 		$(".locationTab").hide();
+		 		if (location.host.indexOf('localhost') < 0) {
+		 			$(".locationTab").hide(); // So we can test locally
+		 		}
 		 		if (location.host.indexOf('georgia.org') >= 0) {
 		 			$('.georgiaorg-hide').css('display', 'none');
 		 		}

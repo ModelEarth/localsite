@@ -170,11 +170,13 @@
   pointer-events: auto; /* catch click through to keep open location filter */
   z-index: 1000;
 }
+/*
 #locationFilterHolder .input-output b {
   color:#777;
   font-weight: 200;
   margin-bottom:4px;
 }
+*/
 @media (max-width: 800px) {
     #locationFilterHolder {
         margin:40px 0 0 40px;

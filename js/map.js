@@ -1010,7 +1010,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
     theState = param["state"].toUpperCase();
   }
   if (!theState) {
-    theState = "GA";
+    //theState = "GA";
   }
   if (theState != "") {
     let kilometers_wide = $("#state_select").find(":selected").attr("km");
@@ -1342,12 +1342,14 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
     });
   } else {
     // Set to Georiga - later we'll show globe
-    if (!hash.state) {hash.state = "GA"};
-    $("#state_select").val(hash.state);
-    $(".locationTabText").text($("#state_select").find(":selected").text());
-    $(".locationTabText").attr("title",$("#state_select").find(":selected").text());
-    //$(".locationTabText").text("Georgia");
-    //$(".locationTabText").attr("title","Georgia");
+    if (!hash.state) {
+      //hash.state = "GA"
+      $(".locationTabText").text("States and counties...")
+    } else {
+      $("#state_select").val(hash.state);
+      $(".locationTabText").text($("#state_select").find(":selected").text());
+      $(".locationTabText").attr("title",$("#state_select").find(":selected").text());
+    }
 
     loadFromSheet('map1','map2', dp1, basemaps1, basemaps2, 0, function(results) {
       initialHighlight(hash);  
@@ -1429,7 +1431,8 @@ function loadGeos(geo, attempts, callback) {
 
     let hash = getHash();
     let stateID = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78,}
-    let theState = "GA"; // TEMP - TODO: loop trough states from start of geo
+    //let theState = "GA"; // TEMP - TODO: loop trough states from start of geo
+    let theState = hash.state;
 
     var geos=geo.split(",");
     fips=[]
@@ -1453,51 +1456,53 @@ function loadGeos(geo, attempts, callback) {
     }
 
     //Load in contents of CSV file
-    d3.csv(dual_map.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv").then(function(myData,error) {
-      if (error) {
-        //alert("error")
-        console.log("Error loading file. " + error);
-      }
-      let geoArray = [];
-
-      myData.forEach(function(d, i) {
-
-        let geoParams = {};
-        d.difference =  d.US_2007_Demand_$;
-
-        // OBJECTID,STATEFP10,COUNTYFP10,GEOID10,NAME10,NAMELSAD10,totalpop18,Reg_Comm,Acres,sq_miles,Label,lat,lon
-        //d.name = ;
-        //d.idname = "US" + d.GEOID + "-" + d.NAME + " County";
-
-        //d.perMile = Math.round(d.totalpop18 / d.sq_miles).toLocaleString(); // Breaks sort
-        d.perMile = Math.round(d.totalpop18 / d.sq_miles);
-
-        d.sq_miles = Number(Math.round(d.sq_miles).toLocaleString());
-        var activeGeo = false;
-        var theGeo = "US" + d.GEOID;
-        //alert(geo + " " + theGeo)
-        let geos=geo.split(",");
-        //fips=[]
-        for (var i = 0; i<geos.length; i++){
-            if (geos[i] == theGeo) {
-              activeGeo = true;
-            }
+    if (theState) {
+      d3.csv(dual_map.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv").then(function(myData,error) {
+        if (error) {
+          //alert("error")
+          console.log("Error loading file. " + error);
         }
+        let geoArray = [];
+
+        myData.forEach(function(d, i) {
+
+          let geoParams = {};
+          d.difference =  d.US_2007_Demand_$;
+
+          // OBJECTID,STATEFP10,COUNTYFP10,GEOID10,NAME10,NAMELSAD10,totalpop18,Reg_Comm,Acres,sq_miles,Label,lat,lon
+          //d.name = ;
+          //d.idname = "US" + d.GEOID + "-" + d.NAME + " County";
+
+          //d.perMile = Math.round(d.totalpop18 / d.sq_miles).toLocaleString(); // Breaks sort
+          d.perMile = Math.round(d.totalpop18 / d.sq_miles);
+
+          d.sq_miles = Number(Math.round(d.sq_miles).toLocaleString());
+          var activeGeo = false;
+          var theGeo = "US" + d.GEOID;
+          //alert(geo + " " + theGeo)
+          let geos=geo.split(",");
+          //fips=[]
+          for (var i = 0; i<geos.length; i++){
+              if (geos[i] == theGeo) {
+                activeGeo = true;
+              }
+          }
 
 
-        geoParams.name = d.NAME;
-        geoParams.pop = d.totalpop18;
-        geoParams.permile = d.perMile;
-        geoParams.active = activeGeo;
+          geoParams.name = d.NAME;
+          geoParams.pop = d.totalpop18;
+          geoParams.permile = d.perMile;
+          geoParams.active = activeGeo;
 
-        geoArray.push([theGeo, geoParams]); // Append an array with an object as the value
+          geoArray.push([theGeo, geoParams]); // Append an array with an object as the value
+        });
+
+        console.log("geoArray")
+        console.log(geoArray)
+        dataObject.geos = geoArray;
+        callback();
       });
-
-      console.log("geoArray")
-      console.log(geoArray)
-      dataObject.geos = geoArray;
-      callback();
-    });
+    }
   } else {
     attempts = attempts + 1;
         if (attempts < 2000) {
