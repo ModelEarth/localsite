@@ -1271,7 +1271,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                         //$('#industry-list').attr('data-naics', naicshash);
                         
                         if (!$.trim( $('#iogrid').html() ).length) { // If empty, otherwise triggered by hash change.
-                            alert("call applyIO")
+                            //alert("call applyIO B")
                             applyIO(naicshash);
                         }
                         
