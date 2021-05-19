@@ -1088,7 +1088,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
     dp1.latitude = 33.74;
     dp1.longitude = -84.38;
     dp1.zoom = 12;
-    dp1.listInfo = "Data pulled from the MARTA.<br>API by Code for Atlanta member jakswa. <a href='https://github.com/jakswa/marta_ui'>GitHub</a>"
+    dp1.listInfo = "Enhancements to the MARTA API<br>by Code for Atlanta member jakswa. <a href='https://github.com/jakswa/marta_ui'>GitHub</a>"
 
     // , "In Address": "address", "In County Name": "county", "In Website URL": "website"
     dp1.search = {"In Vehicle Number": "VEHICLE"}; // Or lowercase?
