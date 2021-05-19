@@ -123,9 +123,23 @@ function refreshNaicsWidget() {
     if (hash.state != priorHash_naicspage.state) {
         //alert("hash change call loadIndustryData()")
         loadIndustryData(); // Occurs on INIT
+
+    } else if (hash.regiontitle != priorHash_naicspage.regiontitle) {
+
+        if (!hash.regiontitle) {
+
+        } else {
+            hiddenhash.loctitle = hash.regiontitle;
+            
+            $("#region_select").val(hash.regiontitle.replace(/\+/g," "));
+            hiddenhash.geo = $("#region_select option:selected").attr("geo");
+            hash.geo = hiddenhash.geo;
+            params.geo = hiddenhash.geo; // Used by naics.js
+        }
+        loadIndustryData();
     } else if (hash.geo != priorHash_naicspage.geo) {
         //alert("hash.geo " + hash.geo);
-        hash.naics = loadIndustryData();
+        loadIndustryData();
     } else if (hash.naics != priorHash_naicspage.naics) {
         //alert("hash.naics " + hash.naics);
         loadIndustryData();
@@ -295,7 +309,7 @@ function populateTitle(showtitle,showtab) {
         }
         
     }
-    
+
     delete hiddenhash.loctitle; // Clear until we are setting elsewhere.
     $("#showAppsText").text(showtab);
     $("#showAppsText").attr("title",showtab); // Swaps in when viewing app thumbs
