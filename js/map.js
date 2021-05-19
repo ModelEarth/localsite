@@ -200,7 +200,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     // We are currently loading dp.dataset from a CSV file.
     // Later we will check if the filename ends with .csv
 
-    if (dp.dataset && dp.dataset.toLowerCase().includes(".json")) { // To Do: only check that it ends with .json
+    if (dp.dataset && (dp.dataset.toLowerCase().includes(".json") || dp.datatype == "json")) { // To Do: only check that it ends with .json
       $.getJSON(dp.dataset, function (data) {
         dp.data = readJsonData(data, dp.numColumns, dp.valueColumn);
         processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){
@@ -1071,11 +1071,27 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   } else if (show == "brigades") {
     dp1.listTitle = "Coding Brigades";
     dp1.dataset = "https://neighborhood.org/brigade-information/organizations.json";
-
+    dp1.datatype = "json";
     dp1.listInfo = "<a href='https://neighborhood.org/brigade-information/'>Source</a> and upcoming: <a href='https://neighborhood.org/brigade-project-index/get-indexed/'>Brigade Project Index</a>"
 
     // , "In Address": "address", "In County Name": "county", "In Website URL": "website"
     dp1.search = {"In Location Name": "name"};
+
+  } else if (show == "buses") {
+    dp1.listTitle = "Bus Locations";
+    dp1.dataset = "https://api.marta.io/buses";
+    dp1.datatype = "json";
+    dp1.nameColumn = "vehicle";
+    dp1.itemsColumn = "DIRECTION";
+    dp1.valueColumn = "DIRECTION";
+    dp1.valueColumnLabel = "Direction";
+    dp1.latitude = 33.74;
+    dp1.longitude = -84.38;
+    dp1.zoom = 12;
+    dp1.listInfo = "Data pulled from the MARTA.<br>API by Code for Atlanta member jakswa. <a href='https://github.com/jakswa/marta_ui'>GitHub</a>"
+
+    // , "In Address": "address", "In County Name": "county", "In Website URL": "website"
+    dp1.search = {"In Vehicle Number": "VEHICLE"}; // Or lowercase?
 
   } else if (show == "trees" && theState == "CA") {
     dp1.listTitle = "Trees";
