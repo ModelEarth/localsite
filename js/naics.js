@@ -115,6 +115,9 @@ function refreshNaicsWidget() {
         delete hash.naics; // Since show value invokes new hiddenhash
         clearHash("naics");
         getNaics_setHiddenHash2(hash.show); // Sets hiddenhash.naics for use by other widgets.
+    } else if (hash.state != priorHash_naicspage.state) {
+        // Not working yet
+        getNaics_setHiddenHash2(hash.show); // Show the state name above naics list.
     }
 
     if (hash.state != priorHash_naicspage.state) {
@@ -164,7 +167,6 @@ function getNaics_setHiddenHash2(go) {
     //    cat_filter = param.naics.split(',');
     //}
     //else 
-
     if (go){
 
         if (go == "opendata") {
@@ -267,20 +269,38 @@ function getNaics_setHiddenHash2(go) {
     console.log("call applyIO from naics change");
     applyIO(hiddenhash.naics);
 
+    // If states are available yet, wait for DOM.
+    if(!$("#state_select").length) {
+        $(document).ready(function() {
+            populateTitle(showtitle,showtab)
+        });
+    } else {
+        populateTitle(showtitle,showtab);
+    }
+    return cat_filter;
+}
+function populateTitle(showtitle,showtab) {
+    hash = getHash();
     if (hiddenhash.loctitle) {
         showtitle = hiddenhash.loctitle + " - " + showtitle;
+    } else if (hash.state) {
+        $("#state_select").val(hash.state);
+        let thestate = $("#state_select").find(":selected").text();
+        hiddenhash.loctitle = thestate;
+
+        if (showtitle) {
+            showtitle = thestate + " - " + showtitle;
+        } else {
+            showtitle = thestate + " - Top Industries";
+        }
+        
     }
+    
+    delete hiddenhash.loctitle; // Clear until we are setting elsewhere.
     $("#showAppsText").text(showtab);
     $("#showAppsText").attr("title",showtab); // Swaps in when viewing app thumbs
     $(".regiontitle").text(showtitle);
-    $(document).ready(function() { // Repeat to wait for the initial load
-        $("#showAppsText").text(showtab);
-        $("#showAppsText").attr("title",showtab); // Swaps in when viewing app thumbs
-        $(".regiontitle").text(showtitle);
-    });
-    return cat_filter;
 }
-
 
 
 

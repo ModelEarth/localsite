@@ -1804,154 +1804,6 @@ document.addEventListener('hiddenhashChangeEvent', function (elem) {
 if(typeof hiddenhash == 'undefined') {
     var hiddenhash = {};
 }
-function getNaics_setHiddenHash(go) {
-
-	// NOT USED HERE - DELETE - RESIDES IN NAICS NOW
-
-	let showtitle, showtab;
-    let cat_filter = [];
-    let states = "";
-
-    // NAICS FROM community/projects/biotech
-    var bio_input = "113000,321113,113310,32121,32191,562213,322121,322110,"; // Omitted 541620
-    var bio_output = "325211,325991,3256,335991,325120,326190,";
-    var green_energy = "221117,221111,221113,221114,221115,221116,221118,";
-    var fossil_energy = "221112,324110,325110,";
-    let electric = "335910,335911,335912,";
-    var auto_parts = "336390,336211,336340,336370,336320,336360,331221,336111,336330,";
-    var parts = "336412,336413,339110,333111,325211,326112,332211,336370,336390,326199,331110,336320,";
-    var combustion_engine = "333613,326220,336350,336310,333618,";
-    var parts_carpets = "325520,314110,313110,313210,"
-    var ppe_suppliers = "622110,621111,325414,339113,423450,"
-    var farmfresh = "311612,311615,311911,311919,311830,311824,311941,311710,311611,115114,311613,311811,311942,311991,311999,311211,311224,311920,"
-    var recycling = "423930,562111,562112,562119,562211,562212,562213,562219,562910,562920,562991,562998,56299";
-
-    //if (param.naics) {
-    //    cat_filter = param.naics.split(',');
-    //}
-    //else 
-
-    if (go){
-
-    	if (go == "opendata") {
-    		states = "GA";
-    	} else if (go == "bioeconomy") {
-        	showtab = "Bioeconomy and Energy";
-        	showtitle = "Bioeconomy and Energy Industries";
-            cat_filter = (bio_input + bio_output + green_energy + fossil_energy).split(',');
-        } else if (go == "farmfresh") {
-        	showtitle = "Farm Fresh";
-            cat_filter = (farmfresh).split(',');
-        } else if (go == "smart") {
-        	// smart also shows list of data-driven mobility projects
-            cat_filter = (electric + auto_parts).split(',');
-        } else if (go == "ev") {
-        	showtab = "EV Ecosystem";
-        	showtitle = "EV Related Manufacturing";
-        	// smart also shows list of data-driven mobility projects
-            cat_filter = (electric + auto_parts).split(',');
-        } else if (go == "parts") {
-        	showtitle = "Parts Manufacturing";
-            cat_filter = (electric + auto_parts + parts + combustion_engine).split(',');
-        } else if (go == "ppe") {
-        	showtitle = "Healthcare Industries";
-            cat_filter = (ppe_suppliers).split(',');
-            states = "GA";
-        } else if (go == "vehicles") {
-        	showtab = "Automotive"
-        	showtitle = "Vehicles and Vehicle Parts";
-            cat_filter = (electric + auto_parts + parts).split(',');
-        } else if (go == "recycling") {
-        	showtab = "Recycling";
-        	showtitle = "Recycling Processors (B2B)";
-            cat_filter = (recycling).split(',');
-            states = "GA";
-        } else if (go == "transfer") {
-        	showtab = "Transfer Stations";
-        	showtitle = "Recycling Transfer Stations (B2B)";
-        	cat_filter = (recycling).split(',');
-        	states = "GA";
-        } else if (go == "recyclers") {
-        	showtab = "Recyclers";
-        	showtitle = "Companies that Recycle during Manufacturing";
-        	cat_filter = (recycling).split(',');
-        	states = "GA";
-        } else if (go == "inert") {
-        	showtab = "Inert Waste Landfills";
-        	showtitle = "Inert Waste Landfills";
-        	cat_filter = (recycling).split(',');
-        	states = "GA";
-        } else if (go == "landfills") {
-        	showtab = "Landfills";
-        	showtitle = "Landfills";
-        	cat_filter = (recycling).split(',');
-        	states = "GA";
-        } else if (go=="manufacturing") {
-        	showtitle = "Manufacturing";
-        	cat_filter=["manufacturing placeholder"];
-        } else if (go=="industries") {
-        	showtitle = "Top Industries";
-        } else if (param.naics) {
-        	showtitle = go.charAt(0).toUpperCase() + go.substr(1).replace(/\_/g," ");
-    	    cat_filter = param.naics.split(',');
-    	} else {
-        	showtitle = go.charAt(0).toUpperCase() + go.substr(1).replace(/\_/g," ");
-    	}
-
-        if (cat_filter.length) {
-            cat_filt=[]
-            for(i=0;i<cat_filter.length;i++){
-                cat_filt.push(cat_filter[i].slice(0,6));
-            }
-            cat_filter=cat_filt
-            //console.log(cat_filter)
-        }
-        if (!showtab) {
-        	showtab = showtitle;
-        }
-        if (!showtab) {
-        	showtab = hash.show.charAt(0).toUpperCase() + hash.show.substr(1).replace(/\_/g," ");
-        }
-
-        if (go != "vehicles") {
-			$("#introframe").hide();
-		}
-        if (go != "ppe") {
-			$(".layerclass.ppe").hide();
-		}
-		if (go != "opendata") {
-			$(".layerclass.opendata").hide();
-		}
-
-		if ($("#sidecolumn .catList").is(":visible")) {
-			$("#selected_states").hide();
-		} else if (states.length <= 0) { // All states
-			$("#selected_states").show();
-		}
-    } else if (param.naics) {
-    	showtitle = "Top Industries";
-    	//
-    	showtab = "Top Industries";
-    	cat_filter = param.naics.split(',');
-    }
-
-    //hiddenhash.showtitle = showtitle; // This was sending to the URL hash.
-
-    // BUGBUG - Not sure where this sends the naics to the URL hash, which might be good until widget updates are tested.
-    // Problem, naics in URL is not updated after initial load.
-    console.log("Start hiddenhash.naics")
-    hiddenhash.naics = cat_filter.join(); // Overrides the existing naics
-    console.log("End hiddenhash.naics")
-
-	$("#showAppsText").text(showtab);
-	$("#showAppsText").attr("title",showtab); // Swaps in when viewing app thumbs
-	if (hiddenhash.loctitle) {
-		showtitle = loctitle + " - " + showtitle;
-	}
-	$(".regiontitle").text(showtitle);
-	
-    return cat_filter;
-}
 
 
 function hashChanged() {
@@ -2301,7 +2153,13 @@ function renderMapShapes(whichmap, hash) { // whichGeoRegion is not yet applied.
 			        // https://github.com/modelearth/topojson/blob/master/countries/us-states/AL-01-alabama-counties.json
 
 			        //var url = dual_map.custom_data_root() + '/counties/GA-13-georgia-counties.json';
-			        var url = dual_map.modelearth_data_root() + "/topojson/countries/us-states/" + hash.state + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + "-counties.json";
+			        let countyFileTerm = "-counties.json";
+			        let countyTopoTerm = "_county_20m";
+			        if (stateNameLowercase == "louisiana") {
+			        	countyFileTerm = "-parishes.json";
+			        	countyTopoTerm = "_parish_20m";
+			        }
+			        var url = dual_map.modelearth_data_root() + "/topojson/countries/us-states/" + hash.state + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
 			        //url = dual_map.modelearth_data_root() + "/opojson/countries/us-states/GA-13-georgia-counties.json";
 			        // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
 			    //}
@@ -2352,7 +2210,7 @@ function renderMapShapes(whichmap, hash) { // whichGeoRegion is not yet applied.
 			              
 			              //if (param.geo == "US01" || param.state == "AL") {
 			                // Example: topoob.objects.cb_2015_alabama_county_20m
-			                let topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + "_county_20m";
+			                let topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + countyTopoTerm;
 			                topodata = topojson.feature(topoob, eval(topoObjName));
 			            //} else {
 			            //  topodata = topojson.feature(topoob, topoob.objects.cb_2015_georgia_county_20m)
