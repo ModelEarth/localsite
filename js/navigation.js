@@ -96,7 +96,7 @@ $(document).ready(function(){
 	 		// To do: fetch the existing background-image.
 	 		if (param.startTitle == "Code for America" ||  location.host.indexOf('codeforamerica') >= 0) {
 	  			param.titleArray = []
-	  			param.headerLogo = "<img src='/localsite/img/logo/codeforamerica.png' style='width:140px;'>";
+	  			param.headerLogo = "<img src='/localsite/img/logo/partners/codeforamerica.png' style='width:140px;'>";
 		 		document.title = "Code for America - " + document.title
 		 		// BUGBUG - error in console
 		 		//changeFavicon("https://lh3.googleusercontent.com/HPVBBuNWulVbWxHAT3Nk_kIhJPFpFObwNt4gU2ZtT4m89tqjLheeRst_cMnO8mSrVt7FOSlWXCdg6MGcGV6kwSyjBVxk5-efdw")
@@ -108,11 +108,12 @@ $(document).ready(function(){
 		 		//changeFavicon("https://lh3.googleusercontent.com/HPVBBuNWulVbWxHAT3Nk_kIhJPFpFObwNt4gU2ZtT4m89tqjLheeRst_cMnO8mSrVt7FOSlWXCdg6MGcGV6kwSyjBVxk5-efdw")
 		 	// localhost will be removed from the following. Currently allows Georgia branding during testing.
 		 	// location.host.indexOf('localhost') >= 0 || 
-		 	} else if (param.startTitle == "Georgia.org" || location.host.indexOf('georgia') >= 0) {
+		 	} else if (location.host.indexOf('localhost') >= 0 || param.startTitle == "Georgia.org" || location.host.indexOf('georgia') >= 0) {
 		 		$(".siteTitleShort").text("Model Georgia");
 		 		param.titleArray = [];
 		 		//param.headerLogo = "<a href='https://georgia.org'><img src='" + modelpath + "../community/img/logo/georgia_usa_gray.png' style='width:130px;padding-top:4px'></a>";
-		 		param.headerLogo = "<a href='https://georgia.org'><img src='https://model.earth/community/img/logo/georgia_usa_gray.png' style='width:130px;padding-top:4px'></a>";
+		 		param.headerLogo = "<a href='https://georgia.org'><img src='/localsite/img/logo/states/GA.png' style='width:130px;padding-top:4px'></a>";
+		 		param.headerLogoNoText = "<a href='https://georgia.org'><img src='/localsite/img/logo/states/GA-notext.png' style='width:40px;padding-top:0px;margin-top:-4px'></a>";
 		 		document.title = "Georgia.org - " + document.title
 		 		changeFavicon("https://www.georgia.org/sites/default/files/logo-georgia-peach-notext_0.png")
 		 		$('.georgia').css('display', 'inline');
@@ -126,9 +127,9 @@ $(document).ready(function(){
 		 	} else if (!Array.isArray(param.titleArray) && (param.startTitle == "Neighborhood.org" || location.host.indexOf('neighborhood.org') >= 0)) {
 		 		$(".siteTitleShort").text("Neighborhood Modeling");
 		 		param.titleArray = ["neighbor","hood"]
-	  			param.headerLogo = "<img src='/localsite/img/logo/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
+	  			param.headerLogo = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
 	  			document.title = "Neighborhood.org - " + document.title
-	  			changeFavicon("/localsite/img/logo/neighborhood-icon.png")
+	  			changeFavicon("/localsite/img/logo/partners/neighborhood-icon.png")
 	  			$('.neighborhood').css('display', 'inline');
 		 	} else if (!Array.isArray(param.titleArray)) {
 		 		$(".siteTitleShort").text("Model Earth");
@@ -192,12 +193,15 @@ $(document).ready(function(){
 		 	*/
 		 	if (param.headerLogo) {
 		 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
-		 		$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
 		 	} else {
 			 	$('#headerLogo').css('background-image', 'url(' + imageUrl + ')');
 				$('#headerLogo').css('background-repeat', 'no-repeat');
 			}
-
+			if (param.headerLogoNoText) {
+				$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoNoText + "</a>");
+			} else if (param.headerLogo) {
+				$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
+			}
 			/*
 	 		//$('#headerLogo').css('background-size', '70% 70%');
 

@@ -1604,8 +1604,14 @@ function initSiteObject(layerName) {
 	    // https://data.openupstate.org/map-layers
 
 	    //var layerJson = dual_map.community_data_root() + "us/state/GA/ga-layers.json"; // CORS prevents live
+	    // The URL above is outdated. Now resides here:
 	    var layerJson = "/localsite/info/data/ga-layers.json";
 
+	    if(location.host.indexOf('georgia') >= 0) {
+	    	// For PPE, since localhost folder does not reside on same server
+	    	layerJson = "https://model.earth/localsite/info/data/ga-layers.json";
+	    	console.log("Set layerJson: " + layerJson);
+		}
 	    console.log(layerJson);
 	    var siteObject = (function() {
 	        var json = null;
