@@ -1660,6 +1660,7 @@ function loadParam(paramStr,hashStr) { // Note that function name is singular to
    }
    return params;
 }
+/*
 function mix(incoming, target) { // Combine two objects, priority to incoming. Delete blanks indicated by incoming.
    target2 = jQuery.extend(true, {}, target); // Clone/copy object without entanglement
    for(var key in incoming) {
@@ -1673,6 +1674,7 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
    }
    return target2;
 }
+*/
 // END COMMON
 
 // UNIQUE TO PAGE

@@ -1,5 +1,4 @@
 // INIT
-//alert("load map.js")
 var dataParameters = [];
 var dp = {};
 var layerControl = {}; // Object containing one control for each map on page.
@@ -80,6 +79,21 @@ document.addEventListener('hiddenhashChangeEvent', function (elem) {
 var priorHashMap = {};
 function hashChangedMap() {
   let hash = getHash();
+
+
+  // For PPE embed, also in map-filters.js. Will likely change
+  if (!hash.show) {
+    // For embed link
+    hash.show = param.show;
+    hiddenhash.show = param.show;
+  }
+  if (!hash.state) {
+    // For embed link
+    hash.state = param.state;
+    hiddenhash.state = param.state;
+  }
+
+
   if (hash.show != priorHashMap.show) {
     //applyIO(hiddenhash.naics);
     loadMap1("hashChanged() in map-filters.js", hash.show);
