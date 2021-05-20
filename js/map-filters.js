@@ -2022,11 +2022,14 @@ function hashChanged() {
 	 	let pagemap = document.querySelector('#map1')._leaflet_map; // Recall existing map
 	    let pagemap_container = L.DomUtil.get(pagemap);
 	    if (pagemap_container != null) {
+	    	// TODO: Reactiveate
+	    	// Test here: http://localhost:8887/localsite/info/embed.html#state=GA
 	      pagemap.flyTo(mapCenter, 5);
 	    }
 	    let pagemap2 = document.querySelector('#map2')._leaflet_map; // Recall existing map
 	    let pagemap_container2 = L.DomUtil.get(pagemap2);
 	    if (pagemap_container2 != null) {
+	      // TODO: Reactiveate
 	      pagemap2.flyTo(mapCenter, 5);
 	    }
 	}

@@ -1,12 +1,18 @@
 // INIT
+//alert("load map.js")
 var dataParameters = [];
 var dp = {};
 var layerControl = {}; // Object containing one control for each map on page.
+if(typeof hash === 'undefined') {
+  // Need to figure out where already declared.
+  // Avoid putting var in front, else "Identifier 'hash' has already been declared" error occurs here: http://localhost:8887/localsite/map/
+  hash = {};
+}
 if(typeof dataObject == 'undefined') {
-    var dataObject = {};
+  var dataObject = {};
 }
 if(typeof priorHash == 'undefined') {
-    var priorHash = {};
+  var priorHash = {};
 }
 
 /* Allows map to remove selected shapes when backing up. */
@@ -105,6 +111,8 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
   defaults.dataTitle = "Data Projects"; // Must match "map.addLayer(overlays" below.
   if (dp.latitude && dp.longitude) {
       mapCenter = [dp.latitude,dp.longitude];
+  } else {
+    mapCenter = [33.74,-84.38]; // Some center is always needed, else error will occur when first using flyTo.
   }
 
   // Make all keys lowercase - add more here, good to loop through array of possible keeys
@@ -1081,7 +1089,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
     dp1.listTitle = "Bus Locations";
     dp1.dataset = "https://api.marta.io/buses";
     dp1.datatype = "json";
-    dp1.nameColumn = "vehicle";
+    dp1.nameColumn = "route";
     dp1.itemsColumn = "DIRECTION";
     dp1.valueColumn = "DIRECTION";
     dp1.valueColumnLabel = "Direction";
@@ -1092,7 +1100,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
     dp1.listInfo = "Enhancements to the MARTA API<br>by Code for Atlanta member jakswa. <a href='https://github.com/jakswa/marta_ui'>GitHub</a>"
 
     // , "In Address": "address", "In County Name": "county", "In Website URL": "website"
-    dp1.search = {"In Vehicle Number": "VEHICLE"}; // Or lowercase?
+    dp1.search = {"In Route Number": "ROUTE", "In Vehicle Number": "VEHICLE"}; // Or lowercase?
 
   } else if (show == "trees" && theState == "CA") {
     dp1.listTitle = "Trees";
@@ -1347,9 +1355,6 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   // Load the map using settings above
 
   // INIT - geo fetches the county for filtering. This will be limited to datasets that contain County columns
-  if(typeof hash == 'undefined') {
-    let hash = {};
-  }
   hash = getHash();
   if (hash.geo) {
     loadGeos(hash.geo,0,function(results) {
