@@ -1104,6 +1104,8 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
     dp1.dataset = "https://api.marta.io/buses";
     dp1.datatype = "json";
     dp1.nameColumn = "route";
+    dp1.namePrefix = "Route";
+    dp1.skips = "route";
     dp1.itemsColumn = "DIRECTION";
     dp1.valueColumn = "DIRECTION";
     dp1.valueColumnLabel = "Direction";
@@ -1111,7 +1113,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
     dp1.longitude = -84.38;
     dp1.zoom = 12;
     dp1.refreshminutes = "1";
-    dp1.listInfo = "Enhancements to the MARTA API<br>by Code for Atlanta member jakswa. <a href='https://github.com/jakswa/marta_ui'>GitHub</a>"
+    dp1.listInfo = "View train station arrival times at <a href='https://marta.io/'>MARTA.io</a><br>API enhancements by Code for Atlanta member jakswa. <a href='https://github.com/jakswa/marta_ui'>GitHub</a>"
 
     // , "In Address": "address", "In County Name": "county", "In Website URL": "website"
     dp1.search = {"In Route Number": "ROUTE", "In Vehicle Number": "VEHICLE"}; // Or lowercase?
@@ -1917,6 +1919,9 @@ function showList(dp,map) {
         name = element.title;
       }
       name = capitalizeFirstLetter(name);
+      if (dp.namePrefix) {
+        name = dp.namePrefix + " " + name;
+      }
       var theTitleLink = 'https://www.google.com/maps/search/' + (name + ', ' + element.county + ' County').replace(/ /g,"+");
 
       if (element.website && !element.website.toLowerCase().includes("http")) {
@@ -2113,6 +2118,16 @@ function showList(dp,map) {
             output += "<b>Distance:</b> " + element.distance + " miles<br>"; 
           
         }
+
+        if (dp.skips) {
+          dp.skips = "," + dp.skips + ",";
+          for (i in element) {
+            if (element[i] != null && dp.skips.indexOf("," + i + ",") == -1) {
+              output += "<b>" + i + ":</b> " + element[i] + "<br>"; 
+            }
+          }
+        }
+
         output += "</div>"; // End Lower
         output += "</div>"; // End detail
 
