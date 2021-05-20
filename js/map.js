@@ -1732,7 +1732,7 @@ function showList(dp,map) {
                     //console.log("foundMatch: " + elementRaw[dp.itemsColumn] + " contains: " + products_array[p]);
                     
                   } else {
-                    console.log("No Match. \"" + products_array[p] + "\" not in: " + elementRaw[dp.itemsColumn]);
+                    //console.log("No Match. \"" + products_array[p] + "\" not in: " + elementRaw[dp.itemsColumn]);
                   }
               }
             }
