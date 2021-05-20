@@ -1289,7 +1289,7 @@ strVar += "  <div id=\"flexwrapper\">";
 strVar += "    <div id=\"hublist\" style=\"margin-top:20px\">";
 strVar += "      <div id=\"hublist-padding\">";
 strVar += "        ";
-strVar += "        <h1 class=\"listTitle\" style=\"display:none;margin-bottom:12px\"><\/h1>";
+strVar += "        <h1 class=\"listTitle\" style=\"margin-bottom:12px\">Loading...<\/h1>";
 strVar += "        <h2 class=\"listSubtitle\" style=\"display:none\"><\/h2>";
 strVar += "";
 strVar += "        <div style=\"display:none\" class=\"layerclass farmfresh\">";

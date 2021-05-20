@@ -105,7 +105,9 @@ function hashChangedMap() {
     loadMap1("hashChanged() in map-filters.js", hash.show);
   } else if (hash.state && hash.state != priorHashMap.state) {
     // Why are new map points not appearing
-    loadMap1("hashChanged() in map-filters.js new state " + hash.state, hash.show);
+    loadMap1("hashChanged() in map.js new state " + hash.state, hash.show);
+  } else if (hash.cat != priorHashMap.cat) {
+    loadMap1("hashChanged() in map.js new cat " + hash.cat, hash.show);
   }
   priorHashMap = getHash();
 }
@@ -911,23 +913,7 @@ function markerRadius(radiusValue,map) {
   //console.log("mapZoom:" + mapZoom + " radiusValu:" + radiusValue + " radiusOut:" + radiusOut);
   return radiusOut;
 }
-function changeCat(catTitle) {
-  $('#catSearch').val(catTitle);
 
-  $('#items').prop("checked", true); // Add front to parameter name.
-
-  $('#industryCatList > div').removeClass('catListSelected');
-
-  $('.catList > div').filter(function(){
-      return $(this).text() === catTitle
-  }).addClass('catListSelected');
-
-  $("#topPanel").hide();
-  $('#catListHolderShow').text('Product Categories');
-  //$('html,body').animate({
-  //    scrollTop: $("#hublist").offset().top - 250
-  //});
-}
 
 // MAP 1
 // var map1 = {};
@@ -943,11 +929,19 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   }
 
   let hash = getHash();
+
+  $("#dataList").html("");
+  $("#detaillist").html("<img src='/localsite/img/icon/loading.gif' style='margin:40px; width:120px'>");
+  // 
+
   //if (!show && param["go"]) {
   //  show = param["go"].toLowerCase();
   //}
   if (show != showprevious) {
-    changeCat(""); // Clear side
+    //changeCat(""); // Clear side
+    $("#topPanel").hide();
+    clearHash("cat");
+    //$("#tableSide").hide();
   }
   //$("#list_main").hide(); // Hide list and map2 until displayed by state-specific data
 
@@ -1727,8 +1721,8 @@ function showList(dp,map) {
 
     //if (keyword.length > 0 || products_array.length > 0 || productcode_array.length > 0) {
 
-          if (products_array.length > 0) {
-            for(var p = 0; p < products_array.length; p++) { // A list from #catSearch field
+          if (products_array.length > 0) { // A list from #catSearch field, typically just one
+            for(var p = 0; p < products_array.length; p++) {
               if (products_array[p].length > 0) {
 
                   if (elementRaw[dp.itemsColumn] && elementRaw[dp.itemsColumn].toLowerCase().indexOf(products_array[p].toLowerCase()) >= 0) {
@@ -1738,7 +1732,7 @@ function showList(dp,map) {
                     //console.log("foundMatch: " + elementRaw[dp.itemsColumn] + " contains: " + products_array[p]);
                     
                   } else {
-                    console.log("No Match: " + elementRaw[dp.itemsColumn] + " does not contain: " + products_array[p]);
+                    console.log("No Match. \"" + products_array[p] + "\" not in: " + elementRaw[dp.itemsColumn]);
                   }
               }
             }

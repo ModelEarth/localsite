@@ -180,7 +180,7 @@ $(document).ready(function () {
     });
 
 	$('#productCodes').click(function () {
-		// Needds to be changed after replacing/moving with #catSearch above.
+		// Needs to be changed after replacing/moving with #catSearch above.
 		if ($('#topPanel').css('display') === 'none') {
 			$('#productSubcats').css("max-height","300px");
 			$('#topPanelFooter').show();
@@ -1162,6 +1162,7 @@ function SearchProductCodes(event1) {
 
 
 function changeCat(catTitle) {
+	catTitle = catTitle.replace(/_/g, ' ');
 	$('#catSearch').val(catTitle);
 
 	$('#items').prop("checked", true); // Add front to parameter name.
@@ -1178,6 +1179,26 @@ function changeCat(catTitle) {
 	//    scrollTop: $("#hublist").offset().top - 250
 	//});
 }
+
+function changeCatDelete(catTitle) {
+  $('#catSearch').val(catTitle);
+
+  $('#items').prop("checked", true); // Add front to parameter name.
+
+  $('#industryCatList > div').removeClass('catListSelected');
+
+  $('.catList > div').filter(function(){
+      return $(this).text() === catTitle
+  }).addClass('catListSelected');
+
+  $("#topPanel").hide();
+  $('#catListHolderShow').text('Product Categories');
+  //$('html,body').animate({
+  //    scrollTop: $("#hublist").offset().top - 250
+  //});
+}
+
+
 
 $(document).ready(function () {
 
@@ -1349,6 +1370,7 @@ function displayHexagonMenu(layerName,siteObject) {
   //$("#iconMenu").append(iconMenu);
     $("#honeyMenuHolder").show();
 }
+// Laurie Henisey
 function thumbClick(show,path) {
 	let hash = getHash();
 	hash.show = show;
@@ -1357,6 +1379,7 @@ function thumbClick(show,path) {
 	if (typeof params != 'undefined') {
 		delete params.show;
 	}
+	delete hash.cat;
 	delete hash.naics;
 	delete hash.m; // Birdseye view
 	if (path && !window.location.pathname.includes(path)) {
@@ -2112,9 +2135,8 @@ function hashChanged() {
 			}
 		}
 	}
-	if (!hash.cat && priorHash.cat) { // Clear the cat
-		//alert("Clear the cat. Temp fix. Refresh page. Need to avoid roundtrip to server for cats.")
-		//window.location.reload();
+	if (hash.cat != priorHash.cat) {
+		changeCat(hash.cat)
 	}
 
     if (hash.catsort) {
