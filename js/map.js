@@ -931,7 +931,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   let hash = getHash();
 
   $("#dataList").html("");
-  $("#detaillist").html("<img src='/localsite/img/icon/loading.gif' style='margin:40px; width:120px'>");
+  $("#detaillist").html("<img src='" + dual_map.localsite_root() + "img/icon/loading.gif' style='margin:40px; width:120px'>");
   // 
 
   //if (!show && param["go"]) {

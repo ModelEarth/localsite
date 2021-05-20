@@ -326,7 +326,7 @@ function loadIndustryData() {
     if (hash.state) {
         stateAbbr = hash.state.toUpperCase();
     }
-    $("#econ_list").html("<img src='/localsite/img/icon/loading.gif' style='margin:40px; width:120px'><br>");
+    $("#econ_list").html("<img src='" + dual_map.localsite_root() + "img/icon/loading.gif' style='margin:40px; width:120px'><br>");
     
     
     if(!stateAbbr) {
