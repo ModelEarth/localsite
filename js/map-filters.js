@@ -1421,12 +1421,13 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	                                if (thelayers[layer].directlink) {
 	                                    //hrefLink = "href='" + removeFrontFolder(thelayers[layer].directlink) + "'";
 	                                }
-	                                if (thelayers[layer].rootfolder && thelayers[layer].rootfolder != "map") {
+	                                if (thelayers[layer].rootfolder && thelayers[layer].rootfolder) {
 	                                	// Change to pass entire hash
 
 	                                	//linkJavascript = 'onclick="window.location = \'/localsite/' + thelayers[layer].rootfolder + '/#show=' + siteObject.items[layer].item + '\';return false;"';
 	                                	linkJavascript = 'onclick="thumbClick(\'' + siteObject.items[layer].item + '\',\'' + thelayers[layer].rootfolder + '\');return false;"';
-	                                } else if ((directlink.indexOf('/map/') >= 0 && location.pathname.indexOf('/map/') >= 0) || (directlink.indexOf('/info/') >= 0 && location.pathname.indexOf('/info/') >= 0)) {
+	                                //} else if ((directlink.indexOf('/map/') >= 0 && location.pathname.indexOf('/map/') >= 0) || (directlink.indexOf('/info/') >= 0 && location.pathname.indexOf('/info/') >= 0)) {
+	                                } else if ((location.pathname.indexOf('/map/') >= 0) || (location.pathname.indexOf('/info/') >= 0)) {
 	                                	// Stayon page when on map or info
 	                                	//linkJavascript = "onclick='goHash({\"show\":\"" + siteObject.items[layer].item + "\",\"cat\":\"\",\"sectors\":\"\",\"naics\":\"\",\"go\":\"\",\"m\":\"\"}); return false;'"; // Remain in current page.
 	                                	linkJavascript = 'onclick="thumbClick(\'' + siteObject.items[layer].item + '\',\'\');return false;"';
@@ -1850,7 +1851,7 @@ function hashChanged() {
 	    hash.state = "GA";
 	    hiddenhash.state = "GA";
 	  }
-  
+
 	populateFieldsFromHash();
 	productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 
@@ -1883,7 +1884,7 @@ function hashChanged() {
                 $(".layerclass.opendata").hide();
             }
 
-            $("#tableSide").hide();
+            //$("#tableSide").hide();
 
             if ($("#sidecolumn .catList").is(":visible")) {
                 $("#selected_states").hide();
