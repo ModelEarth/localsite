@@ -1400,7 +1400,7 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	        var directlink = getDirectLink(thelayers[layer].livedomain, thelayers[layer].directlink, thelayers[layer].rootfolder, thelayers[layer].item);
 
 	        if (bigThumbSection == "main") {
-	            if (thelayers[layer].menulevel == "1" && (!thelayers[layer].states || (thelayers[layer].states == "GA" && (!param.state || param.state=="GA")  ))) {
+	            if (thelayers[layer].menulevel == "1") {
 	                if (access(currentAccess,menuaccess)) {
 	                    //if (siteObject.items[layer].section == bigThumbSection && siteObject.items[layer].showthumb != '0' && bigThumbSection.replace(" ","-").toLowerCase() != thelayers[layer].item) {
 	                    
@@ -1434,11 +1434,19 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	                                	linkJavascript = "";
 	                                }
 
-	                                if (menuaccess==0) { // Quick hack until user-0 displays for currentAccess 1. In progress...
+	                                // !thelayers[layer].states || (thelayers[layer].states == "GA" && (!param.state || param.state=="GA")  )
+	                                if (menuaccess!=0 || (thelayers[layer].states == "GA")) {
+	                                	// This one is hidden. If a related state, shown with geo-US13
+	                                	let hideforAccessLevel = "";
+	                                	if (menuaccess!=0) { // Also hiddden for access leven
+	                                		hideforAccessLevel = "style='display:none'";
+	                                	}
+	                                	// TODO: lazy load images only when visible by moving img tag into an attribute.
+	                                	// TODO: Add geo-US13 for other states
+	                                    sectionMenu += "<div class='bigThumbMenuContent geo-US13 geo-limited' style='display:none' show='" + siteObject.items[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' " + hideforAccessLevel + "><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
+	                                
+	                                } else if (menuaccess==0) { // Quick hack until user-0 displays for currentAccess 1. In progress...
 	                                    sectionMenu += "<div class='bigThumbMenuContent' show='" + siteObject.items[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='displayX:none'><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
-	                                } else {
-	                                	// This one is hidden
-	                                    sectionMenu += "<div class='bigThumbMenuContent' show='" + siteObject.items[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='display:none'><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
 	                                }
 	                            }
 	                    //}
@@ -1473,6 +1481,9 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	        }
 	    }
 	    $(".bigThumbMenu").append("<div class='bigThumbMenuInner'>" + sectionMenu + "</div>");
+	    if (hash.state == "GA") {
+	    	$(".geo-US13").show();
+	    }
 	    //$("#honeycombMenu").append("<ul class='bigThumbUl'>" + sectionMenu + "</ul>");
 	    $("#iconMenu").append(iconMenu);
 	    $("#bigThumbPanelHolder").show();
@@ -1985,6 +1996,9 @@ function hashChanged() {
           let lon = $("#state_select").find(":selected").attr("lon");
           mapCenter = [lat,lon];
         }
+        if (hash.state == "GA") {
+
+        }
 	}
 	if (hash.state) {
         $(".showforstates").show();
@@ -2022,10 +2036,12 @@ function hashChanged() {
 			}
 		}
 		$("#state_select").val(hash.state);
-		if (hash.state == "GA") {
-			$(".regionFilter").show();
-		} else {
+		if (hash.state != "GA") {
 			$(".regionFilter").hide();
+			$(".geo-limited").hide();
+		} else {
+			$(".regionFilter").show();
+			$(".geo-US13").show();
 		}
 		if (!hash.state) {
 			$(".locationTabText").text("States and counties...");
