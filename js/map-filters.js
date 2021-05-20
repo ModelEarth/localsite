@@ -1745,7 +1745,7 @@ let siteObject = callInitSiteObject(1);
 // Load Google API key fron config.json
 
   var GOOGLE_MAP_KEY;
-  $.getJSON("/localsite/map/auto/config.json", function(json) {
+  $.getJSON(dual_map.localsite_root() + "map/auto/config.json", function(json) {
     GOOGLE_MAP_KEY = json.googleAPIKey;
     loadGoogleScript();
   });
