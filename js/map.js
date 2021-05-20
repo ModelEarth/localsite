@@ -93,6 +93,12 @@ function hashChangedMap() {
     hiddenhash.state = param.state;
   }
 
+  // Temp for PPE
+  if (!hash.state && location.host.indexOf("georgia") >= 0) {
+    hash.state = "GA";
+    hiddenhash.state = "GA";
+  }
+
 
   if (hash.show != priorHashMap.show) {
     //applyIO(hiddenhash.naics);

@@ -33,7 +33,7 @@ $(document).ready(function(){
  		//modelpath = "/" + modelpath;
  	}
  	if (param.showhero != "false") {
- 		if(location.host.indexOf('georgia') >= 0) { 
+ 		if(location.host.indexOf("georgia") >= 0) { 
 	 		//$("body").prepend( "<div class='headerImage'><img src='" + modelpath + "../io/img/hero/sustainable-communities.jpg' style='width:100%'></div>");
 	 	}
 	}
@@ -108,7 +108,7 @@ $(document).ready(function(){
 		 		//changeFavicon("https://lh3.googleusercontent.com/HPVBBuNWulVbWxHAT3Nk_kIhJPFpFObwNt4gU2ZtT4m89tqjLheeRst_cMnO8mSrVt7FOSlWXCdg6MGcGV6kwSyjBVxk5-efdw")
 		 	// localhost will be removed from the following. Currently allows Georgia branding during testing.
 		 	// location.host.indexOf('localhost') >= 0 || 
-		 	} else if (location.host.indexOf('localhost') >= 0 || param.startTitle == "Georgia.org" || location.host.indexOf('georgia') >= 0) {
+		 	} else if (location.host.indexOf('localhost') >= 0 || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0) {
 		 		$(".siteTitleShort").text("Model Georgia");
 		 		param.titleArray = [];
 		 		//param.headerLogo = "<a href='https://georgia.org'><img src='" + modelpath + "../community/img/logo/georgia_usa_gray.png' style='width:130px;padding-top:4px'></a>";
@@ -144,7 +144,7 @@ $(document).ready(function(){
 		 	}
 
 		 	if (param["show"] == "mockup") {
-		 		if(location.host.indexOf('georgia') >= 0) {
+		 		if(location.host.indexOf("georgia") >= 0) {
 		 			$('#headerLocTitle').html("West Central Georgia");
 			 		//$('#headerLocTitle').html("<span class='arrownext' style='margin:10px 10px 0 10px'></span><span style='float:left'> West Central Georgia</span>");
 			 	}

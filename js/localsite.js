@@ -16,7 +16,7 @@ var dual_map = dual_map || (function(){
         },
         localsite_root : function() {
             let root = location.protocol + '//' + location.host + '/localsite/';
-            if (location.host.indexOf('georgia') >= 0) { // For feedback link within embedded map
+            if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
               root = 'https://map.georgia.org/localsite/';
             }
             if (location.host.indexOf('localhost') < 0) {
