@@ -17,7 +17,7 @@ var dual_map = dual_map || (function(){
         localsite_root : function() {
             //alert("call localsite_repo");
             if (localsite_repo) { // Intensive, so allows to only run once
-              alert(localsite_repo);
+              //alert(localsite_repo);
               return(localsite_repo);
             }
 
