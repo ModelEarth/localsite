@@ -254,7 +254,7 @@ code {
 'use strict'; // Optional, to make sure we are declaring variables.
 
 // COMMON - also resides in embed-map.js
-function loadScript(url, callback)
+function loadScriptOLD(url, callback)
 {
   if (!document.getElementById(url)) { // Prevents multiple loads.
     var script = document.createElement('script');
@@ -274,6 +274,38 @@ function loadScript(url, callback)
     callback();
   }
   // Nested calls are described here: https://books.google.com/books?id=ZOtVCgAAQBAJ&pg=PA6&lpg=PA6
+}
+function loadScript(url, callback)
+{
+	let urlID = url.replace(/^.*\/\/[^\/]+/, ''); // Allows id's to always omit the domain.
+	if (!document.getElementById(urlID)) { // Prevents multiple loads.
+		console.log("loadScript seeking: " + url);
+		var script = document.createElement('script');
+	    script.type = 'text/javascript';
+	    script.src = url;
+		script.id = urlID; // Prevents multiple loads.
+	    // Bind the event to the callback function. Two events for cross browser compatibility.
+	    //script.onreadystatechange = callback; // This apparently is never called by Brave, but needed for some of the other browsers.
+	    script.onreadystatechange = function() { // Cound eliminate these 3 lines and switch back to the line above.
+	    	console.log("loadScript ready: " + url); // This apparently is never called by Brave.
+            callback();
+        }
+	    //script.onload = callback;
+	    script.onload = function() {
+          	console.log("loadScript loaded: " + url); // Once the entire file is processed.
+            callback();
+        } 
+
+        //$(document).ready(function () { // Only needed if appending to body
+           var head = document.getElementsByTagName('head')[0];
+	       head.appendChild(script);
+        //});
+        
+	} else {
+		console.log("loadScript script already available: " + url);
+		if(callback) callback();
+	}
+	// Nested calls are described here: https://books.google.com/books?id=ZOtVCgAAQBAJ&pg=PA6&lpg=PA6
 }
 // END COMMON
 

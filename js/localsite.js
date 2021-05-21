@@ -4,8 +4,8 @@
 // Localsite Path Library - A global namespace singleton
 // If dual_map library exists then use it, else define a new object.
 var dual_map = dual_map || (function(){
-    var _args = {}; // private
-
+    let _args = {}; // private
+    let localsite_repo;
     return {
         init : function(Args) {
             _args = Args;
@@ -15,14 +15,41 @@ var dual_map = dual_map || (function(){
             alert('Hello World! -' + _args[0]);
         },
         localsite_root : function() {
+            //alert("call localsite_repo");
+            if (localsite_repo) { // Intensive, so allows to only run once
+              alert(localsite_repo);
+              return(localsite_repo);
+            }
+
+            let scripts = document.getElementsByTagName('script'); 
+            let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
+            //let myScript = null;
+            // Now try to find one containging map-embed.js
+            for (var i = 0; i < scripts.length; ++i) {
+                if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
+                  myScript = scripts[i];
+                }
+            }
+            let hostnameAndPort = extractHostnameAndPort(myScript.src);
             let root = location.protocol + '//' + location.host + '/localsite/';
+
             if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
-              root = 'https://map.georgia.org/localsite/';
+              //root = "https://map.georgia.org/localsite/";
+              root = hostnameAndPort + "/localsite/";
             }
-            if (location.host.indexOf('localhost') < 0) {
-              // May be needed if embedding without locathost repo in site root.
-              //root = "https://neighborhood.org/localsite/";
+            
+            if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+              // Omit known hosts of "localsite" repo here.
+
+              //root = "https://model.earth/localsite/";
+              root = hostnameAndPort + "/localsite/";
+              console.log("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src) + "\rwindow.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
             }
+            if (location.host.indexOf('localhost') >= 0) {
+              // Enable to test embedding without locathost repo in site root. Rename your localsite folder.
+              root = "https://model.earth/localsite/";
+            }
+            localsite_repo = root; // Save to reduce DOM hits
             return (root);
         },
         community_data_root : function() { // General US states and eventually some international
@@ -47,6 +74,12 @@ var dual_map = dual_map || (function(){
     };
 }());
 
+//dual_map.init(["somevalue", 1, "controlId"]);
+//dual_map.helloWorld();
+// Above is alternative to placing params in javascript include path:
+// https://stackoverflow.com/questions/2190801/passing-parameters-to-javascript-files
+
+
 // USE params (plural) to isolate within functions when creating embedable widgets.
 // USE param for any html page using localsite.js.
 if(typeof param == 'undefined') {
@@ -69,6 +102,13 @@ function initateHiddenhash() { // Load in values from params on javascript inclu
         myScript = scripts[i];
       }
   }
+  
+  // Check if script resides on current server.
+  //alert("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src) + "\rwindow.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
+
+  //dual_map.localsite_root() = "https://model.earth";
+  //alert(dual_map.localsite_root())
+
   let includepairs = myScript.src.substring(myScript.src.indexOf('?') + 1).split('&');
   for (let i = 0; i < includepairs.length; i++) {
     if(!includepairs[i]) continue;
@@ -275,6 +315,24 @@ function consoleLog(text,value) {
        dsconsole.scrollTop(dsconsole[0].scrollHeight - dsconsole.height() - 17); // Adjusts for bottom alignment
 
   
+}
+function extractHostnameAndPort(url) {
+    let hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
+
+    if (url.indexOf("//") > -1) {
+        hostname = url.split('/')[2];
+    }
+    else {
+        hostname = url.split('/')[0];
+    }
+
+    //find & remove port number
+    //hostname = hostname.split(':')[0];
+    //find & remove "?"
+    hostname = hostname.split('?')[0];
+
+    return hostname;
 }
 
 // Convert json to html

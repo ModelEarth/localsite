@@ -1561,13 +1561,13 @@ document.write("<div id=\"filterEmbedHolder\" style=\"display:none;position:rela
 // COMMON
 function loadScript(url, callback)
 {
-	url = url.replace(/^.*\/\/[^\/]+/, ''); // Allows id's to always omit the domain.
-	if (!document.getElementById(url)) { // Prevents multiple loads.
+	let urlID = url.replace(/^.*\/\/[^\/]+/, ''); // Allows id's to always omit the domain.
+	if (!document.getElementById(urlID)) { // Prevents multiple loads.
 		console.log("loadScript seeking: " + url);
 		var script = document.createElement('script');
 	    script.type = 'text/javascript';
 	    script.src = url;
-		  script.id = url; // Prevents multiple loads.
+		script.id = urlID; // Prevents multiple loads.
 	    // Bind the event to the callback function. Two events for cross browser compatibility.
 	    //script.onreadystatechange = callback; // This apparently is never called by Brave, but needed for some of the other browsers.
 	    script.onreadystatechange = function() { // Cound eliminate these 3 lines and switch back to the line above.
