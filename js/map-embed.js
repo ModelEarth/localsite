@@ -55,7 +55,7 @@ strVar += "        <img src=\"\/localsite\/img\/icon\/search.png\" style=\"width
 strVar += "      <\/div>";
 strVar += "      -->";
 strVar += "      <div class=\"showMenu\" style=\"font-size:24px;color:#999;float:left\">";
-strVar += "        <img src=\"\/localsite\/img\/icon\/hamburger.png\" style=\"width:30px; opacity:0.5; margin-top:10px\">";
+strVar += "        <img src=\"..\/localsite\/img\/icon\/hamburger.png\" style=\"width:30px; opacity:0.5; margin-top:10px\">";
 strVar += "      <\/div>";
 strVar += "    <\/div>";
 strVar += "";
@@ -765,41 +765,50 @@ strVar += "              <\/div>";
 strVar += "            <\/div>";
 strVar += "";
 strVar += "        <!-- GOOGLE ADDRESS AUTOCOMPLETE -->";
+strVar += "        <!-- USES \"Google Autocomplete\" javascript in map-filters.js ";
+strVar += "        Currently flacky.  Works after returning to page, sometimes.";
+strVar += "";
+strVar += "        For testing (this works fine):";
+strVar += "          \/localsite\/map\/auto\/";
+strVar += "        -->";
 strVar += "        <style>";
 strVar += "";
 strVar += "        <\/style>";
-strVar += "        <div id=\"app\" class=\"local\" style=\"display:none\">";
+strVar += "        <div id=\"app\">";
 strVar += "";
-strVar += "          <div class=\"place_details input-output\" style=\"float:left;margin-bottom:15px\">";
-strVar += "          ";
-strVar += "            <b style=\"margin-top:0px\">Address Lookup<\/b><br>";
-strVar += "          ";
-strVar += "            <input ";
-strVar += "              class=\"filterClick\"";
-strVar += "              id=\"searchloc\"";
-strVar += "              style=\"max-width:400px; float:left; display: block; width: 60vw; font-size: 1rem; font-weight: 400; line-height: 2rem;\"";
-strVar += "              placeholder=\"Enter an address, city, state, county or zip\"";
-strVar += "              onfocus=\"value = ''\" ";
-strVar += "              type=\"text\" \/>";
-strVar += "            <br><br>";
-strVar += "          ";
-strVar += "            <div class=\"localX\" style=\"display:none\">";
-strVar += "            <h3 class>Latitude: &nbsp; {{ lat }}<\/h3>";
-strVar += "            <h3>Longitude: &nbsp; {{ lng }}<\/h3>";
-strVar += "            <h3>Address: &nbsp; {{ address }}<\/h3>";
-strVar += "            <h3>State: &nbsp; {{ state }}<\/h3>";
-strVar += "            <h3>Phone: &nbsp; {{ phone }}<\/h3>";
-strVar += "            <h3>Website: &nbsp; {{ website }}<\/h3>";
+strVar += "          <div class=\"local\" style=\"display:none\">";
+strVar += "            <div class=\"place_details input-output\" style=\"float:left;margin-bottom:15px\">";
+strVar += "            ";
+strVar += "              <b style=\"margin-top:0px\">Address Lookup<\/b> <a href=\"auto\">project<\/a><br>";
+strVar += "            ";
+strVar += "              <input ";
+strVar += "                class=\"filterClick\"";
+strVar += "                id=\"searchloc\"";
+strVar += "                style=\"max-width:400px; float:left; display: block; width: 60vw; font-size: 1rem; font-weight: 400; line-height: 2rem;\"";
+strVar += "                placeholder=\"Enter an address, city, state, county or zip\"";
+strVar += "                onfocus=\"value = ''\" ";
+strVar += "                type=\"text\" \/>";
+strVar += "              <br><br>";
+strVar += "            ";
+strVar += "              <div class=\"localX\" style=\"display:none\">";
+strVar += "              <h3 class>Latitude: &nbsp; {{ lat }}<\/h3>";
+strVar += "              <h3>Longitude: &nbsp; {{ lng }}<\/h3>";
+strVar += "              <h3>Address: &nbsp; {{ address }}<\/h3>";
+strVar += "              <h3>State: &nbsp; {{ state }}<\/h3>";
+strVar += "              <h3>Phone: &nbsp; {{ phone }}<\/h3>";
+strVar += "              <h3>Website: &nbsp; {{ website }}<\/h3>";
+strVar += "              <\/div>";
+strVar += "";
+strVar += "              <div id=\"readmeDiv\"><\/div>";
 strVar += "            <\/div>";
 strVar += "";
-strVar += "            <div id=\"readmeDiv\"><\/div>";
+strVar += "            <!--";
+strVar += "            <input id=\"searchX\" autocomplete=\"off\" style=\"width:100%;max-width:400px;padding-right:27px;margin-bottom:10px\" class=\"filterClick mobileWide textInput si-input\" type=\"text\" value=\"\" ";
+strVar += "            placeholder=\"Address Lookup\"";
+strVar += "            onkeyupX=\"return SearchEnter(event);\" \/>";
+strVar += "            -->";
 strVar += "          <\/div>";
 strVar += "";
-strVar += "          <!--";
-strVar += "          <input id=\"searchX\" autocomplete=\"off\" style=\"width:100%;max-width:400px;padding-right:27px;margin-bottom:10px\" class=\"filterClick mobileWide textInput si-input\" type=\"text\" value=\"\" ";
-strVar += "          placeholder=\"Address Lookup\"";
-strVar += "          onkeyupX=\"return SearchEnter(event);\" \/>";
-strVar += "          -->";
 strVar += "        <\/div>";
 strVar += "";
 strVar += "        ";
@@ -1139,7 +1148,6 @@ strVar += "<label for=\"WY\" class=\"\">Wyoming<\/label>";
 strVar += "<\/div>";
 strVar += "<\/div>";
 strVar += "";
-strVar += "";
 strVar += "  <\/div>";
 strVar += "";
 strVar += "  <!-- INDUSTRIES -->";
@@ -1433,96 +1441,7 @@ strVar += "        <div id=\"disclaimerText\" class=\"layerclass ppe suppliers\"
 strVar += "          <b>Disclaimer:<\/b>  The Georgia Department of Economic Development (GDEcD) is collecting information from Georgia companies that indicate they are producing essential medical supplies in response to the COVID-19 pandemic. GDEcD is sharing these companies’ information with Georgia’s units of local government and other potential in-state buyers of these essential medical supplies merely as a courtesy. The following product information and addresses were submitted by private companies to GDEcD, and this list does not constitute an endorsement of any particular company or product by the State or by GDEcD.  GDEcD does not make any representations or warranties as to the accuracy of this information, or as to the quality or quantity of the products offered by these companies. Buyers use this information at their own risk.  Buyers are encouraged to contact the companies directly, for product specifications, delivery options, and other information required for executing a purchase.  Buyers are cautioned to make their own determinations regarding supplier responsibility, including but not limited to assessing whether the supplier has appropriate financial, organization and operational capacity, appropriate legal authority to do business in Georgia, a satisfactory record of integrity, and an acceptable performance record on past contracts.";
 strVar += "        <\/div>";
 strVar += "";
-strVar += "        <!-- INDUSTRIES -->";
-strVar += "        <div class=\"mock-up\" style=\"display:none; padding-bottom:80px\">";
-strVar += "";
-strVar += "          <!-- TOP WIDGETS -->";
-strVar += "          <div>";
-strVar += "";
-strVar += "            <div style=\"margin-bottom:14px\">";
-strVar += "              <b style=\"font-size:16px\">About<\/b><br>";
-strVar += "              <a href=\"https:\/\/model.earth\/io\/charts\">Embeddable  charts<\/a> - ";
-strVar += "              <a href=\".\/?show=pickup&design=1\">Design Ideas<\/a> - ";
-strVar += "              <a href=\".\/?show=suppliers\">C19 Logistics<\/a>";
-strVar += "            <\/div>";
-strVar += "";
-strVar += "            <div style=\"display:none; float:left; margin-right:30px\">";
-strVar += "              Changing filters will update the URL hash value, which will trigger updates to independent widgets.";
-strVar += "";
-strVar += "              <b>Location & Weight:<\/b> Country, State, County, Zip<br>";
-strVar += "              <b>BEA Sector & Intensity:<\/b> Industry ID : Percent<br>";
-strVar += "              <b>Census & Level:<\/b> Population, Education, etc.<br>";
-strVar += "              <b>Product HS Codes<\/b>";
-strVar += "            <\/div>";
-strVar += "            ";
-strVar += "            <div style=\"clear:both\"><\/div>";
-strVar += "";
-strVar += "";
-strVar += "            ";
-strVar += "            <div style=\"overflow: auto;\" class=\"leftWidget eWidget\">";
-strVar += "             ";
-strVar += "                <!-- POSITIVE OUTCOMES -->";
-strVar += "                <div class=\"widgetbar\">";
-strVar += "                  <div style=\"float:left\">OUTCOME<\/div>";
-strVar += "                  <div style=\"float:right; padding-right:10px\"><span style='color:#555'>YOUR SCORE:<\/span> 500<\/div>";
-strVar += "                <\/div>";
-strVar += "                <div class=\"topboxes outcomesbox\" style=\"min-height: 120px\">";
-strVar += "";
-strVar += "                  <!-- was width:230px; -->";
-strVar += "                  <div style=\"float:left;width:250px; margin-right:30px\">";
-strVar += "                    <div>1. Value-Added <span><img src=\"\/localsite\/info\/img\/greenbar.gif\" style=\"width:80px;height:14px;margin-right:8px\">50<\/span><\/div>";
-strVar += "                    <div>2. Quality Jobs <span><img src=\"\/localsite\/info\/img\/greenbar.gif\" style=\"width:80px;height:14px;margin-right:8px\">50<\/span><\/div>";
-strVar += "                    <div>3. Clean Air <span><img src=\"\/localsite\/info\/img\/greenbar.gif\" style=\"width:80px;height:14px;margin-right:8px\">50<\/span><\/div>";
-strVar += "                    <div>4. Clean Water <span><img src=\"\/localsite\/info\/img\/greenbar.gif\" style=\"width:80px;height:14px;margin-right:8px\">50<\/span><\/div>";
-strVar += "                    <div>5. Clean Energy <span><img src=\"\/localsite\/info\/img\/greenbar.gif\" style=\"width:80px;height:14px;margin-right:8px\">50<\/span><\/div>";
-strVar += "                    ";
-strVar += "                  <\/div>";
-strVar += "                  <div style=\"float:left;width:250px\">";
-strVar += "                    <div>6. Local Suppliers <span><img src=\"\/localsite\/info\/img\/greenbar.gif\" style=\"width:80px;height:14px;margin-right:8px\">50<\/span><\/div>";
-strVar += "                    <div>7. Green Materials <span><img src=\"\/localsite\/info\/img\/greenbar.gif\" style=\"width:80px;height:14px;margin-right:8px\">50<\/span><\/div>";
-strVar += "                    <div>8. Inclusive Design <span><img src=\"\/localsite\/info\/img\/greenbar.gif\" style=\"width:80px;height:14px;margin-right:8px\">50<\/span><\/div>";
-strVar += "                    <div>9. Improves Health <span><img src=\"\/localsite\/info\/img\/greenbar.gif\" style=\"width:80px;height:14px;margin-right:8px\">50<\/span><\/div>";
-strVar += "                    <div>10. Creates Beauty <span><img src=\"\/localsite\/info\/img\/greenbar.gif\" style=\"width:80px;height:14px;margin-right:8px\">50<\/span><\/div>";
-strVar += "                  <\/div>";
-strVar += "                <\/div>";
-strVar += "              ";
-strVar += "            <\/div>";
-strVar += "            <div style=\"clear:both\"><\/div>";
-strVar += "";
-strVar += "";
-strVar += "            <div style=\"overflow: auto;\" class=\"leftWidget eWidget\">";
-strVar += "                <div class=\"widgetbar\">";
-strVar += "                  ADVERSE IMPACTS";
-strVar += "                  <div style=\"float:right; font-weight:400; padding-right:10px\">";
-strVar += "                  Supply Chain - Full System - Production";
-strVar += "                  <\/div>";
-strVar += "                <\/div>";
-strVar += "                <div style=\"clear:both\">";
-strVar += "                <\/div>";
-strVar += "                <div class=\"topboxes\">";
-strVar += "                  <div style=\"display:none; border-bottom: 1px solid #eee; padding-bottom:8px; margin-bottom:8px\">";
-strVar += "                    <b>Perspective:<\/b> Supply Chain, Point of Consumption<br>";
-strVar += "                    <b>System:<\/b> Full System, Food System<br>";
-strVar += "                    <b>Type:<\/b> Consumption, Production<br>";
-strVar += "                    <b>Indicator & Weight:<\/b> Impact, Resources, Waste, Chem, Econ<br>";
-strVar += "                  <\/div>";
-strVar += "";
-strVar += "                  <div class=\"column50\" style=\"float:left\"><img src=\"\/localsite\/info\/img\/impacts1.gif\" style=\"width:100%; padding-right:40px\" \/>";
-strVar += "                  <\/div>";
-strVar += "                  <div class=\"column50mid\" style=\"float:left\">&nbsp;";
-strVar += "                  <\/div>";
-strVar += "                  <div class=\"column50\" style=\"float:left\"><img src=\"\/localsite\/info\/img\/impacts2.gif\" style=\"width:100%; padding-right:40px\" \/>";
-strVar += "                  <\/div>";
-strVar += "              <\/div>";
-strVar += "";
-strVar += "            <\/div>";
-strVar += "";
-strVar += "          <\/div>";
-strVar += "          <!-- END TOP WIDGETS -->";
-strVar += "          &nbsp;";
-strVar += "          <br><br>";
-strVar += "        <\/div>";
-strVar += "        <!-- \/INDUSTRIES -->";
+strVar += "        ";
 strVar += "";
 strVar += "      <\/div>";
 strVar += "";
@@ -1551,7 +1470,6 @@ strVar += "  <\/div>";
 strVar += "<\/div>";
 strVar += "";
 strVar += "<!-- End HTML -->";
-
 
 
 
@@ -1687,7 +1605,7 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
 
 // UNIQUE TO PAGE
 function jsLoaded(root) {
-	loadScript(root + '/localsite/js/localsite.js', function(results) {
+	loadScript(root + 'js/localsite.js', function(results) {
 
 	  	var strVarCss = "<style>";
 		if (param["show"] == "suppliers") {
@@ -1711,33 +1629,33 @@ function jsLoaded(root) {
 		document.head.insertAdjacentHTML("beforeend", strVarCss);
 
 		if (param.preloadmap != "false") {
-		  	loadScript(root + '/localsite/js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
-		    	loadScript(root + '/localsite/js/localsite.js', function(results) {
-		    		loadScript(root + '/localsite/js/map.js', function(results) {
+		  	loadScript(root + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
+		    	loadScript(root + 'js/localsite.js', function(results) {
+		    		loadScript(root + 'js/map.js', function(results) {
 			  			loadSearchFilters(root,1); // Uses dual_map library in localsite.js for community_data_root
 			  		});
 			  		if (param.shownav) {
-			  			loadScript(root + '/localsite/js/navigation.js', function(results) {});
+			  			loadScript(root + 'js/navigation.js', function(results) {});
 			  		}
 			  	});
 		    });
 		  }
 	});
 
-	loadScript(root + '/localsite/js/table-sort.js', function(results) {});
+	loadScript(root + 'js/table-sort.js', function(results) {});
 }
 function leafletLoaded(root, count) {
 	console.log("From leafletLoaded typeof L: " + typeof L);
 	if (typeof L !== 'undefined') {
 		console.log(L);
 	  	// The large d3-legend.js script is flawed because it throws errors due to dependencies on leaflet script, so we can not load early.
-		loadScript(root + '/localsite/js/leaflet.icon-material.js', function(results) {});
-		loadScript(root + '/localsite/js/jquery.min.js', function(results) {
+		loadScript(root + 'js/leaflet.icon-material.js', function(results) {});
+		loadScript(root + 'js/jquery.min.js', function(results) {
 			if (param.preloadmap != "false") {
-				loadScript(root + '/localsite/js/d3.v5.min.js', function(results) {
-					loadScript(root + '/localsite/js/localsite.js', function(results) {
-						loadScript(root + '/localsite/js/map.js', function(results) { // BUG - change so dual-map does not require this on it's load
-							//loadScript(root + '/localsite/js/d3-legend.js', function(results) { // This checks that load above is completed.
+				loadScript(root + 'js/d3.v5.min.js', function(results) {
+					loadScript(root + 'js/localsite.js', function(results) {
+						loadScript(root + 'js/map.js', function(results) { // BUG - change so dual-map does not require this on it's load
+							//loadScript(root + 'js/d3-legend.js', function(results) { // This checks that load above is completed.
 					  		dualmapLoaded(param, root, 1);
 					  	});
 				  	});
@@ -1763,7 +1681,7 @@ function loadSearchFilters(root, count) {
 	if (typeof customD3loaded !== 'undefined' && typeof localsite_map !== 'undefined') {
 		//alert("localsite_map " + localsite_map)
 		//loadScript(root + 'https://cdn.jsdelivr.net/npm/vue', function(results) { // Need to check if function loaded
-			loadScript(root + '/localsite/js/map-filters.js', function(results) {});
+			loadScript(root + 'js/map-filters.js', function(results) {});
 		//});
 	} else if (count<100) { // Wait a milisecond and try again
 		setTimeout( function() {
@@ -1776,43 +1694,101 @@ function loadSearchFilters(root, count) {
 
 } 
 
+let localsite_repo2; // TEMP HERE
+function extractHostnameAndPort2(url) { // TEMP HERE
+    let hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
+
+    if (url.indexOf("//") > -1) {
+        hostname = url.split('/')[2];
+    }
+    else {
+        hostname = url.split('/')[0];
+    }
+
+    //find & remove port number
+    //hostname = hostname.split(':')[0];
+    //find & remove "?"
+    hostname = hostname.split('?')[0];
+
+    return hostname;
+}
+function get_localsite_root() { // TEMP HERE
+//alert("call localsite_repo");
+            if (localsite_repo2) { // Intensive, so allows to only run once
+              //alert(localsite_repo);
+              return(localsite_repo2);
+            }
+
+            let scripts = document.getElementsByTagName('script'); 
+            let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
+            //let myScript = null;
+            // Now try to find one containging map-embed.js
+            for (var i = 0; i < scripts.length; ++i) {
+                if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
+                  myScript = scripts[i];
+                }
+            }
+            let hostnameAndPort = extractHostnameAndPort2(myScript.src);
+            let root = location.protocol + '//' + location.host + '/localsite/';
+
+            if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
+              //root = "https://map.georgia.org/localsite/";
+              root = hostnameAndPort + "/localsite/";
+            }
+            
+            if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+              // Omit known hosts of "localsite" repo here.
+
+              //root = "https://model.earth/localsite/";
+              root = hostnameAndPort + "/localsite/";
+              console.log("myScript.src hostname and port: " + extractHostnameAndPort2(myScript.src) + "\rwindow.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
+            }
+            if (location.host.indexOf('localhost') >= 0) {
+              // Enable to test embedding without locathost repo in site root. Rename your localsite folder.
+              root = "https://model.earth/localsite/";
+            }
+            localsite_repo = root; // Save to reduce DOM hits
+            return (root);
+}
 function lazyLoadFiles() {
-	let root = location.protocol + '//' + location.host;
+	//let root = location.protocol + '//' + location.host;
+	let root = get_localsite_root();
 	if (location.host.indexOf('localhost') < 0) {
-		root = "https://neighborhood.org";
+	//	root = "https://model.earth/";
 	}
-	loadScript(root + '/localsite/js/jquery.min.js', function(results) {
+	loadScript(root + 'js/jquery.min.js', function(results) {
 		jsLoaded(root);
 	});
 
 	// Load early so available later
 	if (param.preloadmap != "false") {
-		loadScript(root + '/localsite/js/d3.v5.min.js', function(results) { // BUG - change so dual-map does not require this on it's load
-			loadScript(root + '/localsite/js/localsite.js', function(results) {
-				loadScript(root + '/localsite/js/map.js', function(results) {});
+		loadScript(root + 'js/d3.v5.min.js', function(results) { // BUG - change so dual-map does not require this on it's load
+			loadScript(root + 'js/localsite.js', function(results) {
+				loadScript(root + 'js/map.js', function(results) {});
 			});
 		});
 	}
 	if (param.preloadmap != "false") {
-		includeCSS(root + '/localsite/css/leaflet.css',root);
+		includeCSS(root + 'css/leaflet.css',root);
 		// Resides AFTER css/leaflet.css
-		loadScript(root + '/localsite/js/leaflet.js', function(results) {
+		loadScript(root + 'js/leaflet.js', function(results) {
 			leafletLoaded(root,1);
 		});
  	}
-	//includeCSS(root + '/localsite/css/localsite.css',root);
-	includeCSS(root + '/localsite/css/base.css',root);
-	includeCSS(root + '/localsite/css/search-filters.css',root);
+	//includeCSS(root + 'css/localsite.css',root);
+	includeCSS(root + 'css/base.css',root);
+	includeCSS(root + 'css/search-filters.css',root);
 	if (param.preloadmap != "false") {
-		includeCSS(root + '/localsite/css/map-display.css',root);
+		includeCSS(root + 'css/map-display.css',root);
 	}
-	//includeCSS(root + '/localsite/css/hexagons.css',root);
+	//includeCSS(root + 'css/hexagons.css',root);
 
 
 	
 	includeCSS('https://fonts.googleapis.com/icon?family=Material+Icons',root);
-	includeCSS(root + '/localsite/css/leaflet.icon-material.css',root);
-	includeCSS(root + '/localsite/css/map.css',root);
+	includeCSS(root + 'css/leaflet.icon-material.css',root);
+	includeCSS(root + 'css/map.css',root);
 }
 
 lazyLoadFiles();
@@ -1827,7 +1803,7 @@ function dualmapLoaded(param, root, count) {
 			  }
 		})
 		//loadScript(root + 'https://cdn.jsdelivr.net/npm/vue', function(results) { // Need to check if function loaded
-			loadScript(root + '/localsite/js/map-filters.js', function(results) {
+			loadScript(root + 'js/map-filters.js', function(results) {
 
 				//loadMap1("map-embed.js"); // Now in map-filters.js
 				/*
