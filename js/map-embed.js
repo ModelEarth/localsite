@@ -5,7 +5,6 @@
  /community/map/starter/embed.html
 
 */
-
 // Add \r to end of aside rows below manually. (You can ignore this, the aside rows are not currently in use.)
 
 var styleOverrides="";
@@ -55,7 +54,7 @@ strVar += "        <img src=\"\/localsite\/img\/icon\/search.png\" style=\"width
 strVar += "      <\/div>";
 strVar += "      -->";
 strVar += "      <div class=\"showMenu\" style=\"font-size:24px;color:#999;float:left\">";
-strVar += "        <img src=\"..\/localsite\/img\/icon\/hamburger.png\" style=\"width:30px; opacity:0.5; margin-top:10px\">";
+strVar += "        <img src=\"\/localsite\/img\/icon\/hamburger.png\" style=\"width:30px; opacity:0.5; margin-top:10px\">";
 strVar += "      <\/div>";
 strVar += "    <\/div>";
 strVar += "";
@@ -1797,9 +1796,11 @@ function dualmapLoaded(param, root, count) {
 	if (typeof localsite_map !== 'undefined' && typeof L.IconMaterial !== 'undefined') {
 		//localsite_map.init(["somevalue", 1, "controlId"]); // Used by link to feedback form
 
+		// BUGBUG - Images are already in the DOM, so they will be loaded once as a broken image.
 		$("#filterEmbedHolder img[src]").each(function() {
 			  if($(this).attr("src").toLowerCase().indexOf("http") < 0){
-		  		$(this).attr("src", root + $(this).attr('src'));
+			  	// 
+		  		//$(this).attr("src", root + $(this).attr('src'));
 			  }
 		})
 		//loadScript(root + 'https://cdn.jsdelivr.net/npm/vue', function(results) { // Need to check if function loaded

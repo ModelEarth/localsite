@@ -36,6 +36,86 @@
 	//hiddenhash.debug = true;
 </script>
 
+<script>
+'use strict'; // Optional, to make sure we are declaring variables.
+
+// COMMON - also resides in embed-map.js and map/index.html
+function loadScriptOLD(url, callback)
+{
+  if (!document.getElementById(url)) { // Prevents multiple loads.
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = url;
+    script.id = url; // Prevents multiple loads.
+    // Bind the event to the callback function. Two events for cross browser compatibility.
+    script.onreadystatechange = callback;
+    script.onload = callback;
+    //$(document).ready(function () { // Only needed if appending to body
+    var head = document.getElementsByTagName('head')[0];
+    head.appendChild(script);
+    //});
+    console.log("loadScript loaded: " + url);
+  } else {
+    console.log("loadScript script already available: " + url);
+    callback();
+  }
+  // Nested calls are described here: https://books.google.com/books?id=ZOtVCgAAQBAJ&pg=PA6&lpg=PA6
+}
+function loadScript(url, callback)
+{
+	let urlID = url.replace(/^.*\/\/[^\/]+/, ''); // Allows id's to always omit the domain.
+	if (!document.getElementById(urlID)) { // Prevents multiple loads.
+		console.log("loadScript seeking: " + url);
+		var script = document.createElement('script');
+	    script.type = 'text/javascript';
+	    script.src = url;
+		script.id = urlID; // Prevents multiple loads.
+	    // Bind the event to the callback function. Two events for cross browser compatibility.
+	    //script.onreadystatechange = callback; // This apparently is never called by Brave, but needed for some of the other browsers.
+	    script.onreadystatechange = function() { // Cound eliminate these 3 lines and switch back to the line above.
+	    	console.log("loadScript ready: " + url); // This apparently is never called by Brave.
+            callback();
+        }
+	    //script.onload = callback;
+	    script.onload = function() {
+          	console.log("loadScript loaded: " + url); // Once the entire file is processed.
+            callback();
+        } 
+
+        //$(document).ready(function () { // Only needed if appending to body
+           var head = document.getElementsByTagName('head')[0];
+	       head.appendChild(script);
+        //});
+        
+	} else {
+		console.log("loadScript script already available: " + url);
+		if(callback) callback();
+	}
+	// Nested calls are described here: https://books.google.com/books?id=ZOtVCgAAQBAJ&pg=PA6&lpg=PA6
+}
+// END COMMON
+
+
+function reloadMapTiles(whichmap,attempt) {
+	if ($('#geomap').html().length > 0) {
+		if (document.querySelector(whichmap)._leaflet_map) { // Give time for next line to be found.
+			document.querySelector(whichmap)._leaflet_map.invalidateSize();
+		} else {
+			console.log("reloadMapTiles " + whichmap + ". Attempt " + attempt);
+			if (attempt < 100) {
+				setTimeout( function() {
+					reloadMapTiles(whichmap,attempt+1)
+				}, 50 );
+			} else {
+				// Try anyway
+				//console.log("reloadMapTiles - try anyway");
+				//document.querySelector(whichmap)._leaflet_map.invalidateSize(); // Still returns error.
+			}
+		}
+	}
+}
+</script>
+
 <script type="text/javascript" src="/localsite/js/map-filters.js" id="/localsite/js/map-filters.js"></script>
 
 <!-- Resides before naics.js -->
@@ -250,87 +330,7 @@ code {
 </style>
   
 
-<script>
-'use strict'; // Optional, to make sure we are declaring variables.
 
-// COMMON - also resides in embed-map.js
-function loadScriptOLD(url, callback)
-{
-  if (!document.getElementById(url)) { // Prevents multiple loads.
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = url;
-    script.id = url; // Prevents multiple loads.
-    // Bind the event to the callback function. Two events for cross browser compatibility.
-    script.onreadystatechange = callback;
-    script.onload = callback;
-    //$(document).ready(function () { // Only needed if appending to body
-    var head = document.getElementsByTagName('head')[0];
-    head.appendChild(script);
-    //});
-    console.log("loadScript loaded: " + url);
-  } else {
-    console.log("loadScript script already available: " + url);
-    callback();
-  }
-  // Nested calls are described here: https://books.google.com/books?id=ZOtVCgAAQBAJ&pg=PA6&lpg=PA6
-}
-function loadScript(url, callback)
-{
-	let urlID = url.replace(/^.*\/\/[^\/]+/, ''); // Allows id's to always omit the domain.
-	if (!document.getElementById(urlID)) { // Prevents multiple loads.
-		console.log("loadScript seeking: " + url);
-		var script = document.createElement('script');
-	    script.type = 'text/javascript';
-	    script.src = url;
-		script.id = urlID; // Prevents multiple loads.
-	    // Bind the event to the callback function. Two events for cross browser compatibility.
-	    //script.onreadystatechange = callback; // This apparently is never called by Brave, but needed for some of the other browsers.
-	    script.onreadystatechange = function() { // Cound eliminate these 3 lines and switch back to the line above.
-	    	console.log("loadScript ready: " + url); // This apparently is never called by Brave.
-            callback();
-        }
-	    //script.onload = callback;
-	    script.onload = function() {
-          	console.log("loadScript loaded: " + url); // Once the entire file is processed.
-            callback();
-        } 
-
-        //$(document).ready(function () { // Only needed if appending to body
-           var head = document.getElementsByTagName('head')[0];
-	       head.appendChild(script);
-        //});
-        
-	} else {
-		console.log("loadScript script already available: " + url);
-		if(callback) callback();
-	}
-	// Nested calls are described here: https://books.google.com/books?id=ZOtVCgAAQBAJ&pg=PA6&lpg=PA6
-}
-// END COMMON
-
-
-function reloadMapTiles(whichmap,attempt) {
-	if ($('#geomap').html().length > 0) {
-		if (document.querySelector(whichmap)._leaflet_map) { // Give time for next line to be found.
-			document.querySelector(whichmap)._leaflet_map.invalidateSize();
-		} else {
-			console.log("reloadMapTiles " + whichmap + ". Attempt " + attempt);
-			if (attempt < 100) {
-				setTimeout( function() {
-					reloadMapTiles(whichmap,attempt+1)
-				}, 50 );
-			} else {
-				// Try anyway
-				//console.log("reloadMapTiles - try anyway");
-				//document.querySelector(whichmap)._leaflet_map.invalidateSize(); // Still returns error.
-			}
-		}
-	}
-}
-
-
-</script>
 
 
 <!-- For Facebook -->

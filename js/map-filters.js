@@ -1761,6 +1761,7 @@ let siteObject = callInitSiteObject(1);
     // Adding this had no improvment
     loadScript(scriptsrc, function(results) {
 		//alert("loadGoogleScript for autocomplete");
+		googPlacesApp();
     	googlePlacesApiLoaded(1); // Initiate calling function until "google" found.
 	});
   }
@@ -1781,20 +1782,20 @@ function googlePlacesApiLoaded(count) {
 }
 
 
-
+function googPlacesApp() {
   // Uses https://cdn.jsdelivr.net/npm/vue above.
   var app = new Vue({ 
     el: '#app',
     mounted() {
       // BUG Give Google script time to load before calling google.maps.places.Autocomplete
-      // Rework this - too much time. Move into loop above.
+      // FIXED! - Rework this - might not need setTimeout here now...
       setTimeout(() => {
         this.autocomplete = new google.maps.places.Autocomplete(
           document.getElementById('searchloc'),
           {types: ['establishment', 'geocode']}
         );
         this.autocomplete.addListener('place_changed', this.getPlaceData);
-      },30000)
+      },10)
     },
     data: {
       lat: '',
@@ -1828,7 +1829,7 @@ function googlePlacesApiLoaded(count) {
       }
     }
   });
-
+}
 // End Google Autocomplete
 
 
