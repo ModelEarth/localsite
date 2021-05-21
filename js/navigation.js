@@ -114,8 +114,12 @@ $(document).ready(function(){
 		 		//param.headerLogo = "<a href='https://georgia.org'><img src='" + modelpath + "../community/img/logo/georgia_usa_gray.png' style='width:130px;padding-top:4px'></a>";
 		 		param.headerLogo = "<a href='https://georgia.org'><img src='/localsite/img/logo/states/GA.png' style='width:130px;padding-top:4px'></a>";
 		 		param.headerLogoNoText = "<a href='https://georgia.org'><img src='/localsite/img/logo/states/GA-notext.png' style='width:40px;padding-top:0px;margin-top:-4px'></a>";
-		 		document.title = "Georgia.org - " + document.title
-		 		changeFavicon("https://www.georgia.org/sites/default/files/logo-georgia-peach-notext_0.png")
+		 		if (document.title) {
+			 		document.title = "Georgia.org - " + document.title;
+			 	} else {
+			 		document.title = "Georgia.org";
+			 	}
+		 		changeFavicon("/localsite/img/logo/states/GA-favicon.png")
 		 		$('.georgia').css('display', 'inline');
 		 		$('.georgia-hide').css('display', 'none');
 		 		if (location.host.indexOf('localhost') < 0) {
@@ -250,8 +254,19 @@ $(document).ready(function(){
 		// END WAS LIMITED TO HEADER
 		$(".headerOffset").show();
 		}); // End $("#header").load
+
 	}
 
+	/*
+	var link = document.querySelector("link[rel~='icon']");
+	alert("link " + link);
+	if (!link) {
+	    link = document.createElement('link');
+	    link.rel = 'icon';
+	    document.getElementsByTagName('head')[0].appendChild(link);
+	}
+	link.href = 'https://stackoverflow.com/favicon.ico';
+	*/
 
 	if(document.getElementById("footer") == null) {
 		$("body").append( "<div id='footer' class='flexfooter noprint'></div>\r" );

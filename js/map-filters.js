@@ -1740,40 +1740,46 @@ let siteObject = callInitSiteObject(1);
 
 
 
-
 // Google Autocomplete
 // Load Google API key fron config.json
+
+// This differs from localsite/map/auto in effort to prevent flackiness. 
+// Not working immediately, sometimes works when returning to browser.
 
   var GOOGLE_MAP_KEY;
   $.getJSON(dual_map.localsite_root() + "map/auto/config.json", function(json) {
     GOOGLE_MAP_KEY = json.googleAPIKey;
-    loadGoogleScript();
+    window.onload = loadGoogleScript();
   });
   
   function loadGoogleScript() {
   	var script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js' + '?key=' + GOOGLE_MAP_KEY +'&libraries=places';
-    document.head.appendChild(script);
+  	var scriptsrc = 'https://maps.googleapis.com/maps/api/js' + '?key=' + GOOGLE_MAP_KEY +'&libraries=places';
+    script.src = scriptsrc;
+    //document.head.appendChild(script);
+
+    // Adding this had no improvment
+    loadScript(scriptsrc, function(results) {
+		//alert("loadGoogleScript for autocomplete");
+    	googlePlacesApiLoaded(1); // Initiate calling function until "google" found.
+	});
   }
 
-  //window.onload = loadScript;
-
-
+// BUGBUG - Could break if another script is already loaded containing "google"
 function googlePlacesApiLoaded(count) {
 
 	if (typeof google === 'object' && typeof google.maps === 'object') {
 		console.log('FOUND google.maps.places. count:' + count)
 	} else if (count<100) { // Wait a 100th of a second and try again
 		setTimeout( function() {
-   			console.log("try googlePlacesApiLoaded again")
+   			console.log("try googlePlacesApiLoaded for auto complete again")
 			googlePlacesApiLoaded(count+1);
    		}, 10 );
 	} else {
 		console.log("ERROR: googlePlacesApiLoaded exceeded 100 attempts.");
 	}
 }
-googlePlacesApiLoaded(1); // Initiate calling function above until "google" found. 
-// BUGBUG - above could break if another script is already loaded containing "google"
+
 
 
   // Uses https://cdn.jsdelivr.net/npm/vue above.

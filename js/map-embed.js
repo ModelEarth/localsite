@@ -1563,18 +1563,28 @@ function loadScript(url, callback)
 {
 	url = url.replace(/^.*\/\/[^\/]+/, ''); // Allows id's to always omit the domain.
 	if (!document.getElementById(url)) { // Prevents multiple loads.
+		console.log("loadScript seeking: " + url);
 		var script = document.createElement('script');
 	    script.type = 'text/javascript';
 	    script.src = url;
 		  script.id = url; // Prevents multiple loads.
 	    // Bind the event to the callback function. Two events for cross browser compatibility.
-	    script.onreadystatechange = callback;
-	    script.onload = callback;
+	    //script.onreadystatechange = callback; // This apparently is never called by Brave, but needed for some of the other browsers.
+	    script.onreadystatechange = function() { // Cound eliminate these 3 lines and switch back to the line above.
+	    	console.log("loadScript ready: " + url); // This apparently is never called by Brave.
+            callback();
+        }
+	    //script.onload = callback;
+	    script.onload = function() {
+          	console.log("loadScript loaded: " + url); // Once the entire file is processed.
+            callback();
+        } 
+
         //$(document).ready(function () { // Only needed if appending to body
            var head = document.getElementsByTagName('head')[0];
 	       head.appendChild(script);
         //});
-        console.log("loadScript loaded: " + url);
+        
 	} else {
 		console.log("loadScript script already available: " + url);
 		if(callback) callback();
@@ -1706,6 +1716,9 @@ function jsLoaded(root) {
 		    		loadScript(root + '/localsite/js/map.js', function(results) {
 			  			loadSearchFilters(root,1); // Uses dual_map library in localsite.js for community_data_root
 			  		});
+			  		if (param.shownav) {
+			  			loadScript(root + '/localsite/js/navigation.js', function(results) {});
+			  		}
 			  	});
 		    });
 		  }
@@ -1718,7 +1731,7 @@ function leafletLoaded(root, count) {
 	if (typeof L !== 'undefined') {
 		console.log(L);
 	  	// The large d3-legend.js script is flawed because it throws errors due to dependencies on leaflet script, so we can not load early.
-		loadScript(root + '/localsite/js/leaflet.icon-material.js');
+		loadScript(root + '/localsite/js/leaflet.icon-material.js', function(results) {});
 		loadScript(root + '/localsite/js/jquery.min.js', function(results) {
 			if (param.preloadmap != "false") {
 				loadScript(root + '/localsite/js/d3.v5.min.js', function(results) {

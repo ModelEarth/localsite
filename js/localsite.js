@@ -479,8 +479,6 @@ addEventListener("load", function(){
   }, false);
 });
 
-
-console.log("localsite.js called");
 var waitForJQuery = setInterval(function () {
     if (typeof $ != 'undefined') {
 
