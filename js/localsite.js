@@ -58,6 +58,25 @@ if(typeof param == 'undefined') {
 if(typeof hiddenhash == 'undefined') {
     var hiddenhash = {};
 }
+initateHiddenhash();
+function initateHiddenhash() { // Load in values from params on javascript include file.
+  let scripts = document.getElementsByTagName('script'); 
+  let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
+  //let myScript = null;
+  // Now try to find one containging map-embed.js
+  for (var i = 0; i < scripts.length; ++i) {
+      if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
+        myScript = scripts[i];
+      }
+  }
+  let includepairs = myScript.src.substring(myScript.src.indexOf('?') + 1).split('&');
+  for (let i = 0; i < includepairs.length; i++) {
+    if(!includepairs[i]) continue;
+    let pair = includepairs[i].split('=');
+    hiddenhash[pair[0].toLowerCase()] = decodeURIComponent(pair[1]);
+    //console.log("Param from javascript include: " + pair[0].toLowerCase() + " " + decodeURIComponent(pair[1]));
+  }
+}
 
 // Loads params with priority given to:
 // 1. Hash values on URL.
@@ -71,9 +90,17 @@ function loadParams(paramStr,hashStr) {
   let scripts = document.getElementsByTagName('script'); 
   let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
   //let myScript = null;
-  // Now try to find one containging embed-map
+
+  // This will be removed
   for (var i = 0; i < scripts.length; ++i) {
       if(scripts[i].src && scripts[i].src.indexOf('embed-map.js') !== -1){
+        myScript = scripts[i];
+      }
+  }
+
+  // Now try to find one containging embed-map
+  for (var i = 0; i < scripts.length; ++i) {
+      if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
         myScript = scripts[i];
       }
   }
@@ -82,8 +109,7 @@ function loadParams(paramStr,hashStr) {
   let params = {};
   let includepairs = myScript.src.substring(myScript.src.indexOf('?') + 1).split('&');
   for (let i = 0; i < includepairs.length; i++) {
-    if(!includepairs[i])
-          continue;
+    if(!includepairs[i]) continue;
     let pair = includepairs[i].split('=');
     params[pair[0].toLowerCase()] = decodeURIComponent(pair[1]);
     //console.log("Param from javascript include: " + pair[0].toLowerCase() + " " + decodeURIComponent(pair[1]));

@@ -1558,8 +1558,6 @@ strVar += "<!-- End HTML -->";
 // Hidden until search-filters.css loads
 document.write("<div id=\"filterEmbedHolder\" style=\"display:none;position:relative\">" + styleOverrides + strVar + "<\/div> ");
 
-
-
 // COMMON
 function loadScript(url, callback)
 {
@@ -1719,7 +1717,7 @@ function leafletLoaded(root, count) {
 	console.log("From leafletLoaded typeof L: " + typeof L);
 	if (typeof L !== 'undefined') {
 		console.log(L);
-	  // The large d3-legend.js script is flawed because it throws errors due to dependencies on leaflet script, so we can not load early.
+	  	// The large d3-legend.js script is flawed because it throws errors due to dependencies on leaflet script, so we can not load early.
 		loadScript(root + '/localsite/js/leaflet.icon-material.js');
 		loadScript(root + '/localsite/js/jquery.min.js', function(results) {
 			if (param.preloadmap != "false") {
