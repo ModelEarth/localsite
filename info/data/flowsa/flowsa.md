@@ -17,7 +17,7 @@ The updates below will be used by the county industry lists on our [industry com
 
 3. Save [state data files](https://github.com/modelearth/community-data/tree/master/us/state) in the same folder structure as our prior process. The prior BEA data prep process resides at the bottom of the current page. Reuse existing [process for state folders](https://github.com/modelearth/community-data/tree/master/process/python/bea).
 
-4. Output 3 similar files containing 2, 4 and 6 digit naics values for the entire US in a new folder called "all" in the [community-data/us](https://github.com/modelearth/community-data/tree/master/us) folder.  
+4. For the entire US, output 3 similar files containing 2, 4 and 6-digit naics values in the folder called "all" located at [community-data/us/all](https://github.com/modelearth/community-data/tree/master/us/all).  
 
 5. Update this [USEEIO_indicators.ipynb Python](https://github.com/modelearth/io/blob/master/charts/bubble/data/USEEIO_indicators.ipynb) used to generate indicators\_sectors\_GA and indicators\_sectors to use the USEEIO 2.0 API.  
 
