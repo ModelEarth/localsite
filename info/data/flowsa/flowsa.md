@@ -4,9 +4,9 @@
 
 The updates below will be used by the county industry lists on our [industry comparison page](https://model.earth/localsite/info/).  
 
-1. Create a Python Pipeline similar to the [tree data pipeline](https://github.com/Public-Tree-Map/public-tree-map-data-pipeline) used by the [Public Tree Map](https://neighborhood.org/public-tree-map/)  
+1. In the [Community-Data Repo](https://github.com/modelearth/community-data/), create a Python Pipeline similar to the [tree data pipeline](https://github.com/Public-Tree-Map/public-tree-map-data-pipeline) used by the [Public Tree Map](https://neighborhood.org/public-tree-map/).  
 
-2. Include a pipeline step that generates CSV files for all states using BLS data pulled from the [EPA's Flowsa API](https://github.com/USEPA/flowsa). Create 3 files per state. One for 2-digit naics, one for 4-digits and one for 6-digits.  Use logic from the Google CoLab below and output these with [simple column names](https://drive.google.com/drive/u/0/folders/1EoWDvNoaKO8xLclX4fr5exw83jJkkJIy).  
+2. Using logic from our [Google CoLab for exploring NAICS](https://colab.research.google.com/drive/1HLK4HIUMLlgTR524QoCKvfaNl-La48XU?usp=sharing), create a pipeline step that generates .csv files for the US and individual states using BLS data pulled from the [EPA's Flowsa API](https://github.com/USEPA/flowsa). Create 3 files per state and for the US. One for 2-digit naics, one for 4-digits and one for 6-digits.  Output .csv files with the following [simple column names](https://drive.google.com/drive/u/0/folders/1EoWDvNoaKO8xLclX4fr5exw83jJkkJIy):  
 
 	- fips - Location (fips for county)  
 	- naics - ActivityProducedBy (6-digit naics)  
@@ -15,7 +15,7 @@ The updates below will be used by the county industry lists on our [industry com
 	- firms - Other (Number of Extablishments)<br><br>  
 
 
-3. Save [state data files](https://github.com/modelearth/community-data/tree/master/us/state) in the same folder as our prior process. The prior BEA Data Preparation process resides at the bottom of the current page. Reuse existing [process for state folders](https://github.com/modelearth/community-data/tree/master/process/python/bea).
+3. Save [state data files](https://github.com/modelearth/community-data/tree/master/us/state) in the same folder structure as our prior process. The prior BEA data prep process resides at the bottom of the current page. Reuse existing [process for state folders](https://github.com/modelearth/community-data/tree/master/process/python/bea).
 
 4. Output 3 similar files containing 2, 4 and 6 digit naics values for the entire US in a new folder called "all" in the [community-data/us](https://github.com/modelearth/community-data/tree/master/us) folder.  
 
