@@ -164,6 +164,7 @@ function getNaics_setHiddenHash2(go) {
     let states = "";
 
     // NAICS FROM community/projects/biotech
+    let computers = "541511,541512,551114,611310"
     var bio_input = "113000,321113,113310,32121,32191,562213,322121,322110,"; // Omitted 541620
     var bio_output = "325211,325991,3256,335991,325120,326190,";
     var green_energy = "221117,221111,221113,221114,221115,221116,221118,";
@@ -185,6 +186,9 @@ function getNaics_setHiddenHash2(go) {
 
         if (go == "opendata") {
             states = "GA";
+        } else if (go == "brigades") {
+            showtitle = "Coding Brigades";
+            cat_filter = (computers).split(',');
         } else if (go == "bioeconomy") {
             showtab = "Bioeconomy and Energy";
             showtitle = "Bioeconomy and Energy Industries";

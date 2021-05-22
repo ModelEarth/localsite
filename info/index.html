@@ -1014,8 +1014,14 @@ config.join(sectorList);
 	<script>
 	  $(document).ready(function () {
 	    // HACK - call twice so rollovers work.
-	    displayImpactBubbles();
-	    displayImpactBubbles();
+	    refreshBubbleWidget();
+	    setTimeout( function() {
+	    	
+	    	// No luck...
+			displayImpactBubbles();
+			//displayImpactBubbles();
+			//refreshBubbleWidget();
+		}, 1000 );
 	  });
 	</script>
 

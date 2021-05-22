@@ -94,7 +94,7 @@ strVar += "                https:\/\/fabriceleven.com\/design\/clever-way-to-cha
 strVar += "              <i id=\"showLocations\" class=\"material-icons\" style=\"font-size:24px;display:none\">&#xE313;<\/i>";
 strVar += "              <i id=\"hideLocations\"  class=\"material-icons\" style=\"font-size:24px;cursor:pointer;\">&#xE409;<\/i>";
 strVar += "            <\/div>";
-strVar += "            <div class=\"filterClickText locationTabText\">State...<\/div><!-- Entire State -->";
+strVar += "            <div class=\"filterClickText locationTabText\">States and Counties...<\/div><!-- Entire State -->";
 strVar += "          <\/div>";
 strVar += "        <\/div>";
 strVar += "";
