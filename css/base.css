@@ -171,7 +171,7 @@ h2 a:visited {
 }
 */
 h3 {
-  font-weight: 200; /* 100 is too light on pos energy */
+  font-weight: 600; 
   font-size: 1.3em;
   line-height: 1.3em;
   margin-top: 20px;
