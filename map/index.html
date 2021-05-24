@@ -23,6 +23,11 @@
   if (!hash.show) {
     hiddenhash.show = "brigades"; // Used by loadFromSheet which is called by loadMap1
   }
+  if (!hash.state) {
+    if (hash.show == "recycling" || hash.show == "ppe" || hash.show == "suppliers" || hash.show == "360" || hash.show == "opendata") {
+      hiddenhash.state = "GA";
+    }
+  }
 </script>
 
 <link type="text/css" rel="stylesheet" href="../css/base.css" />
@@ -1104,7 +1109,11 @@ Displayed by hashChanged() in map-filters.js
 
 <div style="clear:both"></div>
 
-<div style="margin:0px 40px 0 40px"><iframe id="mapframe" style="display:none; margin-top:40px; width:100%;height:800px;"></iframe></div>
+<div id="showIframeCover" onclick="this.style.display='none';$('#iframeCover').show();" style="display:none;position:fixed; z-index:10; color:#fff; cursor: pointer; padding:10px">Reactivate Scrolling</div>
+<div id="iframeCover" onclick="this.style.display='none';$('#showIframeCover').show();" style="background-image: url('../img/hero/hexagon-pattern.png'); position: absolute; z-index: 10; width:100%; height:800px"></div>
+<div style="margin:0px">
+  <iframe id="mapframe" style="display:none; width:100%;height:800px;"></iframe>
+</div>
 
 <div id="tableSide" class="hideMobile">
 
@@ -1618,9 +1627,9 @@ function loadScript(url, callback)
 // INIT
 hash = getHash(); // Allows hiddenhash set above to be included.
 
-dual_map.init(["somevalue", 1, "controlId"]); // Used by link to feedback form
-//dual_map.helloWorld();
-//dual_map.community_root();
+localsite_app.init(["somevalue", 1, "controlId"]); // Used by link to feedback form
+//localsite_app.helloWorld();
+//localsite_app.community_root();
 
 //var localmap = 
 //loadMap1("map/index.html 2", hash.show, dp); // Now in map-filters.js

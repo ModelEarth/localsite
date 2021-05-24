@@ -80,7 +80,7 @@ $(document).ready(function () {
 		$(".si-btn").hide();
 	}
 	catArray = [];
-	$.get(dual_map.community_data_root() + 'global/hs/harmonized-system.txt', function(data) {
+	$.get(localsite_app.community_data_root() + 'global/hs/harmonized-system.txt', function(data) {
 		var catLines = data.split("\n");
 		
 		catLines.forEach(function(element) {
@@ -744,7 +744,7 @@ function showCounties(attempts) {
 
 		//Load in contents of CSV file
 		if (theState.length > 0) {
-			d3.csv(dual_map.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv").then(function(myData,error) {
+			d3.csv(localsite_app.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv").then(function(myData,error) {
 				if (error) {
 					alert("error")
 					console.log("Error loading file. " + error);
@@ -1276,7 +1276,7 @@ $(document).ready(function () {
   }
 
 	$('.sendfeedback').click(function(event) {
-	  window.open(dual_map.localsite_root() + "/info/input/",'_parent');
+	  window.open(localsite_app.localsite_root() + "/info/input/",'_parent');
 	  event.stopPropagation();
 	});
 
@@ -1627,7 +1627,7 @@ function initSiteObject(layerName) {
 	    // https://github.com/codeforgreenville/leaflet-google-sheets-template
 	    // https://data.openupstate.org/map-layers
 
-	    //var layerJson = dual_map.community_data_root() + "us/state/GA/ga-layers.json"; // CORS prevents live
+	    //var layerJson = localsite_app.community_data_root() + "us/state/GA/ga-layers.json"; // CORS prevents live
 	    // The URL above is outdated. Now resides here:
 	    var layerJson = "/localsite/info/data/ga-layers.json";
 
@@ -1719,8 +1719,8 @@ function showThumbMenu(activeLayer, siteObject) {
 	}
 	$('.showApps').addClass("active");
 }
-function callInitSiteObject(attempt) { // wait for dual_map
-	if (typeof dual_map !== 'undefined') {
+function callInitSiteObject(attempt) { // wait for localsite_app
+	if (typeof localsite_app !== 'undefined') {
 		let siteObject = initSiteObject("");
 
 		// Not available here since async in initSiteObject()
@@ -1732,7 +1732,7 @@ function callInitSiteObject(attempt) { // wait for dual_map
 			callInitSiteObject(attempt+1);
    		}, 10 );
 	} else {
-		console.log("ERROR: Too many search-filters dual_map attempts.");
+		console.log("ERROR: Too many search-filters localsite_app attempts.");
 	}
 }
 let siteObject = callInitSiteObject(1);
@@ -1747,7 +1747,7 @@ let siteObject = callInitSiteObject(1);
 // Not working immediately, sometimes works when returning to browser.
 
   var GOOGLE_MAP_KEY;
-  $.getJSON(dual_map.localsite_root() + "map/auto/config.json", function(json) {
+  $.getJSON(localsite_app.localsite_root() + "map/auto/config.json", function(json) {
     GOOGLE_MAP_KEY = json.googleAPIKey;
     window.onload = loadGoogleScript();
   });
@@ -2051,9 +2051,6 @@ function hashChanged() {
           let lon = $("#state_select").find(":selected").attr("lon");
           mapCenter = [lat,lon];
         }
-        if (hash.state == "GA") {
-
-        }
 	}
 	if (hash.state) {
         $(".showforstates").show();
@@ -2173,11 +2170,11 @@ function hashChanged() {
 
 function renderMapShapes(whichmap, hash) { // whichGeoRegion is not yet applied.
 
-  loadScript(dual_map.modelearth_data_root() + '/localsite/js/topojson-client.min.js', function(results) {
+  loadScript(localsite_app.modelearth_data_root() + '/localsite/js/topojson-client.min.js', function(results) {
 
     // Oddly, this is still reached when 404 returned by call to topojson-client.min.js above.
 
-    //alert(dual_map.modelearth_data_root() + '/localsite/js/topojson-client.min.js')
+    //alert(localsite_app.modelearth_data_root() + '/localsite/js/topojson-client.min.js')
     
     // <script src="https://unpkg.com/topojson-client@3"></script>
 
@@ -2225,15 +2222,15 @@ function renderMapShapes(whichmap, hash) { // whichGeoRegion is not yet applied.
 			      //if (param.geo == "US01" || param.state == "AL") { // Bug, change to get state from string, also below.
 			        // https://github.com/modelearth/topojson/blob/master/countries/us-states/AL-01-alabama-counties.json
 
-			        //var url = dual_map.custom_data_root() + '/counties/GA-13-georgia-counties.json';
+			        //var url = localsite_app.custom_data_root() + '/counties/GA-13-georgia-counties.json';
 			        let countyFileTerm = "-counties.json";
 			        let countyTopoTerm = "_county_20m";
 			        if (stateNameLowercase == "louisiana") {
 			        	countyFileTerm = "-parishes.json";
 			        	countyTopoTerm = "_parish_20m";
 			        }
-			        var url = dual_map.modelearth_data_root() + "/topojson/countries/us-states/" + hash.state + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
-			        //url = dual_map.modelearth_data_root() + "/opojson/countries/us-states/GA-13-georgia-counties.json";
+			        var url = localsite_app.modelearth_data_root() + "/topojson/countries/us-states/" + hash.state + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
+			        //url = localsite_app.modelearth_data_root() + "/opojson/countries/us-states/GA-13-georgia-counties.json";
 			        // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
 			    //}
 			      //var layerControl_CountyMap = {}; // Object containing one control for each map on page.

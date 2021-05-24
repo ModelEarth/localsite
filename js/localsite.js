@@ -2,8 +2,8 @@
 // To do: dynamically add target _parent to external link when in an iFrame, and no existing target
 
 // Localsite Path Library - A global namespace singleton
-// If dual_map library exists then use it, else define a new object.
-var dual_map = dual_map || (function(){
+// If localsite_app library exists then use it, else define a new object.
+var localsite_app = localsite_app || (function(){
     let _args = {}; // private
     let localsite_repo;
     return {
@@ -46,8 +46,8 @@ var dual_map = dual_map || (function(){
               console.log("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src) + "\rwindow.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
             }
             if (location.host.indexOf('localhost') >= 0) {
-              // Enable to test embedding without locathost repo in site root. Rename your localsite folder.
-              root = "https://model.earth/localsite/";
+              // For testing embedding without locathost repo in site root. Rename your localsite folder.
+              //root = "https://model.earth/localsite/";
             }
             localsite_repo = root; // Save to reduce DOM hits
             return (root);
@@ -74,8 +74,8 @@ var dual_map = dual_map || (function(){
     };
 }());
 
-//dual_map.init(["somevalue", 1, "controlId"]);
-//dual_map.helloWorld();
+//localsite_app.init(["somevalue", 1, "controlId"]);
+//localsite_app.helloWorld();
 // Above is alternative to placing params in javascript include path:
 // https://stackoverflow.com/questions/2190801/passing-parameters-to-javascript-files
 
@@ -106,8 +106,8 @@ function initateHiddenhash() { // Load in values from params on javascript inclu
   // Check if script resides on current server.
   //alert("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src) + "\rwindow.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
 
-  //dual_map.localsite_root() = "https://model.earth";
-  //alert(dual_map.localsite_root())
+  //localsite_app.localsite_root() = "https://model.earth";
+  //alert(localsite_app.localsite_root())
 
   let includepairs = myScript.src.substring(myScript.src.indexOf('?') + 1).split('&');
   for (let i = 0; i < includepairs.length; i++) {
