@@ -177,8 +177,9 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     }
     let map = document.querySelector('#' + whichmap)._leaflet_map; // Recall existing map
     var container = L.DomUtil.get(map);
-    //dp.zoom = 18; // TEMP
-    //alert("dp.zoom " + dp.zoom)
+    // dp.zoom = 18; // TEMP - Causes map to start with extreme close-up, then zooms out to about 5.
+    // Otherwise starts with 7ish and zooms to 5ish.
+    console.log("dp.zoom " + dp.zoom);
     if (container == null) { // Initialize map
       map = L.map(whichmap, {
         center: mapCenter,
@@ -212,6 +213,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
         }
       })
     } else {
+      console.log("dp.zoom 2 " + dp.zoom);
       map.setView(mapCenter,dp.zoom);
     }
     let map2 = {};
@@ -326,6 +328,9 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
 }
 
 function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callback) {
+  if (typeof map === 'undefined') {
+    console.log("processOutput: map undefined");
+  }
   dp.scale = getScale(dp.data, dp.scaleType, dp.valueColumn);
   dp.group = L.layerGroup();
   dp.group2 = L.layerGroup();
@@ -456,6 +461,7 @@ function populateMap(whichmap, dp, callback) { // From JSON within page
     var circle;
     let defaults = {};
     defaults.zoom = 7;
+
     if (dp.latitude && dp.longitude) {
       mapCenter = [dp.latitude,dp.longitude]; 
     } else {
@@ -463,6 +469,7 @@ function populateMap(whichmap, dp, callback) { // From JSON within page
     }
 
     dp = mix(dp,defaults); // Gives priority to dp
+    console.log("populateMap dp.zoom " + dp.zoom);
 
     var map = L.map(whichmap,{
       center: mapCenter,
@@ -1377,6 +1384,8 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
       }
 
   } // end state GA
+
+  console.log("loadMap1 dp1.zoom " + dp1.zoom);
 
   // Load the map using settings above
 

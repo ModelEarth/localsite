@@ -2037,6 +2037,8 @@ function hashChanged() {
 		// If map is already loaded, recenter map.  See same thing below
    		// Get lat/lon from state dropdown #state_select
 
+   		// Potential BugBug - this runs after initial map load, not needed (but okay as long as zoom is not set).
+   		console.log("Recenter map")
    		let theState = $("#state_select").find(":selected").val();
         if (theState != "") {
           let kilometers_wide = $("#state_select").find(":selected").attr("km");
@@ -2064,19 +2066,20 @@ function hashChanged() {
 	    mapCenter = [hash.lat,hash.lon];
 	}
 	if (mapCenter.length > 0 && typeof L != "undefined") {
-		//alert(mapCenter)
+		// Avoiding including ",5" for zoom since 7 is already set. This also runs during init.
+		//console.log("Recenter map")
 	 	let pagemap = document.querySelector('#map1')._leaflet_map; // Recall existing map
 	    let pagemap_container = L.DomUtil.get(pagemap);
 	    if (pagemap_container != null) {
 	    	// TODO: Reactiveate
 	    	// Test here: http://localhost:8887/localsite/info/embed.html#state=GA
-	      pagemap.flyTo(mapCenter, 5);
+	      pagemap.flyTo(mapCenter);
 	    }
 	    let pagemap2 = document.querySelector('#map2')._leaflet_map; // Recall existing map
 	    let pagemap_container2 = L.DomUtil.get(pagemap2);
 	    if (pagemap_container2 != null) {
 	      // TODO: Reactiveate
-	      pagemap2.flyTo(mapCenter, 5);
+	      pagemap2.flyTo(mapCenter);
 	    }
 	}
 	if (hash.state != priorHash.state) {
