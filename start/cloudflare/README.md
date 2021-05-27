@@ -13,11 +13,13 @@ You can transfer an existing domain to Cloudflare for cheaper hosting.
 
 ### Configuration
 
-- Select "Full"
+Under "Speed > Optimization"  
+
 - Always Use HTTPS - On
 - Auto Minify - All 3
 - Brotli compression - On (the default)  
-(Under "Speed > Optimization")  
+- Rocket Loader™ - Improve the paint time for pages which include JavaScript.  
+- AMP Real URL - Display your site’s actual URL on your AMP pages, instead of the traditional Google AMP cache URL.  
 
 ### Go to "SSL/TLS > Edge Certificates"  
 
@@ -29,11 +31,15 @@ Video 2: Under the same tab
 https://www.youtube.com/watch?time_continue=1&v=mVzdEl5G0iM
 -->
 
+- Select "Full"  
+- SSL/TLS Recommender  
+
 Click "Enable HSTS" - Turn on all 4, set Max Age Header to 12 months. (6 months is too short for hstspreload.org)  
 
-- Minimum TLS Version: Minimum TSL 1.2  
+- Minimum TLS Version: Minimum TSL 1.2 ( but use TSL 1.3)  
 - Leave the default of "TLS 1.3" as "On"  
 - Keep on "Automatic HTTPS Rewrites" (ON by default) - Allows Cloudflare to automatically change all links in the HTML to https when appropriate, including links to external sites.  
+- Certificate Transparency Monitoring - ON. Receive an email when a Certificate Authority issues a certificate for your domain.  
 
 Go to [hstspreload.org](https://hstspreload.org) and click two checkboxes here so browsers always preload as https.  
 

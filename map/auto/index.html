@@ -98,7 +98,8 @@
         setTimeout(() => {
           this.autocomplete = new google.maps.places.Autocomplete(
             document.getElementById('searchloc'),
-            {types: ['establishment', 'geocode']}
+            {types: ['establishment', 'geocode'],
+            componentRestrictions: {country: "us"}}
           );
           this.autocomplete.addListener('place_changed', this.getPlaceData);
         },1000)
