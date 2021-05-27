@@ -80,6 +80,9 @@ $(document).ready(function () {
 		$(".si-btn").hide();
 	}
 	catArray = [];
+	if(location.host.indexOf('localhost') >= 0) {
+		console.log("Loaded Harmonized System (HS) codes");
+	}
 	$.get(localsite_app.community_data_root() + 'global/hs/harmonized-system.txt', function(data) {
 		var catLines = data.split("\n");
 		
@@ -1787,15 +1790,19 @@ function googPlacesApp() {
   var app = new Vue({ 
     el: '#app',
     mounted() {
-      // BUG Give Google script time to load before calling google.maps.places.Autocomplete
-      // FIXED! - Rework this - might not need setTimeout here now...
-      setTimeout(() => {
-        this.autocomplete = new google.maps.places.Autocomplete(
-          document.getElementById('searchloc'),
-          {types: ['establishment', 'geocode']}
-        );
-        this.autocomplete.addListener('place_changed', this.getPlaceData);
-      },10)
+    	
+	      // BUG Give Google script time to load before calling google.maps.places.Autocomplete
+	      // FIXED! - Rework this - might not need setTimeout here now...
+	      //setTimeout(() => {
+	        this.autocomplete = new google.maps.places.Autocomplete(
+	          document.getElementById('searchloc'),
+	          {types: ['establishment', 'geocode']}
+	        );
+	        //console.log("google.maps.places.Autocomplete: ");
+	        //console.log(this.autocomplete);
+	        this.autocomplete.addListener('place_changed', this.getPlaceData);
+	      //},10)
+		  
     },
     data: {
       lat: '',
@@ -1919,6 +1926,8 @@ function hashChanged() {
             if ($("#sidecolumn .catList").is(":visible")) {
                 $("#selected_states").hide();
             }
+
+            $(".layerclass." + hash.show).show();
         //});
 
 
@@ -2039,19 +2048,22 @@ function hashChanged() {
 
    		// Potential BugBug - this runs after initial map load, not needed (but okay as long as zoom is not set).
    		console.log("Recenter map")
-   		let theState = $("#state_select").find(":selected").val();
-        if (theState != "") {
-          let kilometers_wide = $("#state_select").find(":selected").attr("km");
-          //zoom = 1/kilometers_wide * 1800000;
-  
-          if (theState == "HI") { // Hawaii
-              zoom = 6
-          } else if (kilometers_wide > 1000000) { // Alaska
-              zoom = 4
-          }
-          let lat = $("#state_select").find(":selected").attr("lat");
-          let lon = $("#state_select").find(":selected").attr("lon");
-          mapCenter = [lat,lon];
+        if($("#state_select").find(":selected").val()) {
+       		let theState = $("#state_select").find(":selected").val();
+            if (theState != "") {
+              let kilometers_wide = $("#state_select").find(":selected").attr("km");
+              //zoom = 1/kilometers_wide * 1800000;
+      
+              if (theState == "HI") { // Hawaii
+                  zoom = 6
+              } else if (kilometers_wide > 1000000) { // Alaska
+                  zoom = 4
+              }
+              let lat = $("#state_select").find(":selected").attr("lat");
+              let lon = $("#state_select").find(":selected").attr("lon");
+              //alert("lat " + lat + " lon " + lon)
+              mapCenter = [lat,lon];
+            }
         }
 	}
 	if (hash.state) {
@@ -2061,6 +2073,7 @@ function hashChanged() {
 	}
 	// Before hash.state to utilize initial lat/lon
 	if (hash.lat != priorHash.lat || hash.lon != priorHash.lon) {
+        //alert("hash.lat " + hash.lat + " priorHash.lat " + priorHash.lat)
 	    $("#lat").val(hash.lat);
 	    $("#lon").val(hash.lon);
 	    mapCenter = [hash.lat,hash.lon];
@@ -2115,7 +2128,7 @@ function hashChanged() {
 	$(".locationTabText").attr("title",$(".locationTabText").text());
 	if (hash.m != priorHash.m) {
 		var mapframe;
-		$("#mapframe").hide();
+		$("#mapframe").hide(); $("#iframeCover").hide();
 		$("#mapframe").prop("src", "about:blank");
 		if (hash.m) {
 	    	if (hash.m == "ej") {
@@ -2134,7 +2147,7 @@ function hashChanged() {
 	    	}
 	    	if (mapframe) {
 	    		$("#mapframe").prop("src", mapframe);
-				$("#mapframe").show();
+				$("#mapframe").show(); $("#iframeCover").show();
 				window.scrollTo({
 			      top: $('#mapframe').offset().top - 95,
 			      left: 0

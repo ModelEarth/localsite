@@ -31,45 +31,45 @@ var localsite_app = localsite_app || (function(){
                 }
             }
             let hostnameAndPort = extractHostnameAndPort(myScript.src);
-            let root = location.protocol + '//' + location.host + '/localsite/';
+            let theroot = location.protocol + '//' + location.host + '/localsite/';
 
             if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
-              //root = "https://map.georgia.org/localsite/";
-              root = hostnameAndPort + "/localsite/";
+              //theroot = "https://map.georgia.org/localsite/";
+              theroot = hostnameAndPort + "/localsite/";
             }
             
             if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
               // Omit known hosts of "localsite" repo here.
 
-              //root = "https://model.earth/localsite/";
-              root = hostnameAndPort + "/localsite/";
-              console.log("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src) + "\rwindow.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
+              //theroot = "https://model.earth/localsite/";
+              theroot = hostnameAndPort + "/localsite/";
+              consoleLog("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src) + "\rwindow.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
             }
             if (location.host.indexOf('localhost') >= 0) {
-              // For testing embedding without locathost repo in site root. Rename your localsite folder.
-              //root = "https://model.earth/localsite/";
+              // For testing embedding without locathost repo in site theroot. Rename your localsite folder.
+              //theroot = "https://model.earth/localsite/";
             }
-            localsite_repo = root; // Save to reduce DOM hits
-            return (root);
+            localsite_repo = theroot; // Save to reduce DOM hits
+            return (theroot);
         },
         community_data_root : function() { // General US states and eventually some international
-            let root = location.protocol + '//' + location.host + '/community-data/';
+            let theroot = location.protocol + '//' + location.host + '/community-data/';
             //if (location.host.indexOf('localhost') < 0) {
-              root = "https://model.earth/community-data/"; 
+              theroot = "https://model.earth/community-data/"; 
             //}
-            return (root);
+            return (theroot);
         },
         modelearth_data_root : function() { // General US states and eventually some international
             // These repos will typically reside on github, so no localhost.
-            let root = "https://model.earth"; // Probably will also remove slash from the ends of others.
-            return (root);
+            let theroot = "https://model.earth"; // Probably will also remove slash from the ends of others.
+            return (theroot);
         },
         custom_data_root : function() { // Unique US states - will use javascript, domain, cookies and json.
-            let root = location.protocol + '//' + location.host + '/georgia-data/';
+            let theroot = location.protocol + '//' + location.host + '/georgia-data/';
             if (location.host.indexOf('localhost') < 0) {
-              root = "https://neighborhood.org/georgia-data/";
+              theroot = "https://neighborhood.org/georgia-data/";
             }
-            return (root);
+            return (theroot);
         }
     };
 }());
@@ -114,7 +114,7 @@ function initateHiddenhash() { // Load in values from params on javascript inclu
     if(!includepairs[i]) continue;
     let pair = includepairs[i].split('=');
     hiddenhash[pair[0].toLowerCase()] = decodeURIComponent(pair[1]);
-    //console.log("Param from javascript include: " + pair[0].toLowerCase() + " " + decodeURIComponent(pair[1]));
+    //consoleLog("Param from javascript include: " + pair[0].toLowerCase() + " " + decodeURIComponent(pair[1]));
   }
 }
 
@@ -152,7 +152,7 @@ function loadParams(paramStr,hashStr) {
     if(!includepairs[i]) continue;
     let pair = includepairs[i].split('=');
     params[pair[0].toLowerCase()] = decodeURIComponent(pair[1]);
-    //console.log("Param from javascript include: " + pair[0].toLowerCase() + " " + decodeURIComponent(pair[1]));
+    //consoleLog("Param from javascript include: " + pair[0].toLowerCase() + " " + decodeURIComponent(pair[1]));
   }
 
   let pairs = paramStr.split('&');
@@ -177,7 +177,10 @@ function loadParams(paramStr,hashStr) {
    return params;
 }
 function mix(incoming, target) { // Combine two objects, priority to incoming. Delete blanks indicated by incoming.
-   target2 = jQuery.extend(true, {}, target); // Clone/copy object without entanglement
+   //target2 = $.extend(true, {}, target); // Clone/copy object without entanglement
+   
+   target2 = extend(true, target, incoming); // Clone/copy object without entanglement, subsequent overrides first.
+   
    for(var key in incoming) {
      if (incoming.hasOwnProperty(key)) {
         if (incoming[key] === null || incoming[key] === undefined || incoming[key] === '') {
@@ -186,9 +189,7 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
           target2[key] = incoming[key];
         }
      }
-   }
-   //alert("cat test out " + hiddenhash.cat);
-   return target2;
+   }   return target2;
 }
 function getHash() { // Includes hiddenhash
     //return getHashOnly(); // Test
@@ -227,13 +228,13 @@ function updateHash(addToHash, addToExisting) {
     window.history.pushState("", searchTitle, pathname + queryString);
 }
 function goHash(addToHash) {
-  console.log("goHash ")
-  console.log(addToHash)
+  consoleLog("goHash ")
+  consoleLog(addToHash)
   updateHash(addToHash);
   triggerHashChangeEvent();
 }
 function go(addToHash) {
-  console.log("go ")
+  consoleLog("go ")
   updateHash(addToHash,false); // Drop existing
   triggerHashChangeEvent();
 }
@@ -245,16 +246,100 @@ var triggerHashChangeEvent = function () {
     // Dispatch the event
     document.dispatchEvent(event);
 };
-$(window).on('hashchange', function() { // Avoid window.onhashchange since overridden by map and widget embeds  
-  console.log("window hashchange");
-  console.log("delete hiddenhash.name");
-  delete hiddenhash.name; // Not sure where this is set.
-  delete hiddenhash.cat; // Not sure where this is set.
-  triggerHashChangeEvent();
-});
-//MutationObserver.observe(hiddenhash, triggerHashChangeEvent);
 
+// COMMON
+function loadScript(url, callback)
+{
+  let urlID = url.replace(/^.*\/\/[^\/]+/, ''); // Allows id's to always omit the domain.
+  if (!document.getElementById(urlID)) { // Prevents multiple loads.
+    consoleLog("loadScript seeking: " + url);
+    var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = url;
+    script.id = urlID; // Prevents multiple loads.
+      // Bind the event to the callback function. Two events for cross browser compatibility.
+      //script.onreadystatechange = callback; // This apparently is never called by Brave, but needed for some of the other browsers.
+      script.onreadystatechange = function() { // Cound eliminate these 3 lines and switch back to the line above.
+        consoleLog("loadScript ready: " + url); // This apparently is never called by Brave.
+            callback();
+        }
+      //script.onload = callback;
+      script.onload = function() {
+            consoleLog("loadScript loaded: " + url); // Once the entire file is processed.
+            callback();
+        } 
 
+        //$(document).ready(function () { // Only needed if appending to body
+         var head = document.getElementsByTagName('head')[0];
+         head.appendChild(script);
+        //});
+        
+  } else {
+    consoleLog("loadScript script already available: " + url);
+    if(callback) callback();
+  }
+  // Nested calls are described here: https://books.google.com/books?id=ZOtVCgAAQBAJ&pg=PA6&lpg=PA6
+}
+
+var localsite_repo3; // TEMP HERE
+function extractHostnameAndPort(url) { // TEMP HERE
+    let hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
+
+    if (url.indexOf("//") > -1) {
+        hostname = url.split('/')[2];
+    }
+    else {
+        hostname = url.split('/')[0];
+    }
+
+    //find & remove port number
+    //hostname = hostname.split(':')[0];
+    //find & remove "?"
+    hostname = hostname.split('?')[0];
+
+    return hostname;
+}
+function get_localsite_root3() { // Also in two other places
+//alert("call localsite_repo");
+            if (localsite_repo3) { // Intensive, so allows to only run once
+              //alert(localsite_repo);
+              return(localsite_repo3);
+            }
+
+            let scripts = document.getElementsByTagName('script'); 
+            let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
+            //let myScript = null;
+            // Now try to find one containging map-embed.js
+            for (var i = 0; i < scripts.length; ++i) {
+                if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
+                  myScript = scripts[i];
+                }
+            }
+            let hostnameAndPort = extractHostnameAndPort(myScript.src);
+            let theroot = location.protocol + '//' + location.host + '/localsite/';
+
+            if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
+              //theroot = "https://map.georgia.org/localsite/";
+              theroot = hostnameAndPort + "/localsite/";
+            }
+            
+            if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+              // Omit known hosts of "localsite" repo here.
+
+              //theroot = "https://model.earth/localsite/";
+              theroot = hostnameAndPort + "/localsite/";
+              consoleLog("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src) + "\rwindow.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
+            }
+            if (location.host.indexOf('localhost') >= 0) {
+              // Enable to test embedding without locathost repo in site theroot. Rename your localsite folder.
+              //theroot = "https://model.earth/localsite/";
+            }
+            localsite_repo3 = theroot; // Save to reduce DOM hits
+            return (theroot);
+}
+
+var theroot = get_localsite_root3(); // BUGBUG if let: Identifier 'theroot' has already been declared.
 function clearHash(toClear) {
   let hash = getHashOnly(); // Include all existing
   let clearArray = toClear.split(/\s*,\s*/);
@@ -274,6 +359,346 @@ function clearHash(toClear) {
   }
   window.history.pushState("", searchTitle, pathname + queryString);
 }
+
+var consoleLogHolder = ""; // Hold until div available in DOM
+function consoleLog(text,value) {
+  if (value) {
+    console.log(text, value);
+  } else {
+    console.log(text);
+  }
+
+  //var dsconsole = document.getElementById("log_display textarea");
+  //let dsconsole = document.getElementById("log_display > textarea");
+  let dsconsole = document.getElementById("logText");
+
+  if (dsconsole) { // Once in DOM
+    //dsconsole.style.display = 'none'; // hidden
+    if (consoleLogHolder.length > 0) { // Called only once to display pre-DOM values
+      dsconsole.innerHTML = consoleLogHolder;
+      consoleLogHolder = "";
+    }
+    dsconsole.style.display = 'block';
+    if (value) {
+      //dsconsole.innerHTML += (text + " " + value + "\n");
+      let content = document.createTextNode(text + " " + value + "\n");
+      dsconsole.appendChild(content);
+
+    } else {
+      //dsconsole.innerHTML += (text + "\n");
+      let content = document.createTextNode(text + "\n");
+      dsconsole.appendChild(content);
+    }
+    //dsconsole.scrollTop(dsconsole[0].scrollHeight - dsconsole.height() - 17); // Adjusts for bottom alignment
+  } else {
+
+    if (value) {
+      consoleLogHolder += (text + " " + value + "\n");
+    } else {
+      consoleLogHolder += (text + "\n");
+    }
+  }
+  
+}
+
+
+// WAIT FOR JQUERY - This will cause bugs if other scripts don't also wait for jquery.
+loadScript(theroot + 'js/jquery.min.js', function(results) {
+
+  // Will surround rest of this block with waitForJQuery if alert occurs.
+  var waitForJQuery = setInterval(function () {
+    if (typeof $ != 'undefined') {
+
+      $(document).ready(function () {
+
+
+        consoleLog("Ready","DOM Loaded (But not template yet)")
+
+        /*! jQuery & Zepto Lazy v1.7.6 - http://jquery.eisbehr.de/lazy - MIT&GPL-2.0 license - Copyright 2012-2017 Daniel 'Eisbehr' Kern */
+        !function(t,e){"use strict";function r(r,a,i,u,l){function f(){L=t.devicePixelRatio>1,i=c(i),a.delay>=0&&setTimeout(function(){s(!0)},a.delay),(a.delay<0||a.combined)&&(u.e=v(a.throttle,function(t){"resize"===t.type&&(w=B=-1),s(t.all)}),u.a=function(t){t=c(t),i.push.apply(i,t)},u.g=function(){return i=n(i).filter(function(){return!n(this).data(a.loadedName)})},u.f=function(t){for(var e=0;e<t.length;e++){var r=i.filter(function(){return this===t[e]});r.length&&s(!1,r)}},s(),n(a.appendScroll).on("scroll."+l+" resize."+l,u.e))}function c(t){var i=a.defaultImage,o=a.placeholder,u=a.imageBase,l=a.srcsetAttribute,f=a.loaderAttribute,c=a._f||{};t=n(t).filter(function(){var t=n(this),r=m(this);return!t.data(a.handledName)&&(t.attr(a.attribute)||t.attr(l)||t.attr(f)||c[r]!==e)}).data("plugin_"+a.name,r);for(var s=0,d=t.length;s<d;s++){var A=n(t[s]),g=m(t[s]),h=A.attr(a.imageBaseAttribute)||u;g===N&&h&&A.attr(l)&&A.attr(l,b(A.attr(l),h)),c[g]===e||A.attr(f)||A.attr(f,c[g]),g===N&&i&&!A.attr(E)?A.attr(E,i):g===N||!o||A.css(O)&&"none"!==A.css(O)||A.css(O,"url('"+o+"')")}return t}function s(t,e){if(!i.length)return void(a.autoDestroy&&r.destroy());for(var o=e||i,u=!1,l=a.imageBase||"",f=a.srcsetAttribute,c=a.handledName,s=0;s<o.length;s++)if(t||e||A(o[s])){var g=n(o[s]),h=m(o[s]),b=g.attr(a.attribute),v=g.attr(a.imageBaseAttribute)||l,p=g.attr(a.loaderAttribute);g.data(c)||a.visibleOnly&&!g.is(":visible")||!((b||g.attr(f))&&(h===N&&(v+b!==g.attr(E)||g.attr(f)!==g.attr(F))||h!==N&&v+b!==g.css(O))||p)||(u=!0,g.data(c,!0),d(g,h,v,p))}u&&(i=n(i).filter(function(){return!n(this).data(c)}))}function d(t,e,r,i){++z;var o=function(){y("onError",t),p(),o=n.noop};y("beforeLoad",t);var u=a.attribute,l=a.srcsetAttribute,f=a.sizesAttribute,c=a.retinaAttribute,s=a.removeAttribute,d=a.loadedName,A=t.attr(c);if(i){var g=function(){s&&t.removeAttr(a.loaderAttribute),t.data(d,!0),y(T,t),setTimeout(p,1),g=n.noop};t.off(I).one(I,o).one(D,g),y(i,t,function(e){e?(t.off(D),g()):(t.off(I),o())})||t.trigger(I)}else{var h=n(new Image);h.one(I,o).one(D,function(){t.hide(),e===N?t.attr(C,h.attr(C)).attr(F,h.attr(F)).attr(E,h.attr(E)):t.css(O,"url('"+h.attr(E)+"')"),t[a.effect](a.effectTime),s&&(t.removeAttr(u+" "+l+" "+c+" "+a.imageBaseAttribute),f!==C&&t.removeAttr(f)),t.data(d,!0),y(T,t),h.remove(),p()});var m=(L&&A?A:t.attr(u))||"";h.attr(C,t.attr(f)).attr(F,t.attr(l)).attr(E,m?r+m:null),h.complete&&h.trigger(D)}}function A(t){var e=t.getBoundingClientRect(),r=a.scrollDirection,n=a.threshold,i=h()+n>e.top&&-n<e.bottom,o=g()+n>e.left&&-n<e.right;return"vertical"===r?i:"horizontal"===r?o:i&&o}function g(){return w>=0?w:w=n(t).width()}function h(){return B>=0?B:B=n(t).height()}function m(t){return t.tagName.toLowerCase()}function b(t,e){if(e){var r=t.split(",");t="";for(var a=0,n=r.length;a<n;a++)t+=e+r[a].trim()+(a!==n-1?",":"")}return t}function v(t,e){var n,i=0;return function(o,u){function l(){i=+new Date,e.call(r,o)}var f=+new Date-i;n&&clearTimeout(n),f>t||!a.enableThrottle||u?l():n=setTimeout(l,t-f)}}function p(){--z,i.length||z||y("onFinishedAll")}function y(t,e,n){return!!(t=a[t])&&(t.apply(r,[].slice.call(arguments,1)),!0)}var z=0,w=-1,B=-1,L=!1,T="afterLoad",D="load",I="error",N="img",E="src",F="srcset",C="sizes",O="background-image";"event"===a.bind||o?f():n(t).on(D+"."+l,f)}function a(a,o){var u=this,l=n.extend({},u.config,o),f={},c=l.name+"-"+ ++i;return u.config=function(t,r){return r===e?l[t]:(l[t]=r,u)},u.addItems=function(t){return f.a&&f.a("string"===n.type(t)?n(t):t),u},u.getItems=function(){return f.g?f.g():{}},u.update=function(t){return f.e&&f.e({},!t),u},u.force=function(t){return f.f&&f.f("string"===n.type(t)?n(t):t),u},u.loadAll=function(){return f.e&&f.e({all:!0},!0),u},u.destroy=function(){return n(l.appendScroll).off("."+c,f.e),n(t).off("."+c),f={},e},r(u,l,a,f,c),l.chainable?a:u}var n=t.jQuery||t.Zepto,i=0,o=!1;n.fn.Lazy=n.fn.lazy=function(t){return new a(this,t)},n.Lazy=n.lazy=function(t,r,i){if(n.isFunction(r)&&(i=r,r=[]),n.isFunction(i)){t=n.isArray(t)?t:[t],r=n.isArray(r)?r:[r];for(var o=a.prototype.config,u=o._f||(o._f={}),l=0,f=t.length;l<f;l++)(o[t[l]]===e||n.isFunction(o[t[l]]))&&(o[t[l]]=i);for(var c=0,s=r.length;c<s;c++)u[r[c]]=t[0]}},a.prototype.config={name:"lazy",chainable:!0,autoDestroy:!0,bind:"load",threshold:500,visibleOnly:!1,appendScroll:t,scrollDirection:"both",imageBase:null,defaultImage:"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==",placeholder:null,delay:-1,combined:!1,attribute:"data-src",srcsetAttribute:"data-srcset",sizesAttribute:"data-sizes",retinaAttribute:"data-retina",loaderAttribute:"data-loader",imageBaseAttribute:"data-imagebase",removeAttribute:!0,handledName:"handled",loadedName:"loaded",effect:"show",effectTime:0,enableThrottle:!0,throttle:250,beforeLoad:e,afterLoad:e,onError:e,onFinishedAll:e},n(t).on("load",function(){o=!0})}(window);
+        $(function() {
+              $('.lazy').Lazy(); // Lazy load all divs with class .lazy
+        });
+
+        if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
+          var div = $("<div />", {
+              html: '<style>.local{display:inline-block !important}.localonly{display:block !important}</style>'
+            }).appendTo("body");
+        } else {
+          // Inject style rule
+            var div = $("<div />", {
+              html: '<style>.local{display:none}.localonly{display:none}</style>'
+            }).appendTo("body");
+        }
+      });
+      clearInterval(waitForJQuery); // Escape the loop
+
+      // LOAD HTML TEMPLATE - Holds search filters and maps
+      // View original: https://model.earth/localsite/map
+      if (param.display == "everything") {
+        let bodyFile = theroot + "map/index.html #insertedText";
+        $("#bodyFile").load(bodyFile, function( response, status, xhr ) {
+          consoleLog("Template Loaded: " + bodyFile);
+        });
+      }
+
+  $(window).on('hashchange', function() { // Avoid window.onhashchange since overridden by map and widget embeds  
+    consoleLog("window hashchange");
+    consoleLog("delete hiddenhash.name");
+    delete hiddenhash.name; // Not sure where this is set.
+    delete hiddenhash.cat; // Not sure where this is set.
+    triggerHashChangeEvent();
+  });
+  //MutationObserver.observe(hiddenhash, triggerHashChangeEvent);
+
+
+
+
+
+
+  // Called from header.html files
+  function toggleFullScreen() {
+    if (document.fullscreenElement) { // Already fullscreen
+      consoleLog("Already fullscreenElement");
+      if (document.exitFullscreen) {
+        consoleLog("Attempt to exit fullscreen")
+        document.exitFullscreen();
+        $('.reduceFromFullscreen').hide();
+        $('.expandToFullscreen').show();
+        return;
+      }
+    }
+    if ((document.fullScreenElement && document.fullScreenElement !== null) ||    
+     (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+      // Only if video is not visible. Otherwise become black.
+      $('.moduleBackground').css({'z-index':'0'});   
+      $('.expandFullScreen span').text("Shrink");
+      // To do: Change icon to &#xE5D1;
+      if (document.documentElement.requestFullScreen) {  
+        document.documentElement.requestFullScreen();  
+      } else if (document.documentElement.mozRequestFullScreen) {  
+        document.documentElement.mozRequestFullScreen();  
+      } else if (document.documentElement.webkitRequestFullScreen) {  
+        document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);  
+      }
+      $('.expandToFullscreen').hide();
+      $('.reduceFromFullscreen').show(); 
+    } else {
+      
+      $('.moduleBackground').css({'z-index':'-1'}); // Allows video to overlap.
+      $('.expandFullScreen span').text("Expand");
+      if (document.cancelFullScreen) {  
+        document.cancelFullScreen();  
+      } else if (document.mozCancelFullScreen) {  
+        document.mozCancelFullScreen();  
+      } else if (document.webkitCancelFullScreen) {  
+        document.webkitCancelFullScreen();  
+      }
+      $('.reduceFromFullscreen').hide();
+      $('.expandToFullscreen').show();
+    }
+  }
+  /**
+  *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+  *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+  /*
+  var disqus_config = function () {
+  this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+  this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+  };
+  */
+
+  /* Avoiding because disqus places doubleclick cookie */
+  /* Uncomment to reactivate
+  (function() { // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+  s.src = 'https://locally.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+  })();
+  */
+
+
+  /*
+  <link rel="stylesheet" href="css/reveal.css">
+  <link rel="stylesheet" href="css/theme/night.css">
+
+  */
+
+
+
+  /*  placed before loadMarkdown 
+
+  Configuration
+  https://github.com/hakimel/reveal.js#markdown
+  */
+  /*
+  <script src="js/reveal.js"></script>
+  <script>
+    Reveal.initialize();
+
+    // For long slides
+    function resetSlideScrolling(slide) {
+        slide.classList.remove('scrollable-slide');
+    }
+
+    function handleSlideScrolling(slide) {
+        if (slide.scrollHeight >= 800) {
+            slide.classList.add('scrollable-slide');
+        }
+    }
+    Reveal.addEventListener('ready', function (event) {
+        handleSlideScrolling(event.currentSlide);
+    });
+
+    Reveal.addEventListener('slidechanged', function (event) {
+        if (event.previousSlide) {
+            resetSlideScrolling(event.previousSlide);
+        }
+        handleSlideScrolling(event.currentSlide);
+    });
+
+  </script>
+  */
+  if (param.display == "everything") {
+
+    if (param.preloadmap != "false") {
+      
+      loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
+          includeCSS3(theroot + 'css/leaflet.css',theroot);
+          loadScript(theroot + 'js/leaflet.js', function(results) {
+            loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Could skip when map does not use material icon colors
+              loadScript(theroot + 'js/map.js', function(results) {
+                loadSearchFilters3(theroot,1); // Uses localsite_app library in localsite.js for community_data_root
+              });
+            });
+          });
+
+          //if (param.shownav) {
+            loadScript(theroot + 'js/navigation.js', function(results) {});
+          //}
+        });
+      
+    }
+
+    includeCSS3(theroot + 'css/base.css',theroot);
+    includeCSS3(theroot + 'css/search-filters.css',theroot);
+    if (param.preloadmap != "false") {
+      includeCSS3(theroot + 'css/map-display.css',theroot);
+    }
+    
+    includeCSS3('https://fonts.googleapis.com/icon?family=Material+Icons',theroot);
+    includeCSS3(theroot + 'css/leaflet.icon-material.css',theroot);
+    includeCSS3(theroot + 'css/map.css',theroot);
+    loadScript(theroot + 'js/table-sort.js', function(results) {}); // For county grid column sort
+
+  }
+
+
+      } else {
+      if(location.host.indexOf('localhost') >= 0) {
+        alert("Localhost alert: JQUERY NOT YET AVAILABLE! Use this more widely.");
+      } else {
+        consoleLog("JQUERY NOT YET AVAILABLE! Use this more widely.");
+      }
+    }
+      
+  }, 10); // End block, could move to end of jQuery loadScript.
+
+
+}); // End JQuery loadScript
+
+
+
+function includeCSS3(url,theroot) {
+    let urlID = getUrlID3(url,theroot);
+    if (!document.getElementById(urlID)) { // Prevents multiple loads.
+        var link  = document.createElement('link');
+        link.id   = urlID;
+        link.rel  = 'stylesheet';
+        link.type = 'text/css';
+        link.href = url;
+        link.media = 'all';
+        //$(document).ready(function () { /* Not necessary if appending to head */
+            //var body  = document.getElementsByTagName('body')[0];
+            //body.appendChild(link);
+        //});
+        var head  = document.getElementsByTagName('head')[0];
+        
+        // Not using because css needs to follow site.css.
+        //head.insertBefore(link, head.firstChild);
+        // Beaware, not all html pages contain a head tag. https://www.stevesouders.com/blog/2010/05/11/appendchild-vs-insertbefore/
+        // Also see "postscribe" use in this page.
+        head.appendChild(link); // Since site-narrow.css comes after site.css
+    }
+}
+function getUrlID3(url,theroot) {
+  let urlID = url.replace(theroot,"").replace("https://","").replace(/\//g,"-").replace(/\./g,"-");
+  if (urlID.indexOf('?') > 0) {
+        urlID = urlID.substring(0,urlID.indexOf('?')); // Remove parameter so ?v=1 is not included in id.
+    }
+    return urlID;
+}
+
+function loadSearchFilters3(theroot, count) {
+  if (typeof customD3loaded !== 'undefined' && typeof localsite_map !== 'undefined') {
+    //alert("localsite_map " + localsite_map)
+    //loadScript(theroot + 'https://cdn.jsdelivr.net/npm/vue', function(results) { // Need to check if function loaded
+      loadScript(theroot + 'js/map-filters.js', function(results) {});
+    //});
+  } else if (count<100) { // Wait a milisecond and try again
+    setTimeout( function() {
+        consoleLog("try loadSearchFilters again")
+      loadSearchFilters(theroot,count+1);
+      }, 10 );
+  } else {
+    consoleLog("ERROR: loadSearchFilters exceeded 100 attempts.");
+  }
+
+} 
+
+// Pass in the objects to merge as arguments.
+// For a deep extend, set the first argument to `true`.
+// https://gomakethings.com/vanilla-javascript-version-of-jquery-extend/
+function extend () {
+
+  // Variables
+  var extended = {};
+  var deep = false;
+  var i = 0;
+  var length = arguments.length;
+
+  // Check if a deep merge
+  if ( Object.prototype.toString.call( arguments[0] ) === '[object Boolean]' ) {
+    deep = arguments[0];
+    i++;
+  }
+
+  // Merge the object into the extended object
+  var merge = function (obj) {
+    for ( var prop in obj ) {
+      if ( Object.prototype.hasOwnProperty.call( obj, prop ) ) {
+        // If deep merge and property is an object, merge properties
+        if ( deep && Object.prototype.toString.call(obj[prop]) === '[object Object]' ) {
+          extended[prop] = extend( true, extended[prop], obj[prop] );
+        } else {
+          extended[prop] = obj[prop];
+        }
+      }
+    }
+  };
+
+  // Loop through each object and conduct a merge
+  for ( ; i < length; i++ ) {
+    var obj = arguments[i];
+    merge(obj);
+  }
+
+  return extended;
+
+};
+
+
 // Serialize a key/value object.
 //var params = { width:1680, height:1050 };
 //var str = jQuery.param( params );
@@ -299,23 +724,6 @@ function updateHiddenhash(hashObject) {
   return;
 }
 
-function consoleLog(text,value) {
-
-  $("#log_display").show();
-  if (value) {
-    $("#log_display textarea").append(text + " " + value + "\n");
-    console.log(text, value);
-  } else {
-    $("#log_display textarea").append(text + "\n");
-    console.log(text);
-  }
-
-  var dsconsole = $("#log_display textarea");
-    if(dsconsole.length)
-       dsconsole.scrollTop(dsconsole[0].scrollHeight - dsconsole.height() - 17); // Adjusts for bottom alignment
-
-  
-}
 function extractHostnameAndPort(url) {
     let hostname;
     //find & remove protocol (http, ftp, etc.) and get hostname
@@ -362,18 +770,18 @@ function formatRow(key,value,level,item) {
   
   //if (value.length == 0) {
   //    addHtml += "<div class='level" + level + "'>&nbsp;</div>\n";
-  //    console.log("Blank: " + key + " " + value);
+  //    consoleLog("Blank: " + key + " " + value);
   //} else 
   if (isObject(value)) {
       for (c in value) {
 
-        console.log("isObject: " + key + " " + value);
+        consoleLog("isObject: " + key + " " + value);
         
         //if (json.data[a].constructor === Array && selected_array.includes(a) )  {
         if (isObject(value[c])) {
 
           // NEVER REACHED?
-          console.log("This code is reached for location: " + key + " " + value);
+          consoleLog("This code is reached for location: " + key + " " + value);
           if (value[c].length >1){
 
             for (d in value[c]){  
@@ -400,20 +808,20 @@ function formatRow(key,value,level,item) {
     } 
     
     /*if (Object.keys(value).length >1){
-      console.log(b);
+      consoleLog(b);
     }*/
 
       // value.constructor === Array
 
     else if (isArray(value))  { // was b.   && selected_array.includes(key)  seems to prevent overload for DiffBot. Need to identify why.
-      //console.log(value.length);
+      //consoleLog(value.length);
 
-      console.log("isArray: " + key + " " + value + " " + value.length);
+      consoleLog("isArray: " + key + " " + value + " " + value.length);
       if (value.length > 0) {
 
         for (c in value) {
           curLine=""            
-          //console.log(value[c],b,c); //c is 0,1,2 index
+          //consoleLog(value[c],b,c); //c is 0,1,2 index
           
           if (isObject(value[c]) || isArray(value[c])) {
             for (d in value[c]){
@@ -431,7 +839,7 @@ function formatRow(key,value,level,item) {
                   //addHtml += "<div class='level5'>" + e + ": " + value[c][d][e] + "</div>\n";
                 }
               } else {
-                //console.log("Found: " + value[c][d])
+                //consoleLog("Found: " + value[c][d])
                 addHtml += formatRow(d,value[c][d],level);
                 //addHtml += "<div class='level4'>" + d + ":: " + value[c][d] + "</div>\n";
               }
@@ -454,8 +862,8 @@ function formatRow(key,value,level,item) {
                   //addHtml += "<div class='level5'>" + e + ": " + value[c][d][e] + "</div>\n";
                 }
               } else {
-                //console.log("Found: " + value[c][d]); // Returns error since not object
-                console.log("Found: " + d);
+                //consoleLog("Found: " + value[c][d]); // Returns error since not object
+                consoleLog("Found: " + d);
                 //addHtml += formatRow(d,d,level); // BUG
                 addHtml += "<div class='level4'>" + d + "</div>\n";
               }
@@ -472,7 +880,7 @@ function formatRow(key,value,level,item) {
         
           }
     } else {
-      console.log("Array of 0: " + key + " " + value);
+      consoleLog("Array of 0: " + key + " " + value);
       //addHtml += formatRow(c,value[c],level);
       addHtml += "<div class='level" + level + "'>" + value + "&nbsp;</div>\n";
     }
@@ -486,7 +894,7 @@ function formatRow(key,value,level,item) {
     } else if (key.toLowerCase().includes("timestamp")) {
       addHtml += "<div class='level" + level + "'>" +  new Date(value) + "</div>\n";
   } else {
-      //console.log("Last: " + key + " " + value);
+      //consoleLog("Last: " + key + " " + value);
       addHtml += "<div class='level" + level + "'>" + value + "</div>\n";
   }
   addHtml += "</div>\n";
@@ -505,7 +913,8 @@ function isArray(obj){
   if (typeof obj == "string") {
     //return false; // no effect
   }
-  return $.isArray(obj);
+  //return $.isArray(obj);
+  return Array.isArray(obj);
 }
 Object.size = function(obj) {
     return Object.keys(obj).length;
@@ -532,144 +941,14 @@ addEventListener("load", function(){
     //consoleLog('click ' + Date.now())
     var anchor = getParentAnchor(e.target);
     if(anchor !== null) {
-      $('#log_display').hide();
+      //$('#log_display').hide();
+      document.getElementById("log_display").style.display = 'none';
     }
   }, false);
 });
 
-var waitForJQuery = setInterval(function () {
-    if (typeof $ != 'undefined') {
 
-      $(document).ready(function () {
-        /*! jQuery & Zepto Lazy v1.7.6 - http://jquery.eisbehr.de/lazy - MIT&GPL-2.0 license - Copyright 2012-2017 Daniel 'Eisbehr' Kern */
-        !function(t,e){"use strict";function r(r,a,i,u,l){function f(){L=t.devicePixelRatio>1,i=c(i),a.delay>=0&&setTimeout(function(){s(!0)},a.delay),(a.delay<0||a.combined)&&(u.e=v(a.throttle,function(t){"resize"===t.type&&(w=B=-1),s(t.all)}),u.a=function(t){t=c(t),i.push.apply(i,t)},u.g=function(){return i=n(i).filter(function(){return!n(this).data(a.loadedName)})},u.f=function(t){for(var e=0;e<t.length;e++){var r=i.filter(function(){return this===t[e]});r.length&&s(!1,r)}},s(),n(a.appendScroll).on("scroll."+l+" resize."+l,u.e))}function c(t){var i=a.defaultImage,o=a.placeholder,u=a.imageBase,l=a.srcsetAttribute,f=a.loaderAttribute,c=a._f||{};t=n(t).filter(function(){var t=n(this),r=m(this);return!t.data(a.handledName)&&(t.attr(a.attribute)||t.attr(l)||t.attr(f)||c[r]!==e)}).data("plugin_"+a.name,r);for(var s=0,d=t.length;s<d;s++){var A=n(t[s]),g=m(t[s]),h=A.attr(a.imageBaseAttribute)||u;g===N&&h&&A.attr(l)&&A.attr(l,b(A.attr(l),h)),c[g]===e||A.attr(f)||A.attr(f,c[g]),g===N&&i&&!A.attr(E)?A.attr(E,i):g===N||!o||A.css(O)&&"none"!==A.css(O)||A.css(O,"url('"+o+"')")}return t}function s(t,e){if(!i.length)return void(a.autoDestroy&&r.destroy());for(var o=e||i,u=!1,l=a.imageBase||"",f=a.srcsetAttribute,c=a.handledName,s=0;s<o.length;s++)if(t||e||A(o[s])){var g=n(o[s]),h=m(o[s]),b=g.attr(a.attribute),v=g.attr(a.imageBaseAttribute)||l,p=g.attr(a.loaderAttribute);g.data(c)||a.visibleOnly&&!g.is(":visible")||!((b||g.attr(f))&&(h===N&&(v+b!==g.attr(E)||g.attr(f)!==g.attr(F))||h!==N&&v+b!==g.css(O))||p)||(u=!0,g.data(c,!0),d(g,h,v,p))}u&&(i=n(i).filter(function(){return!n(this).data(c)}))}function d(t,e,r,i){++z;var o=function(){y("onError",t),p(),o=n.noop};y("beforeLoad",t);var u=a.attribute,l=a.srcsetAttribute,f=a.sizesAttribute,c=a.retinaAttribute,s=a.removeAttribute,d=a.loadedName,A=t.attr(c);if(i){var g=function(){s&&t.removeAttr(a.loaderAttribute),t.data(d,!0),y(T,t),setTimeout(p,1),g=n.noop};t.off(I).one(I,o).one(D,g),y(i,t,function(e){e?(t.off(D),g()):(t.off(I),o())})||t.trigger(I)}else{var h=n(new Image);h.one(I,o).one(D,function(){t.hide(),e===N?t.attr(C,h.attr(C)).attr(F,h.attr(F)).attr(E,h.attr(E)):t.css(O,"url('"+h.attr(E)+"')"),t[a.effect](a.effectTime),s&&(t.removeAttr(u+" "+l+" "+c+" "+a.imageBaseAttribute),f!==C&&t.removeAttr(f)),t.data(d,!0),y(T,t),h.remove(),p()});var m=(L&&A?A:t.attr(u))||"";h.attr(C,t.attr(f)).attr(F,t.attr(l)).attr(E,m?r+m:null),h.complete&&h.trigger(D)}}function A(t){var e=t.getBoundingClientRect(),r=a.scrollDirection,n=a.threshold,i=h()+n>e.top&&-n<e.bottom,o=g()+n>e.left&&-n<e.right;return"vertical"===r?i:"horizontal"===r?o:i&&o}function g(){return w>=0?w:w=n(t).width()}function h(){return B>=0?B:B=n(t).height()}function m(t){return t.tagName.toLowerCase()}function b(t,e){if(e){var r=t.split(",");t="";for(var a=0,n=r.length;a<n;a++)t+=e+r[a].trim()+(a!==n-1?",":"")}return t}function v(t,e){var n,i=0;return function(o,u){function l(){i=+new Date,e.call(r,o)}var f=+new Date-i;n&&clearTimeout(n),f>t||!a.enableThrottle||u?l():n=setTimeout(l,t-f)}}function p(){--z,i.length||z||y("onFinishedAll")}function y(t,e,n){return!!(t=a[t])&&(t.apply(r,[].slice.call(arguments,1)),!0)}var z=0,w=-1,B=-1,L=!1,T="afterLoad",D="load",I="error",N="img",E="src",F="srcset",C="sizes",O="background-image";"event"===a.bind||o?f():n(t).on(D+"."+l,f)}function a(a,o){var u=this,l=n.extend({},u.config,o),f={},c=l.name+"-"+ ++i;return u.config=function(t,r){return r===e?l[t]:(l[t]=r,u)},u.addItems=function(t){return f.a&&f.a("string"===n.type(t)?n(t):t),u},u.getItems=function(){return f.g?f.g():{}},u.update=function(t){return f.e&&f.e({},!t),u},u.force=function(t){return f.f&&f.f("string"===n.type(t)?n(t):t),u},u.loadAll=function(){return f.e&&f.e({all:!0},!0),u},u.destroy=function(){return n(l.appendScroll).off("."+c,f.e),n(t).off("."+c),f={},e},r(u,l,a,f,c),l.chainable?a:u}var n=t.jQuery||t.Zepto,i=0,o=!1;n.fn.Lazy=n.fn.lazy=function(t){return new a(this,t)},n.Lazy=n.lazy=function(t,r,i){if(n.isFunction(r)&&(i=r,r=[]),n.isFunction(i)){t=n.isArray(t)?t:[t],r=n.isArray(r)?r:[r];for(var o=a.prototype.config,u=o._f||(o._f={}),l=0,f=t.length;l<f;l++)(o[t[l]]===e||n.isFunction(o[t[l]]))&&(o[t[l]]=i);for(var c=0,s=r.length;c<s;c++)u[r[c]]=t[0]}},a.prototype.config={name:"lazy",chainable:!0,autoDestroy:!0,bind:"load",threshold:500,visibleOnly:!1,appendScroll:t,scrollDirection:"both",imageBase:null,defaultImage:"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==",placeholder:null,delay:-1,combined:!1,attribute:"data-src",srcsetAttribute:"data-srcset",sizesAttribute:"data-sizes",retinaAttribute:"data-retina",loaderAttribute:"data-loader",imageBaseAttribute:"data-imagebase",removeAttribute:!0,handledName:"handled",loadedName:"loaded",effect:"show",effectTime:0,enableThrottle:!0,throttle:250,beforeLoad:e,afterLoad:e,onError:e,onFinishedAll:e},n(t).on("load",function(){o=!0})}(window);
-        $(function() {
-              $('.lazy').Lazy(); // Lazy load all divs with class .lazy
-        });
-
-        if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
-          var div = $("<div />", {
-              html: '<style>.local{display:inline-block !important}.localonly{display:block !important}</style>'
-            }).appendTo("body");
-          console.log("localsite.js waitForJQuery called");
-        } else {
-          // Inject style rule
-            var div = $("<div />", {
-              html: '<style>.local{display:none}.localonly{display:none}</style>'
-            }).appendTo("body");
-        }
-      });
-      clearInterval(waitForJQuery); // Escape the loop
-    }
-}, 10);
 
 String.prototype.toTitleCase = function () {
     return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 };
-
-
-
-// Called from header.html files
-function toggleFullScreen() {
-  if (document.fullscreenElement) { // Already fullscreen
-    console.log("Already fullscreenElement");
-    if (document.exitFullscreen) {
-      console.log("Attempt to exit fullscreen")
-      document.exitFullscreen();
-      $('.reduceFromFullscreen').hide();
-      $('.expandToFullscreen').show();
-      return;
-    }
-  }
-  if ((document.fullScreenElement && document.fullScreenElement !== null) ||    
-   (!document.mozFullScreen && !document.webkitIsFullScreen)) {
-    // Only if video is not visible. Otherwise become black.
-    $('.moduleBackground').css({'z-index':'0'});   
-    $('.expandFullScreen span').text("Shrink");
-    // To do: Change icon to &#xE5D1;
-    if (document.documentElement.requestFullScreen) {  
-      document.documentElement.requestFullScreen();  
-    } else if (document.documentElement.mozRequestFullScreen) {  
-      document.documentElement.mozRequestFullScreen();  
-    } else if (document.documentElement.webkitRequestFullScreen) {  
-      document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);  
-    }
-    $('.expandToFullscreen').hide();
-    $('.reduceFromFullscreen').show(); 
-  } else {
-    
-    $('.moduleBackground').css({'z-index':'-1'}); // Allows video to overlap.
-    $('.expandFullScreen span').text("Expand");
-    if (document.cancelFullScreen) {  
-      document.cancelFullScreen();  
-    } else if (document.mozCancelFullScreen) {  
-      document.mozCancelFullScreen();  
-    } else if (document.webkitCancelFullScreen) {  
-      document.webkitCancelFullScreen();  
-    }
-    $('.reduceFromFullscreen').hide();
-    $('.expandToFullscreen').show();
-  }
-}
-/**
-*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
-/*
-var disqus_config = function () {
-this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
-this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-};
-*/
-
-/* Avoiding because disqus places doubleclick cookie */
-/* Uncomment to reactivate
-(function() { // DON'T EDIT BELOW THIS LINE
-var d = document, s = d.createElement('script');
-s.src = 'https://locally.disqus.com/embed.js';
-s.setAttribute('data-timestamp', +new Date());
-(d.head || d.body).appendChild(s);
-})();
-*/
-
-
-/*
-<link rel="stylesheet" href="css/reveal.css">
-<link rel="stylesheet" href="css/theme/night.css">
-
-*/
-
-
-
-/*  placed before loadMarkdown 
-
-Configuration
-https://github.com/hakimel/reveal.js#markdown
-*/
-/*
-<script src="js/reveal.js"></script>
-<script>
-  Reveal.initialize();
-
-  // For long slides
-  function resetSlideScrolling(slide) {
-      slide.classList.remove('scrollable-slide');
-  }
-
-  function handleSlideScrolling(slide) {
-      if (slide.scrollHeight >= 800) {
-          slide.classList.add('scrollable-slide');
-      }
-  }
-  Reveal.addEventListener('ready', function (event) {
-      handleSlideScrolling(event.currentSlide);
-  });
-
-  Reveal.addEventListener('slidechanged', function (event) {
-      if (event.previousSlide) {
-          resetSlideScrolling(event.previousSlide);
-      }
-      handleSlideScrolling(event.currentSlide);
-  });
-
-</script>
-*/

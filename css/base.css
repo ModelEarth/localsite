@@ -603,22 +603,24 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 
 #log_display {
-  position:absolute;
+  position:fixed;
+  z-index: 999999;
   top:70%;
   left:50px;
   max-height:200px;
   padding: 8px 8px 8px 8px;
   color:#fff;
+  background: rgba(0,0,0,.8);
   border:1px solid #ccc;
-  border-radius: 18px 0px 5px 5px;
+  border-radius: 10px 10px 10px 10px;
 }
 #log_display textarea {
   color:#fff;
   background: rgba(0,0,0,0);
-  min-width: 350px;
-  min-height: 150;
+  min-width: 400px;
+  min-height: 150px;
   overflow:scroll;
-  border:0px;
+  border:1px solid #ccc;
 }
 .bgimg {
     position: relative;

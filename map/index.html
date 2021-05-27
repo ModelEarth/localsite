@@ -132,8 +132,20 @@
 </script>
 <!-- /INTRO -->
 
+<div id="insertedText">
 
 <!-- Start HTML -->
+
+<!-- STYLE OVERRIDES FOR DRUPAL -->
+<style type="text/css">
+  #legendHolder {min-width: 270px;}
+  .component--custom_markup > .content {max-width:100%}
+  .component--main_content, .component--single_column_content {padding:0px}
+  svg {max-width:none;}
+  .visually-hidden {display: none !important;}
+</style>
+
+<div id="log_display" style="display:none" class="localonlyX"><span style='float:left; font-size:10px'>LOG</span><br><textarea id="logText">MyTest</textarea></div>
 
 <!-- FILTERS -->
 <div class="search-filters-css" style="display:none">
@@ -761,7 +773,7 @@
       -->
     
     
-      <div class="hideMobile" style="display:none; float:left; clear:both">
+      <div class="hideMobile localonly" style="display:none; float:left; clear:both">
         <ul class="filterUL" style="margin:18px 12px 0 30px;clear:both;min-width:120px;float:left">
 
             <li data-id="all" style="display:none"><a href="#">All</a></li>
@@ -1111,7 +1123,7 @@ Displayed by hashChanged() in map-filters.js
 
 <div id="showIframeCover" onclick="this.style.display='none';$('#iframeCover').show();" style="display:none;position:fixed; z-index:10; color:#fff; cursor: pointer; padding:10px">Reactivate Scrolling</div>
 <!-- ../img/hero/hexagon-pattern.png  -->
-<div id="iframeCover" onclick="this.style.display='none';$('#showIframeCover').show();" style="background-image: url('https://www.georgia.org/themes/custom/mmg8_cog/dist/images/honeycomb.png'); position: absolute; z-index: 10; width:100%; height:800px"></div>
+<div id="iframeCover" onclick="this.style.display='none';$('#showIframeCover').show();" style="display:none; background-image: url('https://www.georgia.org/themes/custom/mmg8_cog/dist/images/honeycomb.png'); position: absolute; z-index: 10; width:100%; height:800px"></div>
 <div style="margin:0px">
   <iframe id="mapframe" style="display:none; width:100%;height:800px;"></iframe>
 </div>
@@ -1582,6 +1594,7 @@ Displayed by hashChanged() in map-filters.js
 
 <!-- End HTML -->
 
+</div><!-- End insertedText -->
 
 
 <!--

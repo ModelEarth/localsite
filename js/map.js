@@ -618,7 +618,16 @@ function addIcons(dp,map,map2) {
 
     iconColorRGB = hex2rgb(iconColor);
     iconName = dp.iconName;
-    var busIcon = L.IconMaterial.icon({ /* Cannot read property 'icon' of undefined */
+    if (typeof L === 'undefined') {
+      if (location.host.indexOf('localhost') >= 0) {
+        alert("Leaflet L not yet loaded");
+      }
+    } else if (typeof L.IconMaterial === 'undefined') {
+      if (location.host.indexOf('localhost') >= 0) {
+        alert("Leaflet L.IconMaterial undefined = leaflet.icon-material.js not loaded");
+      }
+    }
+    var busIcon = L.IconMaterial.icon({ /* Cannot read property 'icon' of undefined = leaflet.icon-material.js not loaded */
       icon: iconName,            // Name of Material icon - star
       iconColor: '#fff',         // Material icon color (could be rgba, hex, html name...)
       markerColor: 'rgba(' + iconColorRGB + ',0.7)',  // Marker fill color
@@ -968,7 +977,6 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   // To do: limit to when layer changes
   //$(".layerclass").hide(); // Hides suppliers, and other layer-specific css
   
-  //alert("show: " + show);
   // Note: light_nolabels does not work on https. Remove if so. Was positron_light_nolabels.
   var basemaps1 = {
     //'Grayscale' : L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}), // No longer works, may require registration change.
@@ -2483,6 +2491,10 @@ function elementScrolled(elem) { // scrolled into view
   return ((elemTop <= docViewBottom) && (elemTop >= docViewTop));
 }
 function bottomReached(elem) { // bottom scrolled into view
+  if(!$(elem).length) {
+    console.log("Element for bottomReached does not exist: " + elem);
+    return 0;
+  }
   var docViewTop = $(window).scrollTop();
   var docViewBottom = docViewTop + $(window).height();
   var hangover = 10; // Extend into the next section, so map remains visible.
@@ -2493,6 +2505,10 @@ function bottomReached(elem) { // bottom scrolled into view
   return (elemBottom < 0);
 }
 function topReached(elem) { // top scrolled out view
+  if(!$(elem).length) {
+    //console.log("Element for topReached does not exist: " + elem);
+    return 0;
+  }
   var docViewTop = $(window).scrollTop();
   //var docViewBottom = docViewTop + $(window).height();
   var pretop = 80; // Extend into the next section, so map remains visible.

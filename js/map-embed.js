@@ -17,7 +17,7 @@ styleOverrides += ".component--main_content, .component--single_column_content {
 //styleOverrides += "p {margin: 0 0 2.2rem;}"; // Overrides Drupal 3.4rem bottom
 styleOverrides += "svg {max-width:none;}"; // Fix for embedding material icon map points in Drupal
 styleOverrides += ".visually-hidden {display: none !important;}"; // Hide text in c19 Drupal top nav
-styleOverrides+= "<\/style>";
+styleOverrides += "<\/style>";
 
 /*
 // Generate the script below by pasting map/index.html from <!-- Start HTML --> to <!-- End HTML --> into:
@@ -1646,6 +1646,7 @@ function jsLoaded(root) {
 function leafletLoaded(root, count) {
 	console.log("From leafletLoaded typeof L: " + typeof L);
 	if (typeof L !== 'undefined') {
+		console.log("leafletLoaded:");
 		console.log(L);
 	  	// The large d3-legend.js script is flawed because it throws errors due to dependencies on leaflet script, so we can not load early.
 		loadScript(root + 'js/leaflet.icon-material.js', function(results) {});
@@ -1747,7 +1748,7 @@ function get_localsite_root() { // TEMP HERE
               // Enable to test embedding without locathost repo in site root. Rename your localsite folder.
               //root = "https://model.earth/localsite/";
             }
-            localsite_repo = root; // Save to reduce DOM hits
+            localsite_repo2 = root; // Save to reduce DOM hits
             return (root);
 }
 function lazyLoadFiles() {
