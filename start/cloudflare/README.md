@@ -15,7 +15,6 @@ You can transfer an existing domain to Cloudflare for cheaper hosting.
 
 ### Go to "Speed > Optimization"  
 
-- Always Use HTTPS - On
 - Auto Minify - All 3 (Javascript, CSS, HTML)  
 - Brotli compression - On (the default)  
 - Rocket Loader™ - Improve the paint time for pages which include JavaScript.  
@@ -32,7 +31,7 @@ https://www.youtube.com/watch?time_continue=1&v=mVzdEl5G0iM
 ### Go to "SSL/TLS > Overview"  
 
 - Select "Full" (Recommended by Cloudflare)  
-- SSL/TLS Recommender  
+- SSL/TLS Recommender - Receive an email regarding whether your website can use a more secure SSL/TLS mode.  
 
 ### Go to "SSL/TLS > Edge Certificates"  
 
