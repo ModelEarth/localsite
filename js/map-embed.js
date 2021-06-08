@@ -20,9 +20,10 @@ styleOverrides += ".visually-hidden {display: none !important;}"; // Hide text i
 styleOverrides += "<\/style>";
 
 /*
-// Generate the script below by pasting map/index.html from <!-- Start HTML --> to <!-- End HTML --> into:
-// http://www.accessify.com/tools-and-wizards/developer-tools/html-javascript-convertor/
-// Choose: Build Up String Variable
+// !!!!!! DISCONTINUED - We now pull the localsite/map/index.html page in directly within the js/localsite.js page.
+// IGNORE: Generate the script below by pasting map/index.html from <!-- Start HTML --> to <!-- End HTML --> into:
+// IGNORE: http://www.accessify.com/tools-and-wizards/developer-tools/html-javascript-convertor/
+// IGNORE: Choose: Build Up String Variable
 */
 
 var strVar="";
