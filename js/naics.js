@@ -122,6 +122,8 @@ function refreshNaicsWidget() {
     } else if (hash.state != priorHash_naicspage.state) {
         // Not working yet
         getNaics_setHiddenHash2(hash.show); // Show the state name above naics list.
+    } else if (hash.catsize != priorHash_naicspage.catsize) {
+        getNaics_setHiddenHash2(hash.show);
     }
 
     if (hash.state != priorHash_naicspage.state) {
@@ -1285,8 +1287,8 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                             }
 
 
-                            rightCol += "<div class='cell mock-up' style='display:none'><img src='http://localhost:8887/localsite/info/img/plus-minus.gif' class='plus-minus'></div>";
-                            //text += top_data_list[i]['NAICScode'] + ": <b>" +top_data_list[i]['data_id']+"</b>, "+String(whichVal.node().options[whichVal.node().selectedIndex].text).slice(3, )+": "+Math.round(top_data_list[i][whichVal.node().value])+"<br>";
+                            //rightCol += "<div class='cell mock-up' style='display:none'><img src='http://localhost:8887/localsite/info/img/plus-minus.gif' class='plus-minus'></div>";
+                            ////text += top_data_list[i]['NAICScode'] + ": <b>" +top_data_list[i]['data_id']+"</b>, "+String(whichVal.node().options[whichVal.node().selectedIndex].text).slice(3, )+": "+Math.round(top_data_list[i][whichVal.node().value])+"<br>";
                             
                             text += "<div class='row'><div class='cell'><a href='#naics=" + top_data_list[i]['NAICScode'] + "' onClick='goHash({\"naics\":" + top_data_list[i]['NAICScode'] + "}); return false;' style='color:#aaa;white-space:nowrap'>" + icon + top_data_list[i]['NAICScode'] + "</a></div><div class='cell'>" + top_data_list[i]['data_id'].replace("Other ","") +"</div>"
                             if(Array.isArray(fips)) {
