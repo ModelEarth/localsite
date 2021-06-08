@@ -193,8 +193,8 @@ function getNaics_setHiddenHash2(go) {
         if (go == "opendata") {
             states = "GA";
         } else if (go == "brigades") {
-            showtitle = "Coding Brigades";
-            cat_filter = (computers).split(',');
+            showtitle = "Industries";
+            //cat_filter = (computers).split(',');
         } else if (go == "bioeconomy") {
             showtab = "Bioeconomy and Energy";
             showtitle = "Bioeconomy and Energy Industries";

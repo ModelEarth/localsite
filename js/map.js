@@ -1123,7 +1123,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
 
     // , "In Address": "address", "In County Name": "county", "In Website URL": "website"
     dp1.search = {"In Location Name": "name"};
-
+    dp1.zoom = 4;
   } else if (show == "buses") {
     dp1.listTitle = "Bus Locations";
     dp1.dataset = "https://api.marta.io/buses";
