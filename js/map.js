@@ -100,13 +100,13 @@ function hashChangedMap() {
   }
 
 
-  if (hash.show != priorHashMap.show) {
+  if (hash.show !== priorHashMap.show) {
     //applyIO(hiddenhash.naics);
     loadMap1("hashChanged() in map-filters.js", hash.show);
-  } else if (hash.state && hash.state != priorHashMap.state) {
+  } else if (hash.state && hash.state !== priorHashMap.state) {
     // Why are new map points not appearing
     loadMap1("hashChanged() in map.js new state " + hash.state, hash.show);
-  } else if (hash.cat != priorHashMap.cat) {
+  } else if (hash.cat !== priorHashMap.cat) {
     loadMap1("hashChanged() in map.js new cat " + hash.cat, hash.show);
   }
   priorHashMap = getHash();
@@ -245,7 +245,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     // We are currently loading dp.dataset from a CSV file.
     // Later we will check if the filename ends with .csv
 
-    if (dp.dataset && (dp.dataset.toLowerCase().includes(".json") || dp.datatype == "json")) { // To Do: only check that it ends with .json
+    if (dp.dataset && (dp.dataset.toLowerCase().includes(".json") || dp.datatype === "json")) { // To Do: only check that it ends with .json
       $.getJSON(dp.dataset, function (data) {
         dp.data = readJsonData(data, dp.numColumns, dp.valueColumn);
         processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){
@@ -360,13 +360,13 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
   overlays1[dp.dataTitle] = dp.group;
   overlays2[dp.dataTitle] = dp.group2;
 
-  if (layerControl[whichmap] != undefined) {
+  if (layerControl[whichmap] !== undefined) {
     // Remove existing instance of layer
     //layerControl[whichmap].removeLayer(overlays[dp.dataTitle]); // Remove from control 
     //map.removeLayer(overlays[dp.dataTitle]); // Remove from map
   }
 
-  if (layerControl[whichmap] != undefined && dp.group) {
+  if (layerControl[whichmap] !== undefined && dp.group) {
       //layerControl[whichmap].removeLayer(dp.group);
   }
 
@@ -960,7 +960,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   let hash = getHash();
 
   $("#dataList").html("");
-  $("#detaillist").html("<img src='" + localsite_app.localsite_root() + "img/icon/loading.gif' style='margin:40px; width:120px'>");
+  $("#detaillist").html("<img src='" + localsite_app.localsite_root() + "img/icon/loading.gif' style='margin:40px; width:120px' alt='Loading'>");
   // 
 
   //if (!show && param["go"]) {
@@ -1077,7 +1077,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   if (show && show.length) {
     $("." + show).show(); // Show layer's divs, after hiding all layer-specific above.
   }
-  $(".headerOffset2").height($("#filterFieldsHolder").height() + "px"); // Adjust incase reveal/hide changes height.
+  $(".filterbarOffset").height($("#filterFieldsHolder").height() + "px"); // Adjust incase reveal/hide changes height.
 
   // Google Sheets must be published with File > Publish to Web to avoid error: "blocked by CORS policy: No 'Access-Control-Allow-Origin' header" 
 
@@ -1440,7 +1440,7 @@ function initialHighlight(hash) {
 
     // https://stackoverflow.com/questions/2346011/how-do-i-scroll-to-an-element-within-an-overflowed-div?noredirect=1&lq=1
 
-    var element = document.getElementById("detaillist");
+    //var element = document.getElementById("detaillist");
     //element.scrollTop = element.scrollHeight;
     //$("#detaillist").scrollTop(200);
 
@@ -2615,6 +2615,6 @@ function calculateDistance(lat1, lon1, lat2, lon2, unit) {
   return dist
 }
 $(window).resize(function() {
-  $(".headerOffset2").height($("#filterFieldsHolder").height() + "px");
+  $(".filterbarOffset").height($("#filterFieldsHolder").height() + "px");
 });
 console.log('end of localsite/js/map.js');

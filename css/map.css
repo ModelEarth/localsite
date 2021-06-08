@@ -369,13 +369,20 @@ label { /* override Drupal */
   }
 }
 
-#industries {
+/* Delete, unable to override with show() in naics.js */
+#industriesX {
     float:right;
     display:none;
     padding-left:20px;
     padding-bottom:0px;
     max-width:520px;
 }
+
+#industries {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
 @media (max-width: 800px) {
   .leftWidget {
     width:100%;

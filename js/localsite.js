@@ -250,9 +250,13 @@ var triggerHashChangeEvent = function () {
 // COMMON
 function loadScript(url, callback)
 {
-  let urlID = url.replace(/^.*\/\/[^\/]+/, ''); // Allows id's to always omit the domain.
+  //let urlID = url.replace(/^.*\/\/[^\/]+/, ''); // Allows id's to always omit the domain.
+
+  let urlID = getUrlID3(url);
+
+  //alert(urlID)
   if (!document.getElementById(urlID)) { // Prevents multiple loads.
-    consoleLog("loadScript seeking: " + url);
+    consoleLog("loadScript seeking: " + url + " via urlID: " + urlID);
     var script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = url;
@@ -275,7 +279,7 @@ function loadScript(url, callback)
         //});
         
   } else {
-    consoleLog("loadScript script already available: " + url);
+    consoleLog("loadScript script already available: " + url + " via ID: " + urlID);
     if(callback) callback();
   }
   // Nested calls are described here: https://books.google.com/books?id=ZOtVCgAAQBAJ&pg=PA6&lpg=PA6
@@ -407,6 +411,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
   // Will surround rest of this block with waitForJQuery if alert occurs.
   var waitForJQuery = setInterval(function () {
+
     if (typeof $ != 'undefined') {
 
       $(document).ready(function () {
@@ -430,29 +435,53 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
               html: '<style>.local{display:none}.localonly{display:none}</style>'
             }).appendTo("body");
         }
+
+        // LOAD HTML TEMPLATE - Holds search filters and maps
+        // View html source: https://model.earth/localsite/map
+        // Consider pulling in HTML before DOM is loaded, then send to page once #bodyFile is available.
+        if (!$("#bodyFile").length) {
+          $('body').prepend("<div id='bodyFile'></div>");
+        }
+        if (param.display == "everything") {
+          let bodyFile = theroot + "map/index.html #insertedText";
+          console.log("Before template Loaded: " + bodyFile);
+          //alert("Before template Loaded: " + bodyFile);
+          $("#bodyFile").load(bodyFile, function( response, status, xhr ) {
+            consoleLog("Template Loaded: " + bodyFile);
+          });
+        }
+
+        // LOAD INFO TEMPLATE - Holds input-output widgets
+        // View html source: https://model.earth/localsite/info/info-template.html
+        if (!$("#infoFile").length) {
+          $('body').append("<div id='infoFile'></div>");
+        }
+        if (param.display == "everything") {
+          let infoFile = theroot + "info/info-template.html #info-template";
+          console.log("Before template Loaded: " + bodyFile);
+          //alert("Before template Loaded: " + bodyFile);
+          $("#infoFile").load(infoFile, function( response, status, xhr ) {
+            consoleLog("Info Template Loaded: " + infoFile);
+          });
+        }
+
+
       });
+      
+
+
+
+      $(window).on('hashchange', function() { // Avoid window.onhashchange since overridden by map and widget embeds  
+        consoleLog("window hashchange");
+        consoleLog("delete hiddenhash.name");
+        delete hiddenhash.name; // Not sure where this is set.
+        delete hiddenhash.cat; // Not sure where this is set.
+        triggerHashChangeEvent();
+      });
+      //MutationObserver.observe(hiddenhash, triggerHashChangeEvent);
+
+
       clearInterval(waitForJQuery); // Escape the loop
-
-      // LOAD HTML TEMPLATE - Holds search filters and maps
-      // View original: https://model.earth/localsite/map
-      if (param.display == "everything") {
-        let bodyFile = theroot + "map/index.html #insertedText";
-        $("#bodyFile").load(bodyFile, function( response, status, xhr ) {
-          consoleLog("Template Loaded: " + bodyFile);
-        });
-      }
-
-  $(window).on('hashchange', function() { // Avoid window.onhashchange since overridden by map and widget embeds  
-    consoleLog("window hashchange");
-    consoleLog("delete hiddenhash.name");
-    delete hiddenhash.name; // Not sure where this is set.
-    delete hiddenhash.cat; // Not sure where this is set.
-    triggerHashChangeEvent();
-  });
-  //MutationObserver.observe(hiddenhash, triggerHashChangeEvent);
-
-
-
 
 
 
@@ -562,12 +591,15 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   */
   if (param.display == "everything") {
 
+    includeCSS3(theroot + 'css/map.css',theroot); // Before naics.js so #industries can be overwritten.
+    includeCSS3(theroot + 'css/naics.css',theroot);
+
     if (param.preloadmap != "false") {
-      
       loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
           includeCSS3(theroot + 'css/leaflet.css',theroot);
           loadScript(theroot + 'js/leaflet.js', function(results) {
             loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Could skip when map does not use material icon colors
+              $(".show-on-load").show();
               loadScript(theroot + 'js/map.js', function(results) {
                 loadSearchFilters3(theroot,1); // Uses localsite_app library in localsite.js for community_data_root
               });
@@ -581,18 +613,52 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       
     }
 
+    //includeCSS3(theroot + 'css/bootstrap.darkly.min.css',theroot);
+
+
+    loadScript(theroot + '../io/build/lib/useeio_widgets.js', function(results) {
+      loadScript(theroot + 'js/naics.js', function(results) {
+        //if(!param.state) {
+          applyIO("");
+        //}
+      });
+    });
+    
+    
+
+    includeCSS3(theroot + '../io/build/widgets.css',theroot);
+    includeCSS3(theroot + '../io/build/slider.css',theroot);
+
+
     includeCSS3(theroot + 'css/base.css',theroot);
     includeCSS3(theroot + 'css/search-filters.css',theroot);
     if (param.preloadmap != "false") {
       includeCSS3(theroot + 'css/map-display.css',theroot);
     }
     
+
     includeCSS3('https://fonts.googleapis.com/icon?family=Material+Icons',theroot);
     includeCSS3(theroot + 'css/leaflet.icon-material.css',theroot);
-    includeCSS3(theroot + 'css/map.css',theroot);
+    
     loadScript(theroot + 'js/table-sort.js', function(results) {}); // For county grid column sort
 
-  }
+    if(param.showbubbles) {
+      loadScript(theroot + 'js/d3.v5.min.js', function(results) {
+        loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
+          // HACK - call twice so rollovers work.
+            refreshBubbleWidget();
+            setTimeout( function() {
+              
+              // No luck...
+            displayImpactBubbles();
+            //displayImpactBubbles();
+            //refreshBubbleWidget();
+          }, 1000 );
+        });
+      });
+    }
+
+  } // end everything
 
 
       } else {
@@ -609,7 +675,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 }); // End JQuery loadScript
 
 
-
+var mycount = 0;
 function includeCSS3(url,theroot) {
     let urlID = getUrlID3(url,theroot);
     if (!document.getElementById(urlID)) { // Prevents multiple loads.
@@ -632,12 +698,113 @@ function includeCSS3(url,theroot) {
         head.appendChild(link); // Since site-narrow.css comes after site.css
     }
 }
-function getUrlID3(url,theroot) {
-  let urlID = url.replace(theroot,"").replace("https://","").replace(/\//g,"-").replace(/\./g,"-");
-  if (urlID.indexOf('?') > 0) {
-        urlID = urlID.substring(0,urlID.indexOf('?')); // Remove parameter so ?v=1 is not included in id.
+function getDomain(url) {
+
+    url = url.replace(/(https?:\/\/)?(www.)?/i, '');
+
+
+        //url = url.split('.');
+
+        //url = url.slice(url.length - 2).join('.');
+
+
+    if (url.indexOf('/') !== -1) {
+        return url.split('/')[0];
     }
-    return urlID;
+
+    return url;
+}
+
+function getUrlID3(url,theroot) {
+
+  // AVOID using theroot parameter. It can be eliminated.
+
+  let startingUrl = url;
+  // Remove hash since it has no effect when on an include tag.
+  if (url.indexOf('#') > 0) {
+    url = url.substring(0,url.indexOf('#')); 
+  }
+
+  // Remove domain and port from url
+  url = "/" + url.replace(/^[a-z]{4,5}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1'); // http or https
+
+  //url = theroot + url;
+
+  // Retain domain if not local. Prevents two external IDs from matching.
+  let domain = getDomain(url);
+  mycount++;
+
+  let myfeedback = "";
+  //if (domain != getDomain(theroot)) {
+  if (domain) {
+    // No changes to url
+    if (100==100) {
+      myfeedback = ("Count: " + mycount + "\nurl: " + url + "\nDomain: " + domain + "\ntheroot: " + theroot + "\nDomain of theroot: " + getDomain(theroot));
+    }
+  } else {
+    
+    // Remove front folder for each ../
+    
+      if (100==100) {
+        //alert(url);
+
+        let climbcount = (url.match(/\.\.\//g) || []).length; // Number of ../ instances in url
+        // TODO: Adjust for non-consecutive ../
+        if (climbcount >= 1) {
+            let beginning = url.split("../");
+
+            
+              //alert(url);
+              //alert(beginning[0]);
+
+              let newbeginning = beginning[0].replace(/^\/+|\/+$/g, ''); // Remove beginning and ending slashes
+              let beginningFolder = newbeginning.split("/"); // Split on remaining slashes
+              if (beginningFolder.length >= 1) {
+                
+                let keepcount = beginningFolder.length - climbcount;
+                if (keepcount < 0) {
+                  keepcount = 0;
+                }
+                keepfolders = "/";
+                // Omit from right side of front.
+                for (i = 0; i < beginningFolder.length; i++) {
+                  if (i < keepcount) {
+                    keepfolders += beginningFolder[i] + keepfolders;
+                  }
+                }
+              }
+              //alert("keepfolders: " + keepfolders);
+              //alert("trim " + beginning[0] + " from " + url);
+              //alert(url.trimLeft(beginning[0]));
+              //url = keepfolders + url.trimLeft(beginning[0]); // Didn't work
+
+              //alert(url.replace(beginning[0],""));
+              //alert(url);
+              url = keepfolders + url.replace(beginning[0],"").replace("../","");
+              //alert(url);
+              console.log("beginningFolder.length " + beginningFolder.length + " for " + startingUrl  + " leads to urlID " + url);
+        }
+      }
+  }
+
+  //let urlID = url.replace(theroot,"").replace("https://","").replace("http://","");
+  ////.replace(/\//g,"-").replace(/\./g,"-");
+
+  let urlID = url
+
+  if (urlID.indexOf('?') > 0) {
+    // Keeping an external site reuses the same file path with different parameters.
+    //urlID = urlID.substring(0,urlID.indexOf('?')); // Remove parameter so ?v=1 is not included in id.
+  }
+
+  urlID = urlID.replace(/^.*\/\/[^\/]+/, ''); 
+
+  if (100==100) {
+    //alert(myfeedback + "\nResulting urlID: " + urlID);
+  }
+
+  console.log("urlID after adjustment: " + urlID);
+  return urlID;
 }
 
 function loadSearchFilters3(theroot, count) {

@@ -6,6 +6,8 @@
 // 759 13  999 Statewide   55  Corporate, subsidiary, and regional managing offices    13  551114  1541.3499999999995  110283.20000000004  11605999.4  116336.0    12059746.4  1542.8
 
 let params = loadParams(location.search,location.hash);
+params = mix(param,params); // Add include file's param values.
+
 if(typeof dataObject == 'undefined') {
     var dataObject = {};
 }
@@ -102,6 +104,8 @@ document.addEventListener('hashChangeEvent', function (elem) {
 function refreshNaicsWidget() {
     let hash = getHash(); // Includes hiddenhash
     params = loadParams(location.search,location.hash); // Also used by loadIndustryData()
+    params = mix(param,params); // Add include file's param values.
+
     if (!params.catsort) {
         params.catsort = "payann";
     }
@@ -379,7 +383,7 @@ function promisesReady(values) {
                 
 
 
-                console.log("tttttt" + params.census_scope)
+                console.log("params.census_scope " + params.census_scope)
                 industryData = {
                     'ActualRate': formatIndustryData(values[params.catsize/2],dataObject.subsetKeys),
                 }
@@ -443,6 +447,9 @@ function promisesReady(values) {
                 statelength=dataObject.counties.length
                 [fips,dataObject.stateshown]=getStateFips(params)
 
+                if (!params.state) {
+                    params.state = hiddenhash.state; // Value from localhost.js include file.
+                }
                 renderIndustryChart(dataObject,values,params);
             }
         })
@@ -1334,6 +1341,10 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                         //updateHash({"naics":naicshash});
                         //params = loadParams(location.search,location.hash);
                         //midFunc(params.x,params.y,params.z,params);
+
+                        //alert("#industries show");
+                        //$("#industries").show();
+
                         })
                 })
                 d3.csv(localsite_app.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {

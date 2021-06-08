@@ -25,9 +25,10 @@
 <div id="info-template">
 <!-- INFO TEMPLATE -->
 
-<div id="industryListHolder" style="display:none; border-bottom:1px solid #ccc; padding-top:0px; padding-bottom:0px">
-
-<div id="top-content-columns" class="contentX contentpadding noprint" style="margin-top:20px; padding-top:0px; padding-bottom:0px">
+<div id="industries"></div>
+<div id="industryListHolder" style="display:none; border-bottom:1px solid #ccc; padding-top:0; padding-bottom:0">
+<div id="industries">
+<div id="top-content-columns" class="contentX contentpadding noprint" style="margin-top:20px; padding-top:0; padding-bottom:0">
 
 	<!--
 	"Life Cycle Assessment (also known as life cycle analysis, or cradle-to-grave analysis) is a method of assessing environmental impacts associated with all stages of a product's life. For example, it measures impact from raw material extraction to materials processing, manufacturing, distribution, use, repair and maintenance, and disposal or recycling. The goal of LCA is to compare the full range of environmental effects assignable to products and services by quantifying all inputs and outputs of material flows, and then assessing how these material flows impact the environment. This information is used to improve processes, support policy, and provide a sound basis for informed decisions." - 
@@ -50,7 +51,7 @@
 					<div id="quickLinks" style="display:none">
 						<div>Choose counties</div>
 					</div>
-					<h1 class="regiontitle" style="margin-top:0px;padding-top:0px;"></h1>
+					<h1 class="regiontitle" style="margin-top:0;padding-top:0;"></h1>
 					<h4 class="location_titles" style="font-size:16px;color:#555;display:none"></h4>
 				</div>
 
@@ -114,7 +115,7 @@
 
 			</div>
 		
-
+</div>
 </div>
 </div>
 
@@ -299,7 +300,7 @@ Georgia-specific input-output dataset is being developed by the EPA.<br><br>
 }
 </style>
 
-
+<div id="supply" class="anchor"></div>
 <div class="contentpadding" style="border-bottom:1px solid #ccc;">
 	<div class="io" style="overflow-x: scroll">
         <div style="margin: 0 auto;">
@@ -328,11 +329,9 @@ Georgia-specific input-output dataset is being developed by the EPA.<br><br>
 
 			<option value="ENRG,LAND,MNRL,WATR">Resource Use</option>
 
-			<option value="ENRG" title="Energy Use (ENRG): 
-			Energy Use is an indicator of the life cycle total amount of primary energy used as defined by heat value in a combusted resource or the available energy in a renewable resource to a converting device such as a wind turbine or water turbine. This indicator is a combination of the NNRG and RNRG indicators. This indicator is expressed in megajoules (MJ).">&nbsp; &nbsp;Energy Use (ENRG)</option>
+			<option value="ENRG" title="Energy Use (ENRG): Energy Use is an indicator of the life cycle total amount of primary energy used as defined by heat value in a combusted resource or the available energy in a renewable resource to a converting device such as a wind turbine or water turbine. This indicator is a combination of the NNRG and RNRG indicators. This indicator is expressed in megajoules (MJ).">&nbsp; &nbsp;Energy Use (ENRG)</option>
 
-			<option value="LAND" title="Land Use (LAND): 
-			Nearly every process requires some amount of land for factories, offices, or roads. This land is often converted from existing natural habitats for wildlife. Habitat loss is the leading cause of wildlife extinctions worldwide and additional habitat conversion could lead to further loss of species. This indicator tracks the total area of usable land occupied to allow for the process. This indicator is expressed in square meters for a year (m2*yr).">&nbsp; &nbsp;Land Use (LAND)</option>
+			<option value="LAND" title="Land Use (LAND): Nearly every process requires some amount of land for factories, offices, or roads. This land is often converted from existing natural habitats for wildlife. Habitat loss is the leading cause of wildlife extinctions worldwide and additional habitat conversion could lead to further loss of species. This indicator tracks the total area of usable land occupied to allow for the process. This indicator is expressed in square meters for a year (m2*yr).">&nbsp; &nbsp;Land Use (LAND)</option>
 
 			<option value="MNRL">&nbsp; &nbsp;Minerals and Metals Use (MNRL)</option>
 
@@ -416,13 +415,7 @@ Georgia-specific input-output dataset is being developed by the EPA.<br><br>
 
 	<br><br><br>
 	
-	<h1 style="margin-bottom: 0px">Impact Levels</h1>
-	<span>National impact of <span class="regiontitle"></span></span><br>
-	<div class="sector-list"></div>
-	<!--
-	JOBS and VADD are excluded from the default sort
-	https://github.com/USEPA/useeio-widgets/issues/35
-	-->
+
 	
 </div>
 
@@ -438,8 +431,6 @@ Georgia-specific input-output dataset is being developed by the EPA.<br><br>
    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
 </style>
-<br><br>
-
 
 <script>
 // Not used - Delete
@@ -525,6 +516,19 @@ function updateMosicNew(naics) {
     });
 }
 </script>
+
+<div id="impact"></div>
+<div class="contentpadding" style="min-height:200px;border-bottom:1px solid #ccc;">
+
+	<h1 style="margin-bottom: 0px">Impact Levels</h1>
+	<span>National impact of <span class="regiontitle"></span></span><br>
+	<div class="sector-list"></div>
+	<!--
+	JOBS and VADD are excluded from the default sort
+	https://github.com/USEPA/useeio-widgets/issues/35
+	-->
+</div>
+
 <!-- /MOSAIC HEATMAP -->
 
 
@@ -649,7 +653,7 @@ config.join(sectorList);
 	<div id="barchart" style="display:none"></div>
 
 	<div id="impactTextIntro" class="noprint">Click bubbles above to display a bar chart below for comparison.</div>
-	<div id="impactText" style="float:left"></div>
+
 	<div style="clear:both"></div>
 
 
@@ -739,8 +743,8 @@ document.getElementById('showValues').onclick = function() {
 /* override widget scroll bars which apopear 100% */
 ::-webkit-scrollbar-thumb {
     border-radius: 4px;
-    background-color: rgba(255,255,255,.5); 
-    -webkit-box-shadow: 0 0 1px rgb(255 255 255 / 50%);
+    background-color: rgba(255,255,255,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255 255 255 .5);
 }
 </style>
 

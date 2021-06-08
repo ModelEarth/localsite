@@ -1,5 +1,8 @@
 #econ_list {
+
+	max-width: 100%;
 	overflow-x: scroll;
+	overflow: auto;
 }
 #sector_list {
 	display: table;

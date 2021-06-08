@@ -136,8 +136,9 @@
 
 <!-- Start HTML -->
 
-<!-- STYLE OVERRIDES FOR DRUPAL -->
 <style type="text/css">
+  .show-on-load {display: none;}
+  /* STYLE OVERRIDES FOR DRUPAL */
   #legendHolder {min-width: 270px;}
   .component--custom_markup > .content {max-width:100%}
   .component--main_content, .component--single_column_content {padding:0px}
@@ -150,7 +151,8 @@
 <!-- FILTERS -->
 <div class="search-filters-css" style="display:none">
 <div id="headerFixed" class="filterPanel">
-  <div class="headerOffset headerOffsetOne" style="display: none">&nbsp;</div>
+
+  <div class="headerOffset headerOffsetOne" style="displayX: none">&nbsp;</div>
 
   <div class="filterPanel_background">
   </div>
@@ -161,7 +163,7 @@
   <div class="hideWhenPop">
 
   <!-- Matches filterFields and headerFixed height -->
-  <div class="headerOffset2" style="height:56px;"></div>
+  <div class="filterbarOffset" style="displayX:none;height:56px;"></div>
 
   <div id="filterFieldsHolder" class="contentfull noprint" style="margin:0 auto; padding-top:0px; float:left; width:100%">
 
@@ -188,7 +190,7 @@
             </div>
         </div>
         <div class="showApps local" style="display:none; padding:0; border:0px solid #ccc; margin-right:4px">
-          <i class="material-icons georgiaorg-hide" style="font-size:34px">&#xE5C3;</i>
+          <i class="material-icons show-on-load georgiaorg-hide" style="font-size:34px">&#xE5C3;</i>
         </div>
       </div>
 
@@ -211,7 +213,7 @@
               <!-- We could place over all select menus
                 https://fabriceleven.com/design/clever-way-to-change-the-drop-down-selector-arrow-icon/ -->
               <i id="showLocations" class="material-icons" style="font-size:24px;display:none">&#xE313;</i>
-              <i id="hideLocations"  class="material-icons" style="font-size:24px;cursor:pointer;">&#xE409;</i>
+              <i id="hideLocations"  class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
             </div>
             <div class="filterClickText locationTabText">States and Counties...</div><!-- Entire State -->
           </div>
@@ -232,7 +234,7 @@
             <div class="filterClick showApps" style="position:relative; overflow:auto;">
 
               <div class="select-menu-arrow-holder">
-                  <i class="material-icons" style="font-size:24px;cursor:pointer;">&#xE409;</i>
+                  <i class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
                   <i class="material-icons" style="font-size:24px;cursor:pointer;display:none;">&#xE313;</i>
               </div>
               <div style="width:100%">
@@ -257,7 +259,7 @@
 
                 <div class="select-menu-arrow-holder">
                   <i class="material-icons" style="font-size:24px;cursor:pointer;display:none;">&#xE409;</i>
-                  <i class="material-icons" style="font-size:24px;cursor:pointer;">&#xE313;</i>
+                  <i class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE313;</i>
                 </div>
                 <!--
                 <select id="selectProduct" class="selectMenu" style="float:left">
@@ -289,7 +291,7 @@
           </div>
           <!--
           <div style="position:absolute; right:8px; top:10px; z-index:1">
-            <i id="showAdvancedXXX" class="material-icons" style="font-size:24px;cursor:pointer">&#xE409;</i>
+            <i id="showAdvancedXXX" class="material-icons show-on-load" style="font-size:24px;cursor:pointer">&#xE409;</i>
             
           </div>
           -->
@@ -375,21 +377,21 @@
             </div>
           </div>
 
-          <div class="toggleListOptions pagebutton" style="margin-right:15px"><i class="material-icons dots-vertical" style="font-weight:900; font-size: 32px; padding:0px; margin:0px">&#xE5C5;</i>
+          <div class="toggleListOptions pagebutton" style="margin-right:15px"><i class="material-icons show-on-load dots-vertical" style="font-weight:900; font-size: 32px; padding:0px; margin:0px">&#xE5C5;</i>
           </div>
 
           <div class="listOptions filterBubble">
 
             <div class="hideEmbed" style="display:none">
 
-              <div class="reduceHeader menuItem" style="display:none"><i class="material-icons" style="margin-top:-5px;">&#xE3C4;</i>Narrow Header</div>
+              <div class="reduceHeader menuItem" style="display:none"><i class="material-icons show-on-load" style="margin-top:-5px;">&#xE3C4;</i>Narrow Header</div>
 
               <!-- Google Icons - search for "crop" -->
               <div class="revealImage menuItem" style="display:none"><i class="material-icons" style="margin-top:-5px;">&#xE3C4;</i>Full Header Image</div>
 
-              <div class="hideInfo hideInfoLink menuItem"><i class="material-icons" style="margin-top:-5px">&#xE88E;</i>Hide Bar</div>
+              <div class="hideInfo hideInfoLink menuItem"><i class="material-icons show-on-load" style="margin-top:-5px">&#xE88E;</i>Hide Bar</div>
 
-              <div class="showInfo showInfoLink menuItem" style="display:none"><i class="material-icons" style="margin-top:-10px">&#xE88E;</i>Show Info</div>
+              <div class="showInfo showInfoLink menuItem" style="display:none"><i class="material-icons show-on-load" style="margin-top:-10px">&#xE88E;</i>Show Info</div>
 
             </div>
 
@@ -537,6 +539,12 @@
 
 
 </div>
+
+<!-- Same height as filterbarOffset within header above -->
+<!--
+<div class="filterbarOffset2" style="displayX:none;height:56px;"></div>
+-->
+
 <!-- END FILTERS -->
 
 
@@ -1113,7 +1121,7 @@ Displayed by hashChanged() in map-filters.js
 <div style="clear:both"></div>
 
 <div class="displayOnload" style="display:none;position:relative">
-  <div id="map1"></div>
+  <div id="map1" style="display:none"></div>
   <div class="localonly" id="legendHolder" style="display:none">
     <div id="allLegends"></div>
   </div>

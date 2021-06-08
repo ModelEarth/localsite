@@ -323,8 +323,9 @@ summary::-webkit-details-marker {
 }
 
 .pageColumns {
-  width:100%;
-  overflow: hidden; /* Allows bottom padding to apply after float:left columns */
+
+  overflowX: hidden; /* Allows bottom padding to apply after float:left columns */
+  overflowX: scroll; /* Allows large number of naics columns to be viewed */
 }
 .pageColumn {
   width:33.33%;

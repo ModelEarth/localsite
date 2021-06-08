@@ -591,7 +591,9 @@ function filterClickLocation() {
     // TO DO: Display cities, etc. somehow without clicking submenu.
     // 
 }
-
+if(hash.select == "counties") {
+    filterClickLocation();
+}
 function locationFilterChange(selectedValue,selectedGeo) {
 	let hash = getHash();
 	var useCookies = false; // Would need Cookies from site repo.
@@ -1796,7 +1798,8 @@ function googPlacesApp() {
 	      //setTimeout(() => {
 	        this.autocomplete = new google.maps.places.Autocomplete(
 	          document.getElementById('searchloc'),
-	          {types: ['establishment', 'geocode']}
+	          {types: ['establishment', 'geocode'],
+                componentRestrictions: {country: "us"}}
 	        );
 	        //console.log("google.maps.places.Autocomplete: ");
 	        //console.log(this.autocomplete);
@@ -2285,7 +2288,8 @@ function renderMapShapes(whichmap, hash) { // whichGeoRegion is not yet applied.
 
 			              // Was used by applyStyle
 			              ////neighbors = topojson.neighbors(topoob.objects.data.geometries);
-			              neighbors = topojson.neighbors(topoob.arcs); // .properties
+                          // comented out May 29, 2021 due to "topojson is not defined" error.
+			              //neighbors = topojson.neighbors(topoob.arcs); // .properties
 
 			              // ADD geometries  see https://observablehq.com/@d3/choropleth
 			              //topodata = topojson.feature(topoob, topoob.objects.data)

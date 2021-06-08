@@ -42,7 +42,7 @@ strVar += "  ";
 strVar += "  <div class=\"hideWhenPop\">";
 strVar += "";
 strVar += "  <!-- Matches filterFields and headerFixed height -->";
-strVar += "  <div class=\"headerOffset2\" style=\"height:56px;\"><\/div>";
+strVar += "  <div class=\"filterbarOffset\" style=\"height:56px;\"><\/div>";
 strVar += "";
 strVar += "  <div id=\"filterFieldsHolder\" class=\"contentfull noprint\" style=\"margin:0 auto; padding-top:0px; float:left; width:100%\">";
 strVar += "";
