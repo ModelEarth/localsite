@@ -1084,6 +1084,14 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   //if (dp && dp[0]) { // Parameters set in page or layer json
   if (dp && dp.dataset) { // Parameters set in page or layer json
     dp1 = dp;
+
+  } else if (show == "beyondcarbon") {
+    dp1.listTitle = "Beyond Carbon";
+    dp1.dataset = "https://assets.bbhub.io/dotorg/sites/40/2019/05/Beyond-Carbon-States_Territories-data-sample-5_22-data-06_06.csv";
+    dp1.itemsColumn = "Has [XX] committed to 100% clean energy?"; // For side nav search
+    dp1.valueColumn = "Has [XX] committed to 100% clean energy?";
+    dp1.nameColumn = "Has [XX] committed to 100% clean energy?";
+
   } else if (show == "farmfresh" && state_abbreviation) {
     dp1.listTitle = "USDA Farm Produce";
     //if (location.host.indexOf('localhost') >= 0) {
