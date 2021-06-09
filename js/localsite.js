@@ -642,7 +642,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     
     loadScript(theroot + 'js/table-sort.js', function(results) {}); // For county grid column sort
 
-    if(param.showbubbles) {
+    //if(param.showbubbles) {
       loadScript(theroot + 'js/d3.v5.min.js', function(results) {
         loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
           // HACK - call twice so rollovers work.
@@ -656,7 +656,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           }, 1000 );
         });
       });
-    }
+    //}
 
   } // end everything
 
