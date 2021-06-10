@@ -448,6 +448,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           //alert("Before template Loaded: " + bodyFile);
           $("#bodyFile").load(bodyFile, function( response, status, xhr ) {
             consoleLog("Template Loaded: " + bodyFile);
+            relocatedStateMenu.appendChild(state_select); // For apps/beyond-carbon
           });
         }
 

@@ -591,7 +591,7 @@ function filterClickLocation() {
     // TO DO: Display cities, etc. somehow without clicking submenu.
     // 
 }
-if(hash.select == "counties") {
+if(param.select == "counties") { // TODO: Change select= to another name
     filterClickLocation();
 }
 function locationFilterChange(selectedValue,selectedGeo) {
@@ -2110,6 +2110,18 @@ function hashChanged() {
 			}
 		}
 		$("#state_select").val(hash.state);
+
+        //let imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/georgia.jpg";
+        //$("#state-landscape-image").css('background-image', 'url(' + imageUrl + ')');
+
+        //let theState = $("#state_select").find(":selected").val();
+        let theStateName = $("#state_select").find(":selected").text();
+        let theStateNameLowercase = theStateName.toLowerCase();
+
+        let imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/" + theStateNameLowercase.replace(/\s+/g, '-') + ".jpg";
+        let imageUrl_scr = "url(" + imageUrl + ")";
+        $("#state-landscape-image").css('background-image', imageUrl_scr);
+
 		if (hash.state != "GA") {
 			$(".regionFilter").hide();
 			$(".geo-limited").hide();
