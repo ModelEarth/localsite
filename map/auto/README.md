@@ -1,6 +1,6 @@
 ## Google Autocomplete
 
-Search utilizes Google Places API autocomplete functionality, returning Google's Place "predictions" as the user is typing in a search term. Once the user makes a selection, the details of the selection (geo coordinates, address, phone, website, etc..) are returned from the API.
+Search utilizes [Google Places API autocomplete](https://developers.google.com/maps/documentation/javascript/places-autocomplete) functionality, returning Google's Place "predictions" as the user is typing in a search term. Once the user makes a selection, the details of the selection (geo coordinates, address, phone, website, etc..) are returned from the API.
 
 ## Setup
 
