@@ -309,7 +309,9 @@ Georgia-specific input-output dataset is being developed by the EPA.<br><br>
 				- <a href="https://model.earth/io/charts/">About Widgets</a>
 			</div>
 
-            <h1>Supply Chain</h1>
+            <h1 style="margin-bottom:0px">Supply Chain</h1>
+            <div class="regiontitle" style="margin-bottom:20px"></div>
+
             <div style="clear:both"></div>
 
             <!--
@@ -317,7 +319,7 @@ Georgia-specific input-output dataset is being developed by the EPA.<br><br>
 
             	location.reload() is a temporary fix since mosaic is not triggered by change to hash.
             -->
-			<select id="indicators" class="filterClickX form-selectX picklist" onchange="goHash({'indicators':this.value});" style="min-width:400px;margin:10px 0 0 0">
+			<select id="indicators" class="filterClickX form-selectX picklist" onchange="goHash({'indicators':this.value});" style="min-width:400px;margin:10px 0 0 0; font-size:18px; max-width:400px">
 
 			<option value="">Select impact area...</option>
 
@@ -521,7 +523,7 @@ function updateMosicNew(naics) {
 <div class="contentpadding" style="min-height:200px;border-bottom:1px solid #ccc;">
 
 	<h1 style="margin-bottom: 0px">Impact Levels</h1>
-	<span>National impact of <span class="regiontitle"></span></span><br>
+	<span class="regiontitle"></span><br>
 	<div class="sector-list"></div>
 	<!--
 	JOBS and VADD are excluded from the default sort

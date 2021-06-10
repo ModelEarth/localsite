@@ -448,7 +448,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           //alert("Before template Loaded: " + bodyFile);
           $("#bodyFile").load(bodyFile, function( response, status, xhr ) {
             consoleLog("Template Loaded: " + bodyFile);
-            relocatedStateMenu.appendChild(state_select); // For apps/beyond-carbon
+            if (typeof relocatedStateMenu != "undefined") {
+              relocatedStateMenu.appendChild(state_select); // For apps/beyond-carbon
+            }
           });
         }
 
@@ -804,7 +806,7 @@ function getUrlID3(url,theroot) {
     //alert(myfeedback + "\nResulting urlID: " + urlID);
   }
 
-  console.log("urlID after adjustment: " + urlID);
+  //console.log("urlID after adjustment: " + urlID);
   return urlID;
 }
 

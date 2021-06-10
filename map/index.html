@@ -812,15 +812,16 @@
               <b>State</b><br>
                 <select id="state_select" name="state">
                  <option></option>
-<option value="AL" stateid="01" lat="32.7396" lon="-86.8435" km="131174">Alabama</option>
-<option value="AK" stateid="02" lat="63.3474" lon="-152.8397" km="1478927">Alaska</option>
+<!-- Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
+<option value="AL" stateid="1" lat="32.7396" lon="-86.8435" km="131174">Alabama</option>
+<option value="AK" stateid="2" lat="63.3474" lon="-152.8397" km="1478927">Alaska</option>
 <option value="AS" stateid="60" lat="-14.2672" lon="-170.6683" km="198"  style="display:none">American Samoa</option>
-<option value="AZ" stateid="04" lat="34.2039" lon="-111.6064" km="294360">Arizona</option>
-<option value="AR" stateid="05" lat="34.8955" lon="-92.4446" km="134777">Arkansas</option>
-<option value="CA" stateid="06" lat="37.1552" lon="-119.5434" km="403660">California</option>
-<option value="CO" stateid="08" lat="38.9938" lon="-105.5083" km="268420">Colorado</option>
+<option value="AZ" stateid="4" lat="34.2039" lon="-111.6064" km="294360">Arizona</option>
+<option value="AR" stateid="5" lat="34.8955" lon="-92.4446" km="134777">Arkansas</option>
+<option value="CA" stateid="6" lat="37.1552" lon="-119.5434" km="403660">California</option>
+<option value="CO" stateid="8" lat="38.9938" lon="-105.5083" km="268420">Colorado</option>
 <option value="MP" stateid="69" lat="14.9368" lon="145.601" km="472" style="display:none">Commonwealth of the Northern Mariana Islands</option>
-<option value="CT" stateid="09" lat="41.5799" lon="-72.7467" km="12542">Connecticut</option>
+<option value="CT" stateid="9" lat="41.5799" lon="-72.7467" km="12542">Connecticut</option>
 <option value="DE" stateid="10" lat="38.9986" lon="-75.4416" km="5047">Delaware</option>
 <option value="DC" stateid="11" lat="38.9042" lon="-77.0165" km="158" style="display:none">District of Columbia</option>
 <option value="FL" stateid="12" lat="28.4574" lon="-82.4091" km="138947">Florida</option>
@@ -1163,24 +1164,27 @@ Displayed by hashChanged() in map-filters.js
   }
 </style>
 <div style="display:none" class="local">
+<!-- 
+Checkbox list.  The select list above is used by naics.js
+Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 <div id="selected_states">
-<input type="checkbox" class="selected_state" name="local-states" id="AL" stateid="01" lat="32.7396" lon="-86.8435" km="131174">
+<input type="checkbox" class="selected_state" name="local-states" id="AL" stateid="1" lat="32.7396" lon="-86.8435" km="131174">
 <label for="AL" class="">Alabama</label>
-<input type="checkbox" class="selected_state" name="local-states" id="AK" stateid="02" lat="63.3474" lon="-152.8397" km="1478927">
+<input type="checkbox" class="selected_state" name="local-states" id="AK" stateid="2" lat="63.3474" lon="-152.8397" km="1478927">
 <label for="AK" class="">Alaska</label>
 <input type="checkbox" class="selected_state" name="local-states" id="AS" stateid="60" lat="-14.2672" lon="-170.6683" km="198" style="display:none">
 <label for="AS" class="" style="display:none">American Samoa</label>
-<input type="checkbox" class="selected_state" name="local-states" id="AZ" stateid="04" lat="34.2039" lon="-111.6064" km="294360">
+<input type="checkbox" class="selected_state" name="local-states" id="AZ" stateid="4" lat="34.2039" lon="-111.6064" km="294360">
 <label for="AZ" class="">Arizona</label>
-<input type="checkbox" class="selected_state" name="local-states" id="AR" stateid="05" lat="34.8955" lon="-92.4446" km="134777">
+<input type="checkbox" class="selected_state" name="local-states" id="AR" stateid="5" lat="34.8955" lon="-92.4446" km="134777">
 <label for="AR" class="">Arkansas</label>
-<input type="checkbox" class="selected_state" name="local-states" id="CA" stateid="06" lat="37.1552" lon="-119.5434" km="403660">
+<input type="checkbox" class="selected_state" name="local-states" id="CA" stateid="6" lat="37.1552" lon="-119.5434" km="403660">
 <label for="CA" class="">California</label>
-<input type="checkbox" class="selected_state" name="local-states" id="CO" stateid="08" lat="38.9938" lon="-105.5083" km="268420">
+<input type="checkbox" class="selected_state" name="local-states" id="CO" stateid="8" lat="38.9938" lon="-105.5083" km="268420">
 <label for="CO" class="">Colorado</label>
 <input type="checkbox" class="selected_state" name="local-states" id="MP" stateid="69" lat="14.9368" lon="145.601" km="472" style="display:none">
 <label for="MP" class="" style="display:none">Commonwealth of the Northern Mariana Islands</label>
-<input type="checkbox" class="selected_state" name="local-states" id="CT" stateid="09" lat="41.5799" lon="-72.7467" km="12542">
+<input type="checkbox" class="selected_state" name="local-states" id="CT" stateid="9" lat="41.5799" lon="-72.7467" km="12542">
 <label for="CT" class="">Connecticut</label>
 <input type="checkbox" class="selected_state" name="local-states" id="DE" stateid="10" lat="38.9986" lon="-75.4416" km="5047">
 <label for="DE" class="">Delaware</label>

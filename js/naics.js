@@ -30,6 +30,7 @@ if (params.geo){
 [fips,dataObject.stateshown]=getStateFips(params);
 
 function getStateFips(params){
+    let hash = getHash();
     if (params.geo) {
         //if (params.geo.includes(",")) {
             var geos=params.geo.split(",");
@@ -76,6 +77,11 @@ function getStateFips(params){
             }
         }
         */
+    } else if (hash.state) {
+        //fips = $("#state_select").find(":selected").attr("stateid").trimLeft("0");
+        fips = stateID[hash.state];
+        dataObject.stateshown = fips;
+        //alert("the fips " + fips)
     } else {
         fips = dataObject.stateshown;
     }
@@ -748,6 +754,7 @@ function keyFound(this_key, cat_filter, params) {
 function topRatesInFips(dataSet, dataNames, fips, params) {
     let catcount = params.catcount || 40;
     let gotext = "";
+    let hash = getHash();
     if (!params.show) {
         params.show = params.go;
     }
@@ -762,12 +769,13 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
 
     //$("#econ_list").html("");
     console.log("topRatesInFips")
-    //alert(String(dataObject.stateshown))
+    //alert(String(dataObject.stateshown)) // State's fips number
 
     // Redirect occurs somewhere below....
 
     d3.csv(localsite_app.community_data_root() + "us/id_lists/state_fips.csv").then( function(consdata) {
-        var filteredData = consdata.filter(function(d) {
+        console.log("naics.js reports state_fips.csv loaded");
+        var filteredData = consdata.filter(function(d) { // Loop through
             if(d["FIPS"]==String(dataObject.stateshown)) {
                 if(params.catsort=='estab'){
                     which=params.catsort;
@@ -933,6 +941,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                         }
                     }   
                 }else{
+                    //alert("fips " + fips + " dataObject.stateshown " + dataObject.stateshown);
                     if(fips==dataObject.stateshown){
                     
                         if(params['census_scope']=="state"){
@@ -1038,10 +1047,11 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                 let dollar = ""; // optionally: $
                 let totalLabel = "Total";
                 let stateAbbr;
-                if (params.state) {
-                    stateAbbr = params.state.toUpperCase();
+                
+                if (hash.state) {
+                    stateAbbr = hash.state.toUpperCase();
                 }
-                if(params.catsort=="payann"){
+                if(hash.catsort=="payann"){
                     totalLabel = "Total Payroll ($)";
                 }
 
@@ -1050,8 +1060,9 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                 d3.csv(localsite_app.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {
                     d3.csv(localsite_app.community_data_root() + "us/state/" + stateAbbr + "/" + stateAbbr + "counties.csv").then( function(latdata) {
                          // TABLE HEADER ROW
-
-                        if(Array.isArray(fips) && statelength != fips.length){
+                         //alert("statelength " + statelength + " fips.length: " + fips.length);
+                         // && statelength != fips.length
+                        if(Array.isArray(fips)){
 
                             for(var i=0; i < fips.length; i++){
 
@@ -1074,13 +1085,15 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                         text += "</div>"; // #9933aa
                         
                         // INDUSTRY ROWS
-                        y=Math.min(catcount, top_data_ids.length)
+                        y=Math.min(catcount, top_data_ids.length);
+                        // y = top_data_ids.length; // Show over 800 rows
                         let naicshash = "";
                         $("#econ_list").html("<div><br>No results found.</div><br>");
+                        //alert(y)
                         for (i = 0; i < y; i++) { // Naics
                             rightCol="";
                             midCol="";
-
+                            //console.log("NAICS ROW " + i);
                             // Update these:
                                 let latitude = "";
                                 let longitude = "";
@@ -1315,11 +1328,11 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                         if (!param.naics) {
                             lowerMessage += "Click NAICS number above to view industry's supply chain. ";
                         }
-                        lowerMessage += "Purple&nbsp;text&nbsp;indicates approximated values. List does not yet include data for industries without state-level payroll reporting by BLS or BEA. - <a href='/localsite/info/data/'>More&nbsp;Details</a>";
-
-                        $("#econ_list").html("<div id='sector_list'>" + text + "</div><br><p style='font-size:13px'>" + lowerMessage + "</p>");
-                        
-
+                        console.log("NAICS count: top " + y + " displayed out of " + top_data_ids.length);
+                        if (y > 0) {
+                            lowerMessage += "Purple&nbsp;text&nbsp;indicates approximated values. List does not yet include data for industries without state-level payroll reporting by BLS or BEA. - <a href='/localsite/info/data/'>More&nbsp;Details</a>";
+                            $("#econ_list").html("<div id='sector_list'>" + text + "</div><br><p style='font-size:13px'>" + lowerMessage + "</p>");
+                        }
                         console.log('send naics to #industry-list data-naics attribute: ' + naicshash)
 
                         // BUGBUG - causes naics to appear in hash

@@ -2184,7 +2184,8 @@ function hashChanged() {
 		$("#catmethod").val(hash.catmethod);
 	}
 	if (hash.indicators) {
-		$("#indicators").val(hash.indicators);
+        //alert("Selected hash.indicators " + hash.indicators);
+        //$("#indicators").prop("selectedIndex", 0).text("Selected hash.indicators " + hash.indicators);
 	}
 	/*
 	// Moved back to map.js
