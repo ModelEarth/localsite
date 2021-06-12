@@ -153,23 +153,32 @@ h1 {
   font-family: "Amaze", "Helvetica Neue", Helvetica, "Lato", sans-serif;
 }
 h2 {
+  margin-top: 0px;
   font-weight: 500;
   font-size: 1.4em;
   padding-top: 12px;
   padding-bottom: 5px;
   border-bottom: 1px solid #ddd;
-  
-  font-family: "Amaze"
-  /* margin-bottom: 14px; */ /* too tight */
   color: rgb(77, 82, 89);
   color: #333;
   overflow: auto;
 }
-/*
-h2 a:visited {
-  color: #0366d6;
+h2::before { /* Avoids hashtag headbutting browser window */
+  display: block; 
+  content: " "; 
+  margin-top: -120px; 
+  height: 120px; 
+  visibility: hidden; 
+  pointer-events: none;
 }
-*/
+section::before { /* Avoids hashtag headbutting browser window */
+  display: block; 
+  content: " "; 
+  margin-top: -120px; 
+  height: 120px; 
+  visibility: hidden; 
+  pointer-events: none;
+}
 h3 {
   font-weight: 600; 
   font-size: 1.3em;
