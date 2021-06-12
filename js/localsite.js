@@ -22,13 +22,21 @@ var localsite_app = localsite_app || (function(){
             }
 
             let scripts = document.getElementsByTagName('script'); 
-            let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
-            //let myScript = null;
-            // Now try to find one containging map-embed.js
+            let myScript; // = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
+            // Now try to find localsite.js
+            //alert(myScript.length)
             for (var i = 0; i < scripts.length; ++i) {
+                //alert(scripts[i].src)
+                if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
+                  myScript = scripts[i];
+                }
+            }
+            if (!myScript) { // Now try to find one containging map-embed.js
+              for (var i = 0; i < scripts.length; ++i) {
                 if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
                   myScript = scripts[i];
                 }
+              }
             }
             let hostnameAndPort = extractHostnameAndPort(myScript.src);
             let theroot = location.protocol + '//' + location.host + '/localsite/';
@@ -43,7 +51,8 @@ var localsite_app = localsite_app || (function(){
 
               //theroot = "https://model.earth/localsite/";
               theroot = hostnameAndPort + "/localsite/";
-              consoleLog("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src) + "\rwindow.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
+              consoleLog("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src));
+              consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
             }
             if (location.host.indexOf('localhost') >= 0) {
               // For testing embedding without locathost repo in site theroot. Rename your localsite folder.
@@ -288,12 +297,13 @@ function loadScript(url, callback)
 var localsite_repo3; // TEMP HERE
 function extractHostnameAndPort(url) { // TEMP HERE
     let hostname;
+    let protocol = "";
     //find & remove protocol (http, ftp, etc.) and get hostname
 
     if (url.indexOf("//") > -1) {
-        hostname = url.split('/')[2];
-    }
-    else {
+        protocol = url.split('//')[0] + "//"; // Retain http or https
+        hostname = protocol + url.split('/')[2];
+    } else {
         hostname = url.split('/')[0];
     }
 
@@ -333,7 +343,8 @@ function get_localsite_root3() { // Also in two other places
 
               //theroot = "https://model.earth/localsite/";
               theroot = hostnameAndPort + "/localsite/";
-              consoleLog("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src) + "\rwindow.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
+              consoleLog("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src))
+              consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
             }
             if (location.host.indexOf('localhost') >= 0) {
               // Enable to test embedding without locathost repo in site theroot. Rename your localsite folder.
@@ -407,6 +418,7 @@ function consoleLog(text,value) {
 
 
 // WAIT FOR JQUERY - This will cause bugs if other scripts don't also wait for jquery.
+
 loadScript(theroot + 'js/jquery.min.js', function(results) {
 
   // Will surround rest of this block with waitForJQuery if alert occurs.
@@ -442,7 +454,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         if (!$("#bodyFile").length) {
           $('body').prepend("<div id='bodyFile'></div>");
         }
-        if (param.display == "everything") {
+        if (param.display == "everything" || param.display == "map") {
           let bodyFile = theroot + "map/index.html #insertedText";
           console.log("Before template Loaded: " + bodyFile);
           //alert("Before template Loaded: " + bodyFile);
@@ -592,7 +604,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
   </script>
   */
-  if (param.display == "everything") {
+  if (param.display == "everything" || param.display == "map") {
 
     includeCSS3(theroot + 'css/map.css',theroot); // Before naics.js so #industries can be overwritten.
     includeCSS3(theroot + 'css/naics.css',theroot);
