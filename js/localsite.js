@@ -296,6 +296,7 @@ function loadScript(url, callback)
 
 var localsite_repo3; // TEMP HERE
 function extractHostnameAndPort(url) { // TEMP HERE
+    console.log("hostname from: " + url);
     let hostname;
     let protocol = "";
     //find & remove protocol (http, ftp, etc.) and get hostname
@@ -312,6 +313,7 @@ function extractHostnameAndPort(url) { // TEMP HERE
     //find & remove "?"
     hostname = hostname.split('?')[0];
 
+    console.log("hostname: " + hostname);
     return hostname;
 }
 function get_localsite_root3() { // Also in two other places
@@ -331,6 +333,7 @@ function get_localsite_root3() { // Also in two other places
                 }
             }
             let hostnameAndPort = extractHostnameAndPort(myScript.src);
+            console.log("hostnameAndPort: " + hostnameAndPort);
             let theroot = location.protocol + '//' + location.host + '/localsite/';
 
             if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
@@ -341,9 +344,10 @@ function get_localsite_root3() { // Also in two other places
             if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
               // Omit known hosts of "localsite" repo here.
 
+              // This is called on http://localhost/. Is it called during embedding on other domains?
               //theroot = "https://model.earth/localsite/";
               theroot = hostnameAndPort + "/localsite/";
-              consoleLog("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src))
+              console.log("theroot: " + theroot);
               consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
             }
             if (location.host.indexOf('localhost') >= 0) {
@@ -417,17 +421,14 @@ function consoleLog(text,value) {
 }
 
 
-// WAIT FOR JQUERY - This will cause bugs if other scripts don't also wait for jquery.
-
+// WAIT FOR JQUERY
 loadScript(theroot + 'js/jquery.min.js', function(results) {
 
-  // Will surround rest of this block with waitForJQuery if alert occurs.
-  var waitForJQuery = setInterval(function () {
+  var waitForJQuery = setInterval(function () { // Waits for $ within jquery.min.js file to become available.
 
     if (typeof $ != 'undefined') {
 
       $(document).ready(function () {
-
 
         consoleLog("Ready","DOM Loaded (But not template yet)")
 
@@ -630,16 +631,17 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
     //includeCSS3(theroot + 'css/bootstrap.darkly.min.css',theroot);
 
+    if (param.display == "everything") {
 
-    loadScript(theroot + '../io/build/lib/useeio_widgets.js', function(results) {
-      loadScript(theroot + 'js/naics.js', function(results) {
-        //if(!param.state) {
-          applyIO("");
-        //}
+      loadScript(theroot + '../io/build/lib/useeio_widgets.js', function(results) {
+        loadScript(theroot + 'js/naics.js', function(results) {
+          //if(!param.state) {
+            applyIO("");
+          //}
+        });
       });
-    });
-    
-    
+    }
+      
 
     includeCSS3(theroot + '../io/build/widgets.css',theroot);
     includeCSS3(theroot + '../io/build/slider.css',theroot);
@@ -657,23 +659,26 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     
     loadScript(theroot + 'js/table-sort.js', function(results) {}); // For county grid column sort
 
-    //if(param.showbubbles) {
-      loadScript(theroot + 'js/d3.v5.min.js', function(results) {
-        loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
-          // HACK - call twice so rollovers work.
-            refreshBubbleWidget();
-            setTimeout( function() {
-              
-              // No luck...
-            displayImpactBubbles();
-            //displayImpactBubbles();
-            //refreshBubbleWidget();
-          }, 1000 );
-        });
-      });
-    //}
 
-  } // end everything
+    if (param.display == "everything") {
+      //if(param.showbubbles) {
+        loadScript(theroot + 'js/d3.v5.min.js', function(results) {
+          loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
+            // HACK - call twice so rollovers work.
+              refreshBubbleWidget();
+              setTimeout( function() {
+                
+                // No luck...
+              displayImpactBubbles();
+              //displayImpactBubbles();
+              //refreshBubbleWidget();
+            }, 1000 );
+          });
+        });
+      //}
+    } // end everything
+
+  } // end everything or map
 
 
       } else {
@@ -906,7 +911,7 @@ function updateHiddenhash(hashObject) {
   return;
 }
 
-function extractHostnameAndPort(url) {
+function extractHostnameAndPortDELETE(url) {
     let hostname;
     //find & remove protocol (http, ftp, etc.) and get hostname
 
@@ -924,6 +929,29 @@ function extractHostnameAndPort(url) {
 
     return hostname;
 }
+
+function extractHostnameAndPort(url) { // TEMP HERE
+    console.log("hostname from: " + url);
+    let hostname;
+    let protocol = "";
+    //find & remove protocol (http, ftp, etc.) and get hostname
+
+    if (url.indexOf("//") > -1) {
+        protocol = url.split('//')[0] + "//"; // Retain http or https
+        hostname = protocol + url.split('/')[2];
+    } else {
+        hostname = url.split('/')[0];
+    }
+
+    //find & remove port number
+    //hostname = hostname.split(':')[0];
+    //find & remove "?"
+    hostname = hostname.split('?')[0];
+
+    console.log("hostname: " + hostname);
+    return hostname;
+}
+
 
 // Convert json to html
 var selected_array=[];
