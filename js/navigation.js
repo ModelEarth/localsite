@@ -46,7 +46,7 @@ $(document).ready(function(){
  	$("body").prepend( "<div id='header' class='flexheader hideprint'></div>\r" );
 		
 
- 	if (param["showheader"] != "true") {
+ 	if (param["showheader"] && param["showheader"] != "true") {
 
 		//$(".filterPanel").addClass("filterPanel_fixed"); // This cause everything but top nav to disappear.
 		//$(".filterbarOffset").hide();
@@ -56,6 +56,11 @@ $(document).ready(function(){
 	// TO DO: Add support for custom headerpath
 
  	} else {
+
+ 		$(".headerOffset").show();
+		$("#headeroffset").show();
+		$(".headerOffset").show();
+
  		// LOAD HEADER.HTML
  		let headerFile = modelpath + "../localsite/header.html";
  		if (slash_count <= 4) { // Folder is the root of site
