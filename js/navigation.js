@@ -46,12 +46,13 @@ $(document).ready(function(){
  	$("body").prepend( "<div id='header' class='flexheader hideprint'></div>\r" );
 		
 
- 	if (param["showheader"] == "false") {
+ 	if (param["showheader"] != "true") {
 
-		$(".filterPanel").addClass("filterPanel_fixed");
-		$("#map1").addClass("filterPanel_fixed_maptop");
-	
-
+		//$(".filterPanel").addClass("filterPanel_fixed"); // This cause everything but top nav to disappear.
+		//$(".filterbarOffset").hide();
+		$(".headerOffset").hide();
+		$("#headeroffset").hide();
+		$(".headerOffset").hide();
 	// TO DO: Add support for custom headerpath
 
  	} else {
@@ -181,8 +182,6 @@ $(document).ready(function(){
 					 		}
 					 	}
 				 	}
-				 	
-
 
 					// WAS LIMITED TO HEADER
 
@@ -253,9 +252,11 @@ $(document).ready(function(){
 			        	}
 			        	//$("#filterLocations").hide();
 					});
+				
 				// END WAS LIMITED TO HEADER
 				$(".headerOffset").show();
 			}); // End $("#header").load
+			
 		}); 
 
 	}

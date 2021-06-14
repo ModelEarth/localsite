@@ -748,7 +748,7 @@ function showCounties(attempts) {
 
 
 		//Load in contents of CSV file
-		if (theState.length > 0) {
+		if (theState.length == 2) {
 			d3.csv(localsite_app.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv").then(function(myData,error) {
 				if (error) {
 					alert("error")
@@ -2129,12 +2129,12 @@ function hashChanged() {
 			$(".regionFilter").show();
 			$(".geo-US13").show();
 		}
-		if (!hash.state) {
-			$(".locationTabText").text("States and counties...");
-			$("#filterLocations").hide();
-			$("#industryListHolder").hide(); // Remove once national naics are loaded.
+		if (hash.state && hash.state.length == 2) {
+            $(".locationTabText").text($("#state_select").find(":selected").text());
 		} else {
-			$(".locationTabText").text($("#state_select").find(":selected").text());
+			$(".locationTabText").text("States and counties...");
+            $("#filterLocations").hide();
+            $("#industryListHolder").hide(); // Remove once national naics are loaded.
 		}
 		//'geo':'', 
 		updateHash({'regiontitle':'', 'lat':'', 'lon':''});
@@ -2183,10 +2183,55 @@ function hashChanged() {
 	if (hash.catmethod) {
 		$("#catmethod").val(hash.catmethod);
 	}
-	if (hash.indicators) {
+	if (hash.indicators != priorHash.indicators) {
         //alert("Selected hash.indicators " + hash.indicators);
-        //$("#indicators").prop("selectedIndex", 0).text("Selected hash.indicators " + hash.indicators);
-	}
+        //$("#indicators").prop("selectedIndex", 0).value("Selected hash.indicators " + hash.indicators);
+
+        //$("#indicators").prepend("<option value='" + hash.indicators + "' selected='selected'>" + hash.indicators + "</option>");
+	   $("#indicators").val(hash.indicators);
+       if (!$("#indicators").val()) { // Select first one
+           $('#indicators option').each(function () {
+                if ($(this).css('display') != 'none') {
+                    $(this).prop("selected", true);
+                    return false;
+                }
+            });
+        }
+
+        /*
+        if (hash.indicators) {
+           $('#indicators option').each(function () {
+                if ($(this).val() == 'JOBS' || $(this).val() == 'VADD') {
+                    $(this).prop("selected", true);
+                    alert("select")
+                    //return false;
+                }
+            });
+        }
+        */
+    }
+
+    if (hash.set != priorHash.set) {
+        if (hash.set == "air") {
+            $('#pageTitle').text('Air and Climate')
+        } else if (hash.set == "water") {
+            $('#pageTitle').text('Water Use and Quality')
+        } else if (hash.set == "land") {
+            $('#pageTitle').text('Land Use')
+        } else if (hash.set == "energy") {
+            $('#pageTitle').text('Energy Use')
+        } else if (hash.set == "prosperity") {
+            $('#pageTitle').text('Jobs and Value Added')
+        } else if (hash.set == "health") {
+            $('#pageTitle').text('Health Impact')
+        }
+        $("#impactIcons div").removeClass("active");
+        const capitalizeSetName = hash.set.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+            return letter.toUpperCase();
+        });
+        $("#impactIcons div:contains(" + capitalizeSetName + ")").addClass("active");
+    }
+
 	/*
 	// Moved back to map.js
 	if (hash.show != priorHash.show) {

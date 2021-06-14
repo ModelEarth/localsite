@@ -339,7 +339,7 @@ function populateTitle(showtitle,showtab) {
 function loadIndustryData() {
     let stateAbbr;
     let hash = getHash(); // Includes hiddenhash
-    if (hash.state) {
+    if (hash.state && hash.state.length == 2) {
         stateAbbr = hash.state.toUpperCase();
     }
     $("#econ_list").html("<img src='" + localsite_app.localsite_root() + "img/icon/loading.gif' style='margin:40px; width:120px'><br>");

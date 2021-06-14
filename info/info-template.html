@@ -131,197 +131,64 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 <iframe id="mapframe" style="display:none; width:93%;height:800px; margin:0 0px 40px 40px"></iframe>
 
 
-<!-- INPUT OUTPUT -->
-<!-- See: "For older 3 column IO layout" below -->
-<div id="ioPanelOld" class="content contentpadding litePanel" style="display:none; width:95% !important; max-width:95%; margin-top:20px; border:1px solid #aaa">
-
-<div style="margin-right:45px">
-	<h2 style="border:0px" id="supplyChainHeader">Input-Output Supply Chain</h2>
-	<hr>
-
-	<div style="float:right;margin-bottom:16px" class="noprint">
-		<a href="https://model.earth/io/charts/">About Widgets</a>
-	</div>
-</div>
-
-
-	<div style="display:none">
-		<div style="font-size: 15px;">
-			<input name="sector_action" type="radio">
-			Recruit a new industry<br>
-			<input name="sector_action" type="radio">
-			Transform an existing industry<br>
-			<br>
-		</div>
-	</div>
-
-
-
-Choose commodities below to view upstream input and downstream output.<br>
-Currently utilizes national USEEIO input-output data generated from the production API.<br>
-Georgia-specific input-output dataset is being developed by the EPA.<br><br>
-
-
-
-
-<div class="pageColumns">
-
-    <div class="pageColumn">
-      <div class="pageColumnInside">
-          <h2>Upstream</h2>
-          Input from Suppliers
-          <div id="inputs" class="industry-list">
-          </div>
-      </div>
-    </div>
-
-    <div class="pageColumn">
-      <div class="pageColumnInside">
-        <h2>Commodities</h2>
-        <div>Georgia Manufacturers</div>
-        <div id="industry-list" class="industry-list">
-        </div>
-      </div>
-    </div>
-
-    <div class="pageColumn">
-      <div class="pageColumnInside">
-        <h2>Downstream</h2>
-          Output to Buyers
-          <div id="outputs" class="industry-list">
-          </div>
-      </div>
-    </div>
-
-</div>
-
-<style>
-.industry-list {
-	padding-right:50px;
-	font-size: 11px;
-}
-.matrix-search {
-	display: none;
-}
-</style>
-
-
-
-<!-- change endpoint when adding to page -->
-
-<script>
-
-</script>
-
-<br><br>
-</div>
-<div style="clear:both;"></div>
-<!-- /INPUT OUTPUT -->
-
-
-
-<style>
-#impactIcons div {
-    float: left;
-    font-size: 13px;
-    border: 1px solid #ccc;
-    width: 100px;
-    padding: 20px;
-    margin-right: 20px;
-    text-align: center
-}
-#impactIcons div.active {
-    border: 4px solid #aaa;
-    padding: 17px;
-}
-
-.fixedBkgd {
-    position: fixed;
-    z-index: -1;
-    width: 100%;
-    min-width: 1040px;
-}
-.buttonLinks a {
-    background-color: #779;
-    color: #fff;
-    padding: 10px 30px;
-    border-radius: 20px;
-    display: inline-block;
-    margin: 0 10px 14px 0;
-    font-size: 16px;
-}
-.buttonLinks a:hover {
-    background-color: #77f;
-    text-decoration: none;
-}
-#impactTopBar {
-    float:left;
-}
-#impactTopBar div {
-    font-size: 14px;
-    color: #fff;
-    background-color: #779;
-    padding: 8px 28px;
-    border-radius: 15px;
-    display: inline-block;
-    margin: 0 10px 14px 0;
-    float: left;
-}
-#impactTopBar div a:visited {
-    color: #fff !important;
-}
-#impactTopBar div a:link {
-    color: #fff !important;
-}
-#impactTopBar .active {
-    background-color: #333;
-}
-
-/* For darkly */
-.MuiGrid-container {
-    background-colorX: rgba(33,33,33,.8);
-}
-.MuiGrid-item {
-    background-colorX: #ddd;
-}
-.MuiDataGrid-mainGridContainer {
-    background-color: #fff;
-}
-
-.MuiDataGrid-root .MuiDataGrid-window {
-    overflow-x: hidden !important;
-    /* overflow-y: hidden !important; */
-}
-.MuiTypography-h6 {
-    color: #333;
-}
-.MuiGrid-spacing-xs-3 {
-	margin-top: 0px;
-}
-</style>
-
+<!-- INDICATOR SETS -->
 <div id="supply" class="anchor"></div>
-<div class="contentpadding" style="border-bottom:1px solid #ccc;">
-	<div class="io" style="overflow-x: scroll">
-        <div style="margin: 0 auto;">
-        	<div style="float:right;margin-bottom:16px;font-size:11px" class="noprint">
-				Data source: U.S. Bureau of Economic Analysis commodities combined with EPA indicators. 
-				- <a href="https://model.earth/io/charts/">About Widgets</a>
-			</div>
+<div style="position:relative; width:100%">
+    <!--  
+    <div class="lazy bgimg bgimg-notfixed" data-src="img/bkgd.jpg" style="opacity:.85">
+        <img src="img/bkgd.jpg" style="opacity:0;width:100%">
+    </div>
+    -->
 
-            <h1 style="margin-bottom:0px">Supply Chain</h1>
-            <div class="regiontitle" style="margin-bottom:20px"></div>
+    <!--
+        Background source:
+        Airbender: https://wallpapersafari.com/w/fXi214
+        Avatar: 
+    -->
 
-            <div style="clear:both"></div>
+    <!--
+    <img class="fixedBkgd backgroundAbsoluteX" src="img/bkgd.jpg" style="width:100%;" alt="">
+    -->
+
+    <div class="contentpadding" id="impactTopHolder" style="overflow:auto; padding-bottom:20px;">
+
+        <div style="float:right;" class="hideMobile">
+            <div id="impactIcons">
+                <!--  some must be wrong -->
+                <div onclick="goHash({'set':'air','indicators':'GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS'});">Air</div>
+                <div onclick="goHash({'set':'water','indicators':'WATR,ACID,EUTR,ETOX'});">Water</div>
+                <div onclick="goHash({'set':'land','indicators':'LAND,MNRL,PEST,METL,CRHW,CMSW,FMSW,CCDD'});">Land</div>
+                <div onclick="goHash({'set':'energy','indicators':'ENRG,NNRG,RNRG'});">Energy</div>
+                <div onclick="goHash({'set':'health','indicators':'HTOX,HCAN,HNCN,HTOX'});">Health</div>
+                <div onclick="goHash({'set':'prosperity','indicators':'VADD,JOBS'});">Prosperity</div>
+            </div><br>
+
+            
+        </div>
+
+        <div style="float:left;">
+            
+            <!--
+            <div style="clear:both; font-size: 13px">
+                <a href="../../localsite/info/#state=GA&regiontitle=Coastal+Georgia&geo=US13127,US13039,US13191,US13179,US13029,US13051">Coastal Georgia</a> <span style="position:absolute; font-size:35px; line-height:13px; padding:3px 0 0 1px">&#8227;</span> &nbsp;&nbsp; &nbsp; 
+                <a href="../../localsite/info/#show=bioeconomy&state=GA&regiontitle=Coastal+Georgia&geo=US13127,US13039,US13191,US13179,US13029,US13051">Bioeconomy and Energy</a>
+            </div>
+            -->
 
             <!--
-            	Goods & Services
-
-            	location.reload() is a temporary fix since mosaic is not triggered by change to hash.
+            Preventing Water Eutrophication
+            Excessive Growth of Algae
             -->
-			<select id="indicators" class="filterClickX form-selectX picklist" onchange="goHash({'indicators':this.value});" style="min-width:400px;margin:10px 0 0 0; font-size:18px; max-width:400px">
+            <!-- Minerals and Metal Use 
+            Impacts on Water
+            -->
+            <h1 id="pageTitle" class="h1-home" style="margin-top:0px; margin-bottom:10px;">Supply Chain</h1>
+            <div class="regiontitle" style="margin-bottom:20px"></div>
+            
 
-			<option value="">Select impact area...</option>
+            <select id="indicators" class="filterClickX form-selectX picklist" onchange="goHash({'set':'','indicators':this.value});" style="min-width:400px;margin:10px 0 0 0; font-size:18px; max-width:400px">
+
+			<option value="">Specific impact areas...</option>
 
 			<option value="JOBS,VADD">Positive Impacts</option>
 
@@ -393,16 +260,208 @@ Georgia-specific input-output dataset is being developed by the EPA.<br><br>
 			<option value="PEST">&nbsp; &nbsp;Pesticides (PEST)</option>
 
 			</select>
-			<br>
 
-            
         </div>
     </div>
+</div>
+<!-- /INDICATOR SETS -->
 
+
+
+
+<!-- INPUT OUTPUT -->
+<!-- See: "For older 3 column IO layout" below -->
+<div id="ioPanelOld" class="content contentpadding litePanel" style="display:none; width:95% !important; max-width:95%; margin-top:20px; border:1px solid #aaa">
+
+	<div style="margin-right:45px">
+		<h2 style="border:0px" id="supplyChainHeader">Input-Output Supply Chain</h2>
+		<hr>
+
+		<div style="float:right;margin-bottom:16px" class="noprint">
+			<a href="https://model.earth/io/charts/">About Widgets</a>
+		</div>
+	</div>
+
+
+		<div style="display:none">
+			<div style="font-size: 15px;">
+				<input name="sector_action" type="radio">
+				Recruit a new industry<br>
+				<input name="sector_action" type="radio">
+				Transform an existing industry<br>
+				<br>
+			</div>
+		</div>
+
+
+
+	Choose commodities below to view upstream input and downstream output.<br>
+	Currently utilizes national USEEIO input-output data generated from the production API.<br>
+	Georgia-specific input-output dataset is being developed by the EPA.<br><br>
+
+
+
+
+	<div class="pageColumns">
+
+	    <div class="pageColumn">
+	      <div class="pageColumnInside">
+	          <h2>Upstream</h2>
+	          Input from Suppliers
+	          <div id="inputs" class="industry-list">
+	          </div>
+	      </div>
+	    </div>
+
+	    <div class="pageColumn">
+	      <div class="pageColumnInside">
+	        <h2>Commodities</h2>
+	        <div>Georgia Manufacturers</div>
+	        <div id="industry-list" class="industry-list">
+	        </div>
+	      </div>
+	    </div>
+
+	    <div class="pageColumn">
+	      <div class="pageColumnInside">
+	        <h2>Downstream</h2>
+	          Output to Buyers
+	          <div id="outputs" class="industry-list">
+	          </div>
+	      </div>
+	    </div>
+
+	</div>
+
+	<style>
+	.industry-list {
+		padding-right:50px;
+		font-size: 11px;
+	}
+	.matrix-search {
+		display: none;
+	}
+	</style>
+
+
+
+	<!-- change endpoint when adding to page -->
+
+	<script>
+
+	</script>
+
+	<br><br>
+</div>
+<div style="clear:both;"></div>
+<!-- /INPUT OUTPUT -->
+
+
+
+<style>
+#impactIcons div {
+    float: left;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    width: 100px;
+    padding: 20px;
+    margin-right: 20px;
+    text-align: center
+}
+#impactIcons div.active {
+    border: 4px solid #aaa;
+    padding: 17px;
+}
+#impactIcons div:hover {
+    cursor: pointer;
+    background-color: rgba(33,33,33,.8);
+    color: #fff;
+}
+
+/*
+.fixedBkgd {
+    position: fixed;
+    z-index: -1;
+    width: 100%;
+    min-width: 1040px;
+}
+.buttonLinks a {
+    background-color: #779;
+    color: #fff;
+    padding: 10px 30px;
+    border-radius: 20px;
+    display: inline-block;
+    margin: 0 10px 14px 0;
+    font-size: 16px;
+}
+.buttonLinks a:hover {
+    background-color: #77f;
+    text-decoration: none;
+}
+#impactTopBar {
+    float:left;
+}
+#impactTopBar div {
+    font-size: 14px;
+    color: #fff;
+    background-color: #779;
+    padding: 8px 28px;
+    border-radius: 15px;
+    display: inline-block;
+    margin: 0 10px 14px 0;
+    float: left;
+}
+#impactTopBar div a:visited {
+    color: #fff !important;
+}
+#impactTopBar div a:link {
+    color: #fff !important;
+}
+#impactTopBar .active {
+    background-color: #333;
+}
+*/
+
+/* For darkly */
+.MuiGrid-container {
+    background-colorX: rgba(33,33,33,.8);
+}
+.MuiGrid-item {
+    background-colorX: #ddd;
+}
+.MuiDataGrid-mainGridContainer {
+    background-color: #fff;
+}
+
+.MuiDataGrid-root .MuiDataGrid-window {
+    overflow-x: hidden !important;
+    /* overflow-y: hidden !important; */
+}
+.MuiTypography-h6 {
+    color: #333;
+}
+.MuiGrid-spacing-xs-3 {
+	margin-top: 0px;
+}
+[aria-controls="commodity-sort-menu"] {
+  border: 4px solid yellow;
+}
+
+</style>
+
+
+<div class="contentpadding" style="padding-top:0px; border-bottom:1px solid #ccc;">
+
+    <hr>
 	<span style="font-size:14px">
-	Select an impact area above and move sliders below to emulate the effects of changes to levels and technologies.<br>
-	Use the commodities sort menu to choose multiple impact areas. (Center column below, upper right)<br>
-	<span style="color:red; display:none" class="showforstates">Values are currently national rather than state-specific.</span><br><br>
+		In the ranked "Commodities" column below, click the yellow menu to choose multiple impact areas, or choose an impact set above.<br>
+		Move sliders to emulate the effects of changes to production levels and technologies.<br>
+		Data source: U.S. Bureau of Economic Analysis commodities combined with EPA indicators. 
+		- <a href="https://model.earth/io/charts/">About&nbsp;Widgets</a><br>
+
+		<span style="color:red; display:none" class="showforstates">Values are currently national rather than state-specific.<br></span>
+
+		<br>
 	</span>
 	<div id="iogrid"></div>
 

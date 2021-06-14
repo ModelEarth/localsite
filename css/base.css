@@ -808,6 +808,9 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 .headerbarheight {
   height:100px;
 }
+.headeroffset { /* Does not include bar */
+  height:100px;
+}
 .filters-margin {
   margin: 0 auto;
   max-width:1000px;

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" type="image/x-icon" href="../img/logo/partners/neighborhood-icon.png" />
+<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 
 <!--
   To create a widget from this page, see steps in map-embed.js.
@@ -16,7 +16,7 @@
 
 <script type="text/javascript" src="../js/showdown.min.js"></script>
 <script type="text/javascript" src="../js/jquery.min.js"></script>
-<script type="text/javascript" src="../js/localsite.js"></script>
+<script type="text/javascript" src="../js/localsite.js?showheader=true"></script>
 
 <script>
   let hash = getHash();
@@ -102,6 +102,7 @@
 
 <body>
 
+
 <!-- INTRO -->
 
 <div id="introDiv" style="display:none" class="content contentpadding"></div>
@@ -148,11 +149,18 @@
 
 <div id="log_display" style="display:none" class="localonlyX"><span style='float:left; font-size:10px'>LOG</span><br><textarea id="logText">MyTest</textarea></div>
 
+<!-- Also update headerbar and headerOffset 
+class="headerbarheight"
+-->
+<div id="headeroffset" style="height:100px;"></div>
+
+<div class="filterbarOffset" style="height:56px;"></div>
+
 <!-- FILTERS -->
 <div class="search-filters-css" style="display:none">
 <div id="headerFixed" class="filterPanel">
 
-  <div class="headerOffset headerOffsetOne" style="displayX: none">&nbsp;</div>
+  <div class="headerOffset headerOffsetOne">&nbsp;</div>
 
   <div class="filterPanel_background">
   </div>
@@ -161,9 +169,6 @@
 
   
   <div class="hideWhenPop">
-
-  <!-- Matches filterFields and headerFixed height -->
-  <div class="filterbarOffset" style="displayX:none;height:56px;"></div>
 
   <div id="filterFieldsHolder" class="contentfull noprint" style="margin:0 auto; padding-top:0px; float:left; width:100%">
 
@@ -753,7 +758,7 @@
 <div style="clear:both"></div>
 <!-- /APP MENU -->
 
-            
+
 <!-- LOCATION SEARCH -->
 <!-- For inactive portions - copy scripts from explore/js/embed.js -->
 <div id="filterLocations" class="fieldSelector filterBubbleHolder">
@@ -1101,7 +1106,7 @@ Displayed by hashChanged() in map-filters.js
   <br>
     
     <div style="float:right; padding: 12px 0px 10px 0" class="noprint hideMobile">
-      <a href="https://model.earth/io/charts/">About Widgets</a>
+      <a href="https://model.earth/io/charts/">About&nbsp;Widgets</a>
     </div>
      <div id="pageLinksInsert" style="displayX:none; float:left; font-size: 15px; padding: 12px 30px 10px 0">
           <a onClick="go({}); return false;"  href="./">Overview</a> | 

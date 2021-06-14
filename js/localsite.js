@@ -344,7 +344,7 @@ function get_localsite_root3() { // Also in two other places
             if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
               // Omit known hosts of "localsite" repo here.
 
-              // This is called on http://localhost/. Is it called during embedding on other domains?
+              // This is called on http://localhost/. Is it called when embedding on other domains?
               //theroot = "https://model.earth/localsite/";
               theroot = hostnameAndPort + "/localsite/";
               console.log("theroot: " + theroot);
@@ -609,7 +609,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
     includeCSS3(theroot + 'css/map.css',theroot); // Before naics.js so #industries can be overwritten.
     includeCSS3(theroot + 'css/naics.css',theroot);
-
+// customD3loaded
     if (param.preloadmap != "false") {
       loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
           includeCSS3(theroot + 'css/leaflet.css',theroot);
@@ -617,6 +617,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Could skip when map does not use material icon colors
               $(".show-on-load").show();
               loadScript(theroot + 'js/map.js', function(results) {
+                // Loads map-filters.js
                 loadSearchFilters3(theroot,1); // Uses localsite_app library in localsite.js for community_data_root
               });
             });
@@ -669,8 +670,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
               setTimeout( function() {
                 
                 // No luck...
-              displayImpactBubbles();
-              //displayImpactBubbles();
+              displayImpactBubbles(1);
+              //displayImpactBubbles(1);
               //refreshBubbleWidget();
             }, 1000 );
           });
