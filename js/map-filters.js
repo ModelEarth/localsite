@@ -2226,10 +2226,12 @@ function hashChanged() {
             $('#pageTitle').text('Health Impact')
         }
         $("#impactIcons div").removeClass("active");
-        const capitalizeSetName = hash.set.toLowerCase().replace(/\b[a-z]/g, function(letter) {
-            return letter.toUpperCase();
-        });
-        $("#impactIcons div:contains(" + capitalizeSetName + ")").addClass("active");
+        if (hash.set) {
+            const capitalizeSetName = hash.set.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+                return letter.toUpperCase();
+            });
+            $("#impactIcons div:contains(" + capitalizeSetName + ")").addClass("active");
+        }
     }
 
 	/*
