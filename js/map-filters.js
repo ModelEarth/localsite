@@ -1375,7 +1375,6 @@ function displayHexagonMenu(layerName,siteObject) {
   //$("#iconMenu").append(iconMenu);
     $("#honeyMenuHolder").show();
 }
-// Laurie Henisey
 function thumbClick(show,path) {
 	let hash = getHashOnly(); // Not hiddenhash
 	hash.show = show;
@@ -1385,8 +1384,9 @@ function thumbClick(show,path) {
 	if (path && !window.location.pathname.includes(path)) {
 		var hashString = decodeURIComponent($.param(hash));
 		window.location = "/localsite/" + path + "#" + hashString;
-	} else { // Renain in current page
+	} else { // Remain in current page
         delete hiddenhash.show;
+        delete hiddenhash.naics;
         delete param.show;
         if (typeof params != 'undefined') {
             delete params.show;
