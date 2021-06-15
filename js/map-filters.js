@@ -1872,7 +1872,7 @@ function hashChanged() {
 
 	let hash = getHash();
 	//alert("hash.state " + hash.state);
-	console.log("hashChanged from prior geo: " + priorHash.geo + " to " + hash.geo);
+	console.log("map-filters.js hashChanged from prior geo: " + priorHash.geo + " to " + hash.geo);
 	
 	// For PPE embed, also in map.js. Will likely change
 	if (!hash.show) {

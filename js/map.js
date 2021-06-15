@@ -1157,7 +1157,17 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
     dp1.nameColumn = "name_botanical";
     // , "In Address": "address", "In County Name": "county", "In Website URL": "website"
     dp1.search = {"Common Name": "family_common_name", "Family Name": "family_name_botanical", "Botanical Name": "name_botanical"};
-
+  } else if (show == "solar") {
+        // Currently showing for all states even though only Georgia solar list in Google Sheet.
+        dp1.listTitle = "Solar Companies";
+        dp1.editLink = "https://docs.google.com/spreadsheets/d/1yt_saLpiBNPR1g_r2mn9-U5DozqLoVJHVwfR-4f0HTU/edit?usp=sharing";
+        dp1.googleDocID = "1yt_saLpiBNPR1g_r2mn9-U5DozqLoVJHVwfR-4f0HTU";
+        dp1.sheetName = "Companies";
+        dp1.listInfo = "<br><br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1yt_saLpiBNPR1g_r2mn9-U5DozqLoVJHVwfR-4f0HTU/edit?usp=sharing'>Google Sheet</a> to submit map updates.<br>View Georgia's <a href='https://www.solarpowerworldonline.com/2020-top-georgia-contractors/'>top solar contractors by KW installed</a>.";
+        dp1.valueColumn = "firm type";
+        dp1.valueColumnLabel = "Firm Type";
+        dp1.markerType = "google";
+        dp1.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};      
   } else if (theState == "GA") {
 
       if (show == "opendata") {
@@ -1227,16 +1237,6 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
         dp1.valueColumnLabel = "EV Industry";
         dp1.markerType = "google";
         dp1.search = {"EV Industry": "ev industry", "In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
-      } else if (show == "solar") {
-        dp1.listTitle = "Solar Companies";
-        dp1.editLink = "https://docs.google.com/spreadsheets/d/1yt_saLpiBNPR1g_r2mn9-U5DozqLoVJHVwfR-4f0HTU/edit?usp=sharing";
-        dp1.googleDocID = "1yt_saLpiBNPR1g_r2mn9-U5DozqLoVJHVwfR-4f0HTU";
-        dp1.sheetName = "Companies";
-        dp1.listInfo = "<br><br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1yt_saLpiBNPR1g_r2mn9-U5DozqLoVJHVwfR-4f0HTU/edit?usp=sharing'>Google Sheet</a> to submit map updates.<br>View Georgia's <a href='https://www.solarpowerworldonline.com/2020-top-georgia-contractors/'>top solar contractors by KW installed</a>.";
-        dp1.valueColumn = "firm type";
-        dp1.valueColumnLabel = "Firm Type";
-        dp1.markerType = "google";
-        dp1.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
       } else if (show == "vax" || show == "vac") { // Phase out vac
         dp1.listTitle = "Vaccine Locations";
         //dp1.dataset = "https://docs.google.com/spreadsheets/d/1odIH33Y71QGplQhjJpkYhZCfN5gYCA6zXALTctSavwE/gviz/tq?tqx=out:csv&sheet=Sheet1"; // MapBox sample
