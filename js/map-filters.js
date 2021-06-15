@@ -1377,20 +1377,20 @@ function displayHexagonMenu(layerName,siteObject) {
 }
 // Laurie Henisey
 function thumbClick(show,path) {
-	let hash = getHash();
+	let hash = getHashOnly(); // Not hiddenhash
 	hash.show = show;
-	delete hiddenhash.show;
-	delete param.show;
-	if (typeof params != 'undefined') {
-		delete params.show;
-	}
 	delete hash.cat;
 	delete hash.naics;
 	delete hash.m; // Birdseye view
 	if (path && !window.location.pathname.includes(path)) {
 		var hashString = decodeURIComponent($.param(hash));
 		window.location = "/localsite/" + path + "#" + hashString;
-	} else {
+	} else { // Renain in current page
+        delete hiddenhash.show;
+        delete param.show;
+        if (typeof params != 'undefined') {
+            delete params.show;
+        }
 		$(".bigThumbMenuContent").removeClass("bigThumbActive");
 		$(".bigThumbMenuContent[show='" + show +"']").addClass("bigThumbActive");
 		goHash(hash);

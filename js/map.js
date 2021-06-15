@@ -1115,8 +1115,8 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
     dp1.titleColumn = "marketname";
     dp1.searchFields = "marketname";
     dp1.addressColumn = "street";
-    dp1.latColumn = "y";
-    dp1.lonColumn = "x";
+    //dp1.latColumn = "latitude";
+    //dp1.lonColumn = "longitude";
     dp1.stateColumn = "state";
 
     dp1.addlisting = "https://www.ams.usda.gov/services/local-regional/food-directories-update";
