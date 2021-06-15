@@ -19,6 +19,10 @@
 }
 .showApps {
   padding-left:12px;
+  padding-right:0px;
+}
+.headerShort .showApps {
+  padding-right:20px;
 }
 .showApps > .material-icons {
   color: #ccc;

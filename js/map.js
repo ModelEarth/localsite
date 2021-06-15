@@ -2543,7 +2543,7 @@ var mapFixed = false;
 var previousScrollTop = $(window).scrollTop();
 $(window).scroll(function() {
   if (revealHeader == false) {
-    $('.headerbar').hide(); $('.showMenuSmNav').show(); $('#logoholderbar').show(); $('#logoholderside').show();
+    $("#headerFixed").addClass("headerShort"); $('.headerbar').hide(); $('.showMenuSmNav').show(); $('#logoholderbar').show(); $('#logoholderside').show();
     $('#filterFieldsHolder').hide();
     $('.headerOffset').hide();
     if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
@@ -2553,7 +2553,7 @@ $(window).scroll(function() {
     revealHeader = true; // For next manual scroll
   } else if ($(window).scrollTop() > previousScrollTop) { // Scrolling Up
     if ($(window).scrollTop() > previousScrollTop + 20) { // Scrolling Up fast
-      $('.headerbar').hide(); $('.showMenuSmNav').show(); $('#logoholderbar').show(); $('#logoholderside').show();
+      $("#headerFixed").addClass("headerShort"); $('.headerbar').hide(); $('.showMenuSmNav').show(); $('#logoholderbar').show(); $('#logoholderside').show();
       //$('#filterFieldsHolder').hide();
       $('.headerOffset').hide();
       if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
@@ -2562,14 +2562,14 @@ $(window).scroll(function() {
     }
   } else { // Scrolling Down
     if ($(window).scrollTop() < (previousScrollTop - 20)) { // Reveal if scrolling down fast
-      $('.headerbar').show(); $('.showMenuSmNav').hide(); $('#logoholderbar').hide(); $('#logoholderside').hide();
+      $("#headerFixed").removeClass("headerShort"); $('.headerbar').show(); $('.showMenuSmNav').hide(); $('#logoholderbar').hide(); $('#logoholderside').hide();
       //$('#filterFieldsHolder').show();
       if ($("#headerbar").length) {
         $('.headerOffset').show();
       }
       $('#headerFixed').show();
     } else if ($(window).scrollTop() == 0) { // At top
-      $('.headerbar').show(); $('.showMenuSmNav').hide(); $('#logoholderbar').hide(); $('#logoholderside').hide();
+      $("#headerFixed").removeClass("headerShort"); $('.headerbar').show(); $('.showMenuSmNav').hide(); $('#logoholderbar').hide(); $('#logoholderside').hide();
       //$('#filterFieldsHolder').show();
       if ($("#headerbar").length) {
         $('.headerOffset').show();
