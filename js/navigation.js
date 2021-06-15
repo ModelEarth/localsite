@@ -131,7 +131,7 @@ $(document).ready(function(){
 				 		$('.georgia').css('display', 'inline');
 				 		$('.georgia-hide').css('display', 'none');
 				 		if (location.host.indexOf('localhost') < 0) {
-				 			$(".locationTab").hide(); // So we can test locally
+				 			//$(".locationTab").hide(); // So we can test locally
 				 		}
 				 		if (location.host.indexOf('georgia.org') >= 0) {
 				 			$('.georgiaorg-hide').css('display', 'none');
