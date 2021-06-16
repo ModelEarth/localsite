@@ -637,7 +637,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       loadScript(theroot + '../io/build/lib/useeio_widgets.js', function(results) {
         loadScript(theroot + 'js/naics.js', function(results) {
           //if(!param.state) {
-            applyIO("");
+            //applyIO("");
           //}
         });
       });

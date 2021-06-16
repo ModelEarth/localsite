@@ -1877,8 +1877,10 @@ function hashChanged() {
 	// For PPE embed, also in map.js. Will likely change
 	if (!hash.show) {
 		// For embed link
-		hash.show = param.show;
-		hiddenhash.show = param.show;
+        if (param.show) {
+		  hash.show = param.show;
+		  hiddenhash.show = param.show;
+        }
 	}
 	if (!hash.state) {
 		// For embed link

@@ -1,5 +1,7 @@
+#detail_selection {
+	margin-bottom: 12px;
+}
 #econ_list {
-
 	max-width: 100%;
 	overflow-x: scroll;
 	overflow: auto;

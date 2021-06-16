@@ -98,7 +98,14 @@ console.log("dataObject.stateshown" + dataObject.stateshown)
 // INIT
 let priorHash_naicspage = {};
 refreshNaicsWidget();
+loadNationalIfNoState();
 
+function loadNationalIfNoState() {
+    let hash = getHash()
+    if (!hash.state) { // No naics filter, use national
+        applyIO();
+    }
+}
 document.addEventListener('hashChangeEvent', function (elem) {
     if (hiddenhash.debug && location.host.indexOf('localhost') >= 0) {
         //alert('Localhost Alert: hashChangeEvent invoked by naics.js'); // Invoked twice by iogrid inflow-outflow chart
@@ -108,6 +115,7 @@ document.addEventListener('hashChangeEvent', function (elem) {
  }, false);
 
 function refreshNaicsWidget() {
+    //alert("refreshNaicsWidget")
     let hash = getHash(); // Includes hiddenhash
     params = loadParams(location.search,location.hash); // Also used by loadIndustryData()
     params = mix(param,params); // Add include file's param values.
@@ -131,6 +139,7 @@ function refreshNaicsWidget() {
     } else if (hash.catsize != priorHash_naicspage.catsize) {
         getNaics_setHiddenHash2(hash.show);
     }
+
 
     if (hash.state != priorHash_naicspage.state) {
         //alert("hash change call loadIndustryData()")
@@ -184,6 +193,7 @@ function getNaics_setHiddenHash2(go) {
     let electric = "335910,335911,335912,";
     var auto_parts = "336390,336211,336340,336370,336320,336360,331221,336111,336330,";
     var parts = "336412,336413,339110,333111,325211,326112,332211,336370,336390,326199,331110,336320,";
+    var solar = "221114,334313,335999";
     var combustion_engine = "333613,326220,336350,336310,333618,";
     var parts_carpets = "325520,314110,313110,313210,"
     var ppe_suppliers = "622110,621111,325414,339113,423450,"
@@ -223,6 +233,11 @@ function getNaics_setHiddenHash2(go) {
             showtitle = "Healthcare Industries";
             cat_filter = (ppe_suppliers).split(',');
             states = "GA";
+        } else if (go == "solar") {
+            alert("solar")
+            showtab = "Solar";
+            showtitle = "Solar Power";
+            cat_filter = (solar).split(',');
         } else if (go == "vehicles") {
             showtab = "Automotive"
             showtitle = "Vehicles and Vehicle Parts";
@@ -344,14 +359,20 @@ function loadIndustryData() {
     }
     $("#econ_list").html("<img src='" + localsite_app.localsite_root() + "img/icon/loading.gif' style='margin:40px; width:120px'><br>");
     
-    
+    // HACK BUGBUG - Until we have a path to data for entire country.
     if(!stateAbbr) {
+        stateAbbr = "GA";
+    }
+    
+    if(!stateAbbr) { // THIS IS NOT REACHED ON INIT, regardless of hack above.
         // Load US data here
         // TODO: When acivating, in info/index.html remove applyIO("")
         //alert("update for no state");
         delete hiddenhash.naics;
         delete hash.naics;
-        applyIO("");
+        console.log("call applyIO when no stateAbbr")
+        alert("Load national, no naics stateAbbr " + stateAbbr);
+        //applyIO(""); // Causes loop
     } else {
         //alert("stateAbbr1: " + stateAbbr);
         dataObject.stateshown=stateID[stateAbbr.toUpperCase()];
@@ -1054,6 +1075,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                 if(hash.catsort=="payann"){
                     totalLabel = "Total Payroll ($)";
                 }
+                let thestate = $("#state_select").find(":selected").text();
 
                 if (stateAbbr) {
                 //alert("stateAbbr2: " + stateAbbr);
@@ -1347,7 +1369,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
 
                         //if (!$.trim( $('#iogrid').html() ).length) { // If empty, otherwise triggered by hash change.
                             //alert("call applyIO B")
-                            applyIO(naicshash);
+                            //applyIO(naicshash); // Was calling twice
                         //}
                         
                         // To Remove - Moveed into applyIO below instead. BugBug
@@ -1394,7 +1416,11 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                             } else {
                                 $(".regiontitle").text("Industries within "+ fips.length + " counties");
                             }
-                            $(".locationTabText").text(fips.length + " counties");
+                            if (fips.length == 1) {
+                                $(".locationTabText").text(thestate);
+                            } else {
+                                $(".locationTabText").text(fips.length + " counties in " + thestate);
+                            }
                             //}
                         } else if (params.regiontitle) {
                             if (params.show) {
@@ -1494,7 +1520,8 @@ if(typeof hiddenhash == 'undefined') {
     var hiddenhash = {};
 }
 function applyIO(naics) { // Called from naics.js
-    console.log("applyIO with naics: " + naics)
+    console.log("applyIO with naics: " + naics);
+    //alert("applyIO with naics: " + naics);
 
     /*
     var modelID = 'USEEIO';
@@ -1559,7 +1586,10 @@ function applyIO(naics) { // Called from naics.js
     // Add bioeconomy
     //naics = naics + "311615,311812,321113,221112,113310,322110,311821,311612,325211,311813,311911,311919,311830,311119,322121,311824,311941,325991,311710,311930";
 
-    var naicsCodes = naics.split(',');
+    var naicsCodes;
+    if (naics) {
+        naicsCodes = naics.split(',');
+    }
     //var handled = {};
 
     //var indicators = "VADD";
