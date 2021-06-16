@@ -18,7 +18,9 @@
 
 [Clone the apps repo](https://github.com/modelearth/apps) for embedding starter samples.  
 
-<a href="../../io/team/">Contact our team for pointers</a> and <a href="../../community/challenge/meetups/">join us on Slack</a><br><br>
+<a href="../../io/team/">Contact our team for pointers</a> and <a href="../../community/challenge/meetups/">join us on Slack</a>
+
+More <a href="../../community/start/">Starter Samples</a> - maps, charts, widgets<br><br>
 
 ### You can also create a website using free GitHub hosting  
 
