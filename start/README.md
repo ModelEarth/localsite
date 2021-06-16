@@ -13,7 +13,14 @@
 	https://github.com/GeorgiaData/io/compare/master...modelearth:master
 	https://github.com/GeorgiaData/localsite/compare/master...modelearth:master
 -->
-### Create a website using markdown with free GitHub hosting  
+
+### We'll help you create a custom page in our "apps" repo
+
+[Clone the apps repo](https://github.com/modelearth/apps) for embedding starter samples.  
+
+<a href="../../io/team/">Contact our team for pointers</a> and <a href="../../community/challenge/meetups/">join us on Slack</a><br><br>
+
+### You can also create a website using free GitHub hosting  
 
 The Localsite Framework is designed to allow multiple Github repos (using JQuery, React,&nbsp;Vue, etc.) to communicate using hash values.  
 
