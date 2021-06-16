@@ -22,10 +22,13 @@
 	<div class="rightside fullMobile" style="border:1px solid #aaa; padding:10px">
       <a href="https://model.earth/community/challenge/"><img src="https://model.earth/community/img/overview/banner-1.png" style="width:270px;"></a>
     </div>
-    <div id="datacommonsDiv"></div>
+    <div id="readmeDiv"></div>
+
+    <section id="setup">
+    	<div id="datacommonsDiv"></div>
+	</section>
     <hr><br>
 
-	<div id="introDiv"></div>
 </div>
 
 <div class="content contentpadding" style="padding-top:0px">
@@ -38,6 +41,7 @@
 
 
 <script>
+	loadMarkdown("readme.md", "readmeDiv", "_parent");
     loadMarkdown("datacommons.md", "datacommonsDiv", "_parent");
 </script>
 
