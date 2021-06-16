@@ -1087,7 +1087,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
 
   } else if (show == "beyondcarbon") {
     dp1.listTitle = "Beyond Carbon";
-    dp1.dataset = "https://assets.bbhub.io/dotorg/sites/40/2019/05/Beyond-Carbon-States_Territories-data-sample-5_22-data-06_06.csv";
+    dp1.dataset = "https://assets.bbhub.io/dotorg/sites/40/2019/05/beyondcarbon-States_Territories-data-sample-5_22-data-06_06.csv";
     dp1.itemsColumn = "Has [XX] committed to 100% clean energy?"; // For side nav search
     dp1.valueColumn = "Has [XX] committed to 100% clean energy?";
     dp1.nameColumn = "Has [XX] committed to 100% clean energy?";

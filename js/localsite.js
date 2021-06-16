@@ -462,7 +462,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           $("#bodyFile").load(bodyFile, function( response, status, xhr ) {
             consoleLog("Template Loaded: " + bodyFile);
             if (typeof relocatedStateMenu != "undefined") {
-              relocatedStateMenu.appendChild(state_select); // For apps/beyond-carbon
+              relocatedStateMenu.appendChild(state_select); // For apps/beyondcarbon
             }
           });
         }
