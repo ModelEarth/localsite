@@ -8,11 +8,11 @@ The updates below will be used by the county industry lists on our [industry com
 
 2. Using logic from our [Google CoLab for exploring NAICS](https://colab.research.google.com/drive/1HLK4HIUMLlgTR524QoCKvfaNl-La48XU?usp=sharing), create a pipeline step that generates .csv files for the US and individual states using BLS data pulled from the [EPA's Flowsa API](https://github.com/USEPA/flowsa). Create 3 files per state and for the US. One for 2-digit naics, one for 4-digits and one for 6-digits.  Output .csv files with the following [simple column names](https://drive.google.com/drive/u/0/folders/1EoWDvNoaKO8xLclX4fr5exw83jJkkJIy):  
 
-	- fips - Location (fips for county)  
-	- naics - ActivityProducedBy (6-digit naics)  
-	- employees - Employment FlowAmount (Number of Employees)  
-	- wages - Money (Annual Wages)
-	- firms - Other (Number of Extablishments)<br><br>  
+	- Fips - Location (fips for county)  
+	- Naics - ActivityProducedBy (6-digit naics)  
+	- Employees - Employment FlowAmount (Number of Employees)  
+	- Wages - Money (Annual Wages)
+	- Firms - Other (Number of Extablishments)<br><br>  
 
 
 3. Save [state data files](https://github.com/modelearth/community-data/tree/master/us/state) in the same folder structure as our prior process. The prior BEA data prep process resides at the bottom of the current page. Reuse existing [process for state folders](https://github.com/modelearth/community-data/tree/master/process/python/bea).
