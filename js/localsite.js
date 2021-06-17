@@ -464,6 +464,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             if (typeof relocatedStateMenu != "undefined") {
               relocatedStateMenu.appendChild(state_select); // For apps/beyondcarbon
             }
+            if (param.showstates != "false") {
+              $("#filterClickLocation").show();
+            }
           });
         }
 
