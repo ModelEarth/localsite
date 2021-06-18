@@ -104,7 +104,7 @@ $(document).ready(function(){
 			 		// To do: fetch the existing background-image.
 			 		if (param.startTitle == "Code for America" ||  location.host.indexOf('codeforamerica') >= 0) {
 			  			param.titleArray = []
-			  			param.headerLogo = "<img src='/localsite/img/logo/partners/codeforamerica.png' style='width:140px;'>";
+			  			param.headerLogo = "<img src='/localsite/img/logo/partners/codeforamerica.png' style='width:110px;margin:10px 10px 10px 0;'>";
 				 		document.title = "Code for America - " + document.title
 				 		// BUGBUG - error in console
 				 		//changeFavicon("https://lh3.googleusercontent.com/HPVBBuNWulVbWxHAT3Nk_kIhJPFpFObwNt4gU2ZtT4m89tqjLheeRst_cMnO8mSrVt7FOSlWXCdg6MGcGV6kwSyjBVxk5-efdw")

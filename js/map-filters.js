@@ -1981,8 +1981,16 @@ function hashChanged() {
 	*/
 
 	//Resides before geo
-	if (hash.regiontitle != priorHash.regiontitle) {
-		if(!hash.regiontitle) {
+	if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state || hash.show != priorHash.show) {
+        let theStateName = $("#state_select").find(":selected").text();
+        if (theStateName != "") {
+            $(".regiontitle").text(theStateName);
+            $(".locationTabText").text(theStateName);
+        } else {
+    		$(".regiontitle").text("");
+            $(".locationTabText").text("");
+        }
+        if(!hash.regiontitle) {
 
 		} else {
 			hiddenhash.loctitle = hash.regiontitle;

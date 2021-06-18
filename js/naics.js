@@ -129,22 +129,33 @@ function refreshNaicsWidget() {
     if (!params.census_scope) {
        params.census_scope = 'state';
     }
+
+    
+    delete hash.naics; // Since show value invokes new hiddenhash
+    delete hiddenhash.naics;
+    clearHash("naics"); // Assuming this does not trigger a hash change event.
+
+    // GET NAICS BASED ON THEME (recycing, bioeconomy, etc.)
     if (hash.show != priorHash_naicspage.show) {
-        delete hash.naics; // Since show value invokes new hiddenhash
-        clearHash("naics");
+        // Initial load
         getNaics_setHiddenHash2(hash.show); // Sets hiddenhash.naics for use by other widgets.
+
+        // Get the hash again because hiddenhash.naics is set in getNaics_setHiddenHash2
+        hash = getHash(); // Includes hiddenhash
+
     } else if (hash.state != priorHash_naicspage.state) {
         // Not working yet
-        getNaics_setHiddenHash2(hash.show); // Show the state name above naics list.
+        //getNaics_setHiddenHash2(hash.show); // Show the state name above naics list.
     } else if (hash.catsize != priorHash_naicspage.catsize) {
-        getNaics_setHiddenHash2(hash.show);
+        //getNaics_setHiddenHash2(hash.show);
     }
 
-
+    
+    // The following will narrow the naics to the current location
     if (hash.state != priorHash_naicspage.state) {
-        //alert("hash change call loadIndustryData()")
+        // Initial load, if there is a state
+        console.log("hash.state change call loadIndustryData()")
         loadIndustryData(); // Occurs on INIT
-
     } else if (hash.regiontitle != priorHash_naicspage.regiontitle) {
 
         if (!hash.regiontitle) {
@@ -173,9 +184,17 @@ function refreshNaicsWidget() {
     } else {
         // Danger, watch for loops
         console.log("No state selected for naics.");
-        //alert("call applyIO from no change");
+        
         //applyIO("");
+
+        // TEMP
+        //hiddenhash.naics = "541511,541512,551114,611310";
+        //loadIndustryData(); // WHy does this not trigger applyio?
+        //alert("call applyIO from no change");
+        //alert("hiddenhash.naics " + hiddenhash.naics)
+        //applyIO(hiddenhash.naics); // TEMP - why is hiddenhash.naics null here?
     }
+
     priorHash_naicspage = getHash();
 }
 
@@ -310,10 +329,6 @@ function getNaics_setHiddenHash2(go) {
     console.log("Start hiddenhash.naics")
     hiddenhash.naics = cat_filter.join(); // Overrides the existing naics
 
-    // TEMP - To trigger later
-    console.log("call applyIO from naics change");
-    applyIO(hiddenhash.naics);
-
     // If states are available yet, wait for DOM.
     if(!$("#state_select").length) {
         $(document).ready(function() {
@@ -352,6 +367,7 @@ function populateTitle(showtitle,showtab) {
 // POORLY DESIGNED - No need to load all 3 naics datasets for state.
 // Calls promisesReady when completed.
 function loadIndustryData() {
+    console.log("loadIndustryData");
     let stateAbbr;
     let hash = getHash(); // Includes hiddenhash
     if (hash.state && hash.state.length == 2) {
@@ -788,7 +804,6 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
         }
     }
 
-    //$("#econ_list").html("");
     console.log("topRatesInFips")
     //alert(String(dataObject.stateshown)) // State's fips number
 
@@ -1359,8 +1374,14 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
 
                         // BUGBUG - causes naics to appear in hash
                         // Used by bubble.js
-                        hiddenhash.naics = naicshash;
-                        updateHiddenhash({"naics":naicshash});
+                        //alert("naicshash " + naicshash)
+                        // Why is this needed for buuble even when naicshash is null?
+                        //hiddenhash.naics = naicshash;
+
+                        //console.log("naicshash  " + naicshash);
+                        updateHiddenhash({"naics":naicshash}); // Used by bubble
+
+
 
                         // Send to USEEIO Widget
                         //$('#industry-list').attr('data-naics', naicshash);
@@ -1369,7 +1390,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
 
                         //if (!$.trim( $('#iogrid').html() ).length) { // If empty, otherwise triggered by hash change.
                             //alert("call applyIO B")
-                            //applyIO(naicshash); // Was calling twice
+                            applyIO(naicshash);
                         //}
                         
                         // To Remove - Moveed into applyIO below instead. BugBug
@@ -1519,10 +1540,13 @@ function getKeyByValue(object, value) {
 if(typeof hiddenhash == 'undefined') {
     var hiddenhash = {};
 }
-function applyIO(naics) { // Called from naics.js
+function applyIO(naics) {
     console.log("applyIO with naics: " + naics);
     //alert("applyIO with naics: " + naics);
-
+    if (!hiddenhash.naics) {
+        //hiddenhash.naics = undefined;
+    }
+    //alert("hiddenhash.naics: " + hiddenhash.naics);
     /*
     var modelID = 'USEEIO';
 
