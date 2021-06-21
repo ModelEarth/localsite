@@ -5,6 +5,8 @@ After deploying, the following can be pasted into Cloudflare to do a custom purg
 
 https://model.earth/localsite/info/info-template.html
 https://model.earth/localsite/js/localsite.js
+https://model.earth/localsite/js/map-embed.js
 https://model.earth/localsite/js/map-filters.js
 https://model.earth/localsite/js/naics.js
+https://model.earth/localsite/js/navigation.js
 https://model.earth/localsite/map/index.html
