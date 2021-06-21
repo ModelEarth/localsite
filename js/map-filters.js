@@ -559,9 +559,10 @@ function filterClickLocation() {
 	$("#bigThumbPanelHolder").hide();
 	//$('.showApps').removeClass("active");
 	$('.showApps').removeClass("filterClickActive");
-
+    let distanceFilterFromTop = $("#filterLocations").offset().top - $(document).scrollTop();
+    //alert("distanceFilterFromTop  " + distanceFilterFromTop);
 	//$('.hideMetaMenuClick').trigger("click"); // Otherwise covers location popup. Problem: hides hideLayers/hideLocationsMenu.
-	if ($("#filterLocations").is(':visible')) {
+	if ($("#filterLocations").is(':visible') && (distanceFilterFromTop < 300 || distanceFilterFromTop > 300)) {
 		$(".locationTabText").text($(".locationTabText").attr("title"));
         $("#showLocations").hide();
 		$("#hideLocations").show();
@@ -579,9 +580,10 @@ function filterClickLocation() {
 		$("#filterClickLocation").addClass("filterClickActive");
 		let hash = getHash();
 		renderMapShapes("geomap", hash);// Called once map div is visible for tiles.
-		$('html,body').animate({
-			scrollTop: 0
-		});
+        $('html,body').animate({
+            scrollTop: $("#filterLocations").offset().top - $("#headerFixed").height()
+        });
+
 	}
 	$("#keywordFields").hide();
 	
@@ -1879,7 +1881,6 @@ function hashChanged() {
 	let hash = getHash();
 	//alert("hash.state " + hash.state);
 	console.log("map-filters.js hashChanged from prior geo: " + priorHash.geo + " to " + hash.geo);
-	
 	// For PPE embed, also in map.js. Will likely change
 	if (!hash.show) {
 		// For embed link
@@ -1907,7 +1908,9 @@ function hashChanged() {
 	if (hash.state) {
 		// Apply early since may be used by changes to geo
 		$("#state_select").val(hash.state.toUpperCase());
-	}
+	} else {
+        //$(".locationTabText").text("United States");
+    }
 	if (hash.show != priorHash.show) {
 		//if (hash.show == priorHash.show) {
 		//	hash.show = ""; // Clear the suppliers display
@@ -1987,6 +1990,14 @@ function hashChanged() {
 	*/
 
 	let mapCenter = [];
+    let zoom = 4; // Wide for entire US
+    // Before hash.state to utilize initial lat/lon
+    if (hash.lat != priorHash.lat || hash.lon != priorHash.lon) {
+        //alert("hash.lat " + hash.lat + " priorHash.lat " + priorHash.lat)
+        $("#lat").val(hash.lat);
+        $("#lon").val(hash.lon);
+        mapCenter = [hash.lat,hash.lon];
+    }
 	if (hash.state != priorHash.state) {
 		// If map is already loaded, recenter map.  See same thing below
    		// Get lat/lon from state dropdown #state_select
@@ -2003,6 +2014,8 @@ function hashChanged() {
                   zoom = 6
               } else if (kilometers_wide > 1000000) { // Alaska
                   zoom = 4
+              } else {
+                  zoom = 6
               }
               let lat = $("#state_select").find(":selected").attr("lat");
               let lon = $("#state_select").find(":selected").attr("lon");
@@ -2016,13 +2029,7 @@ function hashChanged() {
     } else {
     	$(".showforstates").hide();
 	}
-	// Before hash.state to utilize initial lat/lon
-	if (hash.lat != priorHash.lat || hash.lon != priorHash.lon) {
-        //alert("hash.lat " + hash.lat + " priorHash.lat " + priorHash.lat)
-	    $("#lat").val(hash.lat);
-	    $("#lon").val(hash.lon);
-	    mapCenter = [hash.lat,hash.lon];
-	}
+	
 	if (mapCenter.length > 0 && typeof L != "undefined") {
 		// Avoiding including ",5" for zoom since 7 is already set. This also runs during init.
 		//console.log("Recenter map")
@@ -2031,7 +2038,7 @@ function hashChanged() {
 	    if (pagemap_container != null) {
 	    	// TODO: Reactiveate
 	    	// Test here: http://localhost:8887/localsite/info/embed.html#state=GA
-	      pagemap.flyTo(mapCenter);
+	      pagemap.flyTo(mapCenter, zoom);
 	    }
 	    let pagemap2 = document.querySelector('#map2')._leaflet_map; // Recall existing map
 	    let pagemap_container2 = L.DomUtil.get(pagemap2);
@@ -2092,7 +2099,7 @@ function hashChanged() {
         } else {
             local_app.loctitle = "USA";
             $(".regiontitle").text("United States");
-            $(".locationTabText").text("");
+            $(".locationTabText").text("United States");
         }
         if(!hash.regiontitle) {
 

@@ -956,7 +956,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   if (!show) {
     show = param["show"];
   }
-
+  let layers = param["layers"];
   let hash = getHash();
 
   $("#dataList").html("");
@@ -1123,7 +1123,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
     // community/farmfresh/ 
     dp1.listInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community/farmfresh/ga/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
   
-  } else if (show == "brigades") {
+  } else if (layers == "brigades") { // To do: Check an array of layers
     dp1.listTitle = "Coding Brigades";
     dp1.dataset = "https://neighborhood.org/brigade-information/organizations.json";
     dp1.datatype = "json";

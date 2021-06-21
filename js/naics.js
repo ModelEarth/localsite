@@ -227,9 +227,6 @@ function getNaics_setHiddenHash2(go) {
 
         if (go == "opendata") {
             states = "GA";
-        } else if (go == "brigades") {
-            showtitle = "Industries";
-            //cat_filter = (computers).split(',');
         } else if (go == "bioeconomy") {
             showtab = "Bioeconomy and Energy";
             showtitle = "Bioeconomy and Energy Industries";
@@ -290,6 +287,7 @@ function getNaics_setHiddenHash2(go) {
             cat_filter=["manufacturing placeholder"];
         } else if (go=="industries") {
             showtitle = "Top Industries";
+            $("#keywordsTB").attr("placeholder","City name..."); // For layers = brigades
         } else if (param.naics) {
             showtitle = go.charAt(0).toUpperCase() + go.substr(1).replace(/\_/g," ");
             cat_filter = param.naics.split(',');
@@ -505,6 +503,11 @@ function promisesReady(values) {
                 if (!params.state) {
                     params.state = hiddenhash.state; // Value from localhost.js include file.
                 }
+                if (!params.state) {
+                    params.state = "GA"; // TEMP HACK
+                    console.log("HACK params.state " + params.state);
+                }
+
                 renderIndustryChart(dataObject,values,params);
             }
         })
@@ -591,9 +594,15 @@ $(document).ready(function() {
 /////// Functions /////// 
 
 function renderIndustryChart(dataObject,values,params) {
-    let stateAbbr = params.state;
-    dataObject.stateshown=stateID[stateAbbr.toUpperCase()];
-
+    let stateAbbr 
+    if (params.state) {
+        stateAbbr = params.state;
+        dataObject.stateshown=stateID[stateAbbr.toUpperCase()];
+    } else {
+        // TEMP BUGBUG TODO - until national NAICS generated
+        stateAbbr = "GA";
+        dataObject.stateshown="GA";
+    }
     if(!params.catsort){
         params.catsort = "payann";
     }
@@ -991,6 +1000,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                         }
                     }   
                 }else{
+                    // US Reaches here
                     //alert("fips " + fips + " dataObject.stateshown " + dataObject.stateshown);
                     if(fips==dataObject.stateshown){
                     
@@ -1100,6 +1110,8 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                 
                 if (hash.state) {
                     stateAbbr = hash.state.toUpperCase();
+                } else {
+                    stateAbbr = "GA"; // Temp HACK to show US
                 }
                 if(hash.catsort=="payann"){
                     totalLabel = "Total Payroll ($)";
