@@ -466,7 +466,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         // View html source: https://model.earth/localsite/map
         // Consider pulling in HTML before DOM is loaded, then send to page once #bodyFile is available.
         if (!$("#bodyFile").length) {
-          $('body').prepend("<div id='bodyFile'></div>");
+          $('body').append("<div id='bodyFile'></div>");
         }
         if (param.display == "everything" || param.display == "map") {
           let bodyFile = theroot + "map/index.html #insertedText";

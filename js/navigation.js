@@ -80,9 +80,11 @@ $(document).ready(function(){
 			 		// Move filterbarOffset and filterEmbedHolder immediately after body tag start.
 			 		// Allows map embed to reside below intro text and additional navigation on page.
 			 		$("#filterEmbedHolder").insertAfter("#headeroffset");
-			 		//$(".filterbarOffset").insertAfter("#headeroffset");
-			 		$(".filterbarOffset").insertAfter("#headerFixed");
+			 		////$(".filterbarOffset").insertAfter("#headeroffset");
 			 		
+			 		$(".filterbarOffset").insertAfter("#headerFixed");
+			 		//$('body').prepend($(".filterbarOffset"));
+
 			 		//$(".filterbarOffset").hide();
 
 			 		// Make paths relative to current page

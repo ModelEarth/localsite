@@ -1228,6 +1228,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
         dp1.listTitle = "Motor Vehicle and Motor Vehicle Equipment Manufacturing";
         if (show == "ev") {
           dp1.listTitle = "Electric Vehicle Manufacturing";
+          dp1.zoom = 14;
         }
         dp1.editLink = "https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing";
         dp1.googleDocID = "1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs";
