@@ -314,6 +314,9 @@ iframe {
 .filterUL li {
 	padding: 8px;
 	margin-left: -6px;
+	width: 85px;
+	margin-right: 10px;
+	float: left;
 }
 .filterUL li:hover {
 	background-color: #f6f6f6;
