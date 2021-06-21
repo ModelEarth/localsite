@@ -1,10 +1,11 @@
 // Updates originate in GitHub localsite/js/localsite.js
-// To do: dynamically add target _parent to external link when in an iFrame, and no existing target
+// To do: dynamically add target _parent to external link when in an iFrame and no existing target.
+
 
 // Localsite Path Library - A global namespace singleton
-// If localsite_app library exists then use it, else define a new object.
-var localsite_app = localsite_app || (function(){
-    let _args = {}; // private
+// If local_app library exists then use it, else define a new object.
+var local_app = local_app || (function(module){
+    let _args = {}; // private, also worked as []
     let localsite_repo;
     return {
         init : function(Args) {
@@ -12,7 +13,10 @@ var localsite_app = localsite_app || (function(){
             // some other initialising
         },
         helloWorld : function() {
-            alert('Hello World! -' + _args[0]);
+            //alert('Hello World! -' + _args[0]);
+            //alert('Hello World! -' + _args.test1);
+
+            alert(Object.keys(_args)[0]);
         },
         localsite_root : function() {
             //alert("call localsite_repo");
@@ -68,7 +72,7 @@ var localsite_app = localsite_app || (function(){
             //}
             return (theroot);
         },
-        modelearth_data_root : function() { // General US states and eventually some international
+        modelearth_root : function() { // General US states and eventually some international
             // These repos will typically reside on github, so no localhost.
             let theroot = "https://model.earth"; // Probably will also remove slash from the ends of others.
             return (theroot);
@@ -81,10 +85,19 @@ var localsite_app = localsite_app || (function(){
             return (theroot);
         }
     };
+
+    // EXPORTS
+    //module.init = init;
+    //module.setData = setData;
 }());
 
-//localsite_app.init(["somevalue", 1, "controlId"]);
-//localsite_app.helloWorld();
+//local_app.loctitle = "what"
+//alert(local_app.loctitle);
+
+//local_app.init(["somevalue", 1, "controlId"]); // Does not work since switched from array to objdec
+//local_app.init({test1: "1", controlId: "okay"});
+//local_app.helloWorld("test2");
+
 // Above is alternative to placing params in javascript include path:
 // https://stackoverflow.com/questions/2190801/passing-parameters-to-javascript-files
 
@@ -115,8 +128,8 @@ function initateHiddenhash() { // Load in values from params on javascript inclu
   // Check if script resides on current server.
   //alert("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src) + "\rwindow.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
 
-  //localsite_app.localsite_root() = "https://model.earth";
-  //alert(localsite_app.localsite_root())
+  //local_app.localsite_root("https://model.earth");
+  //alert(local_app.localsite_root())
 
   let includepairs = myScript.src.substring(myScript.src.indexOf('?') + 1).split('&');
   for (let i = 0; i < includepairs.length; i++) {
@@ -621,7 +634,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
               $(".show-on-load").show();
               loadScript(theroot + 'js/map.js', function(results) {
                 // Loads map-filters.js
-                loadSearchFilters3(theroot,1); // Uses localsite_app library in localsite.js for community_data_root
+                loadSearchFilters3(theroot,1); // Uses local_app library in localsite.js for community_data_root
               });
             });
           });
@@ -687,7 +700,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       } else {
       if(location.host.indexOf('localhost') >= 0) {
-        alert("Localhost alert: JQUERY NOT YET AVAILABLE! Use this more widely.");
+        alert("Localhost alert: JQUERY NOT YET AVAILABLE!");
       } else {
         consoleLog("JQUERY NOT YET AVAILABLE! Use this more widely.");
       }
@@ -886,7 +899,6 @@ function extend () {
   }
 
   return extended;
-
 };
 
 

@@ -1632,7 +1632,7 @@ function jsLoaded(root) {
 		  	loadScript(root + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
 		    	loadScript(root + 'js/localsite.js', function(results) {
 		    		loadScript(root + 'js/map.js', function(results) {
-			  			loadSearchFilters(root,1); // Uses localsite_app library in localsite.js for community_data_root
+			  			loadSearchFilters(root,1); // Uses local_app library in localsite.js for community_data_root
 			  		});
 			  		if (param.shownav) {
 			  			loadScript(root + 'js/navigation.js', function(results) {});
