@@ -36,7 +36,7 @@ The Localsite Framework is designed to allow multiple Github repos (using JQuery
 
 ## 1. View in webroot on your computer
 
-You'll launch [https://localhost:8887](https://localhost:8887) to view multiple repos in the same webroot.
+You'll launch [http://localhost:8887/localsite/](http://localhost:8887localsite/) to view multiple repos in the same webroot.
 
 WITH A PYTHON COMMAND:
 
@@ -61,7 +61,7 @@ MORE OPTIONS:
 ON A PC: [Install IIS](https://www.techwalla.com/articles/how-to-circumvent-mcafee-dlp) to view using http://localhost/  &nbsp; With this approach you'd avoid typing the port number.
 
 
- WITH CHORME: Alternatively, you can install [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb?hl=en) to view and develop pages offline using https://localhost:8887 on your computer. Web Server for Chrome also allows you to [load a custom domain](https://medium.com/@jmatix/using-chrome-as-a-local-web-server-af04baffd581). Web Server for Chrome does not work as a Brave browser extension on Mac (as of December 2019), but you can add as a Chrome extension, then utilize from within Brave.
+ WITH CHORME: Alternatively, you can install [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb?hl=en) to view and develop pages offline using http://localhost:8887 on your computer. Web Server for Chrome also allows you to [load a custom domain](https://medium.com/@jmatix/using-chrome-as-a-local-web-server-af04baffd581). Web Server for Chrome does not work as a Brave browser extension on Mac (as of December 2019), but you can add as a Chrome extension, then utilize from within Brave.
 
  On a Mac, you can add a shorthand "localsite" command in your .bash_profile file. Change /Site to your webroot:
 
