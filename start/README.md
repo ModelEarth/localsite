@@ -16,13 +16,16 @@
 
 ### We'll help you create a custom page in our "apps" repo
 
-[Clone the apps repo](https://github.com/modelearth/apps) for embedding starter samples.  
+Fork the the [apps repo](https://github.com/modelearth/apps), the [localsite repo](https://github.com/modelearth/localsite), and the [io repo](https://github.com/modelearth/io).  
+Place in the same webroot. (More local webroot setup info below.)  
 
 <a href="../../io/team/">Contact our team for pointers</a> and <a href="../../community/challenge/meetups/">join us on Slack</a>
 
 More <a href="../../community/start/">Starter Samples</a> - maps, charts, widgets<br><br>
 
-### You can also create a website using free GitHub hosting  
+# Local Webroot Setup
+
+### You can use these steps to create a website with free GitHub hosting  
 
 The Localsite Framework is designed to allow multiple Github repos (using JQuery, React,&nbsp;Vue, etc.) to communicate using hash values.  
 
@@ -31,7 +34,7 @@ The Localsite Framework is designed to allow multiple Github repos (using JQuery
 
 
 
-## 1. Start a localhost server on your computer
+## 1. View in webroot on your computer
 
 You'll launch [https://localhost:8887](https://localhost:8887) to view multiple repos in the same webroot.
 
@@ -77,7 +80,9 @@ Save the file in the webroot folder you created in step 1.
 A static page should now be visible at [http://localhost:8887/localsite/](http://localhost:8887/localsite/)  
 An industry impact widget is embedded on the page.  
 
-Also clone the <a href='https://github.com/modelearth/io/'>io repo</a> into the same webroot to help build input-output widgets. [Learn more](../../../io/charts/)    
+Also clone the <a href='https://github.com/modelearth/apps/'>apps repo</a> if you are making a custom entry page.  
+
+Also clone the <a href='https://github.com/modelearth/io/'>io repo</a> into the same webroot to include the input-output widgets. [Learn more](../../../io/charts/)    
 
 
 For the address search to work, you'll need to get a new Google Maps API key. You can get yours and enable it by following these instructions: [https://developers.google.com/maps/documentation/javascript/get-api-key](https://developers.google.com/maps/documentation/javascript/get-api-key)  
