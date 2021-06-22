@@ -120,7 +120,7 @@ $(document).ready(function(){
 				 		//changeFavicon("https://lh3.googleusercontent.com/HPVBBuNWulVbWxHAT3Nk_kIhJPFpFObwNt4gU2ZtT4m89tqjLheeRst_cMnO8mSrVt7FOSlWXCdg6MGcGV6kwSyjBVxk5-efdw")
 				 	// localhost will be removed from the following. Currently allows Georgia branding during testing.
 				 	// location.host.indexOf('localhost') >= 0 || 
-				 	} else if (location.host.indexOf('localhost') >= 0 || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0) {
+				 	} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0) {
 				 		$(".siteTitleShort").text("Model Georgia");
 				 		param.titleArray = [];
 				 		//param.headerLogo = "<a href='https://georgia.org'><img src='" + modelpath + "../community/img/logo/georgia_usa_gray.png' style='width:130px;padding-top:4px'></a>";
