@@ -1,13 +1,17 @@
 ## Input-Output Widgets
 
-Creating websites should be fun.  The LocalSite project provides a static framework for integrating community data from multiple sources.  
+Creating websites should be fun - without waiting for build commands.  The [localsite repo](https://github.com/modelearth/localsite/) provides a static framework for displaying community data from json APIs and [community datasets](https://github.com/modelearth/community-data/).  
 
-[Widgets for Community Websites](https://model.earth/io/charts/)   
+## Get Involved
 
-[Sustainable Communities Web Challenge](https://model.earth/community/challenge/)  
+- [Local Webroot Setup](start/)   
 
-[Fall Event Press Release](https://model.earth/io/coders/)
+- [Widgets for Community Websites](https://model.earth/io/charts/)   
 
-[Current Project Areas](https://model.earth/community/)  
+- [Sustainable Communities Web Challenge](https://model.earth/community/challenge/)  
+
+- [Web Challenge Press Release](https://model.earth/io/coders/)
+
+- [Current Project Areas](https://model.earth/community/projects/)  
 <br>
 
