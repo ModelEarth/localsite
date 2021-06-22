@@ -43,7 +43,7 @@ $(document).ready(function(){
  	}
  	$("body").addClass("flexbody"); // For footer to stick at bottom on short pages
  	$("body").wrapInner( "<main class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
- 	$("body").prepend( "<div id='header' class='flexheader hideprint'></div>\r" );
+ 	$("body").prepend( "<div id='header' class='flexheader hideprint' style='pointer-events:none'></div>\r" );
 		
 
  	if (param["showheader"] && param["showheader"] != "true") {
@@ -82,7 +82,9 @@ $(document).ready(function(){
 			 		$("#filterEmbedHolder").insertAfter("#headeroffset");
 			 		////$(".filterbarOffset").insertAfter("#headeroffset");
 			 		
-			 		$(".filterbarOffset").insertAfter("#headerFixed");
+			 		//$(".filterbarOffset").insertAfter("#headerFixed");
+			 		$(".filterbarOffset").insertAfter("#headeroffset");
+			 		//$(".filterbarOffset").insertAfter("#header");
 			 		//$('body').prepend($(".filterbarOffset"));
 
 			 		//$(".filterbarOffset").hide();

@@ -371,6 +371,49 @@ function get_localsite_root3() { // Also in two other places
             return (theroot);
 }
 
+// Called from header.html files
+  function toggleFullScreen() {
+    if (document.fullscreenElement) { // Already fullscreen
+      consoleLog("Already fullscreenElement");
+      if (document.exitFullscreen) {
+        consoleLog("Attempt to exit fullscreen")
+        document.exitFullscreen();
+        $('.reduceFromFullscreen').hide();
+        $('.expandToFullscreen').show();
+        return;
+      }
+    }
+    if ((document.fullScreenElement && document.fullScreenElement !== null) ||    
+     (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+      // Only if video is not visible. Otherwise become black.
+      $('.moduleBackground').css({'z-index':'0'});   
+      $('.expandFullScreen span').text("Shrink");
+      // To do: Change icon to &#xE5D1;
+      if (document.documentElement.requestFullScreen) {  
+        document.documentElement.requestFullScreen();  
+      } else if (document.documentElement.mozRequestFullScreen) {  
+        document.documentElement.mozRequestFullScreen();  
+      } else if (document.documentElement.webkitRequestFullScreen) {  
+        document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);  
+      }
+      $('.expandToFullscreen').hide();
+      $('.reduceFromFullscreen').show(); 
+    } else {
+      
+      $('.moduleBackground').css({'z-index':'-1'}); // Allows video to overlap.
+      $('.expandFullScreen span').text("Expand");
+      if (document.cancelFullScreen) {  
+        document.cancelFullScreen();  
+      } else if (document.mozCancelFullScreen) {  
+        document.mozCancelFullScreen();  
+      } else if (document.webkitCancelFullScreen) {  
+        document.webkitCancelFullScreen();  
+      }
+      $('.reduceFromFullscreen').hide();
+      $('.expandToFullscreen').show();
+    }
+  }
+  
 var theroot = get_localsite_root3(); // BUGBUG if let: Identifier 'theroot' has already been declared.
 function clearHash(toClear) {
   let hash = getHashOnly(); // Include all existing
@@ -476,6 +519,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             consoleLog("Template Loaded: " + bodyFile);
             if (typeof relocatedStateMenu != "undefined") {
               relocatedStateMenu.appendChild(state_select); // For apps/beyondcarbon
+              $(".stateFilters").hide();
             }
             if (param.showstates != "false") {
               $("#filterClickLocation").show();
@@ -517,48 +561,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
 
 
-  // Called from header.html files
-  function toggleFullScreen() {
-    if (document.fullscreenElement) { // Already fullscreen
-      consoleLog("Already fullscreenElement");
-      if (document.exitFullscreen) {
-        consoleLog("Attempt to exit fullscreen")
-        document.exitFullscreen();
-        $('.reduceFromFullscreen').hide();
-        $('.expandToFullscreen').show();
-        return;
-      }
-    }
-    if ((document.fullScreenElement && document.fullScreenElement !== null) ||    
-     (!document.mozFullScreen && !document.webkitIsFullScreen)) {
-      // Only if video is not visible. Otherwise become black.
-      $('.moduleBackground').css({'z-index':'0'});   
-      $('.expandFullScreen span').text("Shrink");
-      // To do: Change icon to &#xE5D1;
-      if (document.documentElement.requestFullScreen) {  
-        document.documentElement.requestFullScreen();  
-      } else if (document.documentElement.mozRequestFullScreen) {  
-        document.documentElement.mozRequestFullScreen();  
-      } else if (document.documentElement.webkitRequestFullScreen) {  
-        document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);  
-      }
-      $('.expandToFullscreen').hide();
-      $('.reduceFromFullscreen').show(); 
-    } else {
-      
-      $('.moduleBackground').css({'z-index':'-1'}); // Allows video to overlap.
-      $('.expandFullScreen span').text("Expand");
-      if (document.cancelFullScreen) {  
-        document.cancelFullScreen();  
-      } else if (document.mozCancelFullScreen) {  
-        document.mozCancelFullScreen();  
-      } else if (document.webkitCancelFullScreen) {  
-        document.webkitCancelFullScreen();  
-      }
-      $('.reduceFromFullscreen').hide();
-      $('.expandToFullscreen').show();
-    }
-  }
+  
   /**
   *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
   *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/

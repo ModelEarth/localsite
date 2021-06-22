@@ -36,6 +36,10 @@
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
 }
+#filterLocations {
+  background-color: #fcfcfc;
+  border-bottom: 1px solid #eee;
+}
 .fieldSelector {
 	display: none;
 }
@@ -90,6 +94,7 @@
     border-bottom-right-radius: 0px;
     background-color: #fcfcfc;
     margin-bottom:-12px;
+    height: 45px;
 }
 .detailbutton {
     font-family: 'Lato', sans-serif;

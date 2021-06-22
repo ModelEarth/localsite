@@ -580,8 +580,10 @@ function filterClickLocation() {
 		$("#filterClickLocation").addClass("filterClickActive");
 		let hash = getHash();
 		renderMapShapes("geomap", hash);// Called once map div is visible for tiles.
+        $("#headerbar").hide();
+        $(".headerOffset").hide();
         $('html,body').animate({
-            scrollTop: $("#filterLocations").offset().top - $("#headerFixed").height()
+            scrollTop: $("#filterLocations").offset().top - $("#filterFieldsHolder").height()
         });
 
 	}
@@ -1678,16 +1680,20 @@ function initSiteObject(layerName) {
 	          				$('.showApps').removeClass("active");
 
 	          			} else {
-
+                            if ($("#filterLocations").is(':visible')) {
+                                filterClickLocation(); // Toggle county-select closed
+                            }
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
 
 	          				$("#showAppsText").text("Now Showing");
 	          				$("#appSelectHolder .showApps").addClass("filterClickActive");
 							showThumbMenu(hash.show, siteObject);
-							$('html,body').animate({
-								scrollTop: 0
-							});
+                            $("#headerbar").hide();
+                            $(".headerOffset").hide();
+                            $('html,body').animate({
+                                scrollTop: $("#bigThumbPanelHolder").offset().top - $("#filterFieldsHolder").height()
+                            });
 	          			}
 	          			
 					  	event.stopPropagation();
