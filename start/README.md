@@ -127,7 +127,7 @@ Use a Google Sheet or CSV file to [prototype a list or chart](../dataset) and up
 
 
 ### Mac Users
-To avoid commiting your local .DS\_Store files to GitHub, you may need to run the following to ignore .DS\_Store files during commits forever. The .DS\_Store files will continue to set icon sizes in your local file manager.   
+To avoid commiting your local .DS\_Store files to GitHub, you can run the following to ignore .DS\_Store files during commits forever. The .DS\_Store files will continue to set icon sizes in your local file manager.   
  
 <!-- Avoid .DS_Store file creation over network connections (article from 2011, confirm this still occurs)
 	https://support.apple.com/en-us/HT1629 -->

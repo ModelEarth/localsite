@@ -10,5 +10,5 @@ https://model.earth/localsite/js/map-filters.js
 https://model.earth/localsite/js/naics.js
 https://model.earth/localsite/js/navigation.js
 https://model.earth/localsite/map/index.html
-
 https://model.earth/apps/
+

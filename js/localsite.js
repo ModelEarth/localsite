@@ -3,7 +3,7 @@
 
 
 // Localsite Path Library - A global namespace singleton
-// If local_app library exists then use it, else define a new object.
+// Define a new object if localsite library does not exist yet.
 var local_app = local_app || (function(module){
     let _args = {}; // private, also worked as []
     let localsite_repo;

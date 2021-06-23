@@ -264,7 +264,14 @@ $(document).ready(function () {
  	$('#region_select').on('change', function() {
  		//alert($(this).attr("geo"))
  	    //goHash({'regiontitle':this.value,'lat':this.options[this.selectedIndex].getAttribute('lat'),'lon':this.options[this.selectedIndex].getAttribute('lon'),'geo':this.options[this.selectedIndex].getAttribute('geo')});
- 		goHash({'regiontitle':this.value,'lat':this.options[this.selectedIndex].getAttribute('lat'),'lon':this.options[this.selectedIndex].getAttribute('lon')});
+ 		hiddenhash.geo = $("#region_select option:selected").attr("geo");
+        delete hash.geo;
+        delete param.geo;
+        delete params.geo;
+        //params.geo = hiddenhash.geo; // Used by naics.js
+        local_app.latitude = this.options[this.selectedIndex].getAttribute('lat');
+        local_app.longitude = this.options[this.selectedIndex].getAttribute('lon');
+        goHash({'regiontitle':this.value,'geo':''});
 	});
 
  	/*
@@ -1884,8 +1891,10 @@ function hashChanged() {
 	let reloadedMap = false;
 	param = mix(param,loadParams(location.search,location.hash)); // param is declared in localsite.js. Give priority to param updates within code.
 
-	let hash = getHash();
-	//alert("hash.state " + hash.state);
+	let hash = getHash(); // Included changes to hiddenhash
+	if(location.host.indexOf('localhost') >= 0) {
+        //alert("hash changed: " + JSON.stringify(hash));
+    }
 	console.log("map-filters.js hashChanged from prior geo: " + priorHash.geo + " to " + hash.geo);
 	// For PPE embed, also in map.js. Will likely change
 	if (!hash.show) {
@@ -2108,7 +2117,12 @@ function hashChanged() {
             $(".locationTabText").text("United States");
         }
         if(!hash.regiontitle) {
-
+            //alert("no hash.regiontitle")
+            delete hiddenhash.loctitle;
+            delete hiddenhash.geo;
+            delete params.geo;
+            delete params.geo;
+            $(".regiontitle").text("");
         } else {
             hiddenhash.loctitle = hash.regiontitle;
             if (hash.show) {

@@ -152,23 +152,24 @@ function refreshNaicsWidget() {
 
     
     // The following will narrow the naics to the current location
-    if (hash.state != priorHash_naicspage.state) {
-        // Initial load, if there is a state
-        console.log("hash.state change call loadIndustryData()")
-        loadIndustryData(); // Occurs on INIT
-    } else if (hash.regiontitle != priorHash_naicspage.regiontitle) {
+    if (hash.regiontitle != priorHash_naicspage.regiontitle) {
 
         if (!hash.regiontitle) {
-
+            if(!hash.geo) {
+                
+            }
         } else {
             hiddenhash.loctitle = hash.regiontitle;
-            
             $("#region_select").val(hash.regiontitle.replace(/\+/g," "));
             hiddenhash.geo = $("#region_select option:selected").attr("geo");
             hash.geo = hiddenhash.geo;
             params.geo = hiddenhash.geo; // Used by naics.js
         }
         loadIndustryData();
+    } else if (hash.state != priorHash_naicspage.state) {
+        // Initial load, if there is a state
+        console.log("hash.state change call loadIndustryData()")
+        loadIndustryData(); // Occurs on INIT
     } else if (hash.geo != priorHash_naicspage.geo) {
         //alert("hash.geo " + hash.geo);
         loadIndustryData();
@@ -205,19 +206,19 @@ function getNaics_setHiddenHash2(go) {
 
     // NAICS FROM community/projects/biotech
     let computers = "541511,541512,551114,611310"
-    var bio_input = "113000,321113,113310,32121,32191,562213,322121,322110,"; // Omitted 541620
-    var bio_output = "325211,325991,3256,335991,325120,326190,";
-    var green_energy = "221117,221111,221113,221114,221115,221116,221118,";
-    var fossil_energy = "221112,324110,325110,";
+    let bio_input = "113000,321113,113310,32121,32191,562213,322121,322110,"; // Omitted 541620
+    let bio_output = "325211,325991,3256,335991,325120,326190,";
+    let green_energy = "221117,221111,221113,221114,221115,221116,221118,";
+    let fossil_energy = "221112,324110,325110,";
     let electric = "335910,335911,335912,";
-    var auto_parts = "336390,336211,336340,336370,336320,336360,331221,336111,336330,";
-    var parts = "336412,336413,339110,333111,325211,326112,332211,336370,336390,326199,331110,336320,";
-    var solar = "221114,334313,335999";
-    var combustion_engine = "333613,326220,336350,336310,333618,";
-    var parts_carpets = "325520,314110,313110,313210,"
-    var ppe_suppliers = "622110,621111,325414,339113,423450,"
-    var farmfresh = "311612,311615,311911,311919,311830,311824,311941,311710,311611,115114,311613,311811,311942,311991,311999,311211,311224,311920,"
-    var recycling = "423930,562111,562112,562119,562211,562212,562213,562219,562910,562920,562991,562998,56299";
+    let auto_parts = "336390,336211,336340,336370,336320,336360,331221,336111,336330,";
+    let parts = "336412,336413,339110,333111,325211,326112,332211,336370,336390,326199,331110,336320,";
+    let solar = "221114,334313,335999";
+    let combustion_engine = "333613,326220,336350,336310,333618,";
+    let parts_carpets = "325520,314110,313110,313210,"
+    let ppe_suppliers = "622110,621111,325414,339113,423450,"
+    let farmfresh = "311612,311615,311911,311919,311830,311824,311941,311710,311611,115114,311613,311811,311942,311991,311999,311211,311224,311920,"
+    let recycling = "423930,562111,562112,562119,562211,562212,562213,562219,562910,562920,562991,562998,56299";
 
     //if (param.naics) {
     //    cat_filter = param.naics.split(',');
