@@ -10,5 +10,10 @@ https://model.earth/localsite/js/map-filters.js
 https://model.earth/localsite/js/naics.js
 https://model.earth/localsite/js/navigation.js
 https://model.earth/localsite/map/index.html
+https://model.earth/localsite/css/search-filters.css
+https://model.earth/localsite/css/map-display.css
+https://model.earth/localsite/css/base.css
+https://model.earth/localsite/css/map.css
+https://model.earth/localsite/css/naics.css
 https://model.earth/apps/
 
