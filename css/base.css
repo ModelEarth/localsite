@@ -418,6 +418,7 @@ mark {
 code {
   background-color: #eee;
   padding: 2px  5px;
+  overflow: scroll;
 }
 content .js, pre code { /* Prevents .js from impacting js class within Drupal body tag */
   background-color: #eee;
