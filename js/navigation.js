@@ -330,8 +330,9 @@ $(document).ready(function(){
 		
 	});
  	// SIDE NAV WITH HIGHLIGHT ON SCROLL
-	if (param["sidecolumn"]) {
-		$("#sidecolumn").load( modelpath + "../community/nav.html", function( response, status, xhr ) {
+ 	if (param["sidecolumn"]) {
+		let targetColumn = "#sidecolumn";
+		$(targetColumn).load( modelpath + "../community/nav.html", function( response, status, xhr ) {
 
 			// Make paths relative to current page
 	 		$("#sidecolumn a[href]").each(function() {
