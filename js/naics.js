@@ -312,7 +312,7 @@ function getNaics_setHiddenHash2(go) {
         }
 
         if (states.length <= 0) { // All states
-            $("#selected_states").show();
+            //$("#selected_states").show();
         }
         
     } else if (param.naics) {

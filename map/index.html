@@ -12,16 +12,16 @@
 <title>Community Map</title>
 
 <!-- For Goole Sheets, since CORS blocks CSV loading on some sheets. -->
-<script type="text/javascript" src="/localsite/map/neighborhood/js/tabletop.js" id="/localsite/map/neighborhood/js/tabletop.js"></script>
+<script type="text/javascript" src="../map/neighborhood/js/tabletop.js" id="/localsite/map/neighborhood/js/tabletop.js"></script>
 
-<script type="text/javascript" src="../js/showdown.min.js"></script>
-<script type="text/javascript" src="../js/jquery.min.js"></script>
-<script type="text/javascript" src="../js/localsite.js?showheader=true"></script>
+<script type="text/javascript" src="../js/showdown.min.js" id="/localsite/js/showdown.min.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/localsite.js"></script>
 
 <script>
   let hash = getHash();
   if (!hash.show) {
-    hiddenhash.show = "brigades"; // Used by loadFromSheet which is called by loadMap1
+    hiddenhash.layers = "brigades"; // Used by loadFromSheet which is called by loadMap1
   }
   if (!hash.state) {
     if (hash.show == "recycling" || hash.show == "ppe" || hash.show == "suppliers" || hash.show == "360" || hash.show == "opendata") {
@@ -30,9 +30,9 @@
   }
 </script>
 
-<link type="text/css" rel="stylesheet" href="../css/base.css" />
-<link rel="stylesheet" href="../css/search-filters.css" />
-<link rel="stylesheet" href="../css/map-display.css" />
+<link type="text/css" rel="stylesheet" href="../css/base.css" id="/localsite/css/base.css" />
+<link rel="stylesheet" href="../css/search-filters.css" id="/localsite/css/search-filters.css" />
+<link rel="stylesheet" href="../css/map-display.css" id="/localsite/css/map-display.css" />
 <!--
 <link rel="stylesheet" href="../css/hexagons.css">
 -->
@@ -50,11 +50,11 @@
 </script>
 
 <!-- Activate to include site navigation-->
-<script type="text/javascript" src="../js/navigation.js"></script>
-<link rel="stylesheet" href="../css/leaflet.css" />
+<script type="text/javascript" src="../js/navigation.js" id="/localsite/js/navigation.js" ></script>
+<link rel="stylesheet" href="../css/leaflet.css" id="/localsite/css/leaflet.css" />
  <!-- Resides AFTER Leaflet's CSS -->
 <script src="../js/leaflet.js" id="/localsite/js/leaflet.js"></script>
-<script src="../js/d3.v5.min.js"></script>
+<script src="../js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
 
 <!-- Resides in info/index.html and map/index.html -->
 <!--

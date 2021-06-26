@@ -2120,8 +2120,7 @@ function hashChanged() {
             //alert("no hash.regiontitle")
             delete hiddenhash.loctitle;
             delete hiddenhash.geo;
-            delete params.geo;
-            delete params.geo;
+            delete param.geo;
             $(".regiontitle").text("");
         } else {
             hiddenhash.loctitle = hash.regiontitle;

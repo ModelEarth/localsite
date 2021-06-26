@@ -99,10 +99,12 @@ function hashChangedMap() {
     hiddenhash.state = "GA";
   }
 
-
-  if (hash.show !== priorHashMap.show) {
+  if (hash.layers !== priorHashMap.layers) {
     //applyIO(hiddenhash.naics);
-    loadMap1("hashChanged() in map-filters.js", hash.show);
+    loadMap1("hashChangedMap() in map.js layers", hash.show);
+  } else if (hash.show !== priorHashMap.show) {
+    //applyIO(hiddenhash.naics);
+    loadMap1("hashChangedMap() in map.js", hash.show);
   } else if (hash.state && hash.state !== priorHashMap.state) {
     // Why are new map points not appearing
     loadMap1("hashChanged() in map.js new state " + hash.state, hash.show);
@@ -943,7 +945,6 @@ function markerRadius(radiusValue,map) {
   return radiusOut;
 }
 
-
 // MAP 1
 // var map1 = {};
 var showprevious = param["show"];
@@ -953,15 +954,15 @@ var tabletop; // Allows us to wait for tabletop to load.
 function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js and map-filters.js
 
   console.log('loadMap1 calledBy ' + calledBy + ' show: ' + show);
-  if (!show) {
+  if (!show && param["show"]) {
     show = param["show"];
   }
-  let layers = param["layers"];
-  let hash = getHash();
+  
+  let hash = getHash(); // Includes hiddenhash
+  let layers = hash.layers;
 
   $("#dataList").html("");
   $("#detaillist").html("<img src='" + local_app.localsite_root() + "img/icon/loading.gif' style='margin:40px; width:120px' alt='Loading'>");
-  // 
 
   //if (!show && param["go"]) {
   //  show = param["go"].toLowerCase();
@@ -1123,15 +1124,6 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
     // community/farmfresh/ 
     dp1.listInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community/farmfresh/ga/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
   
-  } else if (layers == "brigades") { // To do: Check an array of layers
-    dp1.listTitle = "Coding Brigades";
-    dp1.dataset = "https://neighborhood.org/brigade-information/organizations.json";
-    dp1.datatype = "json";
-    dp1.listInfo = "<a href='https://neighborhood.org/brigade-information/'>Source</a> - <a href='https://projects.brigade.network/'>Brigade Project List</a> and <a href='https://neighborhood.org/brigade-project-index/get-indexed/'>About Project Index</a> ";
-
-    // , "In Address": "address", "In County Name": "county", "In Website URL": "website"
-    dp1.search = {"In Location Name": "name"};
-    dp1.zoom = 4;
   } else if (show == "buses") {
     dp1.listTitle = "Bus Locations";
     dp1.dataset = "https://api.marta.io/buses";
@@ -1168,6 +1160,15 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
         dp1.valueColumnLabel = "Firm Type";
         dp1.markerType = "google";
         dp1.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};      
+  } else if (layers == "brigades") { // To do: Check an array of layers
+        dp1.listTitle = "Coding Brigades";
+        dp1.dataset = "https://neighborhood.org/brigade-information/organizations.json";
+        dp1.datatype = "json";
+        dp1.listInfo = "<a href='https://neighborhood.org/brigade-information/'>Source</a> - <a href='https://projects.brigade.network/'>Brigade Project List</a> and <a href='https://neighborhood.org/brigade-project-index/get-indexed/'>About Project Index</a> ";
+
+        // , "In Address": "address", "In County Name": "county", "In Website URL": "website"
+        dp1.search = {"In Location Name": "name"};
+        dp1.zoom = 4;
   } else if (theState == "GA") {
 
       if (show == "opendata") {
@@ -1228,7 +1229,6 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
         dp1.listTitle = "Motor Vehicle and Motor Vehicle Equipment Manufacturing";
         if (show == "ev") {
           dp1.listTitle = "Electric Vehicle Manufacturing";
-          dp1.zoom = 14;
         }
         dp1.editLink = "https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing";
         dp1.googleDocID = "1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs";
