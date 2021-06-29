@@ -804,7 +804,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 .headerbar {
   background:#fff;
-  /* border-bottom: 1px solid #eee; */
+  pointer-events: auto;
 }
 .headerbarheight {
   height:100px;
