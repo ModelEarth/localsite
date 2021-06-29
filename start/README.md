@@ -163,7 +163,7 @@ To activate GitHub Pages on your fork’s settings page, set the Github Pages So
 
 ## 5. Update your forked repos
 
-### Occasionally merge in updates from the main (source) repo by doing a "pull request"
+### Occasionally merge in updates from the main repos (localsite and io) by doing a "pull request"
 
 - On your forked repo: Click Compare 
 - Flip the order. (Pick a third repo temporarily because if the two match a warning occurs.)<!-- switching the base (if you have not switched already) -->

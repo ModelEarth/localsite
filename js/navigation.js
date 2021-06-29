@@ -40,6 +40,8 @@ $(document).ready(function(){
  	$("body").wrapInner( "<div id='fullcolumn'></div>"); // Creates space for sidecolumn
  	if(document.getElementById("sidecolumn") == null) {
  		$("body").prepend( "<div id='sidecolumn' class='hideprint'></div>\r" );
+ 	} else {
+ 		$("#sidecolumn").addClass("sidecolumn-inpage");
  	}
  	$("body").addClass("flexbody"); // For footer to stick at bottom on short pages
  	$("body").wrapInner( "<main class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
@@ -453,7 +455,9 @@ $(document).ready(function(){
 			      		// To do: Change to highlight the uppermost section.
 			      		menuItems.filter("[href='..\/tools\/#']").addClass("active");
 			      	} else {
+			      		//alert("id " + id)
 			      		menuItems.filter("[href*='#"+id+"']").addClass("active"); // *= means contains
+			      		menuItems.filter("[hashid='" + id + "']").addClass("active");
 			      	}
 			  	  }
 			      /*
@@ -476,6 +480,7 @@ $(document).ready(function(){
 
 			// Initial page load
 			var currentSection = currentSideID();
+			//alert("currentSection " + currentSection)
 			if (currentSection && currentSection.length) {
 				if (currentSection == "intro") {
 			      	// To do: Change to highlight the uppermost section.
@@ -483,6 +488,7 @@ $(document).ready(function(){
 			      	lastID = "intro";
 			    } else {
 			    	menuItems.filter("[href*='#"+currentSection+"']").addClass("active");
+			    	menuItems.filter("[hashid='" + currentSection + "']").addClass("active");
 			    	// To do: If not found, try using folder name from link when no #
 			    	//menuItems.filter("[href*='interns/']").addClass("active");
 				}
