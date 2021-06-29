@@ -847,20 +847,17 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   height:100%;
   position:fixed;
   right:0px;
-
-  margin-leftX:-10px;
   overflow: auto;
   background: #fff;
-
   width:250px;
   margin-right:-250px;
   -webkit-transition-duration: 0.3s;
 	-moz-transition-duration: 0.3s;
 	-o-transition-duration: 0.3s;
 	transition-duration: 0.3s;
-
 	box-sizing: border-box;
 	z-index: 99999;
+  pointer-events: auto;
 }
 @media (max-width: 600px) {
 	#menuHolder {
