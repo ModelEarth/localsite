@@ -16,7 +16,7 @@
 
 ### We'll help you create a custom page in our "apps" repo
 
-Fork the the [apps repo](https://github.com/modelearth/apps), the [localsite repo](https://github.com/modelearth/localsite), and the [io repo](https://github.com/modelearth/io).  
+Fork the [apps repo](https://github.com/modelearth/apps), the [localsite repo](https://github.com/modelearth/localsite), and the [io repo](https://github.com/modelearth/io).  
 Place in the same webroot. (More local webroot setup info below.)  
 
 <a href="../../io/team/">Contact our team for pointers</a> and <a href="../../community/challenge/meetups/">join us on Slack</a>
