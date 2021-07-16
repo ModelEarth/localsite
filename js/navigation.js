@@ -48,6 +48,10 @@ $(document).ready(function(){
  	$("body").prepend( "<div id='header' class='flexheader hideprint' style='pointer-events:none'></div>\r" );
 		
 
+ 	if (param["showapps"] && param["showapps"] == "false") {
+ 		$(".showApps").hide();
+		$("#appSelectHolder").hide();
+ 	}
  	if (param["showheader"] && param["showheader"] != "true") {
 
 		//$(".filterPanel").addClass("filterPanel_fixed"); // This cause everything but top nav to disappear.
@@ -286,51 +290,51 @@ $(document).ready(function(){
 	} else {
 		//$("#footer").addClass("flexfooter");
 	}
-	var footerClimbpath = "";
-	let footerFile = modelpath + "../localsite/footer.html"; // modelpath remains relative for site desgnated above as having a local copy of io and community.
-	if (param.footer) {
-		footerFile = param.footer; // Custom
+	if (param["showfooter"] && param["showfooter"] == "false") {
+	} else {
+		var footerClimbpath = "";
+		let footerFile = modelpath + "../localsite/footer.html"; // modelpath remains relative for site desgnated above as having a local copy of io and community.
+		if (param.footer) {
+			footerFile = param.footer; // Custom
 
-		var footerFilePath = location.pathname + footerFile;
-		if (footerFile.indexOf("/") > 0) {
-			footerFilePath = footerFilePath.substr(0, footerFilePath.lastIndexOf("/") + 1); // Remove file name
+			var footerFilePath = location.pathname + footerFile;
+			if (footerFile.indexOf("/") > 0) {
+				footerFilePath = footerFilePath.substr(0, footerFilePath.lastIndexOf("/") + 1); // Remove file name
+			}
+
+			console.log("footerFilePath " + footerFilePath);
+
+			var upLevelInstance = (footerFilePath.match(/\.\.\//g) || []).length; // count of ../ in path.
+
+			var climbLevels = ""
+			for (var i = 0; i < upLevelInstance; i++) { // Remove ../ for each found
+				climbLevels = climbLevels + "../";
+			}	 	
+		 	footerClimbpath = climbLevels; // Example: ../
+		 	console.log("footerClimbpath (Levels up to current page): " + footerClimbpath);
+		 	//alert(footerClimbpath)
+		} else {
+			footerClimbpath = climbpath;
 		}
 
-		console.log("footerFilePath " + footerFilePath);
+		if (location.host.indexOf('familytrees') >= 0) {
+			//footerClimbpath = "../"; // TEMP FIX
+		}
+		$("#footer").load(footerFile, function( response, status, xhr ) {
+			console.log("footerFile: " + footerFile);
+			let pageFolder = getPageFolder(footerFile);
+			//alert("footerClimbpath: " + footerClimbpath);
+			//alert("pageFolder: " + pageFolder);
 
-		var upLevelInstance = (footerFilePath.match(/\.\.\//g) || []).length; // count of ../ in path.
+			//var pathToFooter = 
 
-		var climbLevels = ""
-		for (var i = 0; i < upLevelInstance; i++) { // Remove ../ for each found
-			climbLevels = climbLevels + "../";
-		}	 	
-	 	footerClimbpath = climbLevels; // Example: ../
-	 	console.log("footerClimbpath (Levels up to current page): " + footerClimbpath);
-	 	//alert(footerClimbpath)
-	} else {
-		footerClimbpath = climbpath;
+			// Append footerClimbpath to relative paths
+			makeLinksRelative("footer", footerClimbpath, pageFolder);
+			//makeLinksRelative("footer",footerClimbpath,footerFilePath); // Not working on second level pages.
+
+		});
 	}
 
-	if (location.host.indexOf('familytrees') >= 0) {
-		//footerClimbpath = "../"; // TEMP FIX
-	}
-	$("#footer").load(footerFile, function( response, status, xhr ) {
-		console.log("footerFile: " + footerFile);
-		let pageFolder = getPageFolder(footerFile);
-		//alert("footerClimbpath: " + footerClimbpath);
-		//alert("pageFolder: " + pageFolder);
-
-		//var pathToFooter = 
-
-		// Append footerClimbpath to relative paths
-		makeLinksRelative("footer", footerClimbpath, pageFolder);
-		//makeLinksRelative("footer",footerClimbpath,footerFilePath); // Not working on second level pages.
-
-	});
-
-	$(document).ready(function () {
-		
-	});
  	// SIDE NAV WITH HIGHLIGHT ON SCROLL
  	if (param["sidecolumn"]) {
 		let targetColumn = "#sidecolumn";
