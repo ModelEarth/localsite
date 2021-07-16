@@ -44,7 +44,7 @@ var local_app = local_app || (function(module){
             let hostnameAndPort = extractHostnameAndPort(myScript.src);
             let theroot = location.protocol + '//' + location.host + '/localsite/';
 
-            if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
+            if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map, and ga-layers.json
               //theroot = "https://map.georgia.org/localsite/";
               theroot = hostnameAndPort + "/localsite/";
             }
@@ -59,7 +59,9 @@ var local_app = local_app || (function(module){
             }
             if (location.host.indexOf('localhost') >= 0) {
               // For testing embedding without locathost repo in site theroot. Rename your localsite folder.
+              // Why don't we reach ".showApps click" when activatied?:
               //theroot = "https://model.earth/localsite/";
+              //alert("theroot " + theroot)
             }
             localsite_repo = theroot; // Save to reduce DOM hits
             return (theroot);

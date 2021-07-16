@@ -1623,8 +1623,8 @@ function initSiteObject(layerName) {
 
 	    //var layerJson = local_app.community_data_root() + "us/state/GA/ga-layers.json"; // CORS prevents live
 	    // The URL above is outdated. Now resides here:
-	    var layerJson = "/localsite/info/data/ga-layers.json";
-
+	    var layerJson = local_app.localsite_root() + "info/data/ga-layers.json";
+        //alert("layerJson " + layerJson)
 	    if(location.host.indexOf("georgia") >= 0) {
 	    	// For PPE, since localhost folder does not reside on same server
 	    	layerJson = "https://model.earth/localsite/info/data/ga-layers.json";
