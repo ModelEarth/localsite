@@ -177,6 +177,10 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
       let hash = getHash();
       renderMapShapes("map1", hash, 1); // County select map
     }
+    if (typeof document.querySelector('#' + whichmap)._leaflet_map === 'undefined') {
+      console.log("ERROR - Cannot read property '_leaflet_map' of null for #" + whichmap);
+      return;
+    }
     let map = document.querySelector('#' + whichmap)._leaflet_map; // Recall existing map
     var container = L.DomUtil.get(map);
     // dp.zoom = 18; // TEMP - Causes map to start with extreme close-up, then zooms out to about 5.
