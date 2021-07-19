@@ -286,9 +286,10 @@ $(document).ready(function(){
 	*/
 
 	if(document.getElementById("footer") == null) {
-		$("body").append( "<div id='footer' class='flexfooter noprint'></div>\r" );
+		$("body").append( "<div id='local-footer' class='flexfooter noprint'></div>\r" );
 	} else {
 		//$("#footer").addClass("flexfooter");
+		$("#footer").prepend( "<div id='local-footer' class='flexfooter noprint'></div>\r" );
 	}
 	if (param["showfooter"] && param["showfooter"] == "false") {
 	} else {
@@ -317,10 +318,7 @@ $(document).ready(function(){
 			footerClimbpath = climbpath;
 		}
 
-		if (location.host.indexOf('familytrees') >= 0) {
-			//footerClimbpath = "../"; // TEMP FIX
-		}
-		$("#footer").load(footerFile, function( response, status, xhr ) {
+		$("#local-footer").load(footerFile, function( response, status, xhr ) {
 			console.log("footerFile: " + footerFile);
 			let pageFolder = getPageFolder(footerFile);
 			//alert("footerClimbpath: " + footerClimbpath);

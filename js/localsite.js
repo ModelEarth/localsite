@@ -516,7 +516,10 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         // LOAD HTML TEMPLATE - Holds search filters and maps
         // View html source: https://model.earth/localsite/map
         // Consider pulling in HTML before DOM is loaded, then send to page once #bodyFile is available.
-        if (!$("#bodyFile").length) {
+
+        if ($("#" + param.insertafter).length) {
+          $("#" + param.insertafter).append("<div id='bodyFile'></div>");
+        } else if (!$("#bodyFile").length) {
           $('body').append("<div id='bodyFile'></div>");
         }
         console.log("param.display " + param.display)
@@ -559,6 +562,27 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         triggerHashChangeEvent();
       });
       //MutationObserver.observe(hiddenhash, triggerHashChangeEvent);
+
+
+      var strVarCss = "<style>";
+      if (param["show"] == "suppliers" || param["show"] == "smart") {
+        console.log("Custom for suppliers and smart");
+        if (location.host == 'georgia.org' || location.host == 'www.georgia.org') {
+          //$('.headerOffsetOne').css('height', '75px'); // Instead of 100px, for space above title.
+
+          strVarCss += ".headerOffsetOne {height:75px}"; 
+        }
+        strVarCss += "h1 {font-size:38px;margin-top:20px}"; // Larger header for Drupal
+        //strVarCss += ".headerOffsetOne{display:none !important}";
+        strVarCss += ".component--main_content{margin-top:70px}";
+
+        // Limit where this occurs
+        strVarCss += "p {margin: 0 0 2.2rem;}"; // Overrides Drupal 3.4rem bottom
+      }
+      strVarCss += "<\/style>";
+      //document.write(strVarCss);
+      document.head.insertAdjacentHTML("beforeend", strVarCss);
+
 
 
       clearInterval(waitForJQuery); // Escape the loop
