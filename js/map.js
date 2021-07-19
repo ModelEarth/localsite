@@ -177,10 +177,21 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
       let hash = getHash();
       renderMapShapes("map1", hash, 1); // County select map
     }
+    
+    // TRY AGAIN UNTIL #[whichmap] is available.
     //if (typeof document.querySelector('#' + whichmap)._leaflet_map === 'undefined') {
-    //  console.log("ERROR - Cannot read property '_leaflet_map' of null for #" + whichmap);
-    //  return;
-    //}
+    if (typeof document.querySelector('#' + whichmap) === 'undefined') {
+      console.log("Cannot read property '_leaflet_map' of null for #" + whichmap + ".  Attempt " + attempts);
+      if (attempts <= 100) {
+        setTimeout( function() {
+          loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts+1,callback);
+        }, 20 );
+      } else {
+        console.log("ERROR - exceeded 100 attempts");
+      }
+      return;
+    }
+
     let map = document.querySelector('#' + whichmap)._leaflet_map; // Recall existing map
     var container = L.DomUtil.get(map);
     //dp.zoom = 18; // TEMP - Causes map to start with extreme close-up, then zooms out to about 5.
