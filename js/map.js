@@ -183,7 +183,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     //}
     let map = document.querySelector('#' + whichmap)._leaflet_map; // Recall existing map
     var container = L.DomUtil.get(map);
-    // dp.zoom = 18; // TEMP - Causes map to start with extreme close-up, then zooms out to about 5.
+    //dp.zoom = 18; // TEMP - Causes map to start with extreme close-up, then zooms out to about 5.
     // Otherwise starts with 7ish and zooms to 5ish.
     console.log("dp.zoom " + dp.zoom);
     if (container == null) { // Initialize map
@@ -222,6 +222,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
       console.log("dp.zoom 2 " + dp.zoom);
       map.setView(mapCenter,dp.zoom);
     }
+    // Right column map
     let map2 = {};
     if (whichmap2) {
       $("#list_main").show();
@@ -231,7 +232,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
         map2 = L.map(whichmap2, {
           center: mapCenter,
           scrollWheelZoom: false,
-          zoom: 5,
+          zoom: 6,
           dragging: !L.Browser.mobile, 
           tap: !L.Browser.mobile
         });
@@ -1270,8 +1271,10 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
         dp1.listInfo = "Includes Georgia Smart Community Projects";
         dp1.search = {"In Title": "title", "In Description": "description", "In Website URL": "website", "In Address": "address", "In City Name": "city", "In Zip Code" : "zip"};
         dp1.markerType = "google";
-        dp1.showShapeMap = true;
-
+        //dp1.showShapeMap = true; // Shows county borders
+        dp1.latitude = 32.8;
+        dp1.longitude = -83.4;
+        dp1.zoom = 7;
       } else if (show == "logistics") { // "http://" + param["domain"]
 
         dp1.listTitle = "Logistics";

@@ -2008,7 +2008,7 @@ function hashChanged() {
               } else if (kilometers_wide > 1000000) { // Alaska
                   zoom = 4
               } else {
-                  zoom = 6
+                  zoom = 7; // For Georgia map
               }
               let lat = $("#state_select").find(":selected").attr("lat");
               let lon = $("#state_select").find(":selected").attr("lon");
@@ -2024,15 +2024,18 @@ function hashChanged() {
 	}
 	
 	if (mapCenter.length > 0 && typeof L != "undefined") {
-		// Avoiding including ",5" for zoom since 7 is already set. This also runs during init.
-		//console.log("Recenter map")
+		// Avoiding including ",5" for zoom since 7 is already set. 
+        // NOT IDEAL: This also runs during init.
+        // TODO: If reactiveating, omit on init, or pass in default zoom.
+        /*
+		console.log("Recenter map zoom " + zoom)
 	 	let pagemap = document.querySelector('#map1')._leaflet_map; // Recall existing map
 	    let pagemap_container = L.DomUtil.get(pagemap);
 	    if (pagemap_container != null) {
-	    	// TODO: Reactiveate
 	    	// Test here: http://localhost:8887/localsite/info/embed.html#state=GA
 	      pagemap.flyTo(mapCenter, zoom);
 	    }
+        */
 	    let pagemap2 = document.querySelector('#map2')._leaflet_map; // Recall existing map
 	    let pagemap_container2 = L.DomUtil.get(pagemap2);
 	    if (pagemap_container2 != null) {
