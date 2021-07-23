@@ -126,7 +126,7 @@ $(document).ready(function(){
 				 		//changeFavicon("https://lh3.googleusercontent.com/HPVBBuNWulVbWxHAT3Nk_kIhJPFpFObwNt4gU2ZtT4m89tqjLheeRst_cMnO8mSrVt7FOSlWXCdg6MGcGV6kwSyjBVxk5-efdw")
 				 	// localhost will be removed from the following. Currently allows Georgia branding during testing.
 				 	// location.host.indexOf('localhost') >= 0 || 
-				 	} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0
+				 	} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0
 				 		// Show locally for Brave Browser only
 				 		|| ((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false)
 				 		) {
@@ -146,9 +146,10 @@ $(document).ready(function(){
 				 		if (location.host.indexOf('localhost') < 0) {
 				 			//$(".locationTab").hide(); // So we can test locally
 				 		}
-				 		if (location.host.indexOf('georgia.org') >= 0) {
+				 		//if (location.host.indexOf('georgia.org') >= 0) {
 				 			$('.georgiaorg-hide').css('display', 'none');
-				 		}
+				 			$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
+				 		//}
 				 	} else if (!Array.isArray(param.titleArray) && (param.startTitle == "Neighborhood.org" || location.host.indexOf('neighborhood.org') >= 0)) {
 				 		$(".siteTitleShort").text("Neighborhood Modeling");
 				 		param.titleArray = ["neighbor","hood"]
