@@ -2057,7 +2057,7 @@ function hashChanged() {
 		$("#state_select").val(hash.state);
 
         //let imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/georgia.jpg";
-        //$("#state-landscape-image").css('background-image', 'url(' + imageUrl + ')');
+        //$("#hero-landscape-image").css('background-image', 'url(' + imageUrl + ')');
 
         //let theState = $("#state_select").find(":selected").val();
         let theStateName = $("#state_select").find(":selected").text();
@@ -2065,7 +2065,7 @@ function hashChanged() {
 
         let imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/" + theStateNameLowercase.replace(/\s+/g, '-') + ".jpg";
         let imageUrl_scr = "url(" + imageUrl + ")";
-        $("#state-landscape-image").css('background-image', imageUrl_scr);
+        $("#hero-landscape-image").css('background-image', imageUrl_scr);
 
 		if (hash.state != "GA") {
 			$(".regionFilter").hide();
