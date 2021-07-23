@@ -515,5 +515,5 @@
   left:auto;
   right: 0;
   top: 44px;
-  width: 164px;
+  max-width: 600px;
 }

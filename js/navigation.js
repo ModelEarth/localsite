@@ -45,7 +45,7 @@ $(document).ready(function(){
  	}
  	$("body").addClass("flexbody"); // For footer to stick at bottom on short pages
  	$("body").wrapInner( "<main class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
- 	$("body").prepend( "<div id='header' class='flexheader hideprint' style='pointer-events:none'></div>\r" );
+ 	$("body").prepend( "<div id='local-header' class='flexheader hideprint' style='pointer-events:none'></div>\r" );
 		
 
  	if (param["showapps"] && param["showapps"] == "false") {
@@ -81,7 +81,7 @@ $(document).ready(function(){
 		if (param.header) headerFile = param.header;
 		
 		$(document).ready(function () {
-			 $("#header").load(headerFile, function( response, status, xhr ) {
+			 $("#local-header").load(headerFile, function( response, status, xhr ) {
 
 			 		// Move filterbarOffset and filterEmbedHolder immediately after body tag start.
 			 		// Allows map embed to reside below intro text and additional navigation on page.
@@ -96,12 +96,12 @@ $(document).ready(function(){
 			 		//$(".filterbarOffset").hide();
 
 			 		// Make paths relative to current page
-			 		$("#header a[href]").each(function() {
+			 		$("#local-header a[href]").each(function() {
 			 			if($(this).attr("href").toLowerCase().indexOf("http") < 0) {
 				      		$(this).attr("href", modelpath + $(this).attr('href'));
 				  		}
 				    })
-				    $("#header img[src]").each(function() {
+				    $("#local-header img[src]").each(function() {
 			 		  if($(this).attr("src").toLowerCase().indexOf("http") < 0) {
 			 		  	if($(this).attr("src").indexOf("/") != 0) { // Don't append if starts with /
 				      		$(this).attr("src", modelpath + $(this).attr('src')); // Was climbpath
@@ -126,7 +126,10 @@ $(document).ready(function(){
 				 		//changeFavicon("https://lh3.googleusercontent.com/HPVBBuNWulVbWxHAT3Nk_kIhJPFpFObwNt4gU2ZtT4m89tqjLheeRst_cMnO8mSrVt7FOSlWXCdg6MGcGV6kwSyjBVxk5-efdw")
 				 	// localhost will be removed from the following. Currently allows Georgia branding during testing.
 				 	// location.host.indexOf('localhost') >= 0 || 
-				 	} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0) {
+				 	} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0
+				 		// Show locally for Brave Browser only
+				 		|| ((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false)
+				 		) {
 				 		$(".siteTitleShort").text("Model Georgia");
 				 		param.titleArray = [];
 				 		//param.headerLogo = "<a href='https://georgia.org'><img src='" + modelpath + "../community/img/logo/georgia_usa_gray.png' style='width:130px;padding-top:4px'></a>";
@@ -327,7 +330,7 @@ $(document).ready(function(){
 			//var pathToFooter = 
 
 			// Append footerClimbpath to relative paths
-			makeLinksRelative("footer", footerClimbpath, pageFolder);
+			makeLinksRelative("local-footer", footerClimbpath, pageFolder);
 			//makeLinksRelative("footer",footerClimbpath,footerFilePath); // Not working on second level pages.
 
 		});
