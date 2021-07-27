@@ -554,6 +554,10 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             consoleLog("Info Template Loaded: " + infoFile);
           });
         }
+
+        // Move local-footer to the end of body
+        $("#local-footer").appendTo("body");
+
       });
 
       $(window).on('hashchange', function() { // Avoid window.onhashchange since overridden by map and widget embeds  

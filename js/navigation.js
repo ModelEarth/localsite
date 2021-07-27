@@ -45,7 +45,8 @@ $(document).ready(function(){
  	}
  	$("body").addClass("flexbody"); // For footer to stick at bottom on short pages
  	$("body").wrapInner( "<main class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
- 	$("body").prepend( "<div id='local-header' class='flexheader hideprint' style='pointer-events:none'></div>\r" );
+ 	// min-height allows header to serve as #filterbaroffset when header.html not loaded
+ 	$("body").prepend( "<div id='local-header' class='flexheader hideprint' style='pointer-events:none;min-height:56px'></div>\r");
 		
 
  	if (param["showapps"] && param["showapps"] == "false") {
@@ -59,6 +60,11 @@ $(document).ready(function(){
 		$(".headerOffset").hide();
 		$("#headeroffset").hide();
 		$(".headerOffset").hide();
+
+		// Insert for map filters since header.html file is not loaded.
+		//alert("123")
+		//$("body").prepend( "<div id='filterbaroffset' style='height:56px; pointer-events:none'></div>");
+
 	// TO DO: Add support for custom headerpath
 
  	} else {
@@ -89,7 +95,10 @@ $(document).ready(function(){
 			 		////$(".filterbarOffset").insertAfter("#headeroffset");
 			 		
 			 		//$(".filterbarOffset").insertAfter("#headerFixed");
-			 		$(".filterbarOffset").insertAfter("#headeroffset");
+
+			 		// Not needed since moved into header.html
+			 		//$(".filterbarOffset").insertAfter("#headeroffset");
+
 			 		//$(".filterbarOffset").insertAfter("#header");
 			 		//$('body').prepend($(".filterbarOffset"));
 
@@ -272,6 +281,7 @@ $(document).ready(function(){
 				
 				// END WAS LIMITED TO HEADER
 				$(".headerOffset").show();
+				$("#local-header").append( "<div id='filterbaroffset' style='height:56px; pointer-events:none'></div>");
 			}); // End $("#header").load
 			
 		}); 

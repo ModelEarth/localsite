@@ -2291,4 +2291,8 @@ $(document).ready(function () {
     	
 	}
 	*/
+    // Insert for map filters since header.html file is not loaded.
+    // Insert in #local-header so flexheader encompasses both.
+    // This is slow, so best if already reside in #local-header
+    //$("#local-header").append( "<div id='filterbaroffset' style='height:56px; pointer-events:none'></div>");
 });

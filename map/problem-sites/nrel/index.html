@@ -19,15 +19,24 @@
 <div class="content contentpadding">
 	<div id="readmeDiv"></div>
 </div>
-
-
-<div id="afdc-stations"><div id="afdc-stations-loading">Loading alternative fueling station locator...</div></div><script type="text/javascript">window.afdcStationsOptions = {"country":"all","localeCountry":"US","path":"/analyze","query":{"show_map":"true","region":"US-GA"}}</script><script async defer src="https://widgets.nrel.gov/afdc/station-locator/assets/embed.js"></script><noscript>Please enable JavaScript to view the alternative fueling station locator.</noscript>
-
-
-
 <script>
   loadMarkdown("README.md", "readmeDiv", "_parent");
 </script>
+
+<div style="position:relative">
+	<div style="position:absolute; right:13px; font-size:10px">
+	Source: <a href="https://afdc.energy.gov/">Alternative Fuels Data Center</a>
+	</div>
+</div>
+
+<div id="afdc-stations"><div id="afdc-stations-loading">Loading alternative fueling station locator...</div></div><script type="text/javascript">window.afdcStationsOptions = {"country":"all","localeCountry":"US","path":"/analyze","query":{"show_map":"true","region":"US-GA"}}</script><script async defer src="https://widgets.nrel.gov/afdc/station-locator/assets/embed.js"></script><noscript>Please enable JavaScript to view the alternative fueling station locator.</noscript>
+
+<br>
+<div class="content contentpadding">
+	<h2>Example of additional widgets on same page</h2>
+	US EPA's <a href="../../../../io/charts/">Embeddable IO Widgets</a>
+</div>
+
 
 </body>
 </html>
