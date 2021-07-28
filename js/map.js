@@ -1094,7 +1094,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
   if (show && show.length) {
     $("." + show).show(); // Show layer's divs, after hiding all layer-specific above.
   }
-  $(".filterbarOffset").height($("#filterFieldsHolder").height() + "px"); // Adjust incase reveal/hide changes height.
+  $("#filterbaroffset").height($("#filterFieldsHolder").height() + "px"); // Adjust incase reveal/hide changes height.
 
   // Google Sheets must be published with File > Publish to Web to avoid error: "blocked by CORS policy: No 'Access-Control-Allow-Origin' header" 
 
@@ -2642,7 +2642,7 @@ function calculateDistance(lat1, lon1, lat2, lon2, unit) {
   return dist
 }
 $(window).resize(function() {
-  $(".filterbarOffset").height($("#filterFieldsHolder").height() + "px");
+  $("#filterbaroffset").height($("#filterFieldsHolder").height() + "px");
 });
 
 // To do: try moving back to map=filters.js

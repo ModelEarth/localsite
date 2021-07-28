@@ -200,11 +200,13 @@ $(document).ready(function () {
 		console.log("showSearchClick")
 		if ($("#filterFieldsHolder").is(':visible')) {
 			$("#filterFieldsHolder").hide();
-			$(".filterbarOffset").hide();
+			//$(".filterbarOffset").hide();
+			$("#filterbaroffset").hide();
 			//$("#pageLinksHolder").hide();
 		} else {
 			$("#filterFieldsHolder").show();
-			$(".filterbarOffset").show();
+			//$(".filterbarOffset").show();
+			$("#filterbaroffset").show();
 			$(".hideWhenPop").show();
 		}
 	    return;

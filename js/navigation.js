@@ -281,9 +281,11 @@ $(document).ready(function(){
 				
 				// END WAS LIMITED TO HEADER
 				$(".headerOffset").show();
-				$("#local-header").append( "<div id='filterbaroffset' style='height:56px; pointer-events:none'></div>");
+				$("#local-header").append( "<div id='filterbaroffset' style='display:none;height:56px; pointer-events:none'></div>");
+				if ($("#filterFieldsHolder").length) {
+					$("#filterbaroffset").css('display','block');
+				}
 			}); // End $("#header").load
-			
 		}); 
 
 	}
