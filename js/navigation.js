@@ -283,8 +283,21 @@ $(document).ready(function(){
 				$(".headerOffset").show();
 				$("#local-header").append( "<div id='filterbaroffset' style='display:none;height:56px; pointer-events:none'></div>");
 				if ($("#filterFieldsHolder").length) {
-					$("#filterbaroffset").css('display','block');
+					//$("#filterbaroffset").css('display','block');
 				}
+
+				// SLight delay
+				setTimeout( function() {
+					if ($("#filterFieldsHolder").length) {
+						$("#filterbaroffset").css('display','block');
+					}
+				}, 200);
+				setTimeout( function() {
+					if ($("#filterFieldsHolder").length) {
+						$("#filterbaroffset").css('display','block');
+					}
+				}, 1000);
+
 			}); // End $("#header").load
 		}); 
 
