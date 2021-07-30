@@ -527,8 +527,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         console.log("param.display " + param.display)
         if (param.display == "everything" || param.display == "map") {
           let bodyFile = theroot + "map/index.html #insertedText";
-          console.log("Before template Loaded: " + bodyFile);
-          //alert("Before template Loaded: " + bodyFile);
+
+          //console.log("Before template Loaded: " + bodyFile);
+
           $("#bodyFile").load(bodyFile, function( response, status, xhr ) {
             consoleLog("Template Loaded: " + bodyFile);
             if (typeof relocatedStateMenu != "undefined") {
@@ -548,7 +549,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         }
         if (param.display == "everything") {
           let infoFile = theroot + "info/info-template.html #info-template";
-          console.log("Before template Loaded: " + bodyFile);
+          //console.log("Before template Loaded infoFile: " + infoFile);
           //alert("Before template Loaded: " + bodyFile);
           $("#infoFile").load(infoFile, function( response, status, xhr ) {
             consoleLog("Info Template Loaded: " + infoFile);
