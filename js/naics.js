@@ -1121,6 +1121,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
 
                 if (stateAbbr) {
                 //alert("stateAbbr2: " + stateAbbr);
+                //BUGBUG - Contains all the counties in the US
                 d3.csv(local_app.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {
                     d3.csv(local_app.community_data_root() + "us/state/" + stateAbbr + "/" + stateAbbr + "counties.csv").then( function(latdata) {
                          // TABLE HEADER ROW

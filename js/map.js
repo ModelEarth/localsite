@@ -1185,7 +1185,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
         dp1.valueColumnLabel = "Firm Type";
         dp1.markerType = "google";
         dp1.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};      
-  } else if (layers == "brigades") { // To do: Check an array of layers
+  } else if (layers == "brigades" || show == "brigades") { // To do: Check an array of layers
         dp1.listTitle = "Coding Brigades";
         dp1.dataset = "https://neighborhood.org/brigade-information/organizations.json";
         dp1.datatype = "json";
