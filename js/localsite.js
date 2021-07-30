@@ -574,9 +574,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       if (param["show"] == "suppliers" || param["show"] == "smart") {
         console.log("Custom for suppliers and smart");
         if (location.host == 'georgia.org' || location.host == 'www.georgia.org') {
-          //$('.headerOffsetOne').css('height', '75px'); // Instead of 100px, for space above title.
-
-          strVarCss += ".headerOffsetOne {height:75px; display:block !important}"; 
+          strVarCss += ".headerOffsetOne {height:75px; display:block !important}.headerOffset {height: 75px;}"; 
         }
         strVarCss += "h1 {font-size:38px;margin-top:20px}"; // Larger header for Drupal
         //strVarCss += ".headerOffsetOne{display:none !important}";
