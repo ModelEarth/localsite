@@ -576,6 +576,9 @@ function filterClickLocation() {
 		//$(".locationTabText").text("Entire State");
 		$("#filterLocations").hide();
 		$("#filterClickLocation").removeClass("filterClickActive");
+        if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
+            $("#header.nav-up").hide();
+        }
 	} else {
 		$(".locationTabText").text("Locations");
 		$("#topPanel").hide();
@@ -592,7 +595,9 @@ function filterClickLocation() {
         $('html,body').animate({
             scrollTop: $("#filterLocations").offset().top - $("#filterFieldsHolder").height()
         });
-
+        if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
+            $("#header.nav-up").show();
+        }
 	}
 	$("#keywordFields").hide();
 	
