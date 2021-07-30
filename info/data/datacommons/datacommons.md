@@ -6,7 +6,7 @@ You'll be running a local copy of the [datacommons.org](https://datacommons.org)
 
 Clone the Google Data Commons "[website](https://github.com/datacommonsorg/website/)" repo and run commands within your cloned folder.  
 
-On the website [Developer Guide](https://github.com/datacommonsorg/website/blob/master/docs/developer_guide.md) page, scroll down to "Develop with Flask (simple/lite)". Get your gcloud connection working using the lite steps.  
+In the [Data Commons Developer Guide](https://github.com/datacommonsorg/website/blob/master/docs/developer_guide.md) page, scroll down to "Develop with Flask (simple/lite)". Get your gcloud connection working using the lite steps.  
 
 After cloning the website repo, run to load submodule "mixer":  
 
