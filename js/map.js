@@ -190,14 +190,23 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
         console.log("ERROR - exceeded 100 attempts");
       }
       return;
+    } else {
+      console.log("typeof document.querySelector: " + typeof document.querySelector('#' + whichmap));
+      console.log("The following 3 are also undefined when working properly...");
+      console.log("typeof document.querySelector ._leaflet_map: " + typeof document.querySelector('#' + whichmap)._leaflet_map);
     }
 
     let map = document.querySelector('#' + whichmap)._leaflet_map; // Recall existing map
+
+    console.log("typeof map: " + typeof map);
+    console.log("typeof document.querySelector ._leaflet_map: " + typeof document.querySelector('#' + whichmap)._leaflet_map);
+    
     var container = L.DomUtil.get(map);
     //dp.zoom = 18; // TEMP - Causes map to start with extreme close-up, then zooms out to about 5.
     // Otherwise starts with 7ish and zooms to 5ish.
     console.log("dp.zoom " + dp.zoom);
     if (container == null) { // Initialize map
+      console.log("Initialize map");
       map = L.map(whichmap, {
         center: mapCenter,
         scrollWheelZoom: false,
