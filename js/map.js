@@ -298,7 +298,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
           callback: function(data, tabletop) { 
 
             //onTabletopLoad(dp1) 
-            dataMixedCase = tabletop.sheets(dp.sheetName).elements; // dp.data is called points in MapsForUs.js
+            dataMixedCase = tabletop.sheets(dp.sheetName).elements; // dp.data is called "points" in MapsForUs.js
             //dp.data_lowercase_key;
 
             // Currently assumes dp.data is blank - later we may need to append.
