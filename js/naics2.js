@@ -293,12 +293,14 @@ function displayIndustryList(localObject) {
         // localObject.industryList[i].NAICS.replace("Other ","") 
 
         // BUGBUG - lookup title in last instance
-        text += "<div class='row'><div class='cell'><a href='#naics=" + localObject.industryList[i].NAICS + "' onClick='goHash({\"naics\":" + localObject.industryList[i].NAICS + "}); return false;' style='color:#aaa;white-space:nowrap'>" + icon + localObject.industryList[i].NAICS + "</a></div><div class='cell'>" + industries.get(localObject.industryList[i].NAICS).replace("Other ","") + "</div>"
+        // .replace("Other ","") 
+        text += "<div class='row'><div class='cell'><a href='#naics=" + localObject.industryList[i].NAICS + "' onClick='goHash({\"naics\":" + localObject.industryList[i].NAICS + "}); return false;' style='color:#aaa;white-space:nowrap'>" + icon + localObject.industryList[i].NAICS + "</a></div><div class='cell'>" + industries.get(localObject.industryList[i].NAICS)+ "</div>"
         
         text += "<div class='cell-right'>" + localObject.industryList[i].FIPS + "</div>";
         text += "<div class='cell-right'>" + localObject.industryList[i].Firms + "</div>";
         text += "<div class='cell-right'>" + localObject.industryList[i].Employees + "</div>";
         text += "<div class='cell-right'>" + localObject.industryList[i].Wages + "</div>";
+        text += "<div class='cell-right'>" + localObject.industryList[i].Population + "</div>";
 
         if(Array.isArray(fips)) {
             text +=  midCol; // Columns for counties
@@ -307,7 +309,7 @@ function displayIndustryList(localObject) {
         
         // use GoHash()
         
-        $("#sector_list").append(text);
+        
 
         if(i<=20){ // Avoids excessively long hash
             if(i==0){
@@ -319,6 +321,7 @@ function displayIndustryList(localObject) {
         }
     } // End looping through top naics row
 
+    $("#sector_list").append(text);
 }
 
 
