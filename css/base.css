@@ -179,6 +179,10 @@ section::before { /* Avoids hashtag headbutting browser window */
   visibility: hidden; 
   pointer-events: none;
 }
+#footer > section::before { /* Correct Drupal Footer */
+  margin-top: auto;
+  height: auto;
+}
 h3 {
   font-weight: 600; 
   font-size: 1.3em;
