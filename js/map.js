@@ -180,20 +180,33 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     
     // TRY AGAIN UNTIL #[whichmap] is available.
     //if (typeof document.querySelector('#' + whichmap)._leaflet_map === 'undefined') {
-    if (typeof document.querySelector('#' + whichmap) === 'undefined') {
-      console.log("Cannot read property '_leaflet_map' of null for #" + whichmap + ".  Attempt " + attempts);
+    if (typeof document.querySelector('#' + whichmap) === 'undefined' || typeof document.querySelector('#' + whichmap) === 'null') {
+      console.log("#" + whichmap + " is undefined. Try again.  Attempt " + attempts);
       if (attempts <= 100) {
         setTimeout( function() {
           loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts+1,callback);
         }, 20 );
       } else {
-        console.log("ERROR - exceeded 100 attempts");
+        console.log("ERROR #" + whichmap + " - exceeded 100 attempts.");
       }
       return;
     } else {
       console.log("typeof document.querySelector: " + typeof document.querySelector('#' + whichmap));
       console.log("The following 3 are also undefined when working properly...");
-      console.log("typeof document.querySelector ._leaflet_map: " + typeof document.querySelector('#' + whichmap)._leaflet_map);
+      if (typeof document.querySelector('#' + whichmap)._leaflet_map === 'null') {
+        console.log("DELETE THIS - should no longer be reached now that we check for null 14 lines above.");
+        console.log("Property '_leaflet_map' is null for #" + whichmap + ".  Try again. Attempt " + attempts);
+        if (attempts <= 100) {
+          setTimeout( function() {
+            loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts+1,callback);
+          }, 20 );
+        } else {
+          console.log("ERROR - _leaflet_map null exceeded 100 attempts.");
+        }
+        return;
+      } else {
+        console.log("typeof document.querySelector ._leaflet_map: " + typeof document.querySelector('#' + whichmap)._leaflet_map);
+      }
     }
 
     let map = document.querySelector('#' + whichmap)._leaflet_map; // Recall existing map

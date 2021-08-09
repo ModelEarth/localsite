@@ -867,8 +867,8 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                 var rates_dict = {};
                 var rates_list = [];
                 var forlist={}
-                selectedFIPS = fips;
-                if(Array.isArray(fips)){
+                //selectedFIPS = fips;
+                if (Array.isArray(fips)) {
                     for (var i = 0; i<fips.length; i++){
                         Object.keys(dataSet.industryData.ActualRate).forEach( this_key=>{
                             // this_key = parseInt(d.split("$")[1])
@@ -902,7 +902,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                         rates_list.push(forlist[key])
                     });
 
-                }else if(fips==dataObject.stateshown){
+                } else if (fips==dataObject.stateshown) {
                     //fips=13
                     
                         if(params['census_scope']=="state"){
@@ -1210,11 +1210,11 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                                     //if(String((top_data_list[i][whichVal.node().value]/1000).toFixed(2)).length<7){
                                     if (1==1) { // Always use million
                                         
-                                        // The counties
-                                        for (var j = 0; j < fips.length; j++) {
+                                        // The county cell values
+                                        for (var j = 0; j < fips.length; j++) { // For each county selected
                                             if(top_data_list[i]['ratearray'][j]){
                                                 if(top_data_list[i]['Estimate'][j]){    
-                                                    if(top_data_list[i]['Estimate'][j]>0){
+                                                    if(top_data_list[i]['Estimate'][j]>0){ // Purple color for estimate
                                                         
                                                         midCol += "<div class='cell-right'>" + dollar +"<a href='" + mapLink[j] + "' target='_blank'>"+'<span style="color: #9933aa" >'+ String((top_data_list[i]['ratearray'][j]/1000).toFixed(2)) + " million</span></a></div>";
                                                     }else{

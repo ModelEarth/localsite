@@ -69,6 +69,7 @@ function populateFieldsFromHash() {
 $(".showSearch").css("display","inline-block");
 $(".showSearch").removeClass("local");
 
+catArray = [];
 $(document).ready(function () {
 
 	if (param.state) {
@@ -79,7 +80,7 @@ $(document).ready(function () {
 	if (! ('webkitSpeechRecognition' in window) ) {
 		$(".si-btn").hide();
 	}
-	catArray = [];
+	
 	if(location.host.indexOf('localhost') >= 0) {
 		console.log("Loaded Harmonized System (HS) codes");
 	}

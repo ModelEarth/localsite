@@ -155,11 +155,11 @@ function loadParams(paramStr,hashStr) {
   //let myScript = null;
 
   // This will be removed
-  for (var i = 0; i < scripts.length; ++i) {
-      if(scripts[i].src && scripts[i].src.indexOf('embed-map.js') !== -1){
-        myScript = scripts[i];
-      }
-  }
+  //for (var i = 0; i < scripts.length; ++i) {
+  //    if(scripts[i].src && scripts[i].src.indexOf('embed-map.js') !== -1){
+  //      myScript = scripts[i];
+  //    }
+  //}
 
   for (var i = 0; i < scripts.length; ++i) {
       if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
@@ -168,11 +168,11 @@ function loadParams(paramStr,hashStr) {
   }
 
   // Now try to find one containging embed-map - to be removed
-  for (var i = 0; i < scripts.length; ++i) {
-      if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
-        myScript = scripts[i];
-      }
-  }
+  //for (var i = 0; i < scripts.length; ++i) {
+  //    if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
+  //      myScript = scripts[i];
+  //    }
+  //}
   //alert(myScript.src);
 
   let params = {};
