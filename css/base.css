@@ -28,7 +28,7 @@ time, mark, audio, video {
 */
 
 /* Amazon Ember */
-@font-face{
+@font-face {
   font-family:'Amaze';font-weight:300;
   src:url("/localsite/css/fonts/ember.woff2") format("woff2"), url("/localsite/css/fonts/ember.woff") format("woff")
 }
@@ -179,7 +179,7 @@ section::before { /* Avoids hashtag headbutting browser window */
   visibility: hidden; 
   pointer-events: none;
 }
-#footer > section::before { /* Correct Drupal Footer */
+#footer .container section::before { /* Correct Drupal Footer */
   margin-top: auto;
   height: auto;
 }
