@@ -1203,9 +1203,10 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
         dp1.dataset = "https://neighborhood.org/brigade-information/organizations.json";
         dp1.datatype = "json";
         dp1.listInfo = "<a href='https://neighborhood.org/brigade-information/'>Source</a> - <a href='https://projects.brigade.network/'>Brigade Project List</a> and <a href='https://neighborhood.org/brigade-project-index/get-indexed/'>About Project Index</a> ";
-
+        dp1.markerType = "google"; // BUGBUG doesn't seem to work with county boundary background (showShapeMap)
         // , "In Address": "address", "In County Name": "county", "In Website URL": "website"
         dp1.search = {"In Location Name": "name"};
+
         dp1.zoom = 4;
   } else if (theState == "GA") {
 

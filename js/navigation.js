@@ -39,8 +39,10 @@ $(document).ready(function(){
 	}
  	$("body").wrapInner( "<div id='fullcolumn'></div>"); // Creates space for sidecolumn
  	if(document.getElementById("sidecolumn") == null) {
- 		$("body").prepend( "<div id='sidecolumn' class='hideprint'></div>\r" );
+ 		$("body").prepend( "<div id='sidecolumn' class='hideprint' style='display:none'></div>\r" );
+ 		//$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div class='showSide'><i class='material-icons show-on-load' style='font-size:30px;color:#bbb'>menu</i></div></div>\r" );
  	} else {
+ 		// TODO - change to fixed when side reaches top of page
  		$("#sidecolumn").addClass("sidecolumn-inpage");
  	}
  	$("body").addClass("flexbody"); // For footer to stick at bottom on short pages
@@ -91,6 +93,8 @@ $(document).ready(function(){
 
 			 		// Move filterbarOffset and filterEmbedHolder immediately after body tag start.
 			 		// Allows map embed to reside below intro text and additional navigation on page.
+
+			 		$(".showMenu").show();
 			 		$("#filterEmbedHolder").insertAfter("#headeroffset");
 			 		////$(".filterbarOffset").insertAfter("#headeroffset");
 			 		
@@ -123,7 +127,7 @@ $(document).ready(function(){
 			 		// To do: fetch the existing background-image.
 			 		if (param.startTitle == "Code for America" ||  location.host.indexOf('codeforamerica') >= 0) {
 			  			param.titleArray = []
-			  			param.headerLogo = "<img src='/localsite/img/logo/partners/codeforamerica.png' style='width:110px;margin:10px 10px 10px 0;'>";
+			  			param.headerLogo = "<img src='/localsite/img/logo/partners/code-for-america.png' style='width:110px;margin:10px 10px 10px 0;'>";
 				 		document.title = "Code for America - " + document.title
 				 		// BUGBUG - error in console
 				 		//changeFavicon("https://lh3.googleusercontent.com/HPVBBuNWulVbWxHAT3Nk_kIhJPFpFObwNt4gU2ZtT4m89tqjLheeRst_cMnO8mSrVt7FOSlWXCdg6MGcGV6kwSyjBVxk5-efdw")
@@ -366,6 +370,9 @@ $(document).ready(function(){
  	if (param["sidecolumn"]) {
 		let targetColumn = "#sidecolumn";
 		$(targetColumn).load( modelpath + "../community/nav.html", function( response, status, xhr ) {
+
+			//return;
+			//alert("test");
 
 			// Make paths relative to current page
 	 		$("#sidecolumn a[href]").each(function() {

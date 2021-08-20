@@ -181,7 +181,7 @@ class="headerbarheight"
       </div>
       -->
       <div class="showMenu" style="font-size:24px;color:#999;float:left">
-        <img src="../img/icon/hamburger.png" style="width:30px; opacity:0.5; margin-top:10px">
+        <img src="/localsite/img/icon/hamburger.png" style="width:30px; opacity:0.5; margin-top:10px">
       </div>
     </div>
 
@@ -189,6 +189,29 @@ class="headerbarheight"
 
       <div id="logoholderbar" style="display:none;float:left;">
       </div>
+
+
+        <div class="hideMobile local" style="float:left;display:none;">
+          <ul class="filterUL" style="margin:18px 12px 0 10px;clear:both;min-width:120px;">
+
+              <li data-id="all"><a href="#">Earth</a></li>
+              <li data-id="country" geo="US"><a href="#">USA</a></li>
+              <!--
+              <li data-id="state" class="selected" style="white-space:nowrap"><a href="#">Entire State</a></li>
+              
+              <li data-id="state" geo="US13" class="selected" style="white-space:nowrap"><a href="#">Georgia</a></li>
+              -->
+              
+              <li data-id="city" class="local" style="display:none"><a href="#">Cities</a></li>
+              <li data-id="counties"><a href="#">Counties</a></li>
+              <li data-id="zip" class="local" style="display:none,white-space:nowrap"><a href="#">Zip Code</a></li>
+              
+              <li data-id="latlon" class="hideFilter"><a href="#">Lat/Lon</a></li>
+              <li data-id="nearby" class="hideFilter"><a href="#">Nearby</a></li>
+              
+          </ul>
+        </div>
+
 
       <div class="hideMobile" style="float:right;">
         <div class="filterLabel">
@@ -200,57 +223,57 @@ class="headerbarheight"
         </div>
       </div>
 
-      <div style="overflow:visible" class="filterField locationTab">
-        <div class="filterLabel">
-          <div class="filterLabelMain">
-            Where
+      <div style="float:right">
+        <div style="overflow:visible" class="filterField locationTab">
+          <div class="filterLabel">
+            <div class="filterLabelMain">
+              Where
+              </div>
+          </div>
+
+          <!--
+            https://www.maxon.net/en/buy
+
+            overflow:auto; causes vertical scroll to appear here:
+          -->
+          <div style="position:relative;">
+            <div class="filterClick" id="filterClickLocation" style="display:none">
+
+              <div class="select-menu-arrow-holder">
+                <!-- We could place over all select menus
+                  https://fabriceleven.com/design/clever-way-to-change-the-drop-down-selector-arrow-icon/ -->
+                <i id="showLocations" class="material-icons" style="font-size:24px;display:none">&#xE313;</i>
+                <i id="hideLocations"  class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
+              </div>
+              <div class="filterClickText locationTabText">States and Counties...</div><!-- Entire State -->
             </div>
-        </div>
-
-        <!--
-          https://www.maxon.net/en/buy
-
-          overflow:auto; causes vertical scroll to appear here:
-        -->
-        <div style="position:relative;">
-          <div class="filterClick" id="filterClickLocation" style="display:none">
-
-            <div class="select-menu-arrow-holder">
-              <!-- We could place over all select menus
-                https://fabriceleven.com/design/clever-way-to-change-the-drop-down-selector-arrow-icon/ -->
-              <i id="showLocations" class="material-icons" style="font-size:24px;display:none">&#xE313;</i>
-              <i id="hideLocations"  class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
-            </div>
-            <div class="filterClickText locationTabText">States and Counties...</div><!-- Entire State -->
           </div>
         </div>
 
-      </div>
 
+        <div id="appSelectHolder" class="filterField layerclass">
+          <div id="catSearchHolder">
 
-      <div id="appSelectHolder" class="filterField layerclass">
-        <div id="catSearchHolder">
-
-            <div class="filterLabel">
-              <div class="filterLabelMain">
-              Show
+              <div class="filterLabel">
+                <div class="filterLabelMain">
+                Show
+                </div>
               </div>
-            </div>
 
-            <div class="filterClick showApps" style="position:relative; overflow:auto;">
+              <div class="filterClick showApps" style="position:relative; overflow:auto;">
 
-              <div class="select-menu-arrow-holder">
-                  <i class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
-                  <i class="material-icons" style="font-size:24px;cursor:pointer;display:none;">&#xE313;</i>
+                <div class="select-menu-arrow-holder">
+                    <i class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
+                    <i class="material-icons" style="font-size:24px;cursor:pointer;display:none;">&#xE313;</i>
+                </div>
+                <div style="width:100%">
+                  <div class="filterClickText" id="showAppsText" title="Goods & Services">Goods & Services</div>
+                </div>
               </div>
-              <div style="width:100%">
-                <div class="filterClickText" id="showAppsText" title="Display...">Display...</div>
-              </div>
-            </div>
 
+          </div>
         </div>
       </div>
-
 
       <div style="display:none;" class="filterField layerclass mock-up suppliers exporter">
         <div id="catSearchHolder">
@@ -376,7 +399,7 @@ class="headerbarheight"
       <!-- END KEYWORD SEARCH -->
 
       <!-- Down arrow -->
-        <div class="local catchClick hideEmbed" style="position:relative;float:right;overflow:visible;">
+        <div class="localX catchClick hideEmbed" style="position:relative;float:right;overflow:visible;display:none">
 
           <div class="filterLabel">
             <div class="filterLabelMain">
@@ -781,29 +804,6 @@ class="headerbarheight"
       </div>
       -->
     
-    
-      <div class="hideMobile localonly" style="display:none;clear:both">
-        <ul class="filterUL" style="margin:18px 12px 0 30px;clear:both;min-width:120px;">
-
-            <li data-id="all" style="display:none"><a href="#">All</a></li>
-            <li data-id="country" geo="US"><a href="#">USA</a></li>
-            <!--
-            <li data-id="state" class="selected" style="white-space:nowrap"><a href="#">Entire State</a></li>
-            
-            <li data-id="state" geo="US13" class="selected" style="white-space:nowrap"><a href="#">Georgia</a></li>
-            -->
-            
-            <li data-id="city" class="local" style="display:none"><a href="#">Cities</a></li>
-            <li data-id="counties"><a href="#">Counties</a></li>
-            <li data-id="zip" class="local" style="display:none,white-space:nowrap"><a href="#">Zip Code</a></li>
-            
-            <li data-id="latlon" class="hideFilter"><a href="#">Lat/Lon</a></li>
-            <li data-id="nearby" class="hideFilter"><a href="#">Nearby</a></li>
-            
-        </ul>
-
-
-      </div>
       <div id="locationFilterHolder" style="overflow:auto; padding:20px 0 20px 40px;">
 
             <div class="hideAdvanced close-X" style="float:right; margin-top:-20px">&#10005;

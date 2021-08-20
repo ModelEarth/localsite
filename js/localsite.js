@@ -525,7 +525,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           $('body').append("<div id='bodyFile'></div>");
         }
         console.log("param.display " + param.display)
-        if (param.display == "everything" || param.display == "map") {
+        if (param.display == "everything" || param.display == "navigation2" || param.display == "map") {
           let bodyFile = theroot + "map/index.html #insertedText";
 
           //console.log("Before template Loaded: " + bodyFile);
@@ -656,7 +656,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
   </script>
   */
-  if (param.display == "everything" || param.display == "map") {
+  if (param.display == "everything" || param.display == "navigation" || param.display == "map") {
 
     includeCSS3(theroot + 'css/map.css',theroot); // Before naics.js so #industries can be overwritten.
     includeCSS3(theroot + 'css/naics.css',theroot);

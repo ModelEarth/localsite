@@ -118,7 +118,7 @@ strVar += "                  <i class=\"material-icons\" style=\"font-size:24px;
 strVar += "                  <i class=\"material-icons\" style=\"font-size:24px;cursor:pointer;display:none;\">&#xE313;<\/i>";
 strVar += "              <\/div>";
 strVar += "              <div style=\"width:100%\">";
-strVar += "                <div class=\"filterClickText\" id=\"showAppsText\" title=\"Display...\">Display...<\/div>";
+strVar += "                <div class=\"filterClickText\" id=\"showAppsText\" title=\"Goods & Services\">Goods & Services<\/div>";
 strVar += "              <\/div>";
 strVar += "            <\/div>";
 strVar += "";

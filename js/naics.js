@@ -1105,7 +1105,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                 let midCol="";
                 let text = "";
                 let dollar = ""; // optionally: $
-                let totalLabel = "Total";
+                let totalLabel = "Total Payroll";
                 let stateAbbr;
                 
                 if (hash.state) {
@@ -1212,7 +1212,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                                         
                                         // The county cell values
                                         for (var j = 0; j < fips.length; j++) { // For each county selected
-                                            if(top_data_list[i]['ratearray'][j]){
+                                            if(top_data_list[i]['ratearray'][j]){ // An array of payrole for only the selected conties
                                                 if(top_data_list[i]['Estimate'][j]){    
                                                     if(top_data_list[i]['Estimate'][j]>0){ // Purple color for estimate
                                                         

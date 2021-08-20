@@ -1677,7 +1677,7 @@ function initSiteObject(layerName) {
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
 
-	          				$("#showAppsText").text("Now Showing");
+	          				$("#showAppsText").text("Goods & Services");
 	          				$("#appSelectHolder .showApps").addClass("filterClickActive");
 							showThumbMenu(hash.show, siteObject);
                             $("#headerbar").hide();
@@ -1714,6 +1714,16 @@ function initSiteObject(layerName) {
 	    
 	//}
 } // end initSiteObject
+
+$(document).on("click", ".hideSide", function(event) {
+	$("#sidecolumn").hide();
+	$(".showSide").show();
+});
+$(document).on("click", ".showSide", function(event) {
+	alert(".showSide")
+	$(".showSide").hide();
+	$("#sidecolumn").show();
+});
 
 function showThumbMenu(activeLayer, siteObject) {
 	$("#menuHolder").css('margin-right','-250px');
@@ -2042,12 +2052,15 @@ function hashChanged() {
 	      pagemap.flyTo(mapCenter, zoom);
 	    }
         */
-	    let pagemap2 = document.querySelector('#map2')._leaflet_map; // Recall existing map
-	    let pagemap_container2 = L.DomUtil.get(pagemap2);
-	    if (pagemap_container2 != null) {
-	      // TODO: Reactiveate
-	      pagemap2.flyTo(mapCenter);
-	    }
+        if (typeof document.querySelector('#map2') === 'undefined' || typeof document.querySelector('#map2') === 'null') {
+            console.log("#map2 undefined");
+        } else {
+    	    let pagemap2 = document.querySelector('#map2')._leaflet_map; // Recall existing map
+    	    let pagemap_container2 = L.DomUtil.get(pagemap2);
+    	    if (pagemap_container2 != null) {
+    	      pagemap2.flyTo(mapCenter);
+    	    }
+        }
 	}
 	if (hash.state != priorHash.state) {
 		if($("#geomap").is(':visible')){

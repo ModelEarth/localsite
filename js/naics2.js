@@ -66,7 +66,7 @@ function displayIndustryList(localObject) {
     let midCol="";
     let text = "";
     let dollar = ""; // optionally: $
-    let totalLabel = "Total";
+    let totalLabel = "Total Payroll";
     let stateAbbr;
     let naicshash = "";
 	//localObject.industryList.forEach(function(element) {

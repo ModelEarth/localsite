@@ -1,5 +1,5 @@
 /*
-Originates at https://neighborhood.github.io/localsite/css/base.css 
+Originates at https://neighborhood.github.io/modelearth/css/base.css 
 Used in localsite, modelearth, io, neighborhood, trees
 */
 
@@ -81,6 +81,7 @@ main, .flexmain {
 header, main, .flexfooter {
     flex-shrink: 0; /* prevent shrinking if content is larger than the screen. */
 }
+
 table {
   border-spacing: 0px;
 }
@@ -551,14 +552,21 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   width:100%;
   */
 }
-#footer {
+#local-footer {
   clear: both;
   position: relative;
   z-index: 1000;
-  background: #fff;
+  background: #dae8eb;
   padding-bottom: 15px;
+  border-top: 6px solid #fff;
 }
-
+.showSide {
+	padding: 8px;
+	position: absolute;
+	z-index: 1001;
+	pointer-events: auto;
+	cursor: pointer;
+}
 .pagecard {
     clear:both;
     overflow: auto;

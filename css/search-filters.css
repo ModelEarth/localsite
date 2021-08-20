@@ -214,7 +214,13 @@
   font-size:28px;
   color:#bbb;
 }
-
+.close-X-sm {
+  cursor:pointer;
+  padding:10px 14px 11px 22px;
+  font-size:19px;
+  font-size:18px;
+  color:#bbb;
+}
 #honeycombPanel {
     text-align: center;
     margin:0 auto;
