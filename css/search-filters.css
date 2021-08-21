@@ -216,10 +216,13 @@
 }
 .close-X-sm {
   cursor:pointer;
-  padding:10px 14px 11px 22px;
+  margin:12px 16px 11px 22px;
   font-size:19px;
   font-size:18px;
   color:#bbb;
+}
+.close-X-sm:hover {
+  color:#333;
 }
 #honeycombPanel {
     text-align: center;

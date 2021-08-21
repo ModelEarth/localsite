@@ -40,7 +40,7 @@ $(document).ready(function(){
  	$("body").wrapInner( "<div id='fullcolumn'></div>"); // Creates space for sidecolumn
  	if(document.getElementById("sidecolumn") == null) {
  		$("body").prepend( "<div id='sidecolumn' class='hideprint' style='display:none'></div>\r" );
- 		//$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div class='showSide'><i class='material-icons show-on-load' style='font-size:30px;color:#bbb'>menu</i></div></div>\r" );
+ 		$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div class='showSide'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
  	} else {
  		// TODO - change to fixed when side reaches top of page
  		$("#sidecolumn").addClass("sidecolumn-inpage");
@@ -50,7 +50,14 @@ $(document).ready(function(){
  	// min-height allows header to serve as #filterbaroffset when header.html not loaded
  	$("body").prepend( "<div id='local-header' class='flexheader hideprint' style='pointer-events:none;min-height:56px'></div>\r");
 		
-
+ 	$(document).on("click", ".showSide", function(event) {
+		$(".showSide").hide();
+		$("#sidecolumn").show();
+	});
+ 	$(document).on("click", ".hideSide", function(event) {
+		$("#sidecolumn").hide();
+		$(".showSide").show();
+	});
  	if (param["showapps"] && param["showapps"] == "false") {
  		$(".showApps").hide();
 		$("#appSelectHolder").hide();

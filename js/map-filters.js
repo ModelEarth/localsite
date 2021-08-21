@@ -1715,16 +1715,6 @@ function initSiteObject(layerName) {
 	//}
 } // end initSiteObject
 
-$(document).on("click", ".hideSide", function(event) {
-	$("#sidecolumn").hide();
-	$(".showSide").show();
-});
-$(document).on("click", ".showSide", function(event) {
-	alert(".showSide")
-	$(".showSide").hide();
-	$("#sidecolumn").show();
-});
-
 function showThumbMenu(activeLayer, siteObject) {
 	$("#menuHolder").css('margin-right','-250px');
 	$("#bigThumbPanelHolder").show();
