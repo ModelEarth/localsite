@@ -40,7 +40,7 @@ $(document).ready(function(){
  	$("body").wrapInner( "<div id='fullcolumn'></div>"); // Creates space for sidecolumn
  	if(document.getElementById("sidecolumn") == null) {
  		$("body").prepend( "<div id='sidecolumn' class='hideprint' style='display:none'></div>\r" );
- 		$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div class='showSide'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
+ 		//$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div class='showSide'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
  	} else {
  		// TODO - change to fixed when side reaches top of page
  		$("#sidecolumn").addClass("sidecolumn-inpage");
