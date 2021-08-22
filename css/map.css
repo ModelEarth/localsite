@@ -7,6 +7,7 @@
   
   .leaflet-touch .leaflet-bar {
      border:none;
+     margin-left:30px;
   }
   .leaflet-touch .leaflet-bar a {
     width:38px !important;

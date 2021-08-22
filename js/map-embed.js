@@ -1007,7 +1007,7 @@ strVar += "<div style=\"margin:0px 40px 0 40px\"><iframe id=\"mapframe\" style=\
 strVar += "";
 strVar += "<div id=\"tableSide\" class=\"hideMobile\">";
 strVar += "";
-strVar += "  <div id='sidecolumn' class='hideprint, local, earth' style=\"display: none\">";
+strVar += "  <div id='sidecolumnX' class='hideprint, local, earth' style=\"displayX: none\">";
 strVar += "";
 strVar += "";
 strVar += "";

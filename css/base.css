@@ -560,12 +560,22 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   padding-bottom: 15px;
   border-top: 6px solid #fff;
 }
-.showSide {
+#showSide {
 	padding: 8px;
-	position: absolute;
+	padding-top: 13px;
+	position: fixed;
 	z-index: 1001;
 	pointer-events: auto;
 	cursor: pointer;
+}
+.close-X-sm {
+  cursor:pointer;
+  margin:6px 6px 11px 22px;
+  font-size:18px;
+  color:#444;
+}
+.close-X-sm:hover {
+  color:#777;
 }
 .pagecard {
     clear:both;

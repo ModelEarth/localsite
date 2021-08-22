@@ -40,23 +40,27 @@ $(document).ready(function(){
  	$("body").wrapInner( "<div id='fullcolumn'></div>"); // Creates space for sidecolumn
  	if(document.getElementById("sidecolumn") == null) {
  		$("body").prepend( "<div id='sidecolumn' class='hideprint' style='display:none'></div>\r" );
- 		//$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div class='showSide'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
  	} else {
  		// TODO - change to fixed when side reaches top of page
+ 		alert("sidecolumn already exists")
  		$("#sidecolumn").addClass("sidecolumn-inpage");
  	}
+ 	$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
+ 	
  	$("body").addClass("flexbody"); // For footer to stick at bottom on short pages
  	$("body").wrapInner( "<main class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
  	// min-height allows header to serve as #filterbaroffset when header.html not loaded
  	$("body").prepend( "<div id='local-header' class='flexheader hideprint' style='pointer-events:none;min-height:56px'></div>\r");
 		
- 	$(document).on("click", ".showSide", function(event) {
-		$(".showSide").hide();
+ 	$(document).on("click", "#showSide", function(event) {
+		$("#showSide").hide();
 		$("#sidecolumn").show();
+		let headerFixedHeight = $("#headerFixed").height();
+		$('#sidecolumnContent').css("top",headerFixedHeight + "px");
 	});
  	$(document).on("click", ".hideSide", function(event) {
 		$("#sidecolumn").hide();
-		$(".showSide").show();
+		$("#showSide").show();
 	});
  	if (param["showapps"] && param["showapps"] == "false") {
  		$(".showApps").hide();
@@ -374,7 +378,8 @@ $(document).ready(function(){
 	}
 
  	// SIDE NAV WITH HIGHLIGHT ON SCROLL
- 	if (param["sidecolumn"]) {
+ 	if (1==2 && param["sidecolumn"]) {
+ 		// No longer used
 		let targetColumn = "#sidecolumn";
 		$(targetColumn).load( modelpath + "../community/nav.html", function( response, status, xhr ) {
 
