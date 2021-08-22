@@ -171,7 +171,7 @@ class="headerbarheight"
   
   <div class="hideWhenPop">
 
-  <div id="filterFieldsHolder" class="contentfull noprint" style="margin:0 auto; padding-top:0px; float:left; width:100%">
+  <div id="filterFieldsHolder" class="contentfull noprint" style="margin:0 auto; padding-top:0px; padding-left:40px; float:left; width:100%">
 
     <!-- Displayed on scroll up -->
     <div class="showMenuSmNav" style="float:right; display:none">
@@ -191,28 +191,6 @@ class="headerbarheight"
       </div>
 
 
-        <div class="hideMobile local" style="float:left;display:none;">
-          <ul class="filterUL" style="margin:18px 12px 0 10px;clear:both;min-width:120px;">
-
-              <li data-id="all"><a href="#">Earth</a></li>
-              <li data-id="country" geo="US"><a href="#">USA</a></li>
-              <!--
-              <li data-id="state" class="selected" style="white-space:nowrap"><a href="#">Entire State</a></li>
-              
-              <li data-id="state" geo="US13" class="selected" style="white-space:nowrap"><a href="#">Georgia</a></li>
-              -->
-              
-              <li data-id="city" class="local" style="display:none"><a href="#">Cities</a></li>
-              <li data-id="counties"><a href="#">Counties</a></li>
-              <li data-id="zip" class="local" style="display:none,white-space:nowrap"><a href="#">Zip Code</a></li>
-              
-              <li data-id="latlon" class="hideFilter"><a href="#">Lat/Lon</a></li>
-              <li data-id="nearby" class="hideFilter"><a href="#">Nearby</a></li>
-              
-          </ul>
-        </div>
-
-
       <div class="hideMobile" style="float:right;">
         <div class="filterLabel">
             <div class="filterLabelMain">
@@ -223,7 +201,29 @@ class="headerbarheight"
         </div>
       </div>
 
-      <div style="float:right">
+      <div class="hideMobile local" style="float:right;display:none;">
+        <ul class="filterUL" style="margin:18px 12px 0 10px;clear:both;min-width:120px;">
+
+            <li data-id="all"><a href="#">Earth</a></li>
+            <li data-id="country" geo="US"><a href="#">USA</a></li>
+            <!--
+            <li data-id="state" class="selected" style="white-space:nowrap"><a href="#">Entire State</a></li>
+            
+            <li data-id="state" geo="US13" class="selected" style="white-space:nowrap"><a href="#">Georgia</a></li>
+            -->
+            
+            <li data-id="city" class="local" style="display:none"><a href="#">Cities</a></li>
+            <li data-id="counties"><a href="#">Counties</a></li>
+            <li data-id="zip" class="local" style="display:none,white-space:nowrap"><a href="#">Zip Code</a></li>
+            
+            <li data-id="latlon" class="hideFilter"><a href="#">Lat/Lon</a></li>
+            <li data-id="nearby" class="hideFilter"><a href="#">Nearby</a></li>
+            
+        </ul>
+      </div>
+
+
+      <div style="float:left">
         <div style="overflow:visible" class="filterField locationTab">
           <div class="filterLabel">
             <div class="filterLabelMain">
@@ -907,7 +907,7 @@ class="headerbarheight"
           <div class="local" style="display:none">
             <div class="place_details input-output" style="float:left;margin-bottom:15px">
             
-              <b style="margin-top:0px">Address Lookup</b> <a href="auto">project</a><br>
+              <b style="margin-top:0px">Address Lookup</b> <a href="/localsite/map/auto">project</a><br>
             
               <input 
                 class="filterClick"

@@ -564,7 +564,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 	padding: 8px;
 	padding-top: 13px;
 	position: fixed;
-	z-index: 1001;
+	z-index: 99999;
 	pointer-events: auto;
 	cursor: pointer;
 }

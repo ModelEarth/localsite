@@ -2591,7 +2591,7 @@ $(window).scroll(function() {
     $('.headerOffset').hide();
 
     $('#sidecolumnContent').css("top","54px");
-    $('#showSide').css("top","54px");
+    $('#showSide').css("top","7px");
 
     if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
       $('#headerFixed').hide();
@@ -2605,7 +2605,7 @@ $(window).scroll(function() {
       $('.headerOffset').hide();
       //alert("4")
       $('#sidecolumnContent').css("top","54px");
-      $('#showSide').css("top","54px");
+      $('#showSide').css("top","7px");
       if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
         $('#headerFixed').hide();
       }
@@ -2617,7 +2617,7 @@ $(window).scroll(function() {
       if ($("#headerbar").length) {
         $('.headerOffset').show();
         $('#sidecolumnContent').css("top","150px");
-        $('#showSide').css("top","150px");
+        $('#showSide').css("top","108px");
       }
       $('#headerFixed').show();
     } else if ($(window).scrollTop() == 0) { // At top
@@ -2626,7 +2626,7 @@ $(window).scroll(function() {
       if ($("#headerbar").length) {
         $('.headerOffset').show();
         $('#sidecolumnContent').css("top","150px");
-        $('#showSide').css("top","150px");
+        $('#showSide').css("top","108px");
       }
       $('#headerFixed').show();
     }
