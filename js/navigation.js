@@ -42,7 +42,7 @@ $(document).ready(function(){
  		$("body").prepend( "<div id='sidecolumn' class='hideprint' style='display:none'></div>\r" );
  	} else {
  		// TODO - change to fixed when side reaches top of page
- 		alert("sidecolumn already exists")
+ 		console.log("navigation.js report: sidecolumn already exists")
  		$("#sidecolumn").addClass("sidecolumn-inpage");
  	}
  	$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
