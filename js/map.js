@@ -1270,9 +1270,10 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
           dp1.listTitle = "Electric Vehicle Manufacturing";
         }
         dp1.editLink = "https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing";
-        dp1.googleDocID = "1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs";
+        //dp1.googleDocID = "1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs";
         dp1.sheetName = "Automotive";
-        dp1.listInfo = "<br><br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates. Learn about <a href='../../community/projects/mobility/'>data sources</a>.";
+        dp1.dataset = "https://model.earth/georgia-data/automotive/automotive.csv";
+        dp1.listInfo = "<br><br>Blue map points indicate electric vehicle parts manufacturing.<br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates. Learn about <a href='../../community/projects/mobility/'>data sources</a>.";
         dp1.valueColumn = "ev industry";
         dp1.valueColumnLabel = "EV Industry";
         dp1.markerType = "google";

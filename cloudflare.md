@@ -16,4 +16,7 @@ https://model.earth/localsite/css/base.css
 https://model.earth/localsite/css/map.css
 https://model.earth/localsite/css/naics.css
 https://model.earth/apps/
+https://model.earth/community/challenge/
+https://model.earth/community/challenge/README.md
+https://model.earth/community/challenge/rules.md
 

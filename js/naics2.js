@@ -59,7 +59,7 @@ function promisesReady(values) { // Wait for
 function displayIndustryList(localObject) {
 	let hash = getHash(); // Includes hiddenhash
 	//let catcount = hash.catcount || 40;
-	let industrycount = 40; // localObject.industryList.length;
+	let industrycount = 100; // localObject.industryList.length;
 
 	let icon = "";
     let rightCol = "";
@@ -72,7 +72,12 @@ function displayIndustryList(localObject) {
 	//localObject.industryList.forEach(function(element) {
 	//	console.log(element);
 	//})
-	
+	if (hash.state) {
+        stateAbbr = hash.state.toUpperCase();
+    } else {
+        stateAbbr = "GA"; // Temp HACK to show US
+    }
+
 	for (i = 0; i < industrycount; i++) { // Naics
         rightCol="";
         midCol="";
@@ -84,20 +89,27 @@ function displayIndustryList(localObject) {
             // Populate maplink with Google Map URL for each industry
 
             //d3.csv(local_app.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {
-                if(Array.isArray(fips) && statelength != fips.length) {
+
+            // TODO: Save in a county_data object and append each new state. Track appended states with an array.
+            d3.csv(local_app.community_data_root() + "us/state/" + stateAbbr + "/" + stateAbbr + "counties.csv").then( function(latdata) {
+
+                //alert("HERE2 industrycount: " + industrycount)
+                mapLink = "nothing"
+                if(Array.isArray(fips)) { // && dataObject.counties.length != fips.length
                     mapLink=[]
-                    for(var j=0; j<fips.length; j++){
-                        var filteredData = consdata.filter(function(d) {
+                    for(var j=0; j<fips.length; j++) { // For each county (fips)
+                        //var filteredData = consdata.filter(function(d) {
                             var filteredData = latdata.filter(function(e) {
-                                if(d["id"]==fips[j]){
-                                    if(d["county"]==e["NAMELSAD"]){
+                                //alert(fips[j])
+                                if(j["geoid"]==fips[j]){
+                                    if(j["county"]==e["NAMELSAD"]){
                                     	// BUGBUG - change to naics title
                                         mapLink.push("https://www.google.com/maps/search/" + localObject.industryList[i]['NAICS'].replace(/ /g,"+") + "/@" + e['latitude'] + "," + e['longitude'] + ",11z")
                                         
                                     }
                                 }
                             })
-                        })
+                        //})
                     }
                 } else if (fips == stateID) {
                         //county=""
@@ -119,7 +131,7 @@ function displayIndustryList(localObject) {
                         })
                     })
                 }
-            //})
+            })
             //let mapLink = "https://www.google.com/maps/search/" + localObject.industryList[i]['data_id'].replace(/ /g,"+") + "/@" + latitude + "," + longitude + ",11z";
 
 
@@ -219,14 +231,14 @@ function displayIndustryList(localObject) {
                 rightCol = ""
                 midCol = ""
                 for (var j = 0; j<fips.length; j++){
-                    if(localObject.industryList[i]['ratearray'][j]){
+                    if(localObject.industryList[i]['Firms'][j]){ // Was ratearray
 
                         if(hash.catsort=="estab"){
                             midCol += "<div class='cell-right'><a href='" + mapLink[j] + "' target='_blank'>" + String(Math.round(localObject.industryList[i]['ratearray'][j])) + "</a></div>";
                             
                         } else {
-                            if(localObject.industryList[i]['Estimate'][j]){    
-                                    if(localObject.industryList[i]['Estimate'][j]>0){
+                            if(localObject.industryList[i]['Wages'][j]){ // Was Estimate
+                                    if(localObject.industryList[i]['Wages'][j]>0) { // Was Estimate
                                         midCol += "<div class='cell-right'><a href='" + mapLink[j] + "' target='_blank'>" + '<span style="color: #9933aa" >'+String(Math.round(localObject.industryList[i]['ratearray'][j])) + "</span></a></div>";
                             
                                     } else {
@@ -294,7 +306,7 @@ function displayIndustryList(localObject) {
 
         // BUGBUG - lookup title in last instance
         // .replace("Other ","") 
-        text += "<div class='row'><div class='cell'><a href='#naics=" + localObject.industryList[i].NAICS + "' onClick='goHash({\"naics\":" + localObject.industryList[i].NAICS + "}); return false;' style='color:#aaa;white-space:nowrap'>" + icon + localObject.industryList[i].NAICS + "</a></div><div class='cell'>" + industries.get(localObject.industryList[i].NAICS)+ "</div>"
+        text += "<div class='row'><div class='cell'>" + icon + localObject.industryList[i].NAICS + "</div><div class='cell'><a href='#naics=" + localObject.industryList[i].NAICS + "' onClick='goHash({\"naics\":" + localObject.industryList[i].NAICS + "}); return false;' style='white-space:nowrap'>" + industries.get(localObject.industryList[i].NAICS)+ "</a></div>"
         
         text += "<div class='cell-right'>" + localObject.industryList[i].FIPS + "</div>";
         text += "<div class='cell-right'>" + localObject.industryList[i].Firms + "</div>";
@@ -325,6 +337,48 @@ function displayIndustryList(localObject) {
 }
 
 
+function keyFound(this_key, cat_filter, params) {
+    if (!params.show) {
+        params.show = params.go;
+    }
+
+    if (this_key <= 1) {
+        return false;
+    } else if (cat_filter == undefined) { // No filter
+        return true;
+    } else if (cat_filter.length == 0) { // No filter
+        return true;
+    } else if (params.show == "bioeconomy" && (this_key.startsWith("11") || this_key.startsWith("311"))) { // Quick hack, always include Agriculture
+        return true;
+    //} else if (params.show == "farmfresh" && (this_key.startsWith("11") || this_key.startsWith("311"))) { // Quick hack, always include Agriculture
+    //    return true;
+    } else if (params.show == "manufacturing" && (this_key.startsWith("31") || this_key.startsWith("32") || this_key.startsWith("33") )) { // All manufacturing
+        return true;
+    } else if ( (params.show == "bioeconomy" || params.show=="parts") && params.catsize == 2) { // Our 4 digit array matches key
+        cat_filt=[]
+        for(i=0;i<cat_filter.length;i++){
+            cat_filt.push(cat_filter[i].slice(0,2))
+        }
+        if(cat_filt.includes(this_key.slice(0,2))){
+            return true;
+        }
+    } else if ( (params.show == "bioeconomy" || params.show=="parts") && params.catsize == 4 ) { // Our 4 digit array matches key
+        cat_filt=[]
+        for(i=0;i<cat_filter.length;i++){
+            cat_filt.push(cat_filter[i].slice(0,4))
+        }
+        if(cat_filt.includes(this_key.slice(0,4))){
+            return true;
+        }
+    } else if ( (params.show == "bioeconomy" || params.show=="parts" || cat_filter.length > 0) && params.catsize == 6 && cat_filter.includes(this_key.slice(0,6))) { // Our 6 digit array matches key
+        return true;
+    } else {
+        console.log("NO CAT MATCH FOUND FOR: " + params.show);
+        return false;
+    }
+}
+
+// Top rows for a specific set of fips (states and counties)
 function topRatesInFips(dataSet, fips) { // REMOVED , params
 	dataNames = dataSet.industryNames;
     //let catcount = hash.catcount || 40;
@@ -377,7 +431,7 @@ function topRatesInFips(dataSet, fips) { // REMOVED , params
 
                 // TEMP - Hardcoded BUGBUG
                 // Note that US is not included
-                fips = ["13189","13025","13171"];
+                //fips = ["13189","13025","13171"];
 
                 if(Array.isArray(fips)){
                     for (var i = 0; i<fips.length; i++) {
@@ -415,12 +469,11 @@ function topRatesInFips(dataSet, fips) { // REMOVED , params
                         rates_list.push(forlist[key])
                     });
 
-                }else if(fips==stateID){
-                    //fips=13
-                    
+                }else if(fips==stateID){ //Example: fips=13
+                    // Was dataSet.industryDataStateApi.ActualRate[this_key], try changing to localObject.industryList
                         if(hash.census_scope=="state"){
                             Object.keys(dataSet.industryDataStateApi.ActualRate).forEach( this_key=>{
-                                if (keyFound(this_key, cat_filter,params)){
+                                if (keyFound(this_key, cat_filter, hash)){ // hash was params
                                     this_rate = dataSet.industryDataStateApi.ActualRate[this_key]
                                     if (this_rate.hasOwnProperty(fips)){ 
                                         rates_dict[this_key] = parseFloat(this_rate[fips][which_state_api])
@@ -433,8 +486,10 @@ function topRatesInFips(dataSet, fips) { // REMOVED , params
                             })
                         }
                     else{
-                        Object.keys(dataSet.industryDataState.ActualRate).forEach( this_key=>{
-                            if (keyFound(this_key, cat_filter,params)){
+                        //Object.keys(dataSet.industryDataState.ActualRate).forEach( this_key=>{
+                        //alert(localObject.industryList)
+                        Object.keys(localObject.industryList).forEach( this_key=>{ // Was: localObject.industryList.ActualRate
+                            if (keyFound(this_key, cat_filter, hash)){ // hash was params
                                 this_rate = dataSet.industryDataState.ActualRate[this_key]
                                 if (this_rate.hasOwnProperty(fips)){ 
                                     rates_dict[this_key] = parseFloat(this_rate[fips][which_state])
@@ -449,7 +504,7 @@ function topRatesInFips(dataSet, fips) { // REMOVED , params
 
                 } else {
                     Object.keys(dataSet.industryData.ActualRate).forEach( this_key=>{
-                        if (keyFound(this_key, cat_filter,params)){
+                        if (keyFound(this_key, cat_filter, hash)){ // hash was params
                             this_rate = dataSet.industryData.ActualRate[this_key]
                             if (this_rate.hasOwnProperty(fips)){ 
                                 rates_dict[this_key] = parseFloat(this_rate[fips][which])
@@ -670,7 +725,7 @@ function topRatesInFips(dataSet, fips) { // REMOVED , params
                         // y = top_data_ids.length; // Show over 800 rows
                         let naicshash = "";
                         $("#econ_list").html("<div><br>No results found.</div><br>");
-                        //alert(y)
+                        alert("Industry matches found (max of " + catcount + "): " + y);
                         for (i = 0; i < y; i++) { // Naics
                             rightCol="";
                             midCol="";
@@ -682,7 +737,7 @@ function topRatesInFips(dataSet, fips) { // REMOVED , params
                                 // Populate maplink with Google Map URL for each industry
 
                                 //d3.csv(local_app.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {
-                                    if(Array.isArray(fips) && statelength != fips.length) {
+                                    if(Array.isArray(fips)) { // What did this do: && dataObject.counties.length != fips.length
                                         mapLink=[]
                                         for(var j=0; j<fips.length; j++){
                                             var filteredData = consdata.filter(function(d) {
