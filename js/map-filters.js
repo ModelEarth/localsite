@@ -1757,6 +1757,14 @@ let siteObject = callInitSiteObject(1);
   });
   
   function loadGoogleScript() {
+
+  	// ADD LIST OF ALLOWED DOMAIN FOR GOOGLE ADDRESS AUTOCOMPLETE
+
+  	// DISALLOWED
+  	if (location.host.indexOf('localhost') >= 0) {
+		return; // Since not authorized for localhost
+	}
+
   	var script = document.createElement('script');
   	var scriptsrc = 'https://maps.googleapis.com/maps/api/js' + '?key=' + GOOGLE_MAP_KEY +'&libraries=places';
     script.src = scriptsrc;
@@ -1772,7 +1780,6 @@ let siteObject = callInitSiteObject(1);
 
 // BUGBUG - Could break if another script is already loaded containing "google"
 function googlePlacesApiLoaded(count) {
-
 	if (typeof google === 'object' && typeof google.maps === 'object') {
 		console.log('FOUND google.maps.places. count:' + count)
 	} else if (count<100) { // Wait a 100th of a second and try again
