@@ -729,7 +729,8 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     height: 30px;
     font-size: 18px;
     border: 1px solid lightgray;
-    border-radius: 5px;
+    border-radius: 20px;
+    min-height: 34px;
     margin-right: 15px;
     padding: 0 5px 0 10px;
 }
