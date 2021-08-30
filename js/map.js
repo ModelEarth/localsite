@@ -1461,7 +1461,7 @@ function loadMap1(calledBy, show, dp) { // Called by index.html, map-embed.js an
     // Set to Georiga - later we'll show globe
     if (!hash.state) {
       //hash.state = "GA"
-      $(".locationTabText").text("States and counties...")
+      $(".locationTabText").text("Locations")
     } else {
       $("#state_select").val(hash.state);
       $(".locationTabText").text($("#state_select").find(":selected").text());
