@@ -268,7 +268,11 @@ $(document).ready(function () {
  		hiddenhash.geo = $("#region_select option:selected").attr("geo");
         delete hash.geo;
         delete param.geo;
-        delete params.geo;
+        try {
+	        delete params.geo; // Used by old naics.js
+	    } catch(e) {
+	    	console.log("Remove params.geo after upgrading naics.js " + e);
+	    }
         //params.geo = hiddenhash.geo; // Used by naics.js
         local_app.latitude = this.options[this.selectedIndex].getAttribute('lat');
         local_app.longitude = this.options[this.selectedIndex].getAttribute('lon');
@@ -591,10 +595,8 @@ function filterClickLocation() {
 		$("#filterClickLocation").addClass("filterClickActive");
 		let hash = getHash();
 		renderMapShapes("geomap", hash, 1);// Called once map div is visible for tiles.
-        $("#headerbar").hide();
-        $(".headerOffset").hide();
         $('html,body').animate({
-            scrollTop: $("#filterLocations").offset().top - $("#filterFieldsHolder").height()
+            scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
         });
         if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
             $("#header.nav-up").show();
@@ -1618,7 +1620,22 @@ function styleShape(feature) {
     
 }
 
+function isElementInViewport(el) {
 
+    // Special bonus for those using jQuery
+    if (typeof jQuery === "function" && el instanceof jQuery) {
+        el = el[0];
+    }
+
+    var rect = el.getBoundingClientRect();
+
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+    );
+}
 function initSiteObject(layerName) {
 
 	let hash = getHash();
@@ -1654,8 +1671,8 @@ function initSiteObject(layerName) {
 	                $(document).on("click", ".showApps, .hideApps", function(event) {
 	          			console.log('.showApps click');
 
-	          			if ($("#bigThumbPanelHolder").is(':visible')) {
-
+	          			//if ($("#bigThumbPanelHolder").is(':visible')) {
+	          			if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) {
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
 
@@ -1671,6 +1688,7 @@ function initSiteObject(layerName) {
 	          				$('.showApps').removeClass("active");
 
 	          			} else {
+	          				//alert("show")
                             if ($("#filterLocations").is(':visible')) {
                                 filterClickLocation(); // Toggle county-select closed
                             }
@@ -1680,10 +1698,9 @@ function initSiteObject(layerName) {
 	          				$("#showAppsText").text("Goods & Services");
 	          				$("#appSelectHolder .showApps").addClass("filterClickActive");
 							showThumbMenu(hash.show, siteObject);
-                            $("#headerbar").hide();
-                            $(".headerOffset").hide();
                             $('html,body').animate({
-                                scrollTop: $("#bigThumbPanelHolder").offset().top - $("#filterFieldsHolder").height()
+                            	//- $("#filterFieldsHolder").height()  
+                                scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
                             });
 	          			}
 	          			
@@ -2093,7 +2110,7 @@ function hashChanged() {
 		if (hash.state && hash.state.length == 2) {
             $(".locationTabText").text($("#state_select").find(":selected").text());
 		} else {
-			$(".locationTabText").text("States and counties...");
+			$(".locationTabText").text("Locations");
             $("#filterLocations").hide();
             $("#industryListHolder").hide(); // Remove once national naics are loaded.
 		}
@@ -2132,7 +2149,12 @@ function hashChanged() {
             $("#region_select").val(hash.regiontitle.replace(/\+/g," "));
             hiddenhash.geo = $("#region_select option:selected").attr("geo");
             hash.geo = hiddenhash.geo;
-            params.geo = hiddenhash.geo; // Used by naics.js
+            
+            try {
+	        	params.geo = hiddenhash.geo; // Used by old naics.js
+		    } catch(e) {
+		    	console.log("Remove params.geo after upgrading naics.js " + e);
+		    }
         }
     }
 

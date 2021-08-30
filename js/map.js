@@ -114,6 +114,7 @@ function hashChangedMap() {
   priorHashMap = getHash();
 }
 $(document).ready(function () {
+  // INIT
   hashChangedMap();
 });
 

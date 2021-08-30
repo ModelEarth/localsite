@@ -191,13 +191,13 @@ class="headerbarheight"
       </div>
 
 
-      <div class="hideMobile" style="float:right;">
+      <div style="float:right;">
         <div class="filterLabel">
             <div class="filterLabelMain">
             </div>
         </div>
         <div class="showApps" style="border:0px solid #ccc;">
-          <i class="material-icons show-on-load georgiaorg-hide" style="font-size:34px">&#xE5C3;</i>
+          <i class="material-icons show-on-load georgiaorg-hide" style="font-size:34px;">&#xE5C3;</i>
         </div>
       </div>
 
@@ -245,7 +245,7 @@ class="headerbarheight"
                 <i id="showLocations" class="material-icons" style="font-size:24px;display:none">&#xE313;</i>
                 <i id="hideLocations"  class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
               </div>
-              <div class="filterClickText locationTabText">States and Counties...</div><!-- Entire State -->
+              <div class="filterClickText locationTabText">Locations</div><!-- Entire State -->
             </div>
           </div>
         </div>
@@ -378,7 +378,10 @@ class="headerbarheight"
                     <div class="filterBubble">
 
                       <div id="findWhat" style="min-width: 176px">
+
+                        <!--
                         <div class="hideAdvanced" style="float:right;cursor:pointer">&#10005;</div>
+                        -->
 
                         <div style="display:none;float:left;margin-right:20px">
                           <input type="checkbox" name="findLocation" id="findLocation" value="findLocation" checked><label for="findLocation" class="filterCheckboxTitle">Search Listings</label><br>
@@ -752,7 +755,10 @@ class="headerbarheight"
 <!-- Currently map-filters.js limits loading to localhost -->
 <div class="search-filters-css" style="display:none">
 <div id="bigThumbPanelHolder" style="display:none;position: relative;">
+
+  <!--
   <div class="hideApps close-X" style="position:absolute;right:0;top:0;z-index:1">✕</div>
+  -->
 
   <div style="overflow:auto;position:relative">
   <a name="sections"></a>
@@ -806,8 +812,15 @@ class="headerbarheight"
     
       <div id="locationFilterHolder" style="overflow:auto; padding:20px 0 20px 40px;">
 
+            <!--
             <div class="hideAdvanced close-X" style="float:right; margin-top:-20px">&#10005;
             </div>
+            -->
+
+            <div style="float:right; padding:18px 7px 7px 7px;">
+              <div class="detailbutton hideAdvanced greenbutton">Continue</div>
+            </div>
+
 
             <div class="stateFilters input-output" style="float:left; display:none" class="mock-up earth">
               <b>State</b><br>
@@ -894,26 +907,23 @@ class="headerbarheight"
 
         <!-- GOOGLE ADDRESS AUTOCOMPLETE -->
         <!-- USES "Google Autocomplete" javascript in map-filters.js 
-        Currently flacky.  Works after returning to page, sometimes.
-
-        For testing (this works fine):
-          /localsite/map/auto/
+        Currently flacky.  Works after returning to page, sometimes.          
         -->
         <style>
 
         </style>
         <div id="app">
 
-          <div class="local" style="display:none">
+          <div id="local_auto_complete" class="localX" style="display:none">
             <div class="place_details input-output" style="float:left;margin-bottom:15px">
-            
-              <b style="margin-top:0px">Address Lookup</b> <a href="/localsite/map/auto">project</a><br>
+              <a style="float:right" href="/localsite/map/auto">?</a>
+              <b style="margin-top:0px">Address</b> <br>
             
               <input 
                 class="filterClick"
                 id="searchloc"
-                style="max-width:400px; float:left; display: block; width: 60vw; font-size: 1rem; font-weight: 400; line-height: 2rem;"
-                placeholder="Enter an address, city, state, county or zip"
+                style="max-width:300px; float:left; display: block; width: 60vw; font-size: 1rem; font-weight: 400; line-height: 2rem;"
+                placeholder="Address, city, state, county or zip"
                 onfocus="value = ''" 
                 type="text" />
               <br><br>
@@ -1060,10 +1070,7 @@ class="headerbarheight"
 
                   <div style="displayX:table; width:100%">
                     <div style="float:left; min-height:30px; padding:10px; displayX: table-cell; vertical-align: middle">
-                      Choose counties above or click on map.
-                    </div>
-                    <div style="displayX: table-cell; padding:3px 7px 7px 7px;">
-                      <div class="detailbutton hideAdvanced greenbutton" style="float:left">Done</div>
+                      Check one or more counties above or click the map.
                     </div>
                   </div>
 

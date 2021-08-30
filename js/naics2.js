@@ -443,7 +443,7 @@ function topRatesInFips(dataSet, fips) {
         }
     }
     //if (fips == stateID && hash.catsort == "payann") {
-        text += "<div class='cell' style='text-align:right'>Firms</div><div class='cell' style='text-align:right'>Employees</div><div class='cell' style='text-align:right'>Wages</div>";
+        text += "<div class='cell' style='text-align:right'>Establishments</div><div class='cell' style='text-align:right'>Employees</div><div class='cell' style='text-align:right'>Payroll</div>";
     //}
 
     text = "<div class='row' style='table_header'><div class='cell'><!-- col 1 -->NAICS</div><div class='cell' style='min-width:300px'><!-- col 2 -->Industry</div>" + text + "<div class='cell-right'>Population</div>";
@@ -454,7 +454,8 @@ function topRatesInFips(dataSet, fips) {
     // Write header to browser
     $("#sector_list").prepend(text);
 
-
+    let naicsNotFound = "";
+    let naicsNotFoundCount = 0;
     for (var i=0; i < dataSet.industryCounties.length; i++) {
         //alert(dataSet.industryCounties[i].NAICS);
         //alert(dataSet.industryCounties[i].FIPS);
@@ -479,7 +480,8 @@ function topRatesInFips(dataSet, fips) {
                 //alert(dataSet.industries[objIndex].population)
                     
             } else {
-                console.log("Not found in industryCounties: " + dataSet.industryCounties[i].NAICS);
+                ++naicsNotFoundCount;
+                //naicsNotFound += dataSet.industryCounties[i].NAICS + ",";
             }
             //dataSet.industries.id[dataSet.industryCounties[i].NAICS].aggregate = dataSet.industryCounties[i].firms;
             //alert(dataSet.industries.id[dataSet.industryCounties[i].NAICS].aggregate);
@@ -490,7 +492,13 @@ function topRatesInFips(dataSet, fips) {
         //}
     }
 
+    console.log(naicsNotFoundCount + " NAICS not found in " + industryTitleFile);
+    //console.log(naicsNotFound);
+
     return;
+
+
+
 
 
     for (var j = 0; j < fips.length; j++) { 

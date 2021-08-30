@@ -522,7 +522,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         if ($("#" + param.insertafter).length) {
           $("#" + param.insertafter).append("<div id='bodyFile'></div>");
         } else if (!$("#bodyFile").length) {
-          $('body').append("<div id='bodyFile'></div>");
+          $('body').prepend("<div id='bodyFile'></div>");
         }
         console.log("param.display " + param.display)
         if (param.display == "everything" || param.display == "locfilters" || param.display == "map") {
@@ -666,7 +666,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           includeCSS3(theroot + 'css/leaflet.css',theroot);
           loadScript(theroot + 'js/leaflet.js', function(results) {
             loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Could skip when map does not use material icon colors
-              $(".show-on-load").show();
               loadScript(theroot + 'js/map.js', function(results) {
                 // Loads map-filters.js
                 loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
@@ -704,7 +703,31 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     }
     
 
-    includeCSS3('https://fonts.googleapis.com/icon?family=Material+Icons',theroot);
+    //includeCSS3('https://fonts.googleapis.com/icon?family=Material+Icons',theroot);
+    !function() {
+      // Setting up listener for font checking
+      var font = "1rem 'Material Icons'";
+      document.fonts.addEventListener('loadingdone', function(event) {
+          console.log(`Checking ${font}: ${ document.fonts.check(font)}`);
+      })
+
+      // Loading font
+      var link = document.createElement('link'),
+          head = document.getElementsByTagName('head')[0];
+
+      link.addEventListener('load', function() {
+          //alert('Font loaded');
+          $(document).ready(function () {
+            $(".show-on-load").show();
+          });
+      })
+
+      link.type = 'text/css';
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
+      head.appendChild(link);
+  }()
+
     includeCSS3(theroot + 'css/leaflet.icon-material.css',theroot);
     
     loadScript(theroot + 'js/table-sort.js', function(results) {}); // For county grid column sort

@@ -45,7 +45,7 @@ $(document).ready(function(){
  		console.log("navigation.js report: sidecolumn already exists")
  		$("#sidecolumn").addClass("sidecolumn-inpage");
  	}
- 	$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
+ 	$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:108px'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
  	
  	$("body").addClass("flexbody"); // For footer to stick at bottom on short pages
  	$("body").wrapInner( "<main class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
