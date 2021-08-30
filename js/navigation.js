@@ -53,12 +53,20 @@ $(document).ready(function(){
  	$("body").prepend( "<div id='local-header' class='flexheader hideprint' style='pointer-events:none;min-height:56px'></div>\r");
 		
  	$(document).on("click", "#showSide", function(event) {
-		$("#showSide").hide();
-		$("#sidecolumn").show();
-		let headerFixedHeight = $("#headerFixed").height();
-		$('#sidecolumnContent').css("top",headerFixedHeight + "px");
+		//$("#showSide").hide();
+		if ($("#sidecolumn").is(':visible')) {
+			$("#showSide").css("opacity","1");
+			$("#sidecolumn").hide();
+			$("#showSide").show();
+		} else {
+			$("#showSide").css("opacity",".4");
+			$("#sidecolumn").show();
+			let headerFixedHeight = $("#headerFixed").height();
+			$('#sidecolumnContent').css("top",headerFixedHeight + "px");
+		}
 	});
  	$(document).on("click", ".hideSide", function(event) {
+ 		$("#showSide").css("opacity","1");
 		$("#sidecolumn").hide();
 		$("#showSide").show();
 	});
