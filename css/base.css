@@ -337,9 +337,9 @@ summary::-webkit-details-marker {
 }
 
 .pageColumns {
-
   overflowX: hidden; /* Allows bottom padding to apply after float:left columns */
   overflowX: scroll; /* Allows large number of naics columns to be viewed */
+  margin-right:-30px;
 }
 .pageColumn {
   width:33.33%;
@@ -354,10 +354,14 @@ summary::-webkit-details-marker {
 }
 .pageColumnInside {
   position: relative;
-  margin-right:30px;
+  margin-right:40px;
   line-height: 1.55;
   border: 1px solid rgba(255,255,255,0);
+  font-size: 18px;
   /* overflow: hidden; */ /* Covers indicator bar */
+}
+.pageColumns > .pageColumn:last-child {
+	margin-right:0px;
 }
 .pageColumnTitle {
   font-size: 1.27em;
@@ -984,13 +988,16 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   position: absolute;
   top: 60px;
   left: 60px;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.85);
   border-radius: 40px;
   margin: 0 auto; /* We'll center instead */
   max-width: 600px;
   padding: 50px;
   padding-bottom: 20px;
   clear: both;
+}
+#hero-rect:hover {
+  background-color: rgba(255, 255, 255, 0.9);
 }
 #hero-rect-new {
   background-color: rgba(255, 255, 255, 0.8);
