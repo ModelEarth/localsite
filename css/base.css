@@ -504,6 +504,21 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     background-color: #f15a7f;
     border-color: #f15a7f;
 }
+.btn-white {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+.btn-white:hover {
+    background-color: #b9da79;
+    border-color: #b9da79;
+}
+.btn-white:link {
+  color: #333;
+}
+.btn-white:visited {
+  color: #333;
+}
 @media (max-width: 500px) {
   .btn {
     width:100%;
