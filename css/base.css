@@ -600,14 +600,14 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     clear:both;
     overflow: auto;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
+    border-radius: 28px;
     margin-bottom: 30px;
 }
 .cardstyle {
     background: #fff;
     min-height: 50px;
     position: relative;
-    border-radius: 4px;
+    border-radius: 28px;
     padding: 20px;
 }
 @media (max-width: 1200px) {
