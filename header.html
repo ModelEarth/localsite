@@ -251,6 +251,7 @@ $(document).ready(function () {
 		$(".showSearch").removeClass("local");
   	}
 
+  	console.log("Doc is ready, place #sidecolumnContent into #sidecolumn")
   	$("#sidecolumn").append($("#sidecolumnContent"));
 	function showSearchClick() {
 		if (!$("#filterFieldsHolder").length) { // Doesn't exist
@@ -393,8 +394,8 @@ body {
 }
 #sidecolumnContent a:hover {
     border-right: 4px solid #f3f3f3;
+    border-right: 4px solid #000;
     margin-right: -4px;
-    border-bottomX: solid 4px #333;
 }
 #sidecolumnContent a.active {
     border-right: 4px solid #999;
@@ -485,7 +486,7 @@ body {
 
 
 <b><a href="/community/carbon-capture/" hashid="carbon-capture">Beyond Carbon</a></b>
-<a href="/community/carbon-capture/" hashid="carbon-capture">Carbon Capture</a>
+<a href="/community/carbon-capture/" hashid="locally">Carbon Capture</a>
 <a href="/community/carbon-capture/#forestry">Fast Forestry</a>
 <a href="/community/carbon-capture/#superwood">Superwood</a>
 <a href="/community/carbon-capture/#hydrogen">Hydrogen Fuel</a>

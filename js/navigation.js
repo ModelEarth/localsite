@@ -8,22 +8,24 @@ if (window.location.protocol != 'https:' && location.host.indexOf('localhost') <
 }
 var imageUrl;
 
+// Get the levels below root
+var foldercount = (location.pathname.split('/').length - 1); // - (location.pathname[location.pathname.length - 1] == '/' ? 1 : 0) // Removed because ending with slash or filename does not effect levels. Increased -1 to -2.
+foldercount = foldercount - 2;
+var climbcount = foldercount;
+if(location.host.indexOf('localhost') >= 0) {
+	//climbcount = foldercount - 0;
+}
+var climbpath = "";
+for (var i = 0; i < climbcount; i++) {
+	climbpath += "../";
+}
+if (climbpath == "") {
+	climbpath += "./"; // Eliminates ? portion of URL
+}
+//console.log("climbpath " + climbpath);
+
 $(document).ready(function(){
-	// Get the levels below root
- 	var foldercount = (location.pathname.split('/').length - 1); // - (location.pathname[location.pathname.length - 1] == '/' ? 1 : 0) // Removed because ending with slash or filename does not effect levels. Increased -1 to -2.
- 	foldercount = foldercount - 2;
- 	var climbcount = foldercount;
- 	if(location.host.indexOf('localhost') >= 0) {
- 		//climbcount = foldercount - 0;
- 	}
- 	var climbpath = "";
- 	for (var i = 0; i < climbcount; i++) {
- 		climbpath += "../";
- 	}
- 	if (climbpath == "") {
- 		climbpath += "./"; // Eliminates ? portion of URL
- 	}
- 	//console.log("climbpath " + climbpath);
+	
 
  	var modelpath = climbpath;
  	if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('hood') < 0) { // When not localhost or other sites that have a fork of io and community.
@@ -108,7 +110,7 @@ $(document).ready(function(){
 		if (param.header) headerFile = param.header;
 		
 		$(document).ready(function () {
-			 $("#local-header").load(headerFile, function( response, status, xhr ) {
+			$("#local-header").load(headerFile, function( response, status, xhr ) {
 
 			 		// Move filterbarOffset and filterEmbedHolder immediately after body tag start.
 			 		// Allows map embed to reside below intro text and additional navigation on page.
@@ -128,10 +130,14 @@ $(document).ready(function(){
 			 		//$(".filterbarOffset").hide();
 
 			 		// Make paths relative to current page
+			 		// Only updates right side navigation, so not currently necessary to check if starts with / but doing so anyway.
 			 		$("#local-header a[href]").each(function() {
-			 			if($(this).attr("href").toLowerCase().indexOf("http") < 0) {
+			 		  if($(this).attr("href").toLowerCase().indexOf("http") < 0) {
+			 		  	if($(this).attr("href").indexOf("/") != 0) { // Don't append if starts with /
+			 		  		//alert($(this).attr('href'))
 				      		$(this).attr("href", modelpath + $(this).attr('href'));
-				  		}
+				        }
+				  	  }
 				    })
 				    $("#local-header img[src]").each(function() {
 			 		  if($(this).attr("src").toLowerCase().indexOf("http") < 0) {
@@ -307,7 +313,7 @@ $(document).ready(function(){
 					//$("#filterbaroffset").css('display','block');
 				}
 
-				// SLight delay
+				// Slight delay
 				setTimeout( function() {
 					if ($("#filterFieldsHolder").length) {
 						$("#filterbaroffset").css('display','block');
@@ -318,6 +324,9 @@ $(document).ready(function(){
 						$("#filterbaroffset").css('display','block');
 					}
 				}, 1000);
+
+
+				activateSideColumn();
 
 			}); // End $("#header").load
 		}); 
@@ -384,22 +393,37 @@ $(document).ready(function(){
 	}
 
  	// SIDE NAV WITH HIGHLIGHT ON SCROLL
+
+ 	// Not currently using nav.html, will likely use later for overrides.  Primary side nav resides in header.
  	if (1==2 && param["sidecolumn"]) {
- 		// No longer used
+ 		// Wait for header to load?
+
 		let targetColumn = "#sidecolumn";
-		$(targetColumn).load( modelpath + "../community/nav.html", function( response, status, xhr ) {
+		$(targetColumn).load( modelpath + "../localsite/nav.html", function( response, status, xhr ) {
+
+			activateSideColumn();
+		});
+	}
+	// END SIDE NAV WITH HIGHLIGHT ON SCROLL
+});
+
+
+function activateSideColumn() {
 
 			//return;
-			//alert("test");
 
 			// Make paths relative to current page
 	 		$("#sidecolumn a[href]").each(function() {
-	 			if($(this).attr("href").toLowerCase().indexOf("http") < 0){
-		      		$(this).attr("href", climbpath + $(this).attr('href'));
+	 			if($(this).attr("href").toLowerCase().indexOf("http") < 0) {
+	 				if($(this).attr("href").indexOf("/") != 0) { // Don't append if starts with /
+	 					$(this).attr("href", climbpath + $(this).attr('href'));
+		      		}
 		  		}
 		    })
 	 		$("#sidecolumn img[src]").each(function() {
-		      $(this).attr("src", climbpath + $(this).attr('src'));
+	 			if($(this).attr("src").indexOf("/") != 0) { // Don't append if starts with /
+		      		$(this).attr("src", climbpath + $(this).attr('src'));
+		  		}
 		    })
 			
 			// Clone after path change
@@ -549,10 +573,8 @@ $(document).ready(function(){
 			    	//menuItems.filter("[href*='interns/']").addClass("active");
 				}
 			}
-		});
-	}
-	// END SIDE NAV WITH HIGHLIGHT ON SCROLL
-});
+}
+
 
 function makeLinksRelative(divID,climbpath,pageFolder) {
 	  $("#" + divID + " a[href]").each(function() {
