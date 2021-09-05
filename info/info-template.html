@@ -51,7 +51,7 @@
 					<div id="quickLinks" style="display:none">
 						<div>Choose counties</div>
 					</div>
-					<h1 class="regiontitle" style="margin-top:0;padding-top:0;"></h1>
+					<h1 class="region_service" style="margin-top:0;padding-top:0;"></h1>
 					<h4 class="location_titles" style="font-size:16px;color:#555;display:none"></h4>
 				</div>
 
@@ -182,7 +182,7 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
             Impacts on Water
             -->
             <h1 id="pageTitle" class="h1-home" style="margin-top:0px; margin-bottom:10px;">Supply Chain</h1>
-            <div class="regiontitle" style="margin-bottom:20px"></div>
+            <div class="region_service" style="margin-bottom:20px"></div>
             
 
             <select id="indicators" class="filterClickX form-selectX picklist" onchange="goHash({'set':'','indicators':this.value});" style="min-width:400px;margin:10px 0 0 0; font-size:18px; max-width:400px">
@@ -453,13 +453,12 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 
     <hr>
 	<span style="font-size:14px">
+		<b>Input and Output per Dollar Spent</b><span style="display:none" class="showforstates"> - Based on 2017 BEA and EPA data displayed for the top <span class=""></span> industries in 2021.<br></span><br>
+
 		In the ranked "Commodities" column below, click the yellow menu to choose multiple impact areas, or choose an impact set above.<br>
 		Move sliders to emulate the effects of changes to production levels and technologies per dollar spent.<br>
 		Data source: U.S. Bureau of Economic Analysis commodities combined with EPA indicators. 
 		- <a href="https://model.earth/io/charts/">About&nbsp;Widgets</a><br>
-
-		<span style="color:red; display:none" class="showforstates">Values are currently national rather than state-specific.<br></span>
-
 		<br>
 	</span>
 	<div id="iogrid"></div>
@@ -581,7 +580,7 @@ function updateMosicNew(naics) {
 <div class="contentpadding" style="min-height:200px;border-bottom:1px solid #ccc;">
 
 	<h1 style="margin-bottom: 0px">Impact Levels</h1>
-	<span class="regiontitle"></span><br>
+	<span class="region_service"></span><br>
 	<div class="sector-list"></div>
 	<!--
 	JOBS and VADD are excluded from the default sort

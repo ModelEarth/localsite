@@ -357,7 +357,7 @@ summary::-webkit-details-marker {
   margin-right:40px;
   line-height: 1.55;
   border: 1px solid rgba(255,255,255,0);
-  font-size: 18px;
+  font-size: 16px;
   /* overflow: hidden; */ /* Covers indicator bar */
 }
 .pageColumns > .pageColumn:last-child {

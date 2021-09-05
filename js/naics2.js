@@ -1079,7 +1079,7 @@ function topRatesInFipsOld(dataSet, fips) { // REMOVED , params
                                 //$(".locationTabText").text(thestate);
                             } else {
                                 //local_app.loctitle = fips.length + " counties in " + thestate;
-                                $(".locationTabText").text(fips.length + " counties in " + thestate);
+                                //$(".locationTabText").text(fips.length + " counties in " + thestate);
                             }
                             //}
                         }

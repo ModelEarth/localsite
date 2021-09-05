@@ -20,6 +20,14 @@
     width: 25%;
   }
 }
+@media (max-width: 650px) {
+  #footerlogos > a, #footerlogos > div {
+    float:none !important;
+    overflow: none !important;
+    margin: 0 0 50px 0 !important;
+    text-align: left !important;
+  }
+}
 </style>
 
 <div class="content contentpadding" style="padding-bottom:20px;">
@@ -107,10 +115,14 @@
 
 <div class="content contentpadding">
 
-  <div id="toplogo" style="">
-      <a href="https://codeforamerica.org/" style="float:left"><img src="/localsite/img/logo/partners/code-for-america.png" style="width:170px;"></a>
+  <div id="footerlogos">
+      <div style="float:left">
+        <a href="https://codeforamerica.org/"><img src="/localsite/img/logo/partners/code-for-america.png" style="width:170px;"></a>
+      </div>
 
-      <a href="https://codeforall.org/" style="float:right"><img src="/localsite/img/logo/partners/code-for-all.png" style="width:200px;"></a>
+      <div style="float:right">
+        <a href="https://codeforall.org/"><img src="/localsite/img/logo/partners/code-for-all.png" style="width:200px;"></a>
+      </div>
 
       <div style="overflow:auto; text-align: center">
         <a href="https://www.epa.gov/"><img src="/localsite/img/logo/partners/epa-text.png" style="width:180px;"></a>

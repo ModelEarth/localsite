@@ -1494,7 +1494,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                                 //$(".locationTabText").text(thestate);
                             } else {
                                 //local_app.loctitle = fips.length + " counties in " + thestate;
-                                $(".locationTabText").text(fips.length + " counties in " + thestate);
+                                //$(".locationTabText").text(fips.length + " counties in " + thestate);
                             }
                             //}
                         }

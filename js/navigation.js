@@ -285,6 +285,7 @@ $(document).ready(function(){
 						event.stopPropagation();
 					});
 					$(document).on("click", ".hideAdvanced", function(event) {
+						updateHash({"view":""});
 						$(".fieldSelector").hide();
 						$("#filterLocations").hide();
 						$("#filterClickLocation").removeClass("filterClickActive");
