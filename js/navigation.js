@@ -47,7 +47,6 @@ $(document).ready(function(){
  		console.log("navigation.js report: sidecolumn already exists")
  		$("#sidecolumn").addClass("sidecolumn-inpage");
  	}
- 	$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:108px'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
  	
  	$("body").addClass("flexbody"); // For footer to stick at bottom on short pages
  	$("body").wrapInner( "<main class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
@@ -91,7 +90,7 @@ $(document).ready(function(){
 	// TO DO: Add support for custom headerpath
 
  	} else {
-
+ 		let showLeftIcon = false;
  		$(".headerOffset").show();
 		$("#headeroffset").show();
 		$(".headerOffset").show();
@@ -151,12 +150,14 @@ $(document).ready(function(){
 
 			 		// To do: fetch the existing background-image.
 			 		if (param.startTitle == "Code for America" ||  location.host.indexOf('codeforamerica') >= 0) {
+			 			showLeftIcon = true;
 			  			param.titleArray = []
 			  			param.headerLogo = "<img src='/localsite/img/logo/partners/code-for-america.png' style='width:110px;margin:10px 10px 10px 0;'>";
 				 		document.title = "Code for America - " + document.title
 				 		// BUGBUG - error in console
 				 		//changeFavicon("https://lh3.googleusercontent.com/HPVBBuNWulVbWxHAT3Nk_kIhJPFpFObwNt4gU2ZtT4m89tqjLheeRst_cMnO8mSrVt7FOSlWXCdg6MGcGV6kwSyjBVxk5-efdw")
 				 	} else if (param.startTitle == "Code for Atlanta" ||  location.host.indexOf('atlanta') >= 0) {
+			  			showLeftIcon = true;
 			  			param.titleArray = []
 			  			param.headerLogo = "<img src='https://scienceatl.org/wp-content/uploads/2020/04/code.png' style='width:150px;'>";
 				 		document.title = "Code for Atlanta - " + document.title
@@ -165,9 +166,9 @@ $(document).ready(function(){
 				 	// localhost will be removed from the following. Currently allows Georgia branding during testing.
 				 	// location.host.indexOf('localhost') >= 0 || 
 				 	} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0
-				 		// Show locally for Brave Browser only
-				 		|| ((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false)
-				 		) {
+				 	// Show locally for Brave Browser only
+				 	|| ((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false)	) {
+				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Model Georgia");
 				 		param.titleArray = [];
 				 		//param.headerLogo = "<a href='https://georgia.org'><img src='" + modelpath + "../community/img/logo/georgia_usa_gray.png' style='width:130px;padding-top:4px'></a>";
@@ -189,6 +190,7 @@ $(document).ready(function(){
 				 			$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
 				 		//}
 				 	} else if (!Array.isArray(param.titleArray) && (param.startTitle == "Neighborhood.org" || location.host.indexOf('neighborhood.org') >= 0)) {
+				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Neighborhood Modeling");
 				 		param.titleArray = ["neighbor","hood"]
 			  			param.headerLogo = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
@@ -196,6 +198,7 @@ $(document).ready(function(){
 			  			changeFavicon("/localsite/img/logo/partners/neighborhood-icon.png")
 			  			$('.neighborhood').css('display', 'inline');
 				 	} else if (!Array.isArray(param.titleArray)) {
+				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Model Earth");
 				 		param.titleArray = ["model","earth"]
 			  			param.headerLogo = "<img src='/community/img/logo/model-earth.png' style='width:34px; margin-right:2px'>";
@@ -331,6 +334,13 @@ $(document).ready(function(){
 
 			}); // End $("#header").load
 		}); 
+
+		if (location.host.indexOf('localhost') >= 0) {
+			showLeftIcon = true;
+		}
+		if (showLeftIcon) {
+			$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:108px'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
+ 		}
 
 	}
 
