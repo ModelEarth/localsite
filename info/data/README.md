@@ -1,18 +1,18 @@
-# Data Setup
+# Display Datasets
 
-<a href="../../start/">Getting Started</a>  | <a href="../">Industry Comparisons</a> | [Projects](../../../community/)
+We combine labor and industry data with commodity inflow-outflow stats from the US EPA.
 
-We use U.S. Bureau of Labor Statistics (BLS) data for naics industry estimates.<!--
- in calculations of county-level 6-digit . The algorithms developed will be published in the Fall 2021 edition of Applied Science.  -->  
- Industry concentration data is combined with commodity inflow-outflow stats from the US EPA.
+<a href="../">Industry Comparisons</a> | [Project Areas](../../../community/projects/) | <a href="../../start/">Getting Started</a>   
 
-[Our Pre-Processed Community Data](https://github.com/modelearth/community-data/)  
+[EPA Datasets - Embeddable Input-Output Widgets](../../../io/charts/)  
 
-[Machine Learning Algorithms](https://github.com/modelearth/machine-learning/)  
+[Pre-Processed Community Data](https://github.com/modelearth/community-data/)  
 
-[Embeddable Input-Output Widgets](../../../io/charts/)  
+[Machine Learning Algorithms for NAICS industries](https://github.com/modelearth/machine-learning/) - US Bureau of Labor Statistics (BLS)
 
-[Model Earth Impact Profiles](../../../io/template/) - Using Environmental Product Declarations (EPDs)  
+[Early Goods and Service Mockups from CSV](../../../community/start/dataset/) -- [Recent widget from JSON API](/io/build/sector_list.html?view=mosaic&count=50)  
+
+[Goods and Services Impact Profiles](../../../io/template/) - Using Environmental Product Declarations (EPDs)  
 
 <hr><br>
 
