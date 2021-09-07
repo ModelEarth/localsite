@@ -1,22 +1,24 @@
 # Display Datasets
 
-We combine labor and industry data with commodity inflow-outflow stats from the US EPA.
+We've combined labor and industry stats with commodity inflow-outflow data from the US EPA.
 
-<a href="../">Industry Comparisons</a> | [Project Areas](../../../community/projects/) | <a href="../../start/">Getting Started</a>   
+<a href="../">Area Industries and Employment</a> - Counties and Environmental Impacts<!-- | [Project Areas](../../../community/projects/) | <a href="../../start/">Getting Started</a>-->
 
-[EPA Datasets - Embeddable Input-Output Widgets](../../../io/charts/)  
+[Impacts of Goods and Services](../../../io/charts/) - EPA Input-Output Widgets  
+
+[Product Impact Profiles](../../../io/template/) - Using Environmental Product Declarations (EPDs)
+<br>
+
+####Data Sources and Prep
 
 [Pre-Processed Community Data](https://github.com/modelearth/community-data/)  
 
 [Machine Learning Algorithms for NAICS industries](https://github.com/modelearth/machine-learning/) - US Bureau of Labor Statistics (BLS)
 
-[Early Goods and Service Mockups from CSV](../../../community/start/dataset/) -- [Recent widget from JSON API](/io/build/sector_list.html?view=mosaic&count=50)  
+[Early Goods and Service Mockups from CSV](../../../community/start/dataset/) -- [Recent IO widget from JSON API](/io/build/sector_list.html?view=mosaic&count=50)
+<br>
 
-[Goods and Services Impact Profiles](../../../io/template/) - Using Environmental Product Declarations (EPDs)  
-
-<hr><br>
-
-###Opportunties for further integration
+####Opportunties for further integration
 
 [Google Data Commons Setup](datacommons)  
 

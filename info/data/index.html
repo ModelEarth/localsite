@@ -10,12 +10,14 @@ Reactivate once widget widths fixed
 <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 
 <title>Industry Data Prep, Data Commons Census Data</title>
-<link type="text/css" rel="stylesheet" href="../../../../localsite/css/base.css" />
-<script type="text/javascript" src="../../../../localsite/js/d3.v5.min.js"></script>
-<script type="text/javascript" src="../../../../localsite/js/jquery.min.js"></script>
+<link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
+<link type="text/css" rel="stylesheet" href="../../../../localsite/css/base.css" id="/localsite/css/base.css" />
+<link type="text/css" rel="stylesheet" href="../../../../localsite/css/base-tabulator.css" />
+<script type="text/javascript" src="../../../../localsite/js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
+<script type="text/javascript" src="../../../../localsite/js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
 <script type="text/javascript" src="../../../../localsite/js/localsite.js"></script>
-<script type="text/javascript" src="../../../../localsite/js/showdown.min.js"></script>
-<script type="text/javascript" src="../../../../localsite/js/navigation.js"></script>
+<script type="text/javascript" src="../../../../localsite/js/showdown.min.js" id="/localsite/js/showdown.min.js"></script>
+<script type="text/javascript" src="../../../../localsite/js/navigation.js" id="/localsite/js/navigation.js"></script>
 
 </head>
 
@@ -33,26 +35,7 @@ Reactivate once widget widths fixed
 
 
 <!-- Tabular: Latest version -->
-<link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
-
-<style>
-    .tabulator {
-        background-color: transparent;
-        border: none;
-    }
-    .tabulator .tabulator-header .tabulator-col {
-        background-color: #fff;
-        border-right: 1px solid #fff;
-    }
-    .tabulator-row .tabulator-cell {
-        border-right: 1px solid #fff;
-    }
-    .tabulator .tabulator-footer {
-        background-color: transparent;
-        border-right: 1px solid #fff;
-    }
-</style>
 
 <div class="content contentpadding">
 
@@ -90,14 +73,18 @@ var table = new Tabulator("#tabulator-table", {
         {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false, cellClick:function(e, cell){
                 cell.getRow().toggleSelect();
         }},
-        {title:"Name", field:"name", editor:"input"},
-        {title:"Task Progress", field:"progress", hozAlign:"left", formatter:"progress", editor:true},
+        {title:"Name", field:"name", minWidth:120, editor:"input"},
+        {title:"Task Progress", field:"progress", hozAlign:"left", formatter:"progress", editor:true, cssClass:"tabulatorBar"},
         {title:"Gender", field:"gender", width:95, editor:"select", editorParams:{values:["male", "female"]}},
-        {title:"Rating", field:"rating", formatter:"star", hozAlign:"center", width:100, editor:true},
+        {title:"Rating", field:"rating", formatter:"star", hozAlign:"left", width:100, editor:true},
         {title:"Color", field:"col", width:130, editor:"input"},
-        {title:"Date Of Birth", field:"dob", width:130, sorter:"date", hozAlign:"center"},
-        {title:"Driver", field:"car", width:90,  hozAlign:"center", formatter:"tickCross", sorter:"boolean", editor:true},
+        {title:"Date Of Birth", field:"dob", width:130, sorter:"date", hozAlign:"left"},
+        {title:"Driver", field:"car", width:90,  hozAlign:"left", formatter:"tickCross", sorter:"boolean", editor:true},
     ],
+    rowSelectionChanged: function(e, row) {
+        //alert(row)
+        //this.recalc();
+    },
 
 });
 </script>
