@@ -1,0 +1,35 @@
+
+.tabulator {
+    background-color: transparent;
+    border: none;
+}
+.tabulator .tabulator-header .tabulator-col {
+    background-color: #fff;
+    border-right: 1px solid #fff;
+}
+.tabulator-row .tabulator-cell {
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #ccc;
+}
+.tabulator .tabulator-footer {
+    background-color: transparent;
+    border-right: 1px solid #fff;
+}
+.tabulator-row.tabulator-row-even {
+    background-color: transparent;
+}
+
+.tabulator-selectable:hover { /* rows */
+    background-color: #fafafa !important;
+}
+.tabulator-row.tabulator-selected {
+    background-color: #ddd;
+    border-bottom: 1px solid #999;
+}
+.tabulator-row.tabulator-selected:hover {
+    background-color: #ccc !important;
+}
+
+.tabulator-table .tabulatorBar div:nth-child(3) {
+    height: 6px !important; /* narrower bars */
+}
