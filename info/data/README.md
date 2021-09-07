@@ -2,12 +2,14 @@
 
 We've combined labor and industry stats with commodity inflow-outflow data from the US EPA.
 
+####Embeddable Datasets
+
 <a href="../">Area Industries and Employment</a> - Counties and Environmental Impacts<!-- | [Project Areas](../../../community/projects/) | <a href="../../start/">Getting Started</a>-->
 
 [Impacts of Goods and Services](../../../io/charts/) - EPA Input-Output Widgets  
 
 [Product Impact Profiles](../../../io/template/) - Using Environmental Product Declarations (EPDs)
-<br>
+
 
 ####Data Sources and Prep
 
@@ -16,7 +18,7 @@ We've combined labor and industry stats with commodity inflow-outflow data from 
 [Machine Learning Algorithms for NAICS industries](https://github.com/modelearth/machine-learning/) - US Bureau of Labor Statistics (BLS)
 
 [Early Goods and Service Mockups from CSV](../../../community/start/dataset/) -- [Recent IO widget from JSON API](/io/build/sector_list.html?view=mosaic&count=50)
-<br>
+
 
 ####Opportunties for further integration
 
