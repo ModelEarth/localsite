@@ -272,7 +272,8 @@ $(document).ready(function () {
  	$('#state_select').on('change', function() {
  		if (this.value) {
 	    	$("#geoPicker").show();
-	    	goHash({'name':'','state':this.value}); // triggers renderMapShapes("geomap", hash); // County select map
+	    	$("#region_select").val("");
+	    	goHash({'state':this.value,'name':'','regiontitle':''}); // triggers renderMapShapes("geomap", hash); // County select map
 	    	//$("#filterLocations").hide(); // So state appears on map immediately
 	    } else { // US selected
 	    	goHash({'view':'country'});
@@ -286,10 +287,10 @@ $(document).ready(function () {
 		$("#state_select").val(this.getAttribute("id"));
 	    goHash({'name':'','state':this.getAttribute("id")}); // triggers renderMapShapes("geomap", hash); // County select map
 	});
- 	$('#regiontitle').on('change', function() {
+ 	$('#region_select').on('change', function() {
  		//alert($(this).attr("geo"))
  	    //goHash({'regiontitle':this.value,'lat':this.options[this.selectedIndex].getAttribute('lat'),'lon':this.options[this.selectedIndex].getAttribute('lon'),'geo':this.options[this.selectedIndex].getAttribute('geo')});
- 		hiddenhash.geo = $("#regiontitle option:selected").attr("geo");
+ 		hiddenhash.geo = this.options[this.selectedIndex].getAttribute('geo');
         delete hash.geo;
         delete param.geo;
         try {
@@ -783,6 +784,7 @@ function locClick(which) {
 
 // Data as values, not objects.
 let geoCountyTable = []; // Array of arrays
+let currentRowIDs = [];
 function showCounties(attempts) {
 	if (typeof d3 !== 'undefined') {
 
@@ -813,6 +815,11 @@ function showCounties(attempts) {
 					//alert("error")
 					console.log("Error loading file. " + error);
 				}
+
+				
+
+
+
 				//alert($("#county-table").length());
 				// No effect
 				//$("#county-table").empty(); // Clear previous state. geo is retained in URL hash.
@@ -838,7 +845,11 @@ function showCounties(attempts) {
 					//d.perMile = Math.round(d.totalpop18 / d.sq_miles).toLocaleString(); // Breaks sort
 					d.perMile = Math.round(d.totalpop18 / d.sq_miles);
 
-					d.sq_miles = Number(Math.round(d.sq_miles).toLocaleString());
+					//console.log("d.sq_miles " + d.sq_miles);
+
+					//d.sq_miles = Number(Math.round(d.sq_miles).toLocaleString());
+
+					d.sq_miles = Math.round(d.sq_miles).toLocaleString();
 
 				 	// Add an array to the empty array with the values of each:
 				 	// d.difference, 
@@ -850,8 +861,9 @@ function showCounties(attempts) {
 
 			 	 		//BUGBUG - Also need to check that state was not already added.
 				 	 	let element = {};
-				 	 	element.geoid = "US" + d.GEOID;
-				 	 	element.county = d.NAME;
+				 	 	element.id = "US" + d.GEOID;
+				 	 	//element.county = d.NAME;
+				 	 	element.name = d.NAME + " County, " + theState;
 				 	 	element.sqmiles = d.sq_miles;
 				 	 	element.pop = d.totalpop18;
 				 	 	element.permile = d.perMile;
@@ -879,96 +891,8 @@ function showCounties(attempts) {
 				console.log("geoCountyTable");
 				console.log(geoCountyTable);
 
+				showTabulatorList(0);
 
-				var table = d3.select(".output_table").append("table").attr("id", "county-table");
-
-				var header = table.append("thead").append("tr");
-
-				// Objects to construct the header in code:
-				// The sort_type is for the Jquery sorting function.
-
-				var headerObjs = [
-					{ class: "", column: "name", label: "County", sort_type: "string" },
-					//{ class: "", column: "Reg_Comm,", label: "Region", sort_type: "string" },
-					{ class: "", column: "Population", label: "Population", sort_type: "int" },
-					{ class: "", column: "Per Mile", label: "Per Mile", labelfull: "", sort_type: "int" },
-					//{ class: "", column: "Sq Miles", label: "Sq Miles", labelfull: "", sort_type: "int" },
-				];
-
-				header
-					.selectAll("th")
-					.data(headerObjs)
-					.enter()
-					.append("th")
-
-					.attr("data-sort", function (d) { return d.sort_type; })
-					.attr("class", function (d) { return d.class; })
-					.append("div")
-					.append("span")
-						.text(function(d) { return d.label; });
-
-				var tablebody = table.append("tbody");
-
-				rows = tablebody
-					.selectAll("tr")
-					.data(geoCountyTable)
-					.enter()
-					.append("tr");
-
-				// We built the rows using the nested array - now each row has its own array.
-
-				// The scale - start at 0 or at lowest number
-				// Not working
-				console.log('Extent is ', d3.extent(allDifferences));
-				//alert('Extent is ', d3.extent(allDifferences));
-
-				var colorScale = d3.scaleLinear()
-					.domain(d3.extent(allDifferences)) // To Do: Limit color scale to each column
-					.range(["#bcdbf7","#c00"]);
-
-				cells = rows.selectAll("td")
-					// each row has data associated; we get it and enter it for the cells.
-					.data(function(d) {
-						return d;
-					})
-					.enter()
-					.append("td")
-					.append("div")
-					.style("border-left-color", function(d,i) { // Was background-color
-						// for the last elements in the row, we color the background:
-						if (i >= 2) { // All the columns with colored boxes
-							return colorScale(d);
-						}
-					})
-
-					.append("div")
-					//.text(function(d,i) { // All columns have a div with a value from CSV data
-					//		return d;
-					//})
-					.html(function(d,i) {
-						if (i == 0) {
-							return "<input type='checkbox' id='" + d.split('-')[0] + "' class='geo' onclick='locClick(this)'/> <label for='" + d.split('-')[0] + "'>" + d.split(/-(.+)/)[1] + "</label>";
-						} else {
-							return d;
-						}
-					})			
-					;
-
-				// load the function file you need before you call it...
-				// Not available here
-				
-				// loadScript is not available here, only in calling page.
-				//loadScript('/community/js/table-sort.js', function(results) { 
-					// jquery sorting applied to it - could be done with d3 and events.
-					applyStupidTable(1); 
-				//});
-
-				$(".geo").change(function(e) {
-		            console.log("Adjust if this line appears multiple times.");
-		        });
-				// INIT AT TIME OF INITIAL COUNTY LIST DISPLAY
-				// Set checkboxes based on param (which may be a hash, query or include parameter)
-				updateGeoFilter(param.geo); // Needed here to check county boxes.  BUGBUG: Might be reloading data. This also gets called from info/
 			});
 		}
 	} else {
@@ -984,6 +908,148 @@ function showCounties(attempts) {
 	}
 }
 
+var geotable = {};
+function showTabulatorList(attempts) {
+
+	if (typeof Tabulator !== 'undefined') {
+		console.log("showTabulatorList")
+		// Try this with 5.0. Currently prevents row click from checking box.
+		// selectable:true,
+
+		// For fixed header, also allows only visible rows to be loaded. See "Row Display Test" below.
+		// maxHeight:"100%",
+
+		geotable = new Tabulator("#tabulator-geotable", {
+		    data:localObject.geo,     //load row data from array of objects
+		    layout:"fitColumns",      //fit columns to width of table
+		    responsiveLayout:"hide",  //hide columns that dont fit on the table
+		    tooltips:true,            //show tool tips on cells
+		    addRowPos:"top",          //when adding a new row, add it to the top of the table
+		    history:true,             //allow undo and redo actions on the table
+		    pagination:"local",       //paginate the data
+		    paginationSize:7,         //allow 7 rows per page of data
+		    movableColumns:true,      //allow column order to be changed
+		    resizableRows:true,       //allow row order to be changed
+		    initialSort:[             //set the initial sort order of the data - NOT WORKING
+		        {column:"name", dir:"asc"},
+		    ],
+		    maxHeight:"100%",
+		    paginationSize:10000,
+		    columns:[
+		    	{formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
+		        {title:"County", field:"name"},
+		        {title:"Population", field:"pop"},
+		        {title:"Sq Miles", field:"sqmiles"},
+		        {title:"Per Mile", field:"permile"},
+		    ],
+
+		    rowClick:function(e, row){
+		        row.toggleSelect(); //toggle row selected state on row click
+
+		        console.log("row:");
+		        console.log(row); // Single row component
+		        console.log(e); // Info about PointerEvent - the click event object
+
+		        
+
+		        currentRowIDs = [];
+			    //e.forEach(function (row) {
+				    //console.log(row.geoid);
+				    currentRowIDs.push(row._row.data.id);
+				//});
+			    //alert(currentRowIDs.toString())
+
+			    ////// TO DO - Merge with existing geo values from hash. This will allow map to match.
+			    let hash = getHash();
+			    if (row.isSelected()) {
+			    	if(hash.geo) {
+			    		hash.geo = hash.geo + "," + currentRowIDs.toString();
+			    	} else {
+			    		hash.geo = currentRowIDs.toString();
+			    	}
+		        } else { // Uncheck
+		        	// HACK - FIX ME, remove only unchecked row.
+		        	hash.geo = "";
+		        }
+			    goHash({'geo':hash.geo});
+
+		        //var selectedData = geotable.getSelectedData(); // Array of currently selected
+		        //alert(selectedData);
+		    },
+		    rowSelectionChanged: function(e, row) {
+		    	//alert("rowSelectionChanged")
+
+		    	//console.log("rowSelectionChanged");
+			    //console.log(e); // Contains all selected rows.
+
+			    //console.log("Row Selection (checkbox) Changed");
+			    //console.log(row); // Has extra levels
+
+			    /*
+			    currentRowIDs = [];
+			    e.forEach(function (row) {
+				    //console.log(row.geoid);
+				    currentRowIDs.push(row.id)
+				});
+			    */
+
+		    	if (row[0]) {
+		    		//console.log(e[0].id); // the geoid
+
+		    		// Works - but currently showing first item in array of objects:
+			    	//console.log(row[0]._row.data.id); // .data.geoid
+
+			        //this.recalc();
+			    }
+		    },
+		});
+
+		//geotable.selectRow(geotable.getRows().filter(row => row.getData().name == 'Fulton County, GA'));
+		//geotable.selectRow(geotable.getRows().filter(row => row.getData().name.includes('Ba')));
+
+		// Place click-through on checkbox - allows hashchange to update row.
+		//$('.tabulator-row input:checkbox').prop('pointer-events', 'none'); // Bug - this only checks visible
+		
+
+	} else {
+	  attempts = attempts + 1;
+      if (attempts < 2000) {
+      	// To do: Add a loading image after a coouple seconds. 2000 waits about 300 seconds.
+        setTimeout( function() {
+          showTabulatorList(attempts);
+        }, 20 );
+      } else {
+        alert("Tabulator JS not available for displaying list.")
+      }
+	}
+}
+function updateSelectedTableRows(geo, clear, attempts) {
+	if (typeof geotable.getRows === "function") {
+    	//geotable.selectRow(geotable.getRows().filter(row => row.getData().name.includes('Ba')));
+    	if (clear) {
+    		geotable.deselectRow(); // All
+    	}
+		$.each(geo.split(','), function(index, value) {
+			geotable.selectRow(geotable.getRows().filter(row => row.getData().id == value));
+		});
+
+		// Row Display Test - scroll down to see which rows were not initially in DOM.
+    	//$('.tabulator-row input:checkbox').css('display', 'none');
+
+    } else {
+	  attempts = attempts + 1;
+      if (attempts < 2000) {
+      	// To do: Add a loading image after a coouple seconds. 2000 waits about 300 seconds.
+        setTimeout( function() {
+          updateSelectedTableRows(geo,clear,attempts);
+        }, 20 );
+      } else {
+        alert("geotable.getRows not available after " + attempts + " attempts.")
+      }
+	}
+}
+
+// To remove, or use as fallback
 function applyStupidTable(count) {
 	console.log("applyStupidTable attempt " + count);
 
@@ -2152,7 +2218,7 @@ function hashChanged() {
             //$("#industryListHolder").hide(); // Remove once national naics are loaded.
 		}
 		//'geo':'', 
-		updateHash({'regiontitle':'', 'lat':'', 'lon':''});
+		//updateHash({'regiontitle':'', 'lat':'', 'lon':''});
 		showCounties(0);
 	}
     //Resides before geo
@@ -2201,7 +2267,7 @@ function hashChanged() {
             local_app.loctitle = hash.regiontitle.replace(/\+/g," ");
             
             $(".regiontitle").val(hash.regiontitle.replace(/\+/g," "));
-            hiddenhash.geo = $("#regiontitle option:selected").attr("geo");
+            hiddenhash.geo = $("#region_select option:selected").attr("geo");
             hash.geo = hiddenhash.geo;
             
             try {
@@ -2255,6 +2321,11 @@ function hashChanged() {
                 //reloadedMap = true;
             //}
         //}
+        let clearall = false;
+        if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
+        	clearall = true;
+        }
+        updateSelectedTableRows(hash.geo, clearall, 0);
 
         loadGeomap = true;
     }
@@ -2387,6 +2458,10 @@ $(document).ready(function () {
 	let hash = getHash();
 	if (hash.state) {
 		$("#state_select").val(hash.state)
+		//$("#state_select option[value='NV']").prop('selected', true);
+	}
+	if (hash.regiontitle) {
+		$("#region_select").val(hash.regiontitle)
 		//$("#state_select option[value='NV']").prop('selected', true);
 	}
 	if (hash.view) { // Country map

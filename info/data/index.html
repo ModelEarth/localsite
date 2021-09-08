@@ -47,7 +47,7 @@ h4 {
 
 	<h3>Tabulator Sample</h3>
 
-	<div id="tabulator-table"></div>
+	<div id="tabulator-geotable"></div>
 	Table by <a href="http://tabulator.info/" target="_blank">Tabulator</a>
 
 </div>
@@ -60,7 +60,7 @@ var tabledata = [
     {id:5, name:"Margret Marmajuke", progress:16, gender:"female", rating:5, col:"yellow", dob:"31/01/1999"},
     {id:6, name:"Frank Harbours", progress:38, gender:"male", rating:4, col:"red", dob:"12/05/1966", car:1},
 ];
-var table = new Tabulator("#tabulator-table", {
+var table = new Tabulator("#tabulator-geotable", {
     data:tabledata,           //load row data from array
     layout:"fitColumns",      //fit columns to width of table
     responsiveLayout:"hide",  //hide columns that dont fit on the table

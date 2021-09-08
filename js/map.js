@@ -1556,21 +1556,29 @@ function loadGeos(geo, attempts, callback) {
     fips=[]
     for (var i = 0; i<geos.length; i++){
         fip=geos[i].split("US")[1]
-        if(fip.startsWith("0")){
-            fips.push(parseInt(geos[i].split("US0")[1]))
-        }else{
-            fips.push(parseInt(geos[i].split("US")[1]))
+        if (fip) {
+          if(fip.startsWith("0")){
+              fips.push(parseInt(geos[i].split("US0")[1]))
+          }else{
+              fips.push(parseInt(geos[i].split("US")[1]))
+          }
+        } else {
+          console.log("ALERT: geo value does not start with US.")
         }
     }
-    st=(geos[0].split("US")[1]).slice(0,2)
-    if(st.startsWith("0")){
-        dataObject.stateshown=(geos[0].split("US0")[1]).slice(0,1)
-    }else{
-        if(geos[0].split("US")[1].length==4){
-            dataObject.stateshown=(geos[0].split("US")[1]).slice(0,1)
-        }else{
-            dataObject.stateshown=(geos[0].split("US")[1]).slice(0,2)
-        }
+    if (geos[0].split("US")[1]) {
+      st=(geos[0].split("US")[1]).slice(0,2)
+      if(st.startsWith("0")){
+          dataObject.stateshown=(geos[0].split("US0")[1]).slice(0,1)
+      }else{
+          if(geos[0].split("US")[1].length==4){
+              dataObject.stateshown=(geos[0].split("US")[1]).slice(0,1)
+          }else{
+              dataObject.stateshown=(geos[0].split("US")[1]).slice(0,2)
+          }
+      }
+    } else {
+      console.log("ALERT: geos[0].split(US)[1] does not start with US.")
     }
 
     //Load in contents of CSV file

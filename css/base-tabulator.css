@@ -30,6 +30,11 @@
     background-color: #ccc !important;
 }
 
-.tabulator-table .tabulatorBar div:nth-child(3) {
+#tabulator-geotable .tabulatorBar div:nth-child(3) {
     height: 6px !important; /* narrower bars */
+}
+
+/* pass clicks through to row so hash change can set checkbox without re-triggering hash change */
+#tabulator-geotable .tabulator-row input[type='checkbox'] {
+    pointer-events: none;
 }

@@ -693,6 +693,14 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       });
     }
 
+    // Tabulator
+    includeCSS3('https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css',theroot);
+    includeCSS3(theroot + '../localsite/css/base-tabulator.css',theroot);
+    loadScript('https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js', function(results) {
+
+    });
+    
+
     includeCSS3(theroot + '../io/build/widgets.css',theroot);
     includeCSS3(theroot + '../io/build/slider.css',theroot);
 
