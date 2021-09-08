@@ -963,13 +963,16 @@ function showTabulatorList(attempts) {
 			    let hash = getHash();
 			    if (row.isSelected()) {
 			    	if(hash.geo) {
-			    		hash.geo = hash.geo + "," + currentRowIDs.toString();
+			    		//hash.geo = hash.geo + "," + currentRowIDs.toString();
+			    		hash.geo = hash.geo + "," + row._row.data.id;
 			    	} else {
 			    		hash.geo = currentRowIDs.toString();
 			    	}
 		        } else { // Uncheck
-		        	// HACK - FIX ME, remove only unchecked row.
-		        	hash.geo = "";
+		        	// Remove only unchecked row.
+		        	//$.each(currentRowIDs, function(index, value) {
+		        		hash.geo = hash.geo.split(',').filter(e => e !== row._row.data.id).toString();
+		        	//}
 		        }
 			    goHash({'geo':hash.geo});
 
