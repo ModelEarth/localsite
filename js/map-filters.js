@@ -892,8 +892,8 @@ function showCounties(attempts) {
 				//console.log("myData");
 				//console.log(myData);
 					
-				console.log("geoCountyTable");
-				console.log(geoCountyTable);
+				//console.log("geoCountyTable");
+				//console.log(geoCountyTable);
 
 				showTabulatorList(0);
 

@@ -721,8 +721,6 @@ function addIcons(dp,map,map2) {
 
     if (!element[dp.latColumn] || !element[dp.lonColumn]) {
       console.log("Missing lat/lon: " + name);
-      //console.log(dp.data)
-      console.log(element.plant_or_group.latitude)
       return;
     }
     // Attach the icon to the marker and add to the map
