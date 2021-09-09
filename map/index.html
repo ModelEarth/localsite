@@ -6,7 +6,7 @@
 <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 
 <!--
-  To create a widget from this page, see steps in map-embed.js.
+  localsite.js pulls in the #insertedText div within this page as template for map portion of layout.
 -->
 
 <title>Community Map</title>
@@ -275,7 +275,7 @@ class="headerbarheight"
         </div>
       </div>
 
-      <div style="display:none;" class="filterField layerclass mock-up suppliers exporter">
+      <div style="display:none;" class="filterField layerclass mock-up suppliers exporter products">
         <div id="catSearchHolder">
           <div class="filterLabel">
             <div class="filterLabelMain">
@@ -1084,7 +1084,7 @@ class="headerbarheight"
                 <!-- Tabular: Latest version -->
                 
                 <div id="tabulator-geotable"></div>
-                Table by <a href="http://tabulator.info/">Tabulator</a><br><br>
+                Table by <a href="http://tabulator.info/" target="_blank">Tabulator</a><br><br>
 
                 <div style="width:100%" class="output_table rotateHeader">
                 </div>
@@ -1542,7 +1542,7 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
           <div id="detaillist"></div>
           <div id="narrowlist" style="display:none"></div>
 
-          <div id="dataListTop" class='exporter' style="display:none;overflow:auto;margin-bottom:8px">
+          <div id="dataListTop" class='exporter products' style="display:none;overflow:auto;margin-bottom:8px">
 
             <div style='float:left'>
               Select up to 10 companies when requesting contact info.

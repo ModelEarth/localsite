@@ -600,7 +600,10 @@ function filterClickLocation() {
 	$("#bigThumbPanelHolder").hide();
 	//$('.showApps').removeClass("active");
 	$('.showApps').removeClass("filterClickActive");
-    let distanceFilterFromTop = $("#filterLocations").offset().top - $(document).scrollTop();
+    let distanceFilterFromTop = 120;
+    if ($("#filterLocations").length) {
+    	distanceFilterFromTop = $("#filterLocations").offset().top - $(document).scrollTop();
+    }
     //alert("distanceFilterFromTop  " + distanceFilterFromTop);
 	//$('.hideMetaMenuClick').trigger("click"); // Otherwise covers location popup. Problem: hides hideLayers/hideLocationsMenu.
 	//alert("1")
@@ -864,6 +867,7 @@ function showCounties(attempts) {
 				 	 	element.id = "US" + d.GEOID;
 				 	 	//element.county = d.NAME;
 				 	 	element.name = d.NAME + " County, " + theState;
+				 	 	element.state = theState;
 				 	 	element.sqmiles = d.sq_miles;
 				 	 	element.pop = d.totalpop18;
 				 	 	element.permile = d.perMile;
@@ -910,7 +914,7 @@ function showCounties(attempts) {
 
 var geotable = {};
 function showTabulatorList(attempts) {
-
+	let hash = getHash();
 	if (typeof Tabulator !== 'undefined') {
 		console.log("showTabulatorList")
 		// Try this with 5.0. Currently prevents row click from checking box.
@@ -919,8 +923,10 @@ function showTabulatorList(attempts) {
 		// For fixed header, also allows only visible rows to be loaded. See "Row Display Test" below.
 		// maxHeight:"100%",
 
+
+
 		geotable = new Tabulator("#tabulator-geotable", {
-		    data:localObject.geo,     //load row data from array of objects
+		    data:localObject.geo.filter(function(el){return el.state == hash.state.split(",")[0];}),     //load row data from array of objects
 		    layout:"fitColumns",      //fit columns to width of table
 		    responsiveLayout:"hide",  //hide columns that dont fit on the table
 		    tooltips:true,            //show tool tips on cells
@@ -959,7 +965,10 @@ function showTabulatorList(attempts) {
 				//});
 			    //alert(currentRowIDs.toString())
 
-			    ////// TO DO - Merge with existing geo values from hash. This will allow map to match.
+			    // Possible way to get currently selected rows - not sure is this includes rows not in DOM
+			    // var selectedRows = $("#tabulator-geotable").tabulator("getSelectedRows"); //get array of currently selected row components.
+
+			    // Merge with existing geo values from hash. This allows map to match.
 			    let hash = getHash();
 			    if (row.isSelected()) {
 			    	if(hash.geo) {
@@ -1039,6 +1048,14 @@ function updateSelectedTableRows(geo, clear, attempts) {
 		// Row Display Test - scroll down to see which rows were not initially in DOM.
     	//$('.tabulator-row input:checkbox').css('display', 'none');
 
+    	//var selectedRows = ; //get array of currently selected row components.
+    	let county_names = []
+    	$.each(geotable.getSelectedRows(), function(index, value) {
+    		// TODO - Group by state
+    		county_names.push(value._row.data.name.split(",")[0].replace(" County",""));
+    	});
+    	//alert(county_names.toString());
+    	$(".counties_title").text(county_names.toString().replaceAll(",",", "))
     } else {
 	  attempts = attempts + 1;
       if (attempts < 2000) {
@@ -2135,7 +2152,9 @@ function hashChanged() {
    		// Get lat/lon from state dropdown #state_select
 
    		// Potential BugBug - this runs after initial map load, not needed (but okay as long as zoom is not set).
-   		console.log("Recenter map")
+   		
+   		// Copied to map.js
+   		
         if($("#state_select").find(":selected").val()) {
        		let theState = $("#state_select").find(":selected").val();
             if (theState != "") {
@@ -2154,7 +2173,11 @@ function hashChanged() {
               //alert("lat " + lat + " lon " + lon)
               mapCenter = [lat,lon];
             }
+        } else {
+        	console.log("ERROR #state_select not available");
         }
+        console.log("Recenter map " + mapCenter)
+		
 	}
 	if (hash.state) {
         $(".showforstates").show();
@@ -2180,10 +2203,14 @@ function hashChanged() {
         } else {
     	    let pagemap2 = document.querySelector('#map2')._leaflet_map; // Recall existing map
     	    let pagemap_container2 = L.DomUtil.get(pagemap2);
+    	    // This will not be reachable on initial load.
     	    if (pagemap_container2 != null) {
     	      pagemap2.flyTo(mapCenter);
+
     	    }
         }
+	} else {
+		console.log("ERROR leaflet not loaded yet. typeof L undefined.");
 	}
 	if (hash.state != priorHash.state) {
 		loadGeomap = true;
@@ -2335,6 +2362,7 @@ function hashChanged() {
 
 	$(".locationTabText").attr("title",$(".locationTabText").text());
 	if (hash.m != priorHash.m) {
+		// For 360 iFrame
 		var mapframe;
 		$("#mapframe").hide(); $("#iframeCover").hide();
 		$("#mapframe").prop("src", "about:blank");

@@ -3,9 +3,6 @@ body {
 	font-family: Lato, sans-serif;
 	-webkit-font-smoothing: antialiased;
 }
-.exporter {
-	displayX:none;
-}
 .sectionContent {
 	font-family: 'Lato', sans-serif;
 	font-family: Lato, sans-serif; /* not installed: NunitoSans-Regular */
@@ -78,7 +75,7 @@ body {
 	padding-bottom: 20px;
 	position: absolute;
 	height:400px;
-	background-color: rgba(255, 255, 255, 0.9);
+	background-color:#fff;
 }
 @media (max-width: 800px) {
 	#topPanel {
