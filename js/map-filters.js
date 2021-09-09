@@ -1042,10 +1042,11 @@ function updateSelectedTableRows(geo, clear, attempts) {
     	if (clear) {
     		geotable.deselectRow(); // All
     	}
-		$.each(geo.split(','), function(index, value) {
-			geotable.selectRow(geotable.getRows().filter(row => row.getData().id == value));
-		});
-
+    	if (geo) {
+			$.each(geo.split(','), function(index, value) {
+				geotable.selectRow(geotable.getRows().filter(row => row.getData().id == value));
+			});
+		}
 		// Row Display Test - scroll down to see which rows were not initially in DOM.
     	//$('.tabulator-row input:checkbox').css('display', 'none');
 
@@ -2162,15 +2163,7 @@ function hashChanged() {
        		let theState = $("#state_select").find(":selected").val();
             if (theState != "") {
               let kilometers_wide = $("#state_select").find(":selected").attr("km");
-              //zoom = 1/kilometers_wide * 1800000;
-      
-              if (theState == "HI") { // Hawaii
-                  zoom = 6
-              } else if (kilometers_wide > 1000000) { // Alaska
-                  zoom = 4
-              } else {
-                  zoom = 7; // For Georgia map
-              }
+              zoom = zoomFromKm(kilometers_wide); // In map.js
               let lat = $("#state_select").find(":selected").attr("lat");
               let lon = $("#state_select").find(":selected").attr("lon");
               //alert("lat " + lat + " lon " + lon)

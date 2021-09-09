@@ -1026,6 +1026,18 @@ var showprevious = param["show"];
 
 var tabletop; // Allows us to wait for tabletop to load.
 
+function zoomFromKm(kilometers_wide) {
+  let zoom = 3;
+  if (!kilometers_wide) return zoom;
+  if (kilometers_wide > 1000000) { // Alaska
+    zoom = 4
+  } else if (kilometers_wide > 600000) { // Texas
+    zoom = 5
+  } else if (kilometers_wide > 105000) { // Hawaii and Idaho
+    zoom = 6
+  }
+  return zoom;
+}
 function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe still index.html, map-embed.js
 
   console.log('loadMap1 calledBy ' + calledBy + ' show: ' + show);
@@ -1144,12 +1156,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   if (theState != "") {
     let kilometers_wide = $("#state_select").find(":selected").attr("km");
     //zoom = 1/kilometers_wide * 1800000;
-
-    if (theState == "HI") { // Hawaii
-        dp.zoom = 6
-    } else if (kilometers_wide > 1000000) { // Alaska
-        dp.zoom = 4
-    }
+    zoom = zoomFromKm(kilometers_wide);
     dp.latitude = $("#state_select").find(":selected").attr("lat");
     dp.longitude = $("#state_select").find(":selected").attr("lon");
   }
@@ -3089,13 +3096,7 @@ function renderMapShapes(whichmap, hash, attempts) {
         lon = "-98.35"
       } else {
         let kilometers_wide = $("#state_select").find(":selected").attr("km");
-        //zoom = 1/kilometers_wide * 1800000;
-
-        if (theState == "HI") { // Hawaii
-            zoom = 6
-        } else if (kilometers_wide > 1000000) { // Alaska
-            zoom = 4
-        }
+        zoom = zoomFromKm(kilometers_wide);
         lat = $("#state_select").find(":selected").attr("lat");
         lon = $("#state_select").find(":selected").attr("lon");
       }
