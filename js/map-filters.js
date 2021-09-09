@@ -924,7 +924,8 @@ function showTabulatorList(attempts) {
 		// maxHeight:"100%",
 
 
-
+		// More filter samples
+		// https://stackoverflow.com/questions/2722159/how-to-filter-object-array-based-on-attributes
 		geotable = new Tabulator("#tabulator-geotable", {
 		    data:localObject.geo.filter(function(el){return el.state == hash.state.split(",")[0];}),     //load row data from array of objects
 		    layout:"fitColumns",      //fit columns to width of table
@@ -2153,8 +2154,10 @@ function hashChanged() {
 
    		// Potential BugBug - this runs after initial map load, not needed (but okay as long as zoom is not set).
    		
-   		// Copied to map.js
+   		// Similar resides in map.js for ds
    		
+   		// Used for map2
+   		/*
         if($("#state_select").find(":selected").val()) {
        		let theState = $("#state_select").find(":selected").val();
             if (theState != "") {
@@ -2177,7 +2180,7 @@ function hashChanged() {
         	console.log("ERROR #state_select not available");
         }
         console.log("Recenter map " + mapCenter)
-		
+		*/
 	}
 	if (hash.state) {
         $(".showforstates").show();
