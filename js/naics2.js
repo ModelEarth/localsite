@@ -91,7 +91,7 @@ function displayIndustryList(localObject) {
         text += "</div>";
 
     }
-    $("#sector_list").prepend("<br><br>" + i + "&nbsp;records<br>");
+    $("#sector_list_intro").append("<br><br><h2>Prior Layout without Column Sort - " + i + "&nbsp;records</h2>");
     $("#sector_list").append(text);
 }
 
@@ -116,25 +116,30 @@ function showIndustryTabulatorList(attempts) {
             tooltips:true,            //show tool tips on cells
             addRowPos:"top",          //when adding a new row, add it to the top of the table
             history:true,             //allow undo and redo actions on the table
-            pagination:"local",       //paginate the data
-            paginationSize:7,         //allow 7 rows per page of data
             movableColumns:true,      //allow column order to be changed
             resizableRows:true,       //allow row order to be changed
             initialSort:[             //set the initial sort order of the data - NOT WORKING
                 {column:"wages", dir:"desc"},
             ],
-            maxHeight:"400px",
+            maxHeight:"500px",
             paginationSize:50000,
             columns:[
-                {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
                 {title:"Naics", field:"id", width:80},
                 {title:"Industry", field:"title"},
-                {title:"Payroll", field:"wages", width:120},
-                {title:"Establishments", field:"firms", width:120},
-                {title:"Employees", field:"employees", width:120},
-                {title:"Population", field:"population", width:120},
+                {title:"Payroll", field:"wages", hozAlign:"right", width:120},
+                {title:"Locations", field:"firms", hozAlign:"right", width:120},
+                {title:"Employees", field:"employees", hozAlign:"right", width:120},
+                {title:"Population", field:"population", hozAlign:"right", width:120},
             ],
+            dataLoaded: function(data) {
 
+                //var newDiv= document.createElement('div');
+                var totalcount_div = Object.assign(document.createElement('div'),{id:"totalcount",style:"float:left"})
+                $("#tabulator-industrytable-count").append(totalcount_div);
+
+                //var el = document.getElementById("total_count");
+                totalcount_div.innerHTML = data.length + " industries";
+            },
             rowClick:function(e, row){
                 row.toggleSelect(); //toggle row selected state on row click
 

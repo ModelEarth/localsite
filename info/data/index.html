@@ -85,7 +85,7 @@ var table = new Tabulator("#tabulator-geotable", {
         {title:"Rating", field:"rating", formatter:"star", hozAlign:"left", width:100, editor:true},
         {title:"Color", field:"col", width:130, editor:"input"},
         {title:"Date Of Birth", field:"dob", width:130, sorter:"date", hozAlign:"left"},
-        {title:"Driver", field:"car", width:90,  hozAlign:"left", formatter:"tickCross", sorter:"boolean", editor:true},
+        {title:"Driver", field:"car", width:90, hozAlign:"left", formatter:"tickCross", sorter:"boolean", editor:true},
     ],
     rowSelectionChanged: function(e, row) {
         //alert(row)

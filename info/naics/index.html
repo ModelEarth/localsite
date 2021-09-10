@@ -20,6 +20,14 @@ Reactivate once widget widths fixed
 
 <script type="text/javascript" src="../../../../localsite/js/naics2.js"></script>
 
+<style>
+#tabulator-industrytable-count {
+	border-top: 2px solid #333;
+	margin-top: 10px;
+	padding-top: 5px;
+}
+</style>
+
 </head>
 
 <body>
@@ -69,7 +77,13 @@ Reactivate once widget widths fixed
 			</div>
 		</div>
 		
-		<div id="tabulator-industrytable"></div>
+		<div style="height:500px">
+			<div id="tabulator-industrytable"></div>
+			<div id="tabulator-industrytable-count"></div>
+		</div>
+
+		<br><br>
+		<div id="sector_list_intro"></div>
 		<div id="sector_list"></div>
 		
 	</div>
