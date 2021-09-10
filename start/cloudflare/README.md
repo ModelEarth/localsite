@@ -57,6 +57,3 @@ Choose "Forwarding URL"
 \*.yourdomain.com/\*  
 https://yourdomain.com/#go=$2  
 
-<!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE4ODI2NjM2ODQsNDM2ODQyNDAyXX0=
--->
