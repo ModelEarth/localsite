@@ -126,10 +126,10 @@ function showIndustryTabulatorList(attempts) {
             columns:[
                 {title:"Naics", field:"id", width:80},
                 {title:"Industry", field:"title"},
-                {title:"Payroll", field:"wages", hozAlign:"right", width:120},
-                {title:"Locations", field:"firms", hozAlign:"right", width:120},
-                {title:"Employees", field:"employees", hozAlign:"right", width:120},
-                {title:"Population", field:"population", hozAlign:"right", width:120},
+                {title:"Payroll", field:"wages", hozAlign:"right", width:120, headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
+                {title:"Locations", field:"firms", hozAlign:"right", width:120, headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false} },
+                {title:"Employees", field:"employees", hozAlign:"right", width:120, headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false} },
+                {title:"Population", field:"population", hozAlign:"right", width:120, headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false} },
             ],
             dataLoaded: function(data) {
 

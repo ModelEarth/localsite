@@ -942,20 +942,19 @@ function showTabulatorList(attempts) {
 		    addRowPos:"top",          //when adding a new row, add it to the top of the table
 		    history:true,             //allow undo and redo actions on the table
 		    pagination:"local",       //paginate the data
-		    paginationSize:7,         //allow 7 rows per page of data
 		    movableColumns:true,      //allow column order to be changed
 		    resizableRows:true,       //allow row order to be changed
 		    initialSort:[             //set the initial sort order of the data - NOT WORKING
-		        {column:"name", dir:"asc"},
+		        {column:"pop", dir:"desc"},
 		    ],
 		    maxHeight:"100%",
 		    paginationSize:10000,
 		    columns:[
 		    	{formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
 		        {title:"County", field:"name"},
-		        {title:"Population", field:"pop"},
-		        {title:"Sq Miles", field:"sqmiles"},
-		        {title:"Per Mile", field:"permile"},
+		        {title:"Population", field:"pop", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
+		        {title:"Sq Miles", field:"sqmiles", hozAlign:"right"},
+		        {title:"Per Mile", field:"permile", hozAlign:"right"},
 		    ],
 
 		    rowClick:function(e, row){
