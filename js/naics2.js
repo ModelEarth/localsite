@@ -62,16 +62,11 @@ function promisesReady(values) { // Wait for
 	// Returns Logging
 	//alert(industries.get("113310"));
 
-    populateIndustryName();
     showIndustryTabulatorList(0);
 
 	displayIndustryList(localObject); 
 }
-function populateIndustryName() {
-    //for (var i = 0; i < localObject.industryCounties.length; i++) {
 
-    //}
-}
 function displayIndustryList(localObject) {
     let text = "";
     for (var i = 0; i < localObject.industries.length; i++) {
