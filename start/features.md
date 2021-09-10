@@ -4,7 +4,7 @@
 
 **hashChangeEvent** - triggers independent widgets when the URL hash is changed both programmatically and by the user.    
 
-**hiddenhash** - stores values referenced by multiple apps to avoid cluttering the URL.  
+**hiddenhash** - stores values referenced by multiple widgets to avoid cluttering the URL.  
 <!--
 goHash({"go":"bioeconomy"}); - Hash change triggers widgets.  
 
@@ -15,4 +15,6 @@ updateHash({"go":"bioeconomy"}); - Only hash updated.
 **loadMarkdown** - Pulls readme files into html and converts links and image tags based on folder levels.  
 
 **lazy class** - Sometimes it's good to be lazy. This class waits to load images until just before they scroll into view.  
+
+**tabulator** - Sortable tables rendered quickly from datasets with 100,000+ rows. <a href="../info/data/">data samples</a>
 

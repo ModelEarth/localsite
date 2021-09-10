@@ -41,6 +41,8 @@ function promisesReady(values) { // Wait for
 	// TO DO: Append here for multiple states
   	localObject.industryCounties = values[1]; // Exceeds 40,000
 
+    // Add titles to 
+
 	//localObject.locList = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
 	  
 	// Make element key always lowercase
@@ -60,12 +62,19 @@ function promisesReady(values) { // Wait for
 	// Returns Logging
 	//alert(industries.get("113310"));
 
+    populateIndustryName();
+    showIndustryTabulatorList(0);
+
 	displayIndustryList(localObject); 
 }
+function populateIndustryName() {
+    //for (var i = 0; i < localObject.industryCounties.length; i++) {
 
+    //}
+}
 function displayIndustryList(localObject) {
     let text = "";
-    for (var i = 0; i < localObject.industries.length; i++){
+    for (var i = 0; i < localObject.industries.length; i++) {
         //console.log(localObject.industries[i].id); // NAICS
         //console.log(localObject.industries[i].title); // NAICS title
 
@@ -74,16 +83,146 @@ function displayIndustryList(localObject) {
         text += "<div class='cell'>" + localObject.industries[i].id + "</div>";
         text += "<div class='cell'><a href='#naics=" + localObject.industries[i].id + "' onClick='goHash({\"naics\":" + localObject.industries[i].id+ "}); return false;' style='white-space:nowrap'>" + localObject.industries[i].title + "</a></div>"
         //text += "<div class='cell-right'>" + localObject.industryCounties[i].FIPS + "</div>";
+        text += "<div class='cell-right'>" + localObject.industries[i].wages + "</div>";
         text += "<div class='cell-right'>" + localObject.industries[i].firms + "</div>";
         text += "<div class='cell-right'>" + localObject.industries[i].employees + "</div>";
-        text += "<div class='cell-right'>" + localObject.industries[i].wages + "</div>";
         text += "<div class='cell-right'>" + localObject.industries[i].population + "</div>";
         //text += "<div class='cell-right'>" + localObject.industries[i].aggregate + "</div>";
         text += "</div>";
 
     }
+    $("#sector_list").prepend("<br><br>" + i + "&nbsp;records<br>");
     $("#sector_list").append(text);
 }
+
+var industrytable = {};
+function showIndustryTabulatorList(attempts) {
+    let hash = getHash();
+    if (typeof Tabulator !== 'undefined') {
+        console.log("showTabulatorList")
+        // Try this with 5.0. Currently prevents row click from checking box.
+        // selectable:true,
+
+        // For fixed header, also allows only visible rows to be loaded. See "Row Display Test" below.
+        // maxHeight:"100%",
+
+
+        // More filter samples
+        // https://stackoverflow.com/questions/2722159/how-to-filter-object-array-based-on-attributes
+        industrytable = new Tabulator("#tabulator-industrytable", {
+            data:localObject.industries,     //load row data from array of objects
+            layout:"fitColumns",      //fit columns to width of table
+            responsiveLayout:"hide",  //hide columns that dont fit on the table
+            tooltips:true,            //show tool tips on cells
+            addRowPos:"top",          //when adding a new row, add it to the top of the table
+            history:true,             //allow undo and redo actions on the table
+            pagination:"local",       //paginate the data
+            paginationSize:7,         //allow 7 rows per page of data
+            movableColumns:true,      //allow column order to be changed
+            resizableRows:true,       //allow row order to be changed
+            initialSort:[             //set the initial sort order of the data - NOT WORKING
+                {column:"wages", dir:"desc"},
+            ],
+            maxHeight:"400px",
+            paginationSize:50000,
+            columns:[
+                {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
+                {title:"Naics", field:"id", width:80},
+                {title:"Industry", field:"title"},
+                {title:"Payroll", field:"wages", width:120},
+                {title:"Establishments", field:"firms", width:120},
+                {title:"Employees", field:"employees", width:120},
+                {title:"Population", field:"population", width:120},
+            ],
+
+            rowClick:function(e, row){
+                row.toggleSelect(); //toggle row selected state on row click
+
+                console.log("row:");
+                console.log(row); // Single row component
+                console.log(e); // Info about PointerEvent - the click event object
+
+                
+
+                currentRowIDs = [];
+                //e.forEach(function (row) {
+                    //console.log(row.geoid);
+                    currentRowIDs.push(row._row.data.id);
+                //});
+                //alert(currentRowIDs.toString())
+
+                // Possible way to get currently selected rows - not sure is this includes rows not in DOM
+                // var selectedRows = $("#tabulator-industrytable").tabulator("getSelectedRows"); //get array of currently selected row components.
+
+                // Merge with existing geo values from hash. This allows map to match.
+                let hash = getHash();
+                if (row.isSelected()) {
+                    if(hash.geo) {
+                        //hash.geo = hash.geo + "," + currentRowIDs.toString();
+                        hash.geo = hash.geo + "," + row._row.data.id;
+                    } else {
+                        hash.geo = currentRowIDs.toString();
+                    }
+                } else { // Uncheck
+                    // Remove only unchecked row.
+                    //$.each(currentRowIDs, function(index, value) {
+                        hash.geo = hash.geo.split(',').filter(e => e !== row._row.data.id).toString();
+                    //}
+                }
+                goHash({'geo':hash.geo});
+
+                //var selectedData = industrytable.getSelectedData(); // Array of currently selected
+                //alert(selectedData);
+            },
+            rowSelectionChanged: function(e, row) {
+                //alert("rowSelectionChanged")
+
+                //console.log("rowSelectionChanged");
+                //console.log(e); // Contains all selected rows.
+
+                //console.log("Row Selection (checkbox) Changed");
+                //console.log(row); // Has extra levels
+
+                /*
+                currentRowIDs = [];
+                e.forEach(function (row) {
+                    //console.log(row.geoid);
+                    currentRowIDs.push(row.id)
+                });
+                */
+
+                if (row[0]) {
+                    //console.log(e[0].id); // the geoid
+
+                    // Works - but currently showing first item in array of objects:
+                    //console.log(row[0]._row.data.id); // .data.geoid
+
+                    //this.recalc();
+                }
+            },
+        });
+
+        //industrytable.selectRow(industrytable.getRows().filter(row => row.getData().name == 'Fulton County, GA'));
+        //industrytable.selectRow(industrytable.getRows().filter(row => row.getData().name.includes('Ba')));
+
+        // Place click-through on checkbox - allows hashchange to update row.
+        //$('.tabulator-row input:checkbox').prop('pointer-events', 'none'); // Bug - this only checks visible
+        
+
+    } else {
+      attempts = attempts + 1;
+      if (attempts < 2000) {
+        // To do: Add a loading image after a coouple seconds. 2000 waits about 300 seconds.
+        setTimeout( function() {
+          showIndustryTabulatorList(attempts);
+        }, 20 );
+      } else {
+        alert("Tabulator JS not available for displaying list.")
+      }
+    }
+}
+
+
 function displayIndustryListOld(localObject) {
     let hash = getHash(); // Includes hiddenhash
 	//let catcount = hash.catcount || 40;
@@ -339,7 +478,7 @@ function displayIndustryListOld(localObject) {
         // BUGBUG - lookup title in last instance
         // .replace("Other ","") 
         text += "<div class='row'><div class='cell'>" + icon + localObject.industryCounties[i].NAICS + "</div>";
-        text += "<div class='cell'><a href='#naics=" + localObject.industryCounties[i].NAICS + "' onClick='goHash({\"naics\":" + localObject.industryCounties[i].NAICS + "}); return false;' style='white-space:nowrap'>" + industries.get(localObject.industryCounties[i].NAICS)+ "</a></div>"
+        text += "<div class='cell'><a href='#naics=" + localObject.industryCounties[i].NAICS + "' onClick='goHash({\"naics\":" + localObject.industryCounties[i].NAICS + "}); return false;' style='white-space:nowrap'>" + industries.get(localObject.industryCounties[i].NAICS) + "</a></div>"
         text += "<div class='cell-right'>" + localObject.industryCounties[i].FIPS + "</div>";
         text += "<div class='cell-right'>" + localObject.industryCounties[i].Firms + "</div>";
         text += "<div class='cell-right'>" + localObject.industryCounties[i].Employees + "</div>";
@@ -443,7 +582,7 @@ function topRatesInFips(dataSet, fips) {
         }
     }
     //if (fips == stateID && hash.catsort == "payann") {
-        text += "<div class='cell' style='text-align:right'>Establishments</div><div class='cell' style='text-align:right'>Employees</div><div class='cell' style='text-align:right'>Payroll</div>";
+        text += "<div class='cell' style='text-align:right'>Payroll</div><div class='cell' style='text-align:right'>Establishments</div><div class='cell' style='text-align:right'>Employees</div>";
     //}
 
     text = "<div class='row' style='table_header'><div class='cell'><!-- col 1 -->NAICS</div><div class='cell' style='min-width:300px'><!-- col 2 -->Industry</div>" + text + "<div class='cell-right'>Population</div>";
@@ -788,7 +927,7 @@ function topRatesInFipsOld(dataSet, fips) { // REMOVED , params
                                     } else {
                                         var filteredData = consdata.filter(function(d) {
                                             var filteredData = county_data.filter(function(county_data_row) {
-                                                if(d["id"]==fips ){      
+                                                if(d["id"]==fips ){
                                                     if(d["county"]==county_data_row["NAMELSAD"]){
                                                                 //mapLink.push("https://www.google.com/search?q=" + localObject.industries[i]['data_id'].replace(/ /g,"+") + " " + d["county"].replace(/ /g,"+") + ",+Georgia")
                                                         mapLink = "https://www.google.com/maps/search/" + localObject.industries[i]['data_id'].replace(/ /g,"+") + "/@" + county_data_row['latitude'] + "," + county_data_row['longitude'] + ",11z"
