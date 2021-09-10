@@ -209,6 +209,7 @@ $(document).ready(function(){
 				 	}
 
 				 	if (location.host.indexOf('model.earth') >= 0) { // Since above is not detecting model.earth
+				 		console.log("model.earth found")
 				 		showLeftIcon = true;
 				 	}
 
