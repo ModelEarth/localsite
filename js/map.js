@@ -1027,7 +1027,8 @@ var showprevious = param["show"];
 var tabletop; // Allows us to wait for tabletop to load.
 
 function zoomFromKm(kilometers_wide) {
-  let zoom = 3;
+  //alert(kilometers_wide) // undefined for the 1st of 3.
+  let zoom = 5;
   if (!kilometers_wide) return zoom;
   if (kilometers_wide > 1000000) { // Alaska
     zoom = 4

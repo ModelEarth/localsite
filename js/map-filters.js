@@ -629,11 +629,12 @@ function filterClickLocation() {
 		}
 		$(".locationTabText").text("Locations");
 		$("#topPanel").hide();
-		locationFilterChange("counties");
+		
         $("#showLocations").show();
 		$("#hideLocations").hide();
-		//$(".locationTabText").text("Location");
-		$("#filterLocations").show();
+		$("#filterLocations").show(); // Than we need to load the state.
+		locationFilterChange("counties");
+
 		$("#filterClickLocation").addClass("filterClickActive");
 		
 		//renderMapShapes("geomap", hash, 1);// Called once map div is visible for tiles.
@@ -702,6 +703,13 @@ function locationFilterChange(selectedValue,selectedGeo) {
     } else {
     	if (hash.state || hash.geo) {
     		$("#geoPicker").show();
+    		showCounties(0);
+
+    		if($("#geomap").is(':visible')) {
+    			if($("#geomap").html().length < 20) {
+					renderMapShapes("geomap", hash, 1); // County select map
+				}
+			}
     	}
     	$(".stateFilters").show();
     }
@@ -788,7 +796,7 @@ function locClick(which) {
 // Data as values, not objects.
 let geoCountyTable = []; // Array of arrays
 let currentRowIDs = [];
-function showCounties(attempts) {
+function showCounties(attempts) { // To avoid broken tiles, this won't be executed if the #geomap div is not visible.
 	if (typeof d3 !== 'undefined') {
 
 		let hash = getHash();

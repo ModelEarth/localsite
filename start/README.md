@@ -177,18 +177,6 @@ Edit online using [stackedit.io](https://stackedit.io/) and [Dillinger Markdown 
 
 [AWS Amplify, and site hosting info](https://model.earth/aws/amplify/) - Azure, Firebase, GitHub Pages, Netlify and more.
 
-<!--stackedit_data:
-eyJkaXNjdXNzaW9ucyI6eyJUVnA4TEhxcU93YTk2N1Y2Ijp7In
-N0YXJ0Ijo3MTU5LCJlbmQiOjcxNjMsInRleHQiOiJFZGl0In19
-LCJjb21tZW50cyI6eyJoZnUwbjMwM0RrdEV6d25uIjp7ImRpc2
-N1c3Npb25JZCI6IlRWcDhMSHFxT3dhOTY3VjYiLCJzdWIiOiJn
-aDoyNjAwNDIzOSIsInRleHQiOiJJcyBhbnlvbmUgZWxzZSB1c2
-luZyBzdGFja2VkaXQuaW8/IEl0J3MgY29vbC4iLCJjcmVhdGVk
-IjoxNjA4MzkzMTE2NjUxfX0sImhpc3RvcnkiOlsxNzcyNzQ2OD
-Y5LDE0MTk2NDEzOTFdfQ==
--->
-
-
 ---
 <br>
 

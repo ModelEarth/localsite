@@ -343,9 +343,7 @@ $(document).ready(function(){
 			showLeftIcon = true;
 		}
 		if (showLeftIcon) {
-			$(document).ready(function () {
-				$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:108px'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
- 			});
+			$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:108px'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
  		}
 	}
 
