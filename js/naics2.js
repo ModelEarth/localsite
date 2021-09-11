@@ -52,9 +52,14 @@ function promisesReady(values) { // Wait for
 
     //alert(fips) // 13189,13025,13171
     //fips = [13189,13025,13171]; // TEMP
-    fips = ["13189","13025","13171"];
+    //fips = ["US13189","US13025","US13171"];
+
     fips = [];
-    topRatesInFips(localObject, fips); // Renders header
+    let hash = getHash();
+    if (hash.geo) {
+        fips = hash.geo.replace(/US/g,'').split(","); // Remove US from geo values to create array of fips.
+    }
+    topRatesInFips(localObject, fips); // Renders header and processes county values
 
 	console.log("localObject.industries length " + localObject.industries.length);
 	console.log("localObject.industryCounties length " + localObject.industryCounties.length);
@@ -65,6 +70,21 @@ function promisesReady(values) { // Wait for
     showIndustryTabulatorList(0);
 
 	displayIndustryList(localObject); 
+}
+
+document.addEventListener('hashChangeEvent', function (elem) {
+    refreshNaicsWidget();                    
+}, false);
+let priorHash_naicspage = {};
+function refreshNaicsWidget() {
+    //alert("refreshNaicsWidget")
+    let hash = getHash(); // Includes hiddenhash
+    if (hash.geo != priorHash_naicspage.geo) {
+        //alert("hash.geo " + hash.geo);
+        loadIndustryData();
+    }
+
+    priorHash_naicspage = getHash();
 }
 
 function displayIndustryList(localObject) {
@@ -114,17 +134,19 @@ function showIndustryTabulatorList(attempts) {
             movableColumns:true,      //allow column order to be changed
             resizableRows:true,       //allow row order to be changed
             initialSort:[             //set the initial sort order of the data - NOT WORKING
-                {column:"wages", dir:"desc"},
+                {column:"id", dir:"asc"},
             ],
             maxHeight:"500px",
             paginationSize:50000,
             columns:[
                 {title:"Naics", field:"id", width:80},
                 {title:"Industry", field:"title"},
-                {title:"Payroll", field:"wages", hozAlign:"right", width:120, headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
-                {title:"Locations", field:"firms", hozAlign:"right", width:120, headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false} },
-                {title:"Employees", field:"employees", hozAlign:"right", width:120, headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false} },
-                {title:"Population", field:"population", hozAlign:"right", width:120, headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false} },
+                {title:"Payroll", field:"wages", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
+                {title:"Locations", field:"firms", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
+                {title:"Employees", field:"employees", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
+                {title:"Population", field:"population", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
+                {title:"Instances", field:"instances", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number" },
+            
             ],
             dataLoaded: function(data) {
 
@@ -569,16 +591,18 @@ function topRatesInFips(dataSet, fips) {
 
         for(var i=0; i < fips.length; i++){
 
-            var filteredData = consdata.filter(function(county_id_list) { // For every county in list
+            //var filteredData = consdata.filter(function(county_id_list) { // For every countyID in the country
                 //alert(county_id_list["id"] + " - " + fips[i]);
-                if (county_id_list["id"]==fips[i]) {
+                //if (county_id_list["id"]==fips[i]) {
                     if(i == fips.length-1){
-                       text += "<div class='cell-right'>" + county_id_list["county"].split("County")[0] + " County</div>";
+                        // text += "<div class='cell-right'>" + county_id_list["county"].split("County")[0] + " County</div>";
+                       text += "<div class='cell-right'>" + fips[i] + " County</div>"; // TEMP
                     } else {
-                        text += "<div class='cell-right'>" + county_id_list["county"].split(" County")[0] + " County</div>";
+                        //text += "<div class='cell-right'>" + county_id_list["county"].split(" County")[0] + " County</div>";
+                        text += "<div class='cell-right'>" + fips[i] + " County</div>"; // TEMP
                     }
-                }
-            })
+                //}
+            //})
         }
     }
     //if (fips == stateID && hash.catsort == "payann") {
@@ -593,34 +617,70 @@ function topRatesInFips(dataSet, fips) {
     // Write header to browser
     $("#sector_list").prepend(text);
 
-    let naicsNotFound = "";
+    let naicsFoundCount = 0;
     let naicsNotFoundCount = 0;
-    for (var i=0; i < dataSet.industryCounties.length; i++) {
+    let appendIndustries = [];
+    if(dataSet.industies) {
+        alert("clear prior industry list")
+        for (var i=0; i < dataSet.industies.length; i++) {
+
+            delete dataSet.industies[i].firms;
+            delete dataSet.industies[i].employees; 
+            delete dataSet.industies[i].wages;
+            delete dataSet.industies[i].population;
+            delete dataSet.industies[i].aggregate;
+            delete dataSet.industies[i].instances;
+        }
+    }
+    for (var i=0; i < dataSet.industryCounties.length; i++) { // For each NAICS-county set for a state.
         //alert(dataSet.industryCounties[i].NAICS);
         //alert(dataSet.industryCounties[i].FIPS);
+        //alert(fips); // Contains US
         if (fips.length == 0 || fips.includes(dataSet.industryCounties[i].FIPS)) {
             //alert(dataSet.industries[1].id);
 
+            // Walk through the list of industries and aggregate a total from multiple selected counties.
             let objIndex = dataSet.industries.findIndex((obj => obj.id == dataSet.industryCounties[i].NAICS));
             if (objIndex >= 0) {
-                if (dataSet.industries[objIndex].aggregate === undefined) {
+                if (dataSet.industries[objIndex].aggregate === undefined) { // Add new row
                     dataSet.industries[objIndex].firms = +dataSet.industryCounties[i]['Firms'];
-                    dataSet.industries[objIndex].employees = +dataSet.industryCounties[i]['Employees']; 
-                    dataSet.industries[objIndex].wages = +dataSet.industryCounties[i]['Wages'];
-                    dataSet.industries[objIndex].population = +dataSet.industryCounties[i]['Population'];
-                    dataSet.industries[objIndex].aggregate = +dataSet.industryCounties[i][catFilter['estab']]; // Set by dropdown
-                } else { // Add more
-                    dataSet.industries[objIndex].firms = +dataSet.industries[objIndex].firms + +dataSet.industryCounties[i]['Firms'];
-                    dataSet.industries[objIndex].employees = +dataSet.industries[objIndex].employees + +dataSet.industryCounties[i]['Employees'];
-                    dataSet.industries[objIndex].wages = +dataSet.industries[objIndex].wages + +dataSet.industryCounties[i]['Wages'];
-                    dataSet.industries[objIndex].population = +dataSet.industries[objIndex].population + +dataSet.industryCounties[i]['Population'];
-                    dataSet.industries[objIndex].aggregate = +dataSet.industries[objIndex].aggregate + +dataSet.industryCounties[i][catFilter['estab']]; // Set by dropdown
+                    dataSet.industries[objIndex].employees = Number(dataSet.industryCounties[i]['Employees']); 
+                    dataSet.industries[objIndex].wages = Number(dataSet.industryCounties[i]['Wages']);
+                    dataSet.industries[objIndex].population = Number(dataSet.industryCounties[i]['Population']);
+                    dataSet.industries[objIndex].aggregate = Number(dataSet.industryCounties[i][catFilter['estab']]); // Set by dropdown
+                    dataSet.industries[objIndex].instances = 1;
+                } else { // Add to existing row
+                    dataSet.industries[objIndex].firms = Number(dataSet.industries[objIndex].firms) + Number(dataSet.industryCounties[i]['Firms']);
+                    dataSet.industries[objIndex].employees = Number(dataSet.industries[objIndex].employees) + Number(dataSet.industryCounties[i]['Employees']);
+                    dataSet.industries[objIndex].wages = Number(dataSet.industries[objIndex].wages) + Number(dataSet.industryCounties[i]['Wages']);
+                    dataSet.industries[objIndex].population = Number(dataSet.industries[objIndex].population) + Number(dataSet.industryCounties[i]['Population']);
+                    dataSet.industries[objIndex].aggregate = Number(dataSet.industries[objIndex].aggregate) + Number(dataSet.industryCounties[i][catFilter['estab']]); // Set by dropdown
+                    dataSet.industries[objIndex].instances++;
                 }
                 //alert(dataSet.industries[objIndex].population)
-                    
-            } else {
+                ++naicsFoundCount; 
+            } else { // An object with new rows to add
+                let appendIndex = appendIndustries.findIndex((obj => obj.id == dataSet.industryCounties[i].NAICS));
+                if (appendIndex >= 0) {
+                    appendIndustries[appendIndex].firms = +appendIndustries[appendIndex].firms + +dataSet.industryCounties[i]['Firms'];
+                    appendIndustries[appendIndex].employees = +appendIndustries[appendIndex].employees + +dataSet.industryCounties[i]['Employees'];
+                    appendIndustries[appendIndex].wages = Number(appendIndustries[appendIndex].wages) + Number(dataSet.industryCounties[i]['Wages']);
+                    appendIndustries[appendIndex].population = Number(appendIndustries[appendIndex].population) + Number(dataSet.industryCounties[i]['Population']);
+                    appendIndustries[appendIndex].aggregate = +appendIndustries[appendIndex].aggregate + +dataSet.industryCounties[i][catFilter['estab']]; // Set by dropdown
+                    appendIndustries[appendIndex].instances++;
+                } else {
+                    let newIndustryRow = {};
+                    newIndustryRow.id = dataSet.industryCounties[i]['NAICS'];
+                    newIndustryRow.title = "NAICS " + dataSet.industryCounties[i]['NAICS'];
+                    newIndustryRow.firms = Number(dataSet.industryCounties[i]['Firms']);
+                    newIndustryRow.employees = Number(dataSet.industryCounties[i]['Employees']); 
+                    newIndustryRow.wages = Number(dataSet.industryCounties[i]['Wages']);
+                    newIndustryRow.population = Number(dataSet.industryCounties[i]['Population']);
+                    newIndustryRow.aggregate = Number(dataSet.industryCounties[i][catFilter['estab']]);
+                    newIndustryRow.instances = 1;
+                    appendIndustries.push(newIndustryRow);
+                }
                 ++naicsNotFoundCount;
-                //naicsNotFound += dataSet.industryCounties[i].NAICS + ",";
             }
             //dataSet.industries.id[dataSet.industryCounties[i].NAICS].aggregate = dataSet.industryCounties[i].firms;
             //alert(dataSet.industries.id[dataSet.industryCounties[i].NAICS].aggregate);
@@ -630,10 +690,15 @@ function topRatesInFips(dataSet, fips) {
         //    alert(i.NAICS);
         //}
     }
+    //alert(typeof dataSet.industries);
+    //alert(typeof appendIndustries);
 
-    console.log(naicsNotFoundCount + " NAICS not found in " + industryTitleFile);
-    //console.log(naicsNotFound);
+    dataSet.industries = $.merge(dataSet.industries, appendIndustries);
+    //alert("NAICS found: " + naicsFoundCount + " and " + naicsNotFoundCount + " NAICS not found in " + industryTitleFile);
+    //alert(dataSet.industries.length);
 
+    console.log("dataSet.industries")
+    console.log(dataSet.industries);
     return;
 
 

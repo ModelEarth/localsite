@@ -41,6 +41,8 @@
 
 .tabulator-cell {
     font-size: 13px;
+    height: 30px  !important; /* Prevents occasional excess height */
+    padding-top: 6px !important;
 }
 .tabulator-header .tabulator-col-title {
     font-weight: 400;

@@ -136,8 +136,10 @@ function initateHiddenhash() { // Load in values from params on javascript inclu
   for (let i = 0; i < includepairs.length; i++) {
     if(!includepairs[i]) continue;
     let pair = includepairs[i].split('=');
-    hiddenhash[pair[0].toLowerCase()] = decodeURIComponent(pair[1].replace(/\+/g, " "));
-    //consoleLog("Param from javascript include: " + pair[0].toLowerCase() + " " + decodeURIComponent(pair[1]));
+    if (pair[1]) {
+      hiddenhash[pair[0].toLowerCase()] = decodeURIComponent(pair[1].replace(/\+/g, " "));
+      //consoleLog("Param from javascript include: " + pair[0].toLowerCase() + " " + decodeURIComponent(pair[1]));
+    }
   }
 }
 
