@@ -2351,29 +2351,6 @@ function hashChanged() {
             $(".mainColumn1").show();
         }
 
-        //if (hash.geomap == "true") { // Since otherwise called above
-            //if (reloadedMap == false) {
-                //loadScript('/localsite/js/leaflet.js', function(results) {
-
-                        // ._leaflet_map Only works if alert occurs here
-                        //alert("reloadedMap2 " + reloadedMap)
-
-                        //alert("update map")
-                        //renderMapShapesSimple("geomap", hash);
-
-                        // Clear here so clicking a new region redraws map.
-                        // This can be avoided once we figure out how to update an individal shape using renderMapShapesSimple.
-                        //let whichmap = "geomap";
-                        //let geomap = document.querySelector('#' + whichmap)._leaflet_map; 
-                        //if (geojsonLayer) {
-                        //  geomap.removeLayer(geojsonLayer); // Remove the prior topo layer
-                        //}
-                            //renderMapShapes("geomap", hash, 1);
-                        
-                //});
-                //reloadedMap = true;
-            //}
-        //}
         let clearall = false;
         if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
         	//clearall = true;

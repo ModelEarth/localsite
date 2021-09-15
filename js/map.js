@@ -229,7 +229,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
       renderMapShapes("map1", hash, 1); // County select map
     }
     
-    // TRY AGAIN UNTIL #[whichmap] is available.
+    // TRY AGAIN UNTIL #[whichmap] and (whichmap)._leaflet_map are available.
     //if (typeof document.querySelector('#' + whichmap)._leaflet_map === 'undefined') {
     if (typeof document.querySelector('#' + whichmap) === 'undefined' || typeof document.querySelector('#' + whichmap) === 'null') {
       console.log("#" + whichmap + " is undefined. Try again.  Attempt " + attempts);
@@ -241,12 +241,17 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
         console.log("ERROR #" + whichmap + " - exceeded 100 attempts.");
       }
       return;
-    } else {
-      console.log("typeof document.querySelector: " + typeof document.querySelector('#' + whichmap)); // An object, but ._leaflet_map is not yet available
-      console.log("The following 3 are also undefined when working properly...");
-      if (document.querySelector(whichmap) && !document.querySelector(whichmap)._leaflet_map) {
+    } 
+
+    /*
+    else if (document.querySelector('#' + whichmap) && typeof document.querySelector('#' + whichmap)._leaflet_map === 'undefined') {
+      //console.log("typeof document.querySelector: " + typeof document.querySelector('#' + whichmap)); // An object, but ._leaflet_map is not yet available
+      //console.log("The following 3 are also undefined when working properly...");
       //if (typeof document.querySelector('#' + whichmap)._leaflet_map === 'null') { // Caused error: Cannot read properties of null (reading '_leaflet_map')
+      //if (document.querySelector(whichmap) && !document.querySelector(whichmap)._leaflet_map) { // This let a none _leaflet_map pass
+      
         console.log("Property '_leaflet_map' is null for #" + whichmap + ".  Try again. Attempt " + attempts);
+        console.log(typeof document.querySelector('#' + whichmap)._leaflet_map);
         if (attempts <= 100) {
           setTimeout( function() {
             loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts+1,callback);
@@ -255,10 +260,13 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
           console.log("ERROR - _leaflet_map null exceeded 100 attempts.");
         }
         return;
-      } else {
+
+    } else {
         console.log("typeof document.querySelector ._leaflet_map: " + typeof document.querySelector('#' + whichmap)._leaflet_map);
-      }
     }
+    */
+
+    console.log("FOUND #" + whichmap);
 
     let map = document.querySelector('#' + whichmap)._leaflet_map; // Recall existing map
 
