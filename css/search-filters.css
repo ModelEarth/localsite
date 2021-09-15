@@ -17,9 +17,8 @@
 .select-menu-arrow-holder {
     position:absolute; right:4px; top:4px;
 }
-.showApps {
-  padding-left:12px;
-  padding-right:0px;
+#appSelectHolder .showApps {
+  padding-right:4px;
 }
 .headerShort .showApps {
   padding-right:20px;
