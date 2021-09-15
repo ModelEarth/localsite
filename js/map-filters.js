@@ -54,13 +54,6 @@ function populateFieldsFromHash() {
 		}
 	}
 	*/
-	if (param["counties"]) {
-		let counties = param["counties"].split(",");
-		for(var i = 0 ; i < counties.length ; i++) {
-			// Not yet implemented
-			$("#county-" + counties[i]).prop('checked', true);
-		}
-	}
 	$("#productCodes").val(param["hs"]);
 	if (param["region"]) {
 		if (hash.show) {
@@ -589,7 +582,7 @@ function productList(startRange, endRange, text) {
     //});
 }
 
-function filterClickLocation() {
+function filterClickLocation(loadGeoTable) {
 	console.log("show location filters");
 
 	$("#searchLocation").focus(); // Not working
@@ -625,7 +618,18 @@ function filterClickLocation() {
 		if (hash.view == "country") {
 			$("#geoPicker").show(); // Required for map to load
 		} else if (!hash.view) {
-			updateHash({"view":"state"});
+			let currentStates = [];
+			if(hash.geo && !hash.state) {
+				let geos = hash.geo.split(",");
+				for(var i = 0 ; i < geos.length ; i++) {
+					currentStates.push(getKeyByValue(us_stateIDs, Number(geos[i].replace("US","").substring(0,2))));
+				}
+			}
+			if (currentStates.length > 0) {
+				goHash({"view":"state","state":currentStates[0]});
+			} else {
+				goHash({"view":"state"});
+			}
 		}
 		$(".locationTabText").text("Locations");
 		$("#topPanel").hide();
@@ -635,6 +639,18 @@ function filterClickLocation() {
 		$("#filterLocations").show(); // Than we need to load the state.
 		locationFilterChange("counties");
 
+		if (hash.geo) {
+			let clearall = false;
+	        if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
+	        	clearall = true;
+	        }
+	        if (hash.view != "country") {
+	        	if (loadGeoTable != false) { // Prevents loading twice on init
+	        		//alert("updateSelectedTableRows 1")
+					updateSelectedTableRows(hash.geo, clearall, 0);
+				}
+			}
+		}
 		$("#filterClickLocation").addClass("filterClickActive");
 		
 		//renderMapShapes("geomap", hash, 1);// Called once map div is visible for tiles.
@@ -703,11 +719,14 @@ function locationFilterChange(selectedValue,selectedGeo) {
     } else {
     	if (hash.state || hash.geo) {
     		$("#geoPicker").show();
-    		showCounties(0);
+    		// Avoid here because called below - caused checkboxes to be unchecked.
+    		//showCounties(0);
 
     		if($("#geomap").is(':visible')) {
     			if($("#geomap").html().length < 20) {
-					renderMapShapes("geomap", hash, 1); // County select map
+    				//alert("render2")
+    				// Avoid here because called below
+					//renderMapShapes("geomap", hash, 1); // County select map
 				}
 			}
     	}
@@ -797,6 +816,7 @@ function locClick(which) {
 let geoCountyTable = []; // Array of arrays
 let currentRowIDs = [];
 function showCounties(attempts) { // To avoid broken tiles, this won't be executed if the #geomap div is not visible.
+	console.log("showCounties " + attempts);
 	if (typeof d3 !== 'undefined') {
 
 		let hash = getHash();
@@ -804,10 +824,8 @@ function showCounties(attempts) { // To avoid broken tiles, this won't be execut
 		if (hash.state) {
 			theState = hash.state.toUpperCase();
 		}
-		if (theState.length <= 0) {
-			// BUGBUG Hack - Need to set the state from geo value(s)
-			//theState = "GA"
-			//$("#state_select").val(theState);
+		if (theState.length > 2) {
+			theState = theState.substring(0,2);
 		}
 		if ($(".output_table > table").length) {
 			if (theState == priorHash.state || (theState == "GA" && !priorHash.state)) {
@@ -924,7 +942,7 @@ var geotable = {};
 function showTabulatorList(attempts) {
 	let hash = getHash();
 	if (typeof Tabulator !== 'undefined') {
-		console.log("showTabulatorList")
+		console.log("showTabulatorList " + attempts)
 		// Try this with 5.0. Currently prevents row click from checking box.
 		// selectable:true,
 
@@ -1062,11 +1080,11 @@ function updateSelectedTableRows(geo, clear, attempts) {
     		// TODO - Group by state
     		county_names.push(value._row.data.name.split(",")[0].replace(" County",""));
     	});
-    	//alert(county_names.toString());
+    	console.log("county_names " + county_names.toString());
     	$(".counties_title").text(county_names.toString().replaceAll(",",", "))
     } else {
 	  attempts = attempts + 1;
-      if (attempts < 2000) {
+      if (attempts < 200) {
       	// To do: Add a loading image after a coouple seconds. 2000 waits about 300 seconds.
         setTimeout( function() {
           updateSelectedTableRows(geo,clear,attempts);
@@ -1729,16 +1747,16 @@ function getDirectLink(livedomain,directlink,rootfolder,hashStr) {
 
 // These is missing var promises = [] and ready.
 // Let's look at Industry Mix first: http://localhost:8887/community/zip/leaflet/#columns=JobsAgriculture:50;JobsManufacturing:50
-var geojsonLayer;
+//var geojsonLayer;
 function renderMapShapesSimple(whichmap, hash) {
 	console.log("renderMapShapesSimple " + whichmap);
 	let map = document.querySelector('#' + whichmap)._leaflet_map; 
 	//alert("renderMapShapesSimple " + whichmap);
-	if (geojsonLayer) {
+	//if (geojsonLayer) {
 		//alert("found geojsonLayer")
 	  	// Problem, this removes the whole layer, shapes and all.
 		//map.removeLayer(geojsonLayer); // Remove the prior topo layer
-	}
+	//}
 }
 
 // This could be reactivated to merge another dataset to map popups
@@ -2187,33 +2205,36 @@ function hashChanged() {
     	$(".showforstates").hide();
 	}
 	
-	if (mapCenter.length > 0 && typeof L != "undefined") {
-		// Avoiding including ",5" for zoom since 7 is already set. 
-        // NOT IDEAL: This also runs during init.
-        // TODO: If reactiveating, omit on init, or pass in default zoom.
-        /*
-		console.log("Recenter map zoom " + zoom)
-	 	let pagemap = document.querySelector('#map1')._leaflet_map; // Recall existing map
-	    let pagemap_container = L.DomUtil.get(pagemap);
-	    if (pagemap_container != null) {
-	    	// Test here: http://localhost:8887/localsite/info/embed.html#state=GA
-	      pagemap.flyTo(mapCenter, zoom);
-	    }
-        */
-        if (typeof document.querySelector('#map2') === 'undefined' || typeof document.querySelector('#map2') === 'null') {
-            console.log("#map2 undefined");
-        } else {
-    	    let pagemap2 = document.querySelector('#map2')._leaflet_map; // Recall existing map
-    	    let pagemap_container2 = L.DomUtil.get(pagemap2);
-    	    // This will not be reachable on initial load.
-    	    if (pagemap_container2 != null) {
-    	      pagemap2.flyTo(mapCenter);
+	if (mapCenter.length > 0) { // Set when hash.lat changes
+		if (typeof L != "undefined") {
+			// Avoiding including ",5" for zoom since 7 is already set. 
+	        // NOT IDEAL: This also runs during init.
+	        // TODO: If reactiveating, omit on init, or pass in default zoom.
+	        /*
+			console.log("Recenter map zoom " + zoom)
+		 	let pagemap = document.querySelector('#map1')._leaflet_map; // Recall existing map
+		    let pagemap_container = L.DomUtil.get(pagemap);
+		    if (pagemap_container != null) {
+		    	// Test here: http://localhost:8887/localsite/info/embed.html#state=GA
+		      pagemap.flyTo(mapCenter, zoom);
+		    }
+	        */
+	        if (typeof document.querySelector('#map2') === 'undefined' || typeof document.querySelector('#map2') === 'null') {
+	            console.log("#map2 undefined");
+	        } else {
+	    	    let pagemap2 = document.querySelector('#map2')._leaflet_map; // Recall existing map
+	    	    let pagemap_container2 = L.DomUtil.get(pagemap2);
+	    	    // This will not be reachable on initial load.
+	    	    if (pagemap_container2 != null) {
+	    	      pagemap2.flyTo(mapCenter);
 
-    	    }
-        }
-	} else {
-		console.log("ERROR leaflet not loaded yet. typeof L undefined.");
+	    	    }
+	        }
+		} else {
+			console.log("ERROR lat changed for map2, but leaflet not loaded. typeof L undefined.");
+		}
 	}
+
 	if (hash.state != priorHash.state) {
 		loadGeomap = true;
 		if(location.host.indexOf('model.georgia') >= 0) {
@@ -2355,10 +2376,14 @@ function hashChanged() {
         //}
         let clearall = false;
         if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
-        	clearall = true;
+        	//clearall = true;
         }
-        updateSelectedTableRows(hash.geo, clearall, 0);
-
+        if($("#geomap").is(':visible')){
+        	if (hash.view != "country") {
+        		//alert("updateSelectedTableRows 2"); // Might need this delay.
+        		updateSelectedTableRows(hash.geo, clearall, 0);
+        	}
+    	}
         loadGeomap = true;
     }
 
@@ -2462,8 +2487,13 @@ function hashChanged() {
     	//$("#filterLocations").show();
     	//$("#geoPicker").show();
     	//$("#geomap").show(); // To trigger map filter display below.
-    	renderMapShapes("geomap", hash, 1); // County select map
-    	loadGeomap = false;
+    	if (hash.view) {
+    		//alert("render1")
+    		renderMapShapes("geomap", hash, 1); // County select map
+    		loadGeomap = false;
+    	} else {
+    		$("#filterLocations").hide();
+    	}
     }
 	/*
 	// Moved back to map.js
@@ -2498,7 +2528,7 @@ $(document).ready(function () {
 		//$("#state_select option[value='NV']").prop('selected', true);
 	}
 	if (hash.view) { // Country map
-		filterClickLocation();
+		filterClickLocation(false);
 	}
 	hashChanged();
 	/*
