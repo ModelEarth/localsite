@@ -3022,7 +3022,7 @@ function renderMapShapes(whichmap, hash, attempts) {
         layerName = "States";
         url = local_app.modelearth_root() + "/localsite/map/topo/states-10m.json";
         topoObjName = "topoob.objects.states";
-        $("#geomap").width("800px");
+        $("#geomap").width("700px");
         $(".geoListHolder").hide();
       } else { // COUNTIES
         layerName = stateAbbr + " Counties";
@@ -3034,7 +3034,8 @@ function renderMapShapes(whichmap, hash, attempts) {
           countyTopoTerm = "_parish_20m";
         }
 
-        $("#geomap").width("440px");
+        //$("#geomap").width("440px");
+        $("#geomap").width("700px");
         $(".geoListHolder").show();
         url = local_app.modelearth_root() + "/topojson/countries/us-states/" + stateAbbr + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
         topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + countyTopoTerm;
@@ -3160,8 +3161,8 @@ function renderMapShapes(whichmap, hash, attempts) {
       let theState = $("#state_select").find(":selected").val();
       if (theState == "" || hash.mapview == "country") {
         zoom = 4
-        lat = "39.50"
-        lon = "-98.35"
+        lat = "39.5"
+        lon = "-96"
       } else {
         let kilometers_wide = $("#state_select").find(":selected").attr("km");
         zoom = zoomFromKm(kilometers_wide);
