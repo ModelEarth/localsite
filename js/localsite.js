@@ -716,7 +716,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       // Setting up listener for font checking
       var font = "1rem 'Material Icons'";
       document.fonts.addEventListener('loadingdone', function(event) {
-          console.log(`Checking ${font}: ${ document.fonts.check(font)}`);
+          console.log("Font loaded: ${font}: ${ document.fonts.check(font)}");
       })
 
       // Loading font

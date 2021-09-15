@@ -71,7 +71,6 @@ var priorHashMap = {};
 function hashChangedMap() {
   let hash = getHash();
 
-
   // For PPE embed, also in map-filters.js. Will likely change
   if (!hash.show) {
     // For embed link
@@ -128,6 +127,13 @@ function hashChangedMap() {
 
   } else if (hash.cat !== priorHashMap.cat) {
     loadMap1("hashChanged() in map.js new cat " + hash.cat, hash.show);
+  } else if (hash.name !== priorHashMap.name) {
+    loadMap1("hashChanged() in map.js new name for View Details " + hash.name, hash.show);
+    //$("#detaillist").scrollTo("#detaillist > [name='"+hash.name+"']");
+    $('html,body').animate({
+        scrollTop: $("#list_main").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
+    });
+    //
   }
   priorHashMap = getHash();
 }
@@ -724,6 +730,7 @@ function addIcons(dp,map,map2) {
   var circle,circle2;
   var iconColor, iconColorRGB, iconName;
   var colorScale = dp.scale;
+  let hash = getHash();
   dp.data.forEach(function(element) {
     
     // Add a lowercase instance of each column name
