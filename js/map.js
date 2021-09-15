@@ -89,7 +89,11 @@ function hashChangedMap() {
     hiddenhash.state = "GA";
   }
 
-  if (hash.layers !== priorHashMap.layers) {
+  if (hash.name !== priorHashMap.name) {
+    loadMap1("hashChanged() in map.js new name for View Details " + hash.name, hash.show);
+    let offTop = $("#list_main").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height();
+    window.scroll(0, offTop);
+  } else if (hash.layers !== priorHashMap.layers) {
     //applyIO(hiddenhash.naics);
     loadMap1("hashChangedMap() in map.js layers", hash.show);
   } else if (hash.show !== priorHashMap.show) {
@@ -127,14 +131,7 @@ function hashChangedMap() {
 
   } else if (hash.cat !== priorHashMap.cat) {
     loadMap1("hashChanged() in map.js new cat " + hash.cat, hash.show);
-  } else if (hash.name !== priorHashMap.name) {
-    loadMap1("hashChanged() in map.js new name for View Details " + hash.name, hash.show);
-    //$("#detaillist").scrollTo("#detaillist > [name='"+hash.name+"']");
-    $('html,body').animate({
-        scrollTop: $("#list_main").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
-    });
-    //
-  }
+  } 
   priorHashMap = getHash();
 }
 $(document).ready(function () {
@@ -245,10 +242,10 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
       }
       return;
     } else {
-      console.log("typeof document.querySelector: " + typeof document.querySelector('#' + whichmap));
+      console.log("typeof document.querySelector: " + typeof document.querySelector('#' + whichmap)); // An object, but ._leaflet_map is not yet available
       console.log("The following 3 are also undefined when working properly...");
-      if (typeof document.querySelector('#' + whichmap)._leaflet_map === 'null') {
-        console.log("DELETE THIS - should no longer be reached now that we check for null 14 lines above.");
+      if (document.querySelector(whichmap) && !document.querySelector(whichmap)._leaflet_map) {
+      //if (typeof document.querySelector('#' + whichmap)._leaflet_map === 'null') { // Caused error: Cannot read properties of null (reading '_leaflet_map')
         console.log("Property '_leaflet_map' is null for #" + whichmap + ".  Try again. Attempt " + attempts);
         if (attempts <= 100) {
           setTimeout( function() {
