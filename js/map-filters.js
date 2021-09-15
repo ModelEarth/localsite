@@ -220,12 +220,12 @@ $(document).ready(function () {
 
     $("#filterClickLocation").click(function(event) {
     	//let hash = getHash();
-    	//if (!hash.view) {
+    	//if (!hash.mapview) {
     	//	// These will trigger call to filterClickLocation() and map display.
     	//	if (hash.state) {
-	    //		goHash({'view':'state'});
+	    //		goHash({'mapview':'state'});
 	    //	} else {
-	    //		goHash({'view':'country'});
+	    //		goHash({'mapview':'country'});
 	    //	}
     	//} else {
     		filterClickLocation();
@@ -269,7 +269,7 @@ $(document).ready(function () {
 	    	goHash({'state':this.value,'name':'','regiontitle':''}); // triggers renderMapShapes("geomap", hash); // County select map
 	    	//$("#filterLocations").hide(); // So state appears on map immediately
 	    } else { // US selected
-	    	goHash({'view':'country'});
+	    	goHash({'mapview':'country'});
 	    	//clearHash("state")
 	    	//$("#geoPicker").hide();
 	    	//$("#industryListHolder").hide();
@@ -611,13 +611,13 @@ function filterClickLocation(loadGeoTable) {
         if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
             $("#header.nav-up").hide();
         }
-        updateHash({"view":""});
+        updateHash({"mapview":""});
 	} else { // OPEN MAP FILTER
 		//alert("Open map filter")
 		let hash = getHash();
-		if (hash.view == "country") {
+		if (hash.mapview == "country") {
 			$("#geoPicker").show(); // Required for map to load
-		} else if (!hash.view) {
+		} else if (!hash.mapview) {
 			let currentStates = [];
 			if(hash.geo && !hash.state) {
 				let geos = hash.geo.split(",");
@@ -626,9 +626,9 @@ function filterClickLocation(loadGeoTable) {
 				}
 			}
 			if (currentStates.length > 0) {
-				goHash({"view":"state","state":currentStates[0]});
+				goHash({"mapview":"state","state":currentStates[0]});
 			} else {
-				goHash({"view":"state"});
+				goHash({"mapview":"state"});
 			}
 		}
 		$(".locationTabText").text("Locations");
@@ -644,7 +644,7 @@ function filterClickLocation(loadGeoTable) {
 	        if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
 	        	clearall = true;
 	        }
-	        if (hash.view != "country") {
+	        if (hash.mapview != "country") {
 	        	if (loadGeoTable != false) { // Prevents loading twice on init
 	        		//alert("updateSelectedTableRows 1")
 					updateSelectedTableRows(hash.geo, clearall, 0);
@@ -1479,7 +1479,7 @@ $(document).ready(function () {
 	  event.stopPropagation();
 	});
 	$('.go_map').click(function(event) {
-	  goHash({'view':'country'});
+	  goHash({'mapview':'country'});
 	  window.scrollTo({
 	      top: $('#map1').offset().top,
 	      left: 0
@@ -2379,7 +2379,7 @@ function hashChanged() {
         	//clearall = true;
         }
         if($("#geomap").is(':visible')){
-        	if (hash.view != "country") {
+        	if (hash.mapview != "country") {
         		//alert("updateSelectedTableRows 2"); // Might need this delay.
         		updateSelectedTableRows(hash.geo, clearall, 0);
         	}
@@ -2481,13 +2481,13 @@ function hashChanged() {
             $("#impactIcons div:contains(" + capitalizeSetName + ")").addClass("active");
         }
     }
-    if (hash.view != priorHash.view) {
+    if (hash.mapview != priorHash.mapview) {
     	//alert("hash change view")
     	//$(".stateFilters").show();
     	//$("#filterLocations").show();
     	//$("#geoPicker").show();
     	//$("#geomap").show(); // To trigger map filter display below.
-    	if (hash.view) {
+    	if (hash.mapview) {
     		//alert("render1")
     		renderMapShapes("geomap", hash, 1); // County select map
     		loadGeomap = false;
@@ -2527,7 +2527,7 @@ $(document).ready(function () {
 		$("#region_select").val(hash.regiontitle)
 		//$("#state_select option[value='NV']").prop('selected', true);
 	}
-	if (hash.view) { // Country map
+	if (hash.mapview) { // Country map
 		filterClickLocation(false);
 	}
 	hashChanged();

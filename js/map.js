@@ -2883,7 +2883,7 @@ function styleShape(feature) { // Called for each topojson row
   if (hash.geo && hash.geo.includes("US" + feature.properties.STATEFP + feature.properties.COUNTYFP)) {
       fillColor = 'purple';
       fillOpacity = .2;
-  } else if (hash.view == "country" && hash.state && hash.state.includes(stateID)) {
+  } else if (hash.mapview == "country" && hash.state && hash.state.includes(stateID)) {
       fillColor = 'red';
       fillOpacity = .2;
   }
@@ -2953,7 +2953,7 @@ function renderMapShapes(whichmap, hash, attempts) {
 
     var stateCount = typeof hash.state !== "undefined" ? hash.state.split(",").length : 0;
     //alert("hash.state: " + hash.state + " stateCount: " + stateCount);
-    if (stateCount > 1 && hash.view != "country") {
+    if (stateCount > 1 && hash.mapview != "country") {
       hash.state.split(",").forEach(function(state) {
         hashclone = $.extend(true, {}, hash); // Clone/copy object without entanglement
         hashclone.state = state; // One state at a time
@@ -3014,7 +3014,7 @@ function renderMapShapes(whichmap, hash, attempts) {
       var url;
       let topoObjName = "";
       var layerName = "Map Layer";
-      if (stateAbbr.length <= 1 || hash.view == "country") { // USA
+      if (stateAbbr.length <= 1 || hash.mapview == "country") { // USA
         layerName = "States";
         url = local_app.modelearth_root() + "/localsite/map/topo/states-10m.json";
         topoObjName = "topoob.objects.states";
@@ -3154,7 +3154,7 @@ function renderMapShapes(whichmap, hash, attempts) {
 
       var zoom = 7;
       let theState = $("#state_select").find(":selected").val();
-      if (theState == "" || hash.view == "country") {
+      if (theState == "" || hash.mapview == "country") {
         zoom = 4
         lat = "39.50"
         lon = "-98.35"

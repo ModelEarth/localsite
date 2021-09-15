@@ -293,7 +293,7 @@ $(document).ready(function(){
 						event.stopPropagation();
 					});
 					$(document).on("click", ".hideAdvanced", function(event) {
-						updateHash({"view":""});
+						updateHash({"mapview":""});
 						$(".fieldSelector").hide();
 						$("#filterLocations").hide();
 						$("#filterClickLocation").removeClass("filterClickActive");
