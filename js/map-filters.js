@@ -2055,7 +2055,11 @@ function hashChanged() {
 	param = mix(param,loadParams(location.search,location.hash)); // param is declared in localsite.js. Give priority to param updates within code.
 
 	let hash = getHash(); // Includes changes to hiddenhash
-
+	if (hash.show == "undefined") { // To eventually remove
+		//alert("hash.show = undefined")
+		delete hash.show; // Fix URL bug from indicator select hamburger menu
+		updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
+	}
 	// For PPE embed, also in map.js. Will likely change
 	if (!hash.show) {
 		// For embed link

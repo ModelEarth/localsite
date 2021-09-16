@@ -198,11 +198,11 @@ $(document).ready(function(){
 			  			document.title = "Neighborhood.org - " + document.title
 			  			changeFavicon("/localsite/img/logo/partners/neighborhood-icon.png")
 			  			$('.neighborhood').css('display', 'inline');
-				 	} else if (!Array.isArray(param.titleArray)) {
+				 	} else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
 				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Model Earth");
 				 		param.titleArray = ["model","earth"]
-			  			param.headerLogo = "<img src='/community/img/logo/model-earth.png' style='width:34px; margin-right:2px'>";
+			  			param.headerLogoSmall = "<img src='/community/img/logo/model-earth.png' style='width:34px; margin-right:2px'>";
 			  			document.title = "Model Earth - " + document.title
 			  			changeFavicon(modelpath + "../community/img/logo/model-earth.png")
 			  			$('.earth').css('display', 'inline'); 
@@ -227,7 +227,7 @@ $(document).ready(function(){
 				 		// Since deactivated above due to conflict with header logo in app.
 				 		$('.neighborhood').css('display', 'block');
 				 	}
-				 	if (param.titleArray) {
+				 	if (param.titleArray && !param.headerLogo) {
 				 		if (param.titleArray[1] == undefined) {
 				 			$('#headerSiteTitle').html("");
 				 		} else {
@@ -260,7 +260,9 @@ $(document).ready(function(){
 				 		$('.logoholder-modelearth').css('margin-right', '20px');
 				 	}
 				 	*/
-				 	if (param.headerLogo) {
+				 	if (param.headerLogoSmall) {
+				 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall + "</a>");
+				 	} else if (param.headerLogo) {
 				 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
 				 	} else {
 					 	$('#headerLogo').css('background-image', 'url(' + imageUrl + ')');

@@ -172,6 +172,10 @@ function refreshNaicsWidget() {
     } else if (hash.naics != priorHash_naicspage.naics) {
         //alert("hash.naics " + hash.naics);
         loadIndustryData();
+    } else if (hash.catsize != priorHash_naicspage.catsize) {
+        loadIndustryData();
+    } else if (hash.catsort != priorHash_naicspage.catsort) {
+        loadIndustryData();
     } else if (hash.indicators != priorHash_naicspage.indicators) {
         // Avoid invoking change to widget since indicators is auto-detected
         //alert("hash.indicators " + hash.indicators);
@@ -414,7 +418,13 @@ function loadIndustryData() {
     }
 }
 function promisesReady(values) {
-
+    let hash = getHash();
+    if (hash.catsize) {
+        params.catsize = hash.catsize;
+    }
+    if (hash.catsort) {
+        params.catsort = hash.catsort;
+    }
     console.log("promisesReady - promises loaded")
     $("#industryListHolder").show();
     d3.csv(local_app.community_data_root() + "us/id_lists/state_fips.csv").then( function(consdata) {
