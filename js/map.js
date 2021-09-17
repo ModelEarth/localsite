@@ -1432,7 +1432,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         console.log("map.js loading " + local_app.custom_data_root() + "communities/map-georgia-smart.csv");
 
         dp.dataset =  local_app.custom_data_root() + "communities/map-georgia-smart.csv";
-        dp.listInfo = "Includes Georgia Smart Community Projects. <a href='https://github.com/GeorgiaData/georgia-data/blob/master/communities/map-georgia-smart.csv'>Submit changes</a>";
+        dp.listInfo = "Includes <a href='https://smartcities.gatech.edu/georgia-smart' target='_blank'>Georgia Smart</a> Community Projects. <a href='https://github.com/GeorgiaData/georgia-data/blob/master/communities/map-georgia-smart.csv'>Submit changes</a>";
         dp.search = {"In Title": "title", "In Description": "description", "In Website URL": "website", "In Address": "address", "In City Name": "city", "In Zip Code" : "zip"};
         dp.markerType = "google";
         //dp.showShapeMap = true; // Shows county borders
@@ -2744,7 +2744,10 @@ var previousScrollTop = $(window).scrollTop();
 
 $(window).scroll(function() {
   if (revealHeader == false) {
-    $("#headerFixed").addClass("headerShort"); $('.headerbar').hide(); $('.headerOffset').hide(); $('.showMenuSmNav').show(); $('#logoholderbar').show(); $('#logoholderside').show();
+    $("#headerFixed").addClass("headerShort"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
+    if (param.showheader != "false") {
+      $('.showMenuSmNav').show(); 
+    }
     $('#filterFieldsHolder').hide();
     $('.headerOffset').hide();
 
@@ -2758,7 +2761,10 @@ $(window).scroll(function() {
     revealHeader = true; // For next manual scroll
   } else if ($(window).scrollTop() > previousScrollTop) { // Scrolling Up
     if ($(window).scrollTop() > previousScrollTop + 20) { // Scrolling Up fast
-      $("#headerFixed").addClass("headerShort"); $('.headerbar').hide(); $('.headerOffset').hide(); $('.showMenuSmNav').show(); $('#logoholderbar').show(); $('#logoholderside').show();
+      $("#headerFixed").addClass("headerShort"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
+      if (param.showheader != "false") {
+        $('.showMenuSmNav').show(); 
+      }
       //$('#filterFieldsHolder').hide();
       $('.headerOffset').hide();
       //alert("4")
