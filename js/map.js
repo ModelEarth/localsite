@@ -241,17 +241,10 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
         console.log("ERROR #" + whichmap + " - exceeded 100 attempts.");
       }
       return;
-    } 
-
-    /*
-    else if (document.querySelector('#' + whichmap) && typeof document.querySelector('#' + whichmap)._leaflet_map === 'undefined') {
-      //console.log("typeof document.querySelector: " + typeof document.querySelector('#' + whichmap)); // An object, but ._leaflet_map is not yet available
-      //console.log("The following 3 are also undefined when working properly...");
-      //if (typeof document.querySelector('#' + whichmap)._leaflet_map === 'null') { // Caused error: Cannot read properties of null (reading '_leaflet_map')
-      //if (document.querySelector(whichmap) && !document.querySelector(whichmap)._leaflet_map) { // This let a none _leaflet_map pass
-      
-        console.log("Property '_leaflet_map' is null for #" + whichmap + ".  Try again. Attempt " + attempts);
-        console.log(typeof document.querySelector('#' + whichmap)._leaflet_map);
+    } else if (document.querySelector('#' + whichmap) && typeof L.DomUtil != "object") { // Wait for Leaflet library
+      //if (document.querySelector('#' + whichmap) && !document.querySelector'#' + whichmap)._leaflet_map) { // Won't work because ._leaflet_map always equals "undefined"
+        console.log("L.DomUtil not available for #" + whichmap + ".  Try again. Attempt " + attempts);
+        console.log(typeof L.DomUtil);
         if (attempts <= 100) {
           setTimeout( function() {
             loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts+1,callback);
@@ -260,8 +253,9 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
           console.log("ERROR - _leaflet_map null exceeded 100 attempts.");
         }
         return;
-
-    } else {
+    }
+    /*
+    else {
         console.log("typeof document.querySelector ._leaflet_map: " + typeof document.querySelector('#' + whichmap)._leaflet_map);
     }
     */
@@ -2747,6 +2741,7 @@ var topMenuHeight = 150;
 
 var mapFixed = false;
 var previousScrollTop = $(window).scrollTop();
+
 $(window).scroll(function() {
   if (revealHeader == false) {
     $("#headerFixed").addClass("headerShort"); $('.headerbar').hide(); $('.headerOffset').hide(); $('.showMenuSmNav').show(); $('#logoholderbar').show(); $('#logoholderside').show();
@@ -2775,19 +2770,25 @@ $(window).scroll(function() {
     }
   } else { // Scrolling Down
     if ($(window).scrollTop() < (previousScrollTop - 20)) { // Reveal if scrolling down fast
-      $("#headerFixed").removeClass("headerShort"); $('.headerbar').show(); $('.headerOffset').show(); $('.showMenuSmNav').hide(); $('#logoholderbar').hide(); $('#logoholderside').hide();
+      $("#headerFixed").removeClass("headerShort"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
       //$('#filterFieldsHolder').show();
       if ($("#headerbar").length) {
-        $('.headerOffset').show();
+        if (param.showheader != "false") {
+          $('.headerOffset').show();
+          $('.showMenuSmNav').hide();
+        }
         $('#sidecolumnContent').css("top","150px");
         $('#showSide').css("top","108px");
       }
       $('#headerFixed').show();
     } else if ($(window).scrollTop() == 0) { // At top
-      $("#headerFixed").removeClass("headerShort"); $('.headerbar').show(); $('.headerOffset').show(); $('.showMenuSmNav').hide(); $('#logoholderbar').hide(); $('#logoholderside').hide();
+      $("#headerFixed").removeClass("headerShort"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
       //$('#filterFieldsHolder').show();
       if ($("#headerbar").length) {
-        $('.headerOffset').show();
+        if (param.showheader != "false") {
+          $('.headerOffset').show();
+          $('.showMenuSmNav').hide();
+        }
         $('#sidecolumnContent').css("top","150px");
         $('#showSide').css("top","108px");
       }
