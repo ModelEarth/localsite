@@ -238,7 +238,7 @@ function getHashOnly() {
       return b;
     })(window.location.hash.substr(1).split('&'));
 }
-function updateHash(addToHash, addToExisting) {
+function updateHash(addToHash, addToExisting) { // Avoids triggering hash change event.
     let hash = {}; // Limited to this function
     if (addToExisting != false) {
       hash = getHashOnly(); // Include all existing. Excludes hiddenhash.

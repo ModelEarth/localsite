@@ -62,6 +62,7 @@ var tabledata = [
     {id:5, name:"Margret Marmajuke", progress:16, gender:"female", rating:5, col:"yellow", dob:"31/01/1999"},
     {id:6, name:"Frank Harbours", progress:38, gender:"male", rating:4, col:"red", dob:"12/05/1966", car:1},
 ];
+// pagination:"local",      //paginate the data
 var table = new Tabulator("#tabulator-geotable", {
     data:tabledata,           //load row data from array
     layout:"fitColumns",      //fit columns to width of table
@@ -69,7 +70,6 @@ var table = new Tabulator("#tabulator-geotable", {
     tooltips:true,            //show tool tips on cells
     addRowPos:"top",          //when adding a new row, add it to the top of the table
     history:true,             //allow undo and redo actions on the table
-    paginationX:"local",      //paginate the data
     paginationSize:7,         //allow 7 rows per page of data
     movableColumns:true,      //allow column order to be changed
     resizableRows:true,       //allow row order to be changed

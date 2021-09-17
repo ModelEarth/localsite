@@ -113,6 +113,12 @@ document.addEventListener('hashChangeEvent', function (elem) {
 function refreshNaicsWidget() {
     //alert("refreshNaicsWidget")
     let hash = getHash(); // Includes hiddenhash
+    if (hash.show == "undefined") { // To eventually remove
+        delete hash.show; // Fix URL bug from indicator select hamburger menu
+        updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
+        console.log("REMOVED hash=undefined");
+    }
+
     params = loadParams(location.search,location.hash); // Also used by loadIndustryData()
     params = mix(param,params); // Add include file's param values.
 
@@ -1629,6 +1635,7 @@ if(typeof hiddenhash == 'undefined') {
 function applyIO(naics) {
     console.log("applyIO with naics: " + naics);
     //alert("applyIO with naics: " + naics);
+    
     if (!hiddenhash.naics) {
         //hiddenhash.naics = undefined;
     }
@@ -1709,6 +1716,7 @@ function applyIO(naics) {
         indicators = hash.indicators;
     }
 
+    alert("applyIO with sectors: " + hash.sectors);
     var indicatorCodes = indicators.split(',');
 
     // Probably not working, using config.update below instead.

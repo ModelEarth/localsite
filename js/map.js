@@ -71,6 +71,11 @@ var priorHashMap = {};
 function hashChangedMap() {
   let hash = getHash();
 
+  if (hash.show == "undefined") { // To eventually remove
+    delete hash.show; // Fix URL bug from indicator select hamburger menu
+    updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
+  }
+
   // For PPE embed, also in map-filters.js. Will likely change
   if (!hash.show) {
     // For embed link

@@ -44,6 +44,11 @@
     height: 30px  !important; /* Prevents occasional excess height */
     padding-top: 6px !important;
 }
+@media (min-width: 1800px) {
+    .tabulator-cell {
+        font-size: 15px;
+    }
+}
 .tabulator-header .tabulator-col-title {
     font-weight: 400;
     text-align: right;

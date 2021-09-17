@@ -2210,7 +2210,8 @@ function hashChanged() {
 	}
 	
 	if (mapCenter.length > 0) { // Set when hash.lat changes
-		if (typeof L != "undefined") {
+		//if (typeof L != "undefined") {
+		if (typeof L.DomUtil === "object") {
 			// Avoiding including ",5" for zoom since 7 is already set. 
 	        // NOT IDEAL: This also runs during init.
 	        // TODO: If reactiveating, omit on init, or pass in default zoom.

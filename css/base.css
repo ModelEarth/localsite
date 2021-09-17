@@ -75,6 +75,9 @@ body {
   display: flex; /* for footer */
   flex-direction: column; /* for footer */
 }
+.flexmain {
+	max-width: 2100px;
+}
 main, .flexmain {
     flex-grow: 1; /* for footer */
 }
@@ -273,6 +276,12 @@ summary::-webkit-details-marker {
   line-height: 1.55;
   position: relative;
   overflowX: auto; /* Test when activating */
+}
+@media (min-width: 1800px) {
+	.content {
+	  max-width: 1500px;
+	  font-size: 18px;
+	}
 }
 .contentpadding {
   padding-top: 25px;
