@@ -1438,7 +1438,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         console.log("map.js loading " + local_app.custom_data_root() + "communities/map-georgia-smart.csv");
 
         dp.dataset =  local_app.custom_data_root() + "communities/map-georgia-smart.csv";
-        dp.listInfo = "Includes Georgia Smart Community Projects";
+        dp.listInfo = "Includes Georgia Smart Community Projects. <a href='https://github.com/GeorgiaData/georgia-data/blob/master/communities/map-georgia-smart.csv'>Submit changes</a>";
         dp.search = {"In Title": "title", "In Description": "description", "In Website URL": "website", "In Address": "address", "In City Name": "city", "In Zip Code" : "zip"};
         dp.markerType = "google";
         //dp.showShapeMap = true; // Shows county borders
