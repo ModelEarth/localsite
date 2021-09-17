@@ -1337,7 +1337,8 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.listTitle = "Environmental Product Declarations";
         dp.listInfo = "EPD directory data from <a href='https://BuildingTransparency.org' target='_blank'>Building Transparency</a>";
         dp.datatype = "json";
-        dp.dataset = "https://buildingtransparency.org/api/materials?page_number=1&page_size=1000&soft_search_terms=true&category=b03dba1dca5b49acb1a5aa4daab546b4&jurisdiction=[jurisdiction]&epd__date_validity_ends__gt=2021-08-24";
+        // Limited to 20 reduces time to 4 seconds, verse 8 seconds for 250.  251 returns 250.
+        dp.dataset = "https://buildingtransparency.org/api/materials?page_number=1&page_size=251&soft_search_terms=true&category=b03dba1dca5b49acb1a5aa4daab546b4&jurisdiction=[jurisdiction]&epd__date_validity_ends__gt=2021-08-24";
         dp.headerAuth = "{'Authorization':'Bearer 204ad15687571d9c62bdfa780526b1514c090f68'}";
 
         dp.latColumn = "plant_or_group.latitude";
