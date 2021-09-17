@@ -251,9 +251,7 @@ $(document).ready(function () {
 		$(".showSearch").removeClass("local");
   	}
 
-  	console.log("Doc is ready, place #sidecolumnContent into #sidecolumn")
-  	$("#sidecolumn").append($("#sidecolumnContent"));
-	function showSearchClick() {
+  	function showSearchClick() {
 		if (!$("#filterFieldsHolder").length) { // Doesn't exist
 			window.location = "/localsite/info/" + window.location.hash;
 			return;
@@ -432,7 +430,7 @@ body {
 
 <div id="logoholderside" class="logoholder" style="display:none; z-index:2"></div>
 
-<div id="sidecolumnContent">
+<div id="sidecolumnContent" style="display:none">
 
 <div id="sidecolumnContentScroll">
 

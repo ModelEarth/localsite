@@ -111,6 +111,12 @@ $(document).ready(function(){
 		$(document).ready(function () {
 			$("#local-header").load(headerFile, function( response, status, xhr ) {
 
+					// BUG - Not header.html is not always ready in DOM yet, add a loop.
+					console.log("Doc is ready, header file loaded,place #sidecolumnContent into #sidecolumn")
+  					$("#sidecolumn").append($("#sidecolumnContent")); // Bug - need to wait until #sidecolumn is appended by navigation.js.
+  					$("#sidecolumnContent").show(); // Still hidden, just removing the div that prevents initial exposure.
+	
+
 			 		// Move filterbarOffset and filterEmbedHolder immediately after body tag start.
 			 		// Allows map embed to reside below intro text and additional navigation on page.
 
