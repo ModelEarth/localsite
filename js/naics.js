@@ -1001,7 +1001,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                         } else {
                             for (var i=0; i<rates_list.length; i++) {
                                 id = parseInt(getKeyByValue(rates_dict, rates_list[i]))
-                                alert("Test2 " + dataSet.industryData.ActualRate[id]);
+                                //alert("Test2 " + dataSet.industryData.ActualRate[id]);
                                 delete rates_dict[id]
 
                                 if (dataSet.industryDataState.ActualRate[id] && dataSet.industryDataState.ActualRate[id].hasOwnProperty(fips)) {

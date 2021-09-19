@@ -821,7 +821,6 @@ function showCounties(attempts) { // To avoid broken tiles, this won't be execut
 
 		let hash = getHash();
 		let theState = $("#state_select").find(":selected").val();
-		alert(theState)
 		if (hash.state) {
 			theState = hash.state.toUpperCase();
 		}

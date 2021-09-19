@@ -1923,7 +1923,6 @@ function showList(dp,map) {
     dp.data = data_sorted;
   }
 
-  //alert(dp.data); //TEMP
   let hash = getHash(); 
 
   dp.data.forEach(function(elementRaw) {
@@ -3481,9 +3480,6 @@ function renderMapShapes(whichmap, hash, attempts) {
               //overlays[layerName] = geojsonLayer; // Add element to existing overlays object.
 
               //overlays[layerName] = stateAbbr + " Counties";
-              //alert("geojsonLayer test")
-              //alert(stateAbbr)
-              //alert(geojsonLayer)
 
               // Add dup
               //layerControl[whichmap].addOverlay(geojsonLayer, stateAbbr + " Counties");
