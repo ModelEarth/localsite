@@ -108,12 +108,6 @@ textarea {
     /* border:solid 1px #777; */
     border-color: rgb(238, 238, 238);
 }
-/* input needed below for search field. Might remove others if id conflicts arrise */
-input, label, button, select, textarea {
-  /* font-size: 13.5px; */
-  /* font-weight: normal; */
-  /* line-height: 20px; */
-}
 a {
   text-decoration: none;
 }
@@ -758,7 +752,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 
 /* Temp until io renamed in useeio-widget */
-.input-output input[type="text"], .input-output input[type="search"], .input-output select {
+.input-output input[type="text"], .input-output input[type="search"], .input-output select, select {
     height: 30px;
     font-size: 18px;
     border: 1px solid lightgray;
