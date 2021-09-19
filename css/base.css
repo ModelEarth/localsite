@@ -753,7 +753,6 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 
 /* Temp until io renamed in useeio-widget */
 .input-output input[type="text"], .input-output input[type="search"], .input-output select, select {
-    height: 30px;
     font-size: 18px;
     border: 1px solid lightgray;
     border-radius: 20px;
