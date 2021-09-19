@@ -821,6 +821,7 @@ function showCounties(attempts) { // To avoid broken tiles, this won't be execut
 
 		let hash = getHash();
 		let theState = $("#state_select").find(":selected").val();
+		alert(theState)
 		if (hash.state) {
 			theState = hash.state.toUpperCase();
 		}
@@ -2052,7 +2053,7 @@ function hashChanged() {
   	// This function now invoke loadMap1 - replaces index.html and map-embed.js.
   	
 	let loadGeomap = false;
-	param = mix(param,loadParams(location.search,location.hash)); // param is declared in localsite.js. Give priority to param updates within code.
+	//param = mix(param,loadParams(location.search,location.hash)); // param is declared in localsite.js. Give priority to param updates within code.
 
 	let hash = getHash(); // Includes changes to hiddenhash
 	if (hash.show == "undefined") { // To eventually remove
@@ -2061,6 +2062,7 @@ function hashChanged() {
 		updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
 	}
 	// For PPE embed, also in map.js. Will likely change
+	/*
 	if (!hash.show) {
 		// For embed link
         if (param.show) {
@@ -2073,17 +2075,17 @@ function hashChanged() {
 		hash.state = param.state;
 		hiddenhash.state = param.state;
 	}
+	*/
 
-	  // Temp for PPE
-	  if (!hash.state && location.host.indexOf("georgia") >= 0) {
+	// Temp for PPE
+	if (!hash.state && location.host.indexOf("georgia") >= 0) {
 	    hash.state = "GA";
 	    hiddenhash.state = "GA";
-	  }
+	}
 
 	populateFieldsFromHash();
 	productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 
-	// NOTE: params after ? are not included, just the hash.
 	if (hash.state) {
 		// Apply early since may be used by changes to geo
 		$("#state_select").val(hash.state.toUpperCase());
@@ -2226,7 +2228,8 @@ function hashChanged() {
 	        */
 	        if (typeof document.querySelector('#map2') === 'undefined' || typeof document.querySelector('#map2') === 'null') {
 	            console.log("#map2 undefined");
-	        } else {
+	        } else if (document.querySelector('#map2')) {
+
 	    	    let pagemap2 = document.querySelector('#map2')._leaflet_map; // Recall existing map
 	    	    let pagemap_container2 = L.DomUtil.get(pagemap2);
 	    	    // This will not be reachable on initial load.
@@ -2304,7 +2307,7 @@ function hashChanged() {
             //alert("no hash.regiontitle")
             delete hiddenhash.loctitle;
             delete hiddenhash.geo;
-            delete param.geo;
+            //delete param.geo;
             $(".regiontitle").text("");
             // Allows full "United States" to be included from above.
             if (hash.show) {

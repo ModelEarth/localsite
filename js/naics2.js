@@ -243,9 +243,9 @@ function showIndustryTabulatorList(attempts) {
 
 
 
-function keyFound(this_key, cat_filter, params) {
-    if (!params.show) {
-        params.show = params.go;
+function keyFound(this_key, cat_filter, hash) {
+    if (!hash.show) {
+        hash.show = hash.go;
     }
 
     if (this_key <= 1) {
@@ -254,13 +254,13 @@ function keyFound(this_key, cat_filter, params) {
         return true;
     } else if (cat_filter.length == 0) { // No filter
         return true;
-    } else if (params.show == "bioeconomy" && (this_key.startsWith("11") || this_key.startsWith("311"))) { // Quick hack, always include Agriculture
+    } else if (hash.show == "bioeconomy" && (this_key.startsWith("11") || this_key.startsWith("311"))) { // Quick hack, always include Agriculture
         return true;
-    //} else if (params.show == "farmfresh" && (this_key.startsWith("11") || this_key.startsWith("311"))) { // Quick hack, always include Agriculture
+    //} else if (hash.show == "farmfresh" && (this_key.startsWith("11") || this_key.startsWith("311"))) { // Quick hack, always include Agriculture
     //    return true;
-    } else if (params.show == "manufacturing" && (this_key.startsWith("31") || this_key.startsWith("32") || this_key.startsWith("33") )) { // All manufacturing
+    } else if (hash.show == "manufacturing" && (this_key.startsWith("31") || this_key.startsWith("32") || this_key.startsWith("33") )) { // All manufacturing
         return true;
-    } else if ( (params.show == "bioeconomy" || params.show=="parts") && params.catsize == 2) { // Our 4 digit array matches key
+    } else if ( (hash.show == "bioeconomy" || hash.show=="parts") && hash.catsize == 2) { // Our 4 digit array matches key
         cat_filt=[]
         for(i=0;i<cat_filter.length;i++){
             cat_filt.push(cat_filter[i].slice(0,2))
@@ -268,7 +268,7 @@ function keyFound(this_key, cat_filter, params) {
         if(cat_filt.includes(this_key.slice(0,2))){
             return true;
         }
-    } else if ( (params.show == "bioeconomy" || params.show=="parts") && params.catsize == 4 ) { // Our 4 digit array matches key
+    } else if ( (hash.show == "bioeconomy" || hash.show=="parts") && hash.catsize == 4 ) { // Our 4 digit array matches key
         cat_filt=[]
         for(i=0;i<cat_filter.length;i++){
             cat_filt.push(cat_filter[i].slice(0,4))
@@ -276,10 +276,10 @@ function keyFound(this_key, cat_filter, params) {
         if(cat_filt.includes(this_key.slice(0,4))){
             return true;
         }
-    } else if ( (params.show == "bioeconomy" || params.show=="parts" || cat_filter.length > 0) && params.catsize == 6 && cat_filter.includes(this_key.slice(0,6))) { // Our 6 digit array matches key
+    } else if ( (hash.show == "bioeconomy" || hash.show=="parts" || cat_filter.length > 0) && hash.catsize == 6 && cat_filter.includes(this_key.slice(0,6))) { // Our 6 digit array matches key
         return true;
     } else {
-        console.log("NO CAT MATCH FOUND FOR: " + params.show);
+        console.log("NO CAT MATCH FOUND FOR: " + hash.show);
         return false;
     }
 }
@@ -443,7 +443,7 @@ function topRatesInFips(dataSet, fips) {
 
 }
 // Top rows for a specific set of fips (states and counties)
-function topRatesInFipsOld(dataSet, fips) { // REMOVED , params
+function topRatesInFipsOld(dataSet, fips) { // REMOVED , hash
     //alert(dataSet.industryCounties.length)
     //let catcount = hash.catcount || 40;
     let catcount = 40;
@@ -504,7 +504,7 @@ function topRatesInFipsOld(dataSet, fips) { // REMOVED , params
                     	/* REACTIVATE
                         Object.keys(localObject.industryCounties).forEach( this_key=>{
                             // this_key = parseInt(d.split("$")[1])
-                            if (keyFound(this_key, cat_filter,params)){
+                            if (keyFound(this_key, cat_filter,hash)){
                                 this_rate = localObject.industryCounties[this_key]
                                 if (this_rate.hasOwnProperty(fips[i])){ 
                                     if(rates_dict[this_key]){
@@ -538,7 +538,7 @@ function topRatesInFipsOld(dataSet, fips) { // REMOVED , params
                     // Was dataSet.industryDataStateApi.ActualRate[this_key], try changing to localObject.industryCounties
                         if(hash.census_scope=="state"){
                             Object.keys(localObject.industryCounties).forEach( this_key=>{
-                                if (keyFound(this_key, cat_filter, hash)){ // hash was params
+                                if (keyFound(this_key, cat_filter, hash)){ // hash was hash
                                     this_rate = localObject.industryCounties[this_key]
                                     if (this_rate.hasOwnProperty(fips)){ 
                                         rates_dict[this_key] = parseFloat(this_rate[fips][which_state_api])
@@ -554,7 +554,7 @@ function topRatesInFipsOld(dataSet, fips) { // REMOVED , params
                         //Object.keys(dataSet.industryDataState.ActualRate).forEach( this_key=>{
                         //alert(localObject.industryCounties)
                         Object.keys(localObject.industryCounties).forEach( this_key=>{ // Was: localObject.industryCounties.ActualRate
-                            if (keyFound(this_key, cat_filter, hash)){ // hash was params
+                            if (keyFound(this_key, cat_filter, hash)){ // hash was hash
                                 //  WAS: this_rate = dataSet.industryDataState.ActualRate[this_key]
                                 this_rate = localObject.industryCounties[this_key]
                                 if (this_rate.hasOwnProperty(fips)){ 
@@ -570,7 +570,7 @@ function topRatesInFipsOld(dataSet, fips) { // REMOVED , params
 
                 } else {
                     Object.keys(localObject.industryCounties).forEach( this_key=>{
-                        if (keyFound(this_key, cat_filter, hash)){ // hash was params
+                        if (keyFound(this_key, cat_filter, hash)){ // hash was hash
                             this_rate = localObject.industryCounties[this_key]
                             if (this_rate.hasOwnProperty(fips)){ 
                                 rates_dict[this_key] = parseFloat(this_rate[fips][which])
@@ -617,7 +617,7 @@ function topRatesInFipsOld(dataSet, fips) { // REMOVED , params
                                 }
                             }
                         }
-                        if (keyFound(naicscode, cat_filter,params)){
+                        if (keyFound(naicscode, cat_filter, hash)){
                             if(dataSet.industries[id]){
                                 if (rateInFips == null) {
                                     rateInFips = 1
@@ -946,8 +946,8 @@ function topRatesInFipsOld(dataSet, fips) { // REMOVED , params
                         //updateMosic(naicshash);
 
                         //updateHash({"naics":naicshash});
-                        //params = loadParams(location.search,location.hash);
-                        //midFunc(hash.x,hash.y,hash.z,params);
+                        //hash = loadParams(location.search,location.hash);
+                        //midFunc(hash.x,hash.y,hash.z,hash);
 
                         //alert("#industries show");
                         //$("#industries").show();

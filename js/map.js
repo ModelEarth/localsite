@@ -1,3 +1,7 @@
+
+// TO DO - Use group to remove prior layer.
+// https://stackoverflow.com/questions/38845292/filter-leaflet-geojson-object-based-on-checkbox-status/38845970#38845970
+
 // INIT
 var dataParameters = [];
 var dp = {};
@@ -3466,8 +3470,7 @@ function renderMapShapes(whichmap, hash, attempts) {
               //layerControl[whichmap].addOverlay(dp.group, dp.dataTitle); // Appends to existing layers
               //alert("Existing " + whichmap + " has no overlay for: " + layerName)
 
-              console.log("getOverlays");
-              console.log(layerControl[whichmap].getOverlays());
+              
 
               //if(map.hasLayer(geojsonLayer)) {
                 //alert("HAS LAYER")
@@ -3498,6 +3501,20 @@ function renderMapShapes(whichmap, hash, attempts) {
               //map.removeLayer(overlays[layerName]);
               //layerControl[whichmap].removeOverlay(overlays[layerName]);
 
+              console.log("getOverlays");
+              console.log(layerControl[whichmap].getOverlays());
+              if (location.host.indexOf('localhost') >= 0) {
+                let layerString = "";
+                Object.keys(layerControl[whichmap].getOverlays()).forEach(key => {
+                  layerString += key;
+                  if (layerControl[whichmap].getOverlays()[key]) {
+                    layerString += " - selected";
+                  }
+                  layerString += "<br>";
+                });
+                $("#layerStringDiv").remove();
+                $("#locationFilterHolder").prepend("<div id='layerStringDiv' style='width:220px'>" + layerString + "<hr></div>");
+              }
             }
         }
 

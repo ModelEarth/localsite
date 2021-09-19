@@ -99,33 +99,49 @@ var local_app = local_app || (function(module){
 //local_app.init({test1: "1", controlId: "okay"});
 //local_app.helloWorld("test2");
 
-// Above is alternative to placing params in javascript include path:
+// Above can also be used as alternative to placing params in javascript include path:
 // https://stackoverflow.com/questions/2190801/passing-parameters-to-javascript-files
 
 
 // USE params (plural) to isolate within functions when creating embedable widgets.
 // USE param for any html page using localsite.js.
-if(typeof param == 'undefined') {
-    var param = {};
-    param = loadParams(location.search,location.hash);
-} else {
-  param = mix(param,loadParams(location.search,location.hash));
-}
+// mix gives priority to the first (allowing it to delete using blanks). extend gives priority to the second.
+let paramIncludeFile = getParamInclude(); // From localsite.js include file param.
 if(typeof hiddenhash == 'undefined') {
-    var hiddenhash = {};
+  var hiddenhash = {};
 }
-initateHiddenhash();
-function initateHiddenhash() { // Load in values from params on javascript include file.
+if(typeof param != 'undefined') { // From settings in HTML page
+  hiddenhash = mix(hiddenhash,paramIncludeFile); // Before URL values added. Priority to hiddenhash.
+  hiddenhash = mix(param,hiddenhash); // param set in page takes priority over param set on localsite.js URL.
+  param = mix(param,loadParams(location.search,location.hash)); // Priority to first, the param values set in page.
+} else { // No param object in page, but could be set in localsite.js include.
+  hiddenhash = mix(hiddenhash,paramIncludeFile);
+  //var param = {}; // Clone paramIncludeFile
+  var param = extend(true, loadParams(location.search,location.hash), paramIncludeFile); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
+  //param = loadParams(location.search,location.hash); // Includes localsite.js include.
+}
+
+// TO DO: Add paramIncludeFile to call once rather than in both function
+function getParamInclude() {
+  let paramInclude = {};
   let scripts = document.getElementsByTagName('script'); 
   let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
+  // But use localsite.js
+  for (var i = 0; i < scripts.length; ++i) {
+      if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
+        myScript = scripts[i];
+      }
+  }
   //let myScript = null;
   // Now try to find one containing map-embed.js
+  /*
   for (var i = 0; i < scripts.length; ++i) {
       if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
         myScript = scripts[i];
       }
   }
-  
+  */
+
   // Check if script resides on current server.
   //alert("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src) + "\rwindow.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
 
@@ -137,10 +153,11 @@ function initateHiddenhash() { // Load in values from params on javascript inclu
     if(!includepairs[i]) continue;
     let pair = includepairs[i].split('=');
     if (pair[1]) {
-      hiddenhash[pair[0].toLowerCase()] = decodeURIComponent(pair[1].replace(/\+/g, " "));
+      paramInclude[pair[0].toLowerCase()] = decodeURIComponent(pair[1].replace(/\+/g, " "));
       //consoleLog("Param from javascript include: " + pair[0].toLowerCase() + " " + decodeURIComponent(pair[1]));
     }
   }
+  return paramInclude;
 }
 
 // Loads params with priority given to:
@@ -316,6 +333,7 @@ function loadScript(url, callback)
 }
 
 var localsite_repo3; // TEMP HERE
+/*
 function extractHostnameAndPort(url) { // TEMP HERE
     console.log("hostname from: " + url);
     let hostname;
@@ -337,6 +355,7 @@ function extractHostnameAndPort(url) { // TEMP HERE
     console.log("hostname: " + hostname);
     return hostname;
 }
+*/
 function get_localsite_root3() { // Also in two other places
 //alert("call localsite_repo");
             if (localsite_repo3) { // Intensive, so allows to only run once
@@ -734,7 +753,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       link.rel = 'stylesheet';
       link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
       head.appendChild(link);
-  }()
+    }();
 
     includeCSS3(theroot + 'css/leaflet.icon-material.css',theroot);
     
@@ -746,14 +765,16 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         loadScript(theroot + 'js/d3.v5.min.js', function(results) {
           loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
             // HACK - call twice so rollovers work.
-              refreshBubbleWidget();
-              setTimeout( function() {
+              //refreshBubbleWidget();
+              //alert("go")
+
+              // Instead, called from naics.js
+              //displayImpactBubbles(1);
+              //setTimeout( function() {
                 
                 // No luck...
-              displayImpactBubbles(1);
-              //displayImpactBubbles(1);
-              //refreshBubbleWidget();
-            }, 1000 );
+                //displayImpactBubbles(1);
+              //}, 1000 );
           });
         });
       //}
