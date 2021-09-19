@@ -2,24 +2,27 @@
 
 # Local Industry Lists - Data Prep  
 
-The updates below will be used by the county industry lists on our [industry comparison page](https://model.earth/localsite/info/).  
+To prepare data for our [industry comparison page](https://model.earth/localsite/info/).  We are using [GitHub Actions](/community/projects/#github-actions) and a [Machine Learning](https://github.com/modelearth/machine-learning/) process that creates estimates for gaps in BLS data.  
 
-1. In the [Community-Data Repo](https://github.com/modelearth/community-data/), create a Python Pipeline similar to the [tree data pipeline](https://github.com/Public-Tree-Map/public-tree-map-data-pipeline) used by the [Public Tree Map](https://neighborhood.org/public-tree-map/).  
+NAICS CSV files have the following columns - [Sample File](https://github.com/modelearth/community-data/blob/master/us/state/GA/naics/GA_data_filled.csv)  
 
-2. Using logic from our [Google CoLab for exploring NAICS](https://colab.research.google.com/drive/1HLK4HIUMLlgTR524QoCKvfaNl-La48XU?usp=sharing), create a pipeline step that generates .csv files for the US and individual states using BLS data pulled from the [EPA's Flowsa API](https://github.com/USEPA/flowsa). Create 3 files per state and for the US. One for 2-digit naics, one for 4-digits and one for 6-digits.  Output .csv files with the following [simple column names](https://drive.google.com/drive/u/0/folders/1EoWDvNoaKO8xLclX4fr5exw83jJkkJIy):  
+- FIPS - Location (fips for county)  
+- NAICS - ActivityProducedBy (6-digit naics)  
+- Establishments - Other (Number of Extablishments)  
+- Employees - Employment FlowAmount (Number of Employees)  
+- Payroll - US Dollars (Annual Wages)
+- Population<br>
 
-	- Fips - Location (fips for county)  
-	- Naics - ActivityProducedBy (6-digit naics)  
-	- Employees - Employment FlowAmount (Number of Employees)  
-	- Wages - Money (Annual Wages)
-	- Firms - Other (Number of Extablishments)<br><br>  
+Another option described in the [Community-Data Repo](https://github.com/modelearth/community-data/) would be to create a Python Pipeline similar to the [tree data pipeline](https://github.com/Public-Tree-Map/public-tree-map-data-pipeline) used by the [Public Tree Map](https://neighborhood.org/public-tree-map/).  
+
+Using logic from our [Google CoLab for exploring NAICS in FLOWSA](https://colab.research.google.com/drive/1HLK4HIUMLlgTR524QoCKvfaNl-La48XU?usp=sharing), create a pipeline step that generates .csv files for the US and individual states using BLS data pulled from the [EPA's Flowsa API](https://github.com/USEPA/flowsa). Create 3 files per state and for the US. One for 2-digit naics, one for 4-digits and one for 6-digits.  Output .csv files with the following [simple column names](https://drive.google.com/drive/u/0/folders/1EoWDvNoaKO8xLclX4fr5exw83jJkkJIy):  
 
 
-3. Save [state data files](https://github.com/modelearth/community-data/tree/master/us/state) in the same folder structure as our prior process. The prior BEA data prep process resides at the bottom of the current page. Reuse existing [process for state folders](https://github.com/modelearth/community-data/tree/master/process/python/bea).
+Save [state data files](https://github.com/modelearth/community-data/tree/master/us/state) in the same folder structure as our prior process. The prior BEA data prep process resides at the bottom of the current page. Reuse existing [process for state folders](https://github.com/modelearth/community-data/tree/master/process/python/bea).
 
-4. For the entire US, output 3 similar files containing 2, 4 and 6-digit naics values in the folder called "all" located at [community-data/us/all](https://github.com/modelearth/community-data/tree/master/us/all).  
+For the entire US, output 3 similar files containing 2, 4 and 6-digit naics values in the folder called "all" located at [community-data/us/all](https://github.com/modelearth/community-data/tree/master/us/all).  
 
-5. Update this [USEEIO_indicators.ipynb Python](https://github.com/modelearth/io/blob/master/charts/bubble/data/USEEIO_indicators.ipynb) used to generate indicators\_sectors\_GA and indicators\_sectors to use the USEEIO 2.0 API.  
+Update this [USEEIO_indicators.ipynb Python](https://github.com/modelearth/io/blob/master/charts/bubble/data/USEEIO_indicators.ipynb) used to generate indicators\_sectors\_GA and indicators\_sectors to use the USEEIO 2.0 API.  
 
 ## Using Machine Learning to Fill Gaps
 
