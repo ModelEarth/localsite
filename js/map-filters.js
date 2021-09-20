@@ -2265,6 +2265,9 @@ function hashChanged() {
         if (theStateNameLowercase == "georgia") {
         	imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
         }
+        if (theStateName.length == 0) {
+        	imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
+        }
         let imageUrl_scr = "url(" + imageUrl + ")";
         $("#hero-landscape-image").css('background-image', imageUrl_scr);
 

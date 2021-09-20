@@ -72,7 +72,17 @@ function promisesReady(values) { // Wait for
 document.addEventListener('hashChangeEvent', function (elem) {
     refreshNaicsWidget();                    
 }, false);
+
+// INIT
 let priorHash_naicspage = {};
+if (typeof hash == 'undefined') {
+    let hash = getHash(); // Allows changes in refreshNaicsWidget to be available.
+}
+if (typeof hiddenhash == 'undefined') {
+    let hiddenhash = {};
+}
+refreshNaicsWidget();
+
 function refreshNaicsWidget() {
     //alert("refreshNaicsWidget")
     let hash = getHash(); // Includes hiddenhash
@@ -80,7 +90,6 @@ function refreshNaicsWidget() {
         //alert("hash.geo " + hash.geo);
         showIndustryTabulatorList(0);
     }
-
     priorHash_naicspage = getHash();
 }
 

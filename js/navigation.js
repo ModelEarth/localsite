@@ -60,7 +60,7 @@ $(document).ready(function(){
 			$("#sidecolumn").hide();
 			$("#showSide").show();
 		} else {
-			$("#showSide").css("opacity",".4");
+			$("#showSide").hide();
 			$("#sidecolumn").show();
 			let headerFixedHeight = $("#headerFixed").height();
 			$('#sidecolumnContent').css("top",headerFixedHeight + "px");
@@ -90,7 +90,7 @@ $(document).ready(function(){
 	// TO DO: Add support for custom headerpath
 
  	} else {
- 		let showLeftIcon = false;
+ 		
  		$(".headerOffset").show();
 		$("#headeroffset").show();
 		$(".headerOffset").show();
@@ -109,6 +109,7 @@ $(document).ready(function(){
 		if (param.header) headerFile = param.header;
 		
 		$(document).ready(function () {
+			let showLeftIcon = false;
 			$("#local-header").load(headerFile, function( response, status, xhr ) {
 
 					// BUG - Not header.html is not always ready in DOM yet, add a loop.
@@ -343,18 +344,18 @@ $(document).ready(function(){
 					}
 				}, 1000);
 
-
 				activateSideColumn();
 
-			}); // End $("#header").load
-		}); 
+				if (location.host.indexOf('localhost') >= 0) {
+					showLeftIcon = true;
+				}
+				if (showLeftIcon) {
+					$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:108px'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
+		 		}
 
-		if (location.host.indexOf('localhost') >= 0) {
-			showLeftIcon = true;
-		}
-		if (showLeftIcon) {
-			$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:108px'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
- 		}
+			}); // End $("#header").load
+
+		});
 	}
 
 	/*
