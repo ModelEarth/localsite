@@ -18,8 +18,8 @@ let stateAbbr;
 let initialPageLoad = true;
 
 if (hash.geo){
-    let =hash.geo.split("US")[1]   
-    if (fip.startsWith("0")){
+    let fip = hash.geo.split("US")[1]   
+    if (fip.startsWith("0")) {
         dataObject.stateshown = hash.geo.split("US0")[1]
     } else {
         dataObject.stateshown = hash.geo.split("US")[1]

@@ -1568,6 +1568,9 @@ function thumbClick(show,path) {
 	let hash = getHashOnly(); // Not hiddenhash
 	let priorShow = hash.show;
 	hash.show = show;
+	if (!hash.state && param.state) {
+		hash.state = param.state; // At least until states are pulled from geo values.
+	}
 	delete hash.cat;
 	delete hash.naics;
 	delete hash.m; // Birdseye view
