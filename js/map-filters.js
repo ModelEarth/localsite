@@ -2262,7 +2262,7 @@ function hashChanged() {
         let theStateNameLowercase = theStateName.toLowerCase();
 
         let imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/" + theStateNameLowercase.replace(/\s+/g, '-') + ".jpg";
-        if (stateAbbr == "GA") {
+        if (theStateNameLowercase == "georgia") {
         	imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
         }
         let imageUrl_scr = "url(" + imageUrl + ")";
