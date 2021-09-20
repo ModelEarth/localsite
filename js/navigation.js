@@ -216,8 +216,7 @@ $(document).ready(function(){
 				 		console.log(".earth display")
 				 	}
 
-				 	if (location.host.indexOf('model.earth') >= 0) { // Since above is not detecting model.earth
-				 		console.log("model.earth found")
+				 	if (location.host.indexOf('model.earth') >= 0) { // Since above might not be detecting model.earth, probably is now.
 				 		showLeftIcon = true;
 				 	}
 
