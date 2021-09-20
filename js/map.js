@@ -3062,9 +3062,6 @@ function renderMapShapes(whichmap, hash, attempts) {
         $("#geomap").width("700px");
         $(".geoListHolder").show();
         url = local_app.modelearth_root() + "/topojson/countries/us-states/" + stateAbbr + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
-        if (stateAbbr == "GA") {
-          url = "/apps/img/hero/state/GA/GA-hero.jpg";
-        }
         topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + countyTopoTerm;
 
         //url = local_app.modelearth_root() + "/opojson/countries/us-states/GA-13-georgia-counties.json";
