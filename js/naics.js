@@ -94,6 +94,12 @@ console.log("dataObject.stateshown: " + dataObject.stateshown);
 
 // INIT
 let priorHash_naicspage = {};
+if (typeof hash == 'undefined') {
+    let hash = getHash(); // Allows changes in refreshNaicsWidget to be available.
+}
+if (typeof hiddenhash == 'undefined') {
+    let hiddenhash = {};
+}
 refreshNaicsWidget();
 //loadNationalIfNoState(); // Caused duplicate call to applyIO when using param.state
 
@@ -112,8 +118,8 @@ document.addEventListener('hashChangeEvent', function (elem) {
  }, false);
 
 function refreshNaicsWidget() {
-    console.log("refreshNaicsWidget")
-    let hash = getHash(); // Includes hiddenhash
+    //alert("refreshNaicsWidget hiddenhash.naics: " + hiddenhash.naics)
+    hash = getHash(); // Includes hiddenhash
     if (hash.show == "undefined") { // To eventually remove
         delete hash.show; // Fix URL bug from indicator select hamburger menu
         updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
@@ -124,15 +130,16 @@ function refreshNaicsWidget() {
     //hash = mix(param,hash); // Add include file's param values.
 
 
-    
-    if (hash.naics != priorHash_naicspage.naics) { // IF NAICS, AVOID THEME NAICS (from show) 
-
-    } else if (hash.show != priorHash_naicspage.show) { // GET NAICS BASED ON THEME (recycing, bioeconomy, etc.)
+    //alert("refreshNaicsWidget " + typeof hash.naics + " " + typeof priorHash_naicspage.naics)
+    if (hash.show != priorHash_naicspage.show) { // GET NAICS BASED ON THEME (recycing, bioeconomy, etc.)
         // Initial load
+        //alert("hash.show " + hash.show)
         getNaics_setHiddenHash2(hash.show); // Sets hiddenhash.naics for use by other widgets.
 
         // Get the hash again - hiddenhash.naics is set in getNaics_setHiddenHash2
         hash = getHash(); // Get new hiddenhash
+    } else if (hash.naics != priorHash_naicspage.naics) { // IF NAICS, AVOID THEME NAICS (from show) 
+        //alert("hash.naics " + hash.naics);
     } else if (hash.state != priorHash_naicspage.state) {
         // Not working yet
         //getNaics_setHiddenHash2(hash.show); // Show the state name above naics list.
@@ -193,6 +200,7 @@ function refreshNaicsWidget() {
         }
         loadIndustryData(hash);
         hash.naics = hiddenhash.naics;
+        //alert("before " + hash.naics);
     }
     if (loadNAICS==false && (initialPageLoad || hash.show != priorHash_naicspage.show)) {
         applyIO("");
@@ -203,6 +211,7 @@ function refreshNaicsWidget() {
     }
 
     priorHash_naicspage = getHash();
+    //alert("afterr " + priorHash_naicspage.naics);
     // priorHash_naicspage = mix(getHash(),hash); // So we include changes above.
 }
 
@@ -1565,10 +1574,6 @@ function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value)
 }
 
-
-if (typeof hiddenhash == 'undefined') {
-    var hiddenhash = {};
-}
 function applyIO(naics) {
     console.log("applyIO with naics: " + naics);
     //alert("applyIO with naics: " + naics);

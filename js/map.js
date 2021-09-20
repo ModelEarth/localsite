@@ -1366,7 +1366,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.dataset =  local_app.custom_data_root() + "360/GeorgiaPowerSites.csv";
 
       } else if (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills") { // recycling-processors
-        if (!param.state || param.state == "GA") {
+        if (!hash.state || hash.state == "GA") {
           dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
           dp.googleDocID = "1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY";
           if (show == "transfer") {
@@ -3062,6 +3062,9 @@ function renderMapShapes(whichmap, hash, attempts) {
         $("#geomap").width("700px");
         $(".geoListHolder").show();
         url = local_app.modelearth_root() + "/topojson/countries/us-states/" + stateAbbr + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
+        if (stateAbbr == "GA") {
+          url = "/apps/img/hero/state/GA/GA-hero.jpg";
+        }
         topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + countyTopoTerm;
 
         //url = local_app.modelearth_root() + "/opojson/countries/us-states/GA-13-georgia-counties.json";

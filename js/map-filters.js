@@ -613,7 +613,6 @@ function filterClickLocation(loadGeoTable) {
         }
         updateHash({"mapview":""});
 	} else { // OPEN MAP FILTER
-		//alert("Open map filter")
 		let hash = getHash();
 		if (hash.mapview == "country") {
 			$("#geoPicker").show(); // Required for map to load
@@ -631,12 +630,12 @@ function filterClickLocation(loadGeoTable) {
 				goHash({"mapview":"state"});
 			}
 		}
+		$("#geoPicker").show();
+		$("#filterLocations").show();
 		$(".locationTabText").text("Locations");
 		$("#topPanel").hide();
-		
         $("#showLocations").show();
 		$("#hideLocations").hide();
-		$("#filterLocations").show(); // Than we need to load the state.
 		locationFilterChange("counties");
 
 		if (hash.geo) {
@@ -1567,6 +1566,7 @@ function displayHexagonMenu(layerName,siteObject) {
 }
 function thumbClick(show,path) {
 	let hash = getHashOnly(); // Not hiddenhash
+	let priorShow = hash.show;
 	hash.show = show;
 	delete hash.cat;
 	delete hash.naics;
@@ -1575,12 +1575,14 @@ function thumbClick(show,path) {
 		var hashString = decodeURIComponent($.param(hash));
 		window.location = "/localsite/" + path + "#" + hashString;
 	} else { // Remain in current page
-        delete hiddenhash.show;
-        delete hiddenhash.naics;
-        delete param.show;
-        if (typeof params != 'undefined') {
-            delete params.show;
-        }
+		if (show != priorShow) {
+	        delete hiddenhash.show;
+	        delete hiddenhash.naics;
+	        delete param.show;
+	        if (typeof params != 'undefined') {
+	            delete params.show;
+	        }
+	    }
 		$(".bigThumbMenuContent").removeClass("bigThumbActive");
 		$(".bigThumbMenuContent[show='" + show +"']").addClass("bigThumbActive");
 		goHash(hash);
@@ -2260,6 +2262,9 @@ function hashChanged() {
         let theStateNameLowercase = theStateName.toLowerCase();
 
         let imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/" + theStateNameLowercase.replace(/\s+/g, '-') + ".jpg";
+        if (stateAbbr == "GA") {
+        	imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
+        }
         let imageUrl_scr = "url(" + imageUrl + ")";
         $("#hero-landscape-image").css('background-image', imageUrl_scr);
 
@@ -2283,7 +2288,10 @@ function hashChanged() {
 	}
     //Resides before geo
     if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state || hash.show != priorHash.show) {
-        let theStateName = $("#state_select").find(":selected").text();
+        let theStateName;
+        if ($("#state_select").find(":selected").value) {
+        	theStateName = $("#state_select").find(":selected").text();
+        }
         if (theStateName != "") {
         	$(".statetitle").text(theStateName);
         	$(".regiontitle").text(theStateName);
@@ -2302,17 +2310,19 @@ function hashChanged() {
             $(".regiontitle").text("United States");
             $(".locationTabText").text("United States");
         }
+
         if(!hash.regiontitle) {
             //alert("no hash.regiontitle")
             delete hiddenhash.loctitle;
             delete hiddenhash.geo;
             //delete param.geo;
             $(".regiontitle").text("");
-            // Allows full "United States" to be included from above.
-            if (hash.show) {
-                $(".region_service").text($(".locationTabText").text() + " - " + hash.show.toTitleCase());
+            // Could add full "United States" from above. Could display longer "show" manufacing title.
+            if (hash.show && local_app.loctitle) {
+                $(".region_service").text(local_app.loctitle + " - " + hash.show.toTitleCase());
+            } else if (hash.show) {
+                $(".region_service").text(hash.show.toTitleCase());
             } else {
-                //$(".region_service").text($(".locationTabText").text());
                 $(".region_service").text("Top " + $(".locationTabText").text() + " Industries");
             }
         } else {
