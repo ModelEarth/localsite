@@ -149,6 +149,7 @@ function refreshNaicsWidget() {
 
     let loadNAICS = false;
     // The following will narrow the naics to the current location
+    
     if (hash.regiontitle != priorHash_naicspage.regiontitle) {
         if (!hash.regiontitle) {
             if(!hash.geo) {
@@ -171,8 +172,9 @@ function refreshNaicsWidget() {
         loadNAICS = true;
     } else if (hash.geo != priorHash_naicspage.geo) {
         loadNAICS = true;
-    } else if (hash.naics != priorHash_naicspage.naics) {
+    } else if ((hash.naics != priorHash_naicspage.naics) && hash.naics.indexOf(",") > 0) { // Skip if only one naics
         loadNAICS = true;
+        alert("test " + hash.naics.indexOf(","))
     } else if (hash.catsize != priorHash_naicspage.catsize) {
         loadNAICS = true;
     } else if (hash.catsort != priorHash_naicspage.catsort) {
@@ -188,7 +190,23 @@ function refreshNaicsWidget() {
     }
     */
 
+    if ((hash.naics != priorHash_naicspage.naics) && hash.naics.indexOf(",") < 0) {
+        //if (!hash.indicators) {
+            //param.indicators = "ACID,CCDD,CMSW,CRHW,ENRG,ETOX,EUTR,GHG,HAPS,HCAN,HNCN,HRSP,HTOX,JOBS,LAND,MNRL,NNRG,OZON,PEST,RNRG,SMOG,VADD,WATR";
+            //hiddenhash.indicators = "ACID,CCDD,CMSW,CRHW,ENRG,ETOX,EUTR,GHG,HAPS,HCAN,HNCN,HRSP,HTOX,JOBS,LAND,MNRL,NNRG,OZON,PEST,RNRG,SMOG,VADD,WATR";
+            hiddenhash.indicators = "ACID,CCDD,CMSW,CRHW,ENRG,ETOX,EUTR,GHG,HAPS,HCAN,HNCN,HRSP,HTOX,JOBS,LAND,MNRL,NNRG,OZON,PEST,RNRG,SMOG,VADD,WATR";
+        
+        //}
+    }
+    alert("naics " + hash.naics)
     if (loadNAICS) {
+        if (hash.state && hash.naics.indexOf(",") < 0) { // Hide when viewing just 1 naics within a state.
+            $("#industryListHolder").hide();
+            $("#industryDetail").show();
+        } else {
+            $("#industryListHolder").show();
+            $("#industryDetail").hide();
+        }
         if (!hash.catsort) {
             hash.catsort = "payann";
         }
@@ -201,6 +219,9 @@ function refreshNaicsWidget() {
         loadIndustryData(hash);
         hash.naics = hiddenhash.naics;
         //alert("before " + hash.naics);
+    } else {
+        $("#industryListHolder").hide();
+        $("#industryDetail").show();
     }
     if (loadNAICS==false && (initialPageLoad || hash.show != priorHash_naicspage.show)) {
         applyIO("");
@@ -375,7 +396,7 @@ function populateTitle(showtitle,showtab) {
     if (hiddenhash.loctitle) {
         showtitle = hiddenhash.loctitle + " - " + showtitle;
     } else if (hash.state) {
-        $("#state_select").val(hash.state);
+        $("#state_select").val(hash.state.toUpperCase().split(",")[0]);
         let thestate = $("#state_select").find(":selected").text();
         hiddenhash.loctitle = thestate;
 
@@ -395,16 +416,17 @@ function populateTitle(showtitle,showtab) {
 
 
 
-// POORLY DESIGNED - No need to load all 3 naics datasets for state.
+// NOT OPTIMALLY DESIGNED - No need to load all 3 naics datasets for state.
 // Calls promisesReady when completed.
 function loadIndustryData(hash) {
     console.log("loadIndustryData");
     let stateAbbr;
-    if (hash.state && hash.state.length == 2) {
+    if (hash.state && hash.state.length >= 2) {
         stateAbbr = hash.state.toUpperCase();
+        stateAbbr = stateAbbr.split(",")[0];
     }
     $("#econ_list").html("<img src='" + local_app.localsite_root() + "img/icon/loading.gif' style='margin:40px; width:120px'><br>");
-    
+
     // HACK BUGBUG - Until we have a path to data for entire country.
     if(!stateAbbr) {
         stateAbbr = "GA";
@@ -416,8 +438,8 @@ function loadIndustryData(hash) {
         //alert("update for no state");
         delete hiddenhash.naics;
         delete hash.naics;
-        console.log("call applyIO when no stateAbbr")
-        alert("Load national, no naics stateAbbr " + stateAbbr);
+        //console.log("call applyIO when no stateAbbr")
+        //alert("Load national, no naics stateAbbr " + stateAbbr);
         //applyIO(""); // Causes loop
     } else {
         //alert("stateAbbr1: " + stateAbbr);
@@ -444,7 +466,7 @@ function promisesReady(values) {
     //let hash = getHash();
     let hash = values[9];
     console.log("promisesReady - promises loaded")
-    $("#industryListHolder").show();
+    //$("#industryListHolder").show();
     d3.csv(local_app.community_data_root() + "us/id_lists/state_fips.csv").then( function(consdata) {
         var filteredData = consdata.filter(function(d) {
             if (d["FIPS"]==String(dataObject.stateshown)) {
@@ -1576,8 +1598,14 @@ function getKeyByValue(object, value) {
 
 function applyIO(naics) {
     console.log("applyIO with naics: " + naics);
-    //alert("applyIO with naics: " + naics);
-    
+
+    if (!hash.indicators) {
+        // After flicer is fixed:
+        //hash.indicators = "ACID,ENRG,ETOX,EUTR,GHG,HTOX,JOBS,LAND,OZON,PEST,RNRG,SMOG,VADD,WATR";
+
+        hash.indicators = "ACID,ETOX,EUTR,GHG,HTOX,JOBS,LAND,OZON,PEST,SMOG,VADD,WATR";
+    }
+
     //alert("hiddenhash.naics: " + hiddenhash.naics);
     /*
     var modelID = 'USEEIO';
@@ -1662,6 +1690,7 @@ function applyIO(naics) {
     if (hash.indicators) {
         indicators = hash.indicators;
         hiddenhash.indicators = hash.indicators;
+        //alert("yes " + indicators)
     }
 
     //alert("indicators " + indicators);
@@ -1750,10 +1779,12 @@ function applyIO(naics) {
         endpoint: '/io/build/api',
         model: modelID,
         asJsonFiles: true,
+
     });
     var ioGrid = useeio.ioGrid({
         model: model,
         selector: '#iogrid',
+        indicators: indicatorCodes,
     });
     config.withDefaults({
         count: 20,

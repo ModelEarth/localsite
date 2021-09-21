@@ -49,12 +49,12 @@ Reactivate once widget widths fixed
 				settings
 				</span>
 			</div>
-			<select id="catsort" class="picklist" onchange="goHash({'catsort':this.value});">
+			<select id="catsort" class="picklist" onchange="goHash({'catsort':this.value});" style="display:none">
 	          <option value="payann" selected>By Annual Payroll</option>
 	          <option value="emp" >By Employee Count</option>
 	          <option value="estab">By Establishments</option>
 	        </select>
-	        <select id="catsize" class="picklist" onchange="goHash({'catsize':this.value});">
+	        <select id="catsize" class="picklist" onchange="goHash({'catsize':this.value});" style="display:none">
 	          <option value="2">Sectors - 2 digits</option>
 	          <!--option value="2">Subsectors - 3 digits</option-->
 	          <option value="4">Industry Group - 4 digits</option>
