@@ -198,7 +198,7 @@ function refreshNaicsWidget() {
         
         //}
     }
-    alert("naics " + hash.naics)
+    //alert("naics " + hash.naics)
     if (loadNAICS) {
         if (hash.state && hash.naics.indexOf(",") < 0) { // Hide when viewing just 1 naics within a state.
             $("#industryListHolder").hide();
