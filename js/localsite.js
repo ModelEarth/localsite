@@ -704,11 +704,16 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     if (param.display == "everything") {
 
       loadScript(theroot + '../io/build/lib/useeio_widgets.js', function(results) {
-        loadScript(theroot + 'js/naics.js', function(results) {
-          //if(!param.state) {
-            //applyIO("");
-          //}
-        });
+        if (param.omit_old_naics == "true") {
+          loadScript(theroot + 'js/naics2.js', function(results) {
+          });
+        } else {
+          loadScript(theroot + 'js/naics.js', function(results) {
+            //if(!param.state) {
+              //applyIO("");
+            //}
+          });
+        }
       });
     }
 

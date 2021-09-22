@@ -591,11 +591,12 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 	padding: 8px;
 	padding-top: 8px;
 	position: fixed;
-	z-index: 99999;
+	z-index: 10000;
 	pointer-events: auto;
 	cursor: pointer;
 
 	padding-right: 6px;
+	margin-top:2px;
 	margin-left:-12px;
 	border:1px solid #aaa;
 	background-color: #fff;

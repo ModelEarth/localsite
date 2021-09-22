@@ -18,60 +18,60 @@ let industries = d3.map(); // Populated in promises by industryTitleFile
 //let industryTitleFile = local_app.community_data_root() + "us/state/" + stateAbbr + "/industries_state" + stateID + "_naics6_state_all.tsv";
 
 let industryTitleFile = "lookup/6-digit_2012_Codes.csv"; // Source: https://www.census.gov/eos/www/naics/downloadables/downloadables.html
-let industryLocDataFile = local_app.community_data_root() + "industries/naics/US/country/US-2021-Q1-naics-6-digits.csv";
+let industryLocDataFile = getIndustryLocFileString(6);
 
 // TO DO: Initially 6-digit naics. Store naics when number changes to 2 and 4 digit to avoid reloading file.
 // TO DO: Put a promise on just the industries
-var promises = [
-    // GET 2 DATASETS
-	d3.csv(industryTitleFile, function(d) {
-	    industries.set(d.id, d.title);
-	    return d;
-	}),
-	d3.csv(industryLocDataFile)
-]
-Promise.all(promises).then(promisesReady);
-function promisesReady(values) { // Wait for 
+function callPromises(industryLocDataFile) {
+    let promises = [
+        // GET 2 DATASETS
+    	d3.csv(industryTitleFile, function(d) {
+    	    industries.set(d.id, d.title);
+    	    return d;
+    	}),
+    	d3.csv(industryLocDataFile)
+    ]
+    Promise.all(promises).then(promisesReady);
+    function promisesReady(values) { // Wait for 
 
-	localObject.industries = values[0]; // NAICS industry titles
+    	localObject.industries = values[0]; // NAICS industry titles
 
-	// TO DO: Append here for multiple states
-  	localObject.industryCounties = values[1]; // Exceeds 40,000
+    	// TO DO: Append here for multiple states
+      	localObject.industryCounties = values[1]; // Exceeds 40,000
 
-    // Add titles to 
+        // Add titles to 
 
-	//localObject.locList = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
-	  
-	// Make element key always lowercase
-	//dp.data_lowercase_key;
+    	//localObject.locList = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
+    	  
+    	// Make element key always lowercase
+    	//dp.data_lowercase_key;
 
-	//processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
+    	//processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
 
-    //alert(fips) // 13189,13025,13171
-    //fips = [13189,13025,13171]; // TEMP
-    //fips = ["US13189","US13025","US13171"];
+        //alert(fips) // 13189,13025,13171
+        //fips = [13189,13025,13171]; // TEMP
+        //fips = ["US13189","US13025","US13171"];
 
-    fips = [];
-    let hash = getHash();
-    if (hash.geo) {
-        fips = hash.geo.replace(/US/g,'').split(","); // Remove US from geo values to create array of fips.
+        fips = [];
+        let hash = getHash();
+        if (hash.geo) {
+            fips = hash.geo.replace(/US/g,'').split(","); // Remove US from geo values to create array of fips.
+        }
+
+        topRatesInFips(localObject, fips); // Renders header and processes county values
+
+    	console.log("localObject.industries length " + localObject.industries.length);
+    	console.log("localObject.industryCounties length " + localObject.industryCounties.length);
+
+    	// Returns Logging
+    	//alert(industries.get("113310"));
+
+        showIndustryTabulatorList(0);
+
+        // This code will be removed
+    	//displayIndustryList(localObject); 
     }
-    topRatesInFips(localObject, fips); // Renders header and processes county values
-
-	console.log("localObject.industries length " + localObject.industries.length);
-	console.log("localObject.industryCounties length " + localObject.industryCounties.length);
-
-	// Returns Logging
-	//alert(industries.get("113310"));
-
-    showIndustryTabulatorList(0);
-
-	displayIndustryList(localObject); 
 }
-
-document.addEventListener('hashChangeEvent', function (elem) {
-    refreshNaicsWidget();                    
-}, false);
 
 // INIT
 let priorHash_naicspage = {};
@@ -82,10 +82,19 @@ if (typeof hiddenhash == 'undefined') {
     let hiddenhash = {};
 }
 refreshNaicsWidget();
+document.addEventListener('hashChangeEvent', function (elem) {
+    refreshNaicsWidget();                    
+}, false);
+
+
+function getIndustryLocFileString(catsize) {
+    return local_app.community_data_root() + "industries/naics/US/country/US-2021-Q1-naics-" + catsize + "-digits.csv";
+}
 
 function refreshNaicsWidget() {
     //alert("refreshNaicsWidget")
     let hash = getHash(); // Includes hiddenhash
+    if (!hash.catsize) hash.catsize = 6;
     let loadNAICS = false;
     // The following will narrow the naics to the current location
     if (hash.regiontitle != priorHash_naicspage.regiontitle) {
@@ -112,7 +121,7 @@ function refreshNaicsWidget() {
         loadNAICS = true;
     } else if ((hash.naics != priorHash_naicspage.naics) && hash.naics.indexOf(",") > 0) { // Skip if only one naics
         loadNAICS = true;
-        alert("test " + hash.naics.indexOf(","))
+        //alert("test " + hash.naics.indexOf(","))
     } else if (hash.catsize != priorHash_naicspage.catsize) {
         loadNAICS = true;
     } else if (hash.catsort != priorHash_naicspage.catsort) {
@@ -120,15 +129,27 @@ function refreshNaicsWidget() {
     }
 
 
-    if (hash.geo != priorHash_naicspage.geo) {
-        //alert("hash.geo " + hash.geo);
-        loadNAICS = true;
-    }
     if (loadNAICS == true) {
-        showIndustryTabulatorList(0);
+        if (hash.state && hash.naics && hash.naics.indexOf(",") < 0) { // Hide when viewing just 1 naics within a state.
+            $("#industryListHolder").hide();
+            $("#industryDetail").show();
+        } else {
+            $("#industryListHolder").show();
+            $("#industryDetail").hide();
+        }
+
+        let industryLocDataFile = getIndustryLocFileString(hash.catsize);
+        d3.csv(industryLocDataFile).then( function(county_data) {
+            //alert("load it " + hash.catsize);
+            //showIndustryTabulatorList(0);
+            callPromises(industryLocDataFile);
+        });
 
         // This gets called from else where:
         //displayIndustryList(localObject); 
+    } else {
+        $("#industryListHolder").hide();
+        $("#industryDetail").hide();
     }
     priorHash_naicspage = getHash();
 }
@@ -167,7 +188,6 @@ function showIndustryTabulatorList(attempts) {
         // For fixed header, also allows only visible rows to be loaded. See "Row Display Test" below.
         // maxHeight:"100%",
 
-
         // More filter samples
         // https://stackoverflow.com/questions/2722159/how-to-filter-object-array-based-on-attributes
         industrytable = new Tabulator("#tabulator-industrytable", {
@@ -197,6 +217,7 @@ function showIndustryTabulatorList(attempts) {
             dataLoaded: function(data) {
 
                 //var newDiv= document.createElement('div');
+                $("#totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
                 var totalcount_div = Object.assign(document.createElement('div'),{id:"totalcount",style:"float:left"})
                 $("#tabulator-industrytable-count").append(totalcount_div);
 
@@ -344,6 +365,10 @@ function topRatesInFips(dataSet, fips) {
     }
     //alert(catFilter['estab'])
 
+    // This code will be removed
+
+    // This code will be removed
+    /*
     // TABLE HEADER ROW
     //alert("statelength " + statelength + " fips.length: " + fips.length);
     // && statelength != fips.length
@@ -378,6 +403,7 @@ function topRatesInFips(dataSet, fips) {
     
     // Write header to browser
     $("#sector_list").prepend(text);
+    */
 
     let naicsFoundCount = 0;
     let naicsNotFoundCount = 0;
@@ -463,10 +489,6 @@ function topRatesInFips(dataSet, fips) {
     console.log(dataSet.industries);
     return;
 
-
-
-
-
     for (var j = 0; j < fips.length; j++) { 
         
         if(localObject.industryCounties.FIPS == fips[j]) {
@@ -485,7 +507,6 @@ function topRatesInFips(dataSet, fips) {
             } else {
                     rateInFips = rateInFips+0
                     estim[j]=parseFloat(0)
-
             }
         }
     }

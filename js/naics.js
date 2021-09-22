@@ -174,7 +174,6 @@ function refreshNaicsWidget() {
         loadNAICS = true;
     } else if ((hash.naics != priorHash_naicspage.naics) && hash.naics.indexOf(",") > 0) { // Skip if only one naics
         loadNAICS = true;
-        alert("test " + hash.naics.indexOf(","))
     } else if (hash.catsize != priorHash_naicspage.catsize) {
         loadNAICS = true;
     } else if (hash.catsort != priorHash_naicspage.catsort) {
@@ -200,7 +199,7 @@ function refreshNaicsWidget() {
     }
     //alert("naics " + hash.naics)
     if (loadNAICS) {
-        if (hash.state && hash.naics.indexOf(",") < 0) { // Hide when viewing just 1 naics within a state.
+        if (hash.state && hash.naics && hash.naics.indexOf(",") < 0) { // Hide when viewing just 1 naics within a state.
             $("#industryListHolder").hide();
             $("#industryDetail").show();
         } else {
@@ -221,7 +220,7 @@ function refreshNaicsWidget() {
         //alert("before " + hash.naics);
     } else {
         $("#industryListHolder").hide();
-        $("#industryDetail").show();
+        $("#industryDetail").hide();
     }
     if (loadNAICS==false && (initialPageLoad || hash.show != priorHash_naicspage.show)) {
         applyIO("");

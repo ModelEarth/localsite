@@ -25,6 +25,18 @@
 <div id="info-template">
 <!-- INFO TEMPLATE -->
 
+<div id="industryDetail" style="display:none">
+	<div class="contentX contentpadding">
+		<div style="float:right">
+			<a id="showIndustries" href="" class="btn btn-white" 
+			onclick="goHash({'naics':''});">Show Industry List</a>
+		</div>
+		<h1 id="industryDetailTitle" class="h1-home">
+			NAICS Industry
+		</h1>
+	</div>
+	<hr>
+</div>
 
 <div id="industryListHolder" style="display:none; border-bottom:1px solid #ccc; padding-top:0; padding-bottom:0">
 <section id="industries">
@@ -87,7 +99,7 @@
 			        </select>
 			        <div style="clear:both;margin-bottom:2px"></div>
 
-			        <div class="industry_filter_settings" style="display:none">
+			        <div class="industry_filter_settings" style="display:none" style="margin:10px 0 0 10px">
 				        <div class="state-view">
 				        	Choose a county or region above to view filter settings.
 				        </div>
@@ -364,7 +376,8 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
     border: 1px solid #ccc;
     width: 100px;
     padding: 20px;
-    margin-right: 20px;
+    margin-right: 15px;
+    margin-bottom: 15px;
     text-align: center
 }
 #impactIcons div.active {

@@ -136,7 +136,7 @@ function hashChangedMap() {
     console.log("Recenter map " + mapCenter)
 
 
-    loadMap1("hashChanged() in map.js new state " + hash.state, hash.show, dp);
+    loadMap1("hashChanged() in map.js new state(s) " + hash.state, hash.show, dp);
 
   } else if (hash.cat !== priorHashMap.cat) {
     loadMap1("hashChanged() in map.js new cat " + hash.cat, hash.show);
@@ -1215,7 +1215,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   let community_root = local_app.community_data_root();
   //let state_root = "/georgia-data/";
   //let state_root = local_app.custom_data_root();
-  let state_abbreviation = hash.state || "GA";
+  let state_abbreviation = hash.state.split(",")[0] || "GA";
 
   
   // Might use when height is 280px
@@ -1606,7 +1606,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
     if (!hash.state) {
       $(".locationTabText").text("Locations");
     } else {
-      $("#state_select").val(hash.state);
+      $("#state_select").val(hash.state.toUpperCase().split(",")[0]);
       $(".locationTabText").text($("#state_select").find(":selected").text());
       $(".locationTabText").attr("title",$("#state_select").find(":selected").text());
     }
@@ -2886,10 +2886,35 @@ function updateGeoFilter(geo) {
 //////////////////
 // CHOROPLETH MAP
 
-function styleShape(feature) { // Called for each topojson row
+/*
+function styleShape(feature) {
+    // Called for each topojson row
+    // console.log("feature.properties.COUNTYFP: " + feature.properties.COUNTYFP);
+    var fillColor = '#ff0000';
+    
+    // Hack - because region1 did not work like in did in maps/poverty
+    dp.data.forEach(function(datarow) { // For each county row from the region lookup table
+      if (datarow.county_num == feature.properties.COUNTYFP) {
+        //fillColor = color(datarow.io_region);
+      }
+    })
+    return {
+        weight: 1,
+        opacity: .5,
+        color: fillColor, // '#ccc', // 'white'
+        //dashArray: '3',
+        fillOpacity: 0.7,
+        fillColor: fillColor
+    };
+    
+}
+*/
+
+function styleShape(feature) { // Called FOR EACH topojson row
 
   let hash = getHash(); // To do: pass in as parameter
 
+  //alert(stateDataList);
   //console.log("feature ", feature)
 
   // console.log("feature.properties.COUNTYFP: " + feature.properties.COUNTYFP);
@@ -2914,8 +2939,7 @@ function styleShape(feature) { // Called for each topojson row
   } else if (hash.mapview == "country" && hash.state && hash.state.includes(stateID)) {
       fillColor = 'red';
       fillOpacity = .2;
-  }
-  return {
+  } return {
       weight: 1,
       opacity: .4,
       color: fillColor, // '#ccc', // 'white'
@@ -2953,7 +2977,16 @@ function renderMapShapes(whichmap, hash, attempts) {
   //alert("renderMapShapes state: " + hash.state + " attempts: " + attempts);
 
   loadScript(local_app.modelearth_root() + '/localsite/js/topojson-client.min.js', function(results) {
-    // Same as https://unpkg.com/topojson-client@3
+    
+    renderMapShapeAfterPromise(whichmap, hash, attempts);
+
+  });
+}
+
+function renderMapShapeAfterPromise(whichmap, hash, attempts) {
+
+
+  // Same as https://unpkg.com/topojson-client@3
 
     //alert(whichmap + " " + local_app.modelearth_root() + '/localsite/js/topojson-client.min.js');
     // Oddly, this is still reached when 404 returned by call to topojson-client.min.js above.
@@ -2996,8 +3029,7 @@ function renderMapShapes(whichmap, hash, attempts) {
     } else {
       $(".regionFilter").hide();
     }
-
-    $("#state_select").val(hash.state); // Used for lat lon fetch
+    $("#state_select").val(stateAbbr); // Used for lat lon fetch
 
 
     $("#geoPicker").show();
@@ -3067,7 +3099,7 @@ function renderMapShapes(whichmap, hash, attempts) {
         //url = local_app.modelearth_root() + "/opojson/countries/us-states/GA-13-georgia-counties.json";
         // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
       }
-  //}
+  
 
     req.open('GET', url, true);
     req.onreadystatechange = handler;
@@ -3511,6 +3543,10 @@ function renderMapShapes(whichmap, hash, attempts) {
                 $("#layerStringDiv").remove();
                 $("#locationFilterHolder").prepend("<div id='layerStringDiv' style='width:220px'>" + layerString + "<hr></div>");
               }
+
+              if (hash.mapview == "country") {
+                loadStateDataList(true); // New list
+              }
             }
         }
 
@@ -3646,8 +3682,87 @@ function renderMapShapes(whichmap, hash, attempts) {
       }
     }
   }
-  });
 }
 
+
+// To add:
+    // https://model.earth/beyond-carbon-scraper/scraped/us-carbon-emissions.json
+var stateDataList = [];
+function loadStateDataList(applyFilter) {
+  //alert("loading")
+  d3.text("https://model.earth/beyond-carbon-scraper/scraped/us-carbon-emissions.json").then(function(data) {
+      stateDataList = d3.csvParseRows(data);
+      console.log("loadHtmlTable - stateDataList row count: " + stateDataList.length);
+      //alert(stateDataList);
+
+        let theStateName = $("#state_select").find(":selected").text();
+        //alert("theStateName " + theStateName);
+        setTimeout( function() {
+          theStateName = $("#state_select").find(":selected").text();
+          if(!theStateName) { // Hack. We need to instead trigger when #state_select menu becomes available.
+            //theStateName = "Georgia"
+          }
+          displayStateDataList(theStateName);
+        }, 1000 ); // Allow time for state dropdown to load.
+  });
+}
+function statePhraseForList(stateRow, rowIndex, theStateName) {
+  return(stateRow[rowIndex].replace("[XX]" || "[XX's]", theStateName) )
+}
+function displayStateDataList(theStateName) {
+  console.log("displayStateData: " + theStateName);
+  if (theStateName.length == 0) {
+    //alert("test")
+    $("#about-profile").show();
+    $("#choose-counties").hide();
+    $("#dataDisplay").hide();
+    return;
+  }
+  $("#about-profile").hide();
+  $("#choose-counties").show();
+  $("#dataDisplay").show();
+
+  let rowcount = 0;
+  let dataRow = "";
+  
+  for(var i = 0; i < stateDataList.length; i++) {
+    rowcount++;
+    if (stateDataList[i][0]==theStateName) {
+      
+      dataRow += "<table id='resultsTable'>";
+      dataRow += "<tr><td><div style='float:left;font-size:24px;font-weight:400'>" + theStateName + " Clean Energy Progress</div><div style='float:right;font-size:11px'>Source: <a target='_blank' href='https://beyondcarbon.org'>BeyondCarbon.org</a></div></td></tr>"
+      dataRow += "<tr><td>" + statePhraseForList(stateDataList[i], 5, theStateName) + "</td></tr>"
+      dataRow += "<tr><td>Has " + theStateName + " committed to 100% clean energy? " + statePhrase(stateDataList[i], 1, theStateName) + "</td></tr>"
+      dataRow += "<tr><td>" + statePhraseForList(stateDataList[i], 2, theStateName)  + "</td></tr>"
+      dataRow += "<tr><td>Does " + theStateName + " have a goal for reducing carbon pollution across the entire economy? " + statePhrase(stateDataList[i], 3, theStateName)  + "</td></tr>"
+      dataRow += "<tr><td>Does " + theStateName + " have goals or incentives for electric vehicles? " + statePhrase(stateDataList[i], 4, theStateName) + "</td></tr>"
+      dataRow += "</table>";
+    }
+  }
+  //alert("rowcount " + rowcount);
+  //$(dataRow).insertAfter($("#dataHeader"));
+
+  $("#dataDisplay").html(dataRow);
+  //$("#dataHeader").html(dataRow);
+}
+
+
+
+$(document).on("click", "#show_county_colors", function(event) {
+  let hash = getHash();
+  let layerName = hash.state + " Counties";
+  overlays[layerName].eachLayer(function (layer) {  
+    //if(layer.feature.properties.COUNTYFP == '121') { // Fulton County
+      layer.setStyle({fillColor :'blue', fillOpacity:.5 }) 
+      // Or call a function:
+      // layer.setStyle(function...)
+    //}
+  });
+  //alert("done"); // Occurs before layers above appear.
+});
+
+
 console.log('end of localsite/js/map.js');
+//console.timeEnd("End of localsite/js/map.js: ");
+console.timeEnd("Processing time: ");
 

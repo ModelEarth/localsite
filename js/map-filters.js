@@ -81,9 +81,10 @@ $(".showSearch").removeClass("local");
 catArray = [];
 $(document).ready(function () {
 
+	// Gets overwritten
 	if (param.state) {
-	    $("#state_select").val(param.state);
-	  }
+	    $("#state_select").val(param.state.split(",")[0]);
+	}
 
 	//loadMarkupPage("intro.md", "introDiv", "_parent");
 	if (! ('webkitSpeechRecognition' in window) ) {
@@ -624,7 +625,7 @@ function filterClickLocation(loadGeoTable) {
 					currentStates.push(getKeyByValue(us_stateIDs, Number(geos[i].replace("US","").substring(0,2))));
 				}
 			}
-			if (currentStates.length > 0) {
+			if (currentStates.length > 0) { // Multiple states, use first one.
 				goHash({"mapview":"state","state":currentStates[0]});
 			} else {
 				goHash({"mapview":"state"});
@@ -676,6 +677,7 @@ function locationFilterChange(selectedValue,selectedGeo) {
     console.log("locationFilterChange: " + selectedValue + " " + selectedGeo);
     //$(".geoListHolder > div").hide();
     $(".geoListCounties").show();
+
     //showSearchClick(); // Display filters
     hideLocationFilters();
 
@@ -2090,9 +2092,11 @@ function hashChanged() {
 	populateFieldsFromHash();
 	productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 
+
 	if (hash.state) {
+		var stateAbbrev = hash.state.toUpperCase().split(",")[0];
 		// Apply early since may be used by changes to geo
-		$("#state_select").val(hash.state.toUpperCase());
+		$("#state_select").val(stateAbbrev);
 	} else {
         //$(".locationTabText").text("United States");
     }
@@ -2255,7 +2259,8 @@ function hashChanged() {
 				window.location = goModelEarth;
 			}
 		}
-		$("#state_select").val(hash.state);
+
+		$("#state_select").val(stateAbbrev);
 
         //let imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/georgia.jpg";
         //$("#hero-landscape-image").css('background-image', 'url(' + imageUrl + ')');
@@ -2502,7 +2507,7 @@ function hashChanged() {
 		loadMap1("hashChanged() in map-filters.js", hash.show);
 	} else if (hash.state && hash.state != priorHash.state) {
 		// Why are new map points not appearing
-		loadMap1("hashChanged() in map-filters.js new state " + hash.state, hash.show);
+		loadMap1("hashChanged() in map-filters.js new state " + stateAbbrev, hash.show);
 	}
 	*/
     $(".regiontitle").text(local_app.loctitle);
@@ -2520,8 +2525,8 @@ function hashChanged() {
 $(document).ready(function () {
 	let hash = getHash();
 	if (hash.state) {
-		$("#state_select").val(hash.state)
-		//$("#state_select option[value='NV']").prop('selected', true);
+		let stateAbbrev = hash.state.toUpperCase().split(",")[0];
+		$("#state_select").val(stateAbbrev);
 	}
 	if (hash.regiontitle) {
 		$("#region_select").val(hash.regiontitle)
