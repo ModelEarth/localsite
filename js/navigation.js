@@ -201,7 +201,7 @@ $(document).ready(function(){
 				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Neighborhood Modeling");
 				 		param.titleArray = ["neighbor","hood"]
-			  			param.headerLogo = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
+			  			param.headerLogoSmall = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
 			  			document.title = "Neighborhood.org - " + document.title
 			  			changeFavicon("/localsite/img/logo/partners/neighborhood-icon.png")
 			  			$('.neighborhood').css('display', 'inline');
