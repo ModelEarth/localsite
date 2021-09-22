@@ -1215,7 +1215,10 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   let community_root = local_app.community_data_root();
   //let state_root = "/georgia-data/";
   //let state_root = local_app.custom_data_root();
-  let state_abbreviation = hash.state.split(",")[0] || "GA";
+  let state_abbreviation = "GA";
+  if (hash.state) {
+    state_abbreviation = hash.state.split(",")[0];
+  }
 
   
   // Might use when height is 280px
