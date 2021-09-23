@@ -23,8 +23,8 @@ After a few minutes, you can view your fork at [[your account].github.io/apps](h
 2. Activate a webroot on your local computer at [http://localhost:8887](http://localhost:8887/)
 3. Then [clone the three forked repos](#clone) into the same local webroot folder.
 4. Copy the [base page folder](../../apps/base/) locally, change parameters and deploy your updates.
-5. Fetch upstream changes to your forked repos.
-6. Point a domain at your repos (optional)
+5. [Fetch upstream](#fetch-upstream) changes to your forked repos.
+6. [Point a domain](#domain) at your repos (optional)
 
 Here are details for the steps above...<br><br>
 
@@ -130,7 +130,9 @@ You can view hidden files by toggling Command+Shift+Dot. Note that .DS_Store wil
 To fix a conflict you may need delete the .DS_Store within the Github.com website.  
 
 
-## 5. Update your forked repos
+<section id="fetch-upstream"></section>
+
+## 5. Fetch upstream changes to your forked repos
 
 Occasionally merge in updates from parent repos by clicking "Fetch Upstream > Fetch and Merge" in GitHub.
 
@@ -147,6 +149,7 @@ In the old days you had to do the following:
 
 -->
 
+<section id="domain"></section>
 
 ## 6. Point a domain at your repos (optional)
 
