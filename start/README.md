@@ -1,5 +1,6 @@
 # Getting Started  
 
+[View Community Pages](../../apps/)  
 You can use these steps to create a website with free GitHub hosting  
 
 <!--
@@ -81,6 +82,10 @@ A static page should now be visible at [http://localhost:8887/localsite/](http:/
 Also clone the <a href='https://github.com/modelearth/io/'>io repo</a> into the same webroot to include the input-output widgets. [Learn more](../../../io/charts/)    
 
 Also clone the <a href='https://github.com/modelearth/apps/'>apps repo</a> if you are making a custom page.  
+
+To redirect into a repo, you can place an index.html file in your webroot with the following:  
+
+	<script language="JavaScript">window.location="localsite/"</script>
 
 
 ## 4. Deploy your updates

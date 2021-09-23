@@ -187,16 +187,22 @@ $(document).ready(function(){
 					 	} else {
 					 		document.title = "Georgia.org";
 					 	}
-				 		changeFavicon("/localsite/img/logo/states/GA-favicon.png")
+				 		changeFavicon("/localsite/img/logo/states/GA-favicon.png");
+
+				 		// BUGBUG - This needs to be css insert rather than being applied before README loads
 				 		$('.georgia').css('display', 'inline');
 				 		$('.georgia-hide').css('display', 'none');
-				 		if (location.host.indexOf('localhost') < 0) {
-				 			//$(".locationTab").hide(); // So we can test locally
-				 		}
-				 		//if (location.host.indexOf('georgia.org') >= 0) {
+				 		$('.georgiaorg-hide').css('display', 'none');
+				 		$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
+
+				 		// TEMP
+				 		setTimeout( function() {
+							$('.georgia').css('display', 'inline');
+				 			$('.georgia-hide').css('display', 'none');
 				 			$('.georgiaorg-hide').css('display', 'none');
-				 			$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
-				 		//}
+				 			$('#headerOffset').css('display', 'block');
+						}, 1500);
+
 				 	} else if (!Array.isArray(param.titleArray) && (param.startTitle == "Neighborhood.org" || location.host.indexOf('neighborhood.org') >= 0)) {
 				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Neighborhood Modeling");
@@ -354,7 +360,7 @@ $(document).ready(function(){
 
 			}); // End $("#header").load
 
-		});
+		}); // End doc ready
 	}
 
 	/*
