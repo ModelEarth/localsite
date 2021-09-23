@@ -18,27 +18,23 @@ You can use these steps to create a website with free GitHub hosting
 
 ### The following can be used to host a custom page within the "apps" repo
 
-First, fork the [localsite repo](https://github.com/modelearth/localsite), the [apps repo](https://github.com/modelearth/apps), and the [io repo](https://github.com/modelearth/io).  Turn on [GitHub Pages](#github-pages) for each repo.  
-Activate a webroot on your local computer at [http://localhost:8887/localsite/](http://localhost:8887localsite/) if you don't have one already.
-Then [clone the three repos](#clone) into the same local webroot folder. You can view your fork at [[your account].github.io/apps](https://modelearth.github.io/apps)<br><br> 
+1. First, fork the [localsite repo](https://github.com/modelearth/localsite), the [apps repo](https://github.com/modelearth/apps), and the [io repo](https://github.com/modelearth/io).  Turn on [GitHub Pages](#github-pages) for each repo.  
+After a few minutes, you can view your fork at [[your account].github.io/apps](https://modelearth.github.io/apps)  
+2. Activate a webroot on your local computer at [http://localhost:8887](http://localhost:8887/)
+3. Then [clone the three forked repos](#clone) into the same local webroot folder.
+4. Copy the [base page folder](../../apps/base/) locally, change parameters and deploy your updates.
+5. Fetch upstream changes to your forked repos.
+6. Point a domain at your repos (optional)
+
+Here are details for the steps above...<br><br>
 
 
 # Local Webroot Setup
 
-## 1. Activate a webroot folder on your computer
-
-The following will allow you to launch [http://localhost:8887/localsite/](http://localhost:8887/localsite/) to view multiple repos in the same webroot.
-
-Go to the folder where you'd like your webroot to reside and run the following to view pages on localhost:  
-Run this command to start localhost whenever you restart your computer.
-
-	python -m http.server 8887
-
-If that dose't work, here are more options for [activating your webroot](activate-webroot).
 
 <section id="github-pages"></section>
 
-## 2. Fork repos and turn on Github Pages 
+## 1. Fork repos and turn on Github Pages 
 
 Clone forks of the parent repos so you can review your changes online before submitting a pull request (PR).  
 Click the "Fork" button in the upper right of each of the following pages:   
@@ -56,6 +52,19 @@ Activate GitHub Pages for each of your forked repos by going to "Settings > Page
 Wait a few minutes for a new GitHub Pages site to become available at a link in the following format:
 
 https://[your account].Github.io/[repo name]  
+
+
+## 2. Activate a webroot folder on your computer
+
+The following will allow you to launch [http://localhost:8887/localsite/](http://localhost:8887/localsite/) to view multiple repos in the same webroot.
+
+Go to the folder where you'd like your webroot to reside and run the following to view pages on localhost:  
+Run this command to start localhost whenever you restart your computer.
+
+	python -m http.server 8887
+
+If that dose't work, here are more options for [activating your webroot](activate-webroot).
+
 
 <section id="clone"></section>
 
@@ -172,8 +181,7 @@ Edit online using [stackedit.io](https://stackedit.io/) and [Dillinger Markdown 
 ---
 <br>
 
-[Edit the page above in Github](https://github.com/modelearth/localsite/blob/master/start/README.md) - 
-[Edit in StackEdit](https://stackedit.io/app#providerId=githubWorkspace&owner=localsite&repo=localsite&branch=) - Click folder icon in upper right within StackEdit. ([Direct links are not yet available in StackEdit](https://community.stackedit.io/t/open-file-from-github-using-a-link/495))
+[Edit the page above in Github](https://github.com/modelearth/localsite/blob/master/start/README.md) - [Edit in StackEdit](https://stackedit.io/app#providerId=githubWorkspace&owner=localsite&repo=localsite&branch=) - Click folder icon in upper right within StackEdit. ([Direct links are not yet available in StackEdit](https://community.stackedit.io/t/open-file-from-github-using-a-link/495))
 
 
 
