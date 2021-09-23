@@ -18,72 +18,57 @@ You can use these steps to create a website with free GitHub hosting
 
 ### We'll help you create a new website repo, or a custom page within our "apps" repo
 
-First, clone the [apps repo](https://github.com/modelearth/apps), the [localsite repo](https://github.com/modelearth/localsite), and the [io repo](https://github.com/modelearth/io).  Place all three in the same local webroot folder.<br><br> 
+First, fork the [localsite repo](https://github.com/modelearth/localsite), the [apps repo](https://github.com/modelearth/apps), and the [io repo](https://github.com/modelearth/io).  Turn on GitHub Pages for each repo.  
+Activate a webroot on your local computer at [http://localhost:8887/localsite/](http://localhost:8887localsite/) if you don't have one already.
+Then [clone the three repos](#clone) into the same local webroot folder. You can view your fork at [[your account].github.io/apps](https://modelearth.github.io/apps)<br><br> 
 
 
 # Local Webroot Setup
 
 ## 1. Activate a webroot folder on your computer
 
-The following will allow you to launch [http://localhost:8887/localsite/](http://localhost:8887localsite/) to view multiple repos in the same webroot.
-
-WITH A PYTHON COMMAND:
+The following will allow you to launch [http://localhost:8887/localsite/](http://localhost:8887/localsite/) to view multiple repos in the same webroot.
 
 Go to the folder where you'd like your webroot to reside and run the following to view pages on localhost:  
 Run this command to start localhost whenever you restart your computer.
 
 	python -m http.server 8887
 
- Or run anywhere and include a path to your webroot. Change /Sites to your custom path.  
- You may be prompted to install XCode if this is your first use of Python 3.  
+If that dose't work, here are more options for [activating your webroot](activate-webroot).
 
- 	python3 -m http.server 8887 -d /Sites
+<section id="clone"></section>
 
-If the above do not work, you can also try:  
+## 2. Fork repos and turn on Github Page 
 
-	python -m SimpleHTTPServer 8887
+Clone forks of the parent repos so you can review your changes online before submitting a pull request (PR).  
+Click the "Fork" button in the upper right of each of the following pages:   
 
-If you receive the message: "This site can't provide a secure connection", [upgrade](https://www.freecodecamp.org/news/python-version-on-mac-update/) from Python 2.7 to 3+.
+[localsite repo](https://github.com/modelearth/localsite)
+[io repo](https://github.com/modelearth/io)
+[apps repo](https://github.com/modelearth/apps)
 
-MORE OPTIONS:  
+Activate GitHub Pages for each of your forked repos by going to "Settings > Pages" and choosing "main" (or master)
 
-ON A PC: [Install IIS](https://www.techwalla.com/articles/how-to-circumvent-mcafee-dlp) to view using http://localhost/  &nbsp; With this approach you'd avoid typing the port number.
+<div style="border:1px solid #ccc; padding:15px; display:inline-block; margin-bottom:20px">
+<img src="img/github-pages.png">
+</div>
 
+## 3. Clone your forked repos into your webroot
 
- WITH CHORME: Alternatively, you can install [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb?hl=en) to view and develop pages offline using http://localhost:8887 on your computer. Web Server for Chrome also allows you to [load a custom domain](https://medium.com/@jmatix/using-chrome-as-a-local-web-server-af04baffd581). Web Server for Chrome does not work as a Brave browser extension on Mac (as of December 2019), but you can add as a Chrome extension, then utilize from within Brave.
+Now go to [your list of forked repos](https://github.com/modelearth?tab=repositories) and clone the forked repos listed above.
 
- On a Mac, you can add a shorthand "localsite" command in your .bash_profile file. Change /Site to your webroot:
+To clone, click the green "Code" button followed by "Open in GitHub Desktop."
 
- 	alias localsite="python3 -m http.server 8887 -d /Site"
-
-## 2. Clone the "localsite" repo into your webroot 
-
-Place the <a href='https://github.com/modelearth/localsite/'>localsite repo</a> within the root of your local web folder, along with other repos that reference&nbsp;it, such as the [apps repo](https://github.com/modelearth/apps) and the [io repo](https://github.com/modelearth/io).  
-
-Fork any repo you intend to edit, such as the apps repo. (Click the Fork button in the upper right, then clone from your fork.) 
-
-Click the green "Code" button and "clone" the repos you don't plan to edit. (You can convert a clone to a fork later.)   
-
-Choose "Open with Github Desktop" to pull down using <a href="https://desktop.github.com/">GitHub Desktop</a>.  
-
-Save the file in the webroot folder you created in step 1.  
+Save the clone in the webroot folder you created in step 1.  
 
 A static page should now be visible at [http://localhost:8887/localsite/](http://localhost:8887/localsite/)  
-An industry impact widget is embedded on the page.  
-
-Also clone the <a href='https://github.com/modelearth/apps/'>apps repo</a> if you are making a custom entry page.  
 
 Also clone the <a href='https://github.com/modelearth/io/'>io repo</a> into the same webroot to include the input-output widgets. [Learn more](../../../io/charts/)    
 
+Also clone the <a href='https://github.com/modelearth/apps/'>apps repo</a> if you are making a custom page.  
 
-For the address search to work, you'll need to get a new Google Maps API key. You can get yours and enable it by following these instructions: [https://developers.google.com/maps/documentation/javascript/get-api-key](https://developers.google.com/maps/documentation/javascript/get-api-key)  
 
-When you get a key, set the google_api_key in localsite/map/auto/config.json
-<!--
-\_config.yml.
--->
-
-## 3. Deploy your updates
+## 4. Deploy your updates
 
 Deploy your updates using GitHub. If you are not a project collaborator, GitHub Desktop will prompt you to create a project fork on GitHub. Place a pull request when your updates are ready for review.  
 
