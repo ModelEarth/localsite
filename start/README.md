@@ -16,9 +16,9 @@ You can use these steps to create a website with free GitHub hosting
 	https://github.com/GeorgiaData/localsite/compare/master...modelearth:master
 -->
 
-### We'll help you create a new website repo, or a custom page within our "apps" repo
+### The following can be used to host a custom page within the "apps" repo
 
-First, fork the [localsite repo](https://github.com/modelearth/localsite), the [apps repo](https://github.com/modelearth/apps), and the [io repo](https://github.com/modelearth/io).  Turn on GitHub Pages for each repo.  
+First, fork the [localsite repo](https://github.com/modelearth/localsite), the [apps repo](https://github.com/modelearth/apps), and the [io repo](https://github.com/modelearth/io).  Turn on [GitHub Pages](#github-pages) for each repo.  
 Activate a webroot on your local computer at [http://localhost:8887/localsite/](http://localhost:8887localsite/) if you don't have one already.
 Then [clone the three repos](#clone) into the same local webroot folder. You can view your fork at [[your account].github.io/apps](https://modelearth.github.io/apps)<br><br> 
 
@@ -36,9 +36,9 @@ Run this command to start localhost whenever you restart your computer.
 
 If that dose't work, here are more options for [activating your webroot](activate-webroot).
 
-<section id="clone"></section>
+<section id="github-pages"></section>
 
-## 2. Fork repos and turn on Github Page 
+## 2. Fork repos and turn on Github Pages 
 
 Clone forks of the parent repos so you can review your changes online before submitting a pull request (PR).  
 Click the "Fork" button in the upper right of each of the following pages:   
@@ -56,6 +56,8 @@ Activate GitHub Pages for each of your forked repos by going to "Settings > Page
 Wait a few minutes for a new GitHub Pages site to become available at a link in the following format:
 
 https://[your account].Github.io/[repo name]  
+
+<section id="clone"></section>
 
 ## 3. Clone forked repos into your webroot
 
