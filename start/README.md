@@ -47,13 +47,17 @@ Click the "Fork" button in the upper right of each of the following pages:
 [io repo](https://github.com/modelearth/io)
 [apps repo](https://github.com/modelearth/apps)
 
-Activate GitHub Pages for each of your forked repos by going to "Settings > Pages" and choosing "main" (or master)
+Activate GitHub Pages for each of your forked repos by going to "Settings > Pages" and choosing "main" (or master) then save.
 
 <div style="border:1px solid #ccc; padding:15px; display:inline-block; margin-bottom:20px">
 <img src="img/github-pages.png">
 </div>
 
-## 3. Clone your forked repos into your webroot
+Wait a few minutes for a new GitHub Pages site to become available at a link in the following format:
+
+https://[your account].Github.io/[repo name]  
+
+## 3. Clone forked repos into your webroot
 
 Now go to [your list of forked repos](https://github.com/modelearth?tab=repositories) and clone the forked repos listed above.
 
@@ -102,8 +106,7 @@ Use a Google Sheet or CSV file to [prototype a list or chart](../dataset) and up
 -->
 
 
-### Mac Users
-To avoid commiting your local .DS\_Store files to GitHub, you can run the following to ignore .DS\_Store files during commits forever. The .DS\_Store files will continue to set icon sizes in your local file manager.   
+**Mac Users:** To avoid commiting your local .DS\_Store files to GitHub, you can run the following to ignore .DS\_Store files during commits forever. The .DS\_Store files will continue to set icon sizes in your local file manager.   
  
 <!-- Avoid .DS_Store file creation over network connections (article from 2011, confirm this still occurs)
 	https://support.apple.com/en-us/HT1629 -->
@@ -112,17 +115,32 @@ To avoid commiting your local .DS\_Store files to GitHub, you can run the follow
 
 If you encounter the error "xcrun: error: invalid active developer path", [install the Xcode toolkit](https://ma.ttias.be/mac-os-xcrun-error-invalid-active-developer-path-missing-xcrun/) first.  
 
-You can toggle hidden file viewing using Command+Shift+Dot, .DS_Store will not be displayed. 
+You can view hidden files by toggling Command+Shift+Dot. Note that .DS_Store will not be displayed.<br>
 To fix a conflict you may need delete the .DS_Store within the Github.com website.  
 
 
-## 4. Activate your website
+## 5. Update your forked repos
 
-### Turn on Github Pages to view your site online
+Occasionally merge in updates from parent repos by clicking "Fetch Upstream > Fetch and Merge" in GitHub.
 
-To activate GitHub Pages on your fork’s settings page, set the Github Pages Source to “Branch: master” with “/(root)“. Wait a few minutes for new GitHub Pages site to become available at the Github.io link.  You can point a domain at all the repos in your Github account with the steps below.  
+<!--
+In the old days you had to do the following:
 
-### How to host multiple repos in one site using Github Pages - without using subdomains
+- On your forked repo: Click Compare 
+- Flip the order. (Pick a third repo temporarily because if the two match a warning occurs.)
+- Create pull request > Give the pull request a title 
+- Create pull request (again) 
+- Merge pull request (scroll down) > Confirm merge.  
+
+[Images of steps for updating your fork](https://stackoverflow.com/questions/20984802/how-can-i-keep-my-fork-in-sync-without-adding-a-separate-remote/21131381#21131381)
+
+-->
+
+
+## 6. Point a domain at your repos (optional)
+
+You can point a domain at all the repos in your Github account with the steps below.  
+
 
 - Use CloudFlare.com as a free proxy for your domain name - [setup steps](cloudflare/) - [more about Cloudflare with GitHub](https://www.toptal.com/github/unlimited-scale-web-hosting-github-pages-cloudflare)  
 - Important: If you are using the same domain for Google email accounts, avoid adding the 4 Google A records (these prevent adding the CNAME record). You'll only need to add the 5 MX records provided by Google.  
@@ -137,24 +155,11 @@ To activate GitHub Pages on your fork’s settings page, set the Github Pages So
 - Fork the "[localsite](https://github.com/modelearth/localsite/)" repo into your GitHub account if you'd like to include it's functionality in any of your sites. Turn on GitHub pages to display at YourDomain.com/localsite/  
 
 
-## 5. Update your forked repos
-
-### Occasionally merge in updates from the main repos (localsite and io) by doing a "pull request"
-
-- On your forked repo: Click Compare 
-- Flip the order. (Pick a third repo temporarily because if the two match a warning occurs.)<!-- switching the base (if you have not switched already) -->
-- Create pull request > Give the pull request a title 
-- Create pull request (again) 
-- Merge pull request (scroll down) > Confirm merge.  
-
-[Images of steps for updating your fork](https://stackoverflow.com/questions/20984802/how-can-i-keep-my-fork-in-sync-without-adding-a-separate-remote/21131381#21131381)
-
-
 ## Additional Resources
 
 <a href="https://neighborhood.org/localsite/">The Localsite Framework</a> is designed to allow multiple Github repos to communicate using hash values.  
 
-<a href="../../community/start/">View Starter Samples</a> - maps, charts, widgets.  <a href="../../io/team/">Contact our team for pointers</a> and <a href="../../community/challenge/meetups/">join us on Slack</a>.  
+<a href="../../community/start/">View Starter Samples</a> - maps, charts, widgets.  <a href="../../community/challenge/meetups/">Join us on Slack</a> for pointers.  
 
 Learn more about [JAM Stack Development](https://jamstack.org) - the process of creating fast sites using static pages with CSV files, JSON and APIs.  
 
