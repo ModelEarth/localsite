@@ -89,6 +89,8 @@ $(document).ready(function () {
 	//loadMarkupPage("intro.md", "introDiv", "_parent");
 	if (! ('webkitSpeechRecognition' in window) ) {
 		$(".si-btn").hide();
+	} else {
+		//$(".si-btn").show();
 	}
 	
 	if(location.host.indexOf('localhost') >= 0) {

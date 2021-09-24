@@ -647,7 +647,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   float:right;
   margin-left:40px;
 }
-@media (max-width: 500px) {
+@media (max-width: 600px) {
   .floatRight {
     float:none !important;
     width:100%;
@@ -863,6 +863,18 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   background:#fff;
   pointer-events: auto;
 }
+@media (max-width: 600px) {
+  .headerbar {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+@media (max-width: 380px) {
+  .showSearch {
+    display: none;
+  }
+}
+
 .headerbarheight {
   height:100px;
 }
@@ -872,18 +884,6 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 .filters-margin {
   margin: 0 auto;
   max-width:1000px;
-}
-.headerDropdown {
-  float:left;
-  display:none;
-  margin-left: 10px;
-}
-.headerDropdown select {
-  font-size: 18px;
-  color: #999;
-  border: 1px #ccc solid;
-  padding: 5px;
-  border-radius: 4px;
 }
 
 /* HEADER */

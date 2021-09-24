@@ -3766,6 +3766,8 @@ $(document).on("click", "#show_county_colors", function(event) {
 
 
 console.log('end of localsite/js/map.js');
+
+// Why does this work on /community/start/maps/counties/counties.html
 //console.timeEnd("End of localsite/js/map.js: ");
-console.timeEnd("Processing time: ");
+//console.timeEnd("Processing time: ");
 
