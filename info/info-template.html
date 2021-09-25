@@ -59,15 +59,12 @@
 					Data source: U.S. Bureau of Economic Analysis
 				</div>
 
-				<div>
-					<div id="quickLinks" style="display:none">
-						<div>Choose counties</div>
-					</div>
+				<div style="clear:both">
 					<h1 class="region_service" style="margin-top:0;padding-top:0;"></h1>
 					<h2 class="location_titles" style="font-size:24px;color:#555;display:none"></h2>
 				</div>
 
-				<div id="topMessage"></div>
+				<div id="topMessage" style="clear:both"></div>
 
 				<!--
 				<div style="max-width:700px">
@@ -100,8 +97,9 @@
 			        <div style="clear:both;margin-bottom:2px"></div>
 
 			        <div class="industry_filter_settings" style="display:none" style="margin:10px 0 0 10px">
-				        <div class="state-view">
+				        <div class="state-view" style="margin:20px 0 20px 30px">
 				        	Choose a county or region above to view filter settings.
+				        	<a href="/localsite/info/naics/">View upcoming industry list</a>
 				        </div>
 				        <div class="county-view" style="display:none">
 					        <select id="catmethod" class="picklist" onchange="goHash({'catmethod':this.value});">
