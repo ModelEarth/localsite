@@ -444,6 +444,11 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 .btn:visited {
   color: #fff;
 }
+.btn:hover {
+    background-color: #b9da79;
+    border-color: #b9da79;
+    text-decoration: none;
+}
 .btn-primary {
     color: #fff;
     background-color: #6fa1d8;
@@ -458,15 +463,13 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     background-color: #a6c36e;
     border-color: #a6c36e;
 }
-.btn-success:hover {
-    background-color: #b9da79;
-    border-color: #b9da79;
-    text-decoration: none;
-}
 .btn-warning {
     color: #fff;
     background-color: #e6853d;
     border-color: #e6853d;
+}
+.btn-warning:hover {
+    background-color: #ef954d;
 }
 .btn-danger {
     color: #fff;
