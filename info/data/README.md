@@ -4,11 +4,11 @@ We've combined labor and industry stats with commodity inflow-outflow data from 
 
 ####Embeddable Datasets
 
-<a href="../">Area Industries and Employment</a> - Counties and Environmental Impacts<!-- | [Project Areas](../../../community/projects/) | <a href="../../start/">Getting Started</a>-->
+[Maps of Industry and Employment](../#mapview=country) - Sample [pages for communities](../../../apps)
 
-[Impacts of Goods and Services](../../../io/charts/) - EPA Input-Output Widgets  
+[Impacts of Goods and Services](../../../io/charts/) - US Environmentally-Extended Input-Output Widgets  
 
-[Product Impact Profiles](../../../io/template/) - Using Environmental Product Declarations (EPDs)
+[Community/Product Impact Profiles](../../../io/template/) - Using Environmental Product Declarations (EPDs)
 
 
 ####Data Sources and Prep
