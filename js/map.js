@@ -1,4 +1,3 @@
-
 // TO DO - Use group to remove prior layer.
 // https://stackoverflow.com/questions/38845292/filter-leaflet-geojson-object-based-on-checkbox-status/38845970#38845970
 
@@ -268,10 +267,21 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
         console.log("typeof document.querySelector ._leaflet_map: " + typeof document.querySelector('#' + whichmap)._leaflet_map);
     }
     */
+    if( $('#' + whichmap).length > 5) {
+      console.log("#" + whichmap + " is populated");
+      var map = document.querySelector('#'+whichmap)._leaflet_map; // Recall existing map
+    } else {
+      
+      console.log("Initialize map");
+      map = L.map(whichmap, {
+        center: mapCenter,
+        scrollWheelZoom: false,
+        zoom: dp.zoom,
+        dragging: !L.Browser.mobile, 
+        tap: !L.Browser.mobile
+      });
 
-    console.log("FOUND #" + whichmap);
-
-    let map = document.querySelector('#' + whichmap)._leaflet_map; // Recall existing map
+    }
 
     console.log("typeof map: " + typeof map);
     console.log("typeof document.querySelector ._leaflet_map: " + typeof document.querySelector('#' + whichmap)._leaflet_map);
@@ -281,7 +291,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     // Otherwise starts with 7ish and zooms to 5ish.
     console.log("dp.zoom " + dp.zoom);
     if (container == null) { // Initialize map
-      console.log("Initialize map");
+      console.log("Initialize map again - this should not be reached.");
       map = L.map(whichmap, {
         center: mapCenter,
         scrollWheelZoom: false,
@@ -347,7 +357,17 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     // We are currently loading dp.dataset from a CSV file.
     // Later we will check if the filename ends with .csv
 
-    if (dp.dataset && (dp.dataset.toLowerCase().includes(".json") || dp.datatype === "json")) { // To Do: only check that it ends with .json
+    let stateAllowed = true;
+    if (dp.datastates && hash.state) {
+      if (dp.datastates.split(",").indexOf(hash.state.split(",")[0]) == -1) {
+        stateAllowed = false;
+        alert("State of " + hash.state + " has no map point data based on dp.datastates indicated.");
+        $("#list_main").hide();
+        $("#map1").hide();
+        return;
+      }
+    }
+    if (dp.dataset && stateAllowed && (dp.dataset.toLowerCase().includes(".json") || dp.datatype === "json")) { // To Do: only check that it ends with .json
       if (dp.headerAuth) {
         //dp.headerAuth = $.parseJSON(dp.headerAuth); // TO DO: Add object below
         $.ajaxSetup({
@@ -1414,6 +1434,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         //dp.googleDocID = "1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs";
         dp.sheetName = "Automotive";
         dp.dataset = "https://model.earth/georgia-data/automotive/automotive.csv";
+        dp.datastates = "GA";
         dp.listInfo = "<br><br>Blue map points indicate electric vehicle parts manufacturing.<br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates. Learn about <a href='../../community/projects/mobility/'>data sources</a>.";
         dp.valueColumn = "ev industry";
         dp.valueColumnLabel = "EV Industry";
@@ -3543,8 +3564,11 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
                   }
                   layerString += "<br>";
                 });
-                $("#layerStringDiv").remove();
-                $("#locationFilterHolder").prepend("<div id='layerStringDiv' style='width:220px'>" + layerString + "<hr></div>");
+
+                // Show map layers, to use later
+                //$("#layerStringDiv").remove();
+                //$("#locationFilterHolder").prepend("<div id='layerStringDiv' style='width:220px'>" + layerString + "<hr></div>");
+              
               }
 
               if (hash.mapview == "country") {

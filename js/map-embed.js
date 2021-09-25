@@ -1808,14 +1808,6 @@ function dualmapLoaded(param, root, count) {
 		//loadScript(root + 'https://cdn.jsdelivr.net/npm/vue', function(results) { // Need to check if function loaded
 			loadScript(root + 'js/map-filters.js', function(results) {
 
-				//loadMap1("map-embed.js"); // Now in map-filters.js
-				/*
-				document.addEventListener('hashChangeEvent', function (elem) {
-					//param = loadParam(location.search,location.hash);
-					console.log("embed-map.js detects hashChangeEvent");
-					loadMap1("map-embed.js from hashChangeEvent");
-				}, false);
-				*/
 			});
 		//});
 	} else if (count<100) { // Wait a 100th of a second and try again

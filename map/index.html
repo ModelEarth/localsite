@@ -328,9 +328,9 @@ class="headerbarheight"
           <!-- speech input -->
             <!-- was a button -->
           
-          <div class="si-wrapperX" style="position:relative; float:left">
+          <div class="si-wrapper" style="position:relative; float:left">
             
-              <div style="display:none" class="si-btn mock-up">
+              <div style="display:none; float:right; padding-left:7px" class="si-btn mock-up">
                   <span class="si-holder" style="font-size: 20px">&#127897;</span>
               </div>
           
@@ -818,6 +818,7 @@ class="headerbarheight"
 
             <div class="stateFilters input-output" style="float:left; display:none" class="mock-up earth">
               <b><!--States--></b><br>
+              <div id="state_select_holder">
                 <select id="state_select" name="state">
                  <option value="">Choose a location...</option>
 <!-- Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
@@ -879,6 +880,8 @@ class="headerbarheight"
 <option value="WY" stateid="56" lat="42.9897" lon="-107.5444" km="251459">Wyoming</option>
 
                </select>
+               </div>
+               
                <br><br>
             </div>
 
@@ -1081,6 +1084,28 @@ class="headerbarheight"
                 </div>
                 -->
                 
+                <style>
+                  #show_county_colors {
+                    position: absolute;
+                    right:50px;
+                    bottom:50px;
+                    background-color: #fff;
+                    border-radius: 18px;
+                    font-size: 14px;
+                    padding: 10px 20px;
+                    cursor: pointer;
+                    z-index:2000;
+                  }
+                  #show_county_colors:hover {
+                    background-color: #999;
+                    color:#fff;
+                  }
+                </style>
+
+                <div class="local" style="display:none">
+                  <div id="show_county_colors">Show Densities</div>
+                </div>
+
                 <!-- Tabular: Latest version -->
                 
                 <div id="tabulator-geotable"></div>
@@ -1670,22 +1695,14 @@ local_app.init(["somevalue", 1, "controlId"]); // Used by link to feedback form
 //local_app.helloWorld();
 //local_app.community_root();
 
-//var localmap = 
-//loadMap1("map/index.html 2", hash.show, dp); // Now in map-filters.js
-if (param["show"] != "suppliers") {
-  // Additional layer
-  //loadMap1("suppliers", dp);
-}
+
 document.addEventListener('hashChangeEvent', function (elem) {
   //param = loadParam(location.search,location.hash);
   console.log("index.html detects hashChangeEvent");
-  hash = getHash();
-  //if 
-  //loadMap1("map/index.html");
-  
+  hash = getHash();  
 }, false);
 
-// Append railroads here, somehow
+// Try appending railroads here, somehow
 //layerControl['map1'].addOverlay(baselayers["Rail"], "Railroads"); // Appends to existing layers
 //layerControl['map2'].addOverlay(baselayers["Rail"], "Railroads"); // Appends to existing layers
 //localmap.addOverlay(baselayers["Rail"], "Railroads"); // Appends to existing layers

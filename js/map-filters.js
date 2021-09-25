@@ -614,6 +614,13 @@ function filterClickLocation(loadGeoTable) {
         if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
             $("#header.nav-up").hide();
         }
+
+        if (typeof relocatedStateMenu != "undefined") {
+            relocatedStateMenu.appendChild(state_select); // For apps hero
+        }
+        $("#hero_holder").show();
+
+
         updateHash({"mapview":""});
 	} else { // OPEN MAP FILTER
 		let hash = getHash();
@@ -639,6 +646,12 @@ function filterClickLocation(loadGeoTable) {
 		$("#topPanel").hide();
         $("#showLocations").show();
 		$("#hideLocations").hide();
+
+        $("#hero_holder").hide();
+        if (typeof state_select_holder != "undefined") {
+            state_select_holder.appendChild(state_select); // For apps hero
+        }
+
 		locationFilterChange("counties");
 
 		if (hash.geo) {
@@ -2058,14 +2071,10 @@ if(typeof hiddenhash == 'undefined') {
 
 
 function hashChanged() {
-  	// This function now invoke loadMap1 - replaces index.html and map-embed.js.
-  	
 	let loadGeomap = false;
-	//param = mix(param,loadParams(location.search,location.hash)); // param is declared in localsite.js. Give priority to param updates within code.
 
 	let hash = getHash(); // Includes changes to hiddenhash
 	if (hash.show == "undefined") { // To eventually remove
-		//alert("hash.show = undefined")
 		delete hash.show; // Fix URL bug from indicator select hamburger menu
 		updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
 	}
@@ -2502,16 +2511,6 @@ function hashChanged() {
     		$("#filterLocations").hide();
     	}
     }
-	/*
-	// Moved back to map.js
-	if (hash.show != priorHash.show) {
-		//applyIO(hiddenhash.naics);
-		loadMap1("hashChanged() in map-filters.js", hash.show);
-	} else if (hash.state && hash.state != priorHash.state) {
-		// Why are new map points not appearing
-		loadMap1("hashChanged() in map-filters.js new state " + stateAbbrev, hash.show);
-	}
-	*/
     $(".regiontitle").text(local_app.loctitle);
     $(".service_title").text(local_app.loctitle + " - " + local_app.showtitle);
 	priorHash = getHash();

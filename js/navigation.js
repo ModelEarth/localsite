@@ -312,6 +312,11 @@ $(document).ready(function(){
 						$(".fieldSelector").hide();
 						$("#filterLocations").hide();
 						$("#filterClickLocation").removeClass("filterClickActive");
+
+						if (typeof relocatedStateMenu != "undefined") {
+				            relocatedStateMenu.appendChild(state_select); // For apps hero
+				        }
+				        $("#hero_holder").show();
 					});
 
 
