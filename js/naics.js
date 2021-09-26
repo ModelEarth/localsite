@@ -76,7 +76,7 @@ function getStateFips(hash) {
         */
     } else if (hash.state) {
         //fips = $("#state_select").find(":selected").attr("stateid").trimLeft("0");
-        fips = stateID[hash.state];
+        fips = stateID[hash.state.split(",")[0].toUpperCase()];
         dataObject.stateshown = fips;
         //alert("the fips " + fips)
     } else {
@@ -395,7 +395,7 @@ function populateTitle(showtitle,showtab) {
     if (hiddenhash.loctitle) {
         showtitle = hiddenhash.loctitle + " - " + showtitle;
     } else if (hash.state) {
-        $("#state_select").val(hash.state.toUpperCase().split(",")[0]);
+        $("#state_select").val(hash.state.split(",")[0].toUpperCase());
         let thestate = $("#state_select").find(":selected").text();
         hiddenhash.loctitle = thestate;
 
@@ -414,14 +414,13 @@ function populateTitle(showtitle,showtab) {
 }
 
 
-
 // NOT OPTIMALLY DESIGNED - No need to load all 3 naics datasets for state.
 // Calls promisesReady when completed.
 function loadIndustryData(hash) {
     console.log("loadIndustryData");
     let stateAbbr;
     if (hash.state && hash.state.length >= 2) {
-        stateAbbr = hash.state.toUpperCase();
+        stateAbbr = hash.state.split(",")[0].toUpperCase();
         stateAbbr = stateAbbr.split(",")[0];
     }
     $("#econ_list").html("<img src='" + local_app.localsite_root() + "img/icon/loading.gif' style='margin:40px; width:120px'><br>");
@@ -630,7 +629,7 @@ $(document).ready(function() {
 function renderIndustryChart(dataObject,values,hash) {
     let stateAbbr 
     if (hash.state) {
-        stateAbbr = hash.state;
+        stateAbbr = hash.state.split(",")[0].toUpperCase();
         dataObject.stateshown=stateID[stateAbbr.toUpperCase()];
     } else {
         // TEMP BUGBUG - until national NAICS generated
@@ -646,7 +645,7 @@ function renderIndustryChart(dataObject,values,hash) {
     if(!hash.census_scope){
         hash.census_scope='state'
     }
-
+    
     // Reduce hash to only those used
     const filteredKeys = ['show','geo','regiontitle','catsort','catsize','catmethod','catpage','catcount','census_scope','naics','state','hs']; // hs not yet implemented for Harmonized System codes.
     hash = filteredKeys.reduce((obj, key) => ({ ...obj, [key]: hash[key] }), {});
@@ -1105,7 +1104,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                 let stateAbbr;
                 
                 if (hash.state) {
-                    stateAbbr = hash.state.toUpperCase();
+                    stateAbbr = hash.state.split(",")[0].toUpperCase();
                 } else {
                     stateAbbr = "GA"; // Temp HACK to show US
                 }

@@ -267,13 +267,19 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
         console.log("typeof document.querySelector ._leaflet_map: " + typeof document.querySelector('#' + whichmap)._leaflet_map);
     }
     */
+
+    // Pevent error when backing up: map container is already initialized
+    if (map) {
+      map.off();
+      map.remove();
+    }
     if( $('#' + whichmap).length > 5) {
       console.log("#" + whichmap + " is populated");
-      var map = document.querySelector('#'+whichmap)._leaflet_map; // Recall existing map
+      map = document.querySelector('#'+whichmap)._leaflet_map; // Recall existing map
     } else {
       
       console.log("Initialize map");
-      map = L.map(whichmap, {
+      var map = L.map(whichmap, {
         center: mapCenter,
         scrollWheelZoom: false,
         zoom: dp.zoom,
@@ -359,9 +365,9 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
 
     let stateAllowed = true;
     if (dp.datastates && hash.state) {
-      if (dp.datastates.split(",").indexOf(hash.state.split(",")[0]) == -1) {
+      if (dp.datastates.split(",").indexOf(hash.state.split(",")[0].toUpperCase()) == -1) {
         stateAllowed = false;
-        alert("State of " + hash.state + " has no map point data based on dp.datastates indicated.");
+        //alert("State1 of " + hash.state + " has no map point data based on dp.datastates indicated.");
         $("#list_main").hide();
         $("#map1").hide();
         return;
@@ -602,7 +608,7 @@ function populateMap(whichmap, dp, callback) { // From JSON within page
     dp = mix(dp,defaults); // Gives priority to dp
     console.log("populateMap dp.zoom " + dp.zoom);
 
-    var map = L.map(whichmap,{
+    let map = L.map(whichmap,{
       center: mapCenter,
       scrollWheelZoom: false,
       zoom: dp.zoom,
@@ -1237,7 +1243,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   //let state_root = local_app.custom_data_root();
   let state_abbreviation = "GA";
   if (hash.state) {
-    state_abbreviation = hash.state.split(",")[0];
+    state_abbreviation = hash.state.split(",")[0].toUpperCase();
   }
 
   
@@ -1611,7 +1617,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
   if(dp.dataset) {
     if (hash.state) {
-      dp.dataset = dp.dataset.replace("[jurisdiction]","US-" + hash.state.split(",")[0]);
+      dp.dataset = dp.dataset.replace("[jurisdiction]","US-" + hash.state.split(",")[0].toUpperCase());
     } else {
       dp.dataset = dp.dataset.replace("[jurisdiction]","US");
     }
@@ -1630,7 +1636,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
     if (!hash.state) {
       $(".locationTabText").text("Locations");
     } else {
-      $("#state_select").val(hash.state.toUpperCase().split(",")[0]);
+      $("#state_select").val(hash.state.split(",")[0].toUpperCase());
       $(".locationTabText").text($("#state_select").find(":selected").text());
       $(".locationTabText").attr("title",$("#state_select").find(":selected").text());
     }
@@ -1715,7 +1721,7 @@ function loadGeos(geo, attempts, callback) {
     let hash = getHash();
     let stateID = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78,}
     //let theState = "GA"; // TEMP - TODO: loop trough states from start of geo
-    let theState = hash.state;
+    let theState = hash.state.split(",")[0].toUpperCase();
     if (theState && theState.includes(",")) {
       theState = theState.substring(0, 2);
     }
@@ -3012,117 +3018,116 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
 
   // Same as https://unpkg.com/topojson-client@3
 
-    //alert(whichmap + " " + local_app.modelearth_root() + '/localsite/js/topojson-client.min.js');
-    // Oddly, this is still reached when 404 returned by call to topojson-client.min.js above.
+  //alert(whichmap + " " + local_app.modelearth_root() + '/localsite/js/topojson-client.min.js');
+  // Oddly, this is still reached when 404 returned by call to topojson-client.min.js above.
 
-    //alert(local_app.modelearth_root() + '/localsite/js/topojson-client.min.js')
-    
-    if (typeof topojson != "undefined") {
-      console.log("renderMapShapes - topojson-client.min.js loaded for #" + whichmap + " after " + attempts + " attempts.");
+  //alert(local_app.modelearth_root() + '/localsite/js/topojson-client.min.js')
+  
+  if (typeof topojson != "undefined") {
+    console.log("renderMapShapes - topojson-client.min.js loaded for #" + whichmap + " after " + attempts + " attempts.");
+  } else {
+    if (attempts <= 100) {
+      setTimeout(function(){
+        renderMapShapes(whichmap, hash, attempts+1);
+      }, 100);
     } else {
-      if (attempts <= 100) {
-        setTimeout(function(){
-          renderMapShapes(whichmap, hash, attempts+1);
-        }, 100);
-      } else {
-        console.log("Failed to load topojson from topojson-client.min.js for #" + whichmap + " after 100 attempts.")
-      }
-      return;
+      console.log("Failed to load topojson from topojson-client.min.js for #" + whichmap + " after 100 attempts.")
     }
+    return;
+  }
 
-    let stateAbbr = "";
-    if (hash.state) {
-      stateAbbr = hash.state.toUpperCase();
-    }
-    // In addition, the state could also be derived from the geo values.
+  let stateAbbr = "";
+  if (hash.state) {
+    stateAbbr = hash.state.split(",")[0].toUpperCase();
+  }
+  // In addition, the state could also be derived from the geo values.
 
-    var stateCount = typeof hash.state !== "undefined" ? hash.state.split(",").length : 0;
-    //alert("hash.state: " + hash.state + " stateCount: " + stateCount);
-    if (stateCount > 1 && hash.mapview != "country") {
-      hash.state.split(",").forEach(function(state) {
-        hashclone = $.extend(true, {}, hash); // Clone/copy object without entanglement
-        hashclone.state = state; // One state at a time
-        //alert(whichmap + " renderMapShapes attempt " + attempts + "  " + hashclone.state);
-        renderMapShapes(whichmap, hashclone, 0); // Using clone since hash could be modified mid-loop by another widget,
-      });
-      return;
-    }
+  var stateCount = typeof hash.state !== "undefined" ? hash.state.split(",").length : 0;
+  if (stateCount > 1 && hash.mapview != "country") {
+    hash.state.split(",").forEach(function(state) {
+      hashclone = $.extend(true, {}, hash); // Clone/copy object without entanglement
+      hashclone.state = state.toUpperCase(); // One state at a time
+      //alert(whichmap + " renderMapShapes attempt " + attempts + "  " + hashclone.state);
+      renderMapShapes(whichmap, hashclone, 0); // Using clone since hash could be modified mid-loop by another widget,
+    });
+    return;
+  }
 
-    if (stateAbbr == "GA") { // TO DO: Add regions for all states
-      $(".regionFilter").show();
-    } else {
-      $(".regionFilter").hide();
-    }
-    $("#state_select").val(stateAbbr); // Used for lat lon fetch
-
-
-    $("#geoPicker").show();
-    if (!$("#" + whichmap).is(":visible")) {
-      console.log("Error: whichmap not visible " + whichmap);
-      return; // Prevents incomplete tiles
-    }
-
-    var req = new XMLHttpRequest();
-    //const whichGeoRegion = hash.geomap;
-
-    // Topo data source
-    //https://github.com/deldersveld/topojson/tree/master/countries/us-states
-
-    updateGeoFilter(hash.geo); // Checks and unchecks geo (counties) when backing up.
-
-    // BUGBUG - Shouldn't need to fetch counties.json every time.
+  if (stateAbbr == "GA") { // TO DO: Add regions for all states
+    $(".regionFilter").show();
+  } else {
+    $(".regionFilter").hide();
+  }
+  $("#state_select").val(stateAbbr); // Used for lat lon fetch
 
 
+  $("#geoPicker").show();
+  if (!$("#" + whichmap).is(":visible")) {
+    console.log("Error: whichmap not visible " + whichmap);
+    return; // Prevents incomplete tiles
+  }
 
-    // TOPO Files: https://github.com/modelearth/topojson/countries/us-states/AL-01-alabama-counties.json";
-    // US: 
+  var req = new XMLHttpRequest();
+  //const whichGeoRegion = hash.geomap;
+
+  // Topo data source
+  //https://github.com/deldersveld/topojson/tree/master/countries/us-states
+
+  updateGeoFilter(hash.geo); // Checks and unchecks geo (counties) when backing up.
+
+  // BUGBUG - Shouldn't need to fetch counties.json every time.
+
+
+
+  // TOPO Files: https://github.com/modelearth/topojson/countries/us-states/AL-01-alabama-counties.json";
+  // US: 
+  
+  let stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78};
+  let state2char = ('0'+stateIDs[stateAbbr]).slice(-2);
+  //let stateNameLowercase = $("#state_select option:selected").text().toLowerCase();
+
+  let map;
+  // MAPS FROM TOPOJSON
+
+  //alert($("#state_select option:selected").attr("stateid"));
+  //alert($("#state_select option:selected").val()); // works
+
+  // $("#state_select").find(":selected").text();
+
+  //if(location.host.indexOf('localhost') >= 0) {
+  //if (param.geo == "US01" || param.state == "AL") { // Bug, change to get state from string, also below.
+    // https://github.com/modelearth/topojson/blob/master/countries/us-states/AL-01-alabama-counties.json
+
+    //var url = local_app.custom_data_root() + '/counties/GA-13-georgia-counties.json';
     
-    let stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78};
-    let state2char = ('0'+stateIDs[stateAbbr]).slice(-2);
-    //let stateNameLowercase = $("#state_select option:selected").text().toLowerCase();
-
-    let map;
-    // MAPS FROM TOPOJSON
-
-    //alert($("#state_select option:selected").attr("stateid"));
-    //alert($("#state_select option:selected").val()); // works
-
-    // $("#state_select").find(":selected").text();
-
-    //if(location.host.indexOf('localhost') >= 0) {
-    //if (param.geo == "US01" || param.state == "AL") { // Bug, change to get state from string, also below.
-      // https://github.com/modelearth/topojson/blob/master/countries/us-states/AL-01-alabama-counties.json
-
-      //var url = local_app.custom_data_root() + '/counties/GA-13-georgia-counties.json';
-      
-      var url;
-      let topoObjName = "";
-      var layerName = "Map Layer";
-      if (stateAbbr.length <= 1 || hash.mapview == "country") { // USA
-        layerName = "States";
-        url = local_app.modelearth_root() + "/localsite/map/topo/states-10m.json";
-        topoObjName = "topoob.objects.states";
-        $("#geomap").width("700px");
-        $(".geoListHolder").hide();
-      } else { // COUNTIES
-        layerName = stateAbbr + " Counties";
-        let stateNameLowercase = getStateNameFromID(stateAbbr).toLowerCase();
-        let countyFileTerm = "-counties.json";
-        let countyTopoTerm = "_county_20m";
-        if (stateNameLowercase == "louisiana") {
-          countyFileTerm = "-parishes.json";
-          countyTopoTerm = "_parish_20m";
-        }
-
-        //$("#geomap").width("440px");
-        $("#geomap").width("700px");
-        $(".geoListHolder").show();
-        url = local_app.modelearth_root() + "/topojson/countries/us-states/" + stateAbbr + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
-        topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + countyTopoTerm;
-
-        //url = local_app.modelearth_root() + "/opojson/countries/us-states/GA-13-georgia-counties.json";
-        // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
+    var url;
+    let topoObjName = "";
+    var layerName = "Map Layer";
+    if (stateAbbr.length <= 1 || hash.mapview == "country") { // USA
+      layerName = "States";
+      url = local_app.modelearth_root() + "/localsite/map/topo/states-10m.json";
+      topoObjName = "topoob.objects.states";
+      $("#geomap").width("700px");
+      $(".geoListHolder").hide();
+    } else { // COUNTIES
+      layerName = stateAbbr + " Counties";
+      let stateNameLowercase = getStateNameFromID(stateAbbr).toLowerCase();
+      let countyFileTerm = "-counties.json";
+      let countyTopoTerm = "_county_20m";
+      if (stateNameLowercase == "louisiana") {
+        countyFileTerm = "-parishes.json";
+        countyTopoTerm = "_parish_20m";
       }
+
+      //$("#geomap").width("440px");
+      $("#geomap").width("700px");
+      $(".geoListHolder").show();
+      url = local_app.modelearth_root() + "/topojson/countries/us-states/" + stateAbbr + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
+      topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + countyTopoTerm;
+
+      //url = local_app.modelearth_root() + "/opojson/countries/us-states/GA-13-georgia-counties.json";
+      // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
+    }
   
 
     req.open('GET', url, true);
@@ -3647,7 +3652,7 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
               //alert("theStateID " + theStateID)
               if (hash.state) {
                 if (hash.state.includes(theStateID)) {
-                  hash.state = jQuery.grep(hash.state.split(','), function(value) {
+                  hash.state = jQuery.grep(hash.state.split(",")[0].toUpperCase(), function(value) {
                     return value != theStateID;
                   }).toString();
                 } else {
@@ -3657,6 +3662,7 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
                 hash.state = theStateID;
               }
               // ,'geo':'','regiontitle':''
+              console.log("COULD BE ISSUE WITH MULTISTATE: goHash " + hash.state);
               goHash({'state':hash.state});
           }
         }
@@ -3777,7 +3783,7 @@ function displayStateDataList(theStateName) {
 
 $(document).on("click", "#show_county_colors", function(event) {
   let hash = getHash();
-  let layerName = hash.state + " Counties";
+  let layerName = hash.state.split(",")[0].toUpperCase() + " Counties";
   overlays[layerName].eachLayer(function (layer) {  
     //if(layer.feature.properties.COUNTYFP == '121') { // Fulton County
       layer.setStyle({fillColor :'blue', fillOpacity:.5 }) 

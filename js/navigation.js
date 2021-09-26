@@ -179,7 +179,6 @@ $(document).ready(function(){
 				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Model Georgia");
 				 		param.titleArray = [];
-				 		//param.headerLogo = "<a href='https://georgia.org'><img src='" + modelpath + "../community/img/logo/georgia_usa_gray.png' style='width:130px;padding-top:4px'></a>";
 				 		param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.localsite_root() + "img/logo/states/GA.png' style='width:130px;padding-top:4px'></a>";
 				 		param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.localsite_root() + "img/logo/states/GA-notext.png' style='width:40px;padding-top:0px;margin-top:-4px'></a>";
 				 		if (document.title) {
@@ -215,9 +214,9 @@ $(document).ready(function(){
 				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Model Earth");
 				 		param.titleArray = ["model","earth"]
-			  			param.headerLogoSmall = "<img src='/community/img/logo/model-earth.png' style='width:34px; margin-right:2px'>";
+			  			param.headerLogoSmall = "<img src='/localsite/img/logo/partners/model-earth.png' style='width:34px; margin-right:2px'>";
 			  			document.title = "Model Earth - " + document.title
-			  			changeFavicon(modelpath + "../community/img/logo/model-earth.png")
+			  			changeFavicon(modelpath + "../localsite/img/logo/partners/model-earth.png")
 			  			$('.earth').css('display', 'inline'); 
 				 		console.log(".earth display")
 				 	}

@@ -838,7 +838,7 @@ function showCounties(attempts) { // To avoid broken tiles, this won't be execut
 		let hash = getHash();
 		let theState = $("#state_select").find(":selected").val();
 		if (hash.state) {
-			theState = hash.state.toUpperCase();
+			theState = hash.state.split(",")[0].toUpperCase();
 		}
 		if (theState.length > 2) {
 			theState = theState.substring(0,2);
@@ -969,7 +969,7 @@ function showTabulatorList(attempts) {
 		// More filter samples
 		// https://stackoverflow.com/questions/2722159/how-to-filter-object-array-based-on-attributes
 		geotable = new Tabulator("#tabulator-geotable", {
-		    data:localObject.geo.filter(function(el){return el.state == hash.state.split(",")[0];}),     //load row data from array of objects
+		    data:localObject.geo.filter(function(el){return el.state == hash.state.split(",")[0].toUpperCase();}),     //load row data from array of objects
 		    layout:"fitColumns",      //fit columns to width of table
 		    responsiveLayout:"hide",  //hide columns that dont fit on the table
 		    tooltips:true,            //show tool tips on cells
@@ -1722,7 +1722,7 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	        }
 	    }
 	    $(".bigThumbMenu").append("<div class='bigThumbMenuInner'>" + sectionMenu + "</div>");
-	    if (hash.state == "GA") {
+	    if (hash.state.split(",")[0].toUpperCase() == "GA") {
 	    	$(".geo-US13").show();
 	    }
 	    //$("#honeycombMenu").append("<ul class='bigThumbUl'>" + sectionMenu + "</ul>");
@@ -2078,21 +2078,6 @@ function hashChanged() {
 		delete hash.show; // Fix URL bug from indicator select hamburger menu
 		updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
 	}
-	// For PPE embed, also in map.js. Will likely change
-	/*
-	if (!hash.show) {
-		// For embed link
-        if (param.show) {
-		  hash.show = param.show;
-		  hiddenhash.show = param.show;
-        }
-	}
-	if (!hash.state) {
-		// For embed link
-		hash.state = param.state;
-		hiddenhash.state = param.state;
-	}
-	*/
 
 	// Temp for PPE
 	if (!hash.state && location.host.indexOf("georgia") >= 0) {
@@ -2105,7 +2090,7 @@ function hashChanged() {
 
 
 	if (hash.state) {
-		var stateAbbrev = hash.state.toUpperCase().split(",")[0];
+		var stateAbbrev = hash.state.split(",")[0].toUpperCase();
 		// Apply early since may be used by changes to geo
 		$("#state_select").val(stateAbbrev);
 	} else {
@@ -2265,7 +2250,7 @@ function hashChanged() {
 	if (hash.state != priorHash.state) {
 		loadGeomap = true;
 		if(location.host.indexOf('model.georgia') >= 0) {
-			if (hash.state != "" && hash.state.toUpperCase() != "GA") { // If viewing other state, use model.earth
+			if (hash.state != "" && hash.state.split(",")[0].toUpperCase() != "GA") { // If viewing other state, use model.earth
 				let goModelEarth = "https://model.earth" + window.location.pathname + window.location.search + window.location.hash;
 				window.location = goModelEarth;
 			}
@@ -2526,7 +2511,7 @@ function hashChanged() {
 $(document).ready(function () {
 	let hash = getHash();
 	if (hash.state) {
-		let stateAbbrev = hash.state.toUpperCase().split(",")[0];
+		let stateAbbrev = hash.state.split(",")[0].toUpperCase();
 		$("#state_select").val(stateAbbrev);
 	}
 	if (hash.regiontitle) {

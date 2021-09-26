@@ -719,7 +719,7 @@ function topRatesInFipsOld(dataSet, fips) { // REMOVED , hash
                 let stateAbbr;
                 
                 if (hash.state) {
-                    stateAbbr = hash.state.toUpperCase();
+                    stateAbbr = hash.state.split(",")[0].toUpperCase();
                 } else {
                     stateAbbr = "GA"; // Temp HACK to show US
                 }
