@@ -669,9 +669,13 @@ function filterClickLocation(loadGeoTable) {
 		$("#filterClickLocation").addClass("filterClickActive");
 		
 		//renderMapShapes("geomap", hash, 1);// Called once map div is visible for tiles.
-        $('html,body').animate({
-            scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
-        });
+        if ($("#filterLocations").length) {
+            $('html,body').animate({
+                scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
+            });
+        } else {
+            console.log("ALERT #filterLocations not available yet.")
+        }
         if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
             $("#header.nav-up").show();
         }
