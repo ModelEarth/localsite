@@ -645,7 +645,7 @@ function renderIndustryChart(dataObject,values,hash) {
     if(!hash.census_scope){
         hash.census_scope='state'
     }
-    
+
     // Reduce hash to only those used
     const filteredKeys = ['show','geo','regiontitle','catsort','catsize','catmethod','catpage','catcount','census_scope','naics','state','hs']; // hs not yet implemented for Harmonized System codes.
     hash = filteredKeys.reduce((obj, key) => ({ ...obj, [key]: hash[key] }), {});
@@ -1601,7 +1601,7 @@ function applyIO(naics) {
         // After flicer is fixed:
         //hash.indicators = "ACID,ENRG,ETOX,EUTR,GHG,HTOX,JOBS,LAND,OZON,PEST,RNRG,SMOG,VADD,WATR";
 
-        hash.indicators = "ACID,ETOX,EUTR,GHG,HTOX,JOBS,LAND,OZON,PEST,SMOG,VADD,WATR";
+        hash.indicators = "ACID,ETOX,EUTR,GHG,HTOX,LAND,OZON,PEST,SMOG,WATR";
     }
 
     //alert("hiddenhash.naics: " + hiddenhash.naics);

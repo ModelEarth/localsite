@@ -258,6 +258,9 @@ $(document).ready(function(){
 					 	}
 				 	}
 
+				 	if (param.favicon) {
+				 		changeFavicon(param.favicon);
+				 	}
 					// WAS LIMITED TO HEADER
 
 					/*
@@ -365,6 +368,17 @@ $(document).ready(function(){
 			}); // End $("#header").load
 
 		}); // End doc ready
+	}
+
+	if (param.headerFile) {
+		//$(document).ready(function () {
+		setTimeout( function() {
+			//$('body').prepend($("#local-header"));
+			$('.headerOffsetOne').prepend($("#local-header"));
+
+			//$("#headerFixed").hide();
+		}, 1000);
+		//});
 	}
 
 	/*
