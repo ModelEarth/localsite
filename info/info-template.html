@@ -163,13 +163,13 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 
         <div style="float:right;">
             <div id="impactIcons">
-                <!--  some must be wrong -->
-                <div onclick="goHash({'set':'air','indicators':'GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS'});">Air</div>
-                <div onclick="goHash({'set':'water','indicators':'WATR,ACID,EUTR,ETOX'});">Water</div>
-                <div onclick="goHash({'set':'land','indicators':'LAND,MNRL,PEST,METL,CRHW,CMSW,FMSW,CCDD'});">Land</div>
-                <div onclick="goHash({'set':'energy','indicators':'ENRG,NNRG,RNRG'});">Energy</div>
-                <div onclick="goHash({'set':'health','indicators':'HTOX,HCAN,HNCN,HTOX,HRSP'});">Health</div>
-                <div onclick="goHash({'set':'prosperity','indicators':'VADD,JOBS'});">Prosperity</div>
+                <!-- to do: check if indicators match USEEIO 2.0 -->
+                <div id="impactIcon_Air" onclick="goHash({'set':'air','indicators':'GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS'});">Air</div>
+                <div id="impactIcon_Water" onclick="goHash({'set':'water','indicators':'WATR,ACID,EUTR,ETOX'});">Water</div>
+                <div id="impactIcon_Land" onclick="goHash({'set':'land','indicators':'LAND,MNRL,PEST,METL,CRHW,CMSW,FMSW,CCDD'});">Land</div>
+                <div id="impactIcon_Energy" onclick="goHash({'set':'energy','indicators':'ENRG,NNRG,RNRG'});">Energy</div>
+                <div id="impactIcon_Health" onclick="goHash({'set':'health','indicators':'HTOX,HCAN,HNCN,HTOX,HRSP'});">Health</div>
+                <div id="impactIcon_Prosperity" onclick="goHash({'set':'prosperity','indicators':'VADD,JOBS'});">Prosperity</div>
             </div><br>
 
             
