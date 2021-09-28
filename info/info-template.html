@@ -502,91 +502,6 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 }
 </style>
 
-<script>
-// Not used - Delete
-function updateMosic(naics) {
-	alert("updateMosic");
-    var config = useeio.urlConfig();
-    var modelID = config.get().model || 'GAUSEEIO';
-
-    var model = useeio.model({
-        endpoint: '/io/build/api',
-        model: modelID,
-        asJsonFiles: true,
-        view: 'mosaic',
-    });
-
-    //naics = "311615,311812,321113,221112,113310,322110,311821,311612,325211,311813,311911,311919,311830,311119,322121,311824,311941,325991,311710,311930";
-
-    var naicsCodes = naics.split(',');
-
-    var sectorListMosaic = useeio.sectorList({
-        model: model,
-        selector: '.industry-list-mosaic',
-    });
-    config.withDefaults({
-    	view: 'mosaic',
-        count: 30,
-        naics: naicsCodes,
-    });
-    config.join(sectorListMosaic);
-}
-
-// 'USEEIOv2.0'; // GAUSEEIO returned Wild-caught fish and game outflow 
-
-// Not used - Delete
-function updateMosicNew(naics) {
-	alert("updateMosicNew");
-	// Might not use this, unless it can be revised to allow the hash to trigger when indicators dropdown changes. Remove location.reload() above.
-	var modelID = 'USEEIO';
-
-    var model = useeio.model({
-        //endpoint: 'https://useeiowidgets.imfast.io/api',
-        endpoint: '/io/build/api',
-        model: modelID,
-        asJsonFiles: true,
-        view: 'mosaic'
-    });
-
-    var sectorList = useeio.sectorList({
-        model: model,
-        selector: '.industry-list-mosaic',
-    });
-
-    var naicsCodes = naics.split(',');
-    var handled = {};
-    var beaCodes = naicsCodes.map(useeio.toBEA)
-        .filter(function (code) {
-            // remove unmapped codes and duplicates
-            if (!code || handled[code])
-                return false;
-            handled[code] = true;
-            return true;
-        });
-
-    var config = {
-        count: 30,
-        view: 'mosaic',
-        naics: naicsCodes,
-        sectors: beaCodes,
-    };
-
-    //inputs.update(config);
-    //outputs.update(config);
-    sectorList.update(config);
-    sectorList.onChanged(function (change) {
-        for (var prop in change) {
-            if (change.hasOwnProperty(prop)) {
-                config[prop] = change[prop];
-            }
-        }
-        //inputs.update(config);
-        //outputs.update(config);
-        sectorList.update(config);
-    });
-}
-</script>
-
 <section id="impact">
 <div class="contentpadding" style="min-height:200px;border-bottom:1px solid #ccc;">
 
@@ -751,6 +666,7 @@ config.join(sectorList);
 
 
 <script type="text/javascript">
+console.log("info-template.html loaded");
 
 // INIT
 var priorHashLocal = {};
