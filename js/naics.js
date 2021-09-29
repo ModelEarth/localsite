@@ -257,9 +257,10 @@ function getNaics_setHiddenHash2(go) {
     let farmfresh = "311612,311615,311911,311919,311830,311824,311941,311710,311611,115114,311613,311811,311942,311991,311999,311211,311224,311920,"
     let recycling = "423930,562111,562112,562119,562211,562212,562213,562219,562910,562920,562991,562998,56299";
 
-    // Not crosswalking. All sectors appear here: 
-    recycling = recycling + ",562111,562212,562213,562910,562920,562HAZ,562OTH"; // 2.0 https://github.com/USEPA/useeior/wiki/Disaggregation-of-Sectors#disaggregation-inputs-for-envfile
-    alert(recycling)
+    // Not crosswalking. All sectors appear here from 2.0 https://github.com/USEPA/useeior/wiki/Disaggregation-of-Sectors#disaggregation-inputs-for-envfile
+    recycling = recycling + ",562111,562212,562213,562910,562920,562HAZ,562OTH";
+    //alert(recycling)
+
     //if (param.naics) {
     //    cat_filter = param.naics.split(',');
     //}
