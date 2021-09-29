@@ -1726,7 +1726,7 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	        }
 	    }
 	    $(".bigThumbMenu").append("<div class='bigThumbMenuInner'>" + sectionMenu + "</div>");
-	    if (hash.state.split(",")[0].toUpperCase() == "GA") {
+	    if (hash.state && hash.state.split(",")[0].toUpperCase() == "GA") {
 	    	$(".geo-US13").show();
 	    }
 	    //$("#honeycombMenu").append("<ul class='bigThumbUl'>" + sectionMenu + "</ul>");

@@ -1258,7 +1258,9 @@ addEventListener("load", function(){
     var anchor = getParentAnchor(e.target);
     if(anchor !== null) {
       //$('#log_display').hide();
-      document.getElementById("log_display").style.display = 'none';
+      if (document.getElementById("log_display").length >= 0) {
+        document.getElementById("log_display").style.display = 'none';
+      }
     }
   }, false);
 });

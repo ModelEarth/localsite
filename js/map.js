@@ -85,10 +85,12 @@ function hashChangedMap() {
     hash.show = param.show;
     hiddenhash.show = param.show;
   }
-  if (!hash.state) {
+  if (!hash.state && param.state) {
     // For embed link
-    hash.state = param.state;
-    hiddenhash.state = param.state;
+
+    // Reactivate if needed
+    //hash.state = param.state;
+    //hiddenhash.state = param.state;
   }
 
   // Temp for PPE
