@@ -274,7 +274,7 @@ $(document).ready(function(){
 				 		$('.logoholder-modelearth').css('margin-right', '20px');
 				 	}
 				 	*/
-				 	if (param.headerLogoSmall) {
+				 	if (!param.headerLogo && param.headerLogoSmall) {
 				 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall + "</a>");
 				 	} else if (param.headerLogo) {
 				 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
@@ -282,7 +282,10 @@ $(document).ready(function(){
 					 	$('#headerLogo').css('background-image', 'url(' + imageUrl + ')');
 						$('#headerLogo').css('background-repeat', 'no-repeat');
 					}
-					if (param.headerLogoNoText) {
+
+					if (param.headerLogoSmall) {
+						$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall+ "</a>");
+					} else if (param.headerLogoNoText) {
 						$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoNoText + "</a>");
 					} else if (param.headerLogo) {
 						$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
