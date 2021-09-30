@@ -677,6 +677,11 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     background-position: 0 0;
   }
 }
+@media(max-width:800px) {
+  .bgimg {
+    width: 200%; /* taller on mobile */
+  }
+}
 /* Turn off parallax scrolling for tablets and phones */
 @media only screen and (max-device-width: 1024px) {
     .bgimg {
@@ -968,18 +973,38 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 /* END HEADER */
 
-#hero-rect {
+#hero-content {
+  /*
   position: absolute;
   top: 60px;
   left: 60px;
+  right: 60px;
+  */
+  padding: 60px;
+  padding-bottom: 40px;
+}
+#hero-mini {
+  float: right;
+  background-color: rgba(33, 33, 33, 0.85);
+  border-radius: 20px;
+  padding: 20px;
+  color: #fff;
+  margin-bottom: 20px;
+}
+#hero-rect {
+  float: left;
   background-color: rgba(255, 255, 255, 0.85);
   border-radius: 40px;
-  margin: 0 auto; /* We'll center instead */
   max-width: 600px;
   padding: 50px;
   padding-bottom: 20px;
-  clear: both;
+  margin-bottom: 30px;
+  /* marginX: 0 auto; */ /* To Center */
 }
 #hero-rect:hover {
   background-color: rgba(255, 255, 255, 0.9);
 }
+#hero-text {
+  float: left;
+}
+
