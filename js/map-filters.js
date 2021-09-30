@@ -2478,12 +2478,12 @@ function hashChanged() {
         } else if (hash.set == "health") {
             $('#pageTitle').text('Health Impact')
         }
-        $("#impactIcons div").removeClass("active");
+        $(".impactIcons div").removeClass("active");
         if (hash.set) {
             const capitalizeSetName = hash.set.toLowerCase().replace(/\b[a-z]/g, function(letter) {
                 return letter.toUpperCase();
             });
-            $("#impactIcons div:contains(" + capitalizeSetName + ")").addClass("active");
+            $(".impactIcons div:contains(" + capitalizeSetName + ")").addClass("active");
         }
     }
     if (hash.mapview != priorHash.mapview) {

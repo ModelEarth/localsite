@@ -162,14 +162,14 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
     <div class="contentpadding" id="impactTopHolder" style="overflow:auto; padding-bottom:20px;">
 
         <div style="float:right;">
-            <div id="impactIcons">
+            <div class="impactIcons">
                 <!-- to do: check if indicators match USEEIO 2.0 -->
-                <div id="impactIcon_Air" onclick="goHash({'set':'air','indicators':'GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS'});">Air</div>
-                <div id="impactIcon_Water" onclick="goHash({'set':'water','indicators':'WATR,ACID,EUTR,ETOX'});">Water</div>
-                <div id="impactIcon_Land" onclick="goHash({'set':'land','indicators':'LAND,MNRL,PEST,METL,CRHW,CMSW,FMSW,CCDD'});">Land</div>
-                <div id="impactIcon_Energy" onclick="goHash({'set':'energy','indicators':'ENRG,NNRG,RNRG'});">Energy</div>
-                <div id="impactIcon_Health" onclick="goHash({'set':'health','indicators':'HTOX,HCAN,HNCN,HTOX,HRSP'});">Health</div>
-                <div id="impactIcon_Prosperity" onclick="goHash({'set':'prosperity','indicators':'VADD,JOBS'});">Prosperity</div>
+                <div class="impactIcon_Air" onclick="goHash({'set':'air','indicators':'GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS'});">Air</div>
+                <div class="impactIcon_Water" onclick="goHash({'set':'water','indicators':'WATR,ACID,EUTR,ETOX'});">Water</div>
+                <div class="impactIcon_Land" onclick="goHash({'set':'land','indicators':'LAND,MNRL,PEST,METL,CRHW,CMSW,FMSW,CCDD'});">Land</div>
+                <div class="impactIcon_Energy" onclick="goHash({'set':'energy','indicators':'ENRG,NNRG,RNRG'});">Energy</div>
+                <div class="impactIcon_Health" onclick="goHash({'set':'health','indicators':'HTOX,HCAN,HNCN,HTOX,HRSP'});">Health</div>
+                <div class="impactIcon_Prosperity" onclick="goHash({'set':'prosperity','indicators':'VADD,JOBS'});">Prosperity</div>
             </div><br>
 
             
@@ -368,21 +368,23 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 
 
 <style>
-#impactIcons div {
+.impactIcons div {
     float: left;
     font-size: 13px;
     border: 1px solid #ccc;
     width: 100px;
     padding: 20px;
     margin-right: 15px;
-    margin-bottom: 15px;
     text-align: center
 }
-#impactIcons div.active {
+#impact-widget-vertical #impactIcons div {
+	margin-bottom: 15px;
+}
+.impactIcons div.active {
     border: 4px solid #aaa;
     padding: 17px;
 }
-#impactIcons div:hover {
+.impactIcons div:hover {
     cursor: pointer;
     background-color: rgba(33,33,33,.8);
     color: #fff;
