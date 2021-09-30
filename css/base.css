@@ -1005,7 +1005,3 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 #hero-rect:hover {
   background-color: rgba(255, 255, 255, 0.9);
 }
-#hero-text {
-  float: left;
-}
-
