@@ -372,7 +372,7 @@ function populateTitle(showtitle,showtab) {
     if (hiddenhash.loctitle) {
         showtitle = hiddenhash.loctitle + " - " + showtitle;
     } else if (hash.state) {
-        $("#state_select").val(hash.state);
+        $("#state_select").val(hash.state.toUpperCase().split(",")[0]);
         let thestate = $("#state_select").find(":selected").text();
         hiddenhash.loctitle = thestate;
 

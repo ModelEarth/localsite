@@ -1,13 +1,18 @@
 ##Parameters
 
-You'll find the following in our [base starter page](../../apps/base/).
+To create a page where you can edit parameters, copy our [base starter page](../../apps/base/).  
+You can copy parameters from the URL.  Here's a sample with [Air impacts for Fulton and DeKalb Counties](../info/#geo=US13121,US13089&set=air&indicators=GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS)
 
     param.display = "everything"
     param.lat = 37
     param.lon = -95.7
-    param.state = "IA"
+    param.state = "GA"
+    param.geo = "US13121,US13089" // Fulton and DeKalb Counties
     param.set = "air"
     param.indicators = "GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS"
+    param.naics = "327310,321213" // Cement and Engineered Wood
+    param.sectors = "562111,562212,562213,562910,562920,562HAZ,562OTH" // Recycling Sectors
+Learn about [Recycling sector deaggregation](https://github.com/USEPA/useeior/wiki/Disaggregation-of-Sectors#disaggregation-inputs-for-envfile)
 
 These additonal parameters can be used to change the header logo:
 

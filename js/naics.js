@@ -1,3 +1,7 @@
+
+// OLD PAGE - This page is being replaced by naics2.js
+// VIEW NEW VERSION: https://model.earth/localsite/info/naics/
+
 // Default is currently state13 for GA.
 // The value after naics is the number of digits in the naics code
 
