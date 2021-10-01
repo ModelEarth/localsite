@@ -14,7 +14,7 @@
     margin-right: 6px;
     min-height: 34px;
 }
-#hero-rect-new #state_select, #hero-rect #state_select {
+.hero-bucket #state_select, #hero-rect #state_select {
   font-size: 24px;
   max-width: 300px;
   padding: 10px;
