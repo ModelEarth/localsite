@@ -1,5 +1,4 @@
-// TO DO - Use group to remove prior layer.
-// https://stackoverflow.com/questions/38845292/filter-leaflet-geojson-object-based-on-checkbox-status/38845970#38845970
+// DISPLAYS LEAFLET MAPS FOR SEARCH FILTERS, DIRECTORY POINTS AND SIDE CLOSEUP
 
 // INIT
 var dataParameters = [];
@@ -59,6 +58,9 @@ var localsite_map = localsite_map || (function(){
     };
 }());
 */
+
+// FOR MAP LAYERS - A group for removing prior layers.
+// https://stackoverflow.com/questions/38845292/filter-leaflet-geojson-object-based-on-checkbox-status/38845970#38845970
 
 /* Allows map to remove selected shapes when backing up. */
 document.addEventListener('hashChangeEvent', function (elem) {
