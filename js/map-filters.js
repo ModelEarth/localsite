@@ -1586,7 +1586,7 @@ function displayHexagonMenu(layerName,siteObject) {
     $("#honeyMenuHolder").show();
 }
 function thumbClick(show,path) {
-	let hash = getHashOnly(); // Not hiddenhash
+    let hash = getHashOnly(); // Not hiddenhash
 	let priorShow = hash.show;
 	hash.show = show;
 	if (!hash.state && param.state) {
@@ -1609,7 +1609,8 @@ function thumbClick(show,path) {
 	    }
 		$(".bigThumbMenuContent").removeClass("bigThumbActive");
 		$(".bigThumbMenuContent[show='" + show +"']").addClass("bigThumbActive");
-		goHash(hash);
+        console.log(hash);
+		goHash(hash,"name,loc"); // Remove name and loc (loc is not used yet)
 	}
 }
 function displayBigThumbnails(activeLayer, layerName,siteObject) {
@@ -1642,7 +1643,7 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	        
 	        var linkJavascript = "";
 	        var directlink = getDirectLink(thelayers[layer].livedomain, thelayers[layer].directlink, thelayers[layer].rootfolder, thelayers[layer].item);
-
+            //alert("directlink " + directlink);
 	        if (bigThumbSection == "main") {
 	            if (thelayers[layer].menulevel == "1") {
 	                if (access(currentAccess,menuaccess)) {
@@ -1691,7 +1692,11 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	                                    sectionMenu += "<div class='bigThumbMenuContent geo-US13 geo-limited' style='display:none' show='" + siteObject.items[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' " + hideforAccessLevel + "><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
 	                                
 	                                } else if (menuaccess==0) { // Quick hack until user-0 displays for currentAccess 1. In progress...
-	                                    sectionMenu += "<div class='bigThumbMenuContent' show='" + siteObject.items[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='displayX:none'><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
+	                                    sectionMenu += "<div class='bigThumbMenuContent' show='" + siteObject.items[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='displayX:none'><div class='bigThumbHolder'><a ";
+                                        if (directlink) { // This is a fallback and won't contain the hash values.
+                                            sectionMenu += "href='" + directlink + "' ";
+                                        }
+                                        sectionMenu += linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
 	                                }
 	                            }
 	                    //}
@@ -1757,11 +1762,12 @@ function getDirectLink(livedomain,directlink,rootfolder,hashStr) {
         directlink = removeFrontFolder(directlink);
     } else if (rootfolder) {
         if (rootfolder.indexOf('/explore/') < 0) {
-            rootfolder = "/explore/" + rootfolder;
+            //rootfolder = "/explore/" + rootfolder;
         }
         directlink = removeFrontFolder(rootfolder + "#" + hashStr);
+        alert(directlink)
     } else {
-        directlink = removeFrontFolder("/explore/#" + hashStr);
+        //directlink = removeFrontFolder("/explore/#" + hashStr);
     }
     
     if (livedomain && location.host.indexOf('localhost') < 0) {

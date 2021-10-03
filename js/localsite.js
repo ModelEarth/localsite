@@ -257,6 +257,9 @@ function updateHash(addToHash, addToExisting, removeFromHash) { // Avoids trigge
     hash = mix(addToHash,hash); // Gives priority to addToHash
 
     if (removeFromHash) {
+      if (typeof removeFromHash == "string") {
+        removeFromHash = removeFromHash.split(",");
+      }
       for(var i = 0; i < removeFromHash.length; i++) {
           delete hash[removeFromHash[i]];
           delete hiddenhash[removeFromHash[i]];

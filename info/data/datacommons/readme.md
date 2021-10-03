@@ -14,8 +14,7 @@ Areas of focus include:
 
 - <a href="../../../localsite/info/#showloc">Industries and Impacts by county</a> - great to also include by zip! 
 - [Bureau of Labor Statistics (BLS)](https://www.bls.gov/data/)  
-- [Solar Companies](../../localsite/map/#show=solar)  
-- [Recycling, Processors, Transfer Stations](../../localsite/map/recycling/ga/)   
+- [Solar Companies](../../localsite/map/#show=solar)   
 - [Electric Vehicle Ecosystems](../../localsite/info/#state=GA&show=vehicles)  
 - [Commute Times and Walkability](../)  
 <br>
