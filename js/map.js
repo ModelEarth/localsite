@@ -273,29 +273,48 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     */
 
     // Pevent error when backing up: map container is already initialized
-    if (map) {
-      map.off();
-      map.remove();
-    }
-    if( $('#' + whichmap).length > 5) {
+    //if (map) {
+    //  map.off();
+    //  map.remove();
+    //}
+
+
+    //map2 = document.querySelector('#' + whichmap2)._leaflet_map; // Recall existing map
+    //  var container2 = L.DomUtil.get(map2);
+    //  if (container2 == null) { // Initialize map
+
+
+
+    let map;
+    //alert(whichmap + " length: " + $('#' + whichmap).length);
+    if( $('#' + whichmap).length >= 1) {
       console.log("#" + whichmap + " is populated");
       map = document.querySelector('#'+whichmap)._leaflet_map; // Recall existing map
     } else {
-      
-      console.log("Initialize map");
-      var map = L.map(whichmap, { // var --> Map container is already initialized.
-        center: mapCenter,
-        scrollWheelZoom: false,
-        zoom: dp.zoom,
-        dragging: !L.Browser.mobile, 
-        tap: !L.Browser.mobile
-      });
+      //alert("#" + whichmap + " not found");
+      //var containerExists = L.DomUtil.get(map); // NOT NEEDED
 
+      // https://help.openstreetmap.org/questions/12935/error-map-container-is-already-initialized
+      // if(container != null){ container._leaflet_id = null; }
+
+      //if (containerExists == null) { // NOT NEEDED - need to detect L.map
+        if (location.host.indexOf('localhost') >= 0) {
+          alert("Initialize map - this may never be reached unless #" + whichmap + " div does not exist.");
+        }
+        map = L.map(whichmap, { // var --> Map container is already initialized.
+          center: mapCenter,
+          scrollWheelZoom: false,
+          zoom: dp.zoom,
+          dragging: !L.Browser.mobile, 
+          tap: !L.Browser.mobile
+        });
+      //}
     }
 
     console.log("typeof map: " + typeof map);
     console.log("typeof document.querySelector ._leaflet_map: " + typeof document.querySelector('#' + whichmap)._leaflet_map);
     
+    // Might be able to rename/reconfig/reuse containerExists above to container and remove this line:
     var container = L.DomUtil.get(map);
     //dp.zoom = 18; // TEMP - Causes map to start with extreme close-up, then zooms out to about 5.
     // Otherwise starts with 7ish and zooms to 5ish.
@@ -955,7 +974,7 @@ function addIcons(dp,map,map2) {
     if (element.property_link) {
       output += "<a href='" + element.property_link + "'>Property Details</a><br>";
     } else if (element["name"]) {
-      output += "<a href='#show=" + hash.show + "&name=" + element["name"].replace(/\ /g,"_") + "''>View Details</a><br>";
+      output += "<a onclick='goHash({\"name\":\"" + element["name"].replace(/\ /g,"_").replace(/'/g,"\'") + "\"}); return false;' href='#show=" + hash.show + "&name=" + element["name"].replace(/\ /g,"_").replace(/'/g,"\'") + "'>View Details</a><br>";
     }
     // ADD POPUP BUBBLES TO MAP POINTS
     if (circle) {
@@ -2505,8 +2524,9 @@ function showList(dp,map) {
           //line below was here
         }
       }
-      searchFor += " <div id='viewAllLink' style='float:right;display:none;'><a href='#show=" + param["show"] + "'>View All</a></div>";
-      
+      // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
+      // Remove name from hash to trigger refresh
+      searchFor += " <div id='viewAllLink' style='float:right;display:none;'><a onclick='goHash({},[\"name\",\"loc\"]); return false;' href='#show=" + param["show"] + "'>View All</a></div>";
 
       if (dp.listInfo) {
         searchFor += dp.listInfo;
