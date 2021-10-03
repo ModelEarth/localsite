@@ -219,6 +219,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     if (!dp.dataset && !dp.googleDocID) {
       console.log('CANCEL loadFromSheet. No dataset selected for top map. May not be one for state.');
       $("#" + whichmap).hide();
+      $("#list_main").hide();
       if (param.showsearch == "true") { // For EPD products io/template
         $(".keywordField").show();
       } else {
