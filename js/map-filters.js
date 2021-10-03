@@ -1595,7 +1595,11 @@ function thumbClick(show,path) {
 	delete hash.cat;
 	delete hash.naics;
 	delete hash.m; // Birdseye view
-	if (path && !window.location.pathname.includes(path)) {
+    let pageContainsInfoWidgets = false;
+    if ($("#iogrid").length >= 0 || $(".sector-list").length >= 0) {
+        pageContainsInfoWidgets = true; // Stay on the current page if it contains widgets.
+    }
+	if (!pageContainsInfoWidgets && path && !window.location.pathname.includes(path)) {
 		var hashString = decodeURIComponent($.param(hash));
 		window.location = "/localsite/" + path + "#" + hashString;
 	} else { // Remain in current page
