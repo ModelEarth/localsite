@@ -283,7 +283,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     } else {
       
       console.log("Initialize map");
-      var map = L.map(whichmap, {
+      var map = L.map(whichmap, { // var --> Map container is already initialized.
         center: mapCenter,
         scrollWheelZoom: false,
         zoom: dp.zoom,
@@ -1565,8 +1565,6 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
       } else if (show == "restaurants") {
         // Fulton County 5631 restaurants
-        
-        dp = {};
         dp.listTitle = "Restaurant Ratings";
         dp.dataTitle = "Restaurant Ratings";
         dp.dataset = "/community/tools/map.csv";
@@ -1617,6 +1615,37 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
   } // end state GA
 
+  if (theState == "CA") {
+    //alert("theState " + theState)
+    if (show == "businesses") { // San Diego - Mike
+        dp.nameColumn = "Name";
+        dp.titleColumn = "Name";
+
+        dp.listTitle = "Businesses";
+        dp.dataTitle = "Businesses";
+        dp.dataset = "/apps/benchmarks/data/beyond_businesses.csv";
+        dp.latitude = 32.71;
+        dp.longitude = -117.16;
+        dp.zoom = 11;
+        dp.latColumn = "lat";
+        dp.lonColumn = "lon";
+        dp.valueColumnLabel = "NAICS";
+        dp.valueColumn = "NAICS";
+      } else if (show == "buildings") { // San Diego - Mike
+        dp.nameColumn = "Name";
+        dp.listTitle = "Buildings";
+        dp.dataTitle = "Buildings";
+        dp.dataset = "/apps/benchmarks/data/beyond_carbon.csv";
+        dp.latitude = 32.71;
+        dp.longitude = -117.16;
+        dp.zoom = 11;
+        dp.latColumn = "lat";
+        dp.lonColumn = "lon";
+        dp.valueColumnLabel = "ENERGY STAR";
+        dp.valueColumn = "ENERGY STAR";
+        dp.scale = "scaleThreshold"; // No effect?
+      }
+  }
   console.log("loadMap1 dp.zoom " + dp.zoom);
 
   if(dp.dataset) {
