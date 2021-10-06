@@ -96,7 +96,32 @@ $(document).ready(function () {
 	if(location.host.indexOf('localhost') >= 0) {
 		console.log("Loaded Harmonized System (HS) codes");
 	}
+
+    // This avoids cross domain CORS error
+    d3.text(local_app.community_data_root() + 'global/hs/harmonized-system.txt').then(function(data) {
+        let catLines = d3.csvParseRows(data);
+        //alert(catLines.length)
+        for(var i = 0; i < catLines.length; i++) {
+            catArray.push([catLines[i][0], catLines[i][1]]);
+        }
+
+        /*
+        catLines.forEach(function(element) {
+          
+          //catArray.push([element.substr(0,4), element.substr(5)]);
+          catArray.push([element[0], element.[1]]);
+        });
+        //$('#mainCats > div:nth-child(11)').trigger("click"); // Specific category
+        */
+
+        productList("01","99","Harmonized System (HS) Product Categories")
+
+    });
+
+    /*
+    // cross domain CORS error
 	$.get(local_app.community_data_root() + 'global/hs/harmonized-system.txt', function(data) {
+
 		var catLines = data.split("\n");
 		
 		catLines.forEach(function(element) {
@@ -106,6 +131,7 @@ $(document).ready(function () {
 		//$('#mainCats > div:nth-child(11)').trigger("click"); // Specific category
 		productList("01","99","Harmonized System (HS) Product Categories")
 	}, 'text');
+    */
 
 	populateFieldsFromHash();
 	$("#productCodes").css('width','200px');
@@ -513,6 +539,9 @@ $(document).ready(function () {
 function productList(startRange, endRange, text) {
 	// Displays Harmonized System (HS) subcategories
 	// To Do: Lazyload file when initially requested - when #catSearch is clicked.
+
+    // BUBBUG - called twice, sometimes without catArray.
+    //alert("catArray.length " + catArray.length)
 
 	if (!$("#productCodes").length) {
 		return;
