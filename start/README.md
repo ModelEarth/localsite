@@ -50,6 +50,8 @@ Activate GitHub Pages for each of your forked repos by going to "Settings > Page
 <img src="img/github-pages.png">
 </div>
 
+IMPORTANT: DO NOT SELECT A THEME - The Jekyll theme will break the modular site integration.  
+
 Wait a few minutes for a new GitHub Pages site to become available at a link in the following format:
 
 https://[your account].Github.io/[repo name]  
