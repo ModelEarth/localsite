@@ -163,7 +163,7 @@ In the old days you had to do the following:
 You can point a domain at all the repos in your Github account with the steps below.  
 
 
-- Use CloudFlare.com as a free proxy for your domain name - [setup steps](cloudflare/) - [more about Cloudflare with GitHub](https://www.toptal.com/github/unlimited-scale-web-hosting-github-pages-cloudflare)  
+- Use CloudFlare.com as a free proxy for your domain name - [setup steps](cloudflare/) - [more about Cloudflare with GitHub](https://www.toptal.com/github/unlimited-scale-web-hosting-github-pages-cloudflare). AWS can also be used.  
 - Important: If you are using the same domain for Google email accounts, avoid adding the 4 Google A records (these prevent adding the CNAME record). You'll only need to add the 5 MX records provided by Google.  
 - Create a repo in your primary account matching the name of the account: [github username].github.io  
 - Click settings and activate GitHub Pages for your [github username].github.io and each repo that is a subfolder in your site.  
