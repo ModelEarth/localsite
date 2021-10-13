@@ -150,6 +150,7 @@ callback(
 	{
 		"menulevel": "1",
 		"item": "farmfresh",
+		"rootfolder": "info",
 		"title": "Farm Fresh",
 		"tabtitle": "Farm Fresh",
 		"mobiletitle": "Farm Fresh",
@@ -163,7 +164,7 @@ callback(
 		"sectionTitle": "leftNav",
 		"topnavaccess": "10",
 		"menuaccess": "0",
-		"directlink": "/localsite/map/#show=farmfresh",
+		"directlink": "/localsite/info/#show=farmfresh",
 		"caption": ""
 	},
 	{

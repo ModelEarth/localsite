@@ -1860,7 +1860,7 @@ function isElementInViewport(el) {
     );
 }
 function initSiteObject(layerName) {
-
+//alert("initSiteObject"); // Gave more time for app icon to load.
 	let hash = getHash();
 	//if(location.host.indexOf('localhost') >= 0) {
 	    // Greenville:
