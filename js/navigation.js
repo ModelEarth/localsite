@@ -26,7 +26,6 @@ if (climbpath == "") {
 
 $(document).ready(function(){
 	
-
  	var modelpath = climbpath;
  	if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('hood') < 0) { // When not localhost or other sites that have a fork of io and community.
  		// To do: allow "Input-Output Map" link in footer to remain relative.
@@ -172,7 +171,10 @@ $(document).ready(function(){
 				 		//changeFavicon("https://lh3.googleusercontent.com/HPVBBuNWulVbWxHAT3Nk_kIhJPFpFObwNt4gU2ZtT4m89tqjLheeRst_cMnO8mSrVt7FOSlWXCdg6MGcGV6kwSyjBVxk5-efdw")
 				 	// localhost will be removed from the following. Currently allows Georgia branding during testing.
 				 	// location.host.indexOf('localhost') >= 0 || 
-				 	} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0
+				 	} else if (location.host.indexOf("lifecycle.tools") >= 0) {
+				 		param.titleArray = ["lifecycle","tools"];
+				 		param.headerLogoSmall = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
+  					} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0
 				 	// Show locally for Brave Browser only
 				 	//|| ((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false)
 				 	) {
