@@ -741,6 +741,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     min-height: 34px;
     margin-right: 15px;
     padding: 0 5px 0 10px;
+    padding-top: 4px; /* Firefox */
 }
 
 
