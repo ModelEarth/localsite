@@ -110,6 +110,7 @@ refreshNaicsWidget();
 function loadNationalIfNoState() {
     let hash = getHash()
     if (!hash.state) { // No naics filter, use national
+        //alert("applyIO with nothing")
         applyIO();
     }
 }
@@ -227,6 +228,7 @@ function refreshNaicsWidget() {
         $("#industryDetail").hide();
     }
     if (loadNAICS==false && (initialPageLoad || hash.show != priorHash_naicspage.show)) {
+        //alert("call applyIO no naics")
         applyIO("");
         if(initialPageLoad) {
             displayImpactBubbles(1);
@@ -1603,7 +1605,7 @@ function getKeyByValue(object, value) {
 }
 
 function applyIO(naics) {
-    console.log("applyIO with naics: " + naics);
+    //alert("applyIO with naics: " + naics);
 
     if (!hash.indicators) {
         hash.indicators = "ACID,ETOX,EUTR,GHG,HTOX,LAND,OZON,PEST,SMOG,WATR";
@@ -1611,8 +1613,9 @@ function applyIO(naics) {
     var naicsCodes;
     if (naics) {
         naicsCodes = naics.split(',');
+        hiddenhash.naics = naics; // No effect
+        //hiddenhash.naics = naicsCodes; // Causes split error in bubble chart.
     }
-
     var indicators = "";
     //let hash = getHash();
     if (hash.indicators) {
@@ -1637,7 +1640,6 @@ function applyIO(naics) {
         model: model,
         selector: '#iogrid',
         indicators: indicatorCodes,
-        
     });
     config.withDefaults({
         count: 20,
@@ -1651,7 +1653,12 @@ function applyIO(naics) {
     config.withDefaults({
         view: ["mosaic"],
         count: 50,
+        //naics: naicsCodes,
+        //sectors: useeio.toBEA(naicsCodes),
+        //naics: naics,
+        //sectors: useeio.toBEA(naics),
     })
+    // Neither of the above naics attempts works for second state loaded.
     config.join(sectorList);
 
     // End Copied from sector_list.html, and changed to use withDefaults
