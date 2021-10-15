@@ -1768,7 +1768,7 @@ function onTabletopLoad(dp1) {
 function loadGeos(geo, attempts, callback) {
 
   // load only, no search filter display - get county name from geo value.
-  // created from a copy of showCounties() in search-filters.js
+  // created from a copy of showCountiesOrStates() in search-filters.js
 
   if (typeof d3 !== 'undefined') {
 
@@ -3182,7 +3182,7 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
     url = local_app.modelearth_root() + "/localsite/map/topo/states-10m.json";
     topoObjName = "topoob.objects.states";
     $("#geomap").width("700px");
-    $(".geoListHolder").hide();
+    //$(".geoListHolder").hide();
   } else { // COUNTIES
     layerName = stateAbbr + " Counties";
     let stateNameLowercase = getStateNameFromID(stateAbbr).toLowerCase();
@@ -3195,7 +3195,7 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
 
     //$("#geomap").width("440px");
     $("#geomap").width("700px");
-    $(".geoListHolder").show();
+    //$(".geoListHolder").show();
     url = local_app.modelearth_root() + "/topojson/countries/us-states/" + stateAbbr + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
     topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + countyTopoTerm;
 
