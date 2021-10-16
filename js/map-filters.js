@@ -298,7 +298,7 @@ $(document).ready(function () {
 	    	goHash({'state':this.value,'name':'','regiontitle':''}); // triggers renderMapShapes("geomap", hash); // County select map
 	    	//$("#filterLocations").hide(); // So state appears on map immediately
 	    } else { // US selected
-	    	goHash({'mapview':'country'});
+	    	goHash({'mapview':'country','state':''});
 	    	//clearHash("state")
 	    	//$("#geoPicker").hide();
 	    	//$("#industryListHolder").hide();
@@ -2399,16 +2399,21 @@ function hashChanged() {
         //let imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/georgia.jpg";
         //$("#hero-landscape-image").css('background-image', 'url(' + imageUrl + ')');
 
-        //let theState = $("#state_select").find(":selected").val();
-        let theStateName = $("#state_select").find(":selected").text();
-        let theStateNameLowercase = theStateName.toLowerCase();
-
-        let imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/" + theStateNameLowercase.replace(/\s+/g, '-') + ".jpg";
-        if (theStateNameLowercase == "georgia") {
-        	imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
-        }
-        if (theStateName.length == 0) {
-        	imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
+        let theStateName;
+        let theStateNameLowercase;
+        let imageUrl;
+        if ($("#state_select").find(":selected").val()) {
+            theStateName = $("#state_select").find(":selected").text();
+            theStateNameLowercase = theStateName.toLowerCase();
+            imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/" + theStateNameLowercase.replace(/\s+/g, '-') + ".jpg";
+            if (theStateNameLowercase == "georgia") {
+            	imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
+            }
+            if (theStateName.length == 0) {
+            	imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
+            }
+        } else {
+            imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
         }
         let imageUrl_scr = "url(" + imageUrl + ")";
         $("#hero-landscape-image").css('background-image', imageUrl_scr);
