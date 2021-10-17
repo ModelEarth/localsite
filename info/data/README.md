@@ -1,10 +1,10 @@
-# Display Datasets
+# Display Data
 
 We've combined labor and industry stats with commodity inflow-outflow data from the US EPA.
 
 ####Embeddable Datasets
-
-[Maps of Industry and Employment](../#mapview=country) - Sample [pages for communities](../../../apps)
+<!-- ../#mapview=country -->
+[Maps of Industry and Employment](../../../apps/beyondcarbon/#mapview=state) - Sample [pages for communities](../../../apps)
 
 [Impacts of Goods and Services](../../../io/charts/) - US Environmentally-Extended Input-Output Widgets  
 
@@ -21,6 +21,8 @@ We've combined labor and industry stats with commodity inflow-outflow data from 
 
 
 ####Opportunties for further integration
+
+[About USEEIO API and Data](/io/about/api/)
 
 [Google Data Commons Setup](datacommons)  
 
