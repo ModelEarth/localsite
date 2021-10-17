@@ -679,7 +679,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
   </script>
   */
-  if (param.display == "everything" || param.display == "locfilters" || param.display == "navigation" || param.display == "map") {
+  if (param.showheader == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "navigation" || param.display == "map") {
 
     includeCSS3(theroot + 'css/map.css',theroot); // Before naics.js so #industries can be overwritten.
     includeCSS3(theroot + 'css/naics.css',theroot);
