@@ -174,6 +174,8 @@ $(document).ready(function(){
 				 	} else if (location.host.indexOf("lifecycle.tools") >= 0) {
 				 		param.titleArray = ["lifecycle","tools"];
 				 		param.headerLogoSmall = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
+  						$('.lifecycle').css('display', 'inline');
+				 		$('.lifecycle-hide').css('display', 'none');
   					} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0
 				 	// Show locally for Brave Browser only
 				 	//|| ((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false)
