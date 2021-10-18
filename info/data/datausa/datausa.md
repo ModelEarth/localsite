@@ -63,7 +63,8 @@ Can't authenticate to database.
 
 Question: How would we hit the DataUSA API rather than a local postgresql database?  
 
-Tried installing [datausa-api](https://github.com/DataUSA/datausa-api)  
+Tried installing [datausa-api](https://github.com/DataUSA/datausa-api) - This API is probably the legacy one.
+We've been unable to find the newer API. [Dig around and make contact](https://github.com/DataUSA/datausa-api/wiki).
 
 If you install Python using brew, the relevant headers are already installed for you.
 In other words, you don't need python-devel.
