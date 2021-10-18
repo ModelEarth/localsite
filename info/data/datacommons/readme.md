@@ -7,7 +7,7 @@ Join us to create new tools and industry maps for Sustainable Material Managemen
 
 We're exploring infusing Google Data Commons with US EPA indicators. 
 
-See additional details in the Google Data Commons section of our [project list](../../../../community/projects/).  
+See additional details in the Google Data Commons section of our [project list](../../../../community/projects/#google).  
 
 <!--
 Areas of focus include:  
