@@ -2231,6 +2231,9 @@ function hashChanged() {
 		var stateAbbrev = hash.state.split(",")[0].toUpperCase();
 		// Apply early since may be used by changes to geo
 		$("#state_select").val(stateAbbrev);
+        if (priorHash.state && hash.state != priorHash.state) {
+            $("#hitRefreshNote").show();
+        }
 	} else {
         //$(".locationTabText").text("United States");
     }
