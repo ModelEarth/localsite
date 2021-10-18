@@ -30,11 +30,14 @@
     background-color: #ccc !important;
 }
 
-#tabulator-geotable .tabulatorBar div:nth-child(3) {
+#tabulator-sample .tabulatorBar div:nth-child(3) {
     height: 6px !important; /* narrower bars */
 }
 
 /* pass clicks through to row so hash change can set checkbox without re-triggering hash change */
+#tabulator-statetable .tabulator-row input[type='checkbox'] {
+    pointer-events: none;
+}
 #tabulator-geotable .tabulator-row input[type='checkbox'] {
     pointer-events: none;
 }
