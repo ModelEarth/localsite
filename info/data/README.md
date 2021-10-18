@@ -4,11 +4,11 @@ We've combined labor and industry stats with commodity inflow-outflow data from 
 
 ####Embeddable Datasets
 <!-- ../#mapview=country -->
-[Maps of Industry and Employment](../../../apps/beyondcarbon/#mapview=state) - Sample [pages for communities](../../../apps)
+[Local Industries, Impacts and Employment](../../../apps/beyondcarbon/#mapview=state) - Sample [Community Pages](../../../apps)
 
 [Impacts of Goods and Services](../../../io/charts/) - US Environmentally-Extended Input-Output Widgets  
 
-[Community/Product Impact Profiles](../../../io/template/) - Using Environmental Product Declarations (EPDs)
+[Community and Product Impact Profiles](../../../io/template/) - Using Environmental Product Declarations (EPDs)
 
 
 ####Data Sources and Prep
