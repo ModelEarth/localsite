@@ -724,7 +724,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     // Tabulator
     includeCSS3('https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css',theroot);
     includeCSS3(theroot + '../localsite/css/base-tabulator.css',theroot);
-    loadScript('https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js', function(results) {
+    // Latest: https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js
+    loadScript('https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js', function(results) {
 
     });
     

@@ -39,9 +39,11 @@ h4 {
 </div>
 <hr>
 
-
-<!-- Tabular: Latest version -->
-<script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
+<!--
+// Tabulator: Latest version
+https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js
+-->
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
 
 <div class="content contentpadding">
 
@@ -67,7 +69,7 @@ var table = new Tabulator("#tabulator-sample", {
     data:tabledata,           //load row data from array
     layout:"fitColumns",      //fit columns to width of table
     responsiveLayout:"hide",  //hide columns that dont fit on the table
-    tooltips:true,            //show tool tips on cells
+    //tooltips:true,            //show tool tips on cells
     addRowPos:"top",          //when adding a new row, add it to the top of the table
     history:true,             //allow undo and redo actions on the table
     paginationSize:7,         //allow 7 rows per page of data
@@ -89,10 +91,13 @@ var table = new Tabulator("#tabulator-sample", {
         {title:"Date Of Birth", field:"dob", hozAlign:"right", width:130, sorter:"date"},
         {title:"Driver", field:"car", hozAlign:"right", width:90, formatter:"tickCross", sorter:"boolean", editor:true},
     ],
-    rowSelectionChanged: function(e, row) {
-        //alert(row)
-        //this.recalc();
+    rowClick:function(e, row){ //trigger an alert message when the row is clicked
+        alert("Row " + row.getData().id + " Clicked!!!!");
     },
+    //rowSelectionChanged: function(e, row) {
+    //    //alert(row)
+    //    //this.recalc();
+    //},
 
 });
 </script>
