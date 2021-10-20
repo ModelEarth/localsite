@@ -1208,7 +1208,7 @@ function updateSelectedTableRows(geo, clear, attempts) {
 	if (typeof geotable.getRows === "function") {
     	//geotable.selectRow(geotable.getRows().filter(row => row.getData().name.includes('Ba')));
     	if (clear) {
-    		geotable.deselectRow(); // All
+            geotable.deselectRow(); // All
     	}
     	if (geo) {
 			$.each(geo.split(','), function(index, value) {
@@ -1225,7 +1225,7 @@ function updateSelectedTableRows(geo, clear, attempts) {
     		county_names.push(value._row.data.name.split(",")[0].replace(" County",""));
     	});
     	console.log("county_names " + county_names.toString());
-    	$(".counties_title").text(county_names.toString().replaceAll(",",", "))
+    	$(".counties_title").text(county_names.toString().replaceAll(",",", "));
     } else {
 	  attempts = attempts + 1;
       if (attempts < 200) {
@@ -2198,10 +2198,15 @@ document.addEventListener('hashChangeEvent', function (elem) {
 	console.log("map-filters.js detects URL hashChangeEvent");
  	hashChanged();
 }, false);
+
+/*
+// This was being triggered by naics.js hiddenhash changes
 document.addEventListener('hiddenhashChangeEvent', function (elem) {
 	console.log("map-filters.js detects hiddenhashChangeEvent");
+    //alert("hiddenhash.naics " + hiddenhash.naics)
  	hashChanged();
 }, false);
+*/
 
 if(typeof hiddenhash == 'undefined') {
     var hiddenhash = {};
@@ -2214,9 +2219,8 @@ function hashChanged() {
 	let hash = getHash(); // Includes changes to hiddenhash
 	if (hash.show == "undefined") { // To eventually remove
 		delete hash.show; // Fix URL bug from indicator select hamburger menu
-		updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
+		//updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
 	}
-
 	// Temp for PPE
 	if (!hash.state && location.host.indexOf("georgia") >= 0) {
 	    hash.state = "GA";
@@ -2438,7 +2442,7 @@ function hashChanged() {
 		//'geo':'', 
 		//updateHash({'regiontitle':'', 'lat':'', 'lon':''});
 		showCountiesOrStates(0);
-	} else if (hash.mapview == "state" || hash.mapview == "country") {
+	} else if (hash.mapview != priorHash.mapview && (hash.mapview == "state" || hash.mapview == "country")) {
         showCountiesOrStates(0);
     }
     //Resides before geo
