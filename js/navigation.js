@@ -155,6 +155,8 @@ $(document).ready(function(){
 			 		// Set here so path works at all levels.
 
 			 		// To do: fetch the existing background-image.
+
+			 		var earthFooter = false;
 			 		if (param.startTitle == "Code for America" ||  location.host.indexOf('codeforamerica') >= 0) {
 			 			showLeftIcon = true;
 			  			param.titleArray = []
@@ -176,6 +178,7 @@ $(document).ready(function(){
 				 		param.headerLogoSmall = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
   						$('.lifecycle').css('display', 'inline');
 				 		$('.lifecycle-hide').css('display', 'none');
+				 		earthFooter = true;
   					} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0
 				 	// Show locally for Brave Browser only
 				 	|| ((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false)
@@ -205,7 +208,7 @@ $(document).ready(function(){
 				 			$('.georgiaorg-hide').css('display', 'none');
 				 			$('#headerOffset').css('display', 'block');
 						}, 1500);
-
+				 		earthFooter = true;
 				 	} else if (!Array.isArray(param.titleArray) && (param.startTitle == "Neighborhood.org" || location.host.indexOf('neighborhood.org') >= 0)) {
 				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Neighborhood Modeling");
@@ -214,6 +217,7 @@ $(document).ready(function(){
 			  			document.title = "Neighborhood.org - " + document.title
 			  			changeFavicon("/localsite/img/logo/partners/neighborhood-icon.png")
 			  			$('.neighborhood').css('display', 'inline');
+			  			earthFooter = true;
 				 	} else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
 				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Model Earth");
@@ -227,6 +231,7 @@ $(document).ready(function(){
 
 				 	if (location.host.indexOf('model.earth') >= 0) { // Since above might not be detecting model.earth, probably is now.
 				 		showLeftIcon = true;
+				 		earthFooter = true;
 				 	}
 
 				 	if (param["show"] == "mockup") {
@@ -405,8 +410,12 @@ $(document).ready(function(){
 		//$("#footer").addClass("flexfooter");
 		$("#footer").prepend( "<div id='local-footer' class='flexfooter noprint'></div>\r" );
 	}
+
+	if (location.host.indexOf('localhost') >= 0) {
+		earthFooter = true; // Need to drive localhost by settings in a file ignored by .gitignore
+	}
 	if (param["showfooter"] && param["showfooter"] == "false") {
-	} else {
+	} else if (earthFooter) {
 		var footerClimbpath = "";
 		let footerFile = modelpath + "../localsite/footer.html"; // modelpath remains relative for site desgnated above as having a local copy of io and community.
 		if (param.footer) {
