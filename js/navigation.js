@@ -178,7 +178,7 @@ $(document).ready(function(){
 				 		$('.lifecycle-hide').css('display', 'none');
   					} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0
 				 	// Show locally for Brave Browser only
-				 	//|| ((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false)
+				 	|| ((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false)
 				 	) {
 				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Model Georgia");
