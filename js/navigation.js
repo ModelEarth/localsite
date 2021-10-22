@@ -27,6 +27,7 @@ if (climbpath == "") {
 $(document).ready(function(){
 	
  	var modelpath = climbpath;
+ 	let earthFooter = false;
  	if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('hood') < 0) { // When not localhost or other sites that have a fork of io and community.
  		// To do: allow "Input-Output Map" link in footer to remain relative.
  		modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
@@ -156,7 +157,6 @@ $(document).ready(function(){
 
 			 		// To do: fetch the existing background-image.
 
-			 		var earthFooter = false;
 			 		if (param.startTitle == "Code for America" ||  location.host.indexOf('codeforamerica') >= 0) {
 			 			showLeftIcon = true;
 			  			param.titleArray = []
