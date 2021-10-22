@@ -1,4 +1,4 @@
-[Display Data](../)  
+[Display Datasets](../)  
 
 # DataUSA.io
 
