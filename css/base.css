@@ -1022,3 +1022,48 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 #hero-rect:hover {
   background-color: rgba(255, 255, 255, 0.9);
 }
+
+
+/* json to html display */
+.titlecell {
+  margin-top:5px;
+  float:left;
+  clear:both;
+  min-width: 200px;
+  font-weight: 500;
+}
+.rightcell {
+  margin-top:5px;
+  overflow: auto;
+  font-weight: 350;
+  color: #000;
+}
+.rightlogo {
+  width:100%;
+  max-width:300px;
+  margin-top:5px;
+  margin-bottom:5px;
+}
+.hidden {
+  displayX:none;
+}
+.bucketDesc {
+  white-space: nowrap;
+}
+.json_to_html_table .titlecell:first-of-type {
+  border-top: 0px #fff solid;
+}
+.json_to_html_table .rightcell:first-of-type {
+  border-top: 0px #fff solid;
+}
+.level1 {
+  color: #fff;
+  background: #777;
+  font-size: 11pt;
+  padding:6px;
+  margin-top:14px; /* margin-bottom breaks alignment of clear:both on titlecell div */
+  cursor: pointer;
+}
+.level2 div:last-of-type {
+  border-bottom: 0px #fff solid !important;
+}

@@ -1069,6 +1069,7 @@ var selected_array=[];
 var omit_array=[];
 function formatRow(key,value,level,item) {
   var addHtml = '';
+  
   if (key == 'color') {
     // JQuery uses this attribute to set the bar color where class level1 immediately above this div.
     addHtml += "<div class='colorHolder' currentlevel='" + level + "' currentitem='" + item + "' color='" + value + "'></div>"
@@ -1103,11 +1104,11 @@ function formatRow(key,value,level,item) {
 
           // NEVER REACHED?
           consoleLog("This code is reached for location: " + key + " " + value);
-          if (value[c].length >1){
+          if (value[c].length > 1){
 
             for (d in value[c]){  
                 
-                if (isObject(value[c][d])) {
+              if (isObject(value[c][d])) {
                 //addHtml += "<b>Add something else here</b>\n";
                 for (e in value[c][d]){
                   //addHtml += "<div class='level" + level + "'>" + e + ":: " + value[c][d][e] + "</div>\n";
@@ -1137,34 +1138,73 @@ function formatRow(key,value,level,item) {
     else if (isArray(value))  { // was b.   && selected_array.includes(key)  seems to prevent overload for DiffBot. Need to identify why.
       //consoleLog(value.length);
 
-      consoleLog("isArray: " + key + " " + value + " " + value.length);
+      //consoleLog("isArray: " + key + " " + value + " " + value.length);
+      console.log(value)
       if (value.length > 0) {
 
-        for (c in value) {
+        for (c in value) { // FOR EACH PROJECT
           curLine=""            
           //consoleLog(value[c],b,c); //c is 0,1,2 index
           
-          if (isObject(value[c]) || isArray(value[c])) {
-            for (d in value[c]){
-            
-              if (isObject(value[c][d])) { // Error in Drupal json
-                //addHtml += "<b>Add something else here</b>\n";
-                for (e in value[c][d]) {
-                  //if (isObject(value[c][d][e]) || isArray(value[c][d][e])) {
-                  //if (e !== null && e !== undefined) { // 
-                    
-                    // BUGBUG - Uncomment after preventoing error here: http://localhost:8887/community/resources/diffbot/?zip=91945
-                    //addHtml += formatRow(e,value[c][d][e],level);
+          if (isObject(value[c])) {
+            addHtml += "<div style='background:#999;color:#fff;padding:4px; clear:both'>" + (+c+1) + "</div>\n";
 
-                  //}
-                  //addHtml += "<div class='level5'>" + e + ": " + value[c][d][e] + "</div>\n";
+            for (d in value[c]) { // Projects metatags
+              console.log(d)
+              console.log(value[c])
+
+              /*
+              if (!value[c][d] || typeof value[c][d] == "undefined") {
+                  addHtml += formatRow(d,"",level);
+                } else if (typeof value[c][d] == "string") {
+                  addHtml += formatRow(d,value[c][d],level);
+              */
+                if (typeof value[c] == "undefined") {
+                  addHtml += formatRow(d,"",level);
+                } else if (typeof value[c][d] == "string" || typeof value[c][d] == "number") {
+                  addHtml += formatRow(d,value[c][d],level);
+                } else if (typeof value[c][d] == "object" ) {
+                //} else if (isObject(value[c][d]) || isArray(value[c][d])) {
+                  if (value[c][d].length > 1) {
+                    addHtml += formatRow(d,value[c][d],level); // 2021
+                  }
+                } else if (typeof value[c][d] != "undefined") {
+                  addHtml += formatRow(d,"TEST " + typeof value[c][d],level);
+                
+                } else {
+                  addHtml += formatRow(d,value[c][d],level);
+                  //addHtml += "<div class='level" + level + "'>" + value[c][d] + "</div>\n";
                 }
-              } else {
-                //consoleLog("Found: " + value[c][d])
+
+
+                /*
+                if (isObject(value[c][d])) {
+                  //addHtml += "<b>Add something else here</b>\n";
+                  for (e in value[c][d]) {
+                    //if (isObject(value[c][d][e]) || isArray(value[c][d][e])) {
+                    //if (e !== null && e !== undefined) { // 
+                      
+                      // BUGBUG - Uncomment after preventoing error here: http://localhost:8887/community/resources/diffbot/?zip=91945
+                      //addHtml += formatRow(e,value[c][d][e],level);
+
+                      //addHtml += "TEST"
+                      addHtml += "<div class='level" + level + "'>TEST: " + e + "</div>\n";
+
+                    //}
+                    //addHtml += "<div class='level5'>" + e + ": " + value[c][d][e] + "</div>\n";
+                  }
+                }
+                */
+
+            }
+
+          } else if (isArray(value[c])) {
+              for (d in value[c]) {
+                consoleLog("Found Array: " + value[c][d])
                 addHtml += formatRow(d,value[c][d],level);
                 //addHtml += "<div class='level4'>" + d + ":: " + value[c][d] + "</div>\n";
+              
               }
-
               // if (value[c].constructor === Array && selected_array.includes(c) )  {
               //  addHtml += "<b>Add loop here</b>\n";
               // }
@@ -1172,7 +1212,9 @@ function formatRow(key,value,level,item) {
               //  addHtml += "<b>Add something here</b>\n";
               // }
               
-            }
+            
+
+
           /*
           } else if (isArray(value[c])) {
             for (d in value[c]) {
@@ -1196,10 +1238,10 @@ function formatRow(key,value,level,item) {
               // For much of first level single names.
               addHtml += "<div class='level" + level + "'>" + value[c] + "</div>\n";
           }
-            
+        }    
                         
         
-          }
+          
     } else {
       consoleLog("Array of 0: " + key + " " + value);
       //addHtml += formatRow(c,value[c],level);
@@ -1222,6 +1264,7 @@ function formatRow(key,value,level,item) {
 
     //result.innerHTML = result.innerHTML + addHtml;
 
+  addHtml += "<div style='border-bottom:#ccc solid 1px; clear:both'></div>" // Last one hidden by css in base.css
   return addHtml;
 }
 isObject = function(a) {
