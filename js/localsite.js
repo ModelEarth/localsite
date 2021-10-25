@@ -1068,6 +1068,7 @@ function extractHostnameAndPort(url) { // TEMP HERE
 var selected_array=[];
 var omit_array=[];
 function formatRow(key,value,level,item) {
+
   var addHtml = '';
   
   if (key == 'color') {
@@ -1089,7 +1090,7 @@ function formatRow(key,value,level,item) {
   //} else {
     addHtml += "<div class='hidden titlecell level" + level + "'>" + key + "</div><div class='hidden rightcell level" + level + "'>"
   //}
-  
+
   //if (value.length == 0) {
   //    addHtml += "<div class='level" + level + "'>&nbsp;</div>\n";
   //    consoleLog("Blank: " + key + " " + value);
@@ -1127,7 +1128,7 @@ function formatRow(key,value,level,item) {
           //addHtml += "<div class='level'>" + c + ":::: " + value[c] + "</div>\n";
         }
       }       
-    } 
+     
     
     /*if (Object.keys(value).length >1){
       consoleLog(b);
@@ -1135,7 +1136,7 @@ function formatRow(key,value,level,item) {
 
       // value.constructor === Array
 
-    else if (isArray(value))  { // was b.   && selected_array.includes(key)  seems to prevent overload for DiffBot. Need to identify why.
+  } else if (isArray(value)) { // was b.   && selected_array.includes(key)  seems to prevent overload for DiffBot. Need to identify why.
       //consoleLog(value.length);
 
       //consoleLog("isArray: " + key + " " + value + " " + value.length);
@@ -1265,6 +1266,7 @@ function formatRow(key,value,level,item) {
     //result.innerHTML = result.innerHTML + addHtml;
 
   addHtml += "<div style='border-bottom:#ccc solid 1px; clear:both'></div>" // Last one hidden by css in base.css
+
   return addHtml;
 }
 isObject = function(a) {
