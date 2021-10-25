@@ -40,9 +40,6 @@ body {
   display: flex; /* for footer */
   flex-direction: column; /* for footer */
 }
-.flexmain {
-	max-width: 2100px;
-}
 main, .flexmain {
     flex-grow: 1; /* for footer */
 }
