@@ -1089,8 +1089,7 @@ function formatRow(key,value,level,item) {
   //  addHtml += "<div class='hidden titlecell level1' style='width:100%'>" + key + "</div><div style='clear:both' class='hidden level" + level + "'>"
   //} else {
     addHtml += "<div class='hidden titlecell level" + level + "'>" + key + "</div><div class='hidden rightcell level" + level + "'>"
-  //}
-
+  //}  
   //if (value.length == 0) {
   //    addHtml += "<div class='level" + level + "'>&nbsp;</div>\n";
   //    consoleLog("Blank: " + key + " " + value);

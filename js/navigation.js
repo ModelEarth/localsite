@@ -181,7 +181,7 @@ $(document).ready(function(){
 				 		earthFooter = true;
   					} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0
 				 	// Show locally for Brave Browser only
-				 	|| (((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false) && !param.headerLogo)
+				 	//|| (((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false) && !param.headerLogo)
 				 	) {
 				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Model Georgia");
@@ -218,6 +218,13 @@ $(document).ready(function(){
 			  			changeFavicon("/localsite/img/logo/partners/neighborhood-icon.png")
 			  			$('.neighborhood').css('display', 'inline');
 			  			earthFooter = true;
+			  		} else if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("democracy.lab") >= 0) {
+			  			showLeftIcon = true;
+				 		$(".siteTitleShort").text("Democracy Lab");
+
+				 		param.headerLogo = "<img src='/localsite/img/logo/partners/democracy-lab.png' style='width:190px;margin-top:15px'>";
+    					param.headerLogoSmall = "<img src='/localsite/img/logo/partners/democracy-lab-icon.jpg' style='width:32px;margin:4px 8px 0 0'>";
+    					earthFooter = true;
 				 	} else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
 				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Model Earth");
@@ -374,7 +381,7 @@ $(document).ready(function(){
 					showLeftIcon = true;
 				}
 				if (showLeftIcon) {
-					$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:108px'><img src='/localsite/img/icon/sidemenu.png' style='width:15px'></div></div>\r" );
+					$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:180px; opacity:.8'><img src='/localsite/img/icon/sidemenu.png' style='width:13px'></div></div>\r" );
 		 		}
 
 			}); // End $("#header").load
