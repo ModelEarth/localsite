@@ -23,11 +23,12 @@ if (climbpath == "") {
 	climbpath += "./"; // Eliminates ? portion of URL
 }
 //console.log("climbpath " + climbpath);
+let earthFooter = false;
 
 $(document).ready(function(){
 	
  	var modelpath = climbpath;
- 	let earthFooter = false;
+ 	
  	if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('hood') < 0) { // When not localhost or other sites that have a fork of io and community.
  		// To do: allow "Input-Output Map" link in footer to remain relative.
  		modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
@@ -84,7 +85,6 @@ $(document).ready(function(){
 		$(".headerOffset").hide();
 
 		// Insert for map filters since header.html file is not loaded.
-		//alert("123")
 		//$("body").prepend( "<div id='filterbaroffset' style='height:56px; pointer-events:none'></div>");
 
 	// TO DO: Add support for custom headerpath
@@ -107,8 +107,8 @@ $(document).ready(function(){
  		}
 
 		if (param.header) headerFile = param.header;
-		
-		$(document).ready(function () {
+
+		//$(document).ready(function () {
 			let showLeftIcon = false;
 			$("#local-header").load(headerFile, function( response, status, xhr ) {
 
@@ -218,12 +218,13 @@ $(document).ready(function(){
 			  			changeFavicon("/localsite/img/logo/partners/neighborhood-icon.png")
 			  			$('.neighborhood').css('display', 'inline');
 			  			earthFooter = true;
-			  		} else if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("democracy.lab") >= 0) {
+			  		} else if (!Array.isArray(param.titleArray) && (location.host.indexOf('localhost') >= 0 || location.host.indexOf("democracy.lab") >= 0)) {
 			  			showLeftIcon = true;
 				 		$(".siteTitleShort").text("Democracy Lab");
 
 				 		param.headerLogo = "<img src='/localsite/img/logo/partners/democracy-lab.png' style='width:190px;margin-top:15px'>";
     					param.headerLogoSmall = "<img src='/localsite/img/logo/partners/democracy-lab-icon.jpg' style='width:32px;margin:4px 8px 0 0'>";
+    					$('.dlab').css('display', 'inline'); 
     					earthFooter = true;
 				 	} else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
 				 		showLeftIcon = true;
@@ -241,6 +242,9 @@ $(document).ready(function(){
 				 		earthFooter = true;
 				 	}
 
+				 	if (param.footer || param.showfooter == false) {
+				 		earthFooter = false;
+				 	}
 				 	if (param["show"] == "mockup") {
 				 		if(location.host.indexOf("georgia") >= 0) {
 				 			$('#headerLocTitle').html("West Central Georgia");
@@ -386,7 +390,7 @@ $(document).ready(function(){
 
 			}); // End $("#header").load
 
-		}); // End doc ready
+		//}); // End doc ready
 	}
 
 	if (param.headerFile) {
@@ -417,8 +421,7 @@ $(document).ready(function(){
 		//$("#footer").addClass("flexfooter");
 		$("#footer").prepend( "<div id='local-footer' class='flexfooter noprint'></div>\r" );
 	}
-
-	if (location.host.indexOf('localhost') >= 0) {
+	if (location.host.indexOf('localhost') >= 0 && param.showfooter != false && !param.footer) {
 		earthFooter = true; // Need to drive localhost by settings in a file ignored by .gitignore
 	}
 	if (param["showfooter"] && param["showfooter"] == "false") {
