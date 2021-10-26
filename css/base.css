@@ -1055,7 +1055,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 .level1 {
   color: #fff;
-  background: #777;
+  background-color: #777;
   font-size: 11pt;
   padding:6px;
   margin-top:14px; /* margin-bottom breaks alignment of clear:both on titlecell div */
