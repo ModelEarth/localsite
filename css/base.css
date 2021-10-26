@@ -861,6 +861,9 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   .showSearch {
     display: none;
   }
+  #headerLogo {
+    margin-left: 24px;
+  }
 }
 
 .headerbarheight {
