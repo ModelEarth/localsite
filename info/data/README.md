@@ -2,7 +2,7 @@
 
 Our site combines labor and industry stats with commodity inflow-outflow data from the US EPA.
 
-[Full list of data sources - BLS, EPA's USEEIO and Flowsa (BEA, Energy, Water, more)](/io/about/api/)
+[Full list of data sources](/io/about/api/) - BLS, EPA's USEEIO and Flowsa (BEA, Energy, Water, more)
 
 ####Embeddable Datasets
 <!-- ../#mapview=country -->

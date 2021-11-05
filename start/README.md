@@ -180,7 +180,7 @@ You can point a domain at all the repos in your Github account with the steps be
 
 <a href="https://neighborhood.org/localsite/">The Localsite Framework</a> is designed to allow multiple Github repos to communicate using hash values.  
 
-<a href="../../community/start/">View Starter Samples</a> - maps, charts, widgets.  <a href="../../community/challenge/meetups/">Join us on Slack</a> for pointers.  
+<a href="../../community/start/">View Starter Samples</a> - maps, charts, widgets.  <a href="../../io/coders/">Join us on Slack</a> for pointers.  
 
 Learn more about [JAM Stack Development](https://jamstack.org) - the process of creating fast sites using static pages with CSV files, JSON and APIs.  
 

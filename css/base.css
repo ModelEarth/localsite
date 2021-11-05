@@ -938,7 +938,9 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 #menuNav a:hover {
   background-color: #000;
 }
-
+#menuNav b a {
+  font-weight: 600;
+}
 
 @media (max-width: 600px) {
   #menuNav a {

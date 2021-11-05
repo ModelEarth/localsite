@@ -1169,8 +1169,7 @@ function formatRow(key,value,level,item) {
                     addHtml += formatRow(d,value[c][d],level); // 2021
                   }
                 } else if (typeof value[c][d] != "undefined") {
-                  addHtml += formatRow(d,"TEST " + typeof value[c][d],level);
-                
+                  addHtml += formatRow(d, value[c][d],level);
                 } else {
                   addHtml += formatRow(d,value[c][d],level);
                   //addHtml += "<div class='level" + level + "'>" + value[c][d] + "</div>\n";

@@ -301,7 +301,8 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
 
       //if (containerExists == null) { // NOT NEEDED - need to detect L.map
         if (location.host.indexOf('localhost') >= 0) {
-          alert("Initialize map - this may never be reached unless #" + whichmap + " div does not exist.");
+          // BUGBUG
+          alert("Reload Page - An errror occured because the #" + whichmap + " div was not yet rendered.");
         }
         map = L.map(whichmap, { // var --> Map container is already initialized.
           center: mapCenter,
