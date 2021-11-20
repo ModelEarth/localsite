@@ -218,7 +218,8 @@ $(document).ready(function(){
 			  			changeFavicon("/localsite/img/logo/partners/neighborhood-icon.png")
 			  			$('.neighborhood').css('display', 'inline');
 			  			earthFooter = true;
-			  		} else if (!Array.isArray(param.titleArray) && (location.host.indexOf('localhost') >= 0 || location.host.indexOf("democracy.lab") >= 0)) {
+			  		// location.host.indexOf('localhost') >= 0 || 
+			  		} else if (!Array.isArray(param.titleArray) && (location.host.indexOf("democracy.lab") >= 0)) {
 			  			showLeftIcon = true;
 				 		$(".siteTitleShort").text("Democracy Lab");
 

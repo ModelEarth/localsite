@@ -267,6 +267,7 @@ function getNaics_setHiddenHash2(go) {
     recycling = recycling + ",562111,562212,562213,562910,562920,562HAZ,562OTH";
     //alert(recycling)
 
+    // Jorge is working on Electricity and waste (sectors 411 to 422)
     //if (param.naics) {
     //    cat_filter = param.naics.split(',');
     //}

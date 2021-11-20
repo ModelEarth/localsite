@@ -729,10 +729,11 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
     });
     
-
-    includeCSS3(theroot + '../io/build/widgets.css',theroot);
-    includeCSS3(theroot + '../io/build/iochart.css',theroot);
-
+    if (param.display == "everything") {
+      includeCSS3(theroot + '../io/build/widgets.css',theroot);
+      includeCSS3(theroot + '../io/build/iochart.css',theroot);
+    }
+    
     includeCSS3(theroot + 'css/base.css',theroot);
     includeCSS3(theroot + 'css/search-filters.css',theroot);
     if (param.preloadmap != "false") {

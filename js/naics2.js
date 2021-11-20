@@ -190,6 +190,8 @@ function showIndustryTabulatorList(attempts) {
 
         // More filter samples
         // https://stackoverflow.com/questions/2722159/how-to-filter-object-array-based-on-attributes
+
+        // Changed maxHeight from 100% to 500px to enable scroll. - No effect yet
         industrytable = new Tabulator("#tabulator-industrytable", {
             data:localObject.industries,     //load row data from array of objects
             layout:"fitColumns",      //fit columns to width of table
@@ -202,7 +204,7 @@ function showIndustryTabulatorList(attempts) {
             initialSort:[             //set the initial sort order of the data - NOT WORKING
                 {column:"id", dir:"asc"},
             ],
-            maxHeight:"500px",
+            maxHeight:"100%",
             paginationSize:50000,
             columns:[
                 {title:"Naics", field:"id", width:80},
