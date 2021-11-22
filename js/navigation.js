@@ -227,8 +227,8 @@ $(document).ready(function(){
     					param.headerLogoSmall = "<img src='/localsite/img/logo/partners/democracy-lab-icon.jpg' style='width:32px;margin:4px 8px 0 0'>";
     					$('.dlab').css('display', 'inline'); 
     					earthFooter = true;
-				 	//} else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
-				 	} else if (location.host.indexOf('model.earth') >= 0) {
+				 	} else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
+				 	//} else if (location.host.indexOf('model.earth') >= 0) {
 				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Model Earth");
 				 		param.titleArray = ["model","earth"]
