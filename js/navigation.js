@@ -247,6 +247,7 @@ $(document).ready(function(){
 
 				 	if (param.footer || param.showfooter == false) {
 				 		earthFooter = false;
+				 		console.log("param.footer " + param.footer);
 				 	}
 				 	if (param["show"] == "mockup") {
 				 		if(location.host.indexOf("georgia") >= 0) {
