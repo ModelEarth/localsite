@@ -227,7 +227,8 @@ $(document).ready(function(){
     					param.headerLogoSmall = "<img src='/localsite/img/logo/partners/democracy-lab-icon.jpg' style='width:32px;margin:4px 8px 0 0'>";
     					$('.dlab').css('display', 'inline'); 
     					earthFooter = true;
-				 	} else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
+				 	//} else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
+				 	} else if (location.host.indexOf('model.earth') >= 0) {
 				 		showLeftIcon = true;
 				 		$(".siteTitleShort").text("Model Earth");
 				 		param.titleArray = ["model","earth"]
@@ -235,7 +236,8 @@ $(document).ready(function(){
 			  			document.title = "Model Earth - " + document.title
 			  			changeFavicon(modelpath + "../localsite/img/logo/partners/model-earth.png")
 			  			$('.earth').css('display', 'inline'); 
-				 		console.log(".earth display")
+				 		console.log(".earth display");
+				 		earthFooter = true;
 				 	}
 
 				 	if (location.host.indexOf('model.earth') >= 0) { // Since above might not be detecting model.earth, probably is now.
