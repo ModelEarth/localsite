@@ -429,7 +429,7 @@ $(document).ready(function(){
 		earthFooter = true; // Need to drive localhost by settings in a file ignored by .gitignore
 	}
 	if (param["showfooter"] && param["showfooter"] == "false") {
-	} else if (earthFooter) {
+	} else if (earthFooter || param.footer) {
 		var footerClimbpath = "";
 		let footerFile = modelpath + "../localsite/footer.html"; // modelpath remains relative for site desgnated above as having a local copy of io and community.
 		if (param.footer) {
