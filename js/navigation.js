@@ -24,7 +24,7 @@ if (climbpath == "") {
 }
 //console.log("climbpath " + climbpath);
 let earthFooter = false;
-
+let showLeftIcon = false;
 const changeFavicon = link => {
   let $favicon = document.querySelector('link[rel="icon"]')
   // If a <link rel="icon"> element already exists,
@@ -236,7 +236,6 @@ $(document).ready(function(){
 
 			if (param.header) headerFile = param.header;
 
-			let showLeftIcon = false;
 			$("#local-header").load(headerFile, function( response, status, xhr ) {
 
 					// BUG - header.html is not always ready in DOM yet, add a loop.
