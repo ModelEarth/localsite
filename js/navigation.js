@@ -247,7 +247,10 @@ $(document).ready(function(){
 			 		// Move filterbarOffset and filterEmbedHolder immediately after body tag start.
 			 		// Allows map embed to reside below intro text and additional navigation on page.
 
-			 		$(".showMenu").show();
+			 		//if (param.showMenu != "false") { // brig
+			 		if (earthFooter && param.showMenu != "false") { // Sites includieng modelearth and neighborhood
+			 			$(".showMenu").show();
+			 		}
 			 		$("#filterEmbedHolder").insertAfter("#headeroffset");
 			 		////$(".filterbarOffset").insertAfter("#headeroffset");
 			 		
