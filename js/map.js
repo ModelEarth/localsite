@@ -1307,6 +1307,11 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   //  dp = dp_incoming;
   //} else 
 
+  // Temp - until widget includes local industry lists
+  if((show == "industries" || show == "parts" || show == "vehicles" || show == "bioeconomy") && location.href.indexOf('/info') == -1) {
+    location.href = "/localsite/info/" + location.hash;
+  }
+
   if (show == "beyondcarbon") {
     dp.listTitle = "Beyond Carbon";
     dp.dataset = "https://assets.bbhub.io/dotorg/sites/40/2019/05/beyondcarbon-States_Territories-data-sample-5_22-data-06_06.csv";
