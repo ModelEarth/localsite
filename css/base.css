@@ -233,11 +233,9 @@ summary::-webkit-details-marker {
   }
 }
 
-
 #header {
 	z-index: 10001;
 }
-
 .displayOnload {
   display:block !important; /* hidden until css loaded */
 }
@@ -247,7 +245,6 @@ summary::-webkit-details-marker {
   font-size: 15px;
   line-height: 1.55;
   position: relative;
-  overflowX: auto; /* Test when activating */
 }
 @media (min-width: 1800px) {
 	.content {
@@ -282,7 +279,8 @@ summary::-webkit-details-marker {
 @media (max-width: 1200px) {
 
   .content li {
-    margin-left: -20px;
+    /* Caused 10+ to be half hidden. Tried overflow: visible */
+    /* margin-left: -20px; */
   }
 }
 @media (max-width: 500px) {
