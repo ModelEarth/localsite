@@ -217,7 +217,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
   }
 
   if (typeof d3 !== 'undefined') {
-    if (!dp.dataset && !dp.googleDocID) {
+    if (!dp.dataset && !dp.googleCSV) {
       console.log('CANCEL loadFromSheet. No dataset selected for top map. May not be one for state.');
       $("#" + whichmap).hide();
       $("#list_main").hide();
@@ -425,51 +425,18 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
 
           processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
       })
-    } else if (dp.googleDocID) {
-      // 
-      loadScript(local_app.modelearth_root() + '/localsite/map/neighborhood/js/tabletop.js', function(results) {
+    } else if (dp.googleCSV) {
+      d3.csv(dp.googleCSV).then(function(data) { // One row per line
+        // LOAD GOOGLE SHEET HERE
 
-        tabletop = Tabletop.init( { key: dp.googleDocID, // from constants.js
-          callback: function(data, tabletop) { 
+          dp.data = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
+          // Make element key always lowercase
+          //dp.data_lowercase_key;
 
-            //onTabletopLoad(dp1) 
-            dataMixedCase = tabletop.sheets(dp.sheetName).elements; // dp.data is called "points" in MapsForUs.js
-            //dp.data_lowercase_key;
-
-            // Currently assumes dp.data is blank - later we may need to append.
-            // Also, tag a start and end time to determine if it would be faster to append the array of objects once populated.
-            dp.data = [];
-
-            // Convert all keys to lowercase
-            for (var i = 0, l = dataMixedCase.length; i < l; i++) {
-              var key, keys = Object.keys(dataMixedCase[i]);
-              var n = keys.length;
-              //var newobj={}
-              dp.data[i] = {};
-              while (n--) {
-                key = keys[n];
-                //if (key.toLowerCase() != key) {
-                  dp.data[i][key.toLowerCase()] = dataMixedCase[i][key];
-                  //dp.data[i][key] = null;
-                //}
-              }
-              //console.log("TEST dp.data[i]");
-              //console.log(dp.data[i]);
-            }
-
-            // Above is not working yet, need to traverse rows.
-            //dp.data = dataMixedCase;
-
-            // TO DO
-            // dataMixedCase delete
-            processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){
-              callback(); // Triggers initialHighlight()
-            });
-            
-          } 
-        });
-        
+          processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
+  
       });
+
 
     }
     
@@ -1428,7 +1395,8 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       } else if (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills") { // recycling-processors
         if (!hash.state || hash.state == "GA") {
           dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-          dp.googleDocID = "1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY";
+          //dp.googleDocID = "1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY";
+          dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=688547633&single=true&output=csv";
           if (show == "transfer") {
             dp.listTitle = "Georgia Transfer Stations";
             dp.sheetName = "Transfer Stations";
@@ -1450,6 +1418,11 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
             dp.valueColumn = "sector"; // Bug - need to support uppercase too.
             dp.valueColumnLabel = "Sector";
           } else {
+
+            // Not working
+            dp.nameColumn = "Organization Name";
+            dp.titleColumn = "Organization Name";
+
             dp.listTitle = "Georgia Recycling Processors";
             dp.sheetName = "Recycling Processors";
             dp.valueColumn = "category";
