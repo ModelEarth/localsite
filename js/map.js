@@ -1392,7 +1392,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         //  https://model.earth/community-data/us/state/GA/VirtualTourSites.csv
         dp.dataset =  local_app.custom_data_root() + "360/GeorgiaPowerSites.csv";
 
-      } else if (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills") { // recycling-processors
+      } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills")) { // recycling-processors
         if (!hash.state || hash.state == "GA") {
           dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
           //dp.googleDocID = "1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY";
