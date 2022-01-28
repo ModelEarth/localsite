@@ -12,6 +12,12 @@ Also lacks CHARM.  Far from comprehensive.
 <a href="https://recyclesearch.com" target="_parent">Recycling Centers - RecycleSearch.com</a>
 -->
 
+Later in February 2022 we'll be launching a new Commercial Recycler list with the Georgia Recycling Coalition (GRC).
+
+
+<!-- TO REACTIVATE -->
+
+<!--
 |||  
 |---|---|  
 | <a href="../../../info/#show=recycling&state=GA" target="_parent">Recycling Processors (B2B)</a> | <a href="https://map.georgia.org/explore/#processors" target="_parent" style="display:none">cartodb</a> |
@@ -19,7 +25,7 @@ Also lacks CHARM.  Far from comprehensive.
 | <a href="../../../info/#show=recyclers&state=GA" target="_parent">Companies that Recycle during Manufacturing</a> &nbsp; &nbsp; | <a href="https://map.georgia.org/explore/#recyclers" target="_parent" style="display:none">cartodb</a> |
 | <a href="../../../info/#show=inert&state=GA" target="_parent">Inert Waste Landfills</a> | <a href="https://map.georgia.org/explore/#inert_waste_landfills" target="_parent" style="display:none">cartodb</a> |
 | <a href="../../../info/#show=landfills&state=GA" target="_parent">Landfills</a> | <a href="https://map.georgia.org/explore/#landfills" target="_parent" style="display:none">cartodb</a> |
-
+-->
 <br>
 
 <a href="https://www.google.com/search?q=Recycling+near+me" target="_parent">Consumer Recycling Centers Near Me - Google</a><br>
