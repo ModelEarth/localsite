@@ -20,9 +20,9 @@ Our older links: [Industries by county](https://github.com/modelearth/community-
 We recommend that you work in [USEEIO-widgets repo](../../charts) if you are interested in interacting with the API data.
 -->
 
-## NAICS Data with Fewer Gaps
+## NAICS Data without Gaps
 
-[Imputed County Business Patterns (CBP) dataset](http://www.fpeckert.me/cbp/) by [Fabian Eckert, et al.](http://fpeckert.me/cbp/efsy.pdf) - The Fabian Eckert (2021) work extends Isserman and Westervelt (2006), but uses a linear objective function for faster computation with exact results. The authors are planning to apply to zip codes. "After 1994, the CBP files contain tabulations at the zip code level. We plan to apply our imputation method to this geographic unit in a future draft." - [2018 data from Eckert](https://github.com/modelearth/community-data/tree/master/process/cbp).     
+[Imputed County Business Patterns (CBP) dataset](http://www.fpeckert.me/cbp/) by [Fabian Eckert, et al.](http://fpeckert.me/cbp/efsy.pdf) - The Fabian Eckert (2021) work extends Isserman and Westervelt (2006), but uses a linear objective function for faster computation with exact results. The authors are planning to apply to zip codes. "After 1994, the CBP files contain tabulations at the zip code level. We plan to apply our imputation method to this geographic unit in a future draft." - [2018 data from Eckert](https://github.com/modelearth/community-data/tree/master/process/cbp) and our [GitHub Fork](https://github.com/modelearth/cbp_database_public).     
 
 ## Community Data File Format
 
