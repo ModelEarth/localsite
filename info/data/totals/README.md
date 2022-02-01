@@ -7,7 +7,7 @@ These samples no longer work following changes by Leo or Micheal.
 
 2. View the same chart in a [React page with Tabulator](https://github.com/TheTisiboth/useeio-widgets/tree/IoChartTabulator) - The url of the page is localhost/ jobsTable.html  
 
-Compare Tabulator with Material UI datagrid [Sector List](../../../io/charts) widgets which also handle the sorting. 
+Compare Tabulator with Material UI datagrid [Sector List](../../../../io/charts) widgets which also handle the sorting. 
 
 Create a similar chart display using Material UI within the [USEEIO-widgets repo](https://github.com/USEPA/useeio-widgets/).
 <br>
