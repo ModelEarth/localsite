@@ -7,7 +7,7 @@ The resulting local NAICS values are sent client-side to [US EPA Input-Output Ch
 
 **Our NAICS pipeline**
 1. [Generate state county files](https://github.com/modelearth/community-data) for 2 to 6 digit NAICS industries for static hosting on Github.  
-To estimate gaps for counties with low numbers of firms per industry, will use this [2018 data from Ecker].  
+To estimate gaps for counties with low numbers of firms per industry, will use this [2018 data from Ecker](https://github.com/modelearth/community-data/tree/master/process/cbp).  
 3. Compare with output from our <a href="https://github.com/modelearth/machine-learning">Machine Learning script</a> created by John Taylor.  
 4. Our upcoming [comparison report](../../info/naics/) - a newer version of our [EPA Local Industries Impact Report](../../info/)  
 
