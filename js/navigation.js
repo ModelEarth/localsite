@@ -415,7 +415,7 @@ $(document).ready(function(){
 					showLeftIcon = true;
 				}
 				if (showLeftIcon) {
-					$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:180px; opacity:.8'><img src='/localsite/img/icon/sidemenu.png' style='width:13px'></div></div>\r" );
+					$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:109px; opacity:.8'><img src='/localsite/img/icon/sidemenu.png' style='width:13px'></div></div>\r" );
 		 		}
 
 			}); // End $("#header").load
