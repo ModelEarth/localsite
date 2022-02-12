@@ -2038,7 +2038,7 @@ function initSiteObject(layerName) {
 	                return siteObject;
 	            },
 	          error: function (req, status, err) {
-	              consoleLog('Error fetching siteObject json: ', status, err);
+	              consoleLog('Error fetching siteObject json: ', err);
 	          }
 	        });
 	    })(); // end siteObject
