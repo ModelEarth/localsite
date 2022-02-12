@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html;">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+
+<title>Local Site</title>
+<link type="text/css" rel="stylesheet" href="../../../../localsite/css/base.css" id="/localsite/css/base.css" />
+<script type="text/javascript" src="js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
+<script type="text/javascript" src="js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
+<script type="text/javascript" src="js/localsite.js"></script>
+
+<script type="text/javascript" src="../../../../localsite/js/showdown.min.js" id="/localsite/js/showdown.min.js"></script>
+<script type="text/javascript" src="../../../../localsite/js/navigation.js" id="/localsite/js/navigation.js"></script>
+<!-- 
+<script type="text/javascript" src="js/map-filters.js" id="/localsite/js/map-filters.js"></script>
+-->
+
+<script>
+var currentAccess = 0;
+function access(minlevel,alevel) {
+    var level = 0;
+    if (alevel) { level = parseInt(alevel) }
+    if (minlevel >= level) {
+        //console.log("TRUE minlevel " + minlevel + " level " + level);
+        return true;
+    } else {
+        //console.log("FALSE minlevel " + minlevel + " level " + level);
+        return false;
+    }
+}
+
+// BUGBUG - these are also in map-filters.js
+function getDirectLink(directlink,rootfolder,layer) {
+    if (directlink) {
+        directlink = removeFrontFolder(directlink);
+    } else if (rootfolder) {
+        if (rootfolder.indexOf('/explore/') < 0) {
+            rootfolder = "/explore/" + rootfolder;
+        }
+        directlink = removeFrontFolder(rootfolder + "#" + layer);
+    } else {
+        directlink = removeFrontFolder("/explore/#" + layer);
+    }
+    return(directlink);
+}
+function removeFrontFolder(path) {
+    //return("../.." + path);
+    return(path);
+}
+
+
+
+function initPartnerMenu(layerName) {
+	let hash = getHash();
+	//if(location.host.indexOf('localhost') >= 0) {
+	    // Greenville:
+	    // https://github.com/codeforgreenville/leaflet-google-sheets-template
+	    // https://data.openupstate.org/map-layers
+
+	    //var layerJson = local_app.community_data_root() + "us/state/GA/ga-layers.json"; // CORS prevents live
+	    // The URL above is outdated. Now resides here:
+	    var layerJson = local_app.localsite_root() + "info/data/ga-layers.json";
+        //alert("layerJson " + layerJson)
+	    if(location.host.indexOf("georgia") >= 0) {
+	    	// For PPE, since localhost folder does not reside on same server
+	    	layerJson = "https://model.earth/localsite/info/data/ga-layers.json";
+	    	console.log("Set layerJson: " + layerJson);
+		}
+	    console.log(layerJson);
+	    var adminNavObject = (function() {
+	        var json = null;
+	        $.ajax({
+	            'type': 'GET',
+	            'async': true,
+	            'global': false,
+	            'url': layerJson,
+	            'jsonpCallback': 'callback',
+	            'dataType': "jsonp",
+	            'success': function (adminNavObject) {
+	                consoleLog("Menu layers json loaded within initPartnerMenu. location.hash: " + location.hash);
+	                
+	                // adminNavObjectFunctions(adminNavObject); // could add to keep simple here
+
+	                $(document).on("click", ".showAdminNav, .hideApps", function(event) {
+	          			console.log('.showAdminNav click');
+
+	          			//if ($("#bigThumbPanelHolder").is(':visible')) {
+	          			if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) {
+	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
+	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
+
+	          				$("#appSelectHolder .showAdminNav").removeClass("filterClickActive");
+	          				$("#showAdminNavText").text($("#showAdminNavText").attr("title"));
+	          				$(".hideWhenPop").show();
+	          				// To do: Only up scroll AND SHOW if not visible
+	          				$('html,body').animate({
+								scrollTop: 0
+							});
+
+	          				$("#bigThumbPanelHolder").hide();
+	          				$('.showAdminNav').removeClass("active");
+
+	          			} else {
+	          				alert("showAdminNav")
+                            if ($("#filterLocations").is(':visible')) {
+                                filterClickLocation(); // Toggle county-select closed
+                            }
+	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
+	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
+
+	          				$("#showAdminNavText").text("Goods & Services");
+	          				$("#appSelectHolder .showAdminNav").addClass("filterClickActive");
+							//showThumbMenu(hash.show, adminNavObject);
+							displayLayerCheckboxes(adminNavObject);
+                            $('html,body').animate({
+                            	//scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
+                            });
+	          			}
+	          			
+					  	event.stopPropagation();
+					});
+	          		// These should be lazy loaded when clicking menu
+	                //displayBigThumbnails(hash.show, "main",adminNavObject);
+	                //displayHexagonMenu("",adminNavObject);
+	                
+	                if (!hash.show && !param.show) { // INITial load
+	                	// alert($("#fullcolumn").width()) = null
+	                	if ($("body").width() >= 800) {
+
+	                		//showThumbMenu(hash.show, adminNavObject);
+	                	}
+	            	}
+	                return adminNavObject;
+	            },
+	          error: function (req, status, err) {
+	              consoleLog('Error fetching adminNavObject json!: ', err);
+	          }
+	        });
+	    })(); // end adminNavObject
+	    
+	    
+	//}
+} // end initPartnerMenu
+initPartnerMenu("special");
+
+
+function displayLayerCheckboxes(siteObject) { // For Layer Icon on map - Master
+    console.log("displayLayerCheckboxes start location.hash: " + location.hash);
+    var layerCheckboxes = "";
+    var overlayList = ""; // CLicking selects checkbox in layerCheckboxes list
+    var previousSet = "";
+    var previousOverlaySet = "";
+    var closeLayerSet = false;
+
+    // To Do: sort by view
+    var item = ""; // Required for IE
+    var layerSectionDisplay = "";
+    var topTabs = "";
+    var menulevel = 1;
+    var menuaccessmax = 11;
+    for(item in siteObject.items) {
+        var menuaccess = 10; // no one
+        try { // For IE error
+            if (typeof(siteObject.items[item].menuaccess) === "undefined") {
+                menuaccess = 0;
+            } else {
+                menuaccess = siteObject.items[item].menuaccess;
+            }
+        } catch(e) {
+            console.log("displayLayerCheckboxes: no menuaccess");
+        }
+        menuaccessmax = 11;
+        if (siteObject.items[item].menuaccessmax) {
+            menuaccessmax = siteObject.items[item].menuaccessmax;
+        }
+        // location.host.indexOf('localhost') >= 0 || 
+        
+        // && siteObject.items[item].section.toLowerCase() != siteObject.items[item].item
+        if (access(currentAccess,menuaccess) && currentAccess <= menuaccessmax) {
+            var title = "";
+            try { // For IE error
+                title = ((siteObject.items[item].navtitle) ? siteObject.items[item].navtitle : siteObject.items[item].title);
+            } catch(e) {
+                console.log("displayLayerCheckboxes: no layer title");
+                title = "----";
+            }
+
+            if (title) {
+
+                // OVERLAYS
+                if (siteObject.items[item].feed && !siteObject.items[item].omitOverlay) {
+                    if (siteObject.items[item].section && siteObject.items[item].section != previousOverlaySet) {
+                        if (previousOverlaySet != "") {
+                            overlayList += '</div></div>'; // For columnizer
+                        }
+                        var overlaylevel = siteObject.items[item].overlaylevel;
+                        var hideOverlay = "";
+                        if (!overlaylevel) {
+                            overlayList += '<div class="user-' + menuaccess + '"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + siteObject.items[item].section.toLowerCase().replace(" ","-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + siteObject.items[item].section + '</div>';
+                        }
+                    }
+                    overlayList += '<div class="layerCbRow user-' + menuaccess + '" data-trigger="go-' + siteObject.items[item].item + '">';
+                    // data-link="' + directlink + '"
+                    overlayList += '<div class="overlayAction"><i class="material-icons active-' + siteObject.items[item].item + '" style="float:right;color:#ccc;display:none">&#xE86C;</i></div><div class="layerCbTitle">' + title + '</div></div><div style="clear:both"></div>';
+                    previousOverlaySet = siteObject.items[item].section;
+                }
+
+                // MENU
+                if (siteObject.items[item].section && siteObject.items[item].section != previousSet) {
+                    //console.log("TITLE: " + title);
+                    // siteObject.items[item].item ==  || 
+                    layerSectionDisplay = '';
+                    menulevel = 1;
+                    if (siteObject.items[item].menulevel) {
+                        menulevel = siteObject.items[item].menulevel;
+                    }
+                    if ((siteObject.items[item].menulevel == "3" || siteObject.items[item].menulevel == "4")) {
+                        layerSectionDisplay = ' style="display:none"';
+                    }
+                    if (previousSet != "") {
+                        layerCheckboxes += '</div></div>'; // For columnizer
+                    }
+                    closeLayerSet = true;
+                    // First div is for columnizer
+                    var sectionIcon = '<i class="material-icons menuTopIcon topHeaderIcon">&#xE53B;</i>';
+                    if (siteObject.items[item].sectionicon) {
+                        //sectionIcon = siteObject.items[item].sectionicon;
+                    }
+                    layerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + siteObject.items[item].section.toLowerCase().replace(" ","-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" data-layer-section="' + siteObject.items[item].section + '" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + siteObject.items[item].section + '</div>';
+                } // Check circle // Was around title: <label for="go-' + siteObject.items[item].item + '" style="width:100%; overflow:auto">
+                // <i class="material-icons" style="float:right;color:#ccc">&#xE86C;</i>
+                var directlink = getDirectLink(siteObject.items[item].directlink, siteObject.items[item].rootfolder, siteObject.items[item].item);
+
+                layerCheckboxes += '<div class="layerCbRow row-' + siteObject.items[item].item + ' user-' + menuaccess + '"><div class="layerAction" data-link="' + directlink + '">';
+                
+                if (siteObject.items[item].feed) {
+                    layerCheckboxes += '<div class="layerActionIcon" data-link="' + directlink + '"></div>';
+                } else {
+                    layerCheckboxes += '<div class="layerActionIcon layerActionIconNoFeed" data-link="' + directlink + '"></div>';
+                }
+
+                layerCheckboxes += '</div><div class="layerCbTitle"><input type="checkbox" class="layersCB" name="layersCB" id="go-' + siteObject.items[item].item + '" value="' + siteObject.items[item].item + '">' + title + '</div></div><div style="clear:both"></div>';
+                previousSet = siteObject.items[item].section;
+            }
+        }
+        if (siteObject.items[item].directoryframe) {
+            topTabs += '<div>' + siteObject.items[item].title + '</div>';
+        }
+    }
+    if (closeLayerSet) {
+        layerCheckboxes += '</div></div>\n'; // For columnizer
+        overlayList += '</div>\n'; // For columnizer
+    }
+    // Double div prevents prior layerSectionTitle from being unchecked.
+    //layerCheckboxes += '<div><div class="showAllLayers dontsplit layerSectionTitleFormat" style="display:none">More</div></div>\n';
+
+    //$(document).ready(function () { // For IE
+        //alert("test in progress: " + layerCheckboxes);
+
+        if (location.host.indexOf('localhost') >= 0) {
+            //$(".siteTopTabs").append(topTabs);
+        }
+        $(".layerCheckboxes").append(layerCheckboxes);
+
+        $(".overlaysInSide").append(overlayList);
+        
+        // Temp, need to adjust to use access level. This didn't work...
+        $('.layerSectionAccess').show();
+
+        // json loaded within initSiteObject. location.hash:
+        console.log("displayLayerCheckboxes location.hash: " + location.hash);
+        console.log("displayLayerCheckboxes - Layer Icon on map, stores active layers without map load");
+
+        //$('.layerCheckboxes').columnize({ columns: 2 }); // Also called later since this won't have an effect when not visible.
+
+        // APP MENU ACTIONS
+        $('.menuRectLink').click(function () {
+            console.log('.menuRectLink click ' + $(this).attr("data-section").toLowerCase());
+            showLayerMenu();
+
+            $('.layerSection').hide();
+            $('.layerSection-' + $(this).attr("data-section").toLowerCase()).show();
+            //$('.layerSection-showAllLayers').show();
+            $('.menuTopIconClose').hide();
+
+            if ($('.layerSection-' + $(this).attr("data-section").toLowerCase()).find('.leftArrow').length) {
+                // Only click if closed.
+                //$('.layerSection-' + $(this).attr("data-section").toLowerCase() + ' > .layerSectionTitle').trigger("click");
+                
+                // Replacing Above
+                layerSectionOpen($(this).attr("data-section").toLowerCase());
+
+                $('.showAllLayers').show();
+            }
+            event.stopPropagation();
+        });
+
+        // CHECKBOX ACTIONS
+        $('.layerActionIcon').click(function () {
+            var layerName = $(this).parent().parent().find('.layersCB').val();
+            //useRootPath(layerName);
+            if($(this).attr("data-link")) {
+                window.location = $(this).attr("data-link");
+                return;
+            }
+            $(this).addClass('layerActionActive');
+            console.log("Trigger hidden checkbox click from icon.");
+            $(this).parent().parent().find('.layersCB').trigger('click');
+
+            event.stopPropagation();
+        });
+        $('.layerAction').click(function () {
+            // Clear all layers
+            clearAll(siteObject);
+            //alert('.layerAction');
+
+            // Avoid if the current URL already contains data-link.
+            // Stet, this caused contractor page to return to root
+            //if($(this).attr("data-link") && window.location.pathname.indexOf($(this).attr("data-link")) < 0) {
+            
+            if($(this).attr("data-link")) {
+                //alert('.layerAction data-link: ' + $(this).attr("data-link"));
+
+                // Bugbug #specs is remaining in current rootfolder when these two lines are active:
+                // Add, if first character is #, prepend path.
+                window.location = $(this).attr("data-link");
+                return;
+            }
+            console.log("Trigger hidden checkbox click from nav.");
+            $(this).parent().find('.layersCB').trigger('click');
+            $(this).parent().find('.layerActionIcon').addClass('layerActionActive');
+
+            if ($(".moduleJS").width() <= 800) { // Narrow
+                //$('.hideLocationsMenu').trigger("click");
+                hideLocationsMenu();
+            }
+                
+            event.stopPropagation();
+        });
+        
+        // , .overlaysInSide .layerCbTitle
+        $('.overlaysInSide .layerCbRow').click(function () {
+            //if (location.host.indexOf('localhost') >= 0) {
+                console.log("overlaysInSide " + $(this).attr("data-trigger"))
+            //}
+            //$(".overlaysInSide").hide();
+            //$(".showOverlays").removeClass("active");
+            
+            layerName = $(this).attr("data-trigger").replace('go-','');
+            
+            if (!$('.active-' + layerName).is(":visible")) {
+                displayMap(layerName,siteObject);
+                $('.active-' + layerName).show(); // Show overlay icon. Has to occur after displayMap.
+            } else {
+                $('.active-' + layerName).hide();
+                hideLayer(layerName,siteObject);
+            }
+            // Causes header to change too:
+            //$('#' + $(this).attr("data-trigger")).trigger("click"); // Toggles layersCB via '.layerCheckboxes :checkbox'. Triggers changeLayer.
+        });
+
+        $('.showAllLayers').click(function () {
+            $('.layerCbRow').hide();
+            $('.sideTip').hide();
+            $('.layerSectionTitle').find('.downArrow').addClass('leftArrow').removeClass('downArrow');
+            // Make all arrows point right.
+
+            showLayerMenu();
+            $('.showAllLayers').hide();
+            event.stopPropagation();
+        });
+        $('.layerSectionTitle').click(function () {
+            
+            if ($(this).attr("data-layer-section")) {
+                layerSectionOpen($(this).attr("data-layer-section").toLowerCase().replace(" ","-"));
+            } else {
+                console.log("layerSectionTitle click");
+                //$('.layerSection').hide();
+                //$(this).parent().parent().show();
+                //$(".listPanelHolder").show();// This shows list too.
+                
+                //$('.layerCbRow').hide(); // Hide All
+                //$(this).parent().parent().find('.layerSectionTitle').show();
+                $(this).parent().find('.layerCbRow').toggle(); // Up to layerSection.
+                //$(this).parent().parent().find('.layerCbRow').show(); // Up to layerSectionAccess.
+
+                if ($(this).find('.leftArrow').length) {
+                    $(this).find('.leftArrow').addClass('downArrow').removeClass('leftArrow');
+                    // If any layers in the current section are feeds, show 3-dots tip.
+                    if ($(this).parent().parent().find('.layerActionIcon').length) {
+                        //$(this).parent().parent().append($('.sideTip'));
+                        $('.sideTip').show();
+                        setTimeout(function() {
+                            $(".sideTip").slideUp('slow')
+                        }, 4000);
+                    } else {
+                        $('.sideTip').hide();
+                    }
+                } else {
+                    $(this).find('.downArrow').addClass('leftArrow').removeClass('downArrow');
+                }
+            }
+            event.stopPropagation();
+        });
+
+        function layerSectionOpen(section) {
+            //alert("function layerSectionOpen: " + section);
+            //alert(".layerSection-" + section + " .layerCbRow");
+            if ($(".layerSection-" + section + " .sectionArrowHolder div").hasClass('downArrow')) {
+                $(".layerSection-" + section + " .layerCbRow").hide();
+                $(".layerSection-" + section + " .sectionArrowHolder div").addClass('leftArrow').removeClass('downArrow');
+            } else {
+                $(".layerSection-" + section + " .layerCbRow").show();
+                $(".layerSection-" + section + " .sectionArrowHolder div").addClass('downArrow').removeClass('leftArrow');
+            }
+        }
+        function useRootPath(layerName) {
+            var pathname = window.location.pathname.toLowerCase();
+
+            // To do: Replace defense with any folder not at the root, except maybe "directory" folder
+            if (pathname.indexOf('defense') >= 0 && $('.appMenuList').is(":visible")) { // Test for uppercase.
+                // Exit the defense URL since Aerospace and other pages are not subsets of defense.
+                //pathname = pathname.replace("/defense","");
+                window.location = root + "#" + layerName;
+                return;
+            }
+        }
+        $('.layerCheckboxes :checkbox').change(function () {
+
+            if($(this).is(":checked")) { // Show Layer
+                //$(this).parent().parent().find('.layerAction .layerActionIcon').css('color', '#3B99FC');
+                $(this).parent().parent().find('.layerAction .layerActionIcon').addClass('layerActionActive');
+
+                // Update hash without triggering listener
+                //updateURL($(this).prop('value'));
+                // History.pushState(historyParams, searchTitle, queryString);
+
+                clearConsole();
+                var layerName = $(this).prop('value');
+                console.log("CHECKED " + layerName);
+                if (embedded()) {
+                    window.top.location.href = root + "/#" + layerName
+                    return;
+                }
+                console.log("changeLayer called from .layerCheckboxes :checkbox");
+
+                useRootPath($(this).prop('value'));
+
+                $('.topButtons').show();
+                $('.layerContent').show(); // Since may be hidden on bigThumb page.
+
+                clearID(".layerCheckboxes :checkbox checked");
+                //$('.cid').text(""); $('.cidTab').val("");
+                updateTheURL($(this).prop('value'));
+                var checkedCount = $('.layersCB:checked').length;
+                if (checkedCount == 1) {
+                    console.log("TO DO: Clearall - Currently clearall only clears the previous layer.");
+                    changeLayer($(this).prop('value'),siteObject,"clearall");
+                } else {
+                    changeLayer($(this).prop('value'),siteObject,"keepexisting");
+                }
+                // Limit to one title at top
+                $("#sectionCategories").hide();
+                $("#sectionCategoriesToggle").show();
+                $('#cat-' + $(this).prop('value')).prop("checked", true);
+
+                /* Hiding below now instead.
+                if ($(".moduleJS").width() <= 800) { // Narrow
+                    $('.hideMetaMenu').trigger("click");
+                } else if ($('.appMenuPosition').is(":visible")) {
+                    $('.hideMetaMenu').trigger("click");
+                }
+                */
+                //$('.hideMainMenu').trigger("click"); // Has to reside after lines above.
+                $('.active-' + $(this).prop('value')).show(); // Show overlay icon
+                closeMenu();
+            } else { // Hide Layer
+                //$(this).parent().parent().find('.layerAction .layerActionIcon').css('color', '#ccc');
+                $(this).parent().parent().find('.layerAction .layerActionIcon').removeClass('layerActionActive');
+                console.log("hideLayer: " + $(this).prop('value'));
+                clearID(".layerCheckboxes :checkbox not checked");
+                //$('.cid').text(""); $('.cidTab').val("");
+
+                $('.active-' + $(this).prop('value')).hide(); // Hide overlay icon
+                $('#cat-' + $(this).prop('value')).prop("checked", false);
+                hideLayer($(this).prop('value'),siteObject);
+            }
+
+            // Would hide list. Not needed for overlays click since list replaces overlays.
+            //$(".besideLeftHolder").hide();
+        });
+
+        $('.showList').click(function(event) {
+            var moduleWidth = $(".moduleJS").width();
+            mapbuttonsNeutral();
+            $('.gridPanelHolder').hide();
+            $(".listPanel").show();
+            $('.listPanelRows').show();
+            $(".listPanelHolder").show();
+            if ($(".besideLeftHolder .listPanel").length > 0) { // Beside map
+                $('.besideLeftHolder').show();
+            }
+            if ($(".moduleJS").width() > 800) { // Because scolling down on mobile.
+                $('.showList').hide();
+                $('.hideList').show();
+            }
+            $('.moveListBelow').show();
+            //$('.moveListBeside').show();
+            $('.detailsPanel').hide();
+            $('#hideDetails').show();
+            $('.layerNav .showMap').show(); // For COI mobile
+            //alert(".layerNav .showMap");
+            $('.showDetails').hide();
+            $('.hideDetails').show();
+            $('.letter').text(""); // No effect
+            clearID('.showList');
+            //$('.cid').text("");
+            
+            // Might limit scroll to when list is below map
+            $('html,body').animate({
+                scrollTop: $(".listPanel").offset().top - $("#siteHeader").height()
+            });
+            //$('.showDirectoryTrigger').trigger("click"); // Triggers map too!
+            //showDirectory(layerName,siteObject); // Not defined here.
+
+            // BugBug Test if needed here
+            layerName = getLayerName();
+            updateTheURL(layerName); // Cid removed
+
+            if ($(".listTable").text().length <= 0) {
+                // Limit to when list is blank, when cid loaded initially.
+                console.log("Call loadGrid from .showList for " + layerName);
+                loadDirectory(0,layerName,siteObject);
+            }
+        });
+    //});
+}
+
+</script>
+</head>
+<body>
+
+<div class="showAdminNav">showAdminNav</div>
+
+<div class="layerCheckboxes"></div>
+
+<div class="overlaysInSide"></div>
+
+
+</body>
+</html>
