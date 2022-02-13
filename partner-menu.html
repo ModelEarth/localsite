@@ -8,6 +8,9 @@
 
 <title>Local Site</title>
 <link type="text/css" rel="stylesheet" href="../../../../localsite/css/base.css" id="/localsite/css/base.css" />
+
+<link type="text/css" rel="stylesheet" href="/explore/css/site.css" id="/explore/css/site.css" />
+
 <script type="text/javascript" src="js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
 <script type="text/javascript" src="js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
 <script type="text/javascript" src="js/localsite.js"></script>
@@ -17,6 +20,18 @@
 <!-- 
 <script type="text/javascript" src="js/map-filters.js" id="/localsite/js/map-filters.js"></script>
 -->
+
+<style>
+.layerSectionTitleFormat {
+    padding: 6px 8px 7px 18px;
+    color: #333;
+    font-size: 18px;
+    font-family: 'Open Sans Condensed', sans-serif;
+    cursor: pointer;
+    text-transform: none;
+    min-width: 200px;
+}
+</style>
 
 <script>
 var currentAccess = 0;
@@ -53,24 +68,20 @@ function removeFrontFolder(path) {
 
 
 
-function initPartnerMenu(layerName) {
+function initPartnerMenu(partnerMenu) {
+	let layerName = partnerMenu.layerName;
 	let hash = getHash();
+	alert("initPartnerMenu")
 	//if(location.host.indexOf('localhost') >= 0) {
 	    // Greenville:
 	    // https://github.com/codeforgreenville/leaflet-google-sheets-template
 	    // https://data.openupstate.org/map-layers
 
-	    //var layerJson = local_app.community_data_root() + "us/state/GA/ga-layers.json"; // CORS prevents live
-	    // The URL above is outdated. Now resides here:
-	    var layerJson = local_app.localsite_root() + "info/data/ga-layers.json";
-        //alert("layerJson " + layerJson)
-	    if(location.host.indexOf("georgia") >= 0) {
-	    	// For PPE, since localhost folder does not reside on same server
-	    	layerJson = "https://model.earth/localsite/info/data/ga-layers.json";
-	    	console.log("Set layerJson: " + layerJson);
-		}
-	    console.log(layerJson);
-	    var adminNavObject = (function() {
+	    let layerJson = partnerMenu.layerJson; 
+	    //console.log(layerJson);
+
+	    alert(location.hash)
+	    let adminNavObject = (function() {
 	        var json = null;
 	        $.ajax({
 	            'type': 'GET',
@@ -83,12 +94,21 @@ function initPartnerMenu(layerName) {
 	                consoleLog("Menu layers json loaded within initPartnerMenu. location.hash: " + location.hash);
 	                
 	                // adminNavObjectFunctions(adminNavObject); // could add to keep simple here
+	                alert("success")
+	                displaypartnerCheckboxes(partnerMenu,adminNavObject);
 
 	                $(document).on("click", ".showAdminNav, .hideApps", function(event) {
+
+	                	// Only load json once, then reuse for each listing
+
 	          			console.log('.showAdminNav click');
 
 	          			//if ($("#bigThumbPanelHolder").is(':visible')) {
-	          			if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) {
+	          			//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) {
+	          			if($(partnerMenu.menuDiv).is(':visible')) {
+	          				$(partnerMenu.menuDiv).hide();
+
+	          				/*
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
 
@@ -102,19 +122,20 @@ function initPartnerMenu(layerName) {
 
 	          				$("#bigThumbPanelHolder").hide();
 	          				$('.showAdminNav').removeClass("active");
+							*/
 
 	          			} else {
-	          				alert("showAdminNav")
-                            if ($("#filterLocations").is(':visible')) {
-                                filterClickLocation(); // Toggle county-select closed
-                            }
+
+	          				$(partnerMenu.menuDiv).show();
+
+
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
 
 	          				$("#showAdminNavText").text("Goods & Services");
 	          				$("#appSelectHolder .showAdminNav").addClass("filterClickActive");
 							//showThumbMenu(hash.show, adminNavObject);
-							displayLayerCheckboxes(adminNavObject);
+							displaypartnerCheckboxes(partnerMenu,adminNavObject);
                             $('html,body').animate({
                             	//scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
                             });
@@ -143,14 +164,26 @@ function initPartnerMenu(layerName) {
 	    
 	    
 	//}
+
+  $('.showPartnerMenu').click(function () {
+  	alert("showPartnerMenu");
+    $("#partnerMenu").show();
+    $("#partnerMenu").prependTo($(this).parent());
+    event.stopPropagation();
+  });
+
 } // end initPartnerMenu
-initPartnerMenu("special");
 
 
-function displayLayerCheckboxes(siteObject) { // For Layer Icon on map - Master
-    console.log("displayLayerCheckboxes start location.hash: " + location.hash);
-    var layerCheckboxes = "";
-    var overlayList = ""; // CLicking selects checkbox in layerCheckboxes list
+
+function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on map - Master
+	alert("testing")
+	if ($(partnerMenu.menuDiv).text().length > 0) {
+		return; // Already loaded
+	}
+    console.log("displaypartnerCheckboxes start location.hash: " + location.hash);
+    var partnerCheckboxes = "";
+    var overlayList = ""; // Clicking selects checkbox in partnerCheckboxes list
     var previousSet = "";
     var previousOverlaySet = "";
     var closeLayerSet = false;
@@ -170,7 +203,7 @@ function displayLayerCheckboxes(siteObject) { // For Layer Icon on map - Master
                 menuaccess = siteObject.items[item].menuaccess;
             }
         } catch(e) {
-            console.log("displayLayerCheckboxes: no menuaccess");
+            console.log("displaypartnerCheckboxes: no menuaccess");
         }
         menuaccessmax = 11;
         if (siteObject.items[item].menuaccessmax) {
@@ -184,7 +217,7 @@ function displayLayerCheckboxes(siteObject) { // For Layer Icon on map - Master
             try { // For IE error
                 title = ((siteObject.items[item].navtitle) ? siteObject.items[item].navtitle : siteObject.items[item].title);
             } catch(e) {
-                console.log("displayLayerCheckboxes: no layer title");
+                console.log("displaypartnerCheckboxes: no layer title");
                 title = "----";
             }
 
@@ -221,7 +254,7 @@ function displayLayerCheckboxes(siteObject) { // For Layer Icon on map - Master
                         layerSectionDisplay = ' style="display:none"';
                     }
                     if (previousSet != "") {
-                        layerCheckboxes += '</div></div>'; // For columnizer
+                        partnerCheckboxes += '</div></div>'; // For columnizer
                     }
                     closeLayerSet = true;
                     // First div is for columnizer
@@ -229,20 +262,20 @@ function displayLayerCheckboxes(siteObject) { // For Layer Icon on map - Master
                     if (siteObject.items[item].sectionicon) {
                         //sectionIcon = siteObject.items[item].sectionicon;
                     }
-                    layerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + siteObject.items[item].section.toLowerCase().replace(" ","-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" data-layer-section="' + siteObject.items[item].section + '" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + siteObject.items[item].section + '</div>';
+                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + siteObject.items[item].section.toLowerCase().replace(" ","-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" data-layer-section="' + siteObject.items[item].section + '" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + siteObject.items[item].section + '</div>';
                 } // Check circle // Was around title: <label for="go-' + siteObject.items[item].item + '" style="width:100%; overflow:auto">
                 // <i class="material-icons" style="float:right;color:#ccc">&#xE86C;</i>
                 var directlink = getDirectLink(siteObject.items[item].directlink, siteObject.items[item].rootfolder, siteObject.items[item].item);
 
-                layerCheckboxes += '<div class="layerCbRow row-' + siteObject.items[item].item + ' user-' + menuaccess + '"><div class="layerAction" data-link="' + directlink + '">';
+                partnerCheckboxes += '<div class="layerCbRow row-' + siteObject.items[item].item + ' user-' + menuaccess + '"><div class="layerAction" data-link="' + directlink + '">';
                 
                 if (siteObject.items[item].feed) {
-                    layerCheckboxes += '<div class="layerActionIcon" data-link="' + directlink + '"></div>';
+                    partnerCheckboxes += '<div class="layerActionIcon" data-link="' + directlink + '"></div>';
                 } else {
-                    layerCheckboxes += '<div class="layerActionIcon layerActionIconNoFeed" data-link="' + directlink + '"></div>';
+                    partnerCheckboxes += '<div class="layerActionIcon layerActionIconNoFeed" data-link="' + directlink + '"></div>';
                 }
 
-                layerCheckboxes += '</div><div class="layerCbTitle"><input type="checkbox" class="layersCB" name="layersCB" id="go-' + siteObject.items[item].item + '" value="' + siteObject.items[item].item + '">' + title + '</div></div><div style="clear:both"></div>';
+                partnerCheckboxes += '</div><div class="layerCbTitle"><input type="checkbox" class="layersCB" name="layersCB" id="go-' + siteObject.items[item].item + '" value="' + siteObject.items[item].item + '">' + title + '</div></div><div style="clear:both"></div>';
                 previousSet = siteObject.items[item].section;
             }
         }
@@ -251,30 +284,34 @@ function displayLayerCheckboxes(siteObject) { // For Layer Icon on map - Master
         }
     }
     if (closeLayerSet) {
-        layerCheckboxes += '</div></div>\n'; // For columnizer
+        partnerCheckboxes += '</div></div>\n'; // For columnizer
         overlayList += '</div>\n'; // For columnizer
     }
     // Double div prevents prior layerSectionTitle from being unchecked.
-    //layerCheckboxes += '<div><div class="showAllLayers dontsplit layerSectionTitleFormat" style="display:none">More</div></div>\n';
+    //partnerCheckboxes += '<div><div class="showAllLayers dontsplit layerSectionTitleFormat" style="display:none">More</div></div>\n';
 
     //$(document).ready(function () { // For IE
-        //alert("test in progress: " + layerCheckboxes);
+        //alert("test in progress: " + partnerCheckboxes);
 
         if (location.host.indexOf('localhost') >= 0) {
             //$(".siteTopTabs").append(topTabs);
         }
-        $(".layerCheckboxes").append(layerCheckboxes);
-
-        $(".overlaysInSide").append(overlayList);
         
+
+    	$(partnerMenu.menuDiv).append(partnerCheckboxes);
+
+    	// To Remove
+    	//$(".overlaysInSide").append(overlayList);
+        
+
         // Temp, need to adjust to use access level. This didn't work...
         $('.layerSectionAccess').show();
 
         // json loaded within initSiteObject. location.hash:
-        console.log("displayLayerCheckboxes location.hash: " + location.hash);
-        console.log("displayLayerCheckboxes - Layer Icon on map, stores active layers without map load");
+        console.log("displaypartnerCheckboxes location.hash: " + location.hash);
+        console.log("displaypartnerCheckboxes - Layer Icon on map, stores active layers without map load");
 
-        //$('.layerCheckboxes').columnize({ columns: 2 }); // Also called later since this won't have an effect when not visible.
+        //$('.partnerCheckboxes').columnize({ columns: 2 }); // Also called later since this won't have an effect when not visible.
 
         // APP MENU ACTIONS
         $('.menuRectLink').click(function () {
@@ -359,7 +396,7 @@ function displayLayerCheckboxes(siteObject) { // For Layer Icon on map - Master
                 hideLayer(layerName,siteObject);
             }
             // Causes header to change too:
-            //$('#' + $(this).attr("data-trigger")).trigger("click"); // Toggles layersCB via '.layerCheckboxes :checkbox'. Triggers changeLayer.
+            //$('#' + $(this).attr("data-trigger")).trigger("click"); // Toggles layersCB via '.partnerCheckboxes :checkbox'. Triggers changeLayer.
         });
 
         $('.showAllLayers').click(function () {
@@ -428,7 +465,7 @@ function displayLayerCheckboxes(siteObject) { // For Layer Icon on map - Master
                 return;
             }
         }
-        $('.layerCheckboxes :checkbox').change(function () {
+        $('.partnerCheckboxes :checkbox').change(function () {
 
             if($(this).is(":checked")) { // Show Layer
                 //$(this).parent().parent().find('.layerAction .layerActionIcon').css('color', '#3B99FC');
@@ -445,14 +482,14 @@ function displayLayerCheckboxes(siteObject) { // For Layer Icon on map - Master
                     window.top.location.href = root + "/#" + layerName
                     return;
                 }
-                console.log("changeLayer called from .layerCheckboxes :checkbox");
+                console.log("changeLayer called from .partnerCheckboxes :checkbox");
 
                 useRootPath($(this).prop('value'));
 
                 $('.topButtons').show();
                 $('.layerContent').show(); // Since may be hidden on bigThumb page.
 
-                clearID(".layerCheckboxes :checkbox checked");
+                clearID(".partnerCheckboxes :checkbox checked");
                 //$('.cid').text(""); $('.cidTab').val("");
                 updateTheURL($(this).prop('value'));
                 var checkedCount = $('.layersCB:checked').length;
@@ -481,7 +518,7 @@ function displayLayerCheckboxes(siteObject) { // For Layer Icon on map - Master
                 //$(this).parent().parent().find('.layerAction .layerActionIcon').css('color', '#ccc');
                 $(this).parent().parent().find('.layerAction .layerActionIcon').removeClass('layerActionActive');
                 console.log("hideLayer: " + $(this).prop('value'));
-                clearID(".layerCheckboxes :checkbox not checked");
+                clearID(".partnerCheckboxes :checkbox not checked");
                 //$('.cid').text(""); $('.cidTab').val("");
 
                 $('.active-' + $(this).prop('value')).hide(); // Hide overlay icon
@@ -539,16 +576,48 @@ function displayLayerCheckboxes(siteObject) { // For Layer Icon on map - Master
     //});
 }
 
+
+localSiteMenu={};
+localSiteMenu.current = "Special"
+localSiteMenu.layerJson = "/explore/json/menu.json";
+localSiteMenu.menuDiv = "#localSiteMenu";
+//initPartnerMenu(localSiteMenu);
+
+
+if(typeof partnerMenu=='undefined'){ var partnerMenu={}; }
+partnerMenu.current = "Special"
+partnerMenu.layerJson = "/localsite/info/data/ga-layers.json";
+partnerMenu.menuDiv = "#partnerCheckboxes";
+partnerMenu.autoDisplay = false;
+initPartnerMenu(partnerMenu);
+
+
+
+//filterClickLocation();
+
 </script>
 </head>
 <body>
 
-<div class="showAdminNav">showAdminNav</div>
+<div class="moduleJS">
 
-<div class="layerCheckboxes"></div>
+  <div class="overlaysInSide" style="font-size:15px; width:300px; float:left">
+	123
 
-<div class="overlaysInSide"></div>
+	<div id="localSiteMenu" class="partnerCheckboxes"></div>
 
+	<div class="overlaysInSide"></div>
+  </div>
+
+  <div style="font-size:15px; width:300px; float:left">
+
+  	<div class="showAdminNav showPartnerMenu" style="cursor:pointer;">showAdminNav …</div>
+
+  	<div id="partnerCheckboxes"></div>
+
+  </div>
+
+</div>
 
 </body>
 </html>
