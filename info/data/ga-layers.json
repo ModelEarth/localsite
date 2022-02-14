@@ -66,8 +66,8 @@ callback(
 		"menulevel": "1",
 		"item": "smart",
 		"rootfolder": "info",
-		"title": "Smart Data",
-		"tabtitle": "Smart Data",
+		"title": "Community Projects",
+		"tabtitle": "Community Projects",
 		"mobiletitle": "Smart and Sustainable",
 		"section": "Smart and Sustainable",
 		"provider": "Admin",
@@ -79,7 +79,8 @@ callback(
 		"sectionTitle": "leftNav",
 		"topnavaccess": "10",
 		"menuaccess": "0",
-		"directlink": "/localsite/map/#show=smart",
+		"directlinkX": "/localsite/map/#show=smart",
+		"directlink": "/community/projects/#state=GA&show=smart",
 		"states": "GA"
 	},
 	{

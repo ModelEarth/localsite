@@ -6,20 +6,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 
-<title>Local Site</title>
+<title>Local Site Menus</title>
 <link type="text/css" rel="stylesheet" href="/explore/css/site.css" id="/explore/css/site.css" />
-<link type="text/css" rel="stylesheet" href="../../../../localsite/css/menu.css" id="/localsite/css/menu.css" />
+
 <link type="text/css" rel="stylesheet" href="../../../../localsite/css/base.css" id="/localsite/css/base.css" />
-
-
+<link type="text/css" rel="stylesheet" href="../../../../localsite/css/menu.css" id="/localsite/css/menu.css" />
 
 <script type="text/javascript" src="js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
 <script type="text/javascript" src="js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
 <script type="text/javascript" src="js/localsite.js"></script>
 
+
+<!--
 <script type="text/javascript" src="../../../../localsite/js/showdown.min.js" id="/localsite/js/showdown.min.js"></script>
 <script type="text/javascript" src="../../../../localsite/js/navigation.js" id="/localsite/js/navigation.js"></script>
-<!-- 
+
 Not retained currently:
 
 Send to a Friend
@@ -54,6 +55,7 @@ function access(minlevel,alevel) {
 
 // Rename from map-filters.js
 function getDirectMenuLink(directlink,rootfolder,layer) {
+	let itemID = "67463";
     if (directlink) {
         directlink = removeFrontMenuFolder(directlink);
     } else if (rootfolder) {
@@ -62,7 +64,8 @@ function getDirectMenuLink(directlink,rootfolder,layer) {
         }
         directlink = removeFrontMenuFolder(rootfolder + "#" + layer);
     } else {
-        directlink = removeFrontMenuFolder("/explore/#" + layer);
+    	// directlink = removeFrontMenuFolder("/explore/#" + layer);
+        directlink = removeFrontMenuFolder("/elements/" + itemID);
     }
     return(directlink);
 }
@@ -340,7 +343,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         //$('.partnerCheckboxes').columnize({ columns: 2 }); // Also called later since this won't have an effect when not visible.
 
         // APP MENU ACTIONS
-        $('.menuRectLink').click(function () {
+        $(partnerMenu.menuDiv + ' .menuRectLink').click(function () {
             console.log('.menuRectLink click ' + $(this).attr("data-section").toLowerCase());
             showLayerMenu();
 
@@ -362,7 +365,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         });
 
         // CHECKBOX ACTIONS
-        $('.layerActionIcon').click(function () {
+        $(partnerMenu.menuDiv + ' .layerActionIcon').click(function () {
             let layerName = $(this).parent().parent().find('.layersCB').val();
             //useRootPath(layerName);
             if($(this).attr("data-link")) {
@@ -375,7 +378,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
 
             event.stopPropagation();
         });
-        $('.layerAction').click(function () {
+        $(partnerMenu.menuDiv + ' .layerAction').click(function () {
             // Clear all layers
             clearAll(menuDataset);
             console.log('.layerAction');
@@ -405,7 +408,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         });
         
         // , .overlaysInSide .layerCbTitle
-        $('.overlaysInSide .layerCbRow').click(function () {
+        $(partnerMenu.menuDiv + ' .overlaysInSide .layerCbRow').click(function () {
             //if (location.host.indexOf('localhost') >= 0) {
                 console.log("overlaysInSide " + $(this).attr("data-trigger"))
             //}
@@ -425,7 +428,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
             //$('#' + $(this).attr("data-trigger")).trigger("click"); // Toggles layersCB via '.partnerCheckboxes :checkbox'. Triggers changeLayer.
         });
 
-        $('.showAllLayers').click(function () {
+        $(partnerMenu.menuDiv + ' .showAllLayers').click(function () {
             $('.layerCbRow').hide();
             $('.sideTip').hide();
             $('.layerSectionTitle').find('.downArrow').addClass('leftArrow').removeClass('downArrow');
@@ -435,7 +438,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
             $('.showAllLayers').hide();
             event.stopPropagation();
         });
-        $('.layerSectionTitle').click(function () {
+        $(partnerMenu.menuDiv + ' .layerSectionTitle').click(function () {
             
             if ($(this).attr("data-layer-section")) {
                 layerSectionOpen($(this).attr("data-layer-section").toLowerCase().replace(/ /g,"-"));
@@ -471,7 +474,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
 
         function layerSectionOpen(section) {
             //alert("function layerSectionOpen: " + section);
-            alert(".layerSection-" + section + " .layerCbRow");
+            //alert(".layerSection-" + section + " .layerCbRow");
             if ($(".layerSection-" + section + " .sectionArrowHolder div").hasClass('downArrow')) {
                 $(".layerSection-" + section + " .layerCbRow").hide();
                 $(".layerSection-" + section + " .sectionArrowHolder div").addClass('leftArrow').removeClass('downArrow');
