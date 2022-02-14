@@ -68,7 +68,7 @@ function removeFrontMenuFolder(path) {
 }
 
 
-function initPartnerMenu(partnerMenu) {
+function initMenu(partnerMenu) {
 	//let layerName = partnerMenu.layerName;
 	//let hash = getHash();
 	//if(location.host.indexOf('localhost') >= 0) {
@@ -90,6 +90,53 @@ function initPartnerMenu(partnerMenu) {
 	        */
 	    });
 
+		$(document).on("click", partnerMenu.revealButton, function(event) {
+
+  			console.log(partnerMenu.revealButton + ' click');
+
+  			//if ($("#bigThumbPanelHolder").is(':visible')) {
+  			//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) {
+  			if($(partnerMenu.menuDiv).is(':visible')) {
+
+  				$(partnerMenu.menuDiv).hide();
+
+  				
+  				//$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
+  				//$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
+
+  				//$("#appSelectHolder .showAdminNav").removeClass("filterClickActive");
+  				//$("#showAdminNavText").text($("#showAdminNavText").attr("title"));
+  				//$(".hideWhenPop").show();
+  				//// To do: Only up scroll AND SHOW if not visible
+  				//$('html,body').animate({
+				//	scrollTop: 0
+				//});
+
+  				//$("#bigThumbPanelHolder").hide();
+  				//$('.showAdminNav').removeClass("active");
+				
+
+  			} else {
+
+  				$(partnerMenu.menuDiv).show();
+
+  				/*
+  				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
+  				$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
+
+  				//$("#showAdminNavText").text("Goods & Services");
+  				//$("#appSelectHolder .showAdminNav").addClass("filterClickActive");
+				//showThumbMenu(hash.show, adminNavObject);
+				displaypartnerCheckboxes(partnerMenu,adminNavObject);
+                $('html,body').animate({
+                	//scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
+                });
+				*/
+  			}
+  			
+		  	event.stopPropagation();
+		});
+
 
 	    /*
 	    let adminNavObject = (function() {
@@ -102,58 +149,13 @@ function initPartnerMenu(partnerMenu) {
 	            'jsonpCallback': 'callback',
 	            'dataType': "jsonp",
 	            'success': function (adminNavObject) {
-	                consoleLog("Menu layers json loaded within initPartnerMenu. location.hash: " + location.hash);
+	                consoleLog("Menu layers json loaded within initMenu. location.hash: " + location.hash);
 	                
 	                // adminNavObjectFunctions(adminNavObject); // could add to keep simple here
 	                alert("success1")
 	                displaypartnerCheckboxes(partnerMenu,adminNavObject);
 
-	                $(document).on("click", partnerMenu.revealButton, function(event) {
-
-	                	// Only load json once, then reuse for each listing
-
-	          			console.log(partnerMenu.revealButton + ' click');
-
-	          			//if ($("#bigThumbPanelHolder").is(':visible')) {
-	          			//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) {
-	          			if($(partnerMenu.menuDiv).is(':visible')) {
-	          				$(partnerMenu.menuDiv).hide();
-
-	          				
-	          				//$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
-	          				//$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
-
-	          				//$("#appSelectHolder .showAdminNav").removeClass("filterClickActive");
-	          				//$("#showAdminNavText").text($("#showAdminNavText").attr("title"));
-	          				//$(".hideWhenPop").show();
-	          				//// To do: Only up scroll AND SHOW if not visible
-	          				//$('html,body').animate({
-							//	scrollTop: 0
-							//});
-
-	          				//$("#bigThumbPanelHolder").hide();
-	          				//$('.showAdminNav').removeClass("active");
-							
-
-	          			} else {
-
-	          				$(partnerMenu.menuDiv).show();
-
-
-	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
-	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
-
-	          				//$("#showAdminNavText").text("Goods & Services");
-	          				//$("#appSelectHolder .showAdminNav").addClass("filterClickActive");
-							//showThumbMenu(hash.show, adminNavObject);
-							displaypartnerCheckboxes(partnerMenu,adminNavObject);
-                            $('html,body').animate({
-                            	//scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
-                            });
-	          			}
-	          			
-					  	event.stopPropagation();
-					});
+	                
 	          		// These should be lazy loaded when clicking menu
 	                //displayBigThumbnails(hash.show, "main",adminNavObject);
 	                //displayHexagonMenu("",adminNavObject);
@@ -183,7 +185,7 @@ function initPartnerMenu(partnerMenu) {
     event.stopPropagation();
   });
 
-} // end initPartnerMenu
+} // end initMenu
 
 
 
@@ -314,8 +316,8 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
 
     	$(partnerMenu.menuDiv).append(partnerCheckboxes);
 
-    	// To Remove
-    	//$(".overlaysInSide").append(overlayList);
+    	
+    	$(".overlaysInSide").append(overlayList);
         
 
         // Temp, need to adjust to use access level. This didn't work...
@@ -544,70 +546,35 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
             //$(".besideLeftHolder").hide();
         });
 
-        $('.showList').click(function(event) {
-            var moduleWidth = $(".moduleJS").width();
-            mapbuttonsNeutral();
-            $('.gridPanelHolder').hide();
-            $(".listPanel").show();
-            $('.listPanelRows').show();
-            $(".listPanelHolder").show();
-            if ($(".besideLeftHolder .listPanel").length > 0) { // Beside map
-                $('.besideLeftHolder').show();
-            }
-            if ($(".moduleJS").width() > 800) { // Because scolling down on mobile.
-                $('.showList').hide();
-                $('.hideList').show();
-            }
-            $('.moveListBelow').show();
-            //$('.moveListBeside').show();
-            $('.detailsPanel').hide();
-            $('#hideDetails').show();
-            $('.layerNav .showMap').show(); // For COI mobile
-            //alert(".layerNav .showMap");
-            $('.showDetails').hide();
-            $('.hideDetails').show();
-            $('.letter').text(""); // No effect
-            clearID('.showList');
-            //$('.cid').text("");
-            
-            // Might limit scroll to when list is below map
-            $('html,body').animate({
-                scrollTop: $(".listPanel").offset().top - $("#siteHeader").height()
-            });
-            //$('.showDirectoryTrigger').trigger("click"); // Triggers map too!
-            //showDirectory(layerName,menuDataset); // Not defined here.
-
-            // BugBug Test if needed here
-            layerName = getLayerName();
-            updateTheURL(layerName); // Cid removed
-
-            if ($(".listTable").text().length <= 0) {
-                // Limit to when list is blank, when cid loaded initially.
-                console.log("Call loadGrid from .showList for " + layerName);
-                loadDirectory(0,layerName,menuDataset);
-            }
-        });
+        
     //});
 }
 
 
 localSiteMenu={};
 localSiteMenu.current = "Special"
-localSiteMenu.layerJson = "http://localhost:8887/explore/json/menu-array.json"; // Might have bad syntax
+localSiteMenu.layerJson = "http://localhost:8887/explore/json/menu-array.json";
 //localSiteMenu.layerJson = "https://neighborhood.org/brigade-information/organizations.json";
 //localSiteMenu.layerJson = "/localsite/info/data/organizations-test.json";
-localSiteMenu.menuDiv = "#localSiteMenu";
 localSiteMenu.revealButton = "#showSiteNav"
-initPartnerMenu(localSiteMenu);
+localSiteMenu.menuDiv = "#localSiteMenu";
+initMenu(localSiteMenu);
 
-//if(typeof partnerMenu=='undefined'){ var partnerMenu={}; }
+industryMenu={};
+industryMenu.current = "Special"
+industryMenu.layerJson = "/localsite/info/data/ga-layers-array.json";
+industryMenu.revealButton = "#showIndustryMenu"
+industryMenu.menuDiv = "#partnerCheckboxes";
+industryMenu.autoDisplay = false;
+initMenu(industryMenu);
+
 partnerMenu={};
 partnerMenu.current = "Special"
-partnerMenu.layerJson = "/localsite/info/data/ga-layers-array.json";
-partnerMenu.menuDiv = "#partnerCheckboxes";
+partnerMenu.layerJson = "/localsite/info/data/partner-menu.json";
 partnerMenu.revealButton = "#showPartnerMenu"
+partnerMenu.menuDiv = "#partnerMenu";
 partnerMenu.autoDisplay = false;
-initPartnerMenu(partnerMenu);
+initMenu(partnerMenu);
 
 
 //filterClickLocation();
@@ -618,20 +585,29 @@ initPartnerMenu(partnerMenu);
 
 <div class="moduleJS" style="padding:50px">
 
-  <div class="overlaysInSide" style="font-size:15px; width:300px; float:left">
-	<div id="showSiteNav" class="btn btn-white" style="cursor:pointer;">Show Site Nav</div>
+  <div style="font-size:15px; width:300px; float:left; padding-right: 30px; border-right:1px solid #ccc; margin-right:30px">
+	<div id="showSiteNav" class="btn btn-white" style="cursor:pointer;">Map Layers</div>
 
 	<div id="localSiteMenu" class="partnerCheckboxes"></div>
 
-	<div class="overlaysInSide"></div>
+  </div>
+
+  <div style="font-size:15px; width:300px; float:left; padding-right: 30px; border-right:1px solid #ccc; margin-right:30px">
+  	<div id="showIndustryMenu" class="btn btn-white" style="cursor:pointer;">Industry Menu …</div>
+  	<div id="partnerCheckboxes"></div>
   </div>
 
   <div style="font-size:15px; width:300px; float:left">
+  	<div id="showPartnerMenu" class="btn btn-white" style="cursor:pointer;">Partner Menu …</div>
+  	<div id="partnerMenu"></div>
+  </div>
 
-  	<div id="showPartnerMenu" class="btn btn-white" style="cursor:pointer;">showAdminNav …</div>
-
-  	<div id="partnerCheckboxes"></div>
-
+  <div style="clear:both; padding-top:30px;">
+  	
+	  <div style="border:1px solid #ccc; padding:30px">
+	  	Overlays In Side<br><br>
+	  	<div class="overlaysInSide"></div>
+	  </div>
   </div>
 
 </div>

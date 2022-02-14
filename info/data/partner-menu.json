@@ -1,0 +1,39 @@
+[
+{
+	"menulevel": "1",
+	"item": "industries",
+	"rootfolder": "info",
+	"title": "Page Details",
+	"tabtitle": "Page Details",
+	"mobiletitle": "Page Details",
+	"section": "Page Details",
+	"provider": "Admin",
+	"image": "/localsite/img/show/industries.jpg",
+	"siteHeaderHeight": "10px",
+	"siteHeaderHeightMax": "230px",
+	"icon": "<i class='material-icons'>&#xE87A;</i>",
+	"hideOverlaysButton": "true",
+	"sectionTitle": "leftNav",
+	"topnavaccess": "10",
+	"menuaccess": "0",
+	"defaultroot": "/localsite/info/",
+	"directlink": "/localsite/info/",
+	"caption": ""
+},
+{
+	"title": "Group Members",
+	"section": "Group Members"
+},
+{
+	"title": "Event Calendar",
+	"section": "Event Calendar"
+},
+{
+	"title": "Images and Files",
+	"section": "Images and Files"
+},
+{
+	"title": "Related Content",
+	"section": "Related Content"
+}
+]
