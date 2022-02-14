@@ -69,8 +69,8 @@ function removeFrontMenuFolder(path) {
 
 
 function initPartnerMenu(partnerMenu) {
-	let layerName = partnerMenu.layerName;
-	let hash = getHash();
+	//let layerName = partnerMenu.layerName;
+	//let hash = getHash();
 	//if(location.host.indexOf('localhost') >= 0) {
 	    // Greenville:
 	    // https://github.com/codeforgreenville/leaflet-google-sheets-template
@@ -79,9 +79,8 @@ function initPartnerMenu(partnerMenu) {
 	    let layerJson = partnerMenu.layerJson; 
 	    //console.log(layerJson);
 
-	    alert("layerJson: " + layerJson);
+	    //alert("layerJson: " + layerJson);
 	    $.getJSON(layerJson, function (data) {
-	    	//alert(data)
 	    	displaypartnerCheckboxes(partnerMenu,data);
 	    	/*
 	        dp.data = readJsonData(data, dp.numColumns, dp.valueColumn);
@@ -188,9 +187,7 @@ function initPartnerMenu(partnerMenu) {
 
 
 
-function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on map - Master
-	alert("testing")
-	alert(siteObject)
+function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon on map - Master
 	if ($(partnerMenu.menuDiv).text().length > 0) {
 		return; // Already loaded
 	}
@@ -207,14 +204,14 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
     var topTabs = "";
     var menulevel = 1;
     var menuaccessmax = 11;
-    //for(item in siteObject.items) {
-    siteObject.forEach(function(item) {
+    //for(item in menuDataset.items) {
+    menuDataset.forEach(function(item) {
         var menuaccess = 10; // no one
         try { // For IE error
-            if (typeof(siteObject.items[item].menuaccess) === "undefined") {
+            if (typeof(item.menuaccess) === "undefined") {
                 menuaccess = 0;
             } else {
-                menuaccess = siteObject.items[item].menuaccess;
+                menuaccess = item.menuaccess;
             }
         } catch(e) {
             console.log("displaypartnerCheckboxes: no menuaccess");
@@ -225,11 +222,11 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
         }
         // location.host.indexOf('localhost') >= 0 || 
         
-        // && siteObject.items[item].section.toLowerCase() != siteObject.items[item].item
+        // && item.section.toLowerCase() != item.item
         if (access(currentAccess,menuaccess) && currentAccess <= menuaccessmax) {
             var title = "";
             try { // For IE error
-                title = ((siteObject.items[item].navtitle) ? siteObject.items[item].navtitle : siteObject.items[item].title);
+                title = ((item.navtitle) ? item.navtitle : item.title);
             } catch(e) {
                 console.log("displaypartnerCheckboxes: no layer title");
                 title = "----";
@@ -238,33 +235,33 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
             if (title) {
 
                 // OVERLAYS
-                if (siteObject.items[item].feed && !siteObject.items[item].omitOverlay) {
-                    if (siteObject.items[item].section && siteObject.items[item].section != previousOverlaySet) {
+                if (item.feed && !item.omitOverlay) {
+                    if (item.section && item.section != previousOverlaySet) {
                         if (previousOverlaySet != "") {
                             overlayList += '</div></div>'; // For columnizer
                         }
-                        var overlaylevel = siteObject.items[item].overlaylevel;
+                        var overlaylevel = item.overlaylevel;
                         var hideOverlay = "";
                         if (!overlaylevel) {
-                            overlayList += '<div class="user-' + menuaccess + '"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + siteObject.items[item].section.toLowerCase().replace(" ","-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + siteObject.items[item].section + '</div>';
+                            overlayList += '<div class="user-' + menuaccess + '"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(" ","-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + item.section + '</div>';
                         }
                     }
-                    overlayList += '<div class="layerCbRow user-' + menuaccess + '" data-trigger="go-' + siteObject.items[item].item + '">';
+                    overlayList += '<div class="layerCbRow user-' + menuaccess + '" data-trigger="go-' + item.item + '">';
                     // data-link="' + directlink + '"
-                    overlayList += '<div class="overlayAction"><i class="material-icons active-' + siteObject.items[item].item + '" style="float:right;color:#ccc;display:none">&#xE86C;</i></div><div class="layerCbTitle">' + title + '</div></div><div style="clear:both"></div>';
-                    previousOverlaySet = siteObject.items[item].section;
+                    overlayList += '<div class="overlayAction"><i class="material-icons active-' + item.item + '" style="float:right;color:#ccc;display:none">&#xE86C;</i></div><div class="layerCbTitle">' + title + '</div></div><div style="clear:both"></div>';
+                    previousOverlaySet = item.section;
                 }
 
                 // MENU
-                if (siteObject.items[item].section && siteObject.items[item].section != previousSet) {
+                if (item.section && item.section != previousSet) {
                     //console.log("TITLE: " + title);
-                    // siteObject.items[item].item ==  || 
+                    // item.item ==  || 
                     layerSectionDisplay = '';
                     menulevel = 1;
-                    if (siteObject.items[item].menulevel) {
-                        menulevel = siteObject.items[item].menulevel;
+                    if (item.menulevel) {
+                        menulevel = item.menulevel;
                     }
-                    if ((siteObject.items[item].menulevel == "3" || siteObject.items[item].menulevel == "4")) {
+                    if ((item.menulevel == "3" || item.menulevel == "4")) {
                         layerSectionDisplay = ' style="display:none"';
                     }
                     if (previousSet != "") {
@@ -273,26 +270,26 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
                     closeLayerSet = true;
                     // First div is for columnizer
                     var sectionIcon = '<i class="material-icons menuTopIcon topHeaderIcon">&#xE53B;</i>';
-                    if (siteObject.items[item].sectionicon) {
-                        //sectionIcon = siteObject.items[item].sectionicon;
+                    if (item.sectionicon) {
+                        //sectionIcon = item.sectionicon;
                     }
-                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + siteObject.items[item].section.toLowerCase().replace(" ","-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" data-layer-section="' + siteObject.items[item].section + '" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + siteObject.items[item].section + '</div>';
-                } // Check circle // Was around title: <label for="go-' + siteObject.items[item].item + '" style="width:100%; overflow:auto">
+                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(" ","-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" data-layer-section="' + item.section + '" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + item.section + '</div>';
+                } // Check circle // Was around title: <label for="go-' + item.item + '" style="width:100%; overflow:auto">
                 // <i class="material-icons" style="float:right;color:#ccc">&#xE86C;</i>
-                var directlink = getDirectMenuLink(siteObject.items[item].directlink, siteObject.items[item].rootfolder, siteObject.items[item].item);
+                var directlink = getDirectMenuLink(item.directlink, item.rootfolder, item.item);
 
-                partnerCheckboxes += '<div class="layerCbRow row-' + siteObject.items[item].item + ' user-' + menuaccess + '"><div class="layerAction" data-link="' + directlink + '">';
+                partnerCheckboxes += '<div class="layerCbRow row-' + item.item + ' user-' + menuaccess + '"><div class="layerAction" data-link="' + directlink + '">';
                 
                 /*
-                if (siteObject.items[item].feed) {
+                if (item.feed) {
                     partnerCheckboxes += '<div class="layerActionIcon" data-link="' + directlink + '"></div>';
                 } else {
                     partnerCheckboxes += '<div class="layerActionIcon layerActionIconNoFeed" data-link="' + directlink + '"></div>';
                 }
 				*/
 
-                partnerCheckboxes += '</div><div class="layerCbTitle"><input type="checkbox" class="layersCB" name="layersCB" id="go-' + siteObject.items[item].item + '" value="' + siteObject.items[item].item + '">' + title + '</div></div><div style="clear:both"></div>';
-                previousSet = siteObject.items[item].section;
+                partnerCheckboxes += '</div><div class="layerCbTitle"><input type="checkbox" class="layersCB" name="layersCB" id="go-' + item.item + '" value="' + item.item + '">' + title + '</div></div><div style="clear:both"></div>';
+                previousSet = item.section;
             }
         }
         if (item.directoryframe) {
@@ -324,7 +321,7 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
         // Temp, need to adjust to use access level. This didn't work...
         $('.layerSectionAccess').show();
 
-        // json loaded within initSiteObject. location.hash:
+        // json loaded within initmenuDataset. location.hash:
         console.log("displaypartnerCheckboxes location.hash: " + location.hash);
         console.log("displaypartnerCheckboxes - Layer Icon on map, stores active layers without map load");
 
@@ -368,7 +365,7 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
         });
         $('.layerAction').click(function () {
             // Clear all layers
-            clearAll(siteObject);
+            clearAll(menuDataset);
             //alert('.layerAction');
 
             // Avoid if the current URL already contains data-link.
@@ -406,11 +403,11 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
             layerName = $(this).attr("data-trigger").replace('go-','');
             
             if (!$('.active-' + layerName).is(":visible")) {
-                displayMap(layerName,siteObject);
+                displayMap(layerName,menuDataset);
                 $('.active-' + layerName).show(); // Show overlay icon. Has to occur after displayMap.
             } else {
                 $('.active-' + layerName).hide();
-                hideLayer(layerName,siteObject);
+                hideLayer(layerName,menuDataset);
             }
             // Causes header to change too:
             //$('#' + $(this).attr("data-trigger")).trigger("click"); // Toggles layersCB via '.partnerCheckboxes :checkbox'. Triggers changeLayer.
@@ -512,9 +509,9 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
                 var checkedCount = $('.layersCB:checked').length;
                 if (checkedCount == 1) {
                     console.log("TO DO: Clearall - Currently clearall only clears the previous layer.");
-                    changeLayer($(this).prop('value'),siteObject,"clearall");
+                    changeLayer($(this).prop('value'),menuDataset,"clearall");
                 } else {
-                    changeLayer($(this).prop('value'),siteObject,"keepexisting");
+                    changeLayer($(this).prop('value'),menuDataset,"keepexisting");
                 }
                 // Limit to one title at top
                 $("#sectionCategories").hide();
@@ -540,7 +537,7 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
 
                 $('.active-' + $(this).prop('value')).hide(); // Hide overlay icon
                 $('#cat-' + $(this).prop('value')).prop("checked", false);
-                hideLayer($(this).prop('value'),siteObject);
+                hideLayer($(this).prop('value'),menuDataset);
             }
 
             // Would hide list. Not needed for overlays click since list replaces overlays.
@@ -578,7 +575,7 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
                 scrollTop: $(".listPanel").offset().top - $("#siteHeader").height()
             });
             //$('.showDirectoryTrigger').trigger("click"); // Triggers map too!
-            //showDirectory(layerName,siteObject); // Not defined here.
+            //showDirectory(layerName,menuDataset); // Not defined here.
 
             // BugBug Test if needed here
             layerName = getLayerName();
@@ -587,7 +584,7 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
             if ($(".listTable").text().length <= 0) {
                 // Limit to when list is blank, when cid loaded initially.
                 console.log("Call loadGrid from .showList for " + layerName);
-                loadDirectory(0,layerName,siteObject);
+                loadDirectory(0,layerName,menuDataset);
             }
         });
     //});
