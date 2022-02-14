@@ -21,19 +21,56 @@
 	"caption": ""
 },
 {
-	"title": "Group Members",
-	"section": "Group Members"
+	"menulevel": "1",
+	"section": "Page Details",
+	"title": "Edit Content"
 },
 {
-	"title": "Event Calendar",
-	"section": "Event Calendar"
+	"menulevel": "1",
+	"section": "Page Details",
+	"title": "Add Subtopic"
 },
 {
+	"menulevel": "1",
+	"section": "Page Details",
+	"title": "Page Admin"
+},
+{
+	"section": "News and Specials",
+	"title": "News and Specials"
+},
+{
+	"section": "News and Specials",
+	"title": "Add News"
+},
+{
+	"section": "News and Specials",
+	"title": "Add Special Deals"
+},
+{
+	"section": "Event Calendar",
+	"title": "Event Calendar"
+},
+{
+	"section": "Event Calendar",
+	"title": "Add Event",
+	"link": "/net/calendar/addevent.aspx?p=[itemid]"
+},
+{
+	"section": "Group Members",
+	"title": "Group Members"
+},
+{
+	"section": "Group Members",
+	"title": "Add Group Member"
+},
+{
+	"section": "Images and Files",
 	"title": "Images and Files",
-	"section": "Images and Files"
+	"link": "/elements/[itemid]"
 },
 {
-	"title": "Related Content",
-	"section": "Related Content"
+	"section": "Images and Files",
+	"title": "Add Image or File"
 }
 ]

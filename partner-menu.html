@@ -8,6 +8,7 @@
 
 <title>Local Site</title>
 <link type="text/css" rel="stylesheet" href="/explore/css/site.css" id="/explore/css/site.css" />
+<link type="text/css" rel="stylesheet" href="../../../../localsite/css/menu.css" id="/localsite/css/menu.css" />
 <link type="text/css" rel="stylesheet" href="../../../../localsite/css/base.css" id="/localsite/css/base.css" />
 
 
@@ -19,20 +20,23 @@
 <script type="text/javascript" src="../../../../localsite/js/showdown.min.js" id="/localsite/js/showdown.min.js"></script>
 <script type="text/javascript" src="../../../../localsite/js/navigation.js" id="/localsite/js/navigation.js"></script>
 <!-- 
-<script type="text/javascript" src="js/map-filters.js" id="/localsite/js/map-filters.js"></script>
--->
+Not retained currently:
 
-<style>
-.layerSectionTitleFormat {
-    padding: 6px 8px 7px 18px;
-    color: #333;
-    font-size: 18px;
-    font-family: 'Open Sans Condensed', sans-serif;
-    cursor: pointer;
-    text-transform: none;
-    min-width: 200px;
-}
-</style>
+Send to a Friend
+/send/67463?u=https%3a%2f%2fgpna.org%2ftechnology?norobots%3d0%26mode%3de&s=0.0.0.20
+
+Add Task
+/add-project/?s=0.67463
+
+Print as PDF
+/net/content/pdf.aspx?s=67463.0.0.20&listid=67463&u=%2ftechnology?norobots%3d0%26mode%3dp%26pdf%3d1
+
+Change Status / Related Sites
+/net/content/relatedsites.aspx?s=67463.0.0.20
+
+Refresh
+/technology?refresh=1
+-->
 
 <script>
 var currentAccess = 0;
@@ -188,7 +192,13 @@ function initMenu(partnerMenu) {
 } // end initMenu
 
 
-
+function clearAll(siteObject) {
+    $('.layersCB:checked').each(function() {
+        var checkedLayer = $(this).attr("id");
+        // From explore embed
+        //hideLayer(checkedLayer.replace('go-',''),siteObject);
+    });
+}
 function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon on map - Master
 	if ($(partnerMenu.menuDiv).text().length > 0) {
 		return; // Already loaded
@@ -245,7 +255,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                         var overlaylevel = item.overlaylevel;
                         var hideOverlay = "";
                         if (!overlaylevel) {
-                            overlayList += '<div class="user-' + menuaccess + '"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(" ","-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + item.section + '</div>';
+                            overlayList += '<div class="user-' + menuaccess + '"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + item.section + '</div>';
                         }
                     }
                     overlayList += '<div class="layerCbRow user-' + menuaccess + '" data-trigger="go-' + item.item + '">';
@@ -275,7 +285,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                     if (item.sectionicon) {
                         //sectionIcon = item.sectionicon;
                     }
-                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(" ","-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" data-layer-section="' + item.section + '" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + item.section + '</div>';
+                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" data-layer-section="' + item.section + '" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + item.section + '</div>';
                 } // Check circle // Was around title: <label for="go-' + item.item + '" style="width:100%; overflow:auto">
                 // <i class="material-icons" style="float:right;color:#ccc">&#xE86C;</i>
                 var directlink = getDirectMenuLink(item.directlink, item.rootfolder, item.item);
@@ -368,7 +378,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         $('.layerAction').click(function () {
             // Clear all layers
             clearAll(menuDataset);
-            //alert('.layerAction');
+            console.log('.layerAction');
 
             // Avoid if the current URL already contains data-link.
             // Stet, this caused contractor page to return to root
@@ -428,7 +438,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         $('.layerSectionTitle').click(function () {
             
             if ($(this).attr("data-layer-section")) {
-                layerSectionOpen($(this).attr("data-layer-section").toLowerCase().replace(" ","-"));
+                layerSectionOpen($(this).attr("data-layer-section").toLowerCase().replace(/ /g,"-"));
             } else {
                 console.log("layerSectionTitle click");
                 //$('.layerSection').hide();
@@ -461,7 +471,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
 
         function layerSectionOpen(section) {
             //alert("function layerSectionOpen: " + section);
-            //alert(".layerSection-" + section + " .layerCbRow");
+            alert(".layerSection-" + section + " .layerCbRow");
             if ($(".layerSection-" + section + " .sectionArrowHolder div").hasClass('downArrow')) {
                 $(".layerSection-" + section + " .layerCbRow").hide();
                 $(".layerSection-" + section + " .sectionArrowHolder div").addClass('leftArrow').removeClass('downArrow');
@@ -585,6 +595,7 @@ initMenu(partnerMenu);
 
 <div class="moduleJS" style="padding:50px">
 
+  <!-- 3 dots: … -->
   <div style="font-size:15px; width:300px; float:left; padding-right: 30px; border-right:1px solid #ccc; margin-right:30px">
 	<div id="showSiteNav" class="btn btn-white" style="cursor:pointer;">Map Layers</div>
 
@@ -593,12 +604,12 @@ initMenu(partnerMenu);
   </div>
 
   <div style="font-size:15px; width:300px; float:left; padding-right: 30px; border-right:1px solid #ccc; margin-right:30px">
-  	<div id="showIndustryMenu" class="btn btn-white" style="cursor:pointer;">Industry Menu …</div>
+  	<div id="showIndustryMenu" class="btn btn-white" style="cursor:pointer;">Industry Menu</div>
   	<div id="partnerCheckboxes"></div>
   </div>
 
   <div style="font-size:15px; width:300px; float:left">
-  	<div id="showPartnerMenu" class="btn btn-white" style="cursor:pointer;">Partner Menu …</div>
+  	<div id="showPartnerMenu" class="btn btn-white" style="cursor:pointer;">Partner Tools</div>
   	<div id="partnerMenu"></div>
   </div>
 

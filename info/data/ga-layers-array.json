@@ -66,8 +66,8 @@
 		"rootfolder": "info",
 		"title": "Smart Data",
 		"tabtitle": "Smart Data",
-		"mobiletitle": "Smart Data Projects",
-		"section": "Smart Data Projects",
+		"mobiletitle": "Smart and Sustainable",
+		"section": "Smart and Sustainable",
 		"provider": "Admin",
 		"image": "/localsite/img/show/ev.jpg",
 		"siteHeaderHeight": "10px",
@@ -77,7 +77,7 @@
 		"sectionTitle": "leftNav",
 		"topnavaccess": "10",
 		"menuaccess": "0",
-		"directlink": "/localsite/map/#show=smart",
+		"directlink": "/community/projects/#state=GA&show=smart",
 		"states": "GA"
 	},
 	{

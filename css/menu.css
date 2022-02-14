@@ -1,0 +1,144 @@
+.layerSection {
+	border-bottom: 1px solid #ddd;
+}
+.layerSectionTitleFormat {
+    padding: 6px 8px 7px 18px;
+    color: #333;
+    font-size: 16px;
+    font-family: 'Open Sans Condensed', sans-serif;
+    cursor: pointer;
+    text-transform: none;
+    min-width: 200px;
+}
+.layerCheckboxes {
+	/* min-width: 500px; */
+	width: 100%;
+	/* padding: 20px 4px 20px 20px; */
+}
+.layerCheckboxes .dontsplit {
+	/* padding-bottom: 8px; */
+}
+.layerCheckboxes .first .dontsplit {
+	marginX:0px !important;
+	/* margin-right:10px !important; */
+	paddingX:0px !important;
+}
+.layerCbRow {
+	display:none;
+	padding: 1px 0px 7px 10px;
+	color: #888;
+}
+.layerCbTitle {
+	white-space:nowrap;
+	margin-top: 6px;
+	margin-left: 22px;
+	margin-right: 25px;
+	font-size: 15px;
+	pointer-events: none; /* Allow pass through */
+	font-family: 'Open Sans Condensed', sans-serif;
+}
+.layerCbRow:hover {
+	background: #ececec;
+	color: #555;
+}
+.layerAction {
+	clear:both;
+	float:right;
+	width: 100%;
+	z-index: 9999;
+	min-height: 34px;
+	/* border: 1px solid red; */
+	cursor: pointer;
+}
+.layerActionActive {
+	/* color: #3B99FC !important; */
+}
+.moduleJS .layerActionActive:before {
+	color:#fff;
+}
+.layerActionIcon {
+	margin-top: 2px;
+	float:right;
+	border-radius: 50%;
+	width: 21px;
+	height: 21px;
+	margin-top: 12px;
+	margin-right: 8px;
+	/* background-color: #272727; */
+}
+.layerActionIcon:before {
+	padding: 2px;
+	line-height: 23px;
+	font-size: 17px;
+	color: #bbb;
+	font-weight: 100;
+	font-family: "Material Icons";
+	content: "\E5D3"; /* Three dots */
+}
+.layerActionIconNoFeed:before {
+	content: ""; /* Blank since no feed for layer. */
+}
+.layerActionActive {
+	background-color: #3B99FC;
+}
+.layerActionActive:before {
+	padding: 1px;
+	font-size: 20px;
+	color: #000;
+	font-family: "Material Icons";
+	content: "\E876"; /* checkbox */
+	font-weight: 100;
+}
+.moduleJS .overlaysInSide .layerCbRow {
+	position: relative;
+}
+.moduleJS .overlayAction {
+	borderX: 1px solid red;
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	top:0px;
+	width:30px;
+	padding-right: 6px;
+}
+.layersCB {
+	display: none;
+}
+.searchHeader {
+	/* overflow: visible; */
+}
+.navClone {
+	float: left;
+	background-color: rgba(55, 55, 55, 0.8);
+	margin:20px 0 20px 20px;
+	display:none;
+}
+.navClone .layerSectionTitle {
+	display: none;
+}
+.navClone .layerCbRow {
+	display: block;
+}
+
+.leftArrow {
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 7px 0px 7px 8px;
+	border-color: transparent transparent transparent #777;
+	margin-top: -8px;
+}
+.leftArrow:hover {
+	border-color: transparent transparent transparent #999;
+}
+.downArrow {
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 7px 8px 0 7px;
+	border-color: #555 transparent transparent transparent;
+	margin: -6px 0px 0 0;
+}
+.downArrow:hover {
+	border-color: #999 transparent transparent transparent;
+}
