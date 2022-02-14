@@ -7,9 +7,10 @@
 <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 
 <title>Local Site</title>
+<link type="text/css" rel="stylesheet" href="/explore/css/site.css" id="/explore/css/site.css" />
 <link type="text/css" rel="stylesheet" href="../../../../localsite/css/base.css" id="/localsite/css/base.css" />
 
-<link type="text/css" rel="stylesheet" href="/explore/css/site.css" id="/explore/css/site.css" />
+
 
 <script type="text/javascript" src="js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
 <script type="text/javascript" src="js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
@@ -47,31 +48,29 @@ function access(minlevel,alevel) {
     }
 }
 
-// BUGBUG - these are also in map-filters.js
-function getDirectLink(directlink,rootfolder,layer) {
+// Rename from map-filters.js
+function getDirectMenuLink(directlink,rootfolder,layer) {
     if (directlink) {
-        directlink = removeFrontFolder(directlink);
+        directlink = removeFrontMenuFolder(directlink);
     } else if (rootfolder) {
         if (rootfolder.indexOf('/explore/') < 0) {
             rootfolder = "/explore/" + rootfolder;
         }
-        directlink = removeFrontFolder(rootfolder + "#" + layer);
+        directlink = removeFrontMenuFolder(rootfolder + "#" + layer);
     } else {
-        directlink = removeFrontFolder("/explore/#" + layer);
+        directlink = removeFrontMenuFolder("/explore/#" + layer);
     }
     return(directlink);
 }
-function removeFrontFolder(path) {
+function removeFrontMenuFolder(path) {
     //return("../.." + path);
     return(path);
 }
 
 
-
 function initPartnerMenu(partnerMenu) {
 	let layerName = partnerMenu.layerName;
 	let hash = getHash();
-	alert("initPartnerMenu")
 	//if(location.host.indexOf('localhost') >= 0) {
 	    // Greenville:
 	    // https://github.com/codeforgreenville/leaflet-google-sheets-template
@@ -80,9 +79,22 @@ function initPartnerMenu(partnerMenu) {
 	    let layerJson = partnerMenu.layerJson; 
 	    //console.log(layerJson);
 
-	    alert(location.hash)
+	    alert("layerJson: " + layerJson);
+	    $.getJSON(layerJson, function (data) {
+	    	//alert(data)
+	    	displaypartnerCheckboxes(partnerMenu,data);
+	    	/*
+	        dp.data = readJsonData(data, dp.numColumns, dp.valueColumn);
+	        processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){
+	          callback(); // Triggers initialHighlight()
+	        });
+	        */
+	    });
+
+
+	    /*
 	    let adminNavObject = (function() {
-	        var json = null;
+	        let json = null;
 	        $.ajax({
 	            'type': 'GET',
 	            'async': true,
@@ -94,35 +106,35 @@ function initPartnerMenu(partnerMenu) {
 	                consoleLog("Menu layers json loaded within initPartnerMenu. location.hash: " + location.hash);
 	                
 	                // adminNavObjectFunctions(adminNavObject); // could add to keep simple here
-	                alert("success")
+	                alert("success1")
 	                displaypartnerCheckboxes(partnerMenu,adminNavObject);
 
-	                $(document).on("click", ".showAdminNav, .hideApps", function(event) {
+	                $(document).on("click", partnerMenu.revealButton, function(event) {
 
 	                	// Only load json once, then reuse for each listing
 
-	          			console.log('.showAdminNav click');
+	          			console.log(partnerMenu.revealButton + ' click');
 
 	          			//if ($("#bigThumbPanelHolder").is(':visible')) {
 	          			//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) {
 	          			if($(partnerMenu.menuDiv).is(':visible')) {
 	          				$(partnerMenu.menuDiv).hide();
 
-	          				/*
-	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
-	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
+	          				
+	          				//$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
+	          				//$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
 
-	          				$("#appSelectHolder .showAdminNav").removeClass("filterClickActive");
-	          				$("#showAdminNavText").text($("#showAdminNavText").attr("title"));
-	          				$(".hideWhenPop").show();
-	          				// To do: Only up scroll AND SHOW if not visible
-	          				$('html,body').animate({
-								scrollTop: 0
-							});
+	          				//$("#appSelectHolder .showAdminNav").removeClass("filterClickActive");
+	          				//$("#showAdminNavText").text($("#showAdminNavText").attr("title"));
+	          				//$(".hideWhenPop").show();
+	          				//// To do: Only up scroll AND SHOW if not visible
+	          				//$('html,body').animate({
+							//	scrollTop: 0
+							//});
 
-	          				$("#bigThumbPanelHolder").hide();
-	          				$('.showAdminNav').removeClass("active");
-							*/
+	          				//$("#bigThumbPanelHolder").hide();
+	          				//$('.showAdminNav').removeClass("active");
+							
 
 	          			} else {
 
@@ -132,8 +144,8 @@ function initPartnerMenu(partnerMenu) {
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
 
-	          				$("#showAdminNavText").text("Goods & Services");
-	          				$("#appSelectHolder .showAdminNav").addClass("filterClickActive");
+	          				//$("#showAdminNavText").text("Goods & Services");
+	          				//$("#appSelectHolder .showAdminNav").addClass("filterClickActive");
 							//showThumbMenu(hash.show, adminNavObject);
 							displaypartnerCheckboxes(partnerMenu,adminNavObject);
                             $('html,body').animate({
@@ -154,21 +166,21 @@ function initPartnerMenu(partnerMenu) {
 	                		//showThumbMenu(hash.show, adminNavObject);
 	                	}
 	            	}
-	                return adminNavObject;
+	            	//return adminNavObject;
 	            },
 	          error: function (req, status, err) {
 	              consoleLog('Error fetching adminNavObject json!: ', err);
 	          }
 	        });
 	    })(); // end adminNavObject
-	    
+	    */
 	    
 	//}
 
-  $('.showPartnerMenu').click(function () {
-  	alert("showPartnerMenu");
-    $("#partnerMenu").show();
-    $("#partnerMenu").prependTo($(this).parent());
+  $(partnerMenu.revealButton).click(function () {
+  	alert("showPartnerMenu " + partnerMenu.revealButton);
+    $(partnerMenu.menuDiv).show();
+    $(partnerMenu.menuDiv).prependTo($(this).parent());
     event.stopPropagation();
   });
 
@@ -178,6 +190,7 @@ function initPartnerMenu(partnerMenu) {
 
 function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on map - Master
 	alert("testing")
+	alert(siteObject)
 	if ($(partnerMenu.menuDiv).text().length > 0) {
 		return; // Already loaded
 	}
@@ -194,7 +207,8 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
     var topTabs = "";
     var menulevel = 1;
     var menuaccessmax = 11;
-    for(item in siteObject.items) {
+    //for(item in siteObject.items) {
+    siteObject.forEach(function(item) {
         var menuaccess = 10; // no one
         try { // For IE error
             if (typeof(siteObject.items[item].menuaccess) === "undefined") {
@@ -206,8 +220,8 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
             console.log("displaypartnerCheckboxes: no menuaccess");
         }
         menuaccessmax = 11;
-        if (siteObject.items[item].menuaccessmax) {
-            menuaccessmax = siteObject.items[item].menuaccessmax;
+        if (item.menuaccessmax) {
+            menuaccessmax = item.menuaccessmax;
         }
         // location.host.indexOf('localhost') >= 0 || 
         
@@ -265,24 +279,27 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
                     partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + siteObject.items[item].section.toLowerCase().replace(" ","-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" data-layer-section="' + siteObject.items[item].section + '" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + siteObject.items[item].section + '</div>';
                 } // Check circle // Was around title: <label for="go-' + siteObject.items[item].item + '" style="width:100%; overflow:auto">
                 // <i class="material-icons" style="float:right;color:#ccc">&#xE86C;</i>
-                var directlink = getDirectLink(siteObject.items[item].directlink, siteObject.items[item].rootfolder, siteObject.items[item].item);
+                var directlink = getDirectMenuLink(siteObject.items[item].directlink, siteObject.items[item].rootfolder, siteObject.items[item].item);
 
                 partnerCheckboxes += '<div class="layerCbRow row-' + siteObject.items[item].item + ' user-' + menuaccess + '"><div class="layerAction" data-link="' + directlink + '">';
                 
+                /*
                 if (siteObject.items[item].feed) {
                     partnerCheckboxes += '<div class="layerActionIcon" data-link="' + directlink + '"></div>';
                 } else {
                     partnerCheckboxes += '<div class="layerActionIcon layerActionIconNoFeed" data-link="' + directlink + '"></div>';
                 }
+				*/
 
                 partnerCheckboxes += '</div><div class="layerCbTitle"><input type="checkbox" class="layersCB" name="layersCB" id="go-' + siteObject.items[item].item + '" value="' + siteObject.items[item].item + '">' + title + '</div></div><div style="clear:both"></div>';
                 previousSet = siteObject.items[item].section;
             }
         }
-        if (siteObject.items[item].directoryframe) {
-            topTabs += '<div>' + siteObject.items[item].title + '</div>';
+        if (item.directoryframe) {
+            topTabs += '<div>' + item.title + '</div>';
         }
-    }
+    //}
+	});
     if (closeLayerSet) {
         partnerCheckboxes += '</div></div>\n'; // For columnizer
         overlayList += '</div>\n'; // For columnizer
@@ -337,7 +354,7 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
 
         // CHECKBOX ACTIONS
         $('.layerActionIcon').click(function () {
-            var layerName = $(this).parent().parent().find('.layersCB').val();
+            let layerName = $(this).parent().parent().find('.layersCB').val();
             //useRootPath(layerName);
             if($(this).attr("data-link")) {
                 window.location = $(this).attr("data-link");
@@ -579,18 +596,21 @@ function displaypartnerCheckboxes(partnerMenu,siteObject) { // For Layer Icon on
 
 localSiteMenu={};
 localSiteMenu.current = "Special"
-localSiteMenu.layerJson = "/explore/json/menu.json";
+localSiteMenu.layerJson = "http://localhost:8887/explore/json/menu-array.json"; // Might have bad syntax
+//localSiteMenu.layerJson = "https://neighborhood.org/brigade-information/organizations.json";
+//localSiteMenu.layerJson = "/localsite/info/data/organizations-test.json";
 localSiteMenu.menuDiv = "#localSiteMenu";
-//initPartnerMenu(localSiteMenu);
+localSiteMenu.revealButton = "#showSiteNav"
+initPartnerMenu(localSiteMenu);
 
-
-if(typeof partnerMenu=='undefined'){ var partnerMenu={}; }
+//if(typeof partnerMenu=='undefined'){ var partnerMenu={}; }
+partnerMenu={};
 partnerMenu.current = "Special"
-partnerMenu.layerJson = "/localsite/info/data/ga-layers.json";
+partnerMenu.layerJson = "/localsite/info/data/ga-layers-array.json";
 partnerMenu.menuDiv = "#partnerCheckboxes";
+partnerMenu.revealButton = "#showPartnerMenu"
 partnerMenu.autoDisplay = false;
 initPartnerMenu(partnerMenu);
-
 
 
 //filterClickLocation();
@@ -599,10 +619,10 @@ initPartnerMenu(partnerMenu);
 </head>
 <body>
 
-<div class="moduleJS">
+<div class="moduleJS" style="padding:50px">
 
   <div class="overlaysInSide" style="font-size:15px; width:300px; float:left">
-	123
+	<div id="showSiteNav" class="btn btn-white" style="cursor:pointer;">Show Site Nav</div>
 
 	<div id="localSiteMenu" class="partnerCheckboxes"></div>
 
@@ -611,7 +631,7 @@ initPartnerMenu(partnerMenu);
 
   <div style="font-size:15px; width:300px; float:left">
 
-  	<div class="showAdminNav showPartnerMenu" style="cursor:pointer;">showAdminNav …</div>
+  	<div id="showPartnerMenu" class="btn btn-white" style="cursor:pointer;">showAdminNav …</div>
 
   	<div id="partnerCheckboxes"></div>
 
