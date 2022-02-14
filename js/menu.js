@@ -520,32 +520,3 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         
     //});
 }
-
-
-localSiteMenu={};
-localSiteMenu.current = "Special"
-localSiteMenu.layerJson = "http://localhost:8887/explore/json/menu-array.json";
-//localSiteMenu.layerJson = "https://neighborhood.org/brigade-information/organizations.json";
-//localSiteMenu.layerJson = "/localsite/info/data/organizations-test.json";
-localSiteMenu.revealButton = "#showSiteNav"
-localSiteMenu.menuDiv = "#localSiteMenu";
-initMenu(localSiteMenu);
-
-industryMenu={};
-industryMenu.current = "Special"
-industryMenu.layerJson = "/localsite/info/data/ga-layers-array.json";
-industryMenu.revealButton = "#showIndustryMenu"
-industryMenu.menuDiv = "#partnerCheckboxes";
-industryMenu.autoDisplay = false;
-initMenu(industryMenu);
-
-partnerMenu={};
-partnerMenu.current = "Special"
-partnerMenu.layerJson = "/localsite/info/data/partner-menu.json";
-partnerMenu.revealButton = "#showPartnerMenu"
-partnerMenu.menuDiv = "#partnerMenu";
-partnerMenu.autoDisplay = false;
-initMenu(partnerMenu);
-
-
-//filterClickLocation();
