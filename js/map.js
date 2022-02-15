@@ -1195,7 +1195,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
     //'Grayscale' : L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}), // No longer works, may require registration change.
     // OpenStreetMap_BlackAndWhite:
       'Grayscale' : L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-          maxZoom: 18, attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+          maxZoom: 18, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
       }),
 
     // https://github.com/CartoDB/basemap-styles
@@ -1208,18 +1208,18 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
     'Satellite' : L.tileLayer(mbUrl, {maxZoom: 25, id: 'mapbox.satellite', attribution: mbAttr}),
     //'Streets' : L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr}),
     'OpenStreetMap' : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19, attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+        maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
     }),
   }
   var basemaps2 = {
     //'Grayscale' : L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
     'Grayscale' : L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-          maxZoom: 18, attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+          maxZoom: 18, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
       }),
     'Satellite' : L.tileLayer(mbUrl, {maxZoom: 25, id: 'mapbox.satellite', attribution: mbAttr}),
     //'Streets' : L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr}),
     'OpenStreetMap' : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19, attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+        maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
     }),
   }
   var baselayers = {
@@ -1416,22 +1416,27 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
       } else if (show == "secret") {
         dp.listTitle = "Georgia Commercial Recyclers";
-        dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=688547633&single=true&output=csv";
+        dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
         //dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
         
         //
-        dp.nameColumn = "organizationname";
-        dp.titleColumn = "organizationname";
-        dp.searchFields = "organizationname";
+        dp.nameColumn = "organization name";
+        dp.titleColumn = "organization name";
+        dp.searchFields = "organization name";
         dp.addressColumn = "address";
 
         dp.valueColumn = "category";
         dp.valueColumnLabel = "Materials Category";
+        // https://map.georgia.org/recycling/
+        dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
+        dp.listInfo = "<br><br>View additional <a href='../map/recycling/ga/'>recycling datasets</a>.<br>Submit updates using our <a href='https://map.georgia.org/recycling/'>Google Form</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google Sheet Tabs</a>.";
+        dp.search = {"In Location Name": "organizationname", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
+
       } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills")) { // recycling-processors
         if (!hash.state || hash.state == "GA") {
           dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
           //dp.googleDocID = "1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY";
-          dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=688547633&single=true&output=csv";
+          dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
           if (show == "transfer") {
             dp.listTitle = "Georgia Transfer Stations";
             dp.sheetName = "Transfer Stations";
@@ -1903,7 +1908,9 @@ function showList(dp,map) {
   console.log("Call showList for " + dp.dataTitle + " list")
   var iconColor, iconColorRGB;
   var colorScale = dp.scale;
-  let count = 0;
+  let count = 0
+  let countDisplay = 0;
+  let validRowCount = 0;
   let showCount = 0;
 
   var productMatchFound = 0;
@@ -2200,10 +2207,15 @@ function showList(dp,map) {
     //  foundMatch++;
     //}
 
+    // BUGBUG
     if (elementRaw.status == "0") {
+      //alert("Never reached because Status is capitaliszed here")
       foundMatch = 0;
     }
     //console.log("foundMatch: " + foundMatch + ", productMatchFound: " + productMatchFound);
+
+
+    // BUGBUG - Is it valid to search above before making key lowercase? Should elementRaw key be made lowercase?
 
     if (foundMatch > 0 && productMatchFound > 0) {
       dataMatchCount++;
@@ -2218,6 +2230,14 @@ function showList(dp,map) {
         //element[key] = elementRaw[key]; // Also keep uppercase for element["Prepared"]
         element[key.toLowerCase()] = elementRaw[key];
       }
+
+    // Also repeated below, move here
+    if (element.status && (element.status != "1" && element.status != "Yes" && element.status != "Active")) {
+        //showListing = false;
+        foundMatch = 0;
+    } else {
+      validRowCount++;
+    }
 
       iconColor = colorScale(element[dp.valueColumn]);
       if (dp.color) { 
@@ -2265,7 +2285,13 @@ function showList(dp,map) {
 
       // TO INVESTIGATE - elementRaw (not element) has to be used here for color scale.
 
-      if (1==1) {
+      let showListing = true;
+      if (element.status && (element.status != "1" && element.status != "Yes" && element.status != "Active")) {
+          showListing = false;
+          console.log("Excluded element.status " + element.status);
+      }
+      if (showListing) {
+        countDisplay++;
         // DETAILS LIST
         // colorScale(element[dp.valueColumn])
         //console.log("iconColor test here: " + iconColor)
@@ -2474,7 +2500,7 @@ function showList(dp,map) {
       }
     }
   });
-  console.log("Total " + dp.dataTitle + " " + count);
+  console.log("Total " + dp.dataTitle + " " + countDisplay + " of " + count);
 
   if (hash.name && $("#detaillist > [name='"+ hash.name.replace(/_/g,' ') +"']").length) {
     let listingName = hash.name.replace(/_/g,' ');
@@ -2521,12 +2547,12 @@ function showList(dp,map) {
       if ($("#catSearch").val()) {
         searchFor = "<b>" + $("#catSearch").val() + "</b> - "; // was twice BUGBUG
       }
-      if (dataMatchCount == count) {
-        searchFor += dataMatchCount + " records. ";
+      if (countDisplay == validRowCount) {
+        searchFor += countDisplay + " active records. " + count + " rows.";
       } else if (count==1) {
-        searchFor += dataMatchCount + " matching results within " + count + " records. ";
+        searchFor += countDisplay + " displayed from " + validRowCount + " active record. ";
       } else {
-        searchFor += dataMatchCount + " matching results within " + count + " records. ";
+        searchFor += countDisplay+ " displayed from " + validRowCount  + " active records. ";
       }
       // alert("showCount " + showCount); // 0 unless filtering for a profile
       //if (showCount == 1 && count - dataMatchCount > 1) {
@@ -3342,7 +3368,7 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
     }
     var mapCenter = [lat,lon];
 
-    var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+    var mbAttr = '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="https://www.openstreetmap.org/">OpenStreetMap</a> | ' +
         '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
         'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZWUyZGV2IiwiYSI6ImNqaWdsMXJvdTE4azIzcXFscTB1Nmcwcm4ifQ.hECfwyQtM7RtkBtydKpc5g';
@@ -3383,11 +3409,11 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
     'Satellite' : L.tileLayer(mbUrl, {maxZoom: 25, id: 'mapbox.satellite', attribution: mbAttr}),
     // OpenStreetMap
     'Street Map' : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19, attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+        maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
     }),
     // OpenStreetMap_BlackAndWhite:
     'Grey' : L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-        maxZoom: 18, attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+        maxZoom: 18, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
     }),
   }
 
