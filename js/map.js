@@ -2,7 +2,6 @@
 
 // INIT
 var dataParameters = [];
-var dp = {};
 var layerControl = {}; // Object containing one control for each map on page.
 if(typeof hash === 'undefined') {
   // Need to figure out where already declared.
@@ -419,9 +418,33 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
           //console.log("To do: store data in browser to avoid repeat loading from CSV.");
 
           dp.data = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
-          
+
+        
           // Make element key always lowercase
           //dp.data_lowercase_key;
+
+          //alert("okay1")
+          // TO DO - Need to verify this is needed, and where.
+          // Convert all keys to lowercase
+          /*
+          // THIS BREAKS FARMFRESH, was never deployed, keys are already entered as lowercase
+          for (var i = 0, l = dp.data.length; i < l; i++) {
+            var key, keys = Object.keys(dp.data[i]);
+            var n = keys.length;
+            //var newobj={}
+            dp.data[i] = {};
+            while (n--) {
+              key = keys[n];
+              //if (key.toLowerCase() != key) {
+                dp.data[i][key.toLowerCase()] = dp.data[i][key];
+                //dp.data[i][key] = null;
+              //}
+            }
+            //console.log("TEST dp.data[i]");
+            //console.log(dp.data[i]);
+          }
+          */
+
 
           processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
       })
@@ -758,8 +781,8 @@ function addIcons(dp,map,map2) {
   var iconColor, iconColorRGB, iconName;
   var colorScale = dp.scale;
   let hash = getHash();
+
   dp.data.forEach(function(element) {
-    
     // Add a lowercase instance of each column name
     var key, keys = Object.keys(element);
     var n = keys.length;
@@ -814,7 +837,6 @@ function addIcons(dp,map,map2) {
       element[dp.latColumn] = element[dp.latColumn.split(".")[0]][dp.latColumn.split(".")[1]];
       element[dp.lonColumn] = element[dp.lonColumn.split(".")[0]][dp.lonColumn.split(".")[1]];
     }
-
     if (!element[dp.latColumn] || !element[dp.lonColumn]) {
       console.log("Missing lat/lon: " + name);
       return;
@@ -1290,24 +1312,24 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
     dp.listTitle = "USDA Farm Produce";
     //if (location.host.indexOf('localhost') >= 0) {
       dp.valueColumn = "type";
-      dp.valueColumnLabel = "Type"; // was: Prepared Food
-      //dp.dataset = "../../../community/farmfresh/scraper/out/states/ga/markets.csv";
+      dp.valueColumnLabel = "Type";
       dp.dataset = "https://model.earth/community-data/us/state/" + state_abbreviation.toUpperCase() + "/" + state_abbreviation.toLowerCase() + "-farmfresh.csv";
     //} else {
     //  // Older data
     //  dp.valueColumn = "Prepared";
     //  dp.dataset = local_app.custom_data_root()  + "farmfresh/farmersmarkets-" + state_abbreviation + ".csv";
     //}
-    dp.name = "Local Farms"; // To remove
+    //dp.name = "Local Farms"; // To remove
     dp.dataTitle = "Farm Fresh Produce";
 
     dp.markerType = "google"; // BUGBUG doesn't seem to work with county boundary background (showShapeMap)
     //dp.showShapeMap = true;
 
     dp.search = {"In Market Name": "MarketName","In County": "County","In City": "city","In Street": "street","In Zip": "zip","In Website": "Website"};
-    dp.nameColumn = "marketname";
-    dp.titleColumn = "marketname";
-    dp.searchFields = "marketname";
+    // These were marketname
+    dp.nameColumn = "name";
+    dp.titleColumn = "name";
+    dp.searchFields = "name";
     dp.addressColumn = "street";
     //dp.latColumn = "latitude";
     //dp.lonColumn = "longitude";
@@ -1392,6 +1414,19 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         //  https://model.earth/community-data/us/state/GA/VirtualTourSites.csv
         dp.dataset =  local_app.custom_data_root() + "360/GeorgiaPowerSites.csv";
 
+      } else if (show == "secret") {
+        dp.listTitle = "Georgia Commercial Recyclers";
+        dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=688547633&single=true&output=csv";
+        //dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
+        
+        //
+        dp.nameColumn = "organizationname";
+        dp.titleColumn = "organizationname";
+        dp.searchFields = "organizationname";
+        dp.addressColumn = "address";
+
+        dp.valueColumn = "category";
+        dp.valueColumnLabel = "Materials Category";
       } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills")) { // recycling-processors
         if (!hash.state || hash.state == "GA") {
           dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
@@ -1418,17 +1453,15 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
             dp.valueColumn = "sector"; // Bug - need to support uppercase too.
             dp.valueColumnLabel = "Sector";
           } else {
-
-            // Not working
-            dp.nameColumn = "Organization Name";
-            dp.titleColumn = "Organization Name";
-
             dp.listTitle = "Georgia Recycling Processors";
             dp.sheetName = "Recycling Processors";
             dp.valueColumn = "category";
             dp.valueColumnLabel = "Materials Category";
           }
-          dp.nameColumn = "company";
+          // May need to add here
+          //dp.nameColumn = "organizationname";
+          //dp.titleColumn = "organizationname";
+
           dp.listInfo = "<br><br>View additional <a href='../map/recycling/ga/'>recycling datasets</a>.<br>Submit updates by posting comments in our 5 <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing'>Google Sheet Tabs</a>.";
           
           //dp.latColumn = "latitude";
@@ -1467,7 +1500,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.countyColumn = "county";
         dp.itemsColumn = "Category1";
       } else if (show == "smart") { // param["data"] for legacy: https://www.georgia.org/smart-mobility
-        dp.dataTitle = "Smart Data Projects";
+        dp.dataTitle = "Smart and Sustainable";
         dp.listTitle = "Data Driven Decision Making";
         //dp.listSubtitle = "Smart & Sustainable Movement of Goods & Services";
         dp.industryListTitle = "Mobility Tech";
@@ -2371,7 +2404,7 @@ function showList(dp,map) {
             output += "<a href='" + element.property_link + "'>Property Details</a><br>";
         }
         if (element.county) {
-            output += '<a href="' + theTitleLink + '">Google Map</a> ';
+            output += '<a href="' + theTitleLink + '" target="_blank">Google Map</a> ';
         }
         
         if (dp.editLink) {

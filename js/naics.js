@@ -795,7 +795,7 @@ function keyFound(this_key, cat_filter, hash) {
     } else if ( (hash.show == "bioeconomy" || hash.show=="parts" || cat_filter.length > 0) && hash.catsize == 6 && cat_filter.includes(this_key.slice(0,6))) { // Our 6 digit array matches key
         return true;
     } else {
-        console.log("NO CAT MATCH FOUND FOR: " + hash.show);
+        console.log("NO NAICS CAT MATCH FOUND FOR: " + hash.show);
         return false;
     }
 }
