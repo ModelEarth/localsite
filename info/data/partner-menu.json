@@ -3,7 +3,6 @@
 	"menulevel": "1",
 	"item": "industries",
 	"rootfolder": "info",
-	"title": "Page Details",
 	"tabtitle": "Page Details",
 	"mobiletitle": "Page Details",
 	"section": "Page Details",
@@ -36,8 +35,7 @@
 	"title": "Page Admin"
 },
 {
-	"section": "News and Specials",
-	"title": "News and Specials"
+	"section": "News and Specials"
 },
 {
 	"section": "News and Specials",
@@ -49,7 +47,8 @@
 },
 {
 	"section": "Event Calendar",
-	"title": "Event Calendar"
+	"title": "View Calendar",
+	"link": "/calendar/[itemid]"
 },
 {
 	"section": "Event Calendar",
@@ -58,7 +57,7 @@
 },
 {
 	"section": "Group Members",
-	"title": "Group Members"
+	"title": "View Group Members"
 },
 {
 	"section": "Group Members",
@@ -66,7 +65,7 @@
 },
 {
 	"section": "Images and Files",
-	"title": "Images and Files",
+	"title": "View Images and Files",
 	"link": "/elements/[itemid]"
 },
 {

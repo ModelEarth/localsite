@@ -1775,7 +1775,7 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	        if (bigThumbSection == "main") {
 	            if (thelayers[layer].menulevel == "1") {
 	                if (access(currentAccess,menuaccess)) {
-	                    //if (siteObject.items[layer].section == bigThumbSection && siteObject.items[layer].showthumb != '0' && bigThumbSection.replace(" ","-").toLowerCase() != thelayers[layer].item) {
+	                    //if (siteObject.items[layer].section == bigThumbSection && siteObject.items[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
 	                    
 	                        var thumbTitle = ( thelayers[layer].thumbtitle ? thelayers[layer].thumbtitle : (thelayers[layer].section ? thelayers[layer].section : thelayers[layer].primarytitle));
 	                        var thumbTitleSecondary = (thelayers[layer].thumbTitleSecondary ? thelayers[layer].thumbTitleSecondary : '&nbsp;');
@@ -1832,7 +1832,7 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	            }
 	        } else {
 	            if (access(currentAccess,menuaccess)) {
-	                if (siteObject.items[layer].section == bigThumbSection && siteObject.items[layer].showthumb != '0' && bigThumbSection.replace(" ","-").toLowerCase() != thelayers[layer].item) {
+	                if (siteObject.items[layer].section == bigThumbSection && siteObject.items[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
 	                    var thumbTitle = (thelayers[layer].navtitle ? thelayers[layer].navtitle : thelayers[layer].title);
 	                    var thumbTitleSecondary = (thelayers[layer].thumbTitleSecondary ? thelayers[layer].thumbTitleSecondary : '&nbsp;');
 
@@ -1964,7 +1964,7 @@ function initSiteObject(layerName) {
 
 	    //var layerJson = local_app.community_data_root() + "us/state/GA/ga-layers.json"; // CORS prevents live
 	    // The URL above is outdated. Now resides here:
-	    var layerJson = local_app.localsite_root() + "info/data/ga-layers.json";
+	    let layerJson = local_app.localsite_root() + "info/data/ga-layers.json";
         //alert("layerJson " + layerJson)
 	    if(location.host.indexOf("georgia") >= 0) {
 	    	// For PPE, since localhost folder does not reside on same server
@@ -1972,8 +1972,8 @@ function initSiteObject(layerName) {
 	    	console.log("Set layerJson: " + layerJson);
 		}
 	    console.log(layerJson);
-	    var siteObject = (function() {
-	        var json = null;
+	    let siteObject = (function() {
+	        let json = null;
 	        $.ajax({
 	            'type': 'GET',
 	            'async': true,
