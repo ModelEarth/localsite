@@ -1414,6 +1414,17 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         //  https://model.earth/community-data/us/state/GA/VirtualTourSites.csv
         dp.dataset =  local_app.custom_data_root() + "360/GeorgiaPowerSites.csv";
 
+      } else if (show == "dmap") {
+        dp.listTitle = "Georgia Map";
+        dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRPe-t3GBhimUV6JN62lLmtpZ5XsmLDXPusjOfrJ-_tW7BZlVrvcVT4oLFXtAtRX79WSAgVQe9zK2Ik/pub?gid=0&single=true&output=csv";
+        
+        dp.nameColumn = "recipient_name";
+        dp.titleColumn = "recipient_name";
+        dp.searchFields = "recipient_name";
+        dp.addressColumn = "address";
+
+        dp.valueColumn = "naics";
+        dp.valueColumnLabel = "2-Digit NAICS";
       } else if (show == "secret") {
         dp.listTitle = "Georgia Commercial Recyclers";
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
@@ -2028,6 +2039,7 @@ function showList(dp,map) {
 
   let hash = getHash(); 
 
+  console.log(dp.data)
   dp.data.forEach(function(elementRaw) {
     count++;
     foundMatch = 0;
