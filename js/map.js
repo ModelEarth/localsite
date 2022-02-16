@@ -925,6 +925,9 @@ function addIcons(dp,map,map2) {
         output += element[dp.valueColumn].replace(/,/g,", ") + "<br>";
       }
     }
+    if (element[dp.showKeys]) {
+      output += "<b>" + dp.showLabels + ":</b> " + element[dp.showKeys] + "<br>";
+    }
     if (element.schedule) {
       output += "Hours: " + element.schedule + "<br>";
     }
@@ -1425,6 +1428,10 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
         dp.valueColumn = "naics";
         dp.valueColumnLabel = "2-Digit NAICS";
+
+        dp.showKeys = "naics description";
+        dp.showLabels = "Industry";
+
       } else if (show == "secret") {
         dp.listTitle = "Georgia Commercial Recyclers";
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
@@ -2039,13 +2046,12 @@ function showList(dp,map) {
 
   let hash = getHash(); 
 
-  console.log(dp.data)
   dp.data.forEach(function(elementRaw) {
     count++;
     foundMatch = 0;
     productMatchFound = 0;
 
-    if (count > 2000) {
+    if (count > 4000) {
         return;
     }
     let showIt = true;
@@ -2433,6 +2439,9 @@ function showList(dp,map) {
           } else if (element[dp.valueColumn] != element.name) {
             output += element[dp.valueColumn] + "<br>";
           }
+        }
+        if (element[dp.showKeys]) {
+          output += "<b>" + dp.showLabels + ":</b> " + element[dp.showKeys] + "<br>";
         }
 
         if (element.mapframe) {
