@@ -1437,7 +1437,6 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
         //dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
         
-        //
         dp.nameColumn = "organization name";
         dp.titleColumn = "organization name";
         dp.searchFields = "organization name";
@@ -1447,7 +1446,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.valueColumnLabel = "Materials Category";
         // https://map.georgia.org/recycling/
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "<br><br>View additional <a href='../map/recycling/ga/'>recycling datasets</a>.<br>Submit updates using our <a href='https://map.georgia.org/recycling/'>Google Form</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google Sheet Tabs</a>.";
+        dp.listInfo = "<br><br>View additional <a href='../map/recycling/ga/'>recycling datasets</a>.<br>Submit updates using our <a href='https://map.georgia.org/recycling/'>Google Form</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google Sheet</a>.";
         dp.search = {"In Location Name": "organizationname", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
 
       } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills")) { // recycling-processors
@@ -2249,13 +2248,21 @@ function showList(dp,map) {
         element[key.toLowerCase()] = elementRaw[key];
       }
 
-    // Also repeated below, move here
-    if (element.status && (element.status != "1" && element.status != "Yes" && element.status != "Active")) {
-        //showListing = false;
-        foundMatch = 0;
-    } else {
-      validRowCount++;
-    }
+      // Also repeated below, move here
+      /*
+      Update - Active - Show on map
+      Current - Active - All info is correct - Show on map
+
+      (Pending) - New, waiting to vet (blank). Has Timestamp, not yet reviewed and approved
+      Hide - Temporarily closed
+      Delete
+      */
+      if (!jQuery.isEmptyObject(element.status) && (element.status != "Update" && element.status != "Active")) {
+          //showListing = false;
+          foundMatch = 0;
+      } else {
+        validRowCount++;
+      }
 
       iconColor = colorScale(element[dp.valueColumn]);
       if (dp.color) { 
@@ -2302,9 +2309,9 @@ function showList(dp,map) {
       element.mapframe = getMapframe(element);
 
       // TO INVESTIGATE - elementRaw (not element) has to be used here for color scale.
-
+      console.log("element.status " + element.status);
       let showListing = true;
-      if (element.status && (element.status != "1" && element.status != "Yes" && element.status != "Active")) {
+      if (!jQuery.isEmptyObject(element.status) && (element.status != "Update" && element.status != "Active")) {
           showListing = false;
           console.log("Excluded element.status " + element.status);
       }
