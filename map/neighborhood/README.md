@@ -80,4 +80,4 @@ In addition to CSV and Google Sheets, we'd like to also pull layers from AirTabl
 Editable link is in our Slack #epa group.
 -->
 
-[Google Sheet Editor](../../../editor/)
+[Google Sheet Editor](https::/neighborhood.org/editor/)
