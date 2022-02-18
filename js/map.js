@@ -1124,7 +1124,8 @@ function markerRadius(radiusValue,map) {
   let mapZoom = map.getZoom();
   let smallerWhenClose = 30;
   if (mapZoom >= 4) { smallerWhenClose = 10};
-  if (mapZoom >= 5) { smallerWhenClose = 8};
+  if (mapZoom >= 5) { smallerWhenClose = 9};
+  if (mapZoom >= 6) { smallerWhenClose = 8.5};
   if (mapZoom >= 8) { smallerWhenClose = 6};
   if (mapZoom >= 9) { smallerWhenClose = 3};
   if (mapZoom >= 10) { smallerWhenClose = 2};
