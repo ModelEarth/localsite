@@ -1123,10 +1123,11 @@ function markerRadius(radiusValue,map) {
   // Standard radiusValue = 1
   let mapZoom = map.getZoom();
   let smallerWhenClose = 30;
-  if (mapZoom >= 5) { smallerWhenClose = 20};
-  if (mapZoom >= 8) { smallerWhenClose = 15};
-  if (mapZoom >= 9) { smallerWhenClose = 10};
-  if (mapZoom >= 10) { smallerWhenClose = 4};
+  if (mapZoom >= 4) { smallerWhenClose = 10};
+  if (mapZoom >= 5) { smallerWhenClose = 8};
+  if (mapZoom >= 8) { smallerWhenClose = 6};
+  if (mapZoom >= 9) { smallerWhenClose = 3};
+  if (mapZoom >= 10) { smallerWhenClose = 2};
   if (mapZoom >= 11) { smallerWhenClose = 1.8};
   if (mapZoom >= 12) { smallerWhenClose = 1.4};
   if (mapZoom >= 13) { smallerWhenClose = 1};
@@ -1135,7 +1136,10 @@ function markerRadius(radiusValue,map) {
   if (mapZoom >= 17) { smallerWhenClose = .3};
   if (mapZoom >= 18) { smallerWhenClose = .2};
   if (mapZoom >= 20) { smallerWhenClose = .1};
-  let radiusOut = (radiusValue * 2000) / mapZoom * smallerWhenClose;
+  if ($(window).width() < 600) {
+    smallerWhenClose = smallerWhenClose * 3; // Larger dots for clicking on mobile
+  }
+  let radiusOut = ((radiusValue * 2000) / mapZoom) * smallerWhenClose;
 
   //console.log("mapZoom:" + mapZoom + " radiusValu:" + radiusValue + " radiusOut:" + radiusOut);
   return radiusOut;
@@ -2308,8 +2312,6 @@ function showList(dp,map) {
       }
       element.mapframe = getMapframe(element);
 
-      // TO INVESTIGATE - elementRaw (not element) has to be used here for color scale.
-      console.log("element.status " + element.status);
       let showListing = true;
       if (!jQuery.isEmptyObject(element.status) && (element.status != "Update" && element.status != "Active")) {
           showListing = false;
