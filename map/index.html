@@ -18,6 +18,10 @@
 <script type="text/javascript" src="../js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
 <script type="text/javascript" src="../js/localsite.js"></script>
 
+<!-- Also in localsite.js. Added here to prevent error "Tabulator JS not available for displaying list." that otherwise pops up after a minute. -->
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+
+
 <script>
   let hash = getHash();
   if (!hash.show) {
@@ -73,7 +77,9 @@
 <!-- after d3 -->
 <script type="text/javascript" src="../js/map-filters.js" id="/localsite/js/map-filters.js"></script>
 <script type="text/javascript" src="../js/map.js" id="/localsite/js/map.js"></script>
+<!--
 <script type="text/javascript" src="../js/table-sort.js" id="/localsite/js/table-sort.js"></script>
+-->
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="../css/leaflet.icon-material.css" rel="stylesheet">

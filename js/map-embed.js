@@ -1642,7 +1642,7 @@ function jsLoaded(root) {
 		  }
 	});
 
-	loadScript(root + 'js/table-sort.js', function(results) {});
+	//loadScript(root + 'js/table-sort.js', function(results) {});
 }
 function leafletLoaded(root, count) {
 	console.log("From leafletLoaded typeof L: " + typeof L);
