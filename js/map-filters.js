@@ -1501,12 +1501,17 @@ function SearchProductCodes(event1) {
 
 function changeCat(catTitle) {
 	catTitle = catTitle.replace(/_/g, ' ');
+    //alert("changeCat catTitle: " + catTitle);
 	$('#catSearch').val(catTitle);
 
 	$('#items').prop("checked", true); // Add front to parameter name.
 
 	$('#industryCatList > div').removeClass('catListSelected');
 
+    // REMOVED - Check implications
+    // changeCat(catTitle);
+
+    // TO DO: Also filter by attr title since some displayed titles contain count.
 	$('.catList > div').filter(function(){
 	    return $(this).text() === catTitle
 	}).addClass('catListSelected');
@@ -1559,12 +1564,11 @@ $(document).ready(function () {
 
   $('#catListClone').html($('#industryCatList').clone());
 
-
-  $('.catList > div').click(function () {
+  $(document).on("click", ".catList > div", function(event) {
     var catTitle = $(this).text();
-    //$('#keywordsTB').val(catTitle); // Temp
-    changeCat(catTitle);
-
+    if ($(this).attr("title")) {
+        catTitle = $(this).attr("title");
+    }
     var catString = catTitle.replace(/ /g, '_');
     $("#bigThumbPanelHolder").hide();
     console.log("catList triggers update");
