@@ -1109,9 +1109,9 @@ function addIcons(dp,map,map2) {
     }
   );
   $('.showItemMenu').click(function () {
-    $("#itemMenu").show();
+    $("#listingMenu").show();
 
-    $("#itemMenu").prependTo($(this).parent());
+    $("#listingMenu").prependTo($(this).parent());
 
     event.stopPropagation();
     //$("#map").show();
@@ -2604,7 +2604,7 @@ function showList(dp,map) {
   );
 
   var imenu = "<div style='display:none'>";
-  imenu += "<div id='itemMenu' class='popMenu filterBubble'>";
+  imenu += "<div id='listingMenu' class='popMenu filterBubble'>";
   imenu += "<div>View On Map</div>";
   imenu += "<div class='localonly mock-up' style='display:none'>Supplier Impact</div>";
   imenu += "<div class='localonly mock-up' style='display:none'>Production Impact</div>";
@@ -2668,7 +2668,7 @@ function showList(dp,map) {
   }
 
   $(document).click(function(event) { // Hide open menus
-      $('#itemMenu').hide();
+      $('#listingMenu').hide();
       $('#locMenu').hide();
   });
 

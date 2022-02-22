@@ -353,13 +353,13 @@ $(document).ready(function(){
 						//$(".showMenu").hide();
 						$("#menuHolder").show();
 						$("#menuHolder").css('margin-right','0px')
-						//$("#itemMenu").appendTo($(this).parent().parent());
+						//$("#listingMenu").appendTo($(this).parent().parent());
 						event.stopPropagation();
 					});
 					$('.hideMenu').click(function () {
 						$("#menuHolder").show();
 						$("#menuHolder").css('margin-right','-250px');
-						//$("#itemMenu").appendTo($(this).parent().parent());
+						//$("#listingMenu").appendTo($(this).parent().parent());
 						event.stopPropagation();
 					});
 					$(document).on("click", ".hideAdvanced", function(event) {
