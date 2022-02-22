@@ -1500,21 +1500,26 @@ function SearchProductCodes(event1) {
 
 
 function changeCat(catTitle) {
-	catTitle = catTitle.replace(/_/g, ' ');
-    //alert("changeCat catTitle: " + catTitle);
-	$('#catSearch').val(catTitle);
+    if (catTitle) {
+        //alert("changeCat catTitle: " + catTitle);
+    	catTitle = catTitle.replace(/_/g, ' ');
+        //alert("changeCat catTitle: " + catTitle);
+    }
+    $('#catSearch').val(catTitle);
 
 	$('#items').prop("checked", true); // Add front to parameter name.
 
 	$('#industryCatList > div').removeClass('catListSelected');
 
-    // REMOVED - Check implications
-    // changeCat(catTitle);
-
-    // TO DO: Also filter by attr title since some displayed titles contain count.
+    // Older lists in index.html
 	$('.catList > div').filter(function(){
 	    return $(this).text() === catTitle
 	}).addClass('catListSelected');
+
+    // Side nav with title attribut
+    $('.catList > div').filter(function(){
+        return $(this).attr("title") === catTitle
+    }).addClass('catListSelected');
 
 	$("#topPanel").hide();
 	$('#catListHolderShow').text('Product Categories');
@@ -1569,7 +1574,7 @@ $(document).ready(function () {
     if ($(this).attr("title")) {
         catTitle = $(this).attr("title");
     }
-    var catString = catTitle.replace(/ /g, '_');
+    var catString = catTitle.replace(/ /g, '_').replace(/&/g, '%26');
     $("#bigThumbPanelHolder").hide();
     console.log("catList triggers update");
     goHash({"cat":catString}); // Let the hash change trigger updates

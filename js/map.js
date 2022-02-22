@@ -198,9 +198,9 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     mapCenter = [33.74,-84.38]; // Some center is always needed, else error will occur when first using flyTo.
   }
 
-  // Make all keys lowercase - add more here, good to loop through array of possible keeys
+  // Make all keys lowercase - add more here, good to loop through array of possible keys
   if (dp.itemsColumn) {
-    dp.itemsColumn = dp.itemsColumn.toLowerCase();
+    //dp.itemsColumn = dp.itemsColumn.toLowerCase(); // Prevented match with ElementRaw
   }
 
   if (dp.dataTitle) {
@@ -1445,11 +1445,14 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.searchFields = "recipient_name";
         dp.addressColumn = "address";
 
-        dp.valueColumn = "naics";
-        dp.valueColumnLabel = "2-Digit NAICS";
+        //dp.valueColumn = "naics";
+        dp.valueColumn = "naics description";
+        //dp.valueColumnLabel = "2-digit NAICS";
 
         dp.showKeys = "naics description";
         dp.showLabels = "Industry";
+        dp.search = {"In Company Name": "recipient_name", "In naics description": "naics description", "In Address" : "address"};
+        dp.itemsColumn = "NAICS Description"; // The column being search
 
       } else if (show == "secret") {
         dp.listTitle = "Georgia Commercial Recyclers";
@@ -1463,7 +1466,8 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.valueColumn = "category";
         dp.valueColumnLabel = "Materials Category";
 
-        dp.itemsColumn = "materials accepted"; // Equivalent to PPE items column, checkboxes
+        //dp.itemsColumn = "materials accepted"; // Equivalent to PPE items column, checkboxes
+        dp.itemsColumn = "Category"; // Needs to remain capitalized
 
         // https://map.georgia.org/recycling/
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
@@ -2110,7 +2114,12 @@ function showList(dp,map) {
             for(var p = 0; p < products_array.length; p++) {
               if (products_array[p].length > 0) {
 
+                  // Maybe element[] needs to be available here so we know we're using lowercase.
+                  //console.log("elementRaw[dp.itemsColumn] " + elementRaw[dp.itemsColumn]);
+                  //console.log("elementRaw['Category'] " + elementRaw['Category']);
+                  //console.log("products_array[p].toLowerCase() " + products_array[p].toLowerCase());
                   if (elementRaw[dp.itemsColumn] && elementRaw[dp.itemsColumn].toLowerCase().indexOf(products_array[p].toLowerCase()) >= 0) {
+                  //if (element[dp.itemsColumn] && element[dp.itemsColumn].toLowerCase().indexOf(products_array[p].toLowerCase()) >= 0) {
 
                     productMatchFound++;
 
@@ -2209,6 +2218,7 @@ function showList(dp,map) {
             */
 
           } else {
+            // PPE arrives here even with cat
             foundMatch++; // No geo or keyword filter
           }
 
@@ -2251,7 +2261,7 @@ function showList(dp,map) {
 
     // BUGBUG
     if (elementRaw.status == "0") {
-      //alert("Never reached because Status is capitaliszed here")
+      //alert("Never reached because Status is capitalized here")
       foundMatch = 0;
     }
     //console.log("foundMatch: " + foundMatch + ", productMatchFound: " + productMatchFound);
@@ -2469,7 +2479,7 @@ function showList(dp,map) {
           } else if (element[dp.valueColumn] != element.name) {
             output += element[dp.valueColumn] + "<br>";
           }
-          console.log("element[dp.valueColumn] " + element[dp.valueColumn]);
+          //console.log("element[dp.valueColumn] " + element[dp.valueColumn]);
           if(!catList[element[dp.valueColumn]]) {
             catList[element[dp.valueColumn]] = {};
             catList[element[dp.valueColumn]].count = 1;
@@ -2569,6 +2579,7 @@ function showList(dp,map) {
       catNavSide += "<div title='" + key + "'>" + key + " (" + catList[key].count + ")</div>";
     });
     console.log(catNavSide)
+    $("#tableSide").html(""); // Clear
     $("#tableSide").append("<div class='catList'>" + catNavSide + "</div>");
   }
 
