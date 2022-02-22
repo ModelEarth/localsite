@@ -768,7 +768,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
     includeCSS3(theroot + 'css/leaflet.icon-material.css',theroot);
     
-    loadScript(theroot + 'js/table-sort.js', function(results) {}); // For county grid column sort
+    //loadScript(theroot + 'js/table-sort.js', function(results) {}); // For county grid column sort
 
 
     if (param.display == "everything") {
