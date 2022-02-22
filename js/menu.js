@@ -53,6 +53,7 @@ function initMenu(partnerMenu) {
 	          callback(); // Triggers initialHighlight()
 	        });
 	        */
+            console.log("initMenu() fetched menu for div " + partnerMenu.menuDiv);
 	    });
 
 		$(document).on("click", partnerMenu.revealButton, function(event) {
