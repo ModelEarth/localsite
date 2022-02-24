@@ -1429,7 +1429,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.valueColumn = "Category1";
         dp.valueColumnLabel = "Type";
         dp.listInfo = "<a href='https://docs.google.com/spreadsheets/d/1bvD9meJgMqLywdoiGwe3f93sw1IVI_ZRjWSuCLSebZo/edit?usp=sharing'>Update Google Sheet</a>.";
-          dp.search = {"In Dataset Name": "name", "In Type": "Category1", "In Website URL": "website"};
+        dp.search = {"In Dataset Name": "name", "In Type": "Category1", "In Website URL": "website"};
               
       } else if (show == "360") {
         dp.listTitle = "Birdseye Views";

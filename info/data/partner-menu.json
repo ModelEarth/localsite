@@ -39,11 +39,13 @@
 },
 {
 	"section": "News and Specials",
-	"title": "Add News"
+	"title": "Add News",
+	"link": "/core/item/add.aspx?parentid=[itemid]"
 },
 {
 	"section": "News and Specials",
-	"title": "Add Special Deals"
+	"title": "Add Special Deals",
+	"link": "/core/item/add.aspx?parentid=[itemid]"
 },
 {
 	"section": "Event Calendar",

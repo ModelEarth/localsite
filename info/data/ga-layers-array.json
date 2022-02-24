@@ -192,8 +192,8 @@
 		"mobiletitle": "360 Views",
 		"section": "Birdseye Views",
 		"provider": "Admin",
+		"icon": "<i class='material-icons'>&#xE87A;</i>",
 		"image": "/localsite/img/show/aerospace.jpg",
-		"icon": "",
 		"menuaccess": "0",
 		"directlink": "/localsite/map/#show=360",
 		"states": "GA"

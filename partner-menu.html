@@ -18,6 +18,11 @@
 <script type="text/javascript" src="/localsite/js/menu.js" id="/localsite/js/menu.js"></script>
 
 <!--
+<link rel="stylesheet" href="/community/css/material_icons.css" />
+-->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<!--
 <script type="text/javascript" src="../../../../localsite/js/showdown.min.js" id="/localsite/js/showdown.min.js"></script>
 <script type="text/javascript" src="../../../../localsite/js/navigation.js" id="/localsite/js/navigation.js"></script>
 
@@ -40,6 +45,13 @@ Refresh
 -->
 
 <script>
+scopeMenu={};
+scopeMenu.current = "Special"
+scopeMenu.layerJson = "/localsite/info/data/scope-menu.json";
+scopeMenu.revealButton = "#showScope"
+scopeMenu.menuDiv = "#scopeMenu";
+initMenu(scopeMenu);
+
 localSiteMenu={};
 localSiteMenu.current = "Special"
 localSiteMenu.layerJson = "/explore/json/menu-array.json";
@@ -64,27 +76,56 @@ partnerMenu.autoDisplay = false;
 initMenu(partnerMenu);
 
 //filterClickLocation();
+function changeMenuLinks(itemid) {
+  //$("button").click(function() {
+    $("#partnerMenu a[href]").each(function() {
+      if ($(this).attr('data-link')) {
+        var datalink = $(this).attr('data-link').replace(/\[itemid\]/g,itemid);
+        $(this).attr("href", datalink);
+      }
+    })
+  //});
+}
 </script>
+
+<style>
+.menuPackage {
+  font-size:15px;
+  width:300px;
+  float:left;
+  padding-right:30px;
+  border-right:1px solid #ccc;
+  margin-right:30px;
+  padding-bottom: 30px;
+}
+</style>
 
 </head>
 <body>
 
+<span class="material-icons blue-color">recycling</span>
+<a href="javascript:changeMenuLinks(1234);">set links</a>
+
 <div class="moduleJS" style="padding:50px">
 
   <!-- 3 dots: … -->
-  <div style="font-size:15px; width:300px; float:left; padding-right: 30px; border-right:1px solid #ccc; margin-right:30px">
-	<div id="showSiteNav" class="btn btn-white" style="cursor:pointer;">Map Layers</div>
 
-	<div id="localSiteMenu" class="partnerCheckboxes"></div>
-
+  <div class="menuPackage">
+  <div id="showScope" class="btn btn-white" style="cursor:pointer;">Scope</div>
+  <div id="scopeMenu" class="partnerCheckboxes"></div>
   </div>
 
-  <div style="font-size:15px; width:300px; float:left; padding-right: 30px; border-right:1px solid #ccc; margin-right:30px">
+  <div class="menuPackage">
+	<div id="showSiteNav" class="btn btn-white" style="cursor:pointer;">Map Layers</div>
+	<div id="localSiteMenu" class="partnerCheckboxes"></div>
+  </div>
+
+  <div class="menuPackage">
   	<div id="showIndustryMenu" class="btn btn-white" style="cursor:pointer;">Industry Menu</div>
   	<div id="partnerCheckboxes"></div>
   </div>
 
-  <div style="font-size:15px; width:300px; float:left">
+  <div class="menuPackage" style="padding-right:0px; border-right:0px">
   	<div id="showPartnerMenu" class="btn btn-white" style="cursor:pointer;">Partner Tools</div>
   	<div id="partnerMenu"></div>
   </div>
