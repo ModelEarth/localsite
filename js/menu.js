@@ -103,7 +103,6 @@ function initMenu(partnerMenu) {
 		  	event.stopPropagation();
 		});
 
-
 	    /*
 	    let adminNavObject = (function() {
 	        let json = null;
@@ -162,7 +161,7 @@ function clearAll(siteObject) {
     });
 }
 function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon on map - Master
-	if ($(partnerMenu.menuDiv).text().length > 0) {
+    if ($(partnerMenu.menuDiv).text().length > 0) {
 		return; // Already loaded
 	}
     console.log("displaypartnerCheckboxes start location.hash: " + location.hash);
@@ -217,7 +216,11 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                         var overlaylevel = item.overlaylevel;
                         var hideOverlay = "";
                         if (!overlaylevel) {
-                            overlayList += '<div class="user-' + menuaccess + '"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>' + item.section + '</div>';
+                            overlayList += '<div class="user-' + menuaccess + '"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" class="layerSectionTitle layerSectionTitleFormat">';
+                            if (partnerMenu.showArrows) {
+                                overlayList += '<div class="sectionArrowHolder"><div class="leftArrow"></div></div>';
+                            }
+                            overlayList += item.section + '</div>';
                         }
                     }
                     overlayList += '<div class="user-' + menuaccess + '"><div class="layerCbRow" data-trigger="go-' + item.item + '">';
@@ -247,8 +250,10 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                     if (item.sectionicon) {
                         //sectionIcon = item.sectionicon;
                     }
-                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" data-layer-section="' + item.section + '" class="layerSectionTitle layerSectionTitleFormat"><div class="sectionArrowHolder"><div class="leftArrow"></div></div>';
-
+                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" data-layer-section="' + item.section + '" class="layerSectionTitle layerSectionTitleFormat">';
+                    if (partnerMenu.showArrows) {
+                        partnerCheckboxes += '<div class="sectionArrowHolder"><div class="leftArrow"></div></div>';
+                    }
                     if (item.icon) {
                         if (item.icon.includes("<")) {
                             partnerCheckboxes += '<div style="float:left;padding-right:10px;color:#bbb">' + item.icon + '</div>';
@@ -410,7 +415,6 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
             event.stopPropagation();
         });
         $(partnerMenu.menuDiv + ' .layerSectionTitle').click(function () {
-            
             if ($(this).attr("data-layer-section")) {
                 layerSectionOpen($(this).attr("data-layer-section").toLowerCase().replace(/ /g,"-"));
             } else {
@@ -446,10 +450,14 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         function layerSectionOpen(section) {
             //alert("function layerSectionOpen: " + section);
             //alert(".layerSection-" + section + " .layerCbRow");
-            if ($(".layerSection-" + section + " .sectionArrowHolder div").hasClass('downArrow')) {
+
+            //if ($(".layerSection-" + section + " .sectionArrowHolder div").hasClass('downArrow')) {
+            if ($(".layerSection-" + section).attr("opened") == "true") {
+                $(".layerSection-" + section).attr("opened","false");
                 $(".layerSection-" + section + " .layerCbRow").hide();
                 $(".layerSection-" + section + " .sectionArrowHolder div").addClass('leftArrow').removeClass('downArrow');
             } else {
+                $(".layerSection-" + section).attr("opened","true");
                 $(".layerSection-" + section + " .layerCbRow").show();
                 $(".layerSection-" + section + " .sectionArrowHolder div").addClass('downArrow').removeClass('leftArrow');
             }
