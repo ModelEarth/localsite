@@ -10,7 +10,7 @@
 	"image": "/localsite/img/show/industries.jpg",
 	"siteHeaderHeight": "10px",
 	"siteHeaderHeightMax": "230px",
-	"icon": "<i class='material-icons'>&#xE87A;</i>",
+	"iconX": "<i class='material-icons'>&#xE87A;</i>",
 	"hideOverlaysButton": "true",
 	"sectionTitle": "leftNav",
 	"topnavaccess": "10",
@@ -22,7 +22,8 @@
 {
 	"menulevel": "1",
 	"section": "Page Details",
-	"title": "Edit Content"
+	"title": "Edit Content",
+	"icon": "/localsite/img/icon/scope/overview.png"
 },
 {
 	"menulevel": "1",
@@ -35,21 +36,18 @@
 	"title": "Page Admin"
 },
 {
-	"section": "News and Specials"
+	"section": "Group Members",
+	"title": "View Group Members",
+	"icon": "/localsite/img/icon/scope/community.png"
 },
 {
-	"section": "News and Specials",
-	"title": "Add News",
-	"link": "/core/item/add.aspx?parentid=[itemid]"
-},
-{
-	"section": "News and Specials",
-	"title": "Add Special Deals",
-	"link": "/core/item/add.aspx?parentid=[itemid]"
+	"section": "Group Members",
+	"title": "Add Group Member"
 },
 {
 	"section": "Event Calendar",
 	"title": "View Calendar",
+	"icon": "<span class='material-icons'>event</span>",
 	"link": "/calendar/[itemid]"
 },
 {
@@ -58,20 +56,33 @@
 	"link": "/net/calendar/addevent.aspx?p=[itemid]"
 },
 {
-	"section": "Group Members",
-	"title": "View Group Members"
-},
-{
-	"section": "Group Members",
-	"title": "Add Group Member"
-},
-{
 	"section": "Images and Files",
 	"title": "View Images and Files",
+	"icon": "<span class='material-icons'>collections</span>",
 	"link": "/elements/[itemid]"
 },
 {
 	"section": "Images and Files",
 	"title": "Add Image or File"
+},
+{
+	"section": "Related Pages"
+},
+{
+	"section": "Related Pages",
+	"title": "News and Specials",
+	"icon": "<span class='material-icons'>article</span>",
+	"link": "/core/item/add.aspx?parentid=[itemid]"
+},
+{
+	"section": "Related Pages",
+	"title": "Add News",
+	"icon": "<span class='material-icons'>article</span>",
+	"link": "/core/item/add.aspx?parentid=[itemid]"
+},
+{
+	"section": "Related Pages",
+	"title": "Add Specials",
+	"link": "/core/item/add.aspx?parentid=[itemid]"
 }
 ]
