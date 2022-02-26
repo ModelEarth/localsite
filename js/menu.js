@@ -17,6 +17,7 @@ function getDirectMenuLink(partnerMenu,item) {
     let rootfolder = item.rootfolder;
     let layer = item.item;
 
+    console.log("incoming partnerMenu.itemid: " + partnerMenu.itemid);
     if (item.link) {
         if (partnerMenu.itemid) {
             //item.link = item.link.replace(/ /g,"-");
@@ -35,8 +36,9 @@ function getDirectMenuLink(partnerMenu,item) {
             //rootfolder = "/explore/" + rootfolder;
         }
         directlink = removeFrontMenuFolder(rootfolder + "#" + layer);
-        console.log("directlink rootfolder: " + directlink)
+        console.log("directlink rootfolder: " + directlink);
     }
+    console.log("directlink final: " + directlink);
     return(directlink);
 }
 function removeFrontMenuFolder(path) {
