@@ -58,7 +58,7 @@
 {
 	"section": "Event Calendar",
 	"title": "Add Event",
-	"link": "/net/calendar/addevent.aspx?p=[itemid]"
+	"link": "/net/calendar/addevent.aspx?s=[itemid]&p=[partnerid]"
 },
 {
 	"section": "Images and Files",
@@ -69,7 +69,7 @@
 {
 	"section": "Images and Files",
 	"title": "Add Image or File",
-	"link": "/core/item/upload.aspx?s=[itemid]"
+	"link": "/core/item/upload.aspx?s=[itemid]&p=[partnerid]"
 },
 {
 	"section": "Related Pages"
