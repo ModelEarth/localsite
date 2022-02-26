@@ -12,18 +12,30 @@ function access(minlevel,alevel) {
 }
 
 // Rename from map-filters.js
-function getDirectMenuLink(directlink,rootfolder,layer) {
-	let itemID = "67463";
+function getDirectMenuLink(partnerMenu,item) {
+    let directlink = item.directlink;
+    let rootfolder = item.rootfolder;
+    let layer = item.item;
+
+    if (item.link) {
+        if (partnerMenu.itemID) {
+            //item.link = item.link.replace(/ /g,"-");
+
+            const regex = /\[itemid\]/g;
+            item.link = item.link.replace(regex, partnerMenu.itemID);
+            
+        }
+        directlink = item.link;
+    }
+
     if (directlink) {
         directlink = removeFrontMenuFolder(directlink);
     } else if (rootfolder) {
         if (rootfolder.indexOf('/explore/') < 0) {
-            rootfolder = "/explore/" + rootfolder;
+            //rootfolder = "/explore/" + rootfolder;
         }
         directlink = removeFrontMenuFolder(rootfolder + "#" + layer);
-    } else {
-    	// directlink = removeFrontMenuFolder("/explore/#" + layer);
-        directlink = removeFrontMenuFolder("/elements/" + itemID);
+        console.log("directlink rootfolder: " + directlink)
     }
     return(directlink);
 }
@@ -193,6 +205,11 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         if (item.menuaccessmax) {
             menuaccessmax = item.menuaccessmax;
         }
+
+        let showSublevel = true;
+        if (partnerMenu.sublevels == 0) {
+            showSublevel = false;
+        }
         // location.host.indexOf('localhost') >= 0 || 
         
         // && item.section.toLowerCase() != item.item
@@ -206,7 +223,6 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
             }
 
             if (title) {
-
                 // OVERLAYS
                 if (item.feed && !item.omitOverlay) {
                     if (item.section && item.section != previousOverlaySet) {
@@ -223,9 +239,13 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                             overlayList += item.section + '</div>';
                         }
                     }
-                    overlayList += '<div class="user-' + menuaccess + '"><div class="layerCbRow" data-trigger="go-' + item.item + '">';
-                    // data-link="' + directlink + '"
-                    overlayList += '<div class="overlayAction"><i class="material-icons active-' + item.item + '" style="float:right;color:#ccc;display:none">&#xE86C;</i></div><div class="layerCbTitle">' + title + '</div></div></div><div style="clear:both"></div>';
+                    if (showSublevel) {
+                        overlayList += '<div class="user-' + menuaccess + '"><div class="layerCbRow" data-trigger="go-' + item.item + '">';
+                        // data-link="' + directlink + '"
+                        overlayList += '<div class="overlayAction"><i class="material-icons active-' + item.item + '" style="float:right;color:#ccc;display:none">&#xE86C;</i></div><div class="layerCbTitle">' + title + '</div>';
+                    }
+                    
+                    overlayList += '</div></div><div style="clear:both"></div>';
                     previousOverlaySet = item.section;
                 }
 
@@ -264,22 +284,23 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                     partnerCheckboxes += item.section + '</div>';
                 } // Check circle // Was around title: <label for="go-' + item.item + '" style="width:100%; overflow:auto">
                 // <i class="material-icons" style="float:right;color:#ccc">&#xE86C;</i>
-                var directlink = getDirectMenuLink(item.directlink, item.rootfolder, item.item);
-                if (item.link) {
-                    directlink = item.link;
-                }
-                // Link is applied dynamically using [itemid] in attr data-link
-                partnerCheckboxes += '<div class="user-' + menuaccess + '"><div class="layerCbRow row-' + item.item + '"><div><a data-link="' + directlink + '" href="" class="layerAction">';
+                var directlink = getDirectMenuLink(partnerMenu, item);
                 
-                /*
-                if (item.feed) {
-                    partnerCheckboxes += '<div class="layerActionIcon" data-link="' + directlink + '"></div>';
-                } else {
-                    partnerCheckboxes += '<div class="layerActionIcon layerActionIconNoFeed" data-link="' + directlink + '"></div>';
-                }
-				*/
+                // Link is applied dynamically using [itemid] in attr data-link
+                if (showSublevel) {
+                    partnerCheckboxes += '<div class="user-' + menuaccess + '"><div class="layerCbRow row-' + item.item + '"><div><a data-link="' + directlink + '" href="' + directlink + '" class="layerAction">';
+                    /*
+                    if (item.feed) {
+                        partnerCheckboxes += '<div class="layerActionIcon" data-link="' + directlink + '"></div>';
+                    } else {
+                        partnerCheckboxes += '<div class="layerActionIcon layerActionIconNoFeed" data-link="' + directlink + '"></div>';
+                    }
+                    */
 
-                partnerCheckboxes += '</a></div><div class="layerCbTitle"><input type="checkbox" class="layersCB" name="layersCB" id="go-' + item.item + '" value="' + item.item + '"><a href="' + item.link + '">' + title + '</a></div></div></div><div style="clear:both"></div>';
+                    partnerCheckboxes += '</a></div><div class="layerCbTitle"><input type="checkbox" class="layersCB" name="layersCB" id="go-' + item.item + '" value="' + item.item + '"><a href="' + item.link + '">' + title + '</a></div></div></div>';
+                    
+                }
+                partnerCheckboxes += '<div style="clear:both"></div>';
                 previousSet = item.section;
             }
         }

@@ -3,12 +3,14 @@
 	"section-user": "My Impact",
 	"section": "My Impact",
 	"title": "My Impact",
-	"icon": "/localsite/img/icon/scope/overview.png"
+	"icon": "/localsite/img/icon/scope/overview.png",
+	"link": "#scope=ind"
 },
 {
 	"section": "Community",
 	"title": "Community",
-	"icon": "/localsite/img/icon/scope/community.png"
+	"icon": "/localsite/img/icon/scope/community.png",
+	"link": "#scope=community"
 },
 {
 	"section": "Household",

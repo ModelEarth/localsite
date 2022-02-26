@@ -55,6 +55,7 @@ scopeMenu.current = "Special"
 scopeMenu.layerJson = "/localsite/info/data/scope-menu.json";
 scopeMenu.revealButton = "#showScope"
 scopeMenu.menuDiv = "#scopeMenu";
+scopeMenu.sublevels = 0;
 initMenu(scopeMenu);
 
 localSiteMenu={};
@@ -62,6 +63,7 @@ localSiteMenu.current = "Special"
 localSiteMenu.layerJson = "/explore/json/menu-array.json";
 localSiteMenu.revealButton = "#showSiteNav"
 localSiteMenu.menuDiv = "#localSiteMenu";
+localSiteMenu.rootfolder = "https://georgiadata.github.io/explore/"; // Triggers appending # item
 localSiteMenu.showArrows = true;
 initMenu(localSiteMenu);
 
@@ -70,6 +72,7 @@ industryMenu.current = "Special"
 industryMenu.layerJson = "/localsite/info/data/ga-layers-array.json";
 industryMenu.revealButton = "#showIndustryMenu"
 industryMenu.menuDiv = "#partnerCheckboxes";
+industryMenu.sublevels = 0;
 industryMenu.autoDisplay = false;
 initMenu(industryMenu);
 
@@ -79,6 +82,7 @@ partnerMenu.layerJson = "/localsite/info/data/partner-menu.json";
 partnerMenu.revealButton = "#showPartnerMenu"
 partnerMenu.menuDiv = "#partnerMenu";
 partnerMenu.autoDisplay = false;
+partnerMenu.itemID = "1234"
 initMenu(partnerMenu);
 
 //filterClickLocation();
