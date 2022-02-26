@@ -24,12 +24,13 @@
 	"section": "Page Details",
 	"title": "Edit Content",
 	"icon": "/localsite/img/icon/scope/overview.png",
-	"link": "/edit/[itemid]"
+	"link": "/core/item/edit.aspx?s=[itemid]"
 },
 {
 	"menulevel": "1",
 	"section": "Page Details",
-	"title": "Add Subtopic"
+	"title": "Add Subtopic",
+	"link": "/core/item/add.aspx?parentid=[itemid]"
 },
 {
 	"menulevel": "1",
@@ -51,7 +52,7 @@
 	"section": "Event Calendar",
 	"title": "View Calendar",
 	"icon": "<span class='material-icons'>event</span>",
-	"link": "/calendar/[itemid]"
+	"link": "/calendar?p=[itemid]"
 },
 {
 	"section": "Event Calendar",
@@ -76,17 +77,12 @@
 	"section": "Related Pages",
 	"title": "News and Specials",
 	"icon": "<span class='material-icons'>article</span>",
-	"link": "/core/item/add.aspx?parentid=[itemid]"
+	"link": "/net/content/related.aspx?s=[itemid]"
 },
 {
 	"section": "Related Pages",
-	"title": "Add News",
+	"title": "Add Related Content",
 	"icon": "<span class='material-icons'>article</span>",
-	"link": "/core/item/add.aspx?parentid=[itemid]"
-},
-{
-	"section": "Related Pages",
-	"title": "Add Specials",
 	"link": "/core/item/add.aspx?parentid=[itemid]"
 }
 ]
