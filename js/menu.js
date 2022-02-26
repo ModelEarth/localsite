@@ -18,11 +18,11 @@ function getDirectMenuLink(partnerMenu,item) {
     let layer = item.item;
 
     if (item.link) {
-        if (partnerMenu.itemID) {
+        if (partnerMenu.itemid) {
             //item.link = item.link.replace(/ /g,"-");
 
             const regex = /\[itemid\]/g;
-            item.link = item.link.replace(regex, partnerMenu.itemID);
+            item.link = item.link.replace(regex, partnerMenu.itemid);
             
         }
         directlink = item.link;
