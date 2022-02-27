@@ -99,14 +99,45 @@ function changeMenuLinks(itemid) {
 </script>
 
 <style>
+.moduleJS {
+  padding:50px;
+}
 .menuPackage {
   font-size:15px;
   width:300px;
   float:left;
-  padding-right:30px;
-  border-right:1px solid #ccc;
+  border:1px solid #ccc;
   margin-right:30px;
-  padding-bottom: 30px;
+  margin-bottom: 30px;
+}
+.hideAdvanced {
+  width: auto !important;
+  margin-top: 8px;
+}
+@media (max-width:500px) {
+  .menuPackage {
+    width:100%;
+    padding-right:0px;
+    margin-right:0px;
+    border:0px;
+    padding-bottom: 40px;
+    border-bottom: #333 4px solid;
+    margin-bottom: 0px;
+  }
+  .sectionArrowHolder {
+    padding-right: 8px;
+  }
+  .moduleJS {
+    padding: 0px;
+    margin: 0px;
+  }
+}
+.revealButton {
+  border: 0px;
+  font-weight: bolder;
+  font-size: 18px;
+  margin-top: 10px;
+  width: auto !important;
 }
 </style>
 
@@ -116,27 +147,28 @@ function changeMenuLinks(itemid) {
 <span class="material-icons blue-color">recycling</span>
 <a href="javascript:changeMenuLinks(1234);">set links</a>
 
-<div class="moduleJS" style="padding:50px">
+<div class="moduleJS">
 
   <!-- 3 dots: … -->
 
   <div class="menuPackage">
-  <div id="showScope" class="btn btn-white" style="cursor:pointer;">Scope</div>
+  <div id="showScope" class="revealButton btn btn-white" style="cursor:pointer;">Scope</div>
   <div id="scopeMenu" class="partnerCheckboxes"></div>
   </div>
 
   <div class="menuPackage">
-	<div id="showSiteNav" class="btn btn-white" style="cursor:pointer;">Map Layers</div>
+	<div id="showSiteNav" class="revealButton btn btn-white" style="cursor:pointer;">Map Layers</div>
 	<div id="localSiteMenu" class="partnerCheckboxes"></div>
   </div>
 
   <div class="menuPackage">
-  	<div id="showIndustryMenu" class="btn btn-white" style="cursor:pointer;">Industry Menu</div>
+  	<div id="showIndustryMenu" class="revealButton btn btn-white" style="cursor:pointer;">Industries</div>
   	<div id="partnerCheckboxes"></div>
   </div>
 
-  <div class="menuPackage" style="padding-right:0px; border-right:0px">
-  	<div id="showPartnerMenu" class="btn btn-white" style="cursor:pointer;">Partner Tools</div>
+  <div class="menuPackage" style="padding-right:0px;">
+    <div class="hideAdvanced close-X btn btn-white" style="float:right; padding-left:12px; padding-right:12px;">✕</div>
+  	<div id="showPartnerMenu" class="revealButton btn btn-white" style="cursor:pointer;">Partner Tools</div>
   	<div id="partnerMenu"></div>
   </div>
 
