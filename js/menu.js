@@ -22,9 +22,10 @@ function getDirectMenuLink(partnerMenu,item) {
         if (partnerMenu.itemid) {
             //item.link = item.link.replace(/ /g,"-");
 
-            const regex = /\[itemid\]/g;
+            let regex = /\[itemid\]/g;
             item.link = item.link.replace(regex, partnerMenu.itemid);
-            
+            regex = /\[partnerid\]/g;
+            item.link = item.link.replace(regex, partnerMenu.partnerid);
         }
         directlink = item.link;
     }
