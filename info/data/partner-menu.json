@@ -22,9 +22,21 @@
 {
 	"menulevel": "1",
 	"section": "Page Details",
+	"title": "Overview",
+	"link": "/info/[itemid]",
+	"icon": "/localsite/img/icon/scope/overview.png"
+},
+{
+	"menulevel": "1",
+	"section": "Page Details",
 	"title": "Edit Content",
-	"icon": "/localsite/img/icon/scope/overview.png",
 	"link": "/core/item/edit.aspx?s=[itemid]"
+},
+{
+	"menulevel": "1",
+	"section": "Page Details",
+	"title": "Edit Location",
+	"link": "/net/org/edit.aspx?s=[itemid]"
 },
 {
 	"menulevel": "1",
