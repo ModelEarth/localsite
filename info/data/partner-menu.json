@@ -42,7 +42,7 @@
 	"section": "Group Members",
 	"title": "View Group Members",
 	"icon": "/localsite/img/icon/scope/community.png",
-	"link": "/core/member/list.aspx?load=1&p=[partnerid]"
+	"link": "/core/member/list.aspx?load=1&p=[partnerid]&s=[itemid]"
 },
 {
 	"section": "Group Members",
