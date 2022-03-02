@@ -45,12 +45,6 @@
 	"link": "/core/item/add.aspx?parentid=[itemid]"
 },
 {
-	"menulevel": "1",
-	"section": "Page Details",
-	"title": "Page Admin",
-	"link": "/net/content/admin.aspx?s=[itemid]"
-},
-{
 	"section": "Group Members",
 	"title": "View Group Members",
 	"icon": "/localsite/img/icon/scope/community.png",
@@ -97,5 +91,10 @@
 	"title": "Add Related Content",
 	"icon": "<span class='material-icons'>article</span>",
 	"link": "/core/item/add.aspx?parentid=[itemid]"
-}
+},
+{
+	"section": "Related Pages",
+	"title": "Page Admin",
+	"link": "/net/content/admin.aspx?s=[itemid]"
+},
 ]

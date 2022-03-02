@@ -1335,3 +1335,6 @@ String.prototype.toTitleCase = function () {
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
 }
+$(document).click(function(event) { // Hide open menus in core
+  $('.hideOnDocClick').hide();
+});
