@@ -240,7 +240,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                         var overlaylevel = item.overlaylevel;
                         var hideOverlay = "";
                         if (!overlaylevel) {
-                            overlayList += '<div class="user-' + menuaccess + '"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" class="layerSectionTitle layerSectionTitleFormat">';
+                            overlayList += '<div class="user-' + menuaccess + '"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" class="layerSectionClick">';
                             if (partnerMenu.showArrows) {
                                 overlayList += '<div class="sectionArrowHolder"><div class="leftArrow"></div></div>';
                             }
@@ -278,7 +278,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                     if (item.sectionicon) {
                         //sectionIcon = item.sectionicon;
                     }
-                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" data-layer-section="' + item.section + '" class="layerSectionTitle layerSectionTitleFormat">';
+                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clear:both; pointer-events: auto;" data-layer-section="' + item.section + '" class="layerSectionClick">';
                     if (partnerMenu.showArrows) {
                         partnerCheckboxes += '<div class="sectionArrowHolder"><div class="leftArrow"></div></div>';
                     }
@@ -286,10 +286,10 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                         if (item.icon.includes("<")) {
                             partnerCheckboxes += '<div style="float:left;padding-right:10px;color:#bbb">' + item.icon + '</div>';
                         } else {
-                            partnerCheckboxes += '<img src="' + item.icon + '" style="float:left; height:18px; padding-right:12px">';  
+                            partnerCheckboxes += '<img class="layerSectionIcon" src="' + item.icon + '" style="float:left; height:18px; padding-right:12px">';  
                         }
                     }
-                    partnerCheckboxes += item.section + '</div>';
+                    partnerCheckboxes += '<div class="layerSectionTitle">' + item.section + '</div></div>';
                 } // Check circle // Was around title: <label for="go-' + item.item + '" style="width:100%; overflow:auto">
                 // <i class="material-icons" style="float:right;color:#ccc">&#xE86C;</i>
                 var directlink = getDirectMenuLink(partnerMenu, item);
@@ -321,8 +321,8 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         partnerCheckboxes += '</div></div>\n'; // For columnizer
         overlayList += '</div>\n'; // For columnizer
     }
-    // Double div prevents prior layerSectionTitle from being unchecked.
-    //partnerCheckboxes += '<div><div class="showAllLayers dontsplit layerSectionTitleFormat" style="display:none">More</div></div>\n';
+    // Double div prevents prior layerSectionClick from being unchecked.
+    //partnerCheckboxes += '<div><div class="showAllLayers dontsplit" style="display:none">More</div></div>\n';
 
     
 
@@ -358,7 +358,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
 
         if ($('.layerSection-' + $(this).attr("data-section").toLowerCase()).find('.leftArrow').length) {
             // Only click if closed.
-            //$('.layerSection-' + $(this).attr("data-section").toLowerCase() + ' > .layerSectionTitle').trigger("click");
+            //$('.layerSection-' + $(this).attr("data-section").toLowerCase() + ' > .layerSectionClick').trigger("click");
             
             // Replacing Above
             layerSectionOpen($(this).attr("data-section").toLowerCase());
@@ -435,24 +435,24 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
     $(document).on("click", partnerMenu.menuDiv + ' .showAllLayers', function(event) {
         $('.layerCbRow').hide();
         $('.sideTip').hide();
-        $('.layerSectionTitle').find('.downArrow').addClass('leftArrow').removeClass('downArrow');
+        $('.layerSectionClick').find('.downArrow').addClass('leftArrow').removeClass('downArrow');
         // Make all arrows point right.
 
         showLayerMenu();
         $('.showAllLayers').hide();
         event.stopPropagation();
     });
-    $(document).on("click", partnerMenu.menuDiv + ' .layerSectionTitle', function(event) {
+    $(document).on("click", partnerMenu.menuDiv + ' .layerSectionClick', function(event) {
         if ($(this).attr("data-layer-section")) {
             layerSectionOpen($(this).attr("data-layer-section").toLowerCase().replace(/ /g,"-"));
         } else {
-            console.log("layerSectionTitle click");
+            console.log("layerSectionClick click");
             //$('.layerSection').hide();
             //$(this).parent().parent().show();
             //$(".listPanelHolder").show();// This shows list too.
             
             //$('.layerCbRow').hide(); // Hide All
-            //$(this).parent().parent().find('.layerSectionTitle').show();
+            //$(this).parent().parent().find('.layerSectionClick').show();
             $(this).parent().find('.layerCbRow').toggle(); // Up to layerSection.
             //$(this).parent().parent().find('.layerCbRow').show(); // Up to layerSectionAccess.
 

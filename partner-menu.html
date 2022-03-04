@@ -111,6 +111,7 @@ function changeMenuLinks(itemid) {
   margin-right:30px;
   margin-bottom: 30px;
 }
+
 .hideAdvanced {
   width: auto !important;
   margin-top: 8px;
@@ -132,6 +133,9 @@ function changeMenuLinks(itemid) {
     padding: 0px;
     margin: 0px;
   }
+  .hideMenuPackage {
+    /* display: block; */
+  }
 }
 .revealButton {
   border: 0px;
@@ -139,6 +143,12 @@ function changeMenuLinks(itemid) {
   font-size: 18px;
   margin-top: 10px;
   width: auto !important;
+}
+
+@media (max-width: 800px) {
+  .menuPackage {
+    width:auto !important;
+  }
 }
 </style>
 
@@ -168,7 +178,7 @@ function changeMenuLinks(itemid) {
   </div>
 
   <div class="menuPackage" style="padding-right:0px;">
-    <div class="hideAdvanced close-X btn btn-white" style="float:right; padding-left:12px; padding-right:12px;">✕</div>
+    <div class="hideMenuPackage hideAdvanced close-X btn btn-white" style="float:right; padding-left:12px; padding-right:12px;">✕</div>
   	<div id="showPartnerMenu" class="revealButton btn btn-white" style="cursor:pointer;">Partner Tools</div>
   	<div id="partnerMenu"></div>
   </div>

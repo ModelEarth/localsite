@@ -1,26 +1,6 @@
 [
 {
 	"menulevel": "1",
-	"item": "industries",
-	"rootfolder": "info",
-	"tabtitle": "Page Details",
-	"mobiletitle": "Page Details",
-	"section": "Page Details",
-	"provider": "Admin",
-	"image": "/localsite/img/show/industries.jpg",
-	"siteHeaderHeight": "10px",
-	"siteHeaderHeightMax": "230px",
-	"iconX": "<i class='material-icons'>&#xE87A;</i>",
-	"hideOverlaysButton": "true",
-	"sectionTitle": "leftNav",
-	"topnavaccess": "10",
-	"menuaccess": "0",
-	"defaultroot": "/localsite/info/",
-	"directlink": "/localsite/info/",
-	"caption": ""
-},
-{
-	"menulevel": "1",
 	"section": "Page Details",
 	"title": "Overview",
 	"link": "/info/[itemid]",
