@@ -17,16 +17,7 @@
     min-width: 200px;
 }
 @media (max-width: 800px) {
-	.layerSectionTitle {
-		display: none;
-	}
-	.layerSectionIcon {
-		float: initial;
-	}
-	.layerSectionClick {
-		min-width: auto;
-		padding-left: 8px;
-	}
+
 	.sectionArrowHolder {
 		display: none;
 	}
@@ -36,12 +27,45 @@
 	.hideMenuPackage {
 		display: none;
 	}
+
+}
+@media (max-width: 1100px) {
 	.absoluteWhenNarrow {
 		position: absolute;
 		z-index: 1;
-		max-width: 40px; /* temp */
-		top: 0; /* temp */
-		bottom: 0; /* temp */
+		max-width: 38px;
+		top: 0;
+		bottom: 0;
+		overflow: visible;
+	}
+	.layerSection {
+		max-width: 38px;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+	.layerSection:hover {
+		max-width: auto;
+		overflow: visible;
+		max-width: 200px; /* allow background color to be visible */
+		text-align: center;
+		background-color: #efefef;
+		border: 1px solid #777;
+		margin:  -1px;
+		margin-left: 0px;
+		z-index: 100;
+	}
+	.layerSectionIcon {
+		float: initial;
+	}
+	.layerSectionTitle {
+		background-color: #eee;
+	}
+	.layerSectionClick {
+		min-width: auto;
+		padding-left: 8px;
+	}
+	.menuBuddy {
+		padding: 20px 0 20px 40px;
 	}
 }
 .layerCheckboxes {
