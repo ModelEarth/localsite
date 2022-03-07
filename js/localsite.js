@@ -304,9 +304,17 @@ function loadScript(url, callback)
   //let urlID = url.replace(/^.*\/\/[^\/]+/, ''); // Allows id's to always omit the domain.
 
   let urlID = getUrlID3(url);
+  var loadFile = true;
+
+    // TODO: load a comma separated list of filenames in param.existing_files into an array that can be searched here. Try to allow for
+    // minified and debug versions, i.e. use the filename only and no extension. Load the array outside of this function so the array
+    // doesn't have to be rebuilt each time this function is called.
+  if (param.existing_files == "jquery" && url.indexOf(param.existing_files) >= 0) {
+     loadFile = false;
+  }
 
   //alert(urlID)
-  if (!document.getElementById(urlID)) { // Prevents multiple loads.
+  if (loadFile && !document.getElementById(urlID)) { // Prevents multiple loads.
     consoleLog("loadScript seeking: " + url + " via urlID: " + urlID);
     var script = document.createElement('script');
       script.type = 'text/javascript';
