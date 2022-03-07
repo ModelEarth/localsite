@@ -204,15 +204,6 @@ summary::-webkit-details-marker {
 }
 @media screen {.printonly {display: none; }}
 
-.table-cell {
-  display: table-cell;
-}
-@media (max-width: 800px) {
-  .table-cell {
-    display: block;
-  }
-}
-
 .row {
   display: flex;
   flex-direction: row;
