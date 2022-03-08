@@ -1454,7 +1454,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.search = {"In Company Name": "recipient_name", "In naics description": "naics description", "In Address" : "address"};
         dp.itemsColumn = "NAICS Description"; // The column being search
 
-      } else if (show == "secret") {
+      } else if (show == "recyclers" || show == "secret") { // Remove "secret"
         dp.listTitle = "Georgia Commercial Recyclers";
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
 
