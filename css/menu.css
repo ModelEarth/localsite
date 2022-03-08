@@ -22,7 +22,6 @@
     font-family: 'Open Sans Condensed', sans-serif;
     cursor: pointer;
     text-transform: none;
-    min-width: 200px;
 }
 @media (max-width: 800px) {
 
