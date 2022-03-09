@@ -11,8 +11,8 @@ function accessBool(minlevel,alevel) {
     }
 }
 function itemtypeBool(partnerMenu, item) {
-    if (item.itemtype ) {
-        if (item.itemtype.split(",").indexOf(partnerMenu.itemtype) >= 0) {
+    if (item.basetype) {
+        if (item.basetype.split(",").indexOf(partnerMenu.basetype) >= 0) {
             return true;
         }
         return false;
