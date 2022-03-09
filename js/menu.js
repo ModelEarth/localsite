@@ -1,5 +1,5 @@
 var currentAccess = 0;
-function access(minlevel,alevel) {
+function accessBool(minlevel,alevel) {
     var level = 0;
     if (alevel) { level = parseInt(alevel) }
     if (minlevel >= level) {
@@ -10,14 +10,23 @@ function access(minlevel,alevel) {
         return false;
     }
 }
-
+function itemtypeBool(partnerMenu, item) {
+    if (item.itemtype ) {
+        if (item.itemtype.split(",").indexOf(partnerMenu.itemtype) >= 0) {
+            return true;
+        }
+        return false;
+    } else {
+        return true;
+    }
+}
 // Rename from map-filters.js
 function getDirectMenuLink(partnerMenu,item) {
     let directlink = item.directlink;
     let rootfolder = item.rootfolder;
     let layer = item.item;
 
-    console.log("incoming partnerMenu.itemid: " + partnerMenu.itemid);
+    //console.log("incoming partnerMenu.itemid: " + partnerMenu.itemid);
     if (item.link) {
         if (partnerMenu.itemid) {
             //item.link = item.link.replace(/ /g,"-");
@@ -42,9 +51,9 @@ function getDirectMenuLink(partnerMenu,item) {
             //rootfolder = "/explore/" + rootfolder;
         }
         directlink = removeFrontMenuFolder(rootfolder + "#" + layer);
-        console.log("directlink rootfolder: " + directlink);
+        //console.log("directlink rootfolder: " + directlink);
     }
-    console.log("directlink final: " + directlink);
+    //console.log("directlink final: " + directlink);
     return(directlink);
 }
 function removeFrontMenuFolder(path) {
@@ -73,7 +82,7 @@ function initMenu(partnerMenu) {
 	          callback(); // Triggers initialHighlight()
 	        });
 	        */
-            console.log("initMenu() fetched menu for div " + partnerMenu.menuDiv);
+            //console.log("initMenu() fetched menu for div " + partnerMenu.menuDiv);
 	    });
 
 		$(document).on("click", partnerMenu.revealButton, function(event) {
@@ -184,7 +193,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
     if ($(partnerMenu.menuDiv).text().length > 0) {
 		return; // Already loaded
 	}
-    console.log("displaypartnerCheckboxes start location.hash: " + location.hash);
+    //console.log("displaypartnerCheckboxes start location.hash: " + location.hash);
     var partnerCheckboxes = "";
     var overlayList = ""; // Clicking selects checkbox in partnerCheckboxes list
     var previousSet = "";
@@ -221,7 +230,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         // location.host.indexOf('localhost') >= 0 || 
         
         // && item.section.toLowerCase() != item.item
-        if (access(currentAccess,menuaccess) && currentAccess <= menuaccessmax) {
+        if (itemtypeBool(partnerMenu, item) && accessBool(currentAccess,menuaccess) && currentAccess <= menuaccessmax) {
             var title = "";
             try { // For IE error
                 title = ((item.navtitle) ? item.navtitle : item.title);
