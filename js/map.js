@@ -536,7 +536,13 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
   // ADD BACKGROUND BASEMAP to Side Map
   if (layerControl[whichmap2] == undefined) {
     layerControl[whichmap2] = L.control.layers(basemaps2, overlays2).addTo(map2); // Init layer checkboxes
-    basemaps2["OpenStreetMap"].addTo(map2); // Set the initial baselayer.
+    if (location.host.indexOf('localhost') >= 0) {
+      // OpenStreetMap tiles stopped working on localhost in March of 2022. Using Grayscale locally for small map instead.
+      // "Access denied. See https://operations.osmfoundation.org/policies/tiles/"
+      basemaps2["Grayscale"].addTo(map2); // Set the initial baselayer.
+    } else {
+      basemaps2["OpenStreetMap"].addTo(map2); // Set the initial baselayer.
+    }
   } else {
     layerControl[whichmap2].addOverlay(dp.group2, dp.dataTitle); // Add layer checkbox
   }
