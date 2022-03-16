@@ -9,7 +9,7 @@ We process NAICS industry data into [state files with county employment levels](
 1. [Generate state county files](https://github.com/modelearth/community-data) for 2 to 6 digit NAICS industries for static hosting on Github.  
 To avoid gaps in county industry data, we'll use this [2018 data from Eckert](https://github.com/modelearth/community-data/tree/master/process/cbp).  
 3. Compare with output from our [Machine Learning script](https://github.com/modelearth/machine-learning) created by John Taylor.  
-4. Our [comparison report](../../info/naics/) will be a new version of our [EPA Local Industries Impact Report](../../info/).  
+4. Our **[new comparison report](../../info/naics/)** will be a new version of our [EPA Local Industries Impact Report](../../info/).  
 
 Data source: US Bureau of Labor Statistics (BLS)
 Our older links: [Industries by county](https://github.com/modelearth/community-data/tree/master/us/state) | [Industries by zipcode](../../../community/industries/)  
