@@ -38,46 +38,10 @@ Reactivate once widget widths fixed
 
 <div style="padding-left:30px; padding-right:30px">
 	<div class="input-output content contentpadding" style="padding:0px">
-
-		<div id="readmeDiv"></div>
 		<br>
+		<div id="readmeDiv"></div>
+		<div id="append_industryFilters"></div>
 
-
-		<!-- Also reside in info/info-template.html -->
-		<div id="detail_selection">
-			<div id="show_industry_settings" style="float:right;cursor:pointer" onclick="$('.industry_filter_settings').toggle();">
-				<span class="material-icons" style="font-size:24px;color:#777">
-				settings
-				</span>
-			</div>
-			<select id="catsort" class="picklist" onchange="goHash({'catsort':this.value});" style="display:none">
-	          <option value="payann" selected>By Annual Payroll</option>
-	          <option value="emp" >By Employee Count</option>
-	          <option value="estab">By Establishments</option>
-	        </select>
-	        <select id="catsize" class="picklist" onchange="goHash({'catsize':this.value});">
-	          <option value="2">Sectors - 2 digits</option>
-	          <!--option value="2">Subsectors - 3 digits</option-->
-	          <option value="4">Industry Group - 4 digits</option>
-	          <!--option value="4">NAICS Industry - 5 digits</option-->
-	          <option value="6" selected>NAICS Codes - 6 digits</option>
-	        </select>
-	        <div style="clear:both;margin-bottom:2px"></div>
-
-	        <div class="industry_filter_settings" style="display:none">
-		        <div class="state-view" style="margin:10px 0 0 10px">
-		        	Choose a county or region above to view filter settings.
-		        </div>
-		        <div class="county-view" style="display:none">
-			        <select id="catmethod" class="picklist" onchange="goHash({'catmethod':this.value});">
-			          <option value="1" selected>Use average of payrolls not assigned to counties</option>
-			          <option value="2" >Use average of all state payrolls (less accurate)</option>
-			          <option value="0" >Leave unpublished values blank</option>
-			        </select>
-			    </div>
-			</div>
-		</div>
-		
 		<div style="height:500px">
 			<div id="tabulator-industrytable"></div>
 			<div id="tabulator-industrytable-count"></div>
@@ -91,7 +55,7 @@ Reactivate once widget widths fixed
 </div>
 
 <script>
-	//loadMarkdown("README.md", "readmeDiv", "_parent");
+	loadMarkdown("README.md", "readmeDiv", "_parent");
 </script>
 
 </body>
