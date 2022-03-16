@@ -1,5 +1,5 @@
 /*
-Originates at https://neighborhood.github.io/modelearth/css/base.css 
+Originates at https://modelearth.github.io/localsite/css/base.css 
 Used in localsite, modelearth, io, neighborhood, trees
 */
 @font-face {
@@ -735,7 +735,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 .input-output input[type="text"], .input-output input[type="search"], .input-output select, select {
     font-size: 18px;
     border: 1px solid lightgray;
-    border-radius: 20px;
+    border-radius: 4px;
     min-height: 34px;
     margin-right: 15px;
     padding: 0 5px 0 10px;

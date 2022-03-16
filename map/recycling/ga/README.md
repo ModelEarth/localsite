@@ -14,8 +14,7 @@ Also lacks CHARM.  Far from comprehensive.
 <a href="https://recyclesearch.com" target="_parent">Recycling Centers - RecycleSearch.com</a>
 -->
 
-**Coming Soon - February 28, 2022**
-New Commercial and Manufacturer Recycler list created with the Georgia Recycling Coalition (GRC) in partnership with the Georgia Center for Innovation.
+**Coming Soon** - A new Commercial and Manufacturer Recycler list is being updated by the Georgia Recycling Coalition (GRC) in partnership with the Georgia Center for Innovation.
 
 [Transfer Stations](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
 [Georgia Landfills](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
