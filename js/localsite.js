@@ -584,6 +584,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           //alert("Before template Loaded: " + bodyFile);
           $("#infoFile").load(infoFile, function( response, status, xhr ) {
             consoleLog("Info Template Loaded: " + infoFile);
+            $("#industryFilters").appendTo("#append_industryFilters");
           });
         }
 

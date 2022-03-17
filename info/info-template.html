@@ -90,9 +90,9 @@
 			        <select id="catsize" class="picklist" onchange="goHash({'catsize':this.value});">
 			          <option value="2">Sectors - 2 digits</option>
 			          <!--option value="2">Subsectors - 3 digits</option-->
-			          <option value="4">Industry Group - 4 digits</option>
+			          <option value="4">Industry Groups - 4 digits</option>
 			          <!--option value="4">NAICS Industry - 5 digits</option-->
-			          <option value="6" selected>NAICS Codes - 6 digits</option>
+			          <option value="6" selected>Industries - 6 digits</option>
 			        </select>
 			        <div style="clear:both;margin-bottom:2px"></div>
 
@@ -113,8 +113,7 @@
 
 				
 				
-				<div id="econ_list"><img src='/localsite/img/icon/loading.gif' style='margin:40px; width:120px'></div>
-				<br>
+				
 				<div class="mock-up" style="display:none">
 					Change scales to view the impact of different industry mixes. (Not yet activated)<br>
 				</div>
@@ -124,6 +123,12 @@
 
 			</div>
 		
+			<!--
+				Previously contained:
+				<img src='/localsite/img/icon/loading.gif' style='margin:40px; width:120px'>
+			-->
+			<div id="econ_list"></div><br>
+
 </section><!-- /industries -->
 </div>
 

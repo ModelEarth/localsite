@@ -224,7 +224,7 @@ function showIndustryTabulatorList(attempts) {
                 $("#tabulator-industrytable-count").append(totalcount_div);
 
                 //var el = document.getElementById("total_count");
-                totalcount_div.innerHTML = data.length + " industries";
+                totalcount_div.innerHTML = data.length + " industries";    
             },
             rowClick:function(e, row){
                 row.toggleSelect(); //toggle row selected state on row click
