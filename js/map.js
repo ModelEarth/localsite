@@ -1544,7 +1544,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         // Temp, prior to change from Google API 2 to 3
         //dp.dataset = "https://model.earth/georgia-data/automotive/automotive.csv";
         dp.datastates = "GA";
-        dp.listInfo = "<br><br>Dark green map points indicate electric vehicle parts manufacturing.<br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates. Learn about <a href='../../community/projects/mobility/'>data sources</a>.";
+        //dp.listInfo = "<br><br>Dark green map points indicate electric vehicle parts manufacturing.<br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates. Learn about <a href='../../community/projects/mobility/'>data sources</a>.";
         dp.valueColumn = "ev industry";
         dp.valueColumnLabel = "EV Industry";
         dp.markerType = "google";
@@ -2363,7 +2363,7 @@ function showList(dp,map) {
       element.mapframe = getMapframe(element);
 
       let showListing = true;
-      if (!jQuery.isEmptyObject(element.status) && (element.status != "Update" && element.status != "Active")) {
+      if (element.status && !jQuery.isEmptyObject(element.status) && (element.status != "Update" && element.status != "Active")) {
           showListing = false;
           console.log("Excluded element.status " + element.status);
       }
