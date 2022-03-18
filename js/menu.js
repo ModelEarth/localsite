@@ -191,6 +191,7 @@ function clearAll(siteObject) {
 }
 function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon on map - Master
     if ($(partnerMenu.menuDiv).text().length > 0) {
+        console.log("displaypartnerCheckboxes already loaded: " + partnerMenu.menuDiv)
 		return; // Already loaded
 	}
     //console.log("displaypartnerCheckboxes start location.hash: " + location.hash);
@@ -208,6 +209,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
     var menuaccessmax = 11;
     //for(item in menuDataset.items) {
     menuDataset.forEach(function(item) {
+        console.log("displaypartnerCheckboxes section: " + item.section);
         var menuaccess = 10; // no one
         try { // For IE error
             if (typeof(item.menuaccess) === "undefined") {
@@ -346,8 +348,18 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
 	$(".overlaysInSide").append(overlayList);
     
 
-    // Temp, need to adjust to use access level. This didn't work...
+    // Temp, need to adjust to use access level. 
+
+    // This didn't work...
     $('.layerSectionAccess').show();
+    // So wait 0.2 seconds and 1 second.
+    setTimeout(() => {
+      $('.layerSectionAccess').show();
+    },200)
+    setTimeout(() => {
+      $('.layerSectionAccess').show();
+    },1000)
+    
 
     // json loaded within initmenuDataset. location.hash:
     console.log("displaypartnerCheckboxes location.hash: " + location.hash);

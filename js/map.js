@@ -2278,11 +2278,6 @@ function showList(dp,map) {
     //  foundMatch++;
     //}
 
-    // BUGBUG
-    if (elementRaw.status == "0") {
-      //alert("Never reached because Status is capitalized here")
-      foundMatch = 0;
-    }
     //console.log("foundMatch: " + foundMatch + ", productMatchFound: " + productMatchFound);
 
 
