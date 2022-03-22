@@ -15,7 +15,7 @@ Also lacks CHARM.  Far from comprehensive.
 -->
 
 **Coming Soon** - A new Commercial and Manufacturer Recycler list is being updated by the Georgia Recycling Coalition (GRC) in partnership with the Georgia Center for Innovation.  
-<a href="https://map.geogia.org/recycling/" target="_parent">Add/Update your organization's listing</a>  
+<a href="https://map.georgia.org/recycling/" target="_parent">Update your organization's listing</a>  
 
 [Transfer Stations](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
 [Georgia Landfills](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
