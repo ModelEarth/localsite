@@ -1,5 +1,6 @@
 .table-cell {
   display: table-cell;
+  vertical-align: top;
 }
 @media (max-width: 800px) {
   .table-cell {
