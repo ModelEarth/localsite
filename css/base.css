@@ -99,10 +99,6 @@ h2, h3, h4 {
     font-family: 'PT Sans', sans-serif;
     font-family: Raleway, Lato, "Helvetica Neue", Helvetica, "Lato", sans-serif;
 }
-.h1-home {
-  font-size: 28pt;
-  font-family: "Helvetica Neue", Helvetica, "Lato", sans-serif;
-}
 h1 {
   font-weight: 300;
   color: #5f5f5f;
@@ -112,9 +108,15 @@ h1 {
   font-size: 31px;
   font-family: "Amaze", "Helvetica Neue", Helvetica, "Lato", sans-serif;
 }
+.h1-home {
+  font-size: 28pt;
+  font-family: "Helvetica Neue", Helvetica, "Lato", sans-serif;
+  font-weight: 700;
+}
 h2 {
   margin-top: 0px;
   font-weight: 500;
+  font-weight: 800;
   font-size: 1.4em;
   padding-top: 12px;
   padding-bottom: 5px;
@@ -538,6 +540,9 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   -moz-box-shadow: 0 4px 4px -2px #999;
   box-shadow: 0 4px 4px -2px #999;
   z-index:10; 
+}
+.topLinks b {
+  font-weight: 800;
 }
 .main-content {
   /* margin-top: 40px; */
