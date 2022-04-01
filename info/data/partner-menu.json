@@ -40,7 +40,7 @@
 {
 	"section": "Event Calendar",
 	"title": "View Calendar",
-	"icon": "<span class='material-icons'>event</span>",
+	"icon": "<span class='material-icons' icon='event'>&#xe878</span>",
 	"link": "/calendar?p=[partnerid]",
 	"basetype": "3,4"
 },
@@ -53,7 +53,7 @@
 {
 	"section": "Images and Files",
 	"title": "View Images and Files",
-	"icon": "<span class='material-icons'>collections</span>",
+	"icon": "<span class='material-icons' icon='collections'>&#xe3b6</span>",
 	"link": "/elements/[itemid]"
 },
 {
@@ -62,18 +62,14 @@
 	"link": "/core/item/upload.aspx?s=[itemid]&p=[partnerid]"
 },
 {
-	"section": "Related Pages"
-},
-{
 	"section": "Related Pages",
 	"title": "News and Specials",
-	"icon": "<span class='material-icons'>article</span>",
+	"icon": "<span class='material-icons' icon='article'>&#xef42</span>",
 	"link": "/net/content/related.aspx?s=[itemid]"
 },
 {
 	"section": "Related Pages",
 	"title": "Add Related Content",
-	"icon": "<span class='material-icons'>article</span>",
 	"link": "/core/item/add.aspx?parentid=[itemid]"
 },
 {
