@@ -17,6 +17,7 @@ You can transfer an existing domain to Cloudflare for cheaper hosting.
 
 - Auto Minify - All 3 (Javascript, CSS, HTML)  
 - Brotli compression - On (the default)  
+- Early Hints  
 - Rocket Loader™ - Improve the paint time for pages which include JavaScript.  
 - AMP Real URL - Display your site’s actual URL on your AMP pages, instead of the traditional Google AMP cache URL.  
 
