@@ -1,4 +1,4 @@
-.table-cell {
+.table-cell, .table-cell-mobile {
   display: table-cell;
   vertical-align: top;
 }
