@@ -48,7 +48,7 @@ https://www.youtube.com/watch?time_continue=1&v=mVzdEl5G0iM
 
 Go to [hstspreload.org](https://hstspreload.org) and click two checkboxes here so browsers always preload as https.  
 
-Optional: Test with ssllabs.com (after 24 hours)  
+Optional: Test with [ssllabs.com](https://www.ssllabs.com/ssltest/analyze.html?hideResults=on&latest) (after 24 hours)  
 
 ### You won't be able to add a true wildcard redirect under "Page Rule"
 
