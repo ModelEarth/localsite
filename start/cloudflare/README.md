@@ -38,7 +38,8 @@ https://www.youtube.com/watch?time_continue=1&v=mVzdEl5G0iM
 
 - Always Use HTTPS - On  
 - Click "Enable HSTS" - Turn on all 4 and set the Max Age Header to 12 months. (6 months is too short for hstspreload.org)  
-- Minimum TLS Version: Minimum TSL 1.2 - because your server might be useing 1.2<!--(but use TSL 1.3)-->  
+- Minimum TLS Version: Minimum TSL 1.2 - because your server might be using
+  1.2<!--(but use TSL 1.3)-->  
 - Leave the default of "TLS 1.3" as "On"  
 - Keep on "Automatic HTTPS Rewrites" (ON by default) - Allows Cloudflare to automatically change all links in the HTML to https when appropriate, including links to external sites.  
 - Certificate Transparency Monitoring - ON. Receive an email when a Certificate Authority issues a certificate for your domain.  
