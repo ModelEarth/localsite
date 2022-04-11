@@ -173,7 +173,7 @@ function initMenu(partnerMenu) {
 	//}
 
   $(document).on("click", partnerMenu.revealButton, function(event) {
-  	alert("showPartnerMenu " + partnerMenu.revealButton);
+  	console.log("showPartnerMenu " + partnerMenu.revealButton);
     $(partnerMenu.menuDiv).show();
     $(partnerMenu.menuDiv).prependTo($(this).parent());
     event.stopPropagation();
