@@ -52,7 +52,7 @@
 },
 {
 	"section": "Images and Files",
-	"title": "View Images and Files",
+	"title": "Images and Files",
 	"icon": "<span class='material-icons' icon='collections'>&#xe3b6</span>",
 	"link": "/elements/[itemid]"
 },
@@ -63,13 +63,13 @@
 },
 {
 	"section": "Related Pages",
-	"title": "News and Specials",
+	"title": "Related Pages",
 	"icon": "<span class='material-icons' icon='article'>&#xef42</span>",
 	"link": "/net/content/related.aspx?s=[itemid]"
 },
 {
 	"section": "Related Pages",
-	"title": "Add Related Content",
+	"title": "Add Related Page",
 	"link": "/core/item/add.aspx?parentid=[itemid]"
 },
 {

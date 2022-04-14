@@ -289,7 +289,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                     if (item.sectionicon) {
                         //sectionIcon = item.sectionicon;
                     }
-                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clearX:both; pointer-events: auto;" data-layer-section="' + item.section + '" class="layerSectionClick">';
+                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSectionOpen layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clearX:both; pointer-events: auto;" data-layer-section="' + item.section + '" class="layerSectionClick">';
                     if (partnerMenu.showArrows) {
                         partnerCheckboxes += '<div class="sectionArrowHolder"><div class="leftArrow"></div></div>';
                     }
