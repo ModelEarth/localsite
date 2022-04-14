@@ -46,6 +46,39 @@
 .absoluteWhenNarrowX {
 	min-width: 250px;
 }
+.layerCheckboxes {
+	/* min-width: 500px; */
+	width: 100%;
+	/* padding: 20px 4px 20px 20px; */
+}
+.layerCheckboxes .dontsplit {
+	/* padding-bottom: 8px; */
+}
+.layerCheckboxes .first .dontsplit {
+	marginX:0px !important;
+	/* margin-right:10px !important; */
+	paddingX:0px !important;
+}
+.layerCbRow {
+	display:none;
+	padding: 1px 0px 0px 27px;
+	color: #888;
+	clear: both;
+	overflow: auto;
+}
+.layerCbTitle {
+	white-space:nowrap;
+	margin-top: 6px;
+	margin-left: 22px;
+	margin-right: 25px;
+	font-size: 15px;
+	pointer-events: none; /* Allow pass through */
+	font-family: 'Open Sans Condensed', sans-serif;
+}
+.layerCbRow:hover {
+	background: #ececec;
+	color: #555;
+}
 @media (max-width: 1100px) {
 	.absoluteWhenNarrow {
 		/* position: absolute; */
@@ -85,40 +118,11 @@
 	.menuBuddy {
 		padding: 20px 0 20px 40px;
 	}
+	.layerCbRow {
+		display:none !important;
+	}
 }
-.layerCheckboxes {
-	/* min-width: 500px; */
-	width: 100%;
-	/* padding: 20px 4px 20px 20px; */
-}
-.layerCheckboxes .dontsplit {
-	/* padding-bottom: 8px; */
-}
-.layerCheckboxes .first .dontsplit {
-	marginX:0px !important;
-	/* margin-right:10px !important; */
-	paddingX:0px !important;
-}
-.layerCbRow {
-	display:none;
-	padding: 1px 0px 0px 27px;
-	color: #888;
-	clear: both;
-	overflow: auto;
-}
-.layerCbTitle {
-	white-space:nowrap;
-	margin-top: 6px;
-	margin-left: 22px;
-	margin-right: 25px;
-	font-size: 15px;
-	pointer-events: none; /* Allow pass through */
-	font-family: 'Open Sans Condensed', sans-serif;
-}
-.layerCbRow:hover {
-	background: #ececec;
-	color: #555;
-}
+
 .layerAction {
 	clear:both;
 	float:right;
