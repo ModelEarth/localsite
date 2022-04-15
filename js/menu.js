@@ -268,6 +268,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                     previousOverlaySet = item.section;
                 }
 
+                let directlink = getDirectMenuLink(partnerMenu, item); // Replaces [itemid] with current ItemID
                 // MENU
                 if (item.section && item.section != previousSet) {
                     //console.log("TITLE: " + title);
@@ -289,7 +290,10 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                     if (item.sectionicon) {
                         //sectionIcon = item.sectionicon;
                     }
-                    let linktext = ""; if (item.link)  { linktext = ' link="' + item.link + '"'; }
+                    let linktext = "";
+                    if (directlink)  { 
+                        linktext = ' link="' + directlink + '"';
+                    }
                     partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSectionOpen layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clearX:both; pointer-events: auto;" data-layer-section="' + item.section + '"' + linktext + '" class="layerSectionClick">';
                     if (partnerMenu.showArrows) {
                         partnerCheckboxes += '<div class="sectionArrowHolder"><div class="leftArrow"></div></div>';
@@ -304,7 +308,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                     partnerCheckboxes += '<div class="layerSectionTitle">' + item.section + '</div></div>';
                 } // Check circle // Was around title: <label for="go-' + item.item + '" style="width:100%; overflow:auto">
                 // <i class="material-icons" style="float:right;color:#ccc">&#xE86C;</i>
-                var directlink = getDirectMenuLink(partnerMenu, item);
+                
                 
                 // Link is applied dynamically using [itemid] in attr data-link
                 if (showSublevel) {
@@ -470,6 +474,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         if (menuColumnWidth <= 52) {
             let link = $(this).attr("link");
             if (typeof link !== 'undefined' && link !== false) { // For diff browsers
+
                 window.location = link;
             } else {
                 console.log("Clicked " + $(this).attr("data-layer-section") + ", but no link provided in json")
