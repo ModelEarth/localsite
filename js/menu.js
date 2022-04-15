@@ -289,7 +289,8 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                     if (item.sectionicon) {
                         //sectionIcon = item.sectionicon;
                     }
-                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSectionOpen layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clearX:both; pointer-events: auto;" data-layer-section="' + item.section + '" class="layerSectionClick">';
+                    let linktext = ""; if (item.link)  { linktext = ' link="' + item.link + '"'; }
+                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSectionOpen layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clearX:both; pointer-events: auto;" data-layer-section="' + item.section + '"' + linktext + '" class="layerSectionClick">';
                     if (partnerMenu.showArrows) {
                         partnerCheckboxes += '<div class="sectionArrowHolder"><div class="leftArrow"></div></div>';
                     }
@@ -403,7 +404,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
 
         event.stopPropagation();
     });
-    $(document).on("click", partnerMenu.menuDiv + ' .layerAction', function(event) {
+    $(document).on("click", partnerMenu.menuDiv + ' .layerAction', function(event) { // Second level menus
         // Clear all layers
         clearAll(menuDataset);
         console.log('.layerAction');
@@ -463,7 +464,19 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         $('.showAllLayers').hide();
         event.stopPropagation();
     });
-    $(document).on("click", partnerMenu.menuDiv + ' .layerSectionClick', function(event) {
+    $(document).on("click", partnerMenu.menuDiv + ' .layerSectionClick', function(event) { // Top level
+        //alert("parent width: " + $(this).parent().parent().parent().parent().width()); // Same as the following, 38px when narrow:
+        let menuColumnWidth = $(partnerMenu.menuDiv).parent().width();
+        if (menuColumnWidth <= 52) {
+            let link = $(this).attr("link");
+            if (typeof link !== 'undefined' && link !== false) { // For diff browsers
+                window.location = link;
+            } else {
+                console.log("Clicked " + $(this).attr("data-layer-section") + ", but no link provided in json")
+            }
+            event.stopPropagation();
+            return;
+        }
         if ($(this).attr("data-layer-section")) {
             layerSectionOpen($(this).attr("data-layer-section").toLowerCase().replace(/ /g,"-"));
         } else {
