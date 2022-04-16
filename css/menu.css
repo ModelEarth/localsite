@@ -16,6 +16,7 @@
 	min-width:  32px;
 	min-height: 32px;
 	color: #333;
+	clear: both;
 }
 .layerSection:last-child {
 	margin-bottom: 12px;
