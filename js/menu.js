@@ -471,6 +471,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
     $(document).on("click", partnerMenu.menuDiv + ' .layerSectionClick', function(event) { // Top level
         //alert("parent width: " + $(this).parent().parent().parent().parent().width()); // Same as the following, 38px when narrow:
         let menuColumnWidth = $(partnerMenu.menuDiv).parent().width();
+        console.log("Check partnerMenu.menuDiv width: " + menuColumnWidth);
         if (menuColumnWidth <= 52) {
             let link = $(this).attr("link");
             if (typeof link !== 'undefined' && link !== false) { // For diff browsers
