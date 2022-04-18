@@ -2646,7 +2646,7 @@ function showList(dp,map) {
         searchFor += countDisplay + " active records. " + count + " rows.";
       } else if (count==1) {
         searchFor += countDisplay + " displayed from " + validRowCount + " active record. ";
-      } else {
+      } else if (validRowCount > 0) { // Hide when status row is not in use.
         searchFor += countDisplay+ " displayed from " + validRowCount  + " active records. ";
       }
       // alert("showCount " + showCount); // 0 unless filtering for a profile
