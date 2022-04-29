@@ -996,7 +996,6 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   float: right;
   background-color: rgba(33, 33, 33, 0.85);
   border-radius: 20px;
-  padding: 20px;
   padding-bottom: 0px;
   color: #fff;
   margin-bottom: 20px;
