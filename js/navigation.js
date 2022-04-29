@@ -43,7 +43,9 @@ const changeFavicon = link => {
 $(document).ready(function(){
 	
  	var modelpath = climbpath;
- 	
+ 	if (modelpath == "./") {
+ 		modelpath = "";
+ 	}
  	if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('neighborhood.org') < 0) { // When not localhost or other sites that have a fork of io and community.
  		// To do: allow "Input-Output Map" link in footer to remain relative.
  		modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
