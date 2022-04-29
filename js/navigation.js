@@ -42,16 +42,19 @@ const changeFavicon = link => {
 
 $(document).ready(function(){
 	
- 	var modelpath = climbpath;
+ 	let modelpath = climbpath;
  	if (modelpath == "./") {
- 		modelpath = "";
+ 		//modelpath = "";
  	}
- 	if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('neighborhood.org') < 0) { // When not localhost or other sites that have a fork of io and community.
+ 	let modelroot = ""; // For links that start with /
+ 	
+ 	// Reactivate
+ 	//if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('neighborhood.org') < 0) { // When not localhost or other sites that have a fork of io and community.
  		// To do: allow "Input-Output Map" link in footer to remain relative.
  		modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
- 		
+ 		modelroot = "https://model.earth";
  		//modelpath = "/" + modelpath;
- 	}
+ 	//}
  	if (param.showhero != "false") {
  		if(location.host.indexOf("georgia") >= 0) { 
 	 		//$("body").prepend( "<div class='headerImage'><img src='" + modelpath + "../io/img/hero/sustainable-communities.jpg' style='width:100%'></div>");
@@ -423,7 +426,7 @@ $(document).ready(function(){
 					showLeftIcon = true;
 				}
 				if (showLeftIcon) {
-					$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:109px; opacity:.8'><img src='" + modelpath + "/localsite/img/icon/sidemenu.png' style='width:13px'></div></div>\r" );
+					$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:109px; opacity:.8'><img src='" + modelroot + "/localsite/img/icon/sidemenu.png' style='width:13px'></div></div>\r" );
 		 		}
 
 			}); // End $("#header").load

@@ -801,7 +801,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           head = document.getElementsByTagName('head')[0];
 
       link.addEventListener('load', function() {
-          //alert('Font loaded');
           $(document).ready(function () {
             $(".show-on-load").show();
           });
