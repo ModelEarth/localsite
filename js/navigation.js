@@ -44,7 +44,7 @@ $(document).ready(function(){
 	
  	var modelpath = climbpath;
  	
- 	if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('hood') < 0) { // When not localhost or other sites that have a fork of io and community.
+ 	if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('neighborhood.org') < 0) { // When not localhost or other sites that have a fork of io and community.
  		// To do: allow "Input-Output Map" link in footer to remain relative.
  		modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
  		
@@ -281,8 +281,8 @@ $(document).ready(function(){
 				  	  }
 				    })
 				    $("#local-header img[src]").each(function() {
-			 		  if($(this).attr("src").toLowerCase().indexOf("http") < 0) {
-			 		  	if($(this).attr("src").indexOf("/") != 0) { // Don't append if starts with /
+			 		  	if($(this).attr("src").toLowerCase().indexOf("http") < 0) {
+			 		  		if($(this).attr("src").indexOf("/") != 0) { // Don't append if starts with /
 				      		$(this).attr("src", modelpath + $(this).attr('src')); // Was climbpath
 				      	}
 				  	  }
@@ -421,7 +421,7 @@ $(document).ready(function(){
 					showLeftIcon = true;
 				}
 				if (showLeftIcon) {
-					$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:109px; opacity:.8'><img src='/localsite/img/icon/sidemenu.png' style='width:13px'></div></div>\r" );
+					$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:109px; opacity:.8'><img src='" + modelpath + "/localsite/img/icon/sidemenu.png' style='width:13px'></div></div>\r" );
 		 		}
 
 			}); // End $("#header").load
