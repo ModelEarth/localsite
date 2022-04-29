@@ -48,13 +48,11 @@ $(document).ready(function(){
  	}
  	let modelroot = ""; // For links that start with /
  	
- 	// Reactivate
- 	//if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('neighborhood.org') < 0) { // When not localhost or other sites that have a fork of io and community.
+ 	if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('neighborhood.org') < 0) { // When not localhost or other sites that have a fork of io and community.
  		// To do: allow "Input-Output Map" link in footer to remain relative.
  		modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
  		modelroot = "https://model.earth";
- 		//modelpath = "/" + modelpath;
- 	//}
+ 	}
  	if (param.showhero != "false") {
  		if(location.host.indexOf("georgia") >= 0) { 
 	 		//$("body").prepend( "<div class='headerImage'><img src='" + modelpath + "../io/img/hero/sustainable-communities.jpg' style='width:100%'></div>");
@@ -235,7 +233,7 @@ $(document).ready(function(){
 
  		// LOAD HEADER.HTML
 	 	//if (earthFooter) {
-	 		let headerFile = modelpath + "../localsite/header.html";
+	 		let headerFile = modelroot + "/localsite/header.html";
 	 		if (slash_count <= 4) { // Folder is the root of site
 	 			// Currently avoid since "https://model.earth/" is prepended to climbpath above.
 	 			//headerFile = climbpath + "../header.html";
@@ -282,18 +280,18 @@ $(document).ready(function(){
 			 		  	if($(this).attr("href").indexOf("/") != 0) { // Don't append if starts with /
 			 		  		//alert($(this).attr('href'))
 				      		$(this).attr("href", modelpath + $(this).attr('href'));
-				        }
-				  	  }
-				    })
-				    $("#local-header img[src]").each(function() {
-			 		  	if($(this).attr("src").toLowerCase().indexOf("http") < 0) {
-			 		  		if($(this).attr("src").indexOf("/") != 0) { // Don't append if starts with /
-				      		$(this).attr("src", modelpath + $(this).attr('src')); // Was climbpath
-				      	}
-				  	  }
-				    })
-
-				    // Was here
+			        }
+			  	  }
+			    })
+			    $("#local-header img[src]").each(function() {
+		 		  	if($(this).attr("src").toLowerCase().indexOf("http") < 0) {
+		 		  		if($(this).attr("src").indexOf("/") == 0) { // Starts with slash
+		 		  			$(this).attr("src", modelroot + $(this).attr('src'));
+		 		  		} else {
+			      		$(this).attr("src", modelpath + $(this).attr('src'));
+			      	}
+			  	  }
+			    })
 
 				 	if(location.host.indexOf('neighborhood') >= 0) {
 				 		// Since deactivated above due to conflict with header logo in app.
