@@ -876,6 +876,9 @@ function getUrlID3(url,theroot) {
 
   // AVOID using theroot parameter. It can be eliminated.
 
+  // TODO: .NET compatible id will use underscores.  Also lowercasing iand removing starter slash:
+  // id="icon_family_material_icons"
+
   let startingUrl = url;
   // Remove hash since it has no effect when on an include tag.
   if (url.indexOf('#') > 0) {
