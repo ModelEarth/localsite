@@ -427,6 +427,11 @@ $(document).ready(function(){
 					$("body").prepend( "<div id='sidecolumn-closed' class='hideprint' style='position:relative'><div id='showSide' class='showSide' style='top:109px; opacity:.8'><img src='" + modelroot + "/localsite/img/icon/sidemenu.png' style='width:13px'></div></div>\r" );
 		 		}
 
+		 		// Only apply if id="/icon?family=Material+Icons" is already in DOM.
+		 		// Running here incase header has not loaded yet when the same runs in localsite.js.
+		 		if (document.getElementById("/icon?family=Material+Icons")) {
+		 			$(".show-on-load").removeClass("show-on-load");
+		 		}
 			}); // End $("#header").load
 		//}
 	}

@@ -411,47 +411,47 @@ function get_localsite_root3() { // Also in two other places
 }
 
 // Called from header.html files
-  function toggleFullScreen() {
-    if (document.fullscreenElement) { // Already fullscreen
-      consoleLog("Already fullscreenElement");
-      if (document.exitFullscreen) {
-        consoleLog("Attempt to exit fullscreen")
-        document.exitFullscreen();
-        $('.reduceFromFullscreen').hide();
-        $('.expandToFullscreen').show();
-        return;
-      }
-    }
-    if ((document.fullScreenElement && document.fullScreenElement !== null) ||    
-     (!document.mozFullScreen && !document.webkitIsFullScreen)) {
-      // Only if video is not visible. Otherwise become black.
-      $('.moduleBackground').css({'z-index':'0'});   
-      $('.expandFullScreen span').text("Shrink");
-      // To do: Change icon to &#xE5D1;
-      if (document.documentElement.requestFullScreen) {  
-        document.documentElement.requestFullScreen();  
-      } else if (document.documentElement.mozRequestFullScreen) {  
-        document.documentElement.mozRequestFullScreen();  
-      } else if (document.documentElement.webkitRequestFullScreen) {  
-        document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);  
-      }
-      $('.expandToFullscreen').hide();
-      $('.reduceFromFullscreen').show(); 
-    } else {
-      
-      $('.moduleBackground').css({'z-index':'-1'}); // Allows video to overlap.
-      $('.expandFullScreen span').text("Expand");
-      if (document.cancelFullScreen) {  
-        document.cancelFullScreen();  
-      } else if (document.mozCancelFullScreen) {  
-        document.mozCancelFullScreen();  
-      } else if (document.webkitCancelFullScreen) {  
-        document.webkitCancelFullScreen();  
-      }
+function toggleFullScreen() {
+  if (document.fullscreenElement) { // Already fullscreen
+    consoleLog("Already fullscreenElement");
+    if (document.exitFullscreen) {
+      consoleLog("Attempt to exit fullscreen")
+      document.exitFullscreen();
       $('.reduceFromFullscreen').hide();
       $('.expandToFullscreen').show();
+      return;
     }
   }
+  if ((document.fullScreenElement && document.fullScreenElement !== null) ||    
+   (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+    // Only if video is not visible. Otherwise become black.
+    $('.moduleBackground').css({'z-index':'0'});   
+    $('.expandFullScreen span').text("Shrink");
+    // To do: Change icon to &#xE5D1;
+    if (document.documentElement.requestFullScreen) {  
+      document.documentElement.requestFullScreen();  
+    } else if (document.documentElement.mozRequestFullScreen) {  
+      document.documentElement.mozRequestFullScreen();  
+    } else if (document.documentElement.webkitRequestFullScreen) {  
+      document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);  
+    }
+    $('.expandToFullscreen').hide();
+    $('.reduceFromFullscreen').show(); 
+  } else {
+    
+    $('.moduleBackground').css({'z-index':'-1'}); // Allows video to overlap.
+    $('.expandFullScreen span').text("Expand");
+    if (document.cancelFullScreen) {  
+      document.cancelFullScreen();  
+    } else if (document.mozCancelFullScreen) {  
+      document.mozCancelFullScreen();  
+    } else if (document.webkitCancelFullScreen) {  
+      document.webkitCancelFullScreen();  
+    }
+    $('.reduceFromFullscreen').hide();
+    $('.expandToFullscreen').show();
+  }
+}
 
 var theroot = get_localsite_root3(); // BUGBUG if let: Identifier 'theroot' has already been declared.
 function clearHash(toClear) {
@@ -788,7 +788,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
   if (fullsite || param.material_icons == "true") {
     // This was inside FULL SITE above, but it is needed for menus embedded in external sites.
-    //includeCSS3('https://fonts.googleapis.com/icon?family=Material+Icons',theroot);
     !function() {
       // Setting up listener for font checking
       var font = "1rem 'Material Icons'";
@@ -811,6 +810,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       link.type = 'text/css';
       link.rel = 'stylesheet';
       link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
+      link.id = getUrlID3(link.href,"");
       head.appendChild(link);
     }();
   }
