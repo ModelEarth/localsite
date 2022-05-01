@@ -84,7 +84,7 @@
 	paddingX: 20px 0 20px 40px;
 	padding-top: 20px;
 }
-@media (max-width: 1100px) {
+@media (max-width: 1400px) {
 	.absoluteWhenNarrow {
 		z-index: 1;
 		min-width: 38px;
