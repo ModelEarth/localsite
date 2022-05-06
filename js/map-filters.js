@@ -2000,7 +2000,8 @@ function initSiteObject(layerName) {
 	                $(document).on("click", ".showApps, .hideApps", function(event) {
 	          			console.log('.showApps click');
 
-	          			if ($("#bigThumbPanelHolder").is(':visible')) {
+                        if($("#bigThumbPanelHolder").css('display') != 'none') {
+	          			//if ($("#bigThumbPanelHolder").is(':visible')) {
 	          			//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) { // Prevented tab click from closing app menu
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
