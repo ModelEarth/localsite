@@ -482,6 +482,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 .btn-warning:hover {
     background-color: #ef954d;
+    border-color: #ef954d;
 }
 .btn-danger {
     color: #fff;

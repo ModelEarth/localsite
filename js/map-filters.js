@@ -1732,7 +1732,9 @@ function thumbClick(show,path) {
     if ($("#iogrid").length >= 0 || $(".sector-list").length >= 0) {
         pageContainsInfoWidgets = true; // Stay on the current page if it contains widgets.
     }
-	if (!pageContainsInfoWidgets && path && !window.location.pathname.includes(path)) {
+    // !pageContainsInfoWidgets && // Prevented bioeconomy from leaving map page.
+	if (path && !window.location.pathname.includes(path)) {
+        // Leave current page
 		var hashString = decodeURIComponent($.param(hash));
 		window.location = "/localsite/" + path + "#" + hashString;
 	} else { // Remain in current page
@@ -1998,8 +2000,8 @@ function initSiteObject(layerName) {
 	                $(document).on("click", ".showApps, .hideApps", function(event) {
 	          			console.log('.showApps click');
 
-	          			//if ($("#bigThumbPanelHolder").is(':visible')) {
-	          			if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) {
+	          			if ($("#bigThumbPanelHolder").is(':visible')) {
+	          			//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) { // Prevented tab click from closing app menu
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
 	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
 
@@ -2015,7 +2017,7 @@ function initSiteObject(layerName) {
 	          				$('.showApps').removeClass("active");
 
 	          			} else {
-	          				//alert("show")
+	          				console.log("call showThumbMenu")
                             if ($("#filterLocations").is(':visible')) {
                                 filterClickLocation(); // Toggle county-select closed
                             }
