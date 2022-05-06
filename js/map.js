@@ -1461,7 +1461,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.search = {"In Company Name": "recipient_name", "In naics description": "naics description", "In Address" : "address"};
         dp.itemsColumn = "NAICS Description"; // The column being search
 
-      } else if (show == "recyclers" || show == "secret") { // Remove "secret"
+      } else if (show == "recyclers") {
         dp.listTitle = "Georgia Commercial Recyclers";
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
 
@@ -1478,7 +1478,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
         // https://map.georgia.org/recycling/
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "<br><br>View additional <a href='../map/recycling/ga/'>recycling datasets</a>.<br>Submit updates using our <a href='https://map.georgia.org/recycling/'>Google Form</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google Sheet</a>.";
+        dp.listInfo = "<br><br>Submit updates using our <a href='https://map.georgia.org/recycling/'>Google Form</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google Sheet</a>.<br>View additional <a href='../map/recycling/ga/'>recycling datasets</a>.";
         dp.search = {"In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
 
       } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills")) { // recycling-processors
@@ -2297,6 +2297,17 @@ function showList(dp,map) {
         element[key.toLowerCase()] = elementRaw[key];
       }
 
+      let name = element.name;
+      if (element[dp.nameColumn]) {
+        name = element[dp.nameColumn];
+      } else if (element.title) {
+        name = element.title;
+      }
+      name = capitalizeFirstLetter(name);
+      if (dp.namePrefix) {
+        name = dp.namePrefix + " " + name;
+      }
+
       // Also repeated below, move here
       /*
       Update - Active - Show on map
@@ -2311,6 +2322,7 @@ function showList(dp,map) {
           foundMatch = 0;
       } else {
         validRowCount++;
+        //console.log("Status: " + element.status + ". Name: " + name)
       }
 
       iconColor = colorScale(element[dp.valueColumn]);
@@ -2340,16 +2352,6 @@ function showList(dp,map) {
       // Bug, this overwrote element.latitude and element.longitude
       //element = mix(dp,element); // Adds existing column names, giving priority to dp assignments made within calling page.
       
-      let name = element.name;
-      if (element[dp.nameColumn]) {
-        name = element[dp.nameColumn];
-      } else if (element.title) {
-        name = element.title;
-      }
-      name = capitalizeFirstLetter(name);
-      if (dp.namePrefix) {
-        name = dp.namePrefix + " " + name;
-      }
       var theTitleLink = 'https://www.google.com/maps/search/' + (name + ', ' + element.county + ' County').replace(/ /g,"+");
 
       if (element.website && !element.website.toLowerCase().includes("http")) {
@@ -2361,6 +2363,9 @@ function showList(dp,map) {
       if (element.status && !jQuery.isEmptyObject(element.status) && (element.status != "Update" && element.status != "Active")) {
           showListing = false;
           console.log("Excluded element.status " + element.status);
+      }
+      if (foundMatch == 0) {
+        showListing = false;
       }
       if (showListing) {
         countDisplay++;
@@ -2643,7 +2648,9 @@ function showList(dp,map) {
         searchFor = "<b>" + $("#catSearch").val() + "</b> - "; // was twice BUGBUG
       }
       if (countDisplay == validRowCount) {
-        searchFor += countDisplay + " active records. " + count + " rows.";
+        searchFor += countDisplay + " active records. ";
+        console.log("Active records: ") + countDisplay;
+        console.log("Rows: ") + count;
       } else if (count==1) {
         searchFor += countDisplay + " displayed from " + validRowCount + " active record. ";
       } else if (validRowCount > 0) { // Hide when status row is not in use.
