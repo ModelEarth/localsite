@@ -45,8 +45,10 @@ var local_app = local_app || (function(module){
             let theroot = location.protocol + '//' + location.host + '/localsite/';
 
             if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map, and ga-layers.json
-              //theroot = "https://map.georgia.org/localsite/";
-              theroot = hostnameAndPort + "/localsite/";
+              ////theroot = "https://map.georgia.org/localsite/";
+              
+              // This could be breaking top links to Location and Good & Services.
+              //theroot = hostnameAndPort + "/localsite/";
             }
             
             if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
