@@ -3,7 +3,7 @@
 <a href="https://georgiarecycles.org" target="_parent"><img src="https://map.georgia.org/recycling/img/grc-logo-320.png" style="width: 100%; max-width: 350px !important;" title="GRC" alt="Georgia Recycling Coalition"></a><br><br>
 </div>
 
-# Business to Business Recycling (Georgia)
+# B2B Recycling in Georgia
 
 
 <!--
@@ -14,12 +14,15 @@ Also lacks CHARM.  Far from comprehensive.
 <a href="https://recyclesearch.com" target="_parent">Recycling Centers - RecycleSearch.com</a>
 -->
 
-[Georgia Commercial Recyclers](/localsite/map/#show=recyclers&state=GA) - Our new Commercial and Manufacturer Recycler list is being updated by the Georgia Recycling Coalition (GRC) in partnership with the Georgia Center for Innovation. <a href="https://map.georgia.org/recycling/" target="_parent" style="white-space: nowrap;">Update your organization's listing</a>  
+**Georgia Commercial Recyclers** - Our Commercial and Manufacturer Recycler list is maintained by the Georgia Recycling Coalition (GRC) in partnership with the Georgia Center for Innovation. 
 
+<a href="/localsite/map/#show=recyclers&state=GA" target="_parent">Map of Commercial Recyclers and Recovered Materials Manufacturers</a> - GRC
+
+**More recycling datasets...**
 [Transfer Stations](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
 [Georgia Landfills](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
 [Inert Waste Landfills](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
-<a href="https://www.google.com/search?q=Recycling+near+me" target="_parent">Consumer Recycling Centers Near Me - Google</a>
+<a href="https://www.google.com/search?q=Recycling+near+me" target="_parent">Consumer Recycling Centers</a> - Google
 
 <!-- OLD -->
 <!--
@@ -35,16 +38,13 @@ Also lacks CHARM.  Far from comprehensive.
 
 
 
-<h2>Contribute to Our Updates</h2>
+<h2>Contribute Updates</h2>
 
-<!--
-Post comments in our Recycling Google Sheet to submit changes.  
 
-<a href="https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing" target="google-recycling">Google Sheet Tabs</a><br> 
--->
-
-<a href="https://github.com/georgiamap/recycling/" target="_parent">Recycling Repo</a>  
-<a href="https://github.com/modelearth/localsite/" target="_parent">Map Interface</a>
+<a href="https://map.georgia.org/recycling/" target="_parent" style="white-space: nowrap;">Add commercial listings</a> 
+<a href="https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing" target="google-recycling">Add comments to our Google Sheet to submit changes</a>
+<a href="https://github.com/georgiamap/recycling/" target="_parent">Recycling GitHub Repo</a>  
+<a href="https://github.com/modelearth/localsite/" target="_parent">Localsite Map GitHub Repo</a>
 <hr>
 <a href="../../neighborhood/" target="_parent">About Maps from Google Sheets</a>
 <!--
@@ -59,4 +59,4 @@ Post a GitHub issue to contribute updates.
 https://github.com/modelearth/community/tree/master/recycling/ga
 -->
 
-Data initially collected by <a href="https://epd.georgia.gov/" target="epd">Georgia EPD</a>. <nobr>View older lists on <a href="https://arcg.is/225L0zO" target="processors">ArcGIS.com</a>
+View older <a href="https://epd.georgia.gov/" target="epd">Georgia EPD</a> lists on <a href="https://arcg.is/225L0zO" target="processors">ArcGIS.com</a>
