@@ -84,6 +84,32 @@
 	paddingX: 20px 0 20px 40px;
 	padding-top: 20px;
 }
+.sectionArrowHolder {
+    float: right;
+    padding-top: 12px;
+}
+.leftArrow {
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 7px 0px 7px 8px;
+	border-color: transparent transparent transparent #777;
+	margin-top: -8px;
+}
+.leftArrow:hover {
+	border-color: transparent transparent transparent #999;
+}
+.downArrow {
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 7px 8px 0 7px;
+	border-color: #555 transparent transparent transparent;
+	margin: -6px 0px 0 0;
+}
+.downArrow:hover {
+	border-color: #999 transparent transparent transparent;
+}
 @media (max-width: 1400px) {
 	.absoluteWhenNarrow {
 		z-index: 1;
@@ -124,6 +150,9 @@
 	}
 	.layerCbRow {
 		display:none !important;
+	}
+	.sectionArrowHolder {
+		display:none;
 	}
 }
 
@@ -217,29 +246,3 @@
 	display: block;
 }
 
-.sectionArrowHolder {
-    float: right;
-    padding-top: 12px;
-}
-.leftArrow {
-	width: 0;
-	height: 0;
-	border-style: solid;
-	border-width: 7px 0px 7px 8px;
-	border-color: transparent transparent transparent #777;
-	margin-top: -8px;
-}
-.leftArrow:hover {
-	border-color: transparent transparent transparent #999;
-}
-.downArrow {
-	width: 0;
-	height: 0;
-	border-style: solid;
-	border-width: 7px 8px 0 7px;
-	border-color: #555 transparent transparent transparent;
-	margin: -6px 0px 0 0;
-}
-.downArrow:hover {
-	border-color: #999 transparent transparent transparent;
-}
