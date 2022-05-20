@@ -4,7 +4,7 @@
 	"section": "Page Details",
 	"title": "Overview",
 	"link": "/info/[itemid]",
-	"icon": "/localsite/img/icon/scope/overview.png"
+	"icon": "<span class='material-icons' icon='article'>&#xef42</span>"
 },
 {
 	"menulevel": "1",
@@ -27,7 +27,7 @@
 {
 	"section": "Group Members",
 	"title": "View Group Members",
-	"icon": "/localsite/img/icon/scope/community.png",
+	"icon": "<span class='material-icons' icon='group'>&#xe7ef</span>",
 	"link": "/core/member/list.aspx?load=1&p=[partnerid]&s=[itemid]",
 	"basetype": "3,4"
 },
@@ -53,7 +53,7 @@
 {
 	"section": "Images and Files",
 	"title": "Images and Files",
-	"icon": "<span class='material-icons' icon='collections'>&#xe3b6</span>",
+	"icon": "<span class='material-icons' icon='image'>&#xe3f4</span>",
 	"link": "/elements/[itemid]"
 },
 {
@@ -64,7 +64,7 @@
 {
 	"section": "Related Pages",
 	"title": "Related Pages",
-	"icon": "<span class='material-icons' icon='article'>&#xef42</span>",
+	"icon": "<span class='material-icons' icon='lan'>&#xeb2f</span>",
 	"link": "/net/content/related.aspx?s=[itemid]"
 },
 {
