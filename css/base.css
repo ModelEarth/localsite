@@ -493,11 +493,9 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     margin-right:4px;
     margin-bottom:8px;
 }
-/*
-.btn:link, .btn:visited {
+#hero-rect .btn:link, #hero-rect .btn:visited {
   color: #fff !important;
 }
-*/
 .btn:hover {
     background-color: #b9da79;
     border-color: #b9da79;
