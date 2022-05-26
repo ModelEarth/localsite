@@ -999,19 +999,28 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   padding-bottom: 0px;
   color: #fff;
   margin-bottom: 20px;
+  max-width:140px;
 }
 #hero-rect {
   float: left;
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: rgba(255, 255, 255, 0.90);
+  background-color: rgba(33, 33, 33, 0.90);
   border-radius: 40px;
   max-width: 600px;
-  padding: 50px;
-  padding-bottom: 20px;
+  padding: 30px 50px 25px 50px;
   margin-bottom: 30px;
   /* marginX: 0 auto; */ /* To Center */
+  color: #fff;
 }
-#hero-rect:hover {
+#hero-rect h3 {
+  color: #fff;
+}
+#hero-rect a:link {
+  color: #66CF79;
+}
+#hero-rect:hoverX {
   background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(33, 33, 33, 0.95);
 }
 
 
