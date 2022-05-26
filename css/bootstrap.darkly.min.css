@@ -31,10 +31,7 @@ html, body, #fullcolumn,
 	background-color: rgba(0, 0, 0, .6);
 }
 */
-a:link {
-  color: #CF6679;
-}
-a:visited {
+a:link, a:visited {
   color: #CF6679;
 }
 .headerbar {
