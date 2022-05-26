@@ -443,8 +443,9 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   border-radius: 20px;
   padding-bottom: 0px;
   color: #fff;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   max-width:140px;
+  overflow: hidden;
 }
 #hero-rect {
   float: left;
