@@ -493,13 +493,23 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     margin-right:4px;
     margin-bottom:8px;
 }
+.btn:link, .btn:visited {
+  color: #fff;
+}
 #hero-rect .btn:link, #hero-rect .btn:visited {
-  color: #fff !important;
+  color: #fff;
 }
 .btn:hover {
     background-color: #b9da79;
     border-color: #b9da79;
     text-decoration: none;
+}
+.btn-lg {
+  height: 52px;
+  font-size: 1.1rem;
+  line-height: 2.15;
+  border-radius: 1.5rem;
+  padding: 0.375rem 1.3rem;
 }
 .btn-primary {
     color: #fff;

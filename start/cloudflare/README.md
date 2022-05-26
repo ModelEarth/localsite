@@ -15,7 +15,7 @@ You can transfer an existing domain to Cloudflare for cheaper hosting.
 
 ### Go to "Speed > Optimization"  
 
-- Auto Minify - All 3 (Javascript, CSS, HTML)  
+- Auto Minify - Javascript and CSS. Avoid HTML because comments will be removed.  
 - Brotli compression - On (the default)  
 - Early Hints  
 - AVOID Rocket Loader™ - Currently not using since it changes javascript loading sequence, which breaks "View Dynmaic Version" link.  <!--Improve the paint time for pages which include JavaScript.  -->
