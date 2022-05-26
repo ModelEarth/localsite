@@ -350,6 +350,8 @@ $(document).ready(function () {
     }); $('.fieldSelector').hide(); return false;" href="#regiontitle=Southeast+Coastal+Georgia&geo=US13001,US13005,US13127,US13161,US13229,US13305&lat=31.1891&lon=-81.4980">Southeast Coastal</a></li>
  	*/
 
+    // REACTIVE - Temp to test why Goods & Services is not clickable on some domains.
+    /*
     $(document).click(function(event) { // Hide open menus
     	console.log("document click -  Hide open menus")
     	if ( !$(event.target).closest( "#goSearch" ).length ) {
@@ -359,7 +361,8 @@ $(document).ready(function () {
     	$('#keywordFields').hide();
     	$('#topPanel').hide();
 	});
-	
+	*/
+    
 	function hideNonListPanels() {
 		$(".fieldSelector").hide(); // Avoid since this occurs when typing text in search field.
     	$('#topPanel').hide();
@@ -1996,6 +1999,7 @@ function initSiteObject(layerName) {
 	                consoleLog("Menu layers json loaded within initSiteObject. location.hash: " + location.hash);
 	                
 	                // siteObjectFunctions(siteObject); // could add to keep simple here
+
 
 	                $(document).on("click", ".showApps, .hideApps", function(event) {
 	          			console.log('.showApps click');
