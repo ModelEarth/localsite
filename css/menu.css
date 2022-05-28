@@ -122,9 +122,13 @@
 	.layerSection {
 		max-width: 38px;
 		white-space: nowrap;
-		overflow: hidden;
+		overflow: visible;
+		border: 5px solid red;
 	}
-	.layerSection:hover {
+	.layerSectionTitle {
+		display: none;
+	}
+	.layerSectionXXX:hover {
 		max-width: auto;
 		overflow: visible;
 		max-width: 200px; /* allow background color to be visible */

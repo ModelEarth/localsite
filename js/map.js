@@ -1849,7 +1849,7 @@ function onTabletopLoad(dp1) {
 function loadGeos(geo, attempts, callback) {
 
   // load only, no search filter display - get county name from geo value.
-  // created from a copy of showCountiesOrStates() in search-filters.js
+  // created from a copy of loadStateCounties() in search-filters.js
 
   if (typeof d3 !== 'undefined') {
 
@@ -3175,12 +3175,12 @@ function styleShape(feature) { // Called FOR EACH topojson row
   } else if (hash.mapview == "country" && hash.state && hash.state.includes(stateID)) {
       fillColor = 'red';
       fillOpacity = .2;
-  } else if ((hash.mapview == "country" || (hash.mapview == "state" && !hash.state)) && typeof stateImpact != 'undefined') {
+  } else if ((hash.mapview == "country" || (hash.mapview == "state" && !hash.state)) && typeof localObject.state != 'undefined') {
       let theValue = 2;
-      if (stateImpact[getState(stateID)] && stateImpact[getState(stateID)].CO2_per_capita != "No data") {
+      if (localObject.state[getState(stateID)] && localObject.state[getState(stateID)].CO2_per_capita != "No data") {
         console.log(stateID + " " + getState(stateID));
-        console.log(stateID + " " + stateImpact[getState(stateID)].CO2_per_capita);
-        theValue = stateImpact[getState(stateID)].CO2_per_capita;
+        console.log(stateID + " " + localObject.state[getState(stateID)].CO2_per_capita);
+        theValue = localObject.state[getState(stateID)].CO2_per_capita;
       }
       theValue = theValue/4;
       fillColor = colorTheStateCarbon(theValue);
@@ -3791,10 +3791,6 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
               //$("#locationFilterHolder").prepend("<div id='layerStringDiv' style='width:220px'>" + layerString + "<hr></div>");
             
             }
-
-            if (hash.mapview == "country") {
-              loadStateDataList(true); // New list
-            }
           }
       }
 
@@ -3804,12 +3800,14 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
     }
 
     // NOT USED
+    /*
     if (typeof stateImpact != 'undefined') {
       //alert("found stateImpact " + stateImpact);
       let dp = {};
       dp.data = stateImpact;
       dp.scale = getScale(dp.data, dp.scaleType, dp.valueColumn);
     }
+    */
 
     // Remove - clear the markers from the map for the layer
      //if (map.hasLayer(overlays1[dp.dataTitle])){
@@ -3942,68 +3940,6 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
 }
 
 
-// To add:
-    // https://model.earth/beyond-carbon-scraper/scraped/us-carbon-emissions.json
-var stateDataList = [];
-function loadStateDataList(applyFilter) {
-  //alert("loading")
-  d3.text("https://model.earth/beyond-carbon-scraper/scraped/us-carbon-emissions.json").then(function(data) {
-      stateDataList = d3.csvParseRows(data);
-      console.log("loadHtmlTable - stateDataList row count: " + stateDataList.length);
-      //alert(stateDataList);
-
-        let theStateName = $("#state_select").find(":selected").text();
-        //alert("theStateName " + theStateName);
-        setTimeout( function() {
-          theStateName = $("#state_select").find(":selected").text();
-          if(!theStateName) { // Hack. We need to instead trigger when #state_select menu becomes available.
-            //theStateName = "Georgia"
-          }
-          displayStateDataList(theStateName);
-        }, 1000 ); // Allow time for state dropdown to load.
-  });
-}
-function statePhraseForList(stateRow, rowIndex, theStateName) {
-  return(stateRow[rowIndex].replace("[XX]" || "[XX's]", theStateName) )
-}
-function displayStateDataList(theStateName) {
-  console.log("displayStateData: " + theStateName);
-  if (theStateName.length == 0) {
-    //alert("test")
-    $("#about-profile").show();
-    $("#choose-counties").hide();
-    $("#dataDisplay").hide();
-    return;
-  }
-  $("#about-profile").hide();
-  $("#choose-counties").show();
-  $("#dataDisplay").show();
-
-  let rowcount = 0;
-  let dataRow = "";
-  
-  for(var i = 0; i < stateDataList.length; i++) {
-    rowcount++;
-    if (stateDataList[i][0]==theStateName) {
-      
-      dataRow += "<table id='resultsTable'>";
-      dataRow += "<tr><td><div style='float:left;font-size:24px;font-weight:400'>" + theStateName + " Clean Energy Progress</div><div style='float:right;font-size:11px'>Source: <a target='_blank' href='https://beyondcarbon.org'>BeyondCarbon.org</a></div></td></tr>"
-      dataRow += "<tr><td>" + statePhraseForList(stateDataList[i], 5, theStateName) + "</td></tr>"
-      dataRow += "<tr><td>Has " + theStateName + " committed to 100% clean energy? " + statePhrase(stateDataList[i], 1, theStateName) + "</td></tr>"
-      dataRow += "<tr><td>" + statePhraseForList(stateDataList[i], 2, theStateName)  + "</td></tr>"
-      dataRow += "<tr><td>Does " + theStateName + " have a goal for reducing carbon pollution across the entire economy? " + statePhrase(stateDataList[i], 3, theStateName)  + "</td></tr>"
-      dataRow += "<tr><td>Does " + theStateName + " have goals or incentives for electric vehicles? " + statePhrase(stateDataList[i], 4, theStateName) + "</td></tr>"
-      dataRow += "</table>";
-    }
-  }
-  //alert("rowcount " + rowcount);
-  //$(dataRow).insertAfter($("#dataHeader"));
-
-  $("#dataDisplay").html(dataRow);
-  //$("#dataHeader").html(dataRow);
-}
-
-
 
 $(document).on("click", "#show_county_colors", function(event) {
   let hash = getHash();
@@ -4017,188 +3953,6 @@ $(document).on("click", "#show_county_colors", function(event) {
   });
   //alert("done"); // Occurs before layers above appear.
 });
-
-function getState(stateCode) {
-  switch (stateCode)
-  {
-      case "AL":
-          return "Alabama";
-
-      case "AK":
-          return "Alaska";
-
-      case "AS":
-          return "American Samoa";
-
-      case "AZ":
-          return "Arizona";
-
-      case "AR":
-          return "Arkansas";
-
-      case "CA":
-          return "California";
-
-      case "CO":
-          return "Colorado";
-
-      case "CT":
-          return "Connecticut";
-
-      case "DE":
-          return "Delaware";
-
-      case "DC":
-          return "District Of Columbia";
-
-      case "FM":
-          return "Federated States Of Micronesia";
-
-      case "FL":
-          return "Florida";
-
-      case "GA":
-          return "Georgia";
-
-      case "GU":
-          return "Guam";
-
-      case "HI":
-          return "Hawaii";
-
-      case "ID":
-          return "Idaho";
-
-      case "IL":
-          return "Illinois";
-
-      case "IN":
-          return "Indiana";
-
-      case "IA":
-          return "Iowa";
-
-      case "KS":
-          return "Kansas";
-
-      case "KY":
-          return "Kentucky";
-
-      case "LA":
-          return "Louisiana";
-
-      case "ME":
-          return "Maine";
-
-      case "MH":
-          return "Marshall Islands";
-
-      case "MD":
-          return "Maryland";
-
-      case "MA":
-          return "Massachusetts";
-
-      case "MI":
-          return "Michigan";
-
-      case "MN":
-          return "Minnesota";
-
-      case "MS":
-          return "Mississippi";
-
-      case "MO":
-          return "Missouri";
-
-      case "MT":
-          return "Montana";
-
-      case "NE":
-          return "Nebraska";
-
-      case "NV":
-          return "Nevada";
-
-      case "NH":
-          return "New Hampshire";
-
-      case "NJ":
-          return "New Jersey";
-
-      case "NM":
-          return "New Mexico";
-
-      case "NY":
-          return "New York";
-
-      case "NC":
-          return "North Carolina";
-
-      case "ND":
-          return "North Dakota";
-
-      case "MP":
-          return "Northern Mariana Islands";
-
-      case "OH":
-          return "Ohio";
-
-      case "OK":
-          return "Oklahoma";
-
-      case "OR":
-          return "Oregon";
-
-      case "PW":
-          return "Palau";
-
-      case "PA":
-          return "Pennsylvania";
-
-      case "PR":
-          return "Puerto Rico";
-
-      case "RI":
-          return "Rhode Island";
-
-      case "SC":
-          return "South Carolina";
-
-      case "SD":
-          return "South Dakota";
-
-      case "TN":
-          return "Tennessee";
-
-      case "TX":
-          return "Texas";
-
-      case "UT":
-          return "Utah";
-
-      case "VT":
-          return "Vermont";
-
-      case "VI":
-          return "Virgin Islands";
-
-      case "VA":
-          return "Virginia";
-
-      case "WA":
-          return "Washington";
-
-      case "WV":
-          return "West Virginia";
-
-      case "WI":
-          return "Wisconsin";
-
-      case "WY":
-          return "Wyoming";
-  }
-}
 
 console.log('end of localsite/js/map.js');
 

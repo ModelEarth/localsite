@@ -25,10 +25,10 @@ if(typeof localObject.stateCountiesLoaded == 'undefined') {
     // Later: localObject.stateZipsLoaded
 }
 if(typeof localObject.geo == 'undefined') {
-    localObject.geo = []; // Holds counties.
+    localObject.geo = []; // Holds counties. Should this also be {} ?
 }
 if(typeof localObject.state == 'undefined') {
-    localObject.state = []; // Holds states.
+    localObject.state = {}; // Holds states.
 }
 
 function populateFieldsFromHash() {
@@ -776,7 +776,7 @@ function locationFilterChange(selectedValue,selectedGeo) {
     	if (hash.state || hash.geo) {
     		$("#geoPicker").show();
     		// Avoid here because called below - caused checkboxes to be unchecked.
-    		//showCountiesOrStates(0);
+    		//loadStateCounties(0);
 
     		if($("#geomap").is(':visible')) {
     			if($("#geomap").html().length < 20) {
@@ -825,7 +825,7 @@ function locationFilterChange(selectedValue,selectedGeo) {
     }
     if (selectedValue == 'counties') {
     	// Not necessary to show when not displayed yet
-    	//showCountiesOrStates(0);
+    	//loadStateCounties(0);
     }
     if (selectedValue == 'city') {
         $("#distanceField").show();
@@ -871,8 +871,8 @@ function locClick(which) {
 // Data as values, not objects.
 let geoCountyTable = []; // Array of arrays
 let currentRowIDs = [];
-function showCountiesOrStates(attempts) { // To avoid broken tiles, this won't be executed if the #geomap div is not visible.
-	console.log("showCountiesOrStates " + attempts);
+function loadStateCounties(attempts) { // To avoid broken tiles, this won't be executed if the #geomap div is not visible.
+	console.log("loadStateCounties " + attempts);
 	if (typeof d3 !== 'undefined') {
 
 		let hash = getHash();
@@ -885,7 +885,7 @@ function showCountiesOrStates(attempts) { // To avoid broken tiles, this won't b
 		}
 		if ($(".output_table > table").length) {
 			if (theState == priorHash.state || (theState == "GA" && !priorHash.state)) {
-				console.log("cancel showCountiesOrStates: " + theState + " prior: " + priorHash.state);
+				console.log("cancel loadStateCounties: " + theState + " prior: " + priorHash.state);
 				return; // Avoid reloading
 			}
 			$(".output_table").html(""); // Clear prior state
@@ -980,77 +980,97 @@ function showCountiesOrStates(attempts) { // To avoid broken tiles, this won't b
 				showTabulatorList(0);
 
 			});
-		} else { // Show country
-
-            let stateDataUrl = "https://model.earth/beyond-carbon-scraper/fused/result.json";
-
-            if (localObject.state.length <= 0) { // Just add first time
-
-                d3.json(stateDataUrl).then(function(json,error) {
-                  stateImpact = $.extend(true, {}, json); // Clone/copy object without entanglement
-                  if (param.state) {
-                    //theStateName = $("#state_select").find(":selected").text();
-                    let theStateName = getState(param.state);
-
-                      $(document).ready(function () {
-                        displaystateImpact(theStateName, stateImpact);
-                      });
-
-                  }
-
-                  /*
-                  if (Array.isArray(json)) { // Other than DifBot - NASA when count included
-                    for (a in json) {
-                      fullHtml += "<div class='level1'><b>Product ID:</b> " + json[a].id + "</div>\n";
-                      for (b in json[a]) {
-                        fullHtml += formatRow(b,json[a][b],1); // Resides in localsite.js
-                      }
-                    }
-                  } else {
-                    alert("not array")
-                    if (!json.data) {
-                      //json.data = json; // For NASA
-                    }
-                  }
-                  alert(fullHtml);
-                  */
-
-                  if (error) throw error;
-                  //console.log("stateImpact");
-                  //return(stateImpact);
-                  
-                  let rowcount = 0;
-                  stateImpactArray = [];
-                  $.each(stateImpact, function(key,val) {             
-                      //alert(key+val);
-                      if (val["jurisdiction"]) {
-                        //stateImpactArray.push(val)
-
-                        localObject.state.push(val)
-                        rowcount++;
-                      }
-                  });
-                  console.log("Loaded set of states. rowcount: " + rowcount)
-                  showTabulatorList(0);
-                });
-            } else {
-                showTabulatorList(0);
-            }
-            
-        }
+		} 
 	} else {
 		attempts = attempts + 1;
 	      if (attempts < 2000) {
-	      	// To do: Add a loading image after a coouple seconds. 2000 waits about 300 seconds.
-	        setTimeout( function() {
-	          showCountiesOrStates(attempts);
+	      	setTimeout( function() {
+	          loadStateCounties(attempts);
 	        }, 20 );
 	      } else {
-	        alert("D3 javascript not available for loading counties csv.")
+	        alert("D3 javascript not available for loadStateCounties csv.")
 	      }
 	}
 }
 
+function loadCountryStates(attempts) {
+    console.log("loadCountryStates " + attempts);
+    if (typeof d3 !== 'undefined') {
+
+        //if (localObject.state && localObject.state.length <= 0) { // Just add first time
+        if (Object.keys(localObject.state).length <= 0) {
+            let stateDataUrl = "https://model.earth/beyond-carbon-scraper/fused/result.json"; // Also resides in app/js/bc.js
+
+            d3.json(stateDataUrl).then(function(json,error) {
+
+
+              stateImpact = $.extend(true, {}, json); // Clone/copy object without entanglement
+              if (param.state) {
+                //theStateName = $("#state_select").find(":selected").text();
+                //let theStateName = getState(param.state);
+
+                  $(document).ready(function () {
+                    //displaystateImpact(theStateName, stateImpact);
+                  });
+
+              }
+
+              /*
+              if (Array.isArray(json)) { // Other than DifBot - NASA when count included
+                for (a in json) {
+                  fullHtml += "<div class='level1'><b>Product ID:</b> " + json[a].id + "</div>\n";
+                  for (b in json[a]) {
+                    fullHtml += formatRow(b,json[a][b],1); // Resides in localsite.js
+                  }
+                }
+              } else {
+                alert("not array")
+                if (!json.data) {
+                  //json.data = json; // For NASA
+                }
+              }
+              alert(fullHtml);
+              */
+
+              if (error) throw error;
+              //console.log("stateImpact");
+              //return(stateImpact);
+              
+              /*
+              let rowcount = 0;
+              //stateImpactArray = [];
+              $.each(stateImpact, function(key,val) {             
+                  //alert(key+val);
+                  if (val["jurisdiction"]) {
+                    //stateImpactArray.push(val)
+
+                    localObject.state.push(val)
+                    rowcount++;
+                  }
+              });
+              console.log("Loaded set of states. rowcount: " + rowcount)
+              */
+
+              localObject.state = $.extend(true, {}, json); // Clone/copy object without entanglement
+
+              showTabulatorList(0);
+            });
+
+        } else {
+            showTabulatorList(0);
+        }
+
+    } else {
+        attempts = attempts + 1;
+          if (attempts < 2000) {
+            setTimeout( function() {
+              lloadCountryStates(attempts);
+            }, 20 );
+          } else {
+            alert("D3 javascript not available for loadCountryStates csv.")
+          }
+    }
+}
 var statetable = {};
 var geotable = {};
 function showTabulatorList(attempts) {
@@ -1061,6 +1081,18 @@ function showTabulatorList(attempts) {
 		// Try this with 5.0. Currently prevents row click from checking box.
 		// selectable:true,
 
+        // Since localObject.state is an array of objects (for each state), convert to a flat array (more like a spreadsheet)
+        let stateImpactArray = [];
+        $.each(localObject.state , function(key,val) {             
+          //alert(key+val);
+          if (val["jurisdiction"]) {
+            stateImpactArray.push(val)
+
+            //localObject.state.push(val)
+            //rowcount++;
+          }
+        });
+
 		// For fixed header, also allows only visible rows to be loaded. See "Row Display Test" below.
 		// maxHeight:"100%",
 
@@ -1069,7 +1101,7 @@ function showTabulatorList(attempts) {
          $("#tabulator-geotable").hide();
          $("#tabulator-statetable").show();
          statetable = new Tabulator("#tabulator-statetable", {
-            data:localObject.state,    //load row data from array of objects
+            data:stateImpactArray,    //load row data from array of objects
             layout:"fitColumns",      //fit columns to width of table
             responsiveLayout:"hide",  //hide columns that dont fit on the table
             tooltips:true,            //show tool tips on cells
@@ -1335,82 +1367,6 @@ function applyStupidTable(count) {
 	}
 }
 
-function stateInsert(stateText, theStateName) {
-  return(stateText.replace("[XX]" || "[XX's]", theStateName) )
-}
-function displaystateImpact(theStateName,stateImpact) {
-  if (theStateName.length < 0) {
-    //alert("theStateName: " + theStateName);
-    return;
-  }
-
-  if(!theStateName || theStateName == "Choose a location...") { // Hack. We need to instead trigger when #state_select menu becomes available.
-    theStateName = "Alabama";
-    console.log("No State Found");
-  }
-
-  if (theStateName.length <= 0) {
-    //alert("test")
-    $("#about-profile").show();
-    $("#choose-counties").hide();
-    $("#dataDisplay").hide();
-    return;
-  } else {
-    $("#stateName").text(theStateName);
-    $("#choose-your-state-intro").hide();
-    $("#choose-counties").show();
-  }
-  $("#about-profile").hide();
-  
-  $("#dataDisplay").show();
-
-  let dataRow = "";
-
-  console.log("stateImpact");
-  console.log(stateImpact);
-
-  //alert("stateImpact.length " + stateImpact.length);
-  //alert(stateImpact[theStateName].clean_energy_commitment);
-
-  dataRow += "<div style='float:right; margin-left:15px;border-left:1px solid #ccc; padding-left:10px'>"
-    dataRow += "CO<sub>2</sub> per capita: " + stateImpact[theStateName].CO2_per_capita + " (tons)<br>";
-    dataRow += "CO<sub>2</sub> per 1000 miles: " + stateImpact[theStateName].CO2_per_1000_miles + " (tons)<br>";
-  
-    dataRow += "CO<sub>2</sub> Emissions: " + stateImpact[theStateName].CO2_emissions + "<br>";
-    dataRow += "CO<sub>2</sub> Percent: " + stateImpact[theStateName].CO2_percent + "%<br>";
-    dataRow += "Population: " + stateImpact[theStateName].population.toLocaleString() + "<br>";
-    dataRow += "Population percent: " + stateImpact[theStateName].population_percent + "%<br>";
-  dataRow += "</div>"
-
-  dataRow += "<div>"
-    dataRow += stateInsert(stateImpact[theStateName].energy_efficency_rank,theStateName) + "<br>";
-    
-    if (stateImpact[theStateName].clean_energy_commitment == "No") {
-      dataRow += theStateName + " has not committed to 100% clean energy.<br>";
-    } else if (stateImpact[theStateName].clean_energy_commitment == "Yes") {
-      dataRow += theStateName + " has committed to 100% clean energy!<br>";
-    } else {
-      //dataRow += stateInsert(stateImpact[theStateName].clean_energy_commitment,theStateName) + "<br>";
-    }
-    dataRow += stateInsert(stateImpact[theStateName].clean_energy_target_percent,theStateName) + "<br>";
-    
-    if (stateImpact[theStateName].carbon_pollution_reduction_goal_percent == "No") {
-        dataRow += theStateName + " has no goal for reducing carbon pollution across the entire economy.<br>"
-    } else {
-      dataRow += stateInsert(stateImpact[theStateName].carbon_pollution_reduction_goal_percent,theStateName) + "<br>";
-    }
-    if (stateImpact[theStateName].electric_vehicle_goals == "No") {
-      dataRow += theStateName + " has no goals or incentives for electric vehicles.<br>"
-    } else {
-      dataRow += stateInsert(stateImpact[theStateName].electric_vehicle_goals,theStateName) + "<br>";
-    }
-    //dataRow += "CO<sub>2</sub> Rank: #" + stateImpact[theStateName].CO2_rank + " by the American Council for an Energy-Efficient Economy<br>";
-  dataRow += "</div><br>"
-
-  $("#dataDisplay").html(dataRow);
-  //$("#dataHeader").html(dataRow);
-}
-
 function activateMyLocation(limitByDistance) {
     $('#latLonFields').show();
     getLatLonFromBrowser(limitByDistance);
@@ -1480,7 +1436,7 @@ function hideLocationsMenu() {
     $('.listHolder').hide();
 }
 function populateCityList(callback) {
-    //$(".menuPanel").hide(); // Also called from showCountiesOrStates
+    //$(".menuPanel").hide(); // Also called from loadStateCounties
     $(".countyList").hide();
 
     if ($('.cityList').length > 0) { // Already populated
@@ -2389,10 +2345,12 @@ function hashChanged() {
 	    hash.state = "GA";
 	    hiddenhash.state = "GA";
 	}
-
+    if (hash.mapview == "state" && hash.state == undefined) {
+        // To Do: Pull the states from the geo values
+        hash.mapview = "country"
+    }
 	populateFieldsFromHash();
 	productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
-
 
 	if (hash.state) {
 		var stateAbbrev = hash.state.split(",")[0].toUpperCase();
@@ -2604,15 +2562,18 @@ function hashChanged() {
 		}
 		//'geo':'', 
 		//updateHash({'regiontitle':'', 'lat':'', 'lon':''});
-		showCountiesOrStates(0);
-	} else if (hash.mapview != priorHash.mapview && (hash.mapview == "state" || hash.mapview == "country")) {
-        showCountiesOrStates(0);
+        loadStateCounties(0);
+    } else if (hash.mapview != priorHash.mapview && hash.mapview == "state") {
+        loadStateCounties(0);
+	} else if (hash.mapview != priorHash.mapview && hash.mapview == "country") {
+        loadCountryStates(0);
     } else if (hash.mapview != priorHash.mapview) { // For backing up within apps
         if (typeof relocatedStateMenu != "undefined") {
             relocatedStateMenu.appendChild(state_select); // For apps hero
         }
         $("#hero_holder").show();
     }
+        
     //Resides before geo
     if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state || hash.show != priorHash.show) {
         let theStateName;
