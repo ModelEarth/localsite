@@ -3319,7 +3319,16 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
   var url;
   let topoObjName = "";
   var layerName = "Map Layer";
-  if (stateAbbr.length <= 1 || hash.mapview == "country") { // USA
+  if (hash.mapview == "zip") {
+    layerName = "Zipcodes";
+    if (stateAbbr) {
+      url = local_app.modelearth_root() + "/community-forecasting/map/zcta/states/" + getState(stateAbbr) + ".topo.json";
+    } else {
+      url = local_app.modelearth_root() + "/community-forecasting/map/zip/topo/zips_us_topo.json";
+    }
+    topoObjName = "topoob.objects.data";
+    $("#geomap").width("700px");
+  } else if (stateAbbr.length <= 1 || hash.mapview == "country") { // USA
     layerName = "States";
     url = local_app.modelearth_root() + "/localsite/map/topo/states-10m.json";
     topoObjName = "topoob.objects.states";

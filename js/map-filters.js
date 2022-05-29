@@ -895,15 +895,17 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
 
 		//Load in contents of CSV file
 		if (theState.length == 2) {
-			d3.csv(local_app.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv").then(function(myData,error) {
+            let csvFilePath = local_app.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv";
+            if (hash.mapview == "zip") {
+                //csvFilePath = local_app.community_data_root() + "us/zipcodes/zipcodes6.csv";
+            
+                //alert("hash.mapview " + hash.mapview)
+            }
+			d3.csv(csvFilePath).then(function(myData,error) {
 				if (error) {
 					//alert("error")
 					console.log("Error loading file. " + error);
 				}
-
-				
-
-
 
 				//alert($("#county-table").length());
 				// No effect
