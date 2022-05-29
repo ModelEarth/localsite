@@ -4,6 +4,9 @@
 if(typeof localObject == 'undefined') {
     var localObject = {};
 }
+if(typeof localObject.zip == 'undefined') {
+  localObject.zip = {}; // Holds states.
+}
 
 // TEMP
 let fips = [];
@@ -24,7 +27,7 @@ let industryLocDataFile = getIndustryLocFileString(6);
 // TO DO: Put a promise on just the industries
 function callPromises(industryLocDataFile) {
     let promises = [
-        // GET 2 DATASETS
+        // GET 2 DATASETS - values[0] and values[1]
     	d3.csv(industryTitleFile, function(d) {
     	    industries.set(d.id, d.title);
     	    return d;
@@ -76,11 +79,15 @@ function callPromises(industryLocDataFile) {
 // INIT
 let priorHash_naicspage = {};
 if (typeof hash == 'undefined') {
-    let hash = getHash(); // Allows changes in refreshNaicsWidget to be available.
+    var hash = getHash(); // Allows changes in refreshNaicsWidget to be available.
 }
 if (typeof hiddenhash == 'undefined') {
     let hiddenhash = {};
 }
+
+let industryZipFile = getIndustryZipPath(hash.zip);
+alert(industryZipFile)
+
 refreshNaicsWidget();
 document.addEventListener('hashChangeEvent', function (elem) {
     refreshNaicsWidget();                    
@@ -90,7 +97,12 @@ document.addEventListener('hashChangeEvent', function (elem) {
 function getIndustryLocFileString(catsize) {
     return local_app.community_data_root() + "industries/naics/US/country/US-2021-Q1-naics-" + catsize + "-digits.csv";
 }
-
+function getIndustryZipPath(zip) {
+    if (zip == undefined) {
+        return;
+    }
+    return local_app.community_data_root() + "us/zipcodes/naics/" + zip.replace(/(.{1})/g,"\/$1") + "/zipcode" + zip + "-census-naics6-2018.csv";
+}
 function refreshNaicsWidget() {
     //alert("refreshNaicsWidget")
     let hash = getHash(); // Includes hiddenhash
