@@ -379,7 +379,21 @@ summary::-webkit-details-marker {
     float:none;
   }
 }
-@media (max-width: 600px) {
+
+.floatRight {
+  float:right;
+  margin-left:40px;
+}
+@media (max-width: 800px) {
+  .floatRight {
+    float:none !important;
+    width:100%;
+    margin-left:0px;
+    margin-bottom:40px;
+  }
+}
+
+@media (max-width: 800px) {
   .floatright {
     max-width:auto;
     margin-left:0px;
@@ -664,18 +678,6 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     margin:20px;
     margin-right:40px;
     min-width: 210px;
-}
-.floatRight {
-  float:right;
-  margin-left:40px;
-}
-@media (max-width: 600px) {
-  .floatRight {
-    float:none !important;
-    width:100%;
-    margin-left:0px;
-    margin-bottom:40px;
-  }
 }
 @media (max-width: 800px) {
   .leftLogo {

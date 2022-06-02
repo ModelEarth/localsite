@@ -98,6 +98,10 @@ function changeMenuLinks(itemid) {
     })
   //});
 }
+
+setlinks.onmouseout = function(){
+    alert("TTZ");
+};
 </script>
 
 <style>
@@ -117,14 +121,14 @@ function changeMenuLinks(itemid) {
   width: auto !important;
   margin-top: 8px;
 }
-@media (max-width:500px) {
+@media (max-width:1400px) {
   .menuPackage {
-    width:100%;
+    width:100px;
     padding-right:0px;
     margin-right:0px;
     border:0px;
     padding-bottom: 40px;
-    border-bottom: #333 4px solid;
+    border-bottomX: #333 4px solid;
     margin-bottom: 0px;
   }
   .sectionArrowHolder {
@@ -160,7 +164,7 @@ function changeMenuLinks(itemid) {
 <body>
 
 <span class="material-icons blue-color">recycling</span>
-<a href="javascript:changeMenuLinks(1234);">set links</a>
+<a href="javascript:changeMenuLinks(1234);" id="setlinks">set links</a>
 
 <div class="moduleJS">
 
@@ -168,30 +172,30 @@ function changeMenuLinks(itemid) {
 
   <div class="menuPackage">
   <div id="showScope" class="revealButton btn btn-white" style="cursor:pointer;">Scope</div>
-  <div id="scopeMenu" class="partnerCheckboxes"></div>
+  <div id="scopeMenu" class="menuWidth partnerCheckboxes"></div>
   </div>
 
   <div class="menuPackage">
 	<div id="showSiteNav" class="revealButton btn btn-white" style="cursor:pointer;">Map Layers</div>
-	<div id="localSiteMenu" class="partnerCheckboxes"></div>
+	<div id="localSiteMenu" class="menuWidth partnerCheckboxes"></div>
   </div>
 
   <div class="menuPackage">
   	<div id="showIndustryMenu" class="revealButton btn btn-white" style="cursor:pointer;">Industries</div>
-  	<div id="partnerCheckboxes"></div>
+  	<div id="partnerCheckboxes" class="menuWidth"></div>
   </div>
 
   <div class="menuPackage" style="padding-right:0px;">
     <div class="hideMenuPackage hideAdvanced close-X btn btn-white" style="float:right; padding-left:12px; padding-right:12px;">✕</div>
   	<div id="showPartnerMenu" class="revealButton btn btn-white" style="cursor:pointer;">Partner Tools</div>
-  	<div id="partnerMenu"></div>
+  	<div id="partnerMenu" class="menuWidth"></div>
   </div>
 
   <div style="clear:both; padding-top:30px;">
   	
 	  <div style="border:1px solid #ccc; padding:30px">
 	  	Overlays In Side<br><br>
-	  	<div class="overlaysInSide"></div>
+	  	<div class="menuWidth overlaysInSide"></div>
 	  </div>
   </div>
 

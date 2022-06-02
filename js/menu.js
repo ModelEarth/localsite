@@ -189,6 +189,49 @@ function clearAll(siteObject) {
         //hideLayer(checkedLayer.replace('go-',''),siteObject);
     });
 }
+
+
+function showSubmenu(id) { //onmouseclick
+    if($("#" + id).hasClass("openMenu")) {
+        $("#" + id).removeClass("openMenu");
+        $("#" + id + ' .layerCbRow').hide();
+    } else {
+        $("#" + id).addClass("openMenu");
+        $("#" + id + ' .layerCbRow').show();
+    }
+    //alert(id)
+}
+// For narrow nav
+function showMenuNav(id) { //onmouseenter
+    if ($(".absoluteWhenNarrow").width() < 50) { // Only do rollover when side narrow.
+        $("#" + id + " .layerSectionTitle").show();
+    }
+}
+function hideMenuNav(id) { //onmouseout
+    if ($(".absoluteWhenNarrow").width() < 50) { // Only hide when side is narrow.
+        $("#" + id + " .layerSectionTitle").hide();
+
+
+        return;
+        //alert(id)
+
+        $("#" + id).hide();
+
+        event.stopPropagation(); //cancel bubbling
+
+        /*
+       ele = event.target || event.srcElement
+       alert("ele.id " + ele.id)
+       if (ele.id === "dvRep"){  
+          //your code
+       }
+       */
+    }
+}
+
+function formatLinkId(section,title) {
+    return (section + "-" + title).replace(/\&/g, "").replace(/ /g, "_").replace(/^.*\/\/[^\/]+/, '').toLowerCase();
+}
 function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon on map - Master
     if ($(partnerMenu.menuDiv).text().length > 0) {
         console.log("displaypartnerCheckboxes already loaded: " + partnerMenu.menuDiv)
@@ -294,7 +337,8 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                     if (directlink)  { 
                         linktext = ' link="' + directlink + '"';
                     }
-                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" style="display:none"><div ' + layerSectionDisplay + ' class="dontsplit layerSection layerSectionOpen layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '"><div style="clearX:both; pointer-events: auto;" data-layer-section="' + item.section + '"' + linktext + '" class="layerSectionClick">';
+                    partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" id="' + formatLinkId(item.section,item.title + "_parent") + '" style="display:none" onmouseleave="hideMenuNav(this.id)">';
+                    partnerCheckboxes += '<div ' + layerSectionDisplay + ' id="' + formatLinkId(item.section,item.title) + '" class="dontsplit layerSection layerSectionOpen layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '" onmouseenter="showMenuNav(this.id)" onclick="showSubmenu(this.id)"><div style="clearX:both; pointer-events: auto;" data-layer-section="' + item.section + '"' + linktext + '" class="layerSectionClick">';
                     if (partnerMenu.showArrows) {
                         partnerCheckboxes += '<div class="sectionArrowHolder"><div class="leftArrow"></div></div>';
                     }
@@ -437,6 +481,22 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         event.stopPropagation();
     });
     
+    /*
+    $(".layerSection").mouseenter(function(){
+      //$("p").css("background-color", "yellow");
+
+      $(".layerSectionTitle").show();
+      //console.log("enter")
+    });
+    $(".layerSection").mouseleave(function(){
+      //$("p").css("background-color", "yellow");
+
+      $(".layerSectionTitle").hide();
+      alert("leave")
+
+    });
+    */
+
     // , .overlaysInSide .layerCbTitle
     $(document).on("click", partnerMenu.menuDiv + ' .overlaysInSide .layerCbRow', function(event) {
         //if (location.host.indexOf('localhost') >= 0) {
@@ -470,9 +530,14 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
     });
     $(document).on("click", partnerMenu.menuDiv + ' .layerSectionClick', function(event) { // Top level
         //alert("parent width: " + $(this).parent().parent().parent().parent().width()); // Same as the following, 38px when narrow:
-        let menuColumnWidth = $(partnerMenu.menuDiv.layerSectionClick).parent().width();
-        console.log("Check partnerMenu.menuDiv width: " + menuColumnWidth);
-        if (menuColumnWidth <= 52) {
+        
+        
+        let menuColumnWidth = $(this).width(); // Bug - Uses width after resize.
+        // Not working
+        //let menuColumnWidth = $(partnerMenu.menuDiv + '.layerSectionClick').parent().width();
+        console.log("This partnerMenu.menuDiv width: " + menuColumnWidth);
+
+        if (menuColumnWidth < 200) { // Only use section as link when side is narrow
             let link = $(this).attr("link");
             if (typeof link !== 'undefined' && link !== false) { // For diff browsers
 
@@ -482,37 +547,42 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
             }
             event.stopPropagation();
             return;
-        }
-        if ($(this).attr("data-layer-section")) {
-            layerSectionOpen($(this).attr("data-layer-section").toLowerCase().replace(/ /g,"-"));
         } else {
-            console.log("layerSectionClick click");
-            //$('.layerSection').hide();
-            //$(this).parent().parent().show();
-            //$(".listPanelHolder").show();// This shows list too.
-            
-            //$('.layerCbRow').hide(); // Hide All
-            //$(this).parent().parent().find('.layerSectionClick').show();
-            $(this).parent().find('.layerCbRow').toggle(); // Up to layerSection.
-            //$(this).parent().parent().find('.layerCbRow').show(); // Up to layerSectionAccess.
-
-            if ($(this).find('.leftArrow').length) {
-                $(this).find('.leftArrow').addClass('downArrow').removeClass('leftArrow');
-                // If any layers in the current section are feeds, show 3-dots tip.
-                if ($(this).parent().parent().find('.layerActionIcon').length) {
-                    //$(this).parent().parent().append($('.sideTip'));
-                    $('.sideTip').show();
-                    setTimeout(function() {
-                        $(".sideTip").slideUp('slow')
-                    }, 4000);
-                } else {
-                    $('.sideTip').hide();
-                }
+            /*
+            if ($(this).attr("data-layer-section")) {
+                alert("layerSectionOpen");
+                layerSectionOpen($(this).attr("data-layer-section").toLowerCase().replace(/ /g,"-"));
             } else {
-                $(this).find('.downArrow').addClass('leftArrow').removeClass('downArrow');
+                alert("layerSectionClick click, no data-layer-section attr");
+                //$('.layerSection').hide();
+                //$(this).parent().parent().show();
+                //$(".listPanelHolder").show();// This shows list too.
+                
+                //$('.layerCbRow').hide(); // Hide All
+                //$(this).parent().parent().find('.layerSectionClick').show();
+                $(this).parent().find('.layerCbRow').toggle(); // Up to layerSection.
+                //$(this).parent().parent().find('.layerCbRow').show(); // Up to layerSectionAccess.
+
+                if ($(this).find('.leftArrow').length) {
+                    $(this).find('.leftArrow').addClass('downArrow').removeClass('leftArrow');
+                    // If any layers in the current section are feeds, show 3-dots tip.
+                    if ($(this).parent().parent().find('.layerActionIcon').length) {
+                        //$(this).parent().parent().append($('.sideTip'));
+                        $('.sideTip').show();
+                        setTimeout(function() {
+                            $(".sideTip").slideUp('slow')
+                        }, 4000);
+                    } else {
+                        $('.sideTip').hide();
+                    }
+                } else {
+                    $(this).find('.downArrow').addClass('leftArrow').removeClass('downArrow');
+                }
             }
+            */
         }
         event.stopPropagation();
+        
     });
 
     function layerSectionOpen(section) {

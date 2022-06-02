@@ -110,7 +110,27 @@
 .downArrow:hover {
 	border-color: #999 transparent transparent transparent;
 }
+
+.absoluteWhenNarrow {
+		z-index: 1;
+		min-width: 160px;
+}
+@media (min-width: 1401px) {
+	.layerSectionTitle {
+		display: block !important;
+	}
+}
 @media (max-width: 1400px) {
+	.layerSectionTitle {
+		width: 180px; /* required for background color to be visible */
+		color: #fff;
+		background-color: #333;
+		margin-top: -8px;
+		margin-left:  -10px;
+		padding-top: 8px;
+		padding-bottom: 8px;
+		padding-right: 8px;
+	}
 	.absoluteWhenNarrow {
 		z-index: 1;
 		min-width: 38px;
@@ -120,37 +140,24 @@
 		overflow: visible;
 	}
 	.layerSection {
-		max-width: 38px;
+		/* max-width: 38px; Avoid, else background is not visible. */
 		white-space: nowrap;
 		overflow: visible;
-		border: 5px solid red;
 	}
 	.layerSectionTitle {
 		display: none;
-	}
-	.layerSectionXXX:hover {
-		max-width: auto;
-		overflow: visible;
-		max-width: 200px; /* allow background color to be visible */
-		background-color: #efefef;
-		borderX: 1px solid #777;
-		marginX:  -1px;
-		margin-leftX: 0px;
-		z-index: 100;
-
-		background-color: #333;
-		color: #efefef;
-
 	}
 	.layerSection:last-child {
 		margin-bottom: 0px;
 	}
 	.layerSectionIcon {
 		float: initial;
+		min-height: 20px;
 	}
 	.layerSectionClick {
 		min-width: auto;
 		padding-left: 8px;
+		min-height: 42px;
 	}
 	.layerCbRow {
 		display:none !important;
