@@ -41,12 +41,6 @@
 		display: none;
 	}
 }
-#partnerMenuHolder {
-	min-width: 185px;
-}
-.absoluteWhenNarrowX {
-	min-width: 250px;
-}
 .layerCheckboxes {
 	/* min-width: 500px; */
 	width: 100%;
@@ -111,6 +105,9 @@
 	border-color: #999 transparent transparent transparent;
 }
 
+#partnerMenuHolder {
+	min-width: 185px;
+}
 .absoluteWhenNarrow {
 		z-index: 1;
 		min-width: 160px;
@@ -121,6 +118,10 @@
 	}
 }
 @media (max-width: 1400px) {
+	#partnerMenuHolder {
+		min-width: 32px;
+		max-width: 100px; /* Less than 120px to trigger clicks without opening submenu */
+	}
 	.layerSectionTitle {
 		width: 180px; /* required for background color to be visible */
 		color: #fff;
