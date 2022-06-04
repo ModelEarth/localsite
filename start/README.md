@@ -21,7 +21,7 @@ You can use these steps to create a website with free GitHub hosting
 
 1. First, fork the [localsite repo](https://github.com/modelearth/localsite), the [apps repo](https://github.com/modelearth/apps), and the [io repo](https://github.com/modelearth/io).  Turn on [GitHub Pages](#github-pages) for each repo.  
 After a few minutes, you can view your fork at [[your account].github.io/apps](https://modelearth.github.io/apps)  
-2. Activate a webroot on your local computer at [http://localhost:8887](http://localhost:8887/)
+2. [Activate a webroot](#webroot) on your local computer for [http://localhost:8887](http://localhost:8887/)
 3. Then [clone the three forked repos](#clone) into the same local webroot folder.
 4. Copy the [base page folder](../../apps/base/) locally, change parameters and deploy your updates.
 5. [Fetch upstream](#fetch-upstream) changes to your forked repos.
@@ -56,10 +56,11 @@ Wait a few minutes for a new GitHub Pages site to become available at a link in 
 
 https://[your account].Github.io/[repo name]  
 
+<section id="webroot"></section>
 
 ## 2. Activate a webroot folder on your computer
 
-The following will allow you to launch [http://localhost:8887/localsite/](http://localhost:8887/localsite/) to view multiple repos in the same webroot.
+The following will allow you to launch [http://localhost:8887/localsite/](http://localhost:8887/localsite/).&nbsp; You'll view multiple repos in the same webroot.
 
 Create a web root folder called "webroot" or "modelearth", or use your existing web root.  
 Go to the web root folder and run the following to view pages locally at http://localhost:8887  
@@ -74,7 +75,7 @@ If that dose't work, here are more options for [activating your webroot](activat
 
 ## 3. Clone forked repos into your webroot
 
-Now go to [your list of forked repos](https://github.com/modelearth?tab=repositories) and clone the forked repos listed above.
+Now go to [your github account](https://github.com) and clone the forked repos listed above.
 
 To clone, click the green "Code" button followed by "Open in GitHub Desktop."
 
