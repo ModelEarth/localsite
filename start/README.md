@@ -61,11 +61,12 @@ https://[your account].Github.io/[repo name]
 
 The following will allow you to launch [http://localhost:8887/localsite/](http://localhost:8887/localsite/) to view multiple repos in the same webroot.
 
-Go to the folder where you'd like your webroot to reside and run the following to view pages on localhost:  
-Run this command to start localhost whenever you restart your computer.
+Create a web root folder called "webroot" or "modelearth", or use your existing web root.  
+Go to the web root folder and run the following to view pages locally at http://localhost:8887  
 
 	python -m http.server 8887
 
+You can run the command above to start localhost whenever you restart your computer.
 If that dose't work, here are more options for [activating your webroot](activate-webroot).
 
 
