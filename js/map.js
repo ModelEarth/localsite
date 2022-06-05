@@ -2282,6 +2282,30 @@ function showList(dp,map) {
 
     //console.log("foundMatch: " + foundMatch + ", productMatchFound: " + productMatchFound);
 
+    var key, keys = Object.keys(elementRaw);
+    var n = keys.length;
+    var element={};
+    while (n--) {
+      key = keys[n];
+      //element[key] = elementRaw[key]; // Also keep uppercase for element["Prepared"]
+      element[key.toLowerCase()] = elementRaw[key];
+    }
+
+    iconColor = colorScale(element[dp.valueColumn]);
+    if (dp.color) { 
+      iconColor = dp.color;
+    }
+    //iconColorRGB = hex2rgb(iconColor);
+    //console.log("element state2 " + element.state + " iconColor: " + iconColor)
+
+    //console.log("element[dp.valueColumn] " + element[dp.valueColumn]);
+    if(!catList[element[dp.valueColumn]]) {
+      catList[element[dp.valueColumn]] = {};
+      catList[element[dp.valueColumn]].count = 1;
+    } else {
+      catList[element[dp.valueColumn]].count++;
+    }
+    catList[element[dp.valueColumn]].color = iconColor;
 
     // BUGBUG - Is it valid to search above before making key lowercase? Should elementRaw key be made lowercase?
 
@@ -2290,14 +2314,7 @@ function showList(dp,map) {
     //if (count <= 500) {
 
       data_out.push(elementRaw);
-      var key, keys = Object.keys(elementRaw);
-      var n = keys.length;
-      var element={};
-      while (n--) {
-        key = keys[n];
-        //element[key] = elementRaw[key]; // Also keep uppercase for element["Prepared"]
-        element[key.toLowerCase()] = elementRaw[key];
-      }
+
 
       let name = element.name;
       if (element[dp.nameColumn]) {
@@ -2328,14 +2345,6 @@ function showList(dp,map) {
         //console.log("Status: " + element.status + ". Name: " + name)
       }
 
-      iconColor = colorScale(element[dp.valueColumn]);
-      if (dp.color) { 
-        iconColor = dp.color;
-      }
-      //iconColorRGB = hex2rgb(iconColor);
-
-      //console.log("element state2 " + element.state + " iconColor: " + iconColor)
-
 
       /*
       // Make dp lowercase and add element.
@@ -2355,7 +2364,7 @@ function showList(dp,map) {
       // Bug, this overwrote element.latitude and element.longitude
       //element = mix(dp,element); // Adds existing column names, giving priority to dp assignments made within calling page.
       
-      var theTitleLink = 'https://www.google.com/maps/search/' + (name + ', ' + element.county + ' County').replace(/ /g,"+");
+      var theTitleLink = 'https://www.google.com/maps/search/' + (name + ', ' + element.address + ', ' + element.county + ' County, ' + hash.state).replace(/ /g,"+");
 
       if (element.website && !element.website.toLowerCase().includes("http")) {
         element.website = "http://" + element.website;
@@ -2501,13 +2510,6 @@ function showList(dp,map) {
           } else if (element[dp.valueColumn] != element.name) {
             output += element[dp.valueColumn] + "<br>";
           }
-          //console.log("element[dp.valueColumn] " + element[dp.valueColumn]);
-          if(!catList[element[dp.valueColumn]]) {
-            catList[element[dp.valueColumn]] = {};
-            catList[element[dp.valueColumn]].count = 1;
-          } else {
-            catList[element[dp.valueColumn]].count++;
-          }
         }
         if (element[dp.showKeys]) {
           output += "<b>" + dp.showLabels + ":</b> " + element[dp.showKeys] + "<br>";
@@ -2594,17 +2596,21 @@ function showList(dp,map) {
 
   console.log("catList:");
   console.log(catList);
-  if (catList && Object.keys(catList).length > 0) {
-    let catNavSide = "<div>All Categories</div>";
+  //alert(hash.show + " + " + showprevious)
+  if (hash.show != showprevious || $("#tableSide > .catList").text().length == 0) { // Prevents selected category from being overwritten.
+    if (hash.show != "ppe") { // PPE cats are still hardcoded in localsite/map/index.html
+      if (catList && Object.keys(catList).length > 0) {
+        let catNavSide = "<div>All Categories</div>";
 
-    Object.keys(catList).forEach(key => {
-      catNavSide += "<div title='" + key + "'>" + key + " (" + catList[key].count + ")</div>";
-    });
-    console.log(catNavSide)
-    $("#tableSide").html(""); // Clear
-    $("#tableSide").append("<div class='catList'>" + catNavSide + "</div>");
+        Object.keys(catList).forEach(key => {
+          catNavSide += "<div style='background:" + catList[key].color + ";padding:0px;width:13px;height:13px;border:1px solid #ccc;margin-top:12px;margin-left:12px;margin-right:5px;float:left'></div><div title='" + key + "' style='min-height:38px'>" + key + " (" + catList[key].count + ")</div>";
+        });
+        console.log(catNavSide)
+        $("#tableSide").html(""); // Clear
+        $("#tableSide").append("<div class='catList' style='white-space:nowrap; margin:15px; margin-left:10px;'>" + catNavSide + "</div>");
+      }
+    }
   }
-
   if (hash.name && $("#detaillist > [name='"+ hash.name.replace(/_/g,' ') +"']").length) {
     let listingName = hash.name.replace(/_/g,' ');
     $("#detaillist > [name='"+ listingName.replace(/'/g,'&#39;') +"']").show(); // To do: check if this or next line for apostrophe in name.
