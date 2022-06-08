@@ -37,6 +37,8 @@ function getDirectMenuLink(partnerMenu,item) {
                 regex = /\[partnerid\]/g;
                 item.link = item.link.replace(regex, partnerMenu.partnerid);
             } else {
+                regex = /\&p=\[partnerid\]/g; // Remove preceding & symbol
+                item.link = item.link.replace(regex, "");
                 regex = /p=\[partnerid\]/g;
                 item.link = item.link.replace(regex, "");
             }
