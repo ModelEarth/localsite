@@ -1702,6 +1702,9 @@ $(document).ready(function () {
     var catString = catTitle.replace(/ /g, '_').replace(/&/g, '%26');
     $("#bigThumbPanelHolder").hide();
     console.log("catList triggers update");
+    if (catString == "All_Categories") {
+        catString = "";
+    }
     goHash({"cat":catString}); // Let the hash change trigger updates
     event.stopPropagation();
   });

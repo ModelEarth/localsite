@@ -301,7 +301,9 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
       //if (containerExists == null) { // NOT NEEDED - need to detect L.map
         if (location.host.indexOf('localhost') >= 0) {
           // BUGBUG
-          alert("Reload Page - An errror occured because the #" + whichmap + " div was not yet rendered.");
+          alert("Trying again - An errror occured because the #" + whichmap + " div was not yet rendered.");
+          loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback);
+          return;
         }
         map = L.map(whichmap, { // var --> Map container is already initialized.
           center: mapCenter,
@@ -1354,7 +1356,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
     dp.markerType = "google"; // BUGBUG doesn't seem to work with county boundary background (showShapeMap)
     //dp.showShapeMap = true;
 
-    dp.search = {"In Market Name": "MarketName","In County": "County","In City": "city","In Street": "street","In Zip": "zip","In Website": "Website"};
+    dp.search = {"In Type": "type","In Market Name": "MarketName","In County": "County","In City": "city","In Street": "street","In Zip": "zip","In Website": "Website"};
     // These were marketname
     dp.nameColumn = "name";
     dp.titleColumn = "name";
@@ -1479,7 +1481,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         // https://map.georgia.org/recycling/
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
         dp.listInfo = "<br><br>Submit updates using our <a href='https://map.georgia.org/recycling/'>Google Form</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google Sheet</a>.<br>View additional <a href='../map/recycling/ga/'>recycling datasets</a>.";
-        dp.search = {"In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
+        dp.search = {"In Type": "Materials Accepted Old", "In Type2": "Materials Accepted", "In Type3": "Category", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
 
       } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills")) { // recycling-processors
         if (!hash.state || hash.state == "GA") {
@@ -1996,6 +1998,7 @@ function showList(dp,map) {
   // Add checkboxes
   console.log("dp.search ")
   console.log(dp.search)
+
   if (dp.search && $("#activeLayer").text() != dp.dataTitle) { // Only set when active layer changes, otherwise selection overwritten on change.
     
     let search = [];
@@ -2039,10 +2042,12 @@ function showList(dp,map) {
 
   }
 
-
+  let hash = getHash();
   var allItemsPhrase = "all categories";
   if ($("#keywordsTB").val()) {
     keyword = $("#keywordsTB").val().toLowerCase();
+  } else if (hash.cat) {
+    keyword = hash.cat;
   }
   if ($("#catSearch").val()) {
     products = $("#catSearch").val().replace(" AND ",";").toLowerCase().replace(allItemsPhrase,"");
@@ -2093,7 +2098,8 @@ function showList(dp,map) {
     dp.data = data_sorted;
   }
 
-  let hash = getHash(); 
+  console.log("VIEW DATA (dp.data) ")
+  console.log(dp.data)
 
   dp.data.forEach(function(elementRaw) {
     count++;
@@ -2103,6 +2109,7 @@ function showList(dp,map) {
     if (count > 4000) {
         return;
     }
+
     let showIt = true;
     if (hash["name"] && elementRaw["name"]) { // Match company name from URL to isolate as profile page.
       //console.log("elementRaw[name] " + elementRaw["name"]);
@@ -2155,8 +2162,9 @@ function showList(dp,map) {
             productMatchFound = 1; // Matches all products
           }
 
+          console.log('Begin foundMatch');
           if (dataObject.geos && elementRaw[dp.countyColumn]) { // Use name of county pre-loaded into dataObject.
-            
+            //console.log('Use name of county pre-loaded');
             for(var g = 0; g < dataObject.geos.length; g++) {
               if (dataObject.geos[g][1].active == true) {
                 //alert(elementRaw[dp.countyColumn])
@@ -2171,21 +2179,18 @@ function showList(dp,map) {
             }
           } else if (keyword.length > 0) {
 
-            console.log('Search for "' + keyword + '" - Fields to search: ' + JSON.stringify(dp.search));
+            console.log('Search for "' + keyword.toLowerCase().replace(/\_/g," ") + '" - Fields to search: ' + JSON.stringify(dp.search));
             
             if (typeof dp.search != "undefined") { // An object containing interface labels and names of columns to search.
 
             //console.log("Search in selected_col ")
             //console.log(selected_col)
 
-            //console.log("Search in dp.search ")
-            //console.log(dp.search)
-
               $.each(dp.search, function( key, value ) { // Works for arrays and objects. key is the index value for arrays.
-                //console.log(elementRaw[key]);
+                console.log(value + " " + elementRaw[value]);
                 //selected_columns_object[key] = 0;
                 if (elementRaw[value]) {
-                  if (elementRaw[value].toString().toLowerCase().indexOf(keyword) >= 0) {
+                  if (elementRaw[value].toString().toLowerCase().indexOf(keyword.toLowerCase().replace(/\_/g," ")) >= 0) {
                     foundMatch++;
                   }
                 }
@@ -2280,7 +2285,7 @@ function showList(dp,map) {
     //  foundMatch++;
     //}
 
-    //console.log("foundMatch: " + foundMatch + ", productMatchFound: " + productMatchFound);
+    console.log("foundMatch: " + foundMatch + ", productMatchFound: " + productMatchFound);
 
     var key, keys = Object.keys(elementRaw);
     var n = keys.length;
@@ -2309,7 +2314,8 @@ function showList(dp,map) {
 
     // BUGBUG - Is it valid to search above before making key lowercase? Should elementRaw key be made lowercase?
 
-    if (foundMatch > 0 && productMatchFound > 0) {
+    //if (foundMatch > 0 && productMatchFound > 0) {
+    if (foundMatch > 0) {
       dataMatchCount++;
     //if (count <= 500) {
 
@@ -2603,7 +2609,9 @@ function showList(dp,map) {
         let catNavSide = "<div>All Categories</div>";
 
         Object.keys(catList).forEach(key => {
-          catNavSide += "<div style='background:" + catList[key].color + ";padding:0px;width:13px;height:13px;border:1px solid #ccc;margin-top:12px;margin-left:12px;margin-right:5px;float:left'></div><div title='" + key + "' style='min-height:38px'>" + key + " (" + catList[key].count + ")</div>";
+          if (key != "") {
+            catNavSide += "<div style='background:" + catList[key].color + ";padding:0px;width:13px;height:13px;border:1px solid #ccc;margin-top:12px;margin-left:12px;margin-right:5px;float:left'></div><div title='" + key + "' style='min-height:38px'>" + key + " (" + catList[key].count + ")</div>";
+          }
         });
         console.log(catNavSide)
         $("#tableSide").html(""); // Clear
