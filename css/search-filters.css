@@ -199,6 +199,7 @@
         margin:40px 0 0 40px;
     }
 }
+/*
 .si-wrapper div {
     position: absolute;
     top: 0 !important;
@@ -209,8 +210,8 @@
     border: 0;
     padding: 3px;
     background: none;
-    /* font: 0/0 a; */
 }
+*/
 .si-btn {
     display: block;
     background-color: #fff;

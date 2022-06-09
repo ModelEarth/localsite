@@ -355,7 +355,7 @@ $(document).ready(function () {
  	*/
 
     // REACTIVE - Temp to test why Goods & Services is not clickable on some domains.
-    /*
+    
     $(document).click(function(event) { // Hide open menus
     	console.log("document click -  Hide open menus")
     	if ( !$(event.target).closest( "#goSearch" ).length ) {
@@ -365,7 +365,7 @@ $(document).ready(function () {
     	$('#keywordFields').hide();
     	$('#topPanel').hide();
 	});
-	*/
+	
 
 	function hideNonListPanels() {
 		$(".fieldSelector").hide(); // Avoid since this occurs when typing text in search field.
@@ -1637,15 +1637,18 @@ function changeCat(catTitle) {
 	$('#industryCatList > div').removeClass('catListSelected');
 
     // Older lists in index.html
-	$('.catList > div').filter(function(){
-	    return $(this).text() === catTitle
-	}).addClass('catListSelected');
+	//$('.catList > div').filter(function(){
+	//    return $(this).text() === catTitle
+	//}).addClass('catListSelected');
 
     // Side nav with title attribut
-    $('.catList > div').filter(function(){
-        return $(this).attr("title") === catTitle
-    }).addClass('catListSelected');
-
+    if (catTitle) {
+        $('.catList div').filter(function(){
+            return $(this).attr("title") === catTitle
+        }).addClass('catListSelected');
+    } else {
+        $('.catList .all_categories').addClass('catListSelected');
+    }
 	$("#topPanel").hide();
 	$('#catListHolderShow').text('Product Categories');
 	//$('html,body').animate({

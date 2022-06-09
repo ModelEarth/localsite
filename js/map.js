@@ -218,6 +218,13 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
   if (typeof d3 !== 'undefined') {
     if (!dp.dataset && !dp.googleCSV) {
       console.log('CANCEL loadFromSheet. No dataset selected for top map. May not be one for state.');
+      if (!hash.state) {
+        if (location.host.indexOf('localhost') >= 0) {
+          alert("Localhost message: State may be required for requested data. Appending state GA.");
+        }
+        goHash({'state':'GA'});
+        return;
+      }
       $("#" + whichmap).hide();
       $("#list_main").hide();
       if (param.showsearch == "true") { // For EPD products io/template
@@ -1473,15 +1480,14 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.addressColumn = "address";
 
         dp.valueColumn = "category";
-        dp.valueColumnLabel = "Materials Category";
+        dp.valueColumnLabel = "Category";
 
-        //dp.itemsColumn = "materials accepted"; // Equivalent to PPE items column, checkboxes
-        dp.itemsColumn = "Category"; // Needs to remain capitalized
+        dp.itemsColumn = "Materials Accepted"; // Needs to remain capitalized. Equivalent to PPE items column, checkboxes
 
         // https://map.georgia.org/recycling/
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
         dp.listInfo = "<br><br>Submit updates using our <a href='https://map.georgia.org/recycling/'>Google Form</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google Sheet</a>.<br>View additional <a href='../map/recycling/ga/'>recycling datasets</a>.";
-        dp.search = {"In Type": "Materials Accepted Old", "In Type2": "Materials Accepted", "In Type3": "Category", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
+        dp.search = {"In Main Category": "Category", "In Materials Accepted": "Materials Accepted", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
 
       } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills")) { // recycling-processors
         if (!hash.state || hash.state == "GA") {
@@ -2606,11 +2612,11 @@ function showList(dp,map) {
   if (hash.show != showprevious || $("#tableSide > .catList").text().length == 0) { // Prevents selected category from being overwritten.
     if (hash.show != "ppe") { // PPE cats are still hardcoded in localsite/map/index.html
       if (catList && Object.keys(catList).length > 0) {
-        let catNavSide = "<div>All Categories</div>";
+        let catNavSide = "<div class='all_categories'>All Categories</div>";
 
         Object.keys(catList).forEach(key => {
           if (key != "") {
-            catNavSide += "<div style='background:" + catList[key].color + ";padding:0px;width:13px;height:13px;border:1px solid #ccc;margin-top:12px;margin-left:12px;margin-right:5px;float:left'></div><div title='" + key + "' style='min-height:38px'>" + key + " (" + catList[key].count + ")</div>";
+            catNavSide += "<div style='background:" + catList[key].color + ";padding:0px;width:13px;height:13px;border:1px solid #ccc;margin-top:12px;margin-left:12px;margin-right:5px;float:left'></div><div title='" + key + "' style='min-height:38px'>" + key + "<span class='local'>&nbsp;(" + catList[key].count + ")</span></div>";
           }
         });
         console.log(catNavSide)
