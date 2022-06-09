@@ -37,7 +37,7 @@ function getDirectMenuLink(partnerMenu,item) {
                 regex = /\[partnerid\]/g;
                 item.link = item.link.replace(regex, partnerMenu.partnerid);
             } else {
-                regex = /\&p=\[partnerid\]/g; // Remove preceding & symbol
+                regex = /&p=\[partnerid\]/g; // Remove preceding & symbol
                 item.link = item.link.replace(regex, "");
                 regex = /p=\[partnerid\]/g;
                 item.link = item.link.replace(regex, "");
@@ -77,7 +77,7 @@ function initMenu(partnerMenu) {
 
 	    //alert("layerJson: " + layerJson);
 	    $.getJSON(layerJson, function (data) {
-	    	displaypartnerCheckboxes(partnerMenu,data);
+            displaypartnerCheckboxes(partnerMenu, data);
 	    	/*
 	        dp.data = readJsonData(data, dp.numColumns, dp.valueColumn);
 	        processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){
@@ -183,6 +183,49 @@ function initMenu(partnerMenu) {
 
 } // end initMenu
 
+function addSValueToLinks(partnerMenu) {
+
+    if (BrowserUtil != "undefined") {
+        if (BrowserUtil.host.indexOf("localhost") >= 0) {
+            // Update any of the navigation links that don't already have an s value
+            queryStringParams = $.extend({}, BrowserUtil.queryStringParams);
+            var tmpQueryString = {};
+            if (queryStringParams.s != "undefined") {
+                tmpQueryString.s = queryStringParams.s;
+            }
+            if (queryStringParams.db != "undefined") {
+                tmpQueryString.db = queryStringParams.db;
+            }
+            $('#partnerMenu a[href]').not('[href^="http"]').not('[href^="javascript"]').not('[href="#"]')
+                .attr('href', function (index, currentValue) {
+                    //console.debug('before: ' + currentValue);
+                    if (currentValue.indexOf('s=') >= 0) {
+                        var urlQueryString = BrowserUtil.parseQueryString(currentValue.substr(currentValue.indexOf('?')));
+                        var sValueArray = urlQueryString.s.split('.');
+
+                        if (sValueArray.length == 1) {
+                            tmpQueryString.s = sValueArray[0] + '.0.0.' + partnerMenu.siteID; // only s value itemid present.
+                        }
+                        else {
+                            tmpQueryString.s = urlQueryString.s; // assume full s value is present
+                        }
+
+                        currentValue = currentValue.replace('s=' + urlQueryString.s, ''); // remove the s value
+
+                        if ((currentValue.indexOf('?') == currentValue.length - 1) || (currentValue.indexOf('&') == currentValue.length - 1)) {
+                            currentValue = currentValue.substr(0, currentValue.length - 1); // remove the trailing '?' character
+                        }
+                        currentValue = currentValue.replace('?&', '?'); // removed s value may be the first of multiple query string values.
+                    }
+                    else {
+                        tmpQueryString.s = '0.0.0.' + partnerMenu.siteID;
+                    }
+                    $(this).attr('href', currentValue + (currentValue.indexOf('?') >= 0 ? '&' : '?') + $.param(tmpQueryString));
+                    //console.debug('after: ' + $(this).attr('href'));
+                });
+        }
+    }
+}
 
 function clearAll(siteObject) {
     $('.layersCB:checked').each(function() {
@@ -393,7 +436,8 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
     }
     
     $(document).ready(function () {
-	   $(partnerMenu.menuDiv).append(partnerCheckboxes);
+        $(partnerMenu.menuDiv).append(partnerCheckboxes);
+        addSValueToLinks(partnerMenu);
     });
 	
 	$(".overlaysInSide").append(overlayList);
