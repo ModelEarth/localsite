@@ -455,18 +455,28 @@ $(document).ready(function () {
    		$("input[name='hs']").prop('checked',false);
    		$("input[name='in']").prop('checked',true);
    	}
+    clearButtonClick = function () { // Allow return false to be passed back.
+
+        clearFields();
+        clearHash("cat,search,q,geo,name"); // Avoids triggering hash change
+        //dataObject.geos = null; // Loaded when geo is in hash on init, to avoid time to place hidden checkboxes.
+        //history.pushState("", document.title, window.location.pathname);
+        //loadHtmlTable(true); // New list
+
+        
+
+        let hash = getHash();
+        goHash(hash); // Now trigger the hash change
+
+
+        //renderMapShapes("geomap", hash, 1); // County select map
+
+        //loadMap1("map-filters.js 2"); // BUGBUG - this hid map on /map page, perhaps dataset is not available during clear.
+        //event.stopPropagation();
+        return false; // Deactivates a href
+    }
    	$("#clearButton").click(function() {
-   		clearFields();
-   		clearHash("cat,search,q,geo,name");
-   		//dataObject.geos = null; // Loaded when geo is in hash on init, to avoid time to place hidden checkboxes.
-   		//history.pushState("", document.title, window.location.pathname);
-   		//loadHtmlTable(true); // New list
-
-   		let hash = getHash();
-   		renderMapShapes("geomap", hash, 1); // County select map
-
-   		loadMap1("map-filters.js 2"); // BUGBUG - this hid map on /map page, perhaps dataset is not available during clear.
-   		event.stopPropagation();
+   		clearButtonClick();
    	});
    	$("#botGo").click(function() {
    		alert("Chat Bot under development.");
@@ -1521,9 +1531,6 @@ function isInt(value) {
 String.prototype.split2 = function(separator) {
     return this == "" ? [] : this.split(separator); // Avoid returning 1 when null.
 }
-function clickClearButton(){
-  	$("#clearButton").click();
-}
 function displayResults() {
 	console.log("displayResults disabled - use showList in Dual-Map.js instead");
 	return;
@@ -1733,7 +1740,7 @@ $(document).ready(function () {
 
   	  alert("Not fully implemented.")
       //$("#map1").show();
-      //displayMap(layerName,siteObject);
+      //displayMap(layerName, localObject.layers);
       $(".listOptions").hide();
       console.log(".refreshMap ");
 
@@ -1806,14 +1813,14 @@ function removeFrontFolder(path) {
     //return("../.." + path);
     return(path);
 }
-function displayHexagonMenu(layerName,siteObject) {
+function displayHexagonMenu(layerName, localObject) {
 
   var currentAccess = 0;
   consoleLog("Display HEXAGON MENU");
 
   $("#honeycombMenu").html(""); // Clear prior
   $("#honeycombPanel").show();
-  var thelayers = siteObject.items;
+  var thelayers = localObject.layers;
   //console.log(thelayers);
   var sectionMenu = "";
   var categoryMenu = "";
@@ -1824,16 +1831,16 @@ function displayHexagonMenu(layerName,siteObject) {
         var menuaccess = 10; // no one
         menuaccess = 0; //Temp
         try { // For IE error. Might not be necessary.
-            if (typeof(siteObject.items[layer].menuaccess) === "undefined") {
+            if (typeof(localObject.layers[layer].menuaccess) === "undefined") {
                 menuaccess = 0;
             } else {
-                menuaccess = siteObject.items[layer].menuaccess;
+                menuaccess = localObject.layers[layer].menuaccess;
             }
         } catch(e) {
             consoleLog("displayLayerCheckboxes: no menuaccess");
         }
         if (access(currentAccess,menuaccess)) {
-            if (siteObject.items[layer].menulevel == "1") {
+            if (localObject.layers[layer].menulevel == "1") {
             //var layerTitleAndArrow = (thelayers[layer].navtitle ? thelayers[layer].navtitle : thelayers[layer].title);
             var layerTitleAndArrow = thelayers[layer].section;
                 var icon = (thelayers[layer].icon ? thelayers[layer].icon : '<i class="material-icons">&#xE880;</i>');
@@ -1883,16 +1890,24 @@ function thumbClick(show,path) {
 		goHash(hash,"name,loc"); // Remove name and loc (loc is not used yet)
 	}
 }
-function displayBigThumbnails(activeLayer, layerName,siteObject) {
+function displayBigThumbnails(attempts, activeLayer, layerName) {
 	if (!$('.bigThumbUl').length) {
-
+        if (attempts > 100) {
+            alert("EXIT load localObject.layers");
+            return;
+        }
   		//$("#filterFieldsHolder").hide();
-
+        if (localObject.layers == undefined) {
+            setTimeout( function() {        
+                displayBigThumbnails(attempts + 1, activeLayer, layerName);
+            }, 100 );
+            return;
+        }
 	    var currentAccess = 0;
 	    $(".bigThumbMenu").html("");
 
 	    //$("#bigThumbPanelHolder").show();
-	    var thelayers = siteObject.items;
+	    var thelayers = localObject.layers;
 	    var sectionMenu = "";
 	    var categoryMenu = "";
 	    var iconMenu = "";
@@ -1902,22 +1917,23 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 
 	        var menuaccess = 10; // no one
 	        try { // For IE error. Might not be necessary.
-	            if (typeof(siteObject.items[layer].menuaccess) === "undefined") {
+	            if (typeof(localObject.layers[layer].menuaccess) === "undefined") {
 	                menuaccess = 0;
 	            } else {
-	                menuaccess = siteObject.items[layer].menuaccess;
+	                menuaccess = localObject.layers[layer].menuaccess;
 	            }
 	        } catch(e) {
 	            consoleLog("displayLayerCheckboxes: no menuaccess");
 	        }
 	        
 	        var linkJavascript = "";
+            //alert(layer) // Returns a nummber: 1,2,3 etc
 	        var directlink = getDirectLink(thelayers[layer].livedomain, thelayers[layer].directlink, thelayers[layer].rootfolder, thelayers[layer].item);
             //alert("directlink " + directlink);
 	        if (bigThumbSection == "main") {
 	            if (thelayers[layer].menulevel == "1") {
 	                if (access(currentAccess,menuaccess)) {
-	                    //if (siteObject.items[layer].section == bigThumbSection && siteObject.items[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
+	                    //if (localObject.layers[layer].section == bigThumbSection && localObject.layers[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
 	                    
 	                        var thumbTitle = ( thelayers[layer].thumbtitle ? thelayers[layer].thumbtitle : (thelayers[layer].section ? thelayers[layer].section : thelayers[layer].primarytitle));
 	                        var thumbTitleSecondary = (thelayers[layer].thumbTitleSecondary ? thelayers[layer].thumbTitleSecondary : '&nbsp;');
@@ -1939,13 +1955,13 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	                                if (thelayers[layer].rootfolder && thelayers[layer].rootfolder) {
 	                                	// Change to pass entire hash
 
-	                                	//linkJavascript = 'onclick="window.location = \'/localsite/' + thelayers[layer].rootfolder + '/#show=' + siteObject.items[layer].item + '\';return false;"';
-	                                	linkJavascript = 'onclick="thumbClick(\'' + siteObject.items[layer].item + '\',\'' + thelayers[layer].rootfolder + '\');return false;"';
+	                                	//linkJavascript = 'onclick="window.location = \'/localsite/' + thelayers[layer].rootfolder + '/#show=' + localObject.layers[layer].item + '\';return false;"';
+	                                	linkJavascript = 'onclick="thumbClick(\'' + localObject.layers[layer].item + '\',\'' + thelayers[layer].rootfolder + '\');return false;"';
 	                                //} else if ((directlink.indexOf('/map/') >= 0 && location.pathname.indexOf('/map/') >= 0) || (directlink.indexOf('/info/') >= 0 && location.pathname.indexOf('/info/') >= 0)) {
 	                                } else if ((location.pathname.indexOf('/map/') >= 0) || (location.pathname.indexOf('/info/') >= 0)) {
 	                                	// Stayon page when on map or info
-	                                	//linkJavascript = "onclick='goHash({\"show\":\"" + siteObject.items[layer].item + "\",\"cat\":\"\",\"sectors\":\"\",\"naics\":\"\",\"go\":\"\",\"m\":\"\"}); return false;'"; // Remain in current page.
-	                                	linkJavascript = 'onclick="thumbClick(\'' + siteObject.items[layer].item + '\',\'\');return false;"';
+	                                	//linkJavascript = "onclick='goHash({\"show\":\"" + localObject.layers[layer].item + "\",\"cat\":\"\",\"sectors\":\"\",\"naics\":\"\",\"go\":\"\",\"m\":\"\"}); return false;'"; // Remain in current page.
+	                                	linkJavascript = 'onclick="thumbClick(\'' + localObject.layers[layer].item + '\',\'\');return false;"';
 	                                } else {
 	                                	linkJavascript = "";
 	                                }
@@ -1959,10 +1975,10 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	                                	}
 	                                	// TODO: lazy load images only when visible by moving img tag into an attribute.
 	                                	// TODO: Add geo-US13 for other states
-	                                    sectionMenu += "<div class='bigThumbMenuContent geo-US13 geo-limited' style='display:none' show='" + siteObject.items[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' " + hideforAccessLevel + "><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
+	                                    sectionMenu += "<div class='bigThumbMenuContent geo-US13 geo-limited' style='display:none' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' " + hideforAccessLevel + "><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
 	                                
 	                                } else if (menuaccess==0) { // Quick hack until user-0 displays for currentAccess 1. In progress...
-	                                    sectionMenu += "<div class='bigThumbMenuContent' show='" + siteObject.items[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='displayX:none'><div class='bigThumbHolder'><a ";
+	                                    sectionMenu += "<div class='bigThumbMenuContent' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='displayX:none'><div class='bigThumbHolder'><a ";
                                         if (directlink) { // This is a fallback and won't contain the hash values.
                                             sectionMenu += "href='" + directlink + "' ";
                                         }
@@ -1974,12 +1990,12 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	            }
 	        } else {
 	            if (access(currentAccess,menuaccess)) {
-	                if (siteObject.items[layer].section == bigThumbSection && siteObject.items[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
+	                if (localObject.layers[layer].section == bigThumbSection && localObject.layers[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
 	                    var thumbTitle = (thelayers[layer].navtitle ? thelayers[layer].navtitle : thelayers[layer].title);
 	                    var thumbTitleSecondary = (thelayers[layer].thumbTitleSecondary ? thelayers[layer].thumbTitleSecondary : '&nbsp;');
 
 	                    var icon = (thelayers[layer].icon ? thelayers[layer].icon : '<i class="material-icons">&#xE880;</i>');
-	                    if (!siteObject.items[layer].bigThumbSection) { // Omit the section parent
+	                    if (!localObject.layers[layer].bigThumbSection) { // Omit the section parent
 	                       if (thelayers[layer].item != "main" && thelayers[layer].section != "Admin" && thelayers[layer].title != "") {
 	                            // <h1 class='honeyTitle'>" + thelayers[layer].provider + "</h1>
 	                            //var thumbTitle = thelayers[layer].title;
@@ -1993,7 +2009,7 @@ function displayBigThumbnails(activeLayer, layerName,siteObject) {
 	                            if (thelayers[layer].directlink) {
 	                                //hrefLink = "href='" + removeFrontFolder(thelayers[layer].directlink) + "'";
 	                            }
-	                            sectionMenu += "<div class='bigThumbMenuContent' show='" + siteObject.items[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='display:none'><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
+	                            sectionMenu += "<div class='bigThumbMenuContent' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='display:none'><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
 	                        }
 	                    }
 	                }
@@ -2096,6 +2112,16 @@ function isElementInViewport(el) {
         rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
     );
 }
+function localJsonpCallback(json) {
+  if (!json.Error) {
+    //$('#resultForm').submit();
+  } else {
+    //$('#loading').hide();
+    //$('#userForm').show();
+    alert(json.Message);
+  }
+}
+
 function initSiteObject(layerName) {
 //alert("initSiteObject"); // Gave more time for app icon to load.
 	let hash = getHash();
@@ -2106,28 +2132,36 @@ function initSiteObject(layerName) {
 
 	    //var layerJson = local_app.community_data_root() + "us/state/GA/ga-layers.json"; // CORS prevents live
 	    // The URL above is outdated. Now resides here:
-	    let layerJson = local_app.localsite_root() + "info/data/ga-layers.json";
+	    let layerJson = local_app.localsite_root() + "info/data/ga-layers-array.json";
         //alert("layerJson " + layerJson)
 	    if(location.host.indexOf("georgia") >= 0) {
 	    	// For PPE, since localhost folder does not reside on same server
-	    	layerJson = "https://model.earth/localsite/info/data/ga-layers.json";
+	    	layerJson = "https://model.earth/localsite/info/data/ga-layers-array.json";
 	    	console.log("Set layerJson: " + layerJson);
 		}
+        //alert(layerJson)
 	    console.log(layerJson);
-	    let siteObject = (function() {
+	    let layerObject = (function() {
+
+            $.getJSON(layerJson, function (layerObject) {
+
+            /*
 	        let json = null;
 	        $.ajax({
 	            'type': 'GET',
 	            'async': true,
 	            'global': false,
 	            'url': layerJson,
-	            'jsonpCallback': 'callback',
-	            'dataType': "jsonp",
-	            'success': function (siteObject) {
+                'dataType': "jsonp",
+	            'jsonpCallback': 'localJsonpCallback',
+	            'success': function (layerObject) {
 	                consoleLog("Menu layers json loaded within initSiteObject. location.hash: " + location.hash);
-	                
-	                // siteObjectFunctions(siteObject); // could add to keep simple here
+	       */
 
+	                // siteObjectFunctions(layerObject); // could add to keep simple here
+                    localObject.layers = layerObject;
+                    console.log("2 localObject.layers");
+                    console.log(localObject.layers);
 
 	                $(document).on("click", ".showApps, .hideApps", function(event) {
 	          			console.log('.showApps click');
@@ -2158,7 +2192,7 @@ function initSiteObject(layerName) {
 
 	          				$("#showAppsText").text("Goods & Services");
 	          				$("#appSelectHolder .showApps").addClass("filterClickActive");
-							showThumbMenu(hash.show, siteObject);
+							showThumbMenu(hash.show);
                             $('html,body').animate({
                             	//- $("#filterFieldsHolder").height()  
                                 scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
@@ -2168,56 +2202,56 @@ function initSiteObject(layerName) {
 					  	event.stopPropagation();
 					});
 	          		// These should be lazy loaded when clicking menu
-	                //displayBigThumbnails(hash.show, "main",siteObject);
-	                //displayHexagonMenu("",siteObject);
+	                //displayBigThumbnails(0, hash.show, "main");
+	                //displayHexagonMenu("", layerObject);
 	                
 	                if (!hash.show && !param.show) { // INITial load
 	                	// alert($("#fullcolumn").width()) = null
 	                	if ($("body").width() >= 800) {
 
-	                		//showThumbMenu(hash.show, siteObject);
+	                		//showThumbMenu(hash.show);
 	                	}
 	            	}
-	                return siteObject;
-	            },
-	          error: function (req, status, err) {
-	              consoleLog('Error fetching siteObject json: ', err);
-	          }
+	                return layerObject;
+	            
 	        });
-	    })(); // end siteObject
+	    })(); // end layerObject
 	    
 	    
 	//}
 } // end initSiteObject
 
-function showThumbMenu(activeLayer, siteObject) {
+function showThumbMenu(activeLayer) {
 	$("#menuHolder").css('margin-right','-250px');
 	$("#bigThumbPanelHolder").show();
 	if (!$(".bigThumbMenuContent").length) {
-		displayBigThumbnails(activeLayer, "main",siteObject);
+		displayBigThumbnails(0, activeLayer, "main");
 	}
 	$('.showApps').addClass("active");
 }
-function callInitSiteObject(attempt) { // wait for local_app
-	if (typeof local_app !== 'undefined') {
-		let siteObject = initSiteObject("");
-
+function callInitSiteObject(attempt) { 
+    //alert("callInitSiteObject")
+    if (localObject.layers) {
+        //alert("done return")
+        return;
+    }
+	if (typeof local_app !== 'undefined') { // wait for local_app
+		localObject.layers = initSiteObject("");
+        console.log("localObject.layers");
+        console.log(localObject.layers);
 		// Not available here since async in initSiteObject()
-		//showThumbMenu(hash.show, siteObject);
-		return siteObject; // Not always returning yet
+		//showThumbMenu(hash.show;
+		//return layerObject.layers; // Not always returning yet
+        return;
 	} else if (attempt < 100) {
 		setTimeout( function() {
-   			console.log("try search-filters initSiteObject again")
+   			console.log("callInitSiteObject again")
 			callInitSiteObject(attempt+1);
    		}, 10 );
 	} else {
 		console.log("ERROR: Too many search-filters local_app attempts.");
 	}
 }
-let siteObject = callInitSiteObject(1);
-
-
-
 
 // Google Autocomplete
 // Load Google API key fron config.json
@@ -2354,6 +2388,7 @@ document.addEventListener('hiddenhashChangeEvent', function (elem) {
 if(typeof hiddenhash == 'undefined') {
     var hiddenhash = {};
 }
+callInitSiteObject(1); // Loads localObject.layers for later use when showApps clicked
 
 
 function hashChanged() {
@@ -2390,7 +2425,10 @@ function hashChanged() {
 		//if (hash.show == priorHash.show) {
 		//	hash.show = ""; // Clear the suppliers display
 		//}
-		
+        if (priorHash.show) {
+          $(".listTitle").empty();
+		  $(".catList").empty();
+        }
 		delete hash.naics; // Since show value invokes new hiddenhash
 		clearHash("naics");
 		//getNaics_setHiddenHash(hash.show); // Sets hiddenhash.naics for use by other widgets.
@@ -2498,6 +2536,8 @@ function hashChanged() {
         }
         console.log("Recenter map " + mapCenter)
 		*/
+
+        //showThumbMenu(hash.show);
 	}
 	if (hash.state) {
         $(".showforstates").show();

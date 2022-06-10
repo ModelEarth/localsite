@@ -153,7 +153,7 @@ function initMenu(partnerMenu) {
 
 	                
 	          		// These should be lazy loaded when clicking menu
-	                //displayBigThumbnails(hash.show, "main",adminNavObject);
+	                //displayBigThumbnails(0, hash.show, "main",adminNavObject);
 	                //displayHexagonMenu("",adminNavObject);
 	                
 	                if (!hash.show && !param.show) { // INITial load
