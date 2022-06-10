@@ -185,18 +185,18 @@ function initMenu(partnerMenu) {
 
 function addSValueToLinks(partnerMenu) {
 
-    if (BrowserUtil != "undefined") {
+    if (typeof (BrowserUtil) != "undefined") {
         if (BrowserUtil.host.indexOf("localhost") >= 0) {
             // Update any of the navigation links that don't already have an s value
             queryStringParams = $.extend({}, BrowserUtil.queryStringParams);
             var tmpQueryString = {};
-            if (queryStringParams.s != "undefined") {
+            if (typeof (queryStringParams.s) != "undefined") {
                 tmpQueryString.s = queryStringParams.s;
             }
-            if (queryStringParams.db != "undefined") {
+            if (typeof (queryStringParams.db) != "undefined") {
                 tmpQueryString.db = queryStringParams.db;
             }
-            $('#partnerMenu a[href]').not('[href^="http"]').not('[href^="javascript"]').not('[href="#"]')
+            $(partnerMenu.menuDiv + ' a[href]').not('[href^="http"]').not('[href^="javascript"]').not('[href="#"]')
                 .attr('href', function (index, currentValue) {
                     //console.debug('before: ' + currentValue);
                     if (currentValue.indexOf('s=') >= 0) {
