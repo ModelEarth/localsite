@@ -15,6 +15,13 @@
 {
 	"menulevel": "1",
 	"section": "Page Details",
+	"title": "Edit Event",
+	"link": "/net/calendar/editnew.aspx?s=[itemid]",
+	"basetype": "2"
+},
+{
+	"menulevel": "1",
+	"section": "Page Details",
 	"title": "Edit Location",
 	"link": "/net/org/edit.aspx?s=[itemid]"
 },
