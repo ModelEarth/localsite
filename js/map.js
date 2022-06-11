@@ -2613,7 +2613,7 @@ function showList(dp,map) {
   //console.log("catList:");
   //console.log(catList);
   if (hash.show != showprevious || $("#tableSide > .catList").text().length == 0) { // Prevents selected category from being overwritten.
-    if (hash.show != "ppe") { // PPE cats are still hardcoded in localsite/map/index.html
+    if (hash.show != "ppe" && hash.show != "suppliers") { // PPE cats are still hardcoded in localsite/map/index.html. "suppliers" is used in site embed
       if (catList && Object.keys(catList).length > 0) {
         let catNavSide = "<div class='all_categories'>All Categories</div>";
 
