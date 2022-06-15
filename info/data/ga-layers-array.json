@@ -136,10 +136,8 @@
 		"siteHeaderHeight": "170px",
 		"headericoncolor": "#999",
 		"icon": "<i class='fa fa-recycle'></i>",
-		"mainiframeX": "/localsite/map/recycling/ga/",
 		"menuaccess": "0",
-		"directlinkX": "/localsite/map/#show=recycling",
-		"directlinkX": "/localsite/map/recycling/ga/",
+		"directlink": "/localsite/map/#show=recyclers",
 		"footerlogos": "",
 		"caption": "",
 		"states": "GA"
