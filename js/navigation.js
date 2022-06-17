@@ -6,7 +6,6 @@ const slash_count = (current_code_path.match(/\//g) || []).length; // To set pat
 if (window.location.protocol != 'https:' && location.host.indexOf('localhost') < 0) {
 	location.href = location.href.replace("http://", "https://");
 }
-var imageUrl;
 
 // Get the levels below root
 var foldercount = (location.pathname.split('/').length - 1); // - (location.pathname[location.pathname.length - 1] == '/' ? 1 : 0) // Removed because ending with slash or filename does not effect levels. Increased -1 to -2.
@@ -31,7 +30,7 @@ const changeFavicon = link => {
   // change its href to the given link.
   if ($favicon !== null) {
     $favicon.href = link
-  // Otherwise, create a new element and append it to <head>.
+  	// Otherwise, create a new element and append it to <head>.
   } else {
     $favicon = document.createElement("link")
     $favicon.rel = "icon"
@@ -88,20 +87,19 @@ $(document).ready(function(){
 		$('.lifecycle').css('display', 'inline');
 		$('.lifecycle-hide').css('display', 'none');
 		earthFooter = true;
-	} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0
-	// Show locally for Brave Browser only
-	|| (((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false) && !param.headerLogo)
-	) {
+	} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 || (((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false) && !param.headerLogo)) {
+		// Show locally for Brave Browser only
 		showLeftIcon = true;
 		$(".siteTitleShort").text("Model Georgia");
 		param.titleArray = [];
 		param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.localsite_root() + "img/logo/states/GA.png' style='width:130px;padding-top:4px'></a>";
 		param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.localsite_root() + "img/logo/states/GA-notext.png' style='width:40px;padding-top:0px;margin-top:-4px'></a>";
 		if (document.title) {
- 		document.title = "Georgia.org - " + document.title;
- 	} else {
- 		document.title = "Georgia.org";
- 	}
+	 		document.title = "Georgia.org - " + document.title;
+	 	} else {
+	 		document.title = "Georgia.org";
+	 	}
+		
 		changeFavicon("/localsite/img/logo/states/GA-favicon.png");
 
 		// BUGBUG - This needs to be css insert rather than being applied before README loads
@@ -116,8 +114,10 @@ $(document).ready(function(){
 			$('.georgia-hide').css('display', 'none');
 			$('.georgiaorg-hide').css('display', 'none');
 			$('#headerOffset').css('display', 'block');
-	}, 1500);
+		}, 1500);
+
 		earthFooter = true;
+
 	} else if (!Array.isArray(param.titleArray) && (param.startTitle == "Neighborhood.org" || location.host.indexOf('neighborhood.org') >= 0)) {
 		showLeftIcon = true;
 		$(".siteTitleShort").text("Neighborhood Modeling");
@@ -325,22 +325,12 @@ $(document).ready(function(){
 				 	}
 					// WAS LIMITED TO HEADER
 
-					/*
-					if (param.favicon) {
-				 		imageUrl = climbpath + ".." + param.favicon;
-				 		//$('#headerlogoside').css('width', '40px');
-				 		//$('#headerlogoside').css('height', '40px');
-				 		$('.logoholder-modelearth').css('width', '40px');
-				 		$('.logoholder-modelearth').css('height', '40px');
-				 		$('.logoholder-modelearth').css('margin-top', '7px');
-				 		$('.logoholder-modelearth').css('margin-right', '20px');
-				 	}
-				 	*/
 				 	if (!param.headerLogo && param.headerLogoSmall) {
 				 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall + "</a>");
 				 	} else if (param.headerLogo) {
 				 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
-				 	} else {
+				 	} else if (param.favicon) {
+				 		let imageUrl = climbpath + ".." + param.favicon;
 					 	$('#headerLogo').css('background-image', 'url(' + imageUrl + ')');
 						$('#headerLogo').css('background-repeat', 'no-repeat');
 					}
