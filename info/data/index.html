@@ -1,4 +1,8 @@
 <script>
-    // Since not all hosts (forks) will have the data-pipeline repo locally.
-    window.location = "https://model.earth/data-pipeline";
+    if (location.host.indexOf('localhost') >= 0 || location.host.indexOf('model.earth') >= 0) {
+        window.location = "/data-pipeline";
+    } else {
+        // Since not all hosts (forks) will have the data-pipeline repo locally.
+        window.location = "https://model.earth/data-pipeline";
+    }
 </script>

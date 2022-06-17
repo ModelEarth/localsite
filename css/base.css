@@ -245,7 +245,7 @@ summary::-webkit-details-marker {
   margin:0 auto;
   font-size: 15px;
   line-height: 1.55;
-  position: relative;
+  /* position: relative; */  /* overlapped top filters */
 }
 @media (min-width: 1800px) {
 	.content {
@@ -624,20 +624,20 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   */
 }
 #showSide {
+  /*
 	padding: 8px;
 	padding-top: 8px;
-	position: fixed;
-	z-index: 10000;
+  border-radius: 8px;
+  border:1px solid #aaa;
+  */
 	pointer-events: auto;
 	cursor: pointer;
-
-	padding-right: 6px;
-	margin-top:2px;
-	margin-left:-12px;
-	border:1px solid #aaa;
-	background-color: #fff;
-	border-radius: 8px;
-	height: 34px;
+	padding: 9px 12px 2px 10px;
+	height: 37px;
+  opacity: .5;
+}
+#showSide:hover {
+  opacity: 1;
 }
 .close-X-sm {
   cursor:pointer;
@@ -693,7 +693,9 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     margin:0 0 30px 0;
   }
 }
-
+.leftOffset {
+  padding-left: 55px;
+}
 #log_display {
   position:fixed;
   z-index: 999999;

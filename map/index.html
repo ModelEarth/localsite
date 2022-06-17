@@ -20,7 +20,8 @@
 
 <!-- Also in localsite.js. Added here to prevent error "Tabulator JS not available for displaying list." that otherwise pops up after a minute. -->
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
-
+<link id="/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet" type="text/css" href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" media="all">
+<link type="text/css" rel="stylesheet" href="/localsite/css/base-tabulator.css" id="/localsite/css/base-tabulator.css" />
 
 <script>
   let hash = getHash();
@@ -147,7 +148,6 @@
 <!-- /INTRO -->
 
 <div id="insertedText">
-<!-- about 5px of extra space still remains in the followign -->
 
 <!-- Start HTML -->
 
@@ -165,13 +165,9 @@
 class="headerbarheight"
 -->
 
-<!--
-<div class="filterbarOffset" style="height:56px; pointer-events:none"></div>
--->
-
 <!-- FILTERS -->
 <div class="search-filters-css" style="display:none">
-<div id="headerFixed" class="filterPanel">
+<div id="headerLarge" class="filterPanel">
 
   <div class="headerOffset headerOffsetOne"></div>
 
@@ -180,321 +176,11 @@ class="headerbarheight"
   <div id="activeLayer" style="display: none"></div>
 
   
-  <div class="hideWhenPop">
-
-  <div id="filterFieldsHolder" class="contentfull noprint" style="margin:0 auto; padding-top:0px; padding-left:40px; float:left; width:100%">
-
-    <!-- Displayed on scroll up -->
-    <div class="showMenuSmNav" style="float:right; display:none">
-      <!-- delete
-      <div class="showSearch local" style="display:none;float:left">
-        <img src="/localsite/img/icon/search.png" style="width:27px; opacity:0.5; margin:10px 20px 0 0">
-      </div>
-      -->
-      <div class="showMenu" style="font-size:24px;color:#999;float:left">
-        <img src="/localsite/img/icon/hamburger.png" style="width:30px; opacity:0.5; margin-top:10px">
-      </div>
-    </div>
-
-    <div class="filterFields" style="min-height:54px; padding:2px 0 0px 0;">
-
-      <div id="logoholderbar" style="display:none;float:left;">
-      </div>
-
-
-      <div style="float:right;">
-        <div class="filterLabel">
-            <div class="filterLabelMain">
-            </div>
-        </div>
-        <div class="showApps" style="border:0px solid #ccc;">
-          <i class="material-icons show-on-load georgiaorg-hide" style="margin-left:-8px;padding-right:0px;font-size:34px;">&#xE5C3;</i>
-        </div>
-      </div>
-
-      <div class="hideMobile localX" style="float:right;display:none;">
-        <ul class="filterUL" style="margin:18px 12px 0 10px;clear:both;min-width:120px;">
-
-            <li data-id="all"><a href="#">Earth</a></li>
-            <li data-id="country" geo="US"><a href="#">USA</a></li>
-            <!--
-            <li data-id="state" class="selected" style="white-space:nowrap"><a href="#">Entire State</a></li>
-            
-            <li data-id="state" geo="US13" class="selected" style="white-space:nowrap"><a href="#">Georgia</a></li>
-            -->
-            
-            <li data-id="city" class="local" style="display:none"><a href="#">Cities</a></li>
-            <li data-id="counties"><a href="#">Counties</a></li>
-            <li data-id="zip" class="local" style="display:none,white-space:nowrap"><a href="#">Zip Code</a></li>
-            
-            <li data-id="latlon" class="hideFilter"><a href="#">Lat/Lon</a></li>
-            <li data-id="nearby" class="hideFilter"><a href="#">Nearby</a></li>
-            
-        </ul>
-      </div>
-
-
-      <div style="float:left">
-        <div style="overflow:visible" class="filterField locationTab">
-          <div class="filterLabel">
-            <div class="filterLabelMain">
-              Where
-              </div>
-          </div>
-
-          <!--
-            https://www.maxon.net/en/buy
-
-            overflow:auto; causes vertical scroll to appear here:
-          -->
-          <div style="position:relative;">
-            <div class="filterClick" id="filterClickLocation" style="display:none">
-
-              <div class="select-menu-arrow-holder">
-                <!-- We could place over all select menus
-                  https://fabriceleven.com/design/clever-way-to-change-the-drop-down-selector-arrow-icon/ -->
-                <i id="showLocations" class="material-icons" style="font-size:24px;display:none">&#xE313;</i>
-                <i id="hideLocations"  class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
-              </div>
-              <div class="filterClickText locationTabText">Locations</div><!-- Entire State -->
-            </div>
-          </div>
-        </div>
-
-
-        <div id="appSelectHolder" class="filterField layerclass">
-          <div id="catSearchHolder">
-
-              <div class="filterLabel">
-                <div class="filterLabelMain">
-                Show
-                </div>
-              </div>
-
-              <div class="filterClick showApps" style="position:relative; overflow:auto">
-
-                <div class="select-menu-arrow-holder">
-                    <i class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
-                    <i class="material-icons" style="font-size:24px;cursor:pointer;display:none;">&#xE313;</i>
-                </div>
-                <div style="width:100%">
-                  <div class="filterClickText" id="showAppsText" title="Goods & Services">Goods & Services</div>
-                </div>
-              </div>
-              <div id="hitRefreshNote" style="display: none;float:left; padding-top:8px; font-size:14px; margin-bottom:8px;">
-                  Hit reload (cmd-R) after changing the state to refresh the input-output chart below.
-              </div>
-          </div>
-        </div>
-      </div>
-
-      <div style="display:none;" class="local filterField layerclass mock-up suppliers exporter products">
-        <div id="catSearchHolder2">
-          <div class="filterLabel">
-            <div class="filterLabelMain">
-            Supply Categories<!--Goods & Services-->
-            </div>
-          </div>
-
-
-            <div style="position:relative; overflow:auto;">
-
-                <div class="select-menu-arrow-holder">
-                  <i class="material-icons" style="font-size:24px;cursor:pointer;display:none;">&#xE409;</i>
-                  <i class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE313;</i>
-                </div>
-                <!--
-                <select id="selectProduct" class="selectMenu" style="float:left">
-                    <option value="1">HS Code(s)</option>
-                </select>
-                -->
-
-                <!--
-                onkeyup="return SearchCategories(event);"
-                readonly - prevents keyboard covering choices on mobile
-                -->
-                <input readonly id="catSearch" class="filterClick mobileWide textInput" placeholder="Categories" type="text" autocomplete="off" style="width: 200px; margin-top: 0px;" />
-            </div>
-        </div>
-      </div>
-
-
-
-      <!-- KEYWORD SEARCH -->
-      <div>
-        <div class="local filterField keywordField" style="display:none">
-
-          <!-- Search Companies -->
-          <div class="filterLabel">
-              <div class="filterLabelMain">
-                Search
-              </div>
-          </div>
-          <!--
-          <div style="position:absolute; right:8px; top:10px; z-index:1">
-            <i id="showAdvancedXXX" class="material-icons show-on-load" style="font-size:24px;cursor:pointer">&#xE409;</i>
-            
-          </div>
-          -->
-
-          <!-- speech input -->
-            <!-- was a button -->
-          
-          <div class="si-wrapper" style="position:relative; float:left">
-            
-              <div style="display:none; float:right; padding-left:7px" class="si-btn mock-up">
-                  <span class="si-holder" style="font-size: 20px">&#127897;</span>
-              </div>
-          
-
-              <div class="searchField" style="overflow:auto">
-
-                  <div style="float:right; position:relative;">
-                      <!-- basicSearch goSearch searchHeight -->
-                      <div id="goSearch" class="detailbutton" href="#" style="float:left;"><span style="font-size:14pt;padding-left:2px">&#128269;</span></div>
-
-                      <!-- showAll showAllResults searchHeight -->
-                      <!--
-                      <div id="clearButton" class="detailbutton" style="float:left;margin:0px 0px 0px 0px">Clear</div>
-                      -->
-                      
-                  </div>
-
-                  <div style="overflow:auto; padding-right:10px; ">
-                    <!-- maxlength="400"  -->
-
-                    <!--
-                      onblurXX="SearchFormTextCheck(this, 0)" 
-                      onfocusXX="SearchFormTextCheck(this, 1)"
-                      onkeypressX="return SearchEnter(event);"
-                    -->
-                    <input id="keywordsTB" autocomplete="off" 
-                    style="padding-right:27px; width:100%" 
-                    class="filterClick mobileWide textInput si-input" 
-                    type="text" value="" 
-                    onkeyup="return SearchEnter(event);" 
-                    placeholder="Search">
-                  </div>
-              </div>
-              
-              
-
-
-            <div style="clear:both"></div>
-
-
-            <div class="keywordBubble">
-              <div id="keywordFields" class="fieldSelector filterBubbleHolder" style="position:relative; margin-top:5px">
-                    <div class="uparrow uparrow-grey" style="left: 34px;"></div>
-                    <div class="uparrow uparrow-white" style="left: 34px;">
-                    </div>
-
-                    <div class="filterBubble">
-
-                      <div id="findWhat" style="min-width: 176px">
-
-                        <!--
-                        <div class="hideAdvanced" style="float:right;cursor:pointer">&#10005;</div>
-                        -->
-
-                        <div style="display:none;float:left;margin-right:20px">
-                          <input type="checkbox" name="findLocation" id="findLocation" value="findLocation" checked><label for="findLocation" class="filterCheckboxTitle">Search Listings</label><br>
-                          <input type="checkbox" name="findNews" id="findNews" value="findNews" checked><label for="findNews" class="filterCheckboxTitle">Search Newsroom</label><br>
-                        </div>
-                        <div style="float:left;" id="selected_col_checkboxes">
-                        </div>
-                      </div>
-                    </div>
-                        
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-      <!-- END KEYWORD SEARCH -->
-
-      <!-- Down arrow -->
-        <div class="localX catchClick hideEmbed" style="position:relative;float:right;overflow:visible;display:none">
-
-          <div class="filterLabel">
-            <div class="filterLabelMain">
-            </div>
-          </div>
-
-          <div class="toggleListOptions pagebutton" style="margin-right:15px"><i class="material-icons show-on-load dots-vertical" style="font-weight:900; font-size: 32px; padding:0px; margin:0px">&#xE5C5;</i>
-          </div>
-
-          <div class="listOptions filterBubble">
-
-            <div class="hideEmbed" style="display:none">
-
-              <div class="reduceHeader menuItem" style="display:none"><i class="material-icons show-on-load" style="margin-top:-5px;">&#xE3C4;</i>Narrow Header</div>
-
-              <!-- Google Icons - search for "crop" -->
-              <div class="revealImage menuItem" style="display:none"><i class="material-icons" style="margin-top:-5px;">&#xE3C4;</i>Full Header Image</div>
-
-              <div class="hideInfo hideInfoLink menuItem"><i class="material-icons show-on-load" style="margin-top:-5px">&#xE88E;</i>Hide Bar</div>
-
-              <div class="showInfo showInfoLink menuItem" style="display:none"><i class="material-icons show-on-load" style="margin-top:-10px">&#xE88E;</i>Show Info</div>
-
-            </div>
-
-            
-            <div class="showImage menuItem" style="display:none"><i class="material-icons">slideshow</i>Slideshow</div>
-
-              <div class="hideMobile">
-              <div class="local menuItem refreshMap" style="display:none; cursor: pointer">
-                <i class="material-icons" style="font-weight:900; margin-top:-5px">&#xE5D5;</i> Refresh Map
-              </div>
-              <div class="local menuItem hashTest" style="display:none; cursor: pointer">
-                <i class="material-icons" style="font-weight:900; margin-top:-5px">&#xE5D5;</i> Hidden Hash
-              </div>
-
-            </div>
-
-            <!--
-            <div class="menuItem hideList" style="display:none">
-              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE5CD;</i> Hide List
-            </div>
-
-            <div class="menuItem showList">
-              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE8EF;</i> Show List
-            </div>
-            -->
-
-            <div class="menuItem hideMap" style="display:none">
-              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE55B;</i> Hide Map
-            </div>
-            <div class="menuItem showMap" style="display:none">
-              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE55B;</i> Show Map
-            </div>
-
-            <div class="menuItem showThumbnails layerContentHide" style="display:none">
-              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE8F0;</i> Modules
-            </div>
-
-          </div>
-
-        </div>
-        <!-- /Down arrow -->
-
-
-      </div><!-- /filterFields -->
-
-
-
-    
-
-  </div>
-  </div>
-
-  <div style="clear:both"></div>
+  
 
   <!-- HS CATEGORIES -->
   <div style="position:relative;overflow:visible;clear:both">
-  <div id="topPanel" class="card" style="display:none;">
+  <div id="topPanel" class="card leftOffset" style="display:none;">
 
     <div id="hideTopPanel" class="close-X" style="position:absolute;right:5px;top:8px;padding-right:10px">&#10005;</div>
 
@@ -763,6 +449,320 @@ class="headerbarheight"
 <div style="clear:both"></div>
 
 
+
+<!-- SEARCH FILTERS -->
+<div class="hideWhenPop">
+
+  <div id="filterFieldsHolder" class="contentfull noprint" style="margin:0 auto; padding-top:0px; width:100%">
+
+    <!-- Displayed on scroll up -->
+    <div class="showMenuSmNav" style="float:right; display:none">
+      <!-- delete
+      <div class="showSearch local" style="display:none;float:left">
+        <img src="/localsite/img/icon/search.png" style="width:27px; opacity:0.5; margin:10px 20px 0 0">
+      </div>
+      -->
+      <div class="showMenu" style="font-size:24px;color:#999;float:left">
+        <img src="/localsite/img/icon/hamburger.png" style="width:30px; opacity:0.5; margin-top:10px">
+      </div>
+    </div>
+
+    <div class="filterFields" style="min-height:54px; padding:2px 0 0px 0;">
+
+      <div id='sidecolumn-closed' class='hideprint' style='float:left'><div id='showSide' class='showSide' style='top:109px;'><img src='/localsite/img/icon/hamburger.png' style='width:30px; opacity:0.5'></div></div>
+
+      <div id="logoholderbar" style="display:none;float:left;">
+      </div>
+
+
+      <div style="float:right;">
+        <div class="filterLabel">
+            <div class="filterLabelMain">
+            </div>
+        </div>
+      </div>
+
+      <div class="hideMobile localX" style="float:right;display:none;">
+        <ul class="filterUL" style="margin:18px 12px 0 10px;clear:both;min-width:120px;">
+
+            <li data-id="all"><a href="#">Earth</a></li>
+            <li data-id="country" geo="US"><a href="#">USA</a></li>
+            <!--
+            <li data-id="state" class="selected" style="white-space:nowrap"><a href="#">Entire State</a></li>
+            
+            <li data-id="state" geo="US13" class="selected" style="white-space:nowrap"><a href="#">Georgia</a></li>
+            -->
+            
+            <li data-id="city" class="local" style="display:none"><a href="#">Cities</a></li>
+            <li data-id="counties"><a href="#">Counties</a></li>
+            <li data-id="zip" class="local" style="display:none,white-space:nowrap"><a href="#">Zip Code</a></li>
+            
+            <li data-id="latlon" class="hideFilter"><a href="#">Lat/Lon</a></li>
+            <li data-id="nearby" class="hideFilter"><a href="#">Nearby</a></li>
+            
+        </ul>
+      </div>
+
+
+      <div style="float:left">
+        <div style="overflow:visible" class="filterField locationTab">
+          <div class="filterLabel">
+            <div class="filterLabelMain">
+              Where
+              </div>
+          </div>
+
+          <!--
+            https://www.maxon.net/en/buy
+
+            overflow:auto; causes vertical scroll to appear here:
+          -->
+          <div style="position:relative;">
+            <div class="filterClick" id="filterClickLocation" style="display:none">
+
+              <div class="select-menu-arrow-holder">
+                <!-- We could place over all select menus
+                  https://fabriceleven.com/design/clever-way-to-change-the-drop-down-selector-arrow-icon/ -->
+                <i id="showLocations" class="material-icons" style="font-size:24px;display:none">&#xE313;</i>
+                <i id="hideLocations"  class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
+              </div>
+              <div class="filterClickText locationTabText">Locations</div><!-- Entire State -->
+            </div>
+          </div>
+        </div>
+
+
+        <div id="appSelectHolder" class="filterField layerclass">
+          <div id="catSearchHolder">
+
+              <div class="filterLabel">
+                <div class="filterLabelMain">
+                Show
+                </div>
+              </div>
+
+              <div class="filterClick showApps" style="position:relative; overflow:auto">
+
+                <div class="select-menu-arrow-holder">
+                    <i class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
+                    <i class="material-icons" style="font-size:24px;cursor:pointer;display:none;">&#xE313;</i>
+                </div>
+                <div style="width:100%">
+                  <!-- Goods & Services -->
+                  <div class="filterClickText" id="showAppsText" title="Top Industries">Top Industries</div>
+                </div>
+              </div>
+              <div id="hitRefreshNote" style="display: none;float:left; padding-top:8px; font-size:14px; margin-bottom:8px;">
+                  Hit reload (cmd-R) after changing the state to refresh the input-output chart below.
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:none;" class="local filterField layerclass mock-up suppliers exporter products">
+        <div id="catSearchHolder2">
+          <div class="filterLabel">
+            <div class="filterLabelMain">
+            Supply Categories<!--Goods & Services-->
+            </div>
+          </div>
+
+
+            <div id="catSearch" class="filterClick mobileWide textInput" placeholder="Categories" type="text" autocomplete="off" style="width: 200px; margin-top: 0px; position:relative; overflow:auto;">
+
+                <div class="select-menu-arrow-holder">
+                  <i class="material-icons" style="font-size:24px;cursor:pointer;">&#xE409;</i>
+                  <i class="material-icons show-on-load" style="font-size:24px;cursor:pointer;display:none;">&#xE313;</i>
+                </div>
+                <div style="width:100%">
+                  <div class="filterClickText" id="catSearchText">Categories</div>
+                </div>
+                <!--
+                <select id="selectProduct" class="selectMenu" style="float:left">
+                    <option value="1">HS Code(s)</option>
+                </select>
+                -->
+
+                <!--
+                onkeyup="return SearchCategories(event);"
+                readonly - prevents keyboard covering choices on mobile
+                -->
+                
+
+            </div>
+        </div>
+      </div>
+
+
+
+      <!-- KEYWORD SEARCH -->
+      <div>
+        <div class="filterField keywordField">
+
+          <!-- Search Companies -->
+          <div class="filterLabel">
+              <div class="filterLabelMain">
+                Search
+              </div>
+          </div>
+          <!--
+          <div style="position:absolute; right:8px; top:10px; z-index:1">
+            <i id="showAdvancedXXX" class="material-icons show-on-load" style="font-size:24px;cursor:pointer">&#xE409;</i>
+            
+          </div>
+          -->
+
+          <!-- speech input -->
+            <!-- was a button -->
+          
+          <div class="si-wrapper" style="position:relative; float:left">
+            
+              <div style="display:none; float:right; padding-left:7px" class="si-btn mock-up">
+                  <span class="si-holder" style="font-size: 20px">&#127897;</span>
+              </div>
+          
+
+              <div class="searchField" style="overflow:auto">
+
+                  <div style="float:right; position:relative;">
+                      <!-- basicSearch goSearch searchHeight -->
+                      <div id="goSearch" class="detailbutton" href="#" style="float:left;min-height:32px;border:1px solid #ccc"><span style="font-size:11pt;line-height:13pt;padding-left:2px;color:#666;">GO</span></div>
+
+                      <!-- &#128269; showAll showAllResults searchHeight -->
+                      <!--
+                      <div id="clearButton" class="detailbutton" style="float:left;margin:0px 0px 0px 0px">Clear</div>
+                      -->
+                      
+                  </div>
+
+                  <div style="overflow:auto; padding-right:10px; ">
+                    <!-- maxlength="400"  -->
+
+                    <!--
+                      onblurXX="SearchFormTextCheck(this, 0)" 
+                      onfocusXX="SearchFormTextCheck(this, 1)"
+                      onkeypressX="return SearchEnter(event);"
+                    -->
+                    <input id="keywordsTB" autocomplete="off" 
+                    style="padding-right:27px; width:100%" 
+                    class="filterClick mobileWide textInput si-input" 
+                    type="text" value="" 
+                    onkeyup="return SearchEnter(event);" 
+                    placeholder="Search">
+                  </div>
+              </div>
+              
+              
+
+
+            <div style="clear:both"></div>
+
+
+            <div class="keywordBubble">
+              <div id="keywordFields" class="fieldSelector filterBubbleHolder" style="position:relative; margin-top:5px">
+                    <div class="uparrow uparrow-grey" style="left: 34px;"></div>
+                    <div class="uparrow uparrow-white" style="left: 34px;">
+                    </div>
+
+                    <div class="filterBubble">
+
+                      <div id="findWhat" style="min-width: 176px">
+
+                        <!--
+                        <div class="hideAdvanced" style="float:right;cursor:pointer">&#10005;</div>
+                        -->
+
+                        <div style="display:none;float:left;margin-right:20px">
+                          <input type="checkbox" name="findLocation" id="findLocation" value="findLocation" checked><label for="findLocation" class="filterCheckboxTitle">Search Listings</label><br>
+                          <input type="checkbox" name="findNews" id="findNews" value="findNews" checked><label for="findNews" class="filterCheckboxTitle">Search Newsroom</label><br>
+                        </div>
+                        <div style="float:left;" id="selected_col_checkboxes"></div>
+                      </div>
+                    </div>
+                        
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+      <!-- END KEYWORD SEARCH -->
+
+      <!-- Down arrow -->
+        <div class="localX catchClick hideEmbed" style="position:relative;float:right;overflow:visible;display:none">
+
+          <div class="filterLabel">
+            <div class="filterLabelMain">
+            </div>
+          </div>
+
+          <div class="toggleListOptions pagebutton" style="margin-right:15px"><i class="material-icons show-on-load dots-vertical" style="font-weight:900; font-size: 32px; padding:0px; margin:0px">&#xE5C5;</i>
+          </div>
+
+          <div class="listOptions filterBubble">
+
+            <div class="hideEmbed" style="display:none">
+
+              <div class="reduceHeader menuItem" style="display:none"><i class="material-icons show-on-load" style="margin-top:-5px;">&#xE3C4;</i>Narrow Header</div>
+
+              <!-- Google Icons - search for "crop" -->
+              <div class="revealImage menuItem" style="display:none"><i class="material-icons" style="margin-top:-5px;">&#xE3C4;</i>Full Header Image</div>
+
+              <div class="hideInfo hideInfoLink menuItem"><i class="material-icons show-on-load" style="margin-top:-5px">&#xE88E;</i>Hide Bar</div>
+
+              <div class="showInfo showInfoLink menuItem" style="display:none"><i class="material-icons show-on-load" style="margin-top:-10px">&#xE88E;</i>Show Info</div>
+
+            </div>
+
+            
+            <div class="showImage menuItem" style="display:none"><i class="material-icons">slideshow</i>Slideshow</div>
+
+              <div class="hideMobile">
+              <div class="local menuItem refreshMap" style="display:none; cursor: pointer">
+                <i class="material-icons" style="font-weight:900; margin-top:-5px">&#xE5D5;</i> Refresh Map
+              </div>
+              <div class="local menuItem hashTest" style="display:none; cursor: pointer">
+                <i class="material-icons" style="font-weight:900; margin-top:-5px">&#xE5D5;</i> Hidden Hash
+              </div>
+
+            </div>
+
+            <!--
+            <div class="menuItem hideList" style="display:none">
+              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE5CD;</i> Hide List
+            </div>
+
+            <div class="menuItem showList">
+              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE8EF;</i> Show List
+            </div>
+            -->
+
+            <div class="menuItem hideMap" style="display:none">
+              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE55B;</i> Hide Map
+            </div>
+            <div class="menuItem showMap" style="display:none">
+              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE55B;</i> Show Map
+            </div>
+
+            <div class="menuItem showThumbnails layerContentHide" style="display:none">
+              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE8F0;</i> Modules
+            </div>
+
+          </div>
+
+        </div>
+        <!-- /Down arrow -->
+
+
+      </div><!-- /filterFields -->
+
+  </div>
+  </div>
+
+  <div style="clear:both"></div>
+<!-- /SEARCH FILTERS -->
+
 <!-- APP MENU -->
 <!-- From map-filters.js displayBigThumbnails function -->
 <!-- Currently map-filters.js limits loading to localhost -->
@@ -833,7 +833,7 @@ class="headerbarheight"
               <b><!--States--></b>
               <div id="state_select_holder">
                 <select id="state_select" name="state">
-                 <option value="">Choose a location...</option>
+                 <option value="">States...</option>
 <!-- Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 <option value="AL" stateid="1" lat="32.7396" lon="-86.8435" km="131174">Alabama</option>
 <option value="AK" stateid="2" lat="63.3474" lon="-152.8397" km="1478927">Alaska</option>
@@ -1177,9 +1177,12 @@ Displayed by hashChanged() in map-filters.js
 
 <div class="displayOnload" style="display:none;position:relative">
   <div id="map1" style="display:none"></div>
-  <div class="localonly" id="legendHolder" style="display:none">
+
+  <!-- not in use -->
+  <div id="legendHolder" style="display:none">
     <div id="allLegends"></div>
   </div>
+  
 </div>
 
 <div style="clear:both"></div>
@@ -1407,28 +1410,28 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 
   <div style="display:none;margin:20px 10px 20px 17px; min-width:195px; line-height: 1.5em;" class="layerclass ppe suppliers">
     <div class="catList" id="industryCatList">
-      <div>All Categories</div>
-      <div>Air Purifying Machines</div>
-      <div>Face Shields</div>
-      <div>Gloves</div>
-      <div>Hair Covers</div>
-      <div>Hand Sanitizer</div>
-      <div>Hospital Beds</div>
-      <div>Masks</div>
-      <div>Negative Pressure Machines</div>
-      <div>No-Touch Thermometers</div>
-      <div>Protective Barriers</div>
-      <div>Regular Thermometers</div>
-      <div>Safety Goggles</div>
-      <div>Sanitation Units</div>
-      <div>Sanitizing Spray</div>
-      <div>Sanitizing Wipes</div>
-      <div>Shoe Covers</div>
-      <div>Surgical Gowns</div>
-      <div>Surgical Masks</div>
-      <div>Tyvek Suits</div>
-      <div>Ventilators</div>
-      <div class="suppliers_pre" style="display:none">Warehouse</div>
+      <div class="all_categories">All Categories</div>
+      <div title="Air Purifying Machines">Air Purifying Machines</div>
+      <div title="Face Shields">Face Shields</div>
+      <div title="Gloves">Gloves</div>
+      <div title="Hair Covers">Hair Covers</div>
+      <div title="Hand Sanitizer">Hand Sanitizer</div>
+      <div title="Hospital Beds">Hospital Beds</div>
+      <div title="Masks">Masks</div>
+      <div title="Negative Pressure Machines">Negative Pressure Machines</div>
+      <div title="No-Touch Thermometers">No-Touch Thermometers</div>
+      <div title="Protective Barriers">Protective Barriers</div>
+      <div title="Regular Thermometers">Regular Thermometers</div>
+      <div title="Safety Goggles">Safety Goggles</div>
+      <div title="Sanitation Units">Sanitation Units</div>
+      <div title="Sanitizing Spray">Sanitizing Spray</div>
+      <div title="Sanitizing Wipes">Sanitizing Wipes</div>
+      <div title="Shoe Covers">Shoe Covers</div>
+      <div title="Surgical Gowns">Surgical Gowns</div>
+      <div title="Surgical Masks">Surgical Masks</div>
+      <div title="Tyvek Suits">Tyvek Suits</div>
+      <div title="Ventilators">Ventilators</div>
+      <div title="Warehouse" class="suppliers_pre" style="display:none">Warehouse</div>
     </div>
   </div>
 

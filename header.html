@@ -6,6 +6,7 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
 	min-height: auto !important; /* Removed min-height 56px set for map-filters bar. */
 }
 </style>
+<!-- Javascript may also reside in the header.html file. -->
 
 <div id="menuHolder" style="pointer-events: auto; background:#333; display:none">
 
@@ -62,11 +63,6 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
         <div class="showInfo showInfoButton1 pagebutton" style="float: left; padding: 3px 3px 3px 4px; color:#fff; display:none;"><i class="material-icons" style="font-size:28px;">&#xE88F;</i>
         </div>
 
-        <div class="showApps local" style="display:none;float:left;">
-          	<div style="display:none" class="showMobile">
-          	<i class="material-icons georgiaorg-hide" style="color:#fff">&#xE5C3;</i>
-      	  	</div>
-        </div>
       </div>
       <!-- /Right Links -->
 
@@ -193,6 +189,7 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
 			}
 
 		</style>
+		<!-- Cool top menu option -->
 		<div class="localX" style="display:none">
 			<div class="hideMobile">
 				<div class="topstack">
@@ -214,16 +211,16 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
 	</div>
 
 	<div class="upperIcons noprint" style="float:right;">
-		<div class="local" style="display:none; float:left">
-		<div class="showSearch">
-			<!-- To do: use javascript to retain the current window.location.search value from URL when on a search page. 
-			add -active rollover
-			-->
-			<img src="../localsite/img/icon/search.png" style="width:27px; opacity:0.5">
-			<!--
-			<div style="font-size:18pt;padding:2px 4px 0 2px;">&#128269;</div>
-			-->
-		</div>
+		<div style="float:left">
+			<div class="showSearch">
+				<!-- To do: use javascript to retain the current window.location.search value from URL when on a search page. 
+				add -active rollover
+				-->
+				<img src="../localsite/img/icon/search.png" style="width:27px; opacity:0.5">
+				<!--
+				<div style="font-size:18pt;padding:2px 4px 0 2px;">&#128269;</div>
+				-->
+			</div>
 		</div>
 		<div class="hideMobile" style="float:left;">
 		      <div class="expandToFullscreen" style="border:0px; padding: 3px 3px; cursor: pointer;">
@@ -238,107 +235,18 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
 		      </div>
 	    </div>
 
-		<div class="showMenu" style="displayX:none; float:left;font-size:24px; color:#999;">
-			<img src="/localsite/img/icon/hamburger.png" style="width:30px; opacity:0.5">
-
-			
-			<!--
-			<div style="font-size: 28px; color:#999; padding: 2px 6px 0 2px; margin-top:-5px">☰</div>
-			-->
+		<div style="float:left">
+			<div class="showMenu">
+				<i class="material-icons show-on-load" style="font-size:34px;opacity:0.2; margin-top:-3px" data="apps">&#xE5C3;</i>
+			</div>
 		</div>
+
 	</div>
 
 	
 
 </div>
 <div id="headeroffset" style="height:100px;"></div>
-
-<script>
-$(document).ready(function () {
-    $('.expandToFullscreen, .reduceFromFullscreen').click(function(event) {
-      toggleFullScreen();  
-    });
-  	$('.showSearch').click(function(event) {		
-		showSearchClick();
-	});
-  	if (location.host.indexOf('model') >= 0) {
-		$(".showSearch").show();
-		$(".showSearch").removeClass("local");
-  	}
-
-  	function showSearchClick() {
-		if (!$("#filterFieldsHolder").length) { // Doesn't exist
-			window.location = "/localsite/info/" + window.location.hash;
-			return;
-		}
-		console.log("showSearchClick")
-		if ($("#filterFieldsHolder").is(':visible')) {
-			$("#filterFieldsHolder").hide();
-			//$(".filterbarOffset").hide();
-			$("#filterbaroffset").hide();
-			//$("#pageLinksHolder").hide();
-		} else {
-			$("#filterFieldsHolder").show();
-			//$(".filterbarOffset").show();
-			$("#filterbaroffset").show();
-			$(".hideWhenPop").show();
-		}
-	    return;
-
-
-	    // NOT CURRENTLY USED
-
-
-	    //$(".filterFields").hide();
-		
-
-	    //$(".moduleBackgroundImage").addClass("moduleBackgroundImageDarken"); // Not needed since filters are not over image.
-	    //$(".siteHeaderImage").addClass("siteHeaderImageDarken"); // Not needed since filters are not over image.
-
-	    //$('.topButtons').show(); // Avoid showing bar when no layer.
-	    $(".layerContent").show(); // For main page, over video.
-
-	    //$(".showFilters").hide(); // Avoid hiding because title jumps.
-	    //$(".hideFilters").show();
-
-	    // Coming soon - Select if searching Georgia.org or Georgia.gov
-	    //$(".searchModuleIconLinks").show();
-	    $(".hideWhenFilters").hide();
-
-	    $(".filterPanelHolder").show();
-	    //$(".filterPanelWidget").show();
-	    $("#filterPanel").show(); // Don't use "normal", causes overflow:hidden.
-	    $(".searchHeader").show();
-	    $("#panelHolder").show();
-
-
-	    $(".showFiltersClick").hide();
-	    $(".hideFiltersClick").show();
-
-	    // Would remove active from Overview Map
-	    $(".horizontalButtons .layoutTab").removeClass("active");
-	    $(".showFiltersButton").addClass("active");
-
-	    $(".hideSearch").show();
-	    //$(".hideFilters").show(); // X not needed since magnifying glass remains visible now.
-	    //$("#hideSearch").show();
-	    if ($(".settingsPanel").is(':visible')) {
-	        hideSettings();
-	    }
-	    if ($("#menuHolder").is(':visible')) {
-	        $('.hideMetaMenu').trigger("click");
-	    }
-	    //updateOffsets();
-
-	    // Hide because map is displayed, causing overlap.
-	    // Could be adjusted to reside left of search filters.
-	    //$(".quickMenu").hide();
-	}
-});
-</script>
-
-
-
 
 
 <!-- nav.html -->

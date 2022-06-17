@@ -26,9 +26,6 @@
 #appSelectHolder .showApps {
   padding-right:4px;
 }
-.headerShort .showApps {
-  padding-right:20px;
-}
 .showApps > .material-icons {
   color: #ccc;
   font-size:36px;
@@ -43,6 +40,15 @@
 #filterFieldsHolder {
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
+  z-index: 999;
+}
+.filterFieldsHolderFixed {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background-color: #fff;
+  border-bottom: #aaa;
+  z-index: 99999;
 }
 #filterLocations {
   background-color: #fcfcfc;
@@ -452,7 +458,7 @@
 .headerOffset {
     height: 100px;
 }
-#headerFixed {
+#headerLarge {
   position: fixed;
   top:0;
   left:0;
@@ -463,6 +469,9 @@
   /* box-shadow: 0 1px 7px rgba(0, 0, 0, 0.1); */
   overflow: visible;
   min-height: 56px;
+}
+.headerLargeHide {
+  display: none;
 }
 #fixedFooter {
   position: fixed;

@@ -19,7 +19,6 @@ if(typeof localObject == 'undefined') {
 }
 let us_stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78,}
 
-
 if(typeof localObject.stateCountiesLoaded == 'undefined') {
     localObject.stateCountiesLoaded = []; // Holds a geo code for each state and province loaded. (but not actual counties)
     // Later: localObject.stateZipsLoaded
@@ -29,6 +28,9 @@ if(typeof localObject.geo == 'undefined') {
 }
 if(typeof localObject.state == 'undefined') {
     localObject.state = {}; // Holds states.
+}
+if(typeof localObject.layers == 'undefined') {
+    localObject.layers = {}; // Holds layers.
 }
 
 function populateFieldsFromHash() {
@@ -353,8 +355,6 @@ $(document).ready(function () {
     'lon':'-81.4979'
     }); $('.fieldSelector').hide(); return false;" href="#regiontitle=Southeast+Coastal+Georgia&geo=US13001,US13005,US13127,US13161,US13229,US13305&lat=31.1891&lon=-81.4980">Southeast Coastal</a></li>
  	*/
-
-    // REACTIVE - Temp to test why Goods & Services is not clickable on some domains.
     
     $(document).click(function(event) { // Hide open menus
     	console.log("document click -  Hide open menus")
@@ -368,16 +368,25 @@ $(document).ready(function () {
 	
 
 	function hideNonListPanels() {
+        updateHash({"mapview":""});
 		$(".fieldSelector").hide(); // Avoid since this occurs when typing text in search field.
     	$('#topPanel').hide();
     	$("#introText").hide();
-    	$("#mapPanel").hide();
+    	$("#mapPanel").hide(); $("#filterClickLocation").removeClass("filterClickActive");
     	if(location.host.indexOf('localhost') >= 0) {
     		$('#mapButton').show();
     	}
     }
-	$("#goSearch").click(function() {
-	    //hideNonListPanels(); // Omitted this instead, remove comment above.
+    $("#goSearch").click(function(event) {
+        let searchQuery = $('#keywordsTB').val();
+        let search = $('.selected_col:checked').map(function() {return this.id;}).get().join(',');
+        // To do: set search to empty array if all search boxes are checked.
+        updateHash({"q":searchQuery,"search":search});
+        if(!hash.show) {
+            window.location = "/localsite/info/" + location.hash;
+            return;
+        }
+	    hideNonListPanels(); // Omitted this instead, remove comment above.
 
 	    if ($('#catListHolder').css('display') == 'none' && $('#catListHolderShow').css('display') == 'none') {
 	    	// In case user has resized from mobile to full and industry list is not available.
@@ -385,10 +394,9 @@ $(document).ready(function () {
 			$('#catListHolderShow').show();
 			$('#catListHolderShow').text('Product Categories');
 		}
-		let searchQuery = $('#keywordsTB').val();
-		let search = $('.selected_col:checked').map(function() {return this.id;}).get().join(',');
-		// To do: set search to empty array if all search boxes are checked.
-		updateHash({"q":searchQuery,"search":search});
+		
+		
+		
 		loadMap1("map-filters.js");
 	    event.stopPropagation();
    	});
@@ -399,7 +407,9 @@ $(document).ready(function () {
 			$("#keywordFields").hide();
 		} else {
 			$("#filterLocations").hide();
-			$("#keywordFields").show();
+            if (!$("#selected_col_checkboxes").is(':empty')) {
+			 $("#keywordFields").show();
+            }
 		}
 	    event.stopPropagation();
 	
@@ -1519,10 +1529,13 @@ function SearchFormTextCheck(t, dirn) {
 
 function SearchEnter(event1) {
 	var kCode = String.fromCharCode(event1.keyCode);
-	//if (kCode == "\n" || kCode == "\r") {
-        $("#goSearch").click();
-	//	return false;
-	//}
+	////if (kCode == "\n" || kCode == "\r") {
+
+        // Reactivate on pages where auto-update appropriate.
+        //$("#goSearch").click();
+
+	////	return false;
+	////}
 }
 function isInt(value) {
   var x;
@@ -1629,16 +1642,15 @@ function SearchProductCodes(event1) {
 	event.stopPropagation();
 }
 
-
-
 function changeCat(catTitle) {
     if (catTitle) {
         //alert("changeCat catTitle: " + catTitle);
     	catTitle = catTitle.replace(/_/g, ' ');
         //alert("changeCat catTitle: " + catTitle);
     }
-    $('#catSearch').val(catTitle);
-
+    //$('#catSearch').val(catTitle);
+    //alert("catTitle1 " + catTitle)
+    $('#catSearchText').text(catTitle);
 	$('#items').prop("checked", true); // Add front to parameter name.
 
 	$('#industryCatList > div').removeClass('catListSelected');
@@ -1715,7 +1727,7 @@ $(document).ready(function () {
     if (catString == "All_Categories") {
         catString = "";
     }
-    goHash({"cat":catString}); // Let the hash change trigger updates
+    goHash({"cat":catString,"name":""}); // Let the hash change trigger updates
     event.stopPropagation();
   });
 
@@ -2121,9 +2133,7 @@ function localJsonpCallback(json) {
     alert(json.Message);
   }
 }
-
 function initSiteObject(layerName) {
-//alert("initSiteObject"); // Gave more time for app icon to load.
 	let hash = getHash();
 	//if(location.host.indexOf('localhost') >= 0) {
 	    // Greenville:
@@ -2133,86 +2143,95 @@ function initSiteObject(layerName) {
 	    //var layerJson = local_app.community_data_root() + "us/state/GA/ga-layers.json"; // CORS prevents live
 	    // The URL above is outdated. Now resides here:
 	    let layerJson = local_app.localsite_root() + "info/data/ga-layers-array.json";
-        //alert("layerJson " + layerJson)
-	    if(location.host.indexOf("georgia") >= 0) {
-	    	// For PPE, since localhost folder does not reside on same server
+        if(location.host.indexOf("georgia") >= 0) {
+	    	// For B2B Recyclers, since localsite folder does not reside on same server.
 	    	layerJson = "https://model.earth/localsite/info/data/ga-layers-array.json";
 	    	console.log("Set layerJson: " + layerJson);
 		}
         //alert(layerJson)
-	    console.log(layerJson);
+	    //console.log(layerJson);
+
+        if (localObject.layers.length >= 0) {
+            return;
+            //return localObject.layers;
+        }
 	    let layerObject = (function() {
 
-            $.getJSON(layerJson, function (layerObject) {
+            $.getJSON(layerJson, function (layers) {
 
-            /*
-	        let json = null;
-	        $.ajax({
-	            'type': 'GET',
-	            'async': true,
-	            'global': false,
-	            'url': layerJson,
-                'dataType': "jsonp",
-	            'jsonpCallback': 'localJsonpCallback',
-	            'success': function (layerObject) {
-	                consoleLog("Menu layers json loaded within initSiteObject. location.hash: " + location.hash);
-	       */
+                console.log("The localObject.layers");
+                console.log(localObject.layers);
 
-	                // siteObjectFunctions(layerObject); // could add to keep simple here
-                    localObject.layers = layerObject;
-                    console.log("2 localObject.layers");
-                    console.log(localObject.layers);
+                // Create an object of objects so show.hash is the layers key
+                $.each(layers, function (i) {
 
-	                $(document).on("click", ".showApps, .hideApps", function(event) {
-	          			console.log('.showApps click');
+                    // To Do, avoid including "item" in object since it is already the key.
+                    localObject.layers[layers[i].item] = layers[i];
 
-                        if ($("#bigThumbPanelHolder").is(':visible')) {
-	          			//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) { // Prevented tab click from closing app menu
-	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
-	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
+                    //$.each(layerObject[i], function (key, val) {
+                    //    alert(key + val);
+                    //});
+                });
 
-	          				$("#appSelectHolder .showApps").removeClass("filterClickActive");
-	          				$("#showAppsText").text($("#showAppsText").attr("title"));
-	          				$(".hideWhenPop").show();
-	          				// To do: Only up scroll AND SHOW if not visible
-	          				$('html,body').animate({
-								scrollTop: 0
-							});
+                console.log("The localObject");
+                console.log(localObject);
 
-	          				$("#bigThumbPanelHolder").hide();
-	          				$('.showApps').removeClass("active");
+                //console.log("The localObject.layers");
+                //console.log(localObject.layers);
 
-	          			} else {
-	          				console.log("call showThumbMenu")
-                            if ($("#filterLocations").is(':visible')) {
-                                filterClickLocation(); // Toggle county-select closed
-                            }
-	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
-	          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
+                let layer = hash.show;
+                //alert(hash.show)
+                //alert(localObject.layers[layer].state)
+                $(document).on("click", ".showApps, .hideApps", function(event) {
+          			console.log('.showApps click');
 
-	          				$("#showAppsText").text("Goods & Services");
-	          				$("#appSelectHolder .showApps").addClass("filterClickActive");
-							showThumbMenu(hash.show);
-                            $('html,body').animate({
-                            	//- $("#filterFieldsHolder").height()  
-                                scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
-                            });
-	          			}
-	          			
-					  	event.stopPropagation();
-					});
-	          		// These should be lazy loaded when clicking menu
-	                //displayBigThumbnails(0, hash.show, "main");
-	                //displayHexagonMenu("", layerObject);
-	                
-	                if (!hash.show && !param.show) { // INITial load
-	                	// alert($("#fullcolumn").width()) = null
-	                	if ($("body").width() >= 800) {
+                    if ($("#bigThumbPanelHolder").is(':visible')) {
+          			//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) { // Prevented tab click from closing app menu
+          				$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
+          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
 
-	                		//showThumbMenu(hash.show);
-	                	}
-	            	}
-	                return layerObject;
+          				$("#appSelectHolder .showApps").removeClass("filterClickActive");
+          				$("#showAppsText").text($("#showAppsText").attr("title"));
+          				$(".hideWhenPop").show();
+          				// To do: Only up scroll AND SHOW if not visible
+          				$('html,body').animate({
+							scrollTop: 0
+						});
+
+          				$("#bigThumbPanelHolder").hide();
+          				$('.showApps').removeClass("active");
+
+          			} else {
+          				console.log("call showThumbMenu")
+                        if ($("#filterLocations").is(':visible')) {
+                            filterClickLocation(); // Toggle county-select closed
+                        }
+          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
+          				$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
+
+          				$("#showAppsText").text("Top Industries");
+          				$("#appSelectHolder .showApps").addClass("filterClickActive");
+						showThumbMenu(hash.show);
+                        $('html,body').animate({
+                        	//- $("#filterFieldsHolder").height()  
+                            scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
+                        });
+          			}
+          			
+				  	event.stopPropagation();
+				});
+          		// These should be lazy loaded when clicking menu
+                //displayBigThumbnails(0, hash.show, "main");
+                //displayHexagonMenu("", layerObject);
+                
+                if (!hash.show && !param.show) { // INITial load
+                	// alert($("#fullcolumn").width()) = null
+                	if ($("body").width() >= 800) {
+
+                		//showThumbMenu(hash.show);
+                	}
+            	}
+                //return layerObject;
 	            
 	        });
 	    })(); // end layerObject
@@ -2231,12 +2250,12 @@ function showThumbMenu(activeLayer) {
 }
 function callInitSiteObject(attempt) { 
     //alert("callInitSiteObject")
-    if (localObject.layers) {
+    if (localObject.layers.length >= 0) {
         //alert("done return")
         return;
     }
 	if (typeof local_app !== 'undefined') { // wait for local_app
-		localObject.layers = initSiteObject("");
+		initSiteObject("");
         console.log("localObject.layers");
         console.log(localObject.layers);
 		// Not available here since async in initSiteObject()
@@ -2247,7 +2266,7 @@ function callInitSiteObject(attempt) {
 		setTimeout( function() {
    			console.log("callInitSiteObject again")
 			callInitSiteObject(attempt+1);
-   		}, 10 );
+   		}, 100 );
 	} else {
 		console.log("ERROR: Too many search-filters local_app attempts.");
 	}
@@ -2388,7 +2407,10 @@ document.addEventListener('hiddenhashChangeEvent', function (elem) {
 if(typeof hiddenhash == 'undefined') {
     var hiddenhash = {};
 }
-callInitSiteObject(1); // Loads localObject.layers for later use when showApps clicked
+
+// Load localObject.layers for later use when showApps clicked
+// Also adds state hash for layers requiring a state.
+callInitSiteObject(1);
 
 
 function hashChanged() {
@@ -2441,7 +2463,7 @@ function hashChanged() {
             if (hash.show != "vehicles") {
                 $("#introframe").hide();
             }
-            if (hash.show != "ppe") {
+            if (hash.show != "ppe" || hash.show != "suppliers") {
                 $(".layerclass.ppe").hide();
             }
             if (hash.show != "opendata") {

@@ -14,7 +14,12 @@ if(typeof dataObject == 'undefined') {
 if(typeof priorHash == 'undefined') {
   var priorHash = {};
 }
-
+if(typeof localObject == 'undefined') {
+    var localObject = {};
+}
+if(typeof localObject.layerCategories == 'undefined') {
+    localObject.layerCategories = {}; // Categories from Google Sheet tab.
+}
 
 // Set your own Mapbox access token below.
 // Restrict which domains your token is loaded through.
@@ -95,7 +100,7 @@ function hashChangedMap() {
   }
 
   // Temp for PPE
-  if (!hash.state && location.host.indexOf("georgia") >= 0) {
+  if ((hash.show == "ppe" || hash.show == "suppliers") && !hash.state && location.host.indexOf("georgia") >= 0) {
     hash.state = "GA";
     hiddenhash.state = "GA";
   }
@@ -218,20 +223,22 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
   if (typeof d3 !== 'undefined') {
     if (!dp.dataset && !dp.googleCSV) {
       console.log('CANCEL loadFromSheet. No dataset selected for top map. May not be one for state.');
+      /*
       if (!hash.state) {
         if (location.host.indexOf('localhost') >= 0) {
           alert("Localhost message: State may be required for requested data. Appending state GA.");
         }
         goHash({'state':'GA'});
+        hash = getHash();
         return;
       }
+      */
       $("#" + whichmap).hide();
       $("#list_main").hide();
       if (param.showsearch == "true") { // For EPD products io/template
         $(".keywordField").show();
       } else {
         $("#data-section").hide();
-        $(".keywordField").hide();
       }
       return;
     } else {
@@ -453,20 +460,21 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
             //console.log(dp.data[i]);
           }
           */
-
-
           processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
       })
     } else if (dp.googleCSV) {
       d3.csv(dp.googleCSV).then(function(data) { // One row per line
-        // LOAD GOOGLE SHEET HERE
-
+        // LOAD GOOGLE SHEET
           dp.data = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
-          // Make element key always lowercase
-          //dp.data_lowercase_key;
-
-          processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
-  
+          if (dp.googleCategories) {            
+            d3.csv(dp.googleCategories).then(function(data) {
+              // LOAD CATEGORIES TAB - Category, SubCategory, SubCategoryLong
+              localObject.layerCategories[dp.show] = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
+              processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
+            });
+          } else {
+            processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
+          }
       });
 
 
@@ -548,7 +556,8 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
     if (location.host.indexOf('localhost') >= 0) {
       // OpenStreetMap tiles stopped working on localhost in March of 2022. Using Grayscale locally for small map instead.
       // "Access denied. See https://operations.osmfoundation.org/policies/tiles/"
-      basemaps2["Grayscale"].addTo(map2); // Set the initial baselayer.
+      //basemaps2["Grayscale"].addTo(map2); // Set the initial baselayer.
+      basemaps2["OpenStreetMap"].addTo(map2); // Set the initial baselayer. // Working as of June 2022.
     } else {
       basemaps2["OpenStreetMap"].addTo(map2); // Set the initial baselayer.
     }
@@ -995,8 +1004,10 @@ function addIcons(dp,map,map2) {
     }
     if (element.property_link) {
       output += "<a href='" + element.property_link + "'>Property Details</a><br>";
-    } else if (element["name"]) {
-      output += "<a onclick='goHash({\"name\":\"" + element["name"].replace(/\ /g,"_").replace(/'/g,"\'") + "\"}); return false;' href='#show=" + hash.show + "&name=" + element["name"].replace(/\ /g,"_").replace(/'/g,"\'") + "'>View Details</a><br>";
+    } else if (element[dp.nameColumn] || element["name"]) {
+      let entityName = element[dp.nameColumn] || element["name"];
+      entityName = entityName.replace(/\ /g,"_").replace(/'/g,"\'")
+      output += "<a onclick='goHash({\"name\":\"" + entityName + "\"}); return false;' href='#show=" + hash.show + "&name=" + entityName + "'>View Details</a><br>";
     }
     // ADD POPUP BUBBLES TO MAP POINTS
     if (circle) {
@@ -1322,6 +1333,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
   dp.listLocation = false; // Hides Waze direction link in list, remains in popup.
 
+  dp.show = show;
   if (show && show.length) {
     $("." + show).show(); // Show layer's divs, after hiding all layer-specific above.
   }
@@ -1474,7 +1486,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       } else if (show == "recyclers") {
         dp.listTitle = "Georgia Commercial Recyclers";
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
-
+        dp.googleCategories = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=381237740&single=true&output=csv";
         dp.nameColumn = "organization name";
         dp.titleColumn = "organization name";
         dp.searchFields = "organization name";
@@ -1482,16 +1494,17 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
         dp.valueColumn = "category";
         dp.valueColumnLabel = "Category";
-
+        dp.catColumn = "Category";
+        dp.subcatColumn = "Materials Accepted";
         dp.itemsColumn = "Materials Accepted"; // Needs to remain capitalized. Equivalent to PPE items column, checkboxes
 
         // https://map.georgia.org/recycling/
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "Submit updates using our <a href='https://map.georgia.org/recycling/'>Google Form</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a>.&nbsp; View additional <a href='../map/recycling/ga/'>recycling datasets</a>.";
+        dp.listInfo = "Submit updates using our <a href='https://map.georgia.org/recycling/'>Google Form</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a>.&nbsp; View&nbsp;additional <a href='../map/recycling/ga/'>recycling datasets</a>.";
         dp.search = {"In Main Category": "Category", "In Materials Accepted": "Materials Accepted", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
 
       } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills")) { // recycling-processors
-        if (!hash.state || hash.state == "GA") {
+        if (hash.state == "GA") {
           dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
           //dp.googleDocID = "1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY";
           dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
@@ -1859,7 +1872,6 @@ function onTabletopLoad(dp1) {
 
 
 function loadGeos(geo, attempts, callback) {
-
   // load only, no search filter display - get county name from geo value.
   // created from a copy of loadStateCounties() in search-filters.js
 
@@ -1868,10 +1880,14 @@ function loadGeos(geo, attempts, callback) {
     let hash = getHash();
     let stateID = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78,}
     //let theState = "GA"; // TEMP - TODO: loop trough states from start of geo
-    let theState = hash.state.split(",")[0].toUpperCase();
-    if (theState && theState.includes(",")) {
-      theState = theState.substring(0, 2);
+    let theState = hash.state ? hash.state.split(",")[0].toUpperCase() : undefined;
+    if (!theState) {
+      goHash({'mapview':'state'});
+      filterClickLocation();
     }
+    //if (theState && theState.includes(",")) {
+    //  theState = theState.substring(0, 2);
+    //}
     var geos=geo.split(",");
     fips=[]
     for (var i = 0; i < geos.length; i++){
@@ -2009,6 +2025,7 @@ function showList(dp,map) {
   console.log("dp.search ")
   console.log(dp.search)
 
+  $("#detaillist").text(""); // Clear prior results
   if (dp.search && $("#activeLayer").text() != dp.dataTitle) { // Only set when active layer changes, otherwise selection overwritten on change.
     
     let search = [];
@@ -2059,6 +2076,37 @@ function showList(dp,map) {
   } else if (hash.cat) {
     keyword = hash.cat;
   }
+
+  // Filter by all subcategories
+  let subcatArray = [];
+  let subcatObject = {};
+  subcatObject["null"] = {};
+  subcatObject["null"].count = 0; // To store a count of rows with no subcategoires
+  if (localObject.layerCategories[dp.show] && localObject.layerCategories[dp.show].length >= 0) {
+    //if (localObject.layerCategories[dp.show][hash.cat] >= 0) {
+      let subcatList = "";
+      
+      $.each(localObject.layerCategories[dp.show], function(index,value) {
+        if (value.Category == hash.cat || !hash.cat) {
+          let subcatTitle = value.SubCategoryLong || value.SubCategory;
+          subcatList += "<li><a href='#' onClick='goHash({\"cat\":\"" + value.Category + "\", \"subcat\":\"" + value.SubCategory + "\"}); return false;'>" + subcatTitle + "</a></li>";
+          subcatArray.push(value.SubCategory);
+          if (value.SubCategory.length > 0) {
+            //console.log("value.SubCategory " + value.SubCategory)
+            subcatObject[value.SubCategory] = {};
+            subcatObject[value.SubCategory].count = 0; // A count for matches later
+          }
+        }
+      });
+      if (subcatArray.length > 1) {
+        $("#detaillist").prepend("<ul style='margin:0px'>" + subcatList + "</ul><br>");
+        if (dp.show == "recyclers") {
+          //$("#detaillist").prepend("Our subcategories are not yet fully populated");
+        }
+      }
+    //}
+  }
+
   if ($("#catSearch").val()) {
     products = $("#catSearch").val().replace(" AND ",";").toLowerCase().replace(allItemsPhrase,"");
     products_array = products.split2(/\s*;\s*/);
@@ -2080,8 +2128,11 @@ function showList(dp,map) {
   var data_sorted = []; // An array of objects
   var data_out = [];
   let catList = {}; // An array of objects, one for each unique category
+  if (localObject.layerCategories[hash.show] && localObject.layerCategories[hash.show].toLowerCase >= 0) {
+    catList = localObject.layerCategories[hash.show];
+  }
 
-  $("#detaillist").text(""); // Clear prior results
+  
 
   if (1==2) {
     // ADD DISTANCE
@@ -2145,6 +2196,33 @@ function showList(dp,map) {
         productMatchFound++;
     } else 
     */
+
+    // count "filtered" populated for active rows only
+    if (localObject.layerCategories[dp.show] && localObject.layerCategories[dp.show].length >= 0) {
+      if (elementRaw[dp.catColumn].length > 0 && elementRaw[dp.catColumn] == hash.cat) {
+        if (dp.subcatColumn && elementRaw[dp.subcatColumn].length <= 0) {
+          subcatObject["null"].count = subcatObject["null"].count + 1;
+        } else {
+          // Walk the array of possible subcats for the category.
+          // Since some will have multiple subcats
+          // This could be performed asynchronously during second iteration of rows.
+
+          // Should we walk on the current subcatObject?
+          console.log(localObject.layerCategories[dp.show])
+          $.each(localObject.layerCategories[dp.show], function(index,value) {
+            console.log("value.SubCategory: " + value.SubCategory);
+            //console.log(subcatObject[value.SubCategory]);
+            if (subcatObject[value.SubCategory] == elementRaw[dp.subcatColumn]) {
+              
+              subcatObject[value.SubCategory].count = subcatObject[value.SubCategory].count + 1;
+              subcatObject[value.SubCategory].count = 12345;
+              console.log(subcatObject[value.SubCategory]);
+              //alert(subcatObject[value.Category].count)
+            }
+          });
+        }
+      }
+    }
 
     //if (keyword.length > 0 || products_array.length > 0 || productcode_array.length > 0) {
 
@@ -2296,6 +2374,24 @@ function showList(dp,map) {
     //}
 
     //console.log("foundMatch: " + foundMatch + ", productMatchFound: " + productMatchFound);
+
+    if (foundMatch == 0 && productMatchFound == 0) {
+      if (subcatArray.length > 0) {
+        let subcatColumn = "SubCategory";
+        if (dp.subcatColumn) {
+          subcatColumn = dp.subcatColumn;
+        }
+        if (elementRaw[subcatColumn].length > 0) {
+          for (const subcat of subcatArray) {
+              //console.log("What: " + elementRaw[subcatColumn] + " - " + subcat);
+              if (elementRaw[subcatColumn] && elementRaw[subcatColumn].indexOf(subcat) >= 0) {
+                //alert("fount subcat")
+                foundMatch++;
+              }
+          }
+        }
+      }
+    }
 
     var key, keys = Object.keys(elementRaw);
     var n = keys.length;
@@ -2603,11 +2699,25 @@ function showList(dp,map) {
 
         output += "</div>"; // End Lower
         output += "</div>"; // End detail
-
+        
         $("#detaillist").append(output);
       }
     }
   });
+  /*
+  if (localObject.layerCategories[dp.show].length >= 0) {
+    //alert("found")
+    let subcatList = "";
+    $.each(localObject.layerCategories[dp.show], function(index,value) {
+      //$('select.mrdDisplayBox').addOption(value.Id, value.Id + ' - ' + value.Number, false);
+      subcatList += value.SubCategory + "<br>";
+    });
+    $("#detaillist").prepend(subcatList);
+  }
+  */
+  if (subcatObject["null"].count > 0) {
+    $("#detaillist").prepend(hash.cat + " rows needing subcategory: " + subcatObject["null"].count);
+  }
   console.log("Total " + dp.dataTitle + " " + countDisplay + " of " + count);
 
   //console.log("catList:");
@@ -3019,10 +3129,10 @@ var topMenuHeight = 150;
 
 var mapFixed = false;
 var previousScrollTop = $(window).scrollTop();
-
 $(window).scroll(function() {
   if (revealHeader == false) {
-    $("#headerFixed").addClass("headerShort"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
+    $("#headerLarge").addClass("headerLargeHide"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
+    $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
     if (param.showheader != "false") {
       $('.showMenuSmNav').show(); 
     }
@@ -3033,13 +3143,14 @@ $(window).scroll(function() {
     $('#showSide').css("top","7px");
 
     if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
-      $('#headerFixed').hide();
+      $('#headerLarge').hide();
     }
     
     revealHeader = true; // For next manual scroll
   } else if ($(window).scrollTop() > previousScrollTop) { // Scrolling Up
     if ($(window).scrollTop() > previousScrollTop + 20) { // Scrolling Up fast
-      $("#headerFixed").addClass("headerShort"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
+      $("#headerLarge").addClass("headerLargeHide"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
+      $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
       if (param.showheader != "false") {
         $('.showMenuSmNav').show(); 
       }
@@ -3049,13 +3160,14 @@ $(window).scroll(function() {
       $('#sidecolumnContent').css("top","54px");
       $('#showSide').css("top","7px");
       if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
-        $('#headerFixed').hide();
+        $('#headerLarge').hide();
       }
     }
   } else { // Scrolling Down
     if ($(window).scrollTop() < (previousScrollTop - 20)) { // Reveal if scrolling down fast
-      $("#headerFixed").removeClass("headerShort"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
+      $("#headerLarge").removeClass("headerLargeHide"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
       //$('#filterFieldsHolder').show();
+      $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
       if ($("#headerbar").length) {
         if (param.showheader != "false") {
           $('.headerOffset').show();
@@ -3064,10 +3176,11 @@ $(window).scroll(function() {
         $('#sidecolumnContent').css("top","150px");
         $('#showSide').css("top","108px");
       }
-      $('#headerFixed').show();
+      $('#headerLarge').show();
     } else if ($(window).scrollTop() == 0) { // At top
-      $("#headerFixed").removeClass("headerShort"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
+      $("#headerLarge").removeClass("headerLargeHide"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
       //$('#filterFieldsHolder').show();
+      $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
       if ($("#headerbar").length) {
         if (param.showheader != "false") {
           $('.headerOffset').show();
@@ -3076,7 +3189,7 @@ $(window).scroll(function() {
         $('#sidecolumnContent').css("top","150px");
         $('#showSide').css("top","108px");
       }
-      $('#headerFixed').show();
+      $('#headerLarge').show();
     }
   }
   previousScrollTop = $(window).scrollTop();
@@ -4002,4 +4115,3 @@ console.log('end of localsite/js/map.js');
 // Why does this work on /community/start/maps/counties/counties.html
 //console.timeEnd("End of localsite/js/map.js: ");
 //console.timeEnd("Processing time: ");
-

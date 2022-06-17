@@ -516,8 +516,48 @@ function consoleLog(text,value) {
   }
   
 }
+function loadLocalTemplate() {
+  let bodyFile = theroot + "map/index.html #insertedText";
+  //console.log("Before template Loaded: " + bodyFile);
 
+  $("#bodyFile").load(bodyFile, function( response, status, xhr ) {
+    consoleLog("Template Loaded: " + bodyFile);
+    if (typeof relocatedStateMenu != "undefined") {
+      relocatedStateMenu.appendChild(state_select); // For apps hero
+      $(".stateFilters").hide();
+    }
+    if (param.showstates != "false") {
+      $("#filterClickLocation").show();
+    }
+    $("#filterFieldsHolder").prependTo("#fullcolumn");
+    $("#local-header").prependTo("body"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
 
+  });
+}
+function loadSearchFilterIncludes() {
+  includeCSS3(theroot + 'css/base.css',theroot);
+  includeCSS3(theroot + 'css/search-filters.css',theroot);
+  if (param.preloadmap != "false") {
+    includeCSS3(theroot + 'css/map-display.css',theroot);
+  }
+}
+function loadLeafletAndMapFilters() {
+  loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
+    includeCSS3(theroot + 'css/leaflet.css',theroot);
+    loadScript(theroot + 'js/leaflet.js', function(results) {
+      loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Could skip when map does not use material icon colors
+        loadScript(theroot + 'js/map.js', function(results) {
+          // Loads map-filters.js
+          loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
+        });
+      });
+    });
+
+    //if (param.shownav) {
+      loadScript(theroot + 'js/navigation.js', function(results) {});
+    //}
+  });
+}
 // WAIT FOR JQuery
 loadScript(theroot + 'js/jquery.min.js', function(results) {
 
@@ -562,20 +602,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         }
         console.log("param.display " + param.display)
         if (param.display == "everything" || param.display == "locfilters" || param.display == "map") {
-          let bodyFile = theroot + "map/index.html #insertedText";
-
-          //console.log("Before template Loaded: " + bodyFile);
-
-          $("#bodyFile").load(bodyFile, function( response, status, xhr ) {
-            consoleLog("Template Loaded: " + bodyFile);
-            if (typeof relocatedStateMenu != "undefined") {
-              relocatedStateMenu.appendChild(state_select); // For apps hero
-              $(".stateFilters").hide();
-            }
-            if (param.showstates != "false") {
-              $("#filterClickLocation").show();
-            }
-          });
+          loadLocalTemplate();
         }
 
         // LOAD INFO TEMPLATE - Holds input-output widgets
@@ -706,21 +733,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     includeCSS3(theroot + 'css/naics.css',theroot);
     // customD3loaded
     if (param.preloadmap != "false") {
-      loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
-          includeCSS3(theroot + 'css/leaflet.css',theroot);
-          loadScript(theroot + 'js/leaflet.js', function(results) {
-            loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Could skip when map does not use material icon colors
-              loadScript(theroot + 'js/map.js', function(results) {
-                // Loads map-filters.js
-                loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
-              });
-            });
-          });
-
-          //if (param.shownav) {
-            loadScript(theroot + 'js/navigation.js', function(results) {});
-          //}
-        });
+      loadLeafletAndMapFilters();
       
     }
 
@@ -755,12 +768,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       includeCSS3(theroot + '../io/build/iochart.css',theroot);
     }
     
-    includeCSS3(theroot + 'css/base.css',theroot);
-    includeCSS3(theroot + 'css/search-filters.css',theroot);
-    if (param.preloadmap != "false") {
-      includeCSS3(theroot + 'css/map-display.css',theroot);
-    }
-    
+    loadSearchFilterIncludes();
+
     includeCSS3(theroot + 'css/leaflet.icon-material.css',theroot);
     
     //loadScript(theroot + 'js/table-sort.js', function(results) {}); // For county grid column sort
@@ -788,6 +797,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
   } // end everything or map
 
+  if (param.material_icons != "false") {
+    param.material_icons = "true"; // Could lazy load if showMenu changed to graphic.
+  }
   if (fullsite || param.material_icons == "true") {
     // This was inside FULL SITE above, but it is needed for menus embedded in external sites.
     !function() {
@@ -974,6 +986,10 @@ function loadMapFiltersJS(theroot, count) {
     //alert("localsite_map " + localsite_map)
     //loadScript(theroot + 'https://cdn.jsdelivr.net/npm/vue', function(results) { // Need to check if function loaded
       loadScript(theroot + 'js/map-filters.js', function(results) {});
+
+      if (document.getElementById("/icon?family=Material+Icons")) {
+          $(".show-on-load").removeClass("show-on-load");
+      }
     //});
   } else if (count<100) { // Wait a milisecond and try again
     setTimeout( function() {
@@ -1533,5 +1549,90 @@ function getState(stateCode) {
 
       case "WY":
           return "Wyoming";
+  }
+}
+//$(document).ready(function () {
+    $('.expandToFullscreen, .reduceFromFullscreen').click(function(event) {
+      toggleFullScreen();  
+    });
+    $(document).on("click", ".showSearch", function(event) {
+        //loadLeafletAndMapFilters();
+
+      showSearchClick();
+    });
+    if (location.host.indexOf('model') >= 0) {
+      $(".showSearch").show();
+      $(".showSearch").removeClass("local");
+    }
+//});
+function showSearchClick() {
+  if (!$("#filterFieldsHolder").length) { // Doesn't exist
+    loadLocalTemplate();
+    loadSearchFilterIncludes();
+    loadLeafletAndMapFilters();
+  } else {
+    console.log("showSearchClick")
+    if ($("#filterFieldsHolder").is(':visible')) {
+      $("#filterFieldsHolder").hide();
+      //$("#filterbaroffset").hide();
+      ////$("#pageLinksHolder").hide();
+    } else {
+
+      $("#filterFieldsHolder").show();
+      //$("#filterbaroffset").show();
+      $(".hideWhenPop").show();
+    }
+    return;
+
+
+
+
+      // NOT CURRENTLY USED
+
+
+      //$(".filterFields").hide();
+    
+
+      //$(".moduleBackgroundImage").addClass("moduleBackgroundImageDarken"); // Not needed since filters are not over image.
+      //$(".siteHeaderImage").addClass("siteHeaderImageDarken"); // Not needed since filters are not over image.
+
+      //$('.topButtons').show(); // Avoid showing bar when no layer.
+      $(".layerContent").show(); // For main page, over video.
+
+      //$(".showFilters").hide(); // Avoid hiding because title jumps.
+      //$(".hideFilters").show();
+
+      // Coming soon - Select if searching Georgia.org or Georgia.gov
+      //$(".searchModuleIconLinks").show();
+      $(".hideWhenFilters").hide();
+
+      $(".filterPanelHolder").show();
+      //$(".filterPanelWidget").show();
+      $("#filterPanel").show(); // Don't use "normal", causes overflow:hidden.
+      $(".searchHeader").show();
+      $("#panelHolder").show();
+
+
+      $(".showFiltersClick").hide();
+      $(".hideFiltersClick").show();
+
+      // Would remove active from Overview Map
+      $(".horizontalButtons .layoutTab").removeClass("active");
+      $(".showFiltersButton").addClass("active");
+
+      $(".hideSearch").show();
+      //$(".hideFilters").show(); // X not needed since magnifying glass remains visible now.
+      //$("#hideSearch").show();
+      if ($(".settingsPanel").is(':visible')) {
+          hideSettings();
+      }
+      if ($("#menuHolder").is(':visible')) {
+          $('.hideMetaMenu').trigger("click");
+      }
+      //updateOffsets();
+
+      // Hide because map is displayed, causing overlap.
+      // Could be adjusted to reside left of search filters.
+      //$(".quickMenu").hide();
   }
 }
