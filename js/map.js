@@ -3475,6 +3475,9 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
     }
     topoObjName = "topoob.objects.data";
     $("#geomap").width("700px");
+  } else if (hash.mapview == "earth") { // ALL COUNTIRES
+    url = local_app.modelearth_root() + "/topojson/world-countries-sans-antarctica.json";
+    topoObjName = "topoob.objects.countries1";
   } else if (stateAbbr.length <= 1 || hash.mapview == "country") { // USA
     layerName = "States";
     url = local_app.modelearth_root() + "/localsite/map/topo/states-10m.json";
@@ -3614,12 +3617,16 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
     var lat = 32.69;
     var lon = -83.2;
 
-    var zoom = 7;
+    let zoom = 7;
     let theState = $("#state_select").find(":selected").val();
     if (theState == "" || hash.mapview == "country") {
       zoom = 4
       lat = "39.5"
       lon = "-96"
+    } else if (theState == "" || hash.mapview == "earth") {
+      zoom = 2
+      lat = "25"
+      lon = "0"
     } else {
       let kilometers_wide = $("#state_select").find(":selected").attr("km");
       zoom = zoomFromKm(kilometers_wide);
