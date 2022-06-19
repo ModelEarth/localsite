@@ -464,7 +464,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 #hero-rect {
   float: left;
   background-color: rgba(255, 255, 255, 0.90);
-  background-color: rgba(33, 33, 33, 0.90);
+  background-color: rgba(11, 11, 11, 0.93);
   border-radius: 40px;
   max-width: 600px;
   padding: 30px 50px 25px 50px;
@@ -844,13 +844,6 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   margin-top: 5px;
   height: 50px;
   width: 70px;
-}
-.logoholder-modelearth {
-  background-image:url(../../../localsite/img/logo/partners/neighborhood-icon.png) no-repeat;
-  margin-top: 15px;
-  margin-right: 24px;
-  height:25px; 
-  width:25px;
 }
 .logolink:hover{
   text-decoration: none;

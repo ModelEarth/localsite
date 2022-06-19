@@ -59,6 +59,7 @@
   .leaflet-control-container > div:first-child.leaflet-top {
     top: auto;
     bottom: 40px;
+    z-index: auto;
   }
   /* Layers */
   .leaflet-control-container > div:nth-child(2).leaflet-right {

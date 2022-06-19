@@ -462,8 +462,8 @@ class="headerbarheight"
         <img src="/localsite/img/icon/search.png" style="width:27px; opacity:0.5; margin:10px 20px 0 0">
       </div>
       -->
-      <div class="showMenu" style="font-size:24px;color:#999;float:left">
-        <img src="/localsite/img/icon/hamburger.png" style="width:30px; opacity:0.5; margin-top:10px">
+      <div class="showMenu" style="cursor:pointer;font-size:24px;color:#999;padding-top:9px;float:left">
+        <i class="material-icons show-on-load" style="font-size:35px; opacity:0.4;" data="apps">&#xE5C3;</i>
       </div>
     </div>
 
@@ -552,9 +552,6 @@ class="headerbarheight"
                   <div class="filterClickText" id="showAppsText" title="Top Industries">Top Industries</div>
                 </div>
               </div>
-              <div id="hitRefreshNote" style="display: none;float:left; padding-top:8px; font-size:14px; margin-bottom:8px;">
-                  Hit reload (cmd-R) after changing the state to refresh the input-output chart below.
-              </div>
           </div>
         </div>
       </div>
@@ -616,47 +613,45 @@ class="headerbarheight"
             <!-- was a button -->
           
           <div class="si-wrapper" style="position:relative; float:left">
-            
-              <div style="display:none; float:right; padding-left:7px" class="si-btn mock-up">
-                  <span class="si-holder" style="font-size: 20px">&#127897;</span>
-              </div>
           
+            <div style="display:none; float:right; padding-left:7px" class="si-btn mock-up">
+                <span class="si-holder" style="font-size: 20px">&#127897;</span>
+            </div>
+        
 
-              <div class="searchField" style="overflow:auto">
+            <div class="searchField" style="overflow:auto">
 
-                  <div style="float:right; position:relative;">
-                      <!-- basicSearch goSearch searchHeight -->
-                      <div id="goSearch" class="detailbutton" href="#" style="float:left;min-height:32px;border:1px solid #ccc"><span style="font-size:11pt;line-height:13pt;padding-left:2px;color:#666;">GO</span></div>
+                <div style="float:right; position:relative;">
+                    <!-- basicSearch goSearch searchHeight -->
+                    <div id="goSearch" class="detailbutton" href="#" style="float:left;min-height:32px;border:1px solid #ccc"><span style="font-size:11pt;line-height:13pt;padding-left:2px;color:#666;">GO</span></div>
 
-                      <!-- &#128269; showAll showAllResults searchHeight -->
-                      <!--
-                      <div id="clearButton" class="detailbutton" style="float:left;margin:0px 0px 0px 0px">Clear</div>
-                      -->
-                      
-                  </div>
-
-                  <div style="overflow:auto; padding-right:10px; ">
-                    <!-- maxlength="400"  -->
-
+                    <!-- &#128269; showAll showAllResults searchHeight -->
                     <!--
-                      onblurXX="SearchFormTextCheck(this, 0)" 
-                      onfocusXX="SearchFormTextCheck(this, 1)"
-                      onkeypressX="return SearchEnter(event);"
+                    <div id="clearButton" class="detailbutton" style="float:left;margin:0px 0px 0px 0px">Clear</div>
                     -->
-                    <input id="keywordsTB" autocomplete="off" 
-                    style="padding-right:27px; width:100%" 
-                    class="filterClick mobileWide textInput si-input" 
-                    type="text" value="" 
-                    onkeyup="return SearchEnter(event);" 
-                    placeholder="Search">
-                  </div>
-              </div>
-              
-              
+                    
+                </div>
 
+                <div style="overflow:auto; padding-right:10px; ">
+                  <!-- maxlength="400"  -->
 
+                  <!--
+                    onblurXX="SearchFormTextCheck(this, 0)" 
+                    onfocusXX="SearchFormTextCheck(this, 1)"
+                    onkeypressX="return SearchEnter(event);"
+                  -->
+                  <input id="keywordsTB" autocomplete="off" 
+                  style="padding-right:27px; width:100%" 
+                  class="filterClick mobileWide textInput si-input" 
+                  type="text" value="" 
+                  onkeyup="return SearchEnter(event);" 
+                  placeholder="Search">
+                </div>
+            </div>
+            
             <div style="clear:both"></div>
 
+            
 
             <div class="keywordBubble">
               <div id="keywordFields" class="fieldSelector filterBubbleHolder" style="position:relative; margin-top:5px">
@@ -684,7 +679,7 @@ class="headerbarheight"
             </div>
 
           </div>
-        </div>
+        </div>    
 
       </div>
       <!-- END KEYWORD SEARCH -->
@@ -758,6 +753,9 @@ class="headerbarheight"
       </div><!-- /filterFields -->
 
   </div>
+  </div>
+
+  <div id="hitRefreshNote" class="contentpadding" style="display: none; clear:both; padding-top:8px; padding-bottom:8px; font-size:14px; margin-bottom:8px;">&nbsp;&nbsp;Please hit reload (cmd-R) to refresh the input-output chart below since you've changed the state.
   </div>
 
   <div style="clear:both"></div>

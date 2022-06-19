@@ -1904,6 +1904,9 @@ function thumbClick(show,path) {
 }
 function displayBigThumbnails(attempts, activeLayer, layerName) {
 	if (!$('.bigThumbUl').length) {
+        if (!activeLayer) {
+            activeLayer = "industries"; // Since Tab defaults to "Top Industries". Will change to site-wide search later.
+        }
         if (attempts > 100) {
             alert("EXIT load localObject.layers");
             return;
