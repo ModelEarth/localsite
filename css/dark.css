@@ -1,0 +1,11 @@
+#fullcolumn {
+	background: #1a1a1a;
+	background-color: #1a1a1a;
+	color: #ccc;
+}
+#fullcolumn  a:link, #fullcolumn  a:visited {
+  color: #8899ee;
+}
+#fullcolumn h1, #fullcolumn h2, #fullcolumn h3, #fullcolumn h4, #fullcolumn h5, #fullcolumn h6 {
+	color: #ccc;
+}
