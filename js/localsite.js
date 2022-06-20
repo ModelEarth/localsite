@@ -45,10 +45,12 @@ var local_app = local_app || (function(module){
             let theroot = location.protocol + '//' + location.host + '/localsite/';
 
             if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map, and ga-layers.json
-              ////theroot = "https://map.georgia.org/localsite/";
+              // Might readd (hopefully not) for https://www.georgia.org/center-of-innovation/energy/smart-mobility  needed occasionally for js/jquery.min.js below, not needed when hitting reload.
+              //theroot = "https://map.georgia.org/localsite/";
               
               // This could be breaking top links to Location and Good & Services.
-              //theroot = hostnameAndPort + "/localsite/";
+              // But reactivating after smart-mobility page tried to get js/jquery.min.js from geogia.org
+              theroot = hostnameAndPort + "/localsite/";
             }
             
             if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
