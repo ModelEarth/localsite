@@ -1,33 +1,33 @@
 [
 {
 	"menulevel": "1",
-	"section": "Page Details",
+	"section": "Page Admin",
 	"title": "Overview",
 	"link": "/info/[itemid]",
 	"icon": "<span class='material-icons' icon='article'>&#xef42</span>"
 },
 {
 	"menulevel": "1",
-	"section": "Page Details",
+	"section": "Page Admin",
 	"title": "Edit Content",
 	"link": "/core/item/edit.aspx?s=[itemid]"
 },
 {
 	"menulevel": "1",
-	"section": "Page Details",
+	"section": "Page Admin",
 	"title": "Edit Event",
 	"link": "/net/calendar/editnew.aspx?s=[itemid]",
 	"basetype": "2"
 },
 {
 	"menulevel": "1",
-	"section": "Page Details",
+	"section": "Page Admin",
 	"title": "Edit Location",
 	"link": "/net/org/edit.aspx?s=[itemid]"
 },
 {
 	"menulevel": "1",
-	"section": "Page Details",
+	"section": "Page Admin",
 	"title": "Add Subtopic",
 	"link": "/core/item/add.aspx?parentid=[itemid]"
 },
