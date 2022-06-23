@@ -134,14 +134,11 @@ function hashChangedMap() {
               zoom = 7; // For Georgia map
           }
           dp.latitude = $("#state_select").find(":selected").attr("lat");
-          dp.lonitude = $("#state_select").find(":selected").attr("lon");
-          //mapCenter = [lat,lon];
+          dp.longitude = $("#state_select").find(":selected").attr("lon");
         }
     } else {
       console.log("ERROR #state_select not available in hashChangedMap()");
-    }
-    console.log("Recenter map " + mapCenter)
-
+    }    
 
     loadMap1("hashChanged() in map.js new state(s) " + hash.state, hash.show, dp);
 
@@ -180,6 +177,46 @@ L.Control.Layers.include({
     return layers;
   }
 });
+
+function loadIframe(iframeName, url) {
+    var $iframe = $('#' + iframeName);
+    if ($iframe.length) {
+        $iframe.attr('src',url);
+        $("#nullschoolHeader #mainbucket").show();
+        return false;
+    }
+    return true;
+}
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+async function loopMap() {
+  await delay(200);
+  let theMonth = 6;
+  let theDay = 1;
+  let theHour = 0;
+  while (theDay <= 20) {
+    let monthStr = String(theMonth).padStart(2, '0');
+    let dayStr = String(theDay).padStart(2, '0');
+    let hourStr = String(theHour).padStart(2, '0');
+    $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " " + theHour + ":00 GMT (7 PM EST)");
+
+    loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/" + hourStr + "00Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
+    await delay(1000);
+
+    $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " 12:00 GMT (7 AM EST)");
+    loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/1200Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
+    await delay(1000);
+
+    theDay += 1;
+    //theHour += 2;   
+  }
+}
+$(document).ready(function () {
+  // Run animation - add a button for this
+  //loopMap();
+});
+
 
 function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback) {
   console.log("loadFromSheet - Might not need to call from Beyond Carbon when state not displayed.")
@@ -1812,6 +1849,9 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
     });
   }
   showprevious = show;
+
+  loadIframe("mainframe","https://earth.nullschool.net/#current/wind/surface/level/orthographic=" +  dp.longitude + "," + dp.latitude + ",1381");
+
 }
 function initialHighlight(hash) {
   if (hash.name) {
