@@ -523,7 +523,7 @@ function loadLocalTemplate() {
   //console.log("Before template Loaded: " + bodyFile);
 
   $("#bodyFile").load(bodyFile, function( response, status, xhr ) {
-    consoleLog("Template Loaded: " + bodyFile);
+    //console.log("Template Loaded: " + bodyFile);
     if (typeof relocatedStateMenu != "undefined") {
       relocatedStateMenu.appendChild(state_select); // For apps hero
       $(".stateFilters").hide();
@@ -531,9 +531,12 @@ function loadLocalTemplate() {
     if (param.showstates != "false") {
       $("#filterClickLocation").show();
     }
-    $("#filterFieldsHolder").prependTo("#fullcolumn");
+    $("#mapFilters").prependTo("#fullcolumn");
     $("#local-header").prependTo("body"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
 
+    /// Coming soon. Trigger with localObject
+    //$("#globalMapHolder").html('<iframe src="https://earth.nullschool.net/#chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
+  
   });
 }
 function loadSearchFilterIncludes() {
@@ -584,7 +587,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         });
         if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
           var div = $("<div />", {
-              html: '<style>.local{display:inline-block !important}.localonly{display:block !important}</style>'
+              html: '<style>.local{display:inline !important}.localonly{display:block !important}</style>'
             }).appendTo("body");
         } else {
           // Inject style rule
@@ -597,9 +600,10 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         // View html source: https://model.earth/localsite/map
         // Consider pulling in HTML before DOM is loaded, then send to page once #bodyFile is available.
 
-        if ($("#" + param.insertafter).length) {
+        if (param.insertafter && $("#" + param.insertafter).length) {
           $("#" + param.insertafter).append("<div id='bodyFile'></div>");
-        } else if (!$("#bodyFile").length) {
+        //} else if (!$("#bodyFile").length) {
+        } else if(document.getElementById("bodyFile") == null) {
           $('body').prepend("<div id='bodyFile'></div>");
         }
         console.log("param.display " + param.display)
@@ -757,13 +761,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       });
     }
 
-    // Tabulator
-    includeCSS3('https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css',theroot);
-    includeCSS3(theroot + '../localsite/css/base-tabulator.css',theroot);
-    // Latest: https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js
-    loadScript('https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js', function(results) {
-
-    });
+    loadTabulator();
     
     if (param.display == "everything") {
       includeCSS3(theroot + '../io/build/widgets.css',theroot);
@@ -892,8 +890,9 @@ function getUrlID3(url,theroot) {
 
   // AVOID using theroot parameter. It can be eliminated.
 
-  // TODO: .NET compatible id will use underscores.  Also lowercasing iand removing starter slash:
+  // TODO: .NET compatible id will use underscores.  Also lowercase it and removing starter slash:
   // id="icon_family_material_icons"
+  // Already added to go, walker
 
   let startingUrl = url;
   // Remove hash since it has no effect when on an include tag.
@@ -1044,6 +1043,15 @@ function extend () {
   return extended;
 };
 
+function loadTabulator() {
+  // Tabulator
+  if (typeof Tabulator === 'undefined') {
+    includeCSS3('https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css',theroot);
+    includeCSS3(theroot + '../localsite/css/base-tabulator.css',theroot);
+    // Latest: https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js
+    loadScript('https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js', function(results) {});
+  }
+}
 
 // Serialize a key/value object.
 //var params = { width:1680, height:1050 };
@@ -1553,27 +1561,32 @@ function getState(stateCode) {
           return "Wyoming";
   }
 }
-//$(document).ready(function () {
-    $('.expandToFullscreen, .reduceFromFullscreen').click(function(event) {
-      toggleFullScreen();  
-    });
-    $(document).on("click", ".showSearch", function(event) {
-        //loadLeafletAndMapFilters();
 
-      showSearchClick();
-    });
-    if (location.host.indexOf('model') >= 0) {
-      $(".showSearch").show();
-      $(".showSearch").removeClass("local");
+
+$(document).on("click", ".expandToFullscreen, .reduceFromFullscreen", function(event) {
+  toggleFullScreen();  
+});
+$(document).on("click", ".showSearch", function(event) {
+    //loadLeafletAndMapFilters();
+  showSearchFilter();
+});
+if (location.host.indexOf('model') >= 0) {
+  $(".showSearch").show();
+  $(".showSearch").removeClass("local");
+}
+
+function showSearchFilter() {
+  if (!$("#filterFieldsHolder").length) { // If doesn't exist yet.
+
+    if (!$("#bodyFile").length) {
+      $('body').prepend("<div id='bodyFile'></div>");
     }
-//});
-function showSearchClick() {
-  if (!$("#filterFieldsHolder").length) { // Doesn't exist
+
     loadLocalTemplate();
     loadSearchFilterIncludes();
     loadLeafletAndMapFilters();
   } else {
-    console.log("showSearchClick")
+    console.log("showSearchFilter");
     if ($("#filterFieldsHolder").is(':visible')) {
       $("#filterFieldsHolder").hide();
       //$("#filterbaroffset").hide();
@@ -1637,4 +1650,16 @@ function showSearchClick() {
       // Could be adjusted to reside left of search filters.
       //$(".quickMenu").hide();
   }
+}
+function showGlobalMap() { // Used by community/index.html
+  $("#nullschoolHeader").show();
+  if($("#globalMapHolder").length > 0) {
+    //alert("#globalMapHolder exists")
+  }
+  //setTimeout(() => {
+  //  alert("1 sec wait done")
+    // BUGBUG #globalMapHolder may not be availale if map/index.html not loaded yet
+    $("#globalMapHolder").html('<iframe src="https://earth.nullschool.net/#chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
+  //},1000);
+  
 }

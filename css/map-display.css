@@ -35,7 +35,7 @@ body {
 	margin-bottom:20px;
 	border-right: 1px solid #ddd;
 }
-#botPanel, #topPanel, #mapPanel, #mainframe {
+#botPanel, #topPanel, #mapPanel {
 	border: 1px solid #ccc;
 	max-width: 950px;
 	padding: 20px;
@@ -213,9 +213,6 @@ body {
 	background-color: #fff;
     border-left: solid 5px #aaf !important;
 } 
-#mainframe {
-
-}
 #resultsPanel {
 	line-height: 20px;
 	display: none;

@@ -1956,7 +1956,7 @@ function loadGeos(geo, attempts, callback) {
           geoParams.permile = d.perMile;
           geoParams.active = activeGeo;
 
-          geoArray.push([theGeo, geoParams]); // Append an array with an object as the value
+          geoArray.push([theGeo, geoParams]); // Append a key-value with an object as the value
         });
 
         console.log("geoArray")
@@ -2867,9 +2867,6 @@ function linkify(inputText) { // https://stackoverflow.com/questions/37684/how-t
 }
 
 // For stateImpact colors
-var colorTheStateCarbonX = d3.scaleThreshold()
-    .domain(d3.range(2, 10))
-    .range(d3.schemeBlues[9]);
 
 var colorTheStateCarbon = d3.scaleThreshold()
     .domain(d3.range(2, 10))
@@ -3149,7 +3146,12 @@ $(window).scroll(function() {
     revealHeader = true; // For next manual scroll
   } else if ($(window).scrollTop() > previousScrollTop) { // Scrolling Up
     if ($(window).scrollTop() > previousScrollTop + 20) { // Scrolling Up fast
-      $("#headerLarge").addClass("headerLargeHide"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
+      $("#headerLarge").addClass("headerLargeHide"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); 
+
+      // BUGBUG - occuring on initial reload when page is a little from top.
+      //$('#logoholderside').show();
+      //alert("load")
+
       $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
       if (param.showheader != "false") {
         $('.showMenuSmNav').show(); 
@@ -3195,6 +3197,8 @@ $(window).scroll(function() {
   previousScrollTop = $(window).scrollTop();
 
   lockSidemap(mapFixed);
+  let headerFixedHeight = $("#headerLarge").height();
+  $('#sidecolumnContent').css("top",headerFixedHeight + "px");
 });
 function lockSidemap() {
   // Detect when #hublist is scrolled into view and add class mapHolderFixed.
@@ -3619,14 +3623,14 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
 
     let zoom = 7;
     let theState = $("#state_select").find(":selected").val();
-    if (theState == "" || hash.mapview == "country") {
-      zoom = 4
-      lat = "39.5"
-      lon = "-96"
-    } else if (theState == "" || hash.mapview == "earth") {
+    if (hash.mapview == "earth" && theState == "") {
       zoom = 2
       lat = "25"
       lon = "0"
+    } else if (theState == "" || hash.mapview == "country") {
+      zoom = 4
+      lat = "39.5"
+      lon = "-96"
     } else {
       let kilometers_wide = $("#state_select").find(":selected").attr("km");
       zoom = zoomFromKm(kilometers_wide);
@@ -3961,32 +3965,6 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
         //layerControl = L.control.layers(baseLayers, overlays).addTo(map);
       }
     }
-
-    // NOT USED
-    /*
-    if (typeof stateImpact != 'undefined') {
-      //alert("found stateImpact " + stateImpact);
-      let dp = {};
-      dp.data = stateImpact;
-      dp.scale = getScale(dp.data, dp.scaleType, dp.valueColumn);
-    }
-    */
-
-    // Remove - clear the markers from the map for the layer
-     //if (map.hasLayer(overlays1[dp.dataTitle])){
-     //   overlays1[dp.dataTitle].remove();
-     //}
-     //if (map.hasLayer(overlays["Counties"])){
-     //   alert("found layer")
-        //no effect
-          //overlays["Counties"].remove();
-     //}
-
-    // Make a layer active. 
-    // Seems to prevent error
-    //geojsonLayer.addTo(map);
-        
-    // End MAPS FROM TOPOJSON
 
     // To add additional layers:
     //layerControl.addOverlay(dp.group, dp.name); // Appends to existing layers

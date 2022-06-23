@@ -8,9 +8,19 @@
 },
 {
 	"section": "Community",
-	"title": "Community",
+	"title": "City",
 	"icon": "/localsite/img/icon/scope/community.png",
-	"link": "#scope=community"
+	"link": "#scope=city"
+},
+{
+	"section": "Community",
+	"title": "State",
+	"link": "#scope=state"
+},
+{
+	"section": "Community",
+	"title": "Zip",
+	"link": "#scope=zip"
 },
 {
 	"section": "Household",

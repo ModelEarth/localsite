@@ -40,7 +40,7 @@
 #filterFieldsHolder {
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
-  z-index: 999;
+  z-index: 9999;
 }
 .filterFieldsHolderFixed {
   position: fixed;

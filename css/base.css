@@ -7,7 +7,9 @@ Used in localsite, modelearth, io, neighborhood, trees
   src:url("/localsite/css/fonts/ember.woff2") format("woff2"), url("/localsite/css/fonts/ember.woff") format("woff")
 }
 * {box-sizing: border-box;}
+/* CAUSED SPACE in map/index.html WHEN #tableSide DIV EMPTY - SHOULD NOT NEED
 .hideMobile, .hideMobileWide {display:inline-block;}
+*/
 .showMobile, .showMobileWide {display:none;}
 .showGit {display:none;}
 .local, .localonly {
@@ -266,8 +268,6 @@ summary::-webkit-details-marker {
 }
 .contentfull {
   max-width: 2000px;
-  padding-left: 34px;
-  padding-right: 20px;
 }
 .content li {
   margin-left: -10px;
@@ -285,9 +285,6 @@ summary::-webkit-details-marker {
   }
 }
 @media (max-width: 500px) {
-  .content {
-    line-height: 1.2;
-  }
   .contentpadding {
     padding-left: 20px;
     padding-right: 20px;
@@ -624,12 +621,6 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   */
 }
 #showSide {
-  /*
-	padding: 8px;
-	padding-top: 8px;
-  border-radius: 8px;
-  border:1px solid #aaa;
-  */
 	pointer-events: auto;
 	cursor: pointer;
 	padding: 9px 12px 2px 10px;

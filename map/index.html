@@ -451,7 +451,7 @@ class="headerbarheight"
 
 
 <!-- SEARCH FILTERS -->
-<div class="hideWhenPop">
+<div id="mapFilters" class="hideWhenPop">
 
   <div id="filterFieldsHolder" class="contentfull noprint" style="margin:0 auto; padding-top:0px; width:100%">
 
@@ -467,7 +467,7 @@ class="headerbarheight"
       </div>
     </div>
 
-    <div class="filterFields" style="min-height:54px; padding:2px 0 0px 0;">
+    <div class="filterFields" style="min-height:54px; padding:2px 0 0px 10px;">
 
       <div id='sidecolumn-closed' class='hideprint' style='float:left'><div id='showSide' class='showSide' style='top:109px;'><img src='/localsite/img/icon/hamburger.png' style='width:30px; opacity:0.5'></div></div>
 
@@ -752,7 +752,10 @@ class="headerbarheight"
 
       </div><!-- /filterFields -->
 
-  </div>
+
+
+
+  </div><!-- /filterFieldsHolder -->
   </div>
 
   <div id="hitRefreshNote" class="contentpadding" style="display: none; clear:both; padding-top:8px; padding-bottom:8px; font-size:14px; margin-bottom:8px;">&nbsp;&nbsp;Please hit reload (cmd-R) to refresh the input-output chart below since you've changed the state.
@@ -828,10 +831,17 @@ class="headerbarheight"
             </div>
 
             <div class="stateFilters input-output" style="float:left; display:none" class="mock-up earth">
+
+              <select id="country_select" style="float:left">
+                <option>Earth</option>
+                <option>Countries</option>
+                <option selected>United States</option>
+              </select>
+
               <b><!--States--></b>
-              <div id="state_select_holder">
+              <div id="state_select_holder" style="float:left">
                 <select id="state_select" name="state">
-                 <option value="">States...</option>
+                 <option value="">All States and Territories</option>
 <!-- Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 <option value="AL" stateid="1" lat="32.7396" lon="-86.8435" km="131174">Alabama</option>
 <option value="AK" stateid="2" lat="63.3474" lon="-152.8397" km="1478927">Alaska</option>
@@ -1060,7 +1070,7 @@ class="headerbarheight"
           </div>
         <!-- /Secondary Location Filters -->
 
-        <div style="clear:both"></div>
+        <div style="clear:both; margin-bottom:12px"></div>
 
         <div id="geoPicker" style="display:none">
           <div style="float:left">
@@ -1075,15 +1085,15 @@ class="headerbarheight"
                 <!--Cities -->
               </div>
 
-              <div style="position:absolute; bottom:0; left:0px; right:36px; padding:2px 2px 2px 16px; background-color:#ddd; z-index:2">
+              <div style="position:absolute; bottom:0; left:0px; right:20px; padding:2px 2px 2px 16px; background-color:#ddd; z-index:2">
 
-                  <div style="float:right; padding:0px 12px 0px 12px; margin-top:5px; margin-bottom:5px;">
+                  <div style="float:right; padding:0px 0px 0px 12px; margin-top:5px; margin-bottom:5px;">
                     <div class="detailbutton hideAdvanced greenbutton" style="padding:10px 18px 10px 18px;">DONE</div>
                   </div>
 
                   <div style="displayX:table; width:100%">
-                    <div style="float:left; min-height:30px; padding:10px; displayX: table-cell; vertical-align: middle">
-                      Check one or more counties above or click the map.
+                    <div style="float:left; min-height:30px; padding:14px 10px 8px 4px;">
+                      Check boxes above or click the map.
                     </div>
                   </div>
 
@@ -1140,6 +1150,8 @@ class="headerbarheight"
 <!-- /LOCATION SEARCH -->
 
 
+
+
 <!-- 
 Displayed by hashChanged() in map-filters.js
 -->
@@ -1173,6 +1185,125 @@ Displayed by hashChanged() in map-filters.js
 
 <div style="clear:both"></div>
 
+
+<!-- NULLSCHOOL -->
+<style>
+  /*
+  #mainarea iframe {
+      background: #efefef;
+  }
+
+  #mainarea iframe {
+      background: #efefef;
+      border: 1px solid #ddd;
+  }
+  */
+  iframe {
+      display: block;
+      border: none;
+      /* min-height: 94vh; */
+      width: 100%;
+  }
+  iframe {
+      display: block;
+      backgroundX: #000;
+      border: none;
+      min-height: 65vh;
+      width: 100%;
+  }
+  #mainbucket {
+    position: absolute;
+    right: 40px;
+    bottom: 60px;
+    padding: 20px;
+    font-size: 18px;
+    line-height: 28px;
+    background: rgba(33,33,33,0.5);
+    color: #ddd;
+    border-radius: 30px;
+    max-width: 550px;
+  }
+  .linkondark {
+    color: #fff !important;
+    text-decoration: underline;
+  }
+</style>
+
+
+<div id="nullschoolHeader" style="position:relative; displayX:none">
+
+  <div id="mainbucket">
+    <a href="../io/charts/"><img src="/community/img/logo/epa-circle.png" style="width:100px;float:left;margin-right:16px"></a>
+
+    Join us in building Lifecycle Tools with US EPA widgets to increase 
+    positive environmental impacts through&nbsp;local innovation. <a href="/apps/beyondcarbon/" class="linkondark">Explore&nbsp;Impacts</a> 
+
+    <!--
+    <a href="projects/">Current Projects</a> and <a href="/localsite/info/">Data Visualizations</a><br>
+    -->
+
+  </div>
+
+  <!-- https://earth.nullschool.net/#current/wind/surface/level/orthographic=-67.66,31.71,913 -->
+  <!-- Cool if we need solid continental for overlaying topjson:
+  https://earth.nullschool.net/#2018/10/10/0000Z/ocean/surface/currents/overlay=significant_wave_height/orthographic=-72.95,33.34,1269/loc=-82.457,27.951
+
+ https://earth.nullschool.net/#current/wind/surface/currents/overlay=wind/orthographic=-73.52,34.52,1101
+  -->
+
+  <div id="globalMapHolder" style="background:#444;"></div>
+
+  <script>
+  function loadIframe(iframeName, url) {
+      var $iframe = $('#' + iframeName);
+      if ($iframe.length) {
+          $iframe.attr('src',url);
+          return false;
+      }
+      return true;
+  }
+  function delay(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
+  }
+  async function loopMap() {
+    await delay(200);
+    let theMonth = 6;
+    let theDay = 1;
+    let theHour = 0;
+    while (theDay <= 20) {
+      let monthStr = String(theMonth).padStart(2, '0');
+      let dayStr = String(theDay).padStart(2, '0');
+      let hourStr = String(theHour).padStart(2, '0');
+      $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " " + theHour + ":00 GMT (7 PM EST)");
+
+      loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/" + hourStr + "00Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
+      await delay(1000);
+
+      $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " 12:00 GMT (7 AM EST)");
+      loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/1200Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
+      await delay(1000);
+
+      theDay += 1;
+      //theHour += 2;   
+    }
+  }
+  $(document).ready(function () {
+
+    // Run animation - add a button for this
+    //loopMap();
+  });
+  </script>
+</div>
+<!-- /NULLSCHOOL -->
+
+
+<!-- a work in progress -->
+<div id="log_display" style="display:none" class="localonlyX"><span style='float:left; font-size:10px'>LOG</span><br><textarea id="logText">MyTest</textarea></div>
+
+
+
+
+
 <div class="displayOnload" style="display:none;position:relative">
   <div id="map1" style="display:none"></div>
 
@@ -1187,15 +1318,14 @@ Displayed by hashChanged() in map-filters.js
 
 <div id="showIframeCover" onclick="this.style.display='none';$('#iframeCover').show();" style="display:none;position:fixed; z-index:10; color:#fff; cursor: pointer; padding:10px">Reactivate Scrolling</div>
 <!-- ../img/hero/hexagon-pattern.png  -->
+
 <div id="iframeCover" onclick="this.style.display='none';$('#showIframeCover').show();" style="display:none; background-image: url('https://www.georgia.org/themes/custom/mmg8_cog/dist/images/honeycomb.png'); position: absolute; z-index: 10; width:100%; height:800px"></div>
-<div style="margin:0px">
-  <iframe id="mapframe" style="display:none; width:100%;height:800px;"></iframe>
-</div>
 
-<div id="tableSide" class="hideMobile">
+<iframe id="mapframe" style="display:none; width:100%;height:800px;"></iframe>
 
-  <div id='sidecolumnX' class='hideprint, local, earth' style="displayX: none">
+<div id="tableSide" class="hideMobile" style="background:#777;">
 
+<div id='sidecolumnX' class='hideprint, local, earth' style="displayX: none">
 
 
 <style>
@@ -1338,7 +1468,7 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 </div>
 </div>
 
-  </div><!-- /sidecolumn -->
+  </div><!-- /sidecolumnX -->
 
   <!-- INDUSTRIES -->
   <div class="mock-up" style="display:none; padding-top:20px; padding-bottom:80px">
@@ -1474,7 +1604,7 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
     </div>
   </div>
 
-</div>
+</div><!-- /tableSide -->
 
 <div id="list_main" style="display:none; overflow:auto; background: #fff">
 
@@ -1659,7 +1789,6 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
   </div>
 </div>
 
-<div id="log_display" style="display:none" class="localonlyX"><span style='float:left; font-size:10px'>LOG</span><br><textarea id="logText">MyTest</textarea></div>
 
 <!-- End HTML -->
 

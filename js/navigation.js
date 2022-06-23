@@ -186,10 +186,14 @@ $(document).ready(function(){
  	}
  	
  	$("body").addClass("flexbody"); // For footer to stick at bottom on short pages
- 	$("body").wrapInner( "<main class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
+ 	$("body").wrapInner("<main class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
  	// min-height allows header to serve as #filterbaroffset when header.html not loaded
- 	$("body").prepend( "<div id='local-header' class='flexheader hideprint' style='pointer-events:none;min-height:56px'></div>\r");
-		
+ 	$("body").prepend("<div id='local-header' class='flexheader hideprint' style='pointer-events:none;min-height:56px'></div>\r");
+	
+	if(document.getElementById("bodyFile") == null) {
+		$("#fullcolumn").prepend("<div id='bodyFile'></div>\r");
+	}
+
  	$(document).on("click", "#showSide", function(event) {
 		//$("#showSide").hide();
 		if ($("#sidecolumn").is(':visible')) {
@@ -201,9 +205,9 @@ $(document).ready(function(){
 			$("#showSide").hide();
 			//$("#filterFieldsHolder").removeClass("leftOffset");
 			$("#sidecolumn").show();
-			let headerFixedHeight = $("#headerLarge").height();
-			$('#sidecolumnContent').css("top",headerFixedHeight + "px");
 		}
+		let headerFixedHeight = $("#headerLarge").height();
+		$('#sidecolumnContent').css("top",headerFixedHeight + "px");
 	});
  	$(document).on("click", ".hideSide", function(event) {
  		$("#showSide").css("opacity","1");
@@ -352,10 +356,12 @@ $(document).ready(function(){
 					*/
 
 			 		$('.showMenu').click(function () {
-						//$(".showMenu").hide();
-						$("#menuHolder").show();
-						$("#menuHolder").css('margin-right','0px')
-						//$("#listingMenu").appendTo($(this).parent().parent());
+			 			if ($("#rightTopMenu").length) {
+			 				$("#rightTopMenu").show();
+			 			} else {
+							$("#menuHolder").show();
+							$("#menuHolder").css('margin-right','0px')
+						}
 						event.stopPropagation();
 					});
 					$('.hideMenu').click(function () {

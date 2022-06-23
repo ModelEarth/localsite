@@ -117,10 +117,14 @@
 		display: block !important;
 	}
 }
+@media (max-width: 600px) {
+	#partnerMenuHolder {
+		max-widthX: 100px; /* Less than 120px to trigger clicks without opening submenu */
+	}
+}
 @media (max-width: 1400px) {
 	#partnerMenuHolder {
 		min-width: 32px;
-		max-width: 100px; /* Less than 120px to trigger clicks without opening submenu */
 	}
 	.layerSectionTitle {
 		width: 180px; /* required for background color to be visible */
@@ -135,7 +139,8 @@
 	.absoluteWhenNarrow {
 		z-index: 1;
 		min-width: 38px;
-		max-width: 38px;
+		/* max-width: 38px; Avoiding since page's .sidechildlist is injected. */
+		max-width: 38px; 
 		top: 0;
 		bottom: 0;
 		overflow: visible;
