@@ -293,7 +293,19 @@ $(document).ready(function () {
     	event.stopPropagation();
     });
 	
- 	$('#state_select').on('change', function() {
+    $(document).on("change", "#country_select", function(event) {
+        if (this.value) {
+            //$('#state_select').val("");
+            //$("#region_select").val("");
+            goHash({'state':'','geo':'','name':'','regiontitle':'','mapview':this.value}); // Triggers map changes
+        } else { // US selected
+            goHash({'mapview':'country','state':''});
+            //clearHash("state")
+            //$("#geoPicker").hide();
+            //$("#industryListHolder").hide();
+        }
+    });
+ 	$(document).on("change", "#state_select", function(event) {
  		if (this.value) {
 	    	$("#geoPicker").show();
 	    	$("#region_select").val("");

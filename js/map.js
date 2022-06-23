@@ -3397,7 +3397,7 @@ function getIDfromStateName(stateName) {
 }
 function getStateNameFromID(stateID) {
   if (typeof stateID == "undefined" || stateID.length < 2) { return; }
-  let stateName;
+  let stateName = ""; // Avoids error when made lowercase
   $("#state_select option").map(function(index) {
     if ($("#state_select option").get(index).value == stateID) {
       stateName = $("#state_select option").get(index).text;
@@ -3507,6 +3507,11 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
 
   //var url = local_app.custom_data_root() + '/counties/GA-13-georgia-counties.json';
   
+  var lat = 32.69;
+  var lon = -20; // -83.2;
+  let zoom = 2;
+  let theState = $("#state_select").find(":selected").val();
+
   var url;
   let topoObjName = "";
   var layerName = "Map Layer";
@@ -3519,16 +3524,13 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
     }
     topoObjName = "topoob.objects.data";
     $("#geomap").width("700px");
-  } else if (hash.mapview == "earth") { // ALL COUNTIRES
-    url = local_app.modelearth_root() + "/topojson/world-countries-sans-antarctica.json";
-    topoObjName = "topoob.objects.countries1";
-  } else if (stateAbbr.length <= 1 || hash.mapview == "country") { // USA
+  }  else if (hash.mapview == "country" && stateAbbr.length != 2) { // USA
     layerName = "States";
     url = local_app.modelearth_root() + "/localsite/map/topo/states-10m.json";
     topoObjName = "topoob.objects.states";
     $("#geomap").width("700px");
     //$(".geoListHolder").hide();
-  } else { // COUNTIES
+  } else if (stateAbbr && stateAbbr.length <= 2) { // COUNTIES
     layerName = stateAbbr + " Counties";
     let stateNameLowercase = getStateNameFromID(stateAbbr).toLowerCase();
     let countyFileTerm = "-counties.json";
@@ -3546,8 +3548,12 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
 
     //url = local_app.modelearth_root() + "/opojson/countries/us-states/GA-13-georgia-counties.json";
     // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
-  }
+  } else { // ALL COUNTIRES
+  //} else if (hash.mapview == "earth") {
 
+    url = local_app.modelearth_root() + "/topojson/world-countries-sans-antarctica.json";
+    topoObjName = "topoob.objects.countries1";
+  }
 
   req.open('GET', url, true);
   req.onreadystatechange = handler;
@@ -3658,20 +3664,16 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
 
     // Georgia 32.1656° N, 82.9001° W
     
-    var lat = 32.69;
-    var lon = -83.2;
 
-    let zoom = 7;
-    let theState = $("#state_select").find(":selected").val();
     if (hash.mapview == "earth" && theState == "") {
       zoom = 2
       lat = "25"
       lon = "0"
-    } else if (theState == "" || hash.mapview == "country") {
+    } else if (hash.mapview == "country" && theState == "") {
       zoom = 4
       lat = "39.5"
       lon = "-96"
-    } else {
+    } else if ($("#state_select").find(":selected").attr("lat")) {
       let kilometers_wide = $("#state_select").find(":selected").attr("km");
       zoom = zoomFromKm(kilometers_wide);
       lat = $("#state_select").find(":selected").attr("lat");
@@ -3757,9 +3759,6 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
         //L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         //    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         //}).addTo(map);
-
-
-
       }
       
         // Add 
