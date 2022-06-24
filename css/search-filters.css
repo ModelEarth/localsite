@@ -36,6 +36,8 @@
 }
 #locationFilterHolder {
   box-shadow: 0px 0px 5px 1px #ddd;
+  overflow:auto;
+  padding:20px 0 20px 40px;
 }
 #filterFieldsHolder {
   border-top: 1px solid #eee;
@@ -193,6 +195,14 @@
 .hideAdvanced {
   pointer-events: auto; /* catch click through to keep open location filter */
   z-index: 1000;
+}
+#geomap {
+  width:702px; height:530px; margin:0 30px 30px 0; border:1px solid blue; position: relative;
+}
+@media (max-width: 600px) {
+  #geomap {
+    width:100%;
+  }
 }
 /*
 #locationFilterHolder .input-output b {
