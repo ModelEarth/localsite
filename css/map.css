@@ -197,7 +197,6 @@
     }
     #hublist {
       width:auto;
-      
     }
     .padding-left {
       padding-left: 30px;
@@ -258,6 +257,9 @@
 }
 #hublist, #tableSide {
   max-height: 750px;
+}
+.hublistFull {
+  max-height: none !important;
 }
 #tableSide {
   overflow: auto;
