@@ -1550,6 +1550,26 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
         dp.latColumn = "plant_or_group.latitude";
         dp.lonColumn = "plant_or_group.longitude";
+  } else if (show == "trade") {
+        dp.listTitle = "Georgia Commercial Recyclers";
+        dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
+        dp.googleCategories = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=381237740&single=true&output=csv";
+        dp.nameColumn = "organization name";
+        dp.titleColumn = "organization name";
+        dp.searchFields = "organization name";
+        dp.addressColumn = "address";
+
+        dp.valueColumn = "category";
+        dp.valueColumnLabel = "Category";
+        dp.catColumn = "Category";
+        dp.subcatColumn = "Materials Accepted";
+        dp.itemsColumn = "Materials Accepted"; // Needs to remain capitalized. Equivalent to PPE items column, checkboxes
+
+        // https://map.georgia.org/recycling/
+        dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
+        dp.listInfo = "Submit updates using our <a href='https://map.georgia.org/recycling/'>Google Form</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a>.&nbsp; View&nbsp;additional <a href='../map/recycling/ga/'>recycling datasets</a>.";
+        dp.search = {"In Main Category": "Category", "In Materials Accepted": "Materials Accepted", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
+
   } else if (theState == "GA") {
 
       if (show == "opendata") {
@@ -1916,6 +1936,15 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
     });
   }
   showprevious = show;
+
+  // Sulfer Dioxide - Good indicator of smoke stacks, Source of acidity
+  // https://earth.nullschool.net/#current/chem/surface/level/overlay=so2smass/orthographic=-94.02,32.31,1023
+
+  // Surface wind
+  // https://earth.nullschool.net/#current/wind/surface/level/orthographic=-73.52,34.52,532
+
+  // US East Coast Ocean Currant
+  // https://earth.nullschool.net/#current/wind/surface/currents/overlay=wind/orthographic=-73.52,34.52,1101
 
   loadIframe("mainframe","https://earth.nullschool.net/#current/wind/surface/level/orthographic=" +  dp.longitude + "," + dp.latitude + ",1381");
 
@@ -2979,6 +3008,10 @@ var colorTheStateCarbon = d3.scaleThreshold()
     .domain(d3.range(2, 10))
     .range(d3.schemeBlues[9]);
 
+var colorTheCountry = d3.scaleThreshold()
+    .domain(d3.range(2, 1000000))
+    .range(d3.schemeBlues[9]);
+
 function popMapPoint(dp, map, latitude, longitude, name) {
   //return;
   let center = [latitude,longitude];
@@ -3407,11 +3440,8 @@ function styleShape(feature) {
 function styleShape(feature) { // Called FOR EACH topojson row
 
   let hash = getHash(); // To do: pass in as parameter
+  //console.log("feature: ", feature)
 
-  //alert(stateDataList);
-  //console.log("feature ", feature)
-
-  // console.log("feature.properties.COUNTYFP: " + feature.properties.COUNTYFP);
   var fillColor = 'rgb(51, 136, 255)'; // 
   // For hover '#665';
   
@@ -3425,7 +3455,6 @@ function styleShape(feature) { // Called FOR EACH topojson row
     })
   */
   let stateID = getIDfromStateName(feature.properties.name);
-
   let fillOpacity = .05;
   if (hash.geo && hash.geo.includes("US" + feature.properties.STATEFP + feature.properties.COUNTYFP)) {
       fillColor = 'purple';
@@ -3433,15 +3462,28 @@ function styleShape(feature) { // Called FOR EACH topojson row
   } else if (hash.mapview == "country" && hash.state && hash.state.includes(stateID)) {
       fillColor = 'red';
       fillOpacity = .2;
+  } else if (hash.mapview == "countries") {
+      let theValue = 2;
+      //console.log("country: " + (feature.properties.name));
+      if (localObject.countries[feature.id]) {
+        //alert("Country 2020 " + localObject.countries[feature.id]["2020"]);
+        theValue = localObject.countries[feature.id]["2020"];
+      }
+      // TO DO - Adjust for 2e-7
+      theValue = theValue/10000000;
+      fillColor = colorTheCountry(theValue);
+      console.log("fillColor: " + fillColor + "; theValue: " + theValue + " " + feature.properties.name);
+      fillOpacity = .5;
   } else if ((hash.mapview == "country" || (hash.mapview == "state" && !hash.state)) && typeof localObject.state != 'undefined') {
       let theValue = 2;
-      if (localObject.state[getState(stateID)] && localObject.state[getState(stateID)].CO2_per_capita != "No data") {
+       if (localObject.state[getState(stateID)] && localObject.state[getState(stateID)].CO2_per_capita != "No data") {
         console.log(stateID + " " + getState(stateID));
         console.log(stateID + " " + localObject.state[getState(stateID)].CO2_per_capita);
         theValue = localObject.state[getState(stateID)].CO2_per_capita;
       }
-      theValue = theValue/4;
+      theValue = theValue/4; // Ranges from 0 to 26
       fillColor = colorTheStateCarbon(theValue);
+      console.log("fillColor: " + fillColor + "; theValue: " + theValue + " " + feature.properties.name);
       fillOpacity = .5;
   } return {
       weight: 1,

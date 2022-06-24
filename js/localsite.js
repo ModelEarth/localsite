@@ -1658,7 +1658,11 @@ function showGlobalMap() { // Used by community/index.html
     
     // Two steps prevent loading error
     $("#globalMapHolder").html('<iframe src="" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
-    loadIframe("mainframe","https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
+    
+    loadIframe("mainframe","https://earth.nullschool.net/#current/wind/surface/level/orthographic=-73.52,34.52,532");
+
+    // Chem Currents NO2 - Since Wind makes NO2 clouds hard to see
+    //loadIframe("mainframe","https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
 
   }
 }

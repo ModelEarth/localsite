@@ -294,6 +294,10 @@ $(document).ready(function () {
     });
 	
     $(document).on("change", "#country_select", function(event) {
+        //alert("this.value " + this.value);
+
+        goHash({'mapview':this.value});
+        /*
         if (this.value) {
             //$('#state_select').val("");
             //$("#region_select").val("");
@@ -304,6 +308,7 @@ $(document).ready(function () {
             //$("#geoPicker").hide();
             //$("#industryListHolder").hide();
         }
+        */
     });
  	$(document).on("change", "#state_select", function(event) {
  		if (this.value) {
@@ -1132,6 +1137,7 @@ function showTabulatorList(element, attempts) {
     //alert("showTabulatorList " + attempts);
 	let hash = getHash();
 	if (typeof Tabulator !== 'undefined') {
+        
 		console.log("showTabulatorList " + attempts)
 		// Try this with 5.0. Currently prevents row click from checking box.
 		// selectable:true,
@@ -1153,7 +1159,7 @@ function showTabulatorList(element, attempts) {
         });
 
         console.log("dataForTabulator")
-        console.log(dataForTabulator)
+        //console.log(dataForTabulator)
 
 		// For fixed header, also allows only visible rows to be loaded. See "Row Display Test" below.
 		// maxHeight:"100%",
@@ -1161,6 +1167,7 @@ function showTabulatorList(element, attempts) {
         // COUNTRY
         //if (!hash.state && typeof stateImpact != 'undefined') {
         if (!hash.state) {
+         console.log("load countries OR USA states list");
          $("#tabulator-geotable").hide();
          $("#tabulator-statetable").show();
          statetable = new Tabulator("#tabulator-statetable", {
@@ -1248,6 +1255,7 @@ function showTabulatorList(element, attempts) {
 		// Might modify to load multiple states
 
         if (hash.state) {
+            console.log("load county list")
             $("#tabulator-statetable").hide();
             $("#tabulator-geotable").show();
 
@@ -2632,6 +2640,10 @@ function hashChanged() {
 			console.log("ERROR lat changed for map2, but leaflet not loaded. typeof L undefined.");
 		}
 	}
+
+    if (hash.mapview != priorHash.mapview) {
+        $("#country_select").val(hash.mapview);
+    }
 
 	if (hash.state != priorHash.state) {
 		loadGeomap = true;
