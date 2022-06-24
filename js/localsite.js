@@ -535,7 +535,8 @@ function loadLocalTemplate() {
     $("#local-header").prependTo("body"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
 
     /// Coming soon. Trigger with localObject
-    //$("#globalMapHolder").html('<iframe src="https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037" class="iframe" name="mainframe" id="mainframe"></iframe>');
+    // $("#nullschoolHeader").show();
+    // $("#globalMapHolder").html('<iframe src="https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037" class="iframe" name="mainframe" id="mainframe"></iframe>');
     
     if (location.host.indexOf('model') >= 0) {
       $(".showSearch").show();

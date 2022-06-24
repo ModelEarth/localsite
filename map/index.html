@@ -1084,7 +1084,7 @@ class="headerbarheight"
                 <!--Cities -->
               </div>
 
-              <div style="position:absolute; bottom:0; left:0px; right:20px; padding:2px 2px 2px 16px; background-color:#ddd; z-index:2">
+              <div style="position:absolute; bottom:0; left:0px; right:20px; padding:2px 2px 2px 16px; z-index:2">
 
                   <div style="float:right; padding:0px 0px 0px 12px; margin-top:5px; margin-bottom:5px;">
                     <div class="detailbutton hideAdvanced greenbutton" style="padding:10px 18px 10px 18px;">DONE</div>
@@ -1092,7 +1092,7 @@ class="headerbarheight"
 
                   <div style="displayX:table; width:100%">
                     <div style="float:left; min-height:30px; padding:14px 10px 8px 4px;">
-                      Check boxes above or click the map.
+                      Select checkboxes above or click the map.
                     </div>
                   </div>
 
@@ -1228,7 +1228,7 @@ Displayed by hashChanged() in map-filters.js
   }
 </style>
 
-<div id="nullschoolHeader" style="position:relative; displayX:none">
+<div id="nullschoolHeader" style="position:relative; display:none">
 
   <div id="earthZoom" style="position: absolute; z-index:100; right:20px; bottom:20px">
     <div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in">+</a><a class="leaflet-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out">−</a></div>
@@ -1237,9 +1237,10 @@ Displayed by hashChanged() in map-filters.js
   <div id="mainbucket" style="display:none">
     <a href="../io/charts/"><img src="/community/img/logo/epa-circle.png" style="width:100px;float:left;margin-right:16px;"></a>
 
-    Join us in building Lifecycle Tools with US EPA widgets to increase 
-    positive environmental impacts through&nbsp;local innovation. <a href="/localsite/info/" class="linkondark">Explore&nbsp;Impacts</a> 
-
+    <div style="padding-top:5px">
+      Join us in building Product Lifecycle Tools<br><!--with US EPA widgets -->
+      that increase positive environmental impacts through&nbsp;local innovation. <a href="/localsite/info/" class="linkondark">Explore&nbsp;Impacts</a>
+    </div>
     <!--
     <a href="projects/">Current Projects</a> and <a href="/localsite/info/">Data Visualizations</a><br>
     -->
