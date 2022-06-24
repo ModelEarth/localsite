@@ -158,9 +158,14 @@
   .mapHolderFixed {
     position: fixed;
     z-index: 1;
-    top: 80px;
+    top: 95px;
     bottom: auto;
     widthX: 480px; /* Reset in dual-map.js */
+  }
+  @media (min-width: 1400px) {
+    .mapHolderFixed {
+      min-width: 600px;
+    }
   }
   @media (max-width: 1300px) {
     .mapHolderFixed {

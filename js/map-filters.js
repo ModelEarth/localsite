@@ -31,11 +31,12 @@ if(typeof localObject.layers == 'undefined') {
 }
 
 function populateFieldsFromHash() {
-	$("#keywordsTB").val(param["q"]);
+    let hash = getHash();
+	$("#keywordsTB").val(hash.q);
 
 	$('.catList > div').removeClass('catListSelected');
-	if (param["cat"]) {
-		var catString = param["cat"].replace(/_/g, ' ');
+	if (hash.cat) {
+		var catString = hash.cat.replace(/_/g, ' ');
 		$("#catSearch").val(catString);
 	    $('.catList > div').filter(function(){
 	        return $(this).text() === catString
@@ -56,12 +57,12 @@ function populateFieldsFromHash() {
 		}
 	}
 	*/
-	$("#productCodes").val(param["hs"]);
-	if (param["region"]) {
+	$("#productCodes").val(hash.hs);
+	if (hash.region) {
 		if (hash.show) {
-			$(".regiontitle").val(param["region"] + " - " + hash.show.toTitleCase());
+			$(".regiontitle").val(hash.region + " - " + hash.show.toTitleCase());
 		} else {
-			$(".regiontitle").val(param["region"]);
+			$(".regiontitle").val(hash.region);
 		}
 	}
 }
@@ -1763,10 +1764,12 @@ $(document).ready(function () {
     var catString = catTitle.replace(/ /g, '_').replace(/&/g, '%26');
     $("#bigThumbPanelHolder").hide();
     console.log("catList triggers update");
+    //$("#catSearch").val(catString);
+    //$("#dataList").html(""); // Clear
     if (catString == "All_Categories") {
         catString = "";
     }
-    goHash({"cat":catString,"name":""}); // Let the hash change trigger updates
+    goHash({"cat":catString,"subcat":"","name":""}); // Let the hash change trigger updates
     event.stopPropagation();
   });
 

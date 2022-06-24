@@ -144,6 +144,8 @@ function hashChangedMap() {
 
   } else if (hash.cat !== priorHashMap.cat) {
     loadMap1("hashChanged() in map.js new cat " + hash.cat, hash.show);
+  } else if (hash.subcat !== priorHashMap.subcat) {
+    loadMap1("hashChanged() in map.js new subcat " + hash.subcat, hash.show);
   } 
   priorHashMap = getHash();
 }
@@ -1220,7 +1222,7 @@ function addIcons(dp,map,map2) {
       $(this).addClass("detailActive");
       var listingsVisible = $('#detaillist .detail:visible').length;
       if (listingsVisible == 1) {
-        $("#viewAllLink").show();
+        $(".viewAllLink").show();
       }
       if ($(this).attr("latitude") && $(this).attr("longitude")) {
         popMapPoint(dp, map2, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"));
@@ -2209,6 +2211,8 @@ function showList(dp,map) {
   var allItemsPhrase = "all categories";
   if ($("#keywordsTB").val()) {
     keyword = $("#keywordsTB").val().toLowerCase();
+  } else if (hash.subcat) {
+    keyword = hash.subcat;
   } else if (hash.cat) {
     keyword = hash.cat;
   }
@@ -2235,9 +2239,8 @@ function showList(dp,map) {
         }
       });
       if (subcatArray.length > 1) {
-        $("#detaillist").prepend("<ul style='margin:0px'>" + subcatList + "</ul><br>");
-        if (dp.show == "recyclers") {
-          //$("#detaillist").prepend("Our subcategories are not yet fully populated");
+        if (!hash.name) { // Omit when looking at listing detail
+          $("#detaillist").prepend("<ul style='margin:0px'>" + subcatList + "</ul><br>");
         }
       }
     //}
@@ -2836,10 +2839,17 @@ function showList(dp,map) {
         output += "</div>"; // End Lower
         output += "</div>"; // End detail
         
+        
         $("#detaillist").append(output);
       }
     }
   });
+
+  // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
+  // Remove name from hash to trigger refresh
+  let viewAllButton = " <div class='viewAllLink btn btn-white' style='float:right;display:none;'><a onclick='goHash({},[\"name\",\"loc\"]); return false;' href='#show=" + param["show"] + "'>View All</a></div>";
+  $("#detaillist").append(viewAllButton);
+
   /*
   if (localObject.layerCategories[dp.show].length >= 0) {
     //alert("found")
@@ -2948,7 +2958,7 @@ function showList(dp,map) {
       }
       // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
       // Remove name from hash to trigger refresh
-      searchFor += " <div id='viewAllLink' style='float:right;display:none;'><a onclick='goHash({},[\"name\",\"loc\"]); return false;' href='#show=" + param["show"] + "'>View All</a></div>";
+      searchFor += " <div class='viewAllLink' style='float:right;display:none;'><a onclick='goHash({},[\"name\",\"loc\"]); return false;' href='#show=" + param["show"] + "'>View All</a></div>";
 
       if (dp.listInfo) {
         if (searchFor) {
