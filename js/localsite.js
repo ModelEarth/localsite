@@ -535,8 +535,12 @@ function loadLocalTemplate() {
     $("#local-header").prependTo("body"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
 
     /// Coming soon. Trigger with localObject
-    //$("#globalMapHolder").html('<iframe src="https://earth.nullschool.net/#chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
-  
+    //$("#globalMapHolder").html('<iframe src="https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037" class="iframe" name="mainframe" id="mainframe"></iframe>');
+    
+    if (location.host.indexOf('model') >= 0) {
+      $(".showSearch").show();
+      $(".showSearch").removeClass("local");
+    }
   });
 }
 function loadSearchFilterIncludes() {
@@ -660,6 +664,13 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       document.head.insertAdjacentHTML("beforeend", strVarCss);
 
 
+      $(document).on("click", ".expandToFullscreen, .reduceFromFullscreen", function(event) {
+        toggleFullScreen();  
+      });
+      $(document).on("click", ".showSearch", function(event) {
+          //loadLeafletAndMapFilters();
+        showSearchFilter();
+      });
 
       clearInterval(waitForJQuery); // Escape the loop
 
@@ -1563,18 +1574,6 @@ function getState(stateCode) {
 }
 
 
-$(document).on("click", ".expandToFullscreen, .reduceFromFullscreen", function(event) {
-  toggleFullScreen();  
-});
-$(document).on("click", ".showSearch", function(event) {
-    //loadLeafletAndMapFilters();
-  showSearchFilter();
-});
-if (location.host.indexOf('model') >= 0) {
-  $(".showSearch").show();
-  $(".showSearch").removeClass("local");
-}
-
 function showSearchFilter() {
   if (!$("#filterFieldsHolder").length) { // If doesn't exist yet.
 
@@ -1653,13 +1652,13 @@ function showSearchFilter() {
 }
 function showGlobalMap() { // Used by community/index.html
   $("#nullschoolHeader").show();
-  if($("#globalMapHolder").length > 0) {
-    //alert("#globalMapHolder exists")
+
+  if($("#globalMapHolder").length <= 1) {
+    //$("#globalMapHolder").html('<iframe src="https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
+    
+    // Two steps prevent loading error
+    $("#globalMapHolder").html('<iframe src="" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
+    loadIframe("mainframe","https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
+
   }
-  //setTimeout(() => {
-  //  alert("1 sec wait done")
-    // BUGBUG #globalMapHolder may not be availale if map/index.html not loaded yet
-    $("#globalMapHolder").html('<iframe src="https://earth.nullschool.net/#chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
-  //},1000);
-  
 }

@@ -355,7 +355,7 @@ $(document).ready(function(){
 			 		$('#headerLogo').css('background-position', 'center');
 					*/
 
-			 		$('.showMenu').click(function () {
+					$(document).on("click", ".showMenu", function(event) {
 			 			if ($("#rightTopMenu").length) {
 			 				$("#rightTopMenu").show();
 			 			} else {
@@ -364,22 +364,14 @@ $(document).ready(function(){
 						}
 						event.stopPropagation();
 					});
-					$('.hideMenu').click(function () {
+					$(document).on("click", ".hideMenu", function(event) {
 						$("#menuHolder").show();
 						$("#menuHolder").css('margin-right','-250px');
 						//$("#listingMenu").appendTo($(this).parent().parent());
 						event.stopPropagation();
 					});
 					$(document).on("click", ".hideAdvanced", function(event) {
-						updateHash({"mapview":""});
-						$(".fieldSelector").hide();
-						$("#filterLocations").hide();
-						$("#filterClickLocation").removeClass("filterClickActive");
-
-						if (typeof relocatedStateMenu != "undefined") {
-				            relocatedStateMenu.appendChild(state_select); // For apps hero
-				        }
-				        $("#hero_holder").show();
+						hideAdvanced();
 					});
 
 
@@ -527,11 +519,18 @@ $(document).ready(function(){
 	// END SIDE NAV WITH HIGHLIGHT ON SCROLL
 });
 
+function hideAdvanced() {
+	updateHash({"mapview":""});
+	$(".fieldSelector").hide();
+	$("#filterLocations").hide();
+	$("#filterClickLocation").removeClass("filterClickActive");
 
+	if (typeof relocatedStateMenu != "undefined") {
+  	relocatedStateMenu.appendChild(state_select); // For apps hero
+  }
+  $("#hero_holder").show();
+}
 function activateSideColumn() {
-
-			//return;
-
 			// Make paths relative to current page
 	 		$("#sidecolumn a[href]").each(function() {
 	 			if($(this).attr("href").toLowerCase().indexOf("http") < 0) {

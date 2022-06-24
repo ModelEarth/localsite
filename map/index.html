@@ -1229,8 +1229,11 @@ Displayed by hashChanged() in map-filters.js
   }
 </style>
 
-
 <div id="nullschoolHeader" style="position:relative; displayX:none">
+
+  <div id="earthZoom" style="position: absolute; z-index:100; right:20px; bottom:20px">
+    <div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in">+</a><a class="leaflet-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out">−</a></div>
+  </div>
 
   <div id="mainbucket" style="display:none">
     <a href="../io/charts/"><img src="/community/img/logo/epa-circle.png" style="width:100px;float:left;margin-right:16px"></a>
@@ -1252,9 +1255,12 @@ Displayed by hashChanged() in map-filters.js
   -->
 
   <div id="globalMapHolder" style="background:#444;"></div>
+  <div id="mapText" style="padding-left:20px"></div>
 
 </div>
 <!-- /NULLSCHOOL -->
+
+
 
 
 <!-- a work in progress -->

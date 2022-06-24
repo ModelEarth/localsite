@@ -48,6 +48,7 @@
   left: 0px;
   background-color: #fff;
   border-bottom: #aaa;
+  padding-right: 24px;
   z-index: 99999;
 }
 #filterLocations {

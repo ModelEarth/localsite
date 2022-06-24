@@ -2696,7 +2696,7 @@ function hashChanged() {
                 {title:"CO<sub>2</sub> per capita", field:"CO2_per_capita", hozAlign:"right", formatter:"money", formatterParams:{precision:false}},
             ];
         loadObjectData(element, 0);
-    } else if (hash.mapview != priorHash.mapview && hash.mapview == "earth") {
+    } else if (hash.mapview != priorHash.mapview && (hash.mapview == "earth" || hash.mapview == "countries")) {
         let element = {};
         element.scope = "countries";
         element.key = "Country Code";

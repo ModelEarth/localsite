@@ -178,14 +178,80 @@ L.Control.Layers.include({
   }
 });
 
+
+// NULLSCHOOL
+$(document).on("click", "#earthZoom .leaflet-control-zoom-in", function(event) { // ZOOM IN
+  zoomEarth(200);
+  event.stopPropagation();
+});
+$(document).on("click", "#earthZoom .leaflet-control-zoom-out", function(event) { // ZOOM IN
+  zoomEarth(-200);
+  event.stopPropagation();
+});
+function zoomEarth(zoomAmount) {
+  if (!localObject.earth) {
+    let earthSrc = document.getElementById("mainframe").src; // Only returns the initial cross-domain uri.
+    localObject.earth = getEarthObject(earthSrc.split('#')[1]);
+  }
+  // Add 100 to orthographic map zoom
+  let orthographic = localObject.earth.orthographic.split(",");
+  localObject.earth.orthographic = orthographic[0] + "," + orthographic[1] + "," + (+orthographic[2] + zoomAmount);
+  
+  /*
+  let theMonth = 6;
+  let theDay = 1;
+  let theHour = 0;
+
+  let monthStr = String(theMonth).padStart(2, '0');
+  let dayStr = String(theDay).padStart(2, '0');
+  let hourStr = String(theHour).padStart(2, '0');
+  $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " " + theHour + ":00 GMT (7 PM EST)");
+  */
+
+  let earthUrl = "https://earth.nullschool.net/#";
+  if (localObject.earth.date) {
+    earthUrl += localObject.earth.date + "/" + localObject.earth.time + "/";
+  } else {
+    earthUrl += "current/";
+  }
+  earthUrl += localObject.earth.mode + "/overlay=" + localObject.earth.overlay + "/orthographic=" + localObject.earth.orthographic;
+  loadIframe("mainframe", earthUrl);
+  //loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/" + hourStr + "00Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
+}
+function getEarthObject(url) {
+  let urlPart = url.split('/');
+  let params = {};
+  if (urlPart.length > 6) { // URL contains date and time
+    params.date = urlPart[0] + "/" + urlPart[1] + "/" + urlPart[2];
+    params.time = urlPart[3];
+    params.mode = urlPart[4] + "/" + urlPart[5] + "/" + urlPart[6];
+  } else {
+    params.mode = urlPart[1] + "/" + urlPart[2] + "/" + urlPart[3];
+  }
+  for (let i = 4; i < urlPart.length; i++) {
+      if(!urlPart[i])
+          continue;
+      if (i==0 && urlPart[i].indexOf("=") == -1) {
+        params[""] = urlPart[i];  // Allows for initial # params without =.
+        continue;
+      }
+      let hashPair = urlPart[i].split('=');
+      params[decodeURIComponent(hashPair[0]).toLowerCase()] = decodeURIComponent(hashPair[1]);
+   }
+   return params;
+}
 function loadIframe(iframeName, url) {
-    var $iframe = $('#' + iframeName);
-    if ($iframe.length) {
-        $iframe.attr('src',url);
-        $("#nullschoolHeader #mainbucket").show();
-        return false;
-    }
-    return true;
+  localObject.earth = getEarthObject(url.split('#')[1]);
+  
+  var $iframe = $('#' + iframeName);
+  if ($iframe.length) {
+      //alert("loadIframe" + url)
+      $iframe.attr('src',url);
+      ///localObject.earthSrc = url;
+      $("#nullschoolHeader #mainbucket").show();
+      return false;
+  }
+  return true;
 }
 function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
@@ -216,6 +282,7 @@ $(document).ready(function () {
   // Run animation - add a button for this
   //loopMap();
 });
+// END NULLSCHOOL
 
 
 function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback) {
@@ -3550,6 +3617,10 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
     // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
   } else { // ALL COUNTIRES
   //} else if (hash.mapview == "earth") {
+    if (hash.mapview == "earth") {
+      hideAdvanced();
+      showGlobalMap();
+    } 
 
     url = local_app.modelearth_root() + "/topojson/world-countries-sans-antarctica.json";
     topoObjName = "topoob.objects.countries1";
