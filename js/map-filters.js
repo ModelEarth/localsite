@@ -2467,7 +2467,7 @@ function hashChanged() {
 		//updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
 	}
 	// Temp for PPE
-	if (!hash.state && location.host.indexOf("georgia") >= 0) {
+	if (!hash.state && location.host.indexOf("georgia") >= 0 && (hash.mapview == "" || hash.mapview == "state" || hash.mapview == "counties")) {
 	    hash.state = "GA";
 	    hiddenhash.state = "GA";
 	}
