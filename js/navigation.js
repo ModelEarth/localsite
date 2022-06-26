@@ -356,7 +356,13 @@ $(document).ready(function(){
 					*/
 
 					$(document).on("click", ".showMenu", function(event) {
-			 			if ($("#rightTopMenu").length) {
+
+						if (location.host.indexOf('localhost') >= 0) {
+							$("#rightTopMenuVisibility").show(); // Temp
+						}
+			 			if ($("#rightTopMenuVisibility").is(':visible')) {
+			 				loadScript('/localsite/js/settings.js', function(results) { // For "Settings" popup
+          		});
 			 				$("#rightTopMenu").show();
 			 			} else {
 							$("#menuHolder").show();

@@ -263,8 +263,9 @@
 
 
 /* general typography */
+/* CUSTOM - Increase size */
 .leaflet-container {
-	font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font: 14px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
 	}
 
 
