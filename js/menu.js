@@ -248,29 +248,26 @@ function showSubmenu(id) { //onmouseclick
 }
 // For narrow nav
 function showMenuNav(id) { //onmouseenter
-    if ($(".absoluteWhenNarrow").width() < 50) { // Only do rollover when side narrow.
+    if ($(".sideMenuColumn").width() < 50) {
+        $(".sideMenuColumn").addClass("sideMenuColumnNarrow"); // Adds black background
+    }
+
+    if ($(".sideMenuColumn").width() < 50) { // Only do rollover popout when side column is narrow.
         $("#" + id + " .layerSectionTitle").show();
     }
 }
 function hideMenuNav(id) { //onmouseout
-    if ($(".absoluteWhenNarrow").width() < 50) { // Only hide when side is narrow.
-        $("#" + id + " .layerSectionTitle").hide();
+    //return; // TEMP
+    if ($(".sideMenuColumn").width() < 50) { // Only hide when side is narrow.
 
-
-        return;
-        //alert(id)
-
-        $("#" + id).hide();
-
+        // Check parent has narrow class
+        const sideMenuColumnNarrow = $("#" + id + " .layerSectionTitle").closest(".sideMenuColumnNarrow");  
+        if(sideMenuColumnNarrow.length > 0) { // Only hide when in .sideMenuColumnNarrow
+            $(".layerSection-" + id).removeClass("openMenu");
+            $("#" + id + " .layerSectionTitle").hide();
+            $("#" + id + " .layerCbRow").hide();
+        }
         event.stopPropagation(); //cancel bubbling
-
-        /*
-       ele = event.target || event.srcElement
-       alert("ele.id " + ele.id)
-       if (ele.id === "dvRep"){  
-          //your code
-       }
-       */
     }
 }
 
