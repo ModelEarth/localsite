@@ -675,7 +675,6 @@ function filterClickLocation(loadGeoTable) {
 	//$('.hideMetaMenuClick').trigger("click"); // Otherwise covers location popup. Problem: hides hideLayers/hideLocationsMenu.
 	//alert("1")
 	if ($("#filterLocations").is(':visible') && (distanceFilterFromTop < 300 || distanceFilterFromTop > 300)) {
-		//alert("2")
 		$(".locationTabText").text($(".locationTabText").attr("title"));
         $("#showLocations").hide();
 		$("#hideLocations").show();
@@ -691,8 +690,11 @@ function filterClickLocation(loadGeoTable) {
         }
         $("#hero_holder").show();
 
-
-        updateHash({"mapview":""});
+        if(location.host.indexOf("georgia") >= 0) { // TEMP until state is enforced while international map is still avalable. Applied when clicking "Top Industires" here: /localsite/map/#show=trade&mapview=countries
+            updateHash({"mapview":"","state":"GA"});
+        } else {
+            updateHash({"mapview":""});
+        }
 	} else { // OPEN MAP FILTER
 		let hash = getHash();
 		if (hash.mapview == "country") {
@@ -722,8 +724,7 @@ function filterClickLocation(loadGeoTable) {
         if (typeof state_select_holder != "undefined") {
             state_select_holder.appendChild(state_select); // For apps hero
         }
-
-		locationFilterChange("counties");
+        locationFilterChange("counties");
 
 		if (hash.geo) {
 			let clearall = false;

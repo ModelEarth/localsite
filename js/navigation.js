@@ -52,14 +52,7 @@ $(document).ready(function(){
  		modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
  		modelroot = "https://model.earth";
  	}
- 	if (param.showhero != "false") {
- 		if(location.host.indexOf("georgia") >= 0) { 
-	 		//$("body").prepend( "<div class='headerImage'><img src='" + modelpath + "../io/img/hero/sustainable-communities.jpg' style='width:100%'></div>");
-	 	}
-	}
 
-
-	// Moved here
 
 	// Set here so path works at all levels.
 
