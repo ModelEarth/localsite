@@ -297,7 +297,7 @@ $(document).ready(function () {
     $(document).on("change", "#country_select", function(event) {
         //alert("this.value " + this.value);
 
-        goHash({'mapview':this.value});
+        goHash({'mapview':this.value,'state':''});
         /*
         if (this.value) {
             //$('#state_select').val("");
