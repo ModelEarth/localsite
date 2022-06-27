@@ -84,8 +84,7 @@ $(document).ready(function(){
 	} else if (location.host.indexOf("lifecycle.tools") >= 0) {
 		param.titleArray = ["lifecycle","tools"];
 		param.headerLogoSmall = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
-		$('.lifecycle').css('display', 'inline');
-		$('.lifecycle-hide').css('display', 'none');
+		showClassInline(".lifecycle");
 		earthFooter = true;
 	} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 || (((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false) && !param.headerLogo)) {
 		// Show locally for Brave Browser only
@@ -103,18 +102,18 @@ $(document).ready(function(){
 		changeFavicon("/localsite/img/logo/states/GA-favicon.png");
 
 		// BUGBUG - This needs to be css insert rather than being applied before README loads
-		$('.georgia').css('display', 'inline');
-		$('.georgia-hide').css('display', 'none');
-		$('.georgiaorg-hide').css('display', 'none');
+		showClassInline(".georgia");
 		$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
 
 		// TEMP
 		setTimeout( function() {
-		$('.georgia').css('display', 'inline');
-			$('.georgia-hide').css('display', 'none');
-			$('.georgiaorg-hide').css('display', 'none');
-			$('#headerOffset').css('display', 'block');
+			showClassInline(".georgia");
+			$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
 		}, 1500);
+		setTimeout( function() {
+			showClassInline(".georgia");
+			$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
+		}, 3500);
 
 		earthFooter = true;
 
@@ -125,7 +124,7 @@ $(document).ready(function(){
 		param.headerLogoSmall = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
 		document.title = "Neighborhood.org - " + document.title
 		changeFavicon("/localsite/img/logo/partners/neighborhood-icon.png")
-		$('.neighborhood').css('display', 'inline');
+		showClassInline(".neighborhood");
 		earthFooter = true;
 	// location.host.indexOf('localhost') >= 0 || 
 	} else if (!Array.isArray(param.titleArray) && (location.host.indexOf("democracy.lab") >= 0)) {
@@ -134,7 +133,7 @@ $(document).ready(function(){
 
 		param.headerLogo = "<img src='/localsite/img/logo/partners/democracy-lab.png' style='width:190px;margin-top:15px'>";
 		param.headerLogoSmall = "<img src='/localsite/img/logo/partners/democracy-lab-icon.jpg' style='width:32px;margin:4px 8px 0 0'>";
-		$('.dlab').css('display', 'inline'); 
+		showClassInline(".dlab'");
 		earthFooter = true;
 	} else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
 	//} else if (location.host.indexOf('model.earth') >= 0) {
@@ -150,7 +149,7 @@ $(document).ready(function(){
 		}
 		param.headerLogoSmall = "<img src='/localsite/img/logo/partners/model-earth.png' style='width:34px; margin-right:2px'>";
 		changeFavicon(modelpath + "../localsite/img/logo/partners/model-earth.png")
-		$('.earth').css('display', 'inline'); 
+		showClassInline(".earth");
 		console.log(".earth display");
 		earthFooter = true;
 	}
@@ -525,6 +524,26 @@ $(document).ready(function(){
 	// END SIDE NAV WITH HIGHLIGHT ON SCROLL
 });
 
+function showClassInline(theclass) {
+
+	$(theclass).css('display', 'inline');
+
+	setTimeout( function() {
+		$(theclass).css('display', 'inline');
+	}, 1000);
+	setTimeout( function() {
+		$(theclass).css('display', 'inline');
+	}, 2000);
+	setTimeout( function() {
+		$(theclass).css('display', 'inline');
+	}, 5000);
+		setTimeout( function() {
+		$(theclass).css('display', 'inline');
+	}, 10000);
+		setTimeout( function() {
+		$(theclass).css('display', 'inline');
+	}, 30000);
+}
 function hideAdvanced() {
 	updateHash({"mapview":""});
 	$(".fieldSelector").hide();
