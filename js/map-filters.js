@@ -690,8 +690,9 @@ function filterClickLocation(loadGeoTable) {
         }
         $("#hero_holder").show();
 
-        if(location.host.indexOf("georgia") >= 0) { // TEMP until state is enforced while international map is still avalable. Applied when clicking "Top Industires" here: /localsite/map/#show=trade&mapview=countries
-            updateHash({"mapview":"","state":"GA"});
+        if(location.host.indexOf("localhost") >= 0 || location.host.indexOf("georgia") >= 0) { // TEMP until state is enforced while international map is still avalable. Applied when clicking "Top Industires" here: /localsite/map/#show=trade&mapview=countries
+            console.log("Populate with state based on domain.")
+            goHash({"mapview":"","state":"GA"});
         } else {
             updateHash({"mapview":""});
         }
@@ -2255,7 +2256,7 @@ function initSiteObject(layerName) {
           				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
           				$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
 
-          				$("#showAppsText").text("Top Industries");
+          				$("#showAppsText").text("Industries");
           				$("#appSelectHolder .showApps").addClass("filterClickActive");
 						showThumbMenu(hash.show);
                         $('html,body').animate({
