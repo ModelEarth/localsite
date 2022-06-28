@@ -6,6 +6,7 @@
 @media (max-width: 800px) {
   .table-cell {
     display: block;
+    float: left;
   }
 }
 .moduleJS {
@@ -78,10 +79,6 @@
 .layerCbRow:hover {
 	background: #ececec;
 	color: #555;
-}
-.menuBuddy {
-	paddingX: 20px 0 20px 40px;
-	padding-top: 20px;
 }
 .sectionArrowHolder {
     float: right;
@@ -192,7 +189,28 @@
 		display:none;
 	}
 }
-
+.sideListCell {
+	border-right: 1px solid #ddd;
+}
+.sideList {
+	margin: 20px;
+	min-width: 200px;
+	max-width: 300px;
+}
+.leftCell {
+	padding-top: 20px;
+}
+@media (max-width: 800px) {
+	.sideListCell {
+		border-right: none;
+	}
+	.leftCell {
+		max-width: 90%; /* Allows partnerAdmin menu to reside to the left on mobile */
+	}
+	.rightCell {
+		width: 100%;
+	}
+}
 .layerSectionOpenX {
 	max-width: auto;
 	overflow: visible;
