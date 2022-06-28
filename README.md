@@ -1,6 +1,6 @@
 ## Input-Output Widgets
 
-Creating websites should be fun - without waiting for build commands.  The [localsite repo](https://github.com/modelearth/localsite/) provides a static framework for displaying community data from fast json APIs, Google Sheets, and .CSV files in our <a href="https://github.com/modelearth/community-data/" target="_parent">community data repo</a>.  
+Creating websites should be fun - without waiting for build commands.  The&nbsp;[localsite&nbsp;repo](https://github.com/modelearth/localsite/) provides a static framework for displaying community data from fast&nbsp;json&nbsp;APIs, Google Sheets, and .CSV files in our <a href="https://github.com/modelearth/community-data/" target="_parent">community data repo</a>.  
 
 ## Get Involved
 
