@@ -16,7 +16,7 @@
 	"menulevel": "1",
 	"section": "Page Admin",
 	"title": "Edit Event",
-	"link": "/net/calendar/editnew.aspx?s=[itemid]",
+	"link": "/net/calendar/editnew.aspx?s=[itemid]&dateid=[dateid]",
 	"basetype": "2"
 },
 {

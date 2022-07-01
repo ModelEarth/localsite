@@ -43,6 +43,18 @@ function getDirectMenuLink(partnerMenu,item) {
                 item.link = item.link.replace(regex, "");
             }
         }
+        if (itemtypeBool(partnerMenu, item)) { // for events only.
+            //item.link = item.link.replace(/ /g,"-");
+
+            let regex = /\[dateid\]/g;
+            if (partnerMenu.dateID && parseInt(partnerMenu.dateID) > 0) {
+                regex = /\[dateid\]/g;
+                item.link = item.link.replace(regex, partnerMenu.dateID);
+            } else {
+                regex = /&?dateid=\[dateid\]/g; // Remove optional preceding & symbol
+                item.link = item.link.replace(regex, "");
+            }
+        }
         directlink = item.link;
     }
 
