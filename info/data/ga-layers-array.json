@@ -135,7 +135,7 @@
 		"image": "/localsite/img/show/recycle.jpg",
 		"siteHeaderHeight": "170px",
 		"headericoncolor": "#999",
-		"icon": "<i class='fa fa-recycle'></i>",
+		"icon": "<i class='material-icons'>&#xE87A;</i>",
 		"menuaccess": "0",
 		"directlink": "/localsite/map/#show=recyclers",
 		"footerlogos": "",

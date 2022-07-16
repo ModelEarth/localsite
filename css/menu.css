@@ -79,6 +79,7 @@
 .layerCbRow:hover {
 	background: #ececec;
 	color: #555;
+	cursor: pointer;
 }
 .sectionArrowHolder {
     float: right;

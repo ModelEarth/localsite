@@ -249,6 +249,7 @@ function clearAll(siteObject) {
 
 
 function showSubmenu(id) { //onmouseclick
+    //alert("showSubmenu for id: " + id)
     if($("#" + id).hasClass("openMenu")) {
         $("#" + id).removeClass("openMenu");
         $("#" + id + ' .layerCbRow').hide();
@@ -256,7 +257,6 @@ function showSubmenu(id) { //onmouseclick
         $("#" + id).addClass("openMenu");
         $("#" + id + ' .layerCbRow').show();
     }
-    //alert(id)
 }
 // For narrow nav
 function showMenuNav(id) { //onmouseenter
@@ -392,7 +392,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                         linktext = ' link="' + directlink + '"';
                     }
                     partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" id="' + formatLinkId(item.section,item.title + "_parent") + '" style="display:none" onmouseleave="hideMenuNav(this.id)">';
-                    partnerCheckboxes += '<div ' + layerSectionDisplay + ' id="' + formatLinkId(item.section,item.title) + '" class="dontsplit layerSection layerSectionOpen layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '" onmouseenter="showMenuNav(this.id)" onclick="showSubmenu(this.id)"><div style="clearX:both; pointer-events: auto;" data-layer-section="' + item.section + '"' + linktext + '" class="layerSectionClick">';
+                    partnerCheckboxes += '<div ' + layerSectionDisplay + ' id="' + formatLinkId(item.section,item.title) + '" class="dontsplit layerSection layerSectionOpen layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '" onmouseenter="showMenuNav(this.id)"><div style="clearX:both; pointer-events: auto;" data-layer-section="' + item.section + '"' + linktext + '" class="layerSectionClick" onclick="showSubmenu(this.parentElement.id)">';
                     if (partnerMenu.showArrows) {
                         partnerCheckboxes += '<div class="sectionArrowHolder"><div class="leftArrow"></div></div>';
                     }
@@ -603,6 +603,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
             event.stopPropagation();
             return;
         } else {
+            console.log("Click but no action - " + partnerMenu.menuDiv);
             /*
             if ($(this).attr("data-layer-section")) {
                 alert("layerSectionOpen");
