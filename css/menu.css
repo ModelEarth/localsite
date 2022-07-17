@@ -167,6 +167,7 @@
 		top: 0;
 		bottom: 0;
 		overflow: visible;
+		background: rgb(238, 238, 238);
 	}
 	.layerSection {
 		/* max-width: 38px; Avoid, else background is not visible. */
