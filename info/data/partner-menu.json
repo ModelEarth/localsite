@@ -22,7 +22,7 @@
 {
 	"menulevel": "1",
 	"section": "Page Admin",
-	"title": "Edit Location",
+	"title": "Update Location",
 	"link": "/net/org/edit.aspx?s=[itemid]"
 },
 {
