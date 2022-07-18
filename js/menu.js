@@ -269,13 +269,13 @@ function showMenuNav(id) { //onmouseenter
         console.log("showMenuNav " + id);
         $(".sideMenuColumn").addClass("sideMenuColumnNarrow"); // Adds black background
 
-        return; // TEMP
+        //return; // TEMP
         $("#" + id + " .layerSectionTitle").show();
     }
 }
 function hideMenuNav(id) { //onmouseleave
     
-    return; // TEMP
+    //return; // TEMP
     //console.log(".sideMenuColumn " + $(".sideMenuColumn").width());
 
     // BUGBUG - Need to check parent .sideMenuColumn since multiple instances may reside on page.
