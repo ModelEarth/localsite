@@ -268,9 +268,12 @@ function showMenuNav(id) { //onmouseenter
     if ($(".sideMenuColumn").width() < 50) { // Only do rollover popout when side column is narrow.
         //console.log("showMenuNav " + id);
         $(".sideMenuColumn").addClass("sideMenuColumnNarrow"); // Adds black background
-
+        $(".sideMenuColumn").removeClass("sideMenuColumnWide");
         //return; // TEMP
         $("#" + id + " .layerSectionTitle").show();
+    } else {
+        $(".sideMenuColumn").addClass("sideMenuColumnWide");
+        $(".sideMenuColumn").removeClass("sideMenuColumnNarrow");
     }
 }
 function hideMenuNav(id) { //onmouseleave

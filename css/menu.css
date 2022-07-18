@@ -143,6 +143,7 @@
 .sideMenuColumnNarrow	.layerSectionTitle {
 	display: none;
 }
+
 .sideMenuColumnNarrow .layerSectionTitle {
 	width: 180px; /* required for background color to be visible */
 	color: #fff;
@@ -155,6 +156,9 @@
 	border-bottom: 1px solid #fff;
 }
 @media (max-width: 1400px) {
+	.sideMenuColumnWide .layerCbRow { /* Allow submenu to be hidden on resize without using javascript */
+		display: none !important;
+	}
 	#partnerMenuHolder {
 		min-width: 32px;
 	}
@@ -176,6 +180,9 @@
 	}
 	.layerSectionTitle {
 		display: none;
+	}
+	.layerCbRow {
+		display: none; /* hides on resize from wide to narrow */
 	}
 	.layerSection:last-child {
 		margin-bottom: 0px;
