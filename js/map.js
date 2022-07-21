@@ -221,6 +221,10 @@ function zoomEarth(zoomAmount) {
   //loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/" + hourStr + "00Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
 }
 function getEarthObject(url) {
+  if (url == undefined) {
+    console.log("BUG - getEarthObject url undefined");
+    return;
+  }
   let urlPart = url.split('/');
   let params = {};
   if (urlPart.length > 6) { // URL contains date and time
@@ -350,7 +354,9 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     } else {
       console.log('loadFromSheet into #' + whichmap);
       $(".keywordField").show();
-      $("#" + whichmap).show();
+      if (dp.mapable != "false") {
+        $("#" + whichmap).show();
+      }
     }
 
     dp = mix(dp,defaults); // Gives priority to dp
@@ -510,6 +516,51 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     // We are currently loading dp.dataset from a CSV file.
     // Later we will check if the filename ends with .csv
 
+    if (dp.googleCategories && !dp.googleCSV) {            
+      d3.csv(dp.googleCategories).then(function(data) {
+        // LOAD CATEGORIES TAB - Category, SubCategory, SubCategoryLong
+        //localObject.layerCategories[dp.show] = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
+        localObject.layerCategories[dp.show] = data;
+        preCatList = localObject.layerCategories[hash.show];
+
+        console.log("preCatList");
+        console.log(preCatList);
+
+        let catList = {};
+        // Build catList object with category name as the key.
+        let catColName = "Category"; // TO DO, apply this below.
+        for (var i = 0, l = preCatList.length; i < l; i++) {
+
+          let key = Object.keys(preCatList[i]);
+
+          //iconColor = colorScale(element[dp.valueColumn]);
+          //if (dp.color) { 
+          //  iconColor = dp.color;
+          //}
+          iconColor = "blue";
+
+          //console.log("element[dp.valueColumn] " + element[dp.valueColumn]);
+          //if (dp.valueColumn) {
+            // Requires only ONE category value in the valueColumn.
+            if(!catList.Category) {
+              catList[preCatList[i].Category] = {};
+              catList[preCatList[i].Category].count = 1;
+            } else {
+              catList[preCatList[i].Category].count++;
+            }
+            catList[preCatList[i].Category].color = iconColor;
+          //}
+        }
+        console.log("catList");
+        console.log(catList);
+
+        localObject.layerCategories[dp.show] = catList;
+
+        renderCatList(catList);
+        //processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
+      });
+    }
+
     let stateAllowed = true;
     if (dp.datastates && hash.state) {
       if (dp.datastates.split(",").indexOf(hash.state.split(",")[0].toUpperCase()) == -1) {
@@ -539,8 +590,8 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
       d3.csv(dp.dataset).then(function(data) { // One row per line
           //console.log("To do: store data in browser to avoid repeat loading from CSV.");
 
-          dp.data = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
-
+          //dp.data = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
+          dp.data = data;
         
           // Make element key always lowercase
           //dp.data_lowercase_key;
@@ -571,19 +622,19 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     } else if (dp.googleCSV) {
       d3.csv(dp.googleCSV).then(function(data) { // One row per line
         // LOAD GOOGLE SHEET
-          dp.data = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
+          //dp.data = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
+          dp.data = data;
           if (dp.googleCategories) {            
             d3.csv(dp.googleCategories).then(function(data) {
               // LOAD CATEGORIES TAB - Category, SubCategory, SubCategoryLong
-              localObject.layerCategories[dp.show] = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
+              //localObject.layerCategories[dp.show] = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
+              localObject.layerCategories[dp.show] = data;
               processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
             });
           } else {
             processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
           }
       });
-
-
     }
     
     //.catch(function(error){ 
@@ -1551,24 +1602,31 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.latColumn = "plant_or_group.latitude";
         dp.lonColumn = "plant_or_group.longitude";
   } else if (show == "trade") {
-        dp.listTitle = "Georgia Commercial Recyclers";
-        dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
-        dp.googleCategories = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=381237740&single=true&output=csv";
-        dp.nameColumn = "organization name";
-        dp.titleColumn = "organization name";
-        dp.searchFields = "organization name";
-        dp.addressColumn = "address";
+        dp.listTitle = "Georgia Exporters";
+        dp.googleCategories = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQjvrzFMi_5ZPpcHj4uzjyA9aHyrlo6eJpdlLB6Mo5Fxtp9dfajgLKOfa16-HlZOPTKNQLbSWbkL6SR/pub?gid=0&single=true&output=csv";
+        
+        //dp.valueColumn = "category";
+        //dp.valueColumnLabel = "Category";
 
-        dp.valueColumn = "category";
-        dp.valueColumnLabel = "Category";
         dp.catColumn = "Category";
-        dp.subcatColumn = "Materials Accepted";
-        dp.itemsColumn = "Materials Accepted"; // Needs to remain capitalized. Equivalent to PPE items column, checkboxes
+        //dp.subcatColumn = "Materials Accepted";
+        dp.dataset = "https://georgiadata.github.io/display/products/exporters/export.csv";
+        dp.nameColumn = "account name"; // Lowercase even though capitalized in CSV.
+        dp.titleColumn = "Account Name";
+        dp.searchFields = "Account Name";
+        //dp.addressColumn = "address";
+
+        //dp.valueColumn = "category"; // Avoid because we have multiple categories in value column.
+        //dp.valueColumnLabel = "Category";
+        dp.catColumn = "Industries Trade";
+        dp.mapable = "false";
+        //dp.subcatColumn = "Materials Accepted";
+        //dp.itemsColumn = "Materials Accepted"; // Needs to remain capitalized. Equivalent to PPE items column, checkboxes
 
         // https://map.georgia.org/recycling/
-        dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "Submit updates using our <a href='https://map.georgia.org/recycling/'>Google Form</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a>.&nbsp; View&nbsp;additional <a href='../map/recycling/ga/'>recycling datasets</a>.";
-        dp.search = {"In Main Category": "Category", "In Materials Accepted": "Materials Accepted", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
+        dp.editLink = "";
+        dp.listInfo = "<a href='https://map.georgia.org/display/products/'>View active version</a>";
+        dp.search = {"In Company Name": "Account Name", "In Industries": "Industries Trade"};
 
   } else if (theState == "GA") {
 
@@ -1609,6 +1667,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
       } else if (show == "recyclers") {
         dp.listTitle = "Georgia Commercial Recyclers";
+        dp.adminNote = "maps.g";
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
         dp.googleCategories = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=381237740&single=true&output=csv";
         dp.nameColumn = "organization name";
@@ -2533,10 +2592,18 @@ function showList(dp,map) {
     var key, keys = Object.keys(elementRaw);
     var n = keys.length;
     var element={};
+    let output = "";
+    let output_details = "";
+
     while (n--) {
       key = keys[n];
       //element[key] = elementRaw[key]; // Also keep uppercase for element["Prepared"]
       element[key.toLowerCase()] = elementRaw[key];
+      if (hash.details == "true" && location.host.indexOf('localhost') >= 0) {
+        if (key && elementRaw[key]) {
+          output_details += "<b>" + key + "</b>: " + elementRaw[key] + "<br>";
+        }
+      }
     }
 
     iconColor = colorScale(element[dp.valueColumn]);
@@ -2547,14 +2614,16 @@ function showList(dp,map) {
     //console.log("element state2 " + element.state + " iconColor: " + iconColor)
 
     //console.log("element[dp.valueColumn] " + element[dp.valueColumn]);
-    if(!catList[element[dp.valueColumn]]) {
-      catList[element[dp.valueColumn]] = {};
-      catList[element[dp.valueColumn]].count = 1;
-    } else {
-      catList[element[dp.valueColumn]].count++;
+    if (dp.valueColumn) {
+      // Requires only ONE category value in the valueColumn.
+      if(!catList[element[dp.valueColumn]]) {
+        catList[element[dp.valueColumn]] = {};
+        catList[element[dp.valueColumn]].count = 1;
+      } else {
+        catList[element[dp.valueColumn]].count++;
+      }
+      catList[element[dp.valueColumn]].color = iconColor;
     }
-    catList[element[dp.valueColumn]].color = iconColor;
-
     // BUGBUG - Is it valid to search above before making key lowercase? Should elementRaw key be made lowercase?
 
     //if (foundMatch > 0 && productMatchFound > 0) {
@@ -2642,9 +2711,9 @@ function showList(dp,map) {
 
         // Hide all until displayed after adding to dom
         if (element[dp.latColumn] && element[dp.lonColumn]) {
-          output = "<div style='display:none' class='detail' name='" + name.replace(/'/g,'&#39;') + "' latitude='" + element[dp.latColumn] + "' longitude='" + element[dp.lonColumn] + "'>";
+          output += "<div style='display:none' class='detail' name='" + name.replace(/'/g,'&#39;') + "' latitude='" + element[dp.latColumn] + "' longitude='" + element[dp.lonColumn] + "'>";
         } else {
-          output = "<div style='display:none' class='detail' name='" + name.replace(/'/g,'&#39;') + "'>";
+          output += "<div style='display:none' class='detail' name='" + name.replace(/'/g,'&#39;') + "'>";
         }
 
         output += "<div class='showItemMenu' style='float:right'>&mldr;</div>"; 
@@ -2780,7 +2849,7 @@ function showList(dp,map) {
           }
           output += "<a href='" + dp.editLink + "' target='edit" + param["show"] + "'>Make Updates</a><br>";
         }
-        if (!element.county && !(element[dp.latColumn] && element[dp.lonColumn])) {
+        if (!element.mapable == "false" && !element.county && !(element[dp.latColumn] && element[dp.lonColumn])) {
           if (!element[dp.lonColumn]) {
             output += "<span>Add latitude and longitude</span><br>";
           } else {
@@ -2834,6 +2903,9 @@ function showList(dp,map) {
           }
         }
 
+        if(output_details) {
+          output += "<br>Details:<br>" + output_details;
+        }
         output += "</div>"; // End Lower
         output += "</div>"; // End detail
         
@@ -2864,23 +2936,8 @@ function showList(dp,map) {
   }
   console.log("Total " + dp.dataTitle + " " + countDisplay + " of " + count);
 
-  //console.log("catList:");
-  //console.log(catList);
   if (hash.show != showprevious || $("#tableSide > .catList").text().length == 0) { // Prevents selected category from being overwritten.
-    if (hash.show != "ppe" && hash.show != "suppliers") { // PPE cats are still hardcoded in localsite/map/index.html. "suppliers" is used in site embed
-      if (catList && Object.keys(catList).length > 0) {
-        let catNavSide = "<div class='all_categories'>All Categories</div>";
-
-        Object.keys(catList).forEach(key => {
-          if (key != "") {
-            catNavSide += "<div style='background:" + catList[key].color + ";padding:0px;width:13px;height:13px;border:1px solid #ccc;margin-top:12px;margin-left:12px;margin-right:5px;float:left'></div><div title='" + key + "' style='min-height:38px'>" + key + "<span class='local'>&nbsp;(" + catList[key].count + ")</span></div>";
-          }
-        });
-        //console.log(catNavSide)
-        $("#tableSide").html(""); // Clear
-        $("#tableSide").append("<div class='catList' style='white-space:nowrap; margin:15px; margin-left:10px;'>" + catNavSide + "</div>");
-      }
-    }
+    renderCatList(catList);
   }
   if (hash.name && $("#detaillist > [name='"+ hash.name.replace(/_/g,' ') +"']").length) {
     let listingName = hash.name.replace(/_/g,' ');
@@ -2985,6 +3042,25 @@ function showList(dp,map) {
 
   dp.data = data_out;
   return dp;
+}
+function renderCatList(catList) {
+  console.log("catList");
+  console.log(catList);
+  if (hash.show != "ppe" && hash.show != "suppliers") { // PPE cats are still hardcoded in localsite/map/index.html. "suppliers" is used in site embed
+      if (catList && Object.keys(catList).length > 0) {
+        let catNavSide = "<div class='all_categories'>All Categories</div>";
+
+        Object.keys(catList).forEach(key => {
+          if (key != "") {
+            catNavSide += "<div style='background:" + catList[key].color + ";padding:0px;width:13px;height:13px;border:1px solid #ccc;margin-top:12px;margin-left:12px;margin-right:5px;float:left'></div><div title='" + key + "' style='min-height:38px'>" + key + "<span class='local'>&nbsp;(" + catList[key].count + ")</span></div>";
+          }
+        });
+        //console.log(catNavSide)
+        $("#tableSide").html(""); // Clear
+        $("#tableSide").append("<div class='catList' style='white-space:nowrap; margin:15px; margin-left:10px;'>" + catNavSide + "</div>");
+        //alert("did it 3")
+      }
+    }
 }
 function capitalizeFirstLetter(str, locale=navigator.language) {
   if (!str) return "";
@@ -3179,8 +3255,10 @@ function isNumeric(str) {
   return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
          !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
 }
+/*
 function makeRowValuesNumeric(_data, columnsNum, valueCol) {
-  //console.log(_data);
+  console.log("makeRowValuesNumeric");
+  console.log(_data);
   
   // 'for of' loop is more efficient than forEach. 
   // Also works on objects. You can call it like this 'for let d of Object.entries(data){ }'
@@ -3196,6 +3274,7 @@ function makeRowValuesNumeric(_data, columnsNum, valueCol) {
   //console.log(_data); // Careful, this can overwhelm browser
   return _data;
 }
+*/
 function convertToNumber(d, _columnsNum) {
   for (var perm in d) {
     if (_columnsNum.indexOf(perm) > -1)
