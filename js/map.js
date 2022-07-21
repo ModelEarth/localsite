@@ -2286,7 +2286,7 @@ function showList(dp,map) {
       $.each(localObject.layerCategories[dp.show], function(index,value) {
         if (value.Category == hash.cat || !hash.cat) {
           let subcatTitle = value.SubCategoryLong || value.SubCategory;
-          subcatList += "<li><a href='#' onClick='goHash({\"cat\":\"" + value.Category + "\", \"subcat\":\"" + value.SubCategory + "\"}); return false;'>" + subcatTitle + "</a></li>";
+          subcatList += "<li><a href='#' onClick='goHash({\"cat\":\"" + value.Category + "\", \"subcat\":\"" + value.SubCategory.replace("&","%26") + "\"}); return false;'>" + subcatTitle + "</a></li>";
           subcatArray.push(value.SubCategory);
           if (value.SubCategory.length > 0) {
             //console.log("value.SubCategory " + value.SubCategory)
@@ -2982,7 +2982,13 @@ function showList(dp,map) {
   if (dataMatchCount > 0) {
       let searchFor = "";
       if ($("#catSearch").val()) {
-        searchFor = "<b>" + $("#catSearch").val() + "</b> - "; // was twice BUGBUG
+        searchFor += "<b>" + $("#catSearch").val() + "</b>";
+      }
+      if (hash.subcat) {
+        searchFor += "<b>: " + hash.subcat + "</b>";
+      }
+      if ($("#catSearch").val()) {
+        searchFor += " - ";
       }
       if (countDisplay == validRowCount) {
         if (countDisplay == 1) {
