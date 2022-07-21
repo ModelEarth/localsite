@@ -42,15 +42,40 @@ Also lacks CHARM.  Far from comprehensive.
 
 
 
-<h2>B2B Recyclers</h2>
+## B2B Recyclers
 
-<a href="https://map.georgia.org/localsite/map/#show=recyclers&state=GA" target="_parent">Recycler Map and Listings</a>
-<a href="https://map.georgia.org/recycling/" target="_parent" style="white-space: nowrap;">Add commercial listings</a> 
-<a href="https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing" target="google-recycling">Submit changes by adding comments</a>
+<a href="https://map.georgia.org/localsite/map/#show=recyclers&state=GA" target="_parent">Recycler Map and Listings</a> <span class="local" style="display:none">- <a href="https://map.georgia.org/localsite/map/#show=recyclers&state=GA" target="_parent">view on localhost</a></span>
+<a href="https://map.georgia.org/recycling/" target="_parent" style="white-space: nowrap;">Add Commercial Recycler Listings</a> 
+<a href="https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing" target="google-recycling">Submit Changes by Adding Comments</a>
 <a href="https://github.com/georgiamap/recycling/" target="_parent">Recycling GitHub Repo</a>  
-<a href="https://github.com/modelearth/localsite/" target="_parent">Localsite Map GitHub Repo</a>
-<hr>
-<a href="../../neighborhood/" target="_parent">About Maps from Google Sheets</a>
+<a href="https://github.com/modelearth/localsite/" target="_parent">Localsite Map GitHub Repo</a>  
+<a href="../../neighborhood/" target="_parent">About Maps from Google Sheets</a>  
+
+## Waste management and remediation services NAICS
+
+[EPA USEEIO - 6 sectors for Waste Management and Remediation Services (562000)](https://www.nature.com/articles/s41597-022-01293-7/tables/7) - For the hybrid waste models the EPA is working on, placeholders extend the 6-digit specificity of the [562 sectors](https://www.census.gov/naics/) for waste material management.
+
+
+Sites to check for "Material separation/recovery facilities" (MRF) - NAICS 562920  
+Both of the following options use Data Axle for business listings:  
+
+Option 1:  
+[Review listings in Georgia Site Selector](https://properties.zoomprospector.com/statega/community/State-of-Georgia-GA/r1025/business/MRF/562920?filters[codeList]=562920&industrySelected=562920&lat=32.708429812871685&lng=-83.22300875984828&zoom=7)
+Provides 21 businesses as of July 21, 2022
+
+Option 2:  
+Georgia Labor employer data by NAICS 562920 - Provides 16 as of July 21, 2022:
+
+1. Sign in to the [Georgia Labor Market Explorer](https://explorer.gdol.ga.gov/)
+
+<!-- Direct links will fail:
+https://explorer.gdol.ga.gov/vosnet/drills/employer/empdrill.aspx?session=jobseek
+-->
+2. Go to: Menu (upper left on page like "Labor Market Facts") > Employers > Employer Profile > Advanced Employer Search > Select Specfic Industry > Industries by Industry Code
+
+
+3. Copy from HTML page, paste into Excel, and rotate from 2-columns into rows using [Rotate-LaborExplorer.xlsx tabs](/community/projects/mobility/Rotate-LaborExplorer.xlsx)<br><br>  
+
 <!--
 Google Sheets resides in Georgia Maps Google account > Georgia Recycling folder
 Owned by maps.georgia.org@gmail.com
