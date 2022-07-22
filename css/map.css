@@ -63,12 +63,14 @@
   }
   /* Layers */
   .leaflet-control-container > div:nth-child(2).leaflet-right {
-    right: 10px;
-    left: auto;
+    /* right: 10px; */
+    /* left: auto; */
+    left: 10px;
   }
   .leaflet-control-container > div:nth-child(2).leaflet-top {
-    top: 10px;
-    bottom: auto;
+    /* top: 10px; */
+    /* bottom: auto; */
+    bottom: 20px;
   }
   .leaflet-control-container > div:nth-child(4) {
     display: none;

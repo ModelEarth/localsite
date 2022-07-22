@@ -127,10 +127,10 @@
 	pointer-events: none;
 	}
 .leaflet-top {
-	top: 0;
+	/* top: 0; CUSTOM */
 	}
 .leaflet-right {
-	right: 0;
+	/* right: 0; CUSTOM */
 	}
 .leaflet-bottom {
 	bottom: 0;
@@ -353,6 +353,7 @@
 .leaflet-retina .leaflet-control-layers-toggle {
 	background-image: url(images/layers-2x.png);
 	background-size: 26px 26px;
+	background-size: 20px 20px; /* CUSTOM */
 	}
 .leaflet-touch .leaflet-control-layers-toggle {
 	width: 44px;
