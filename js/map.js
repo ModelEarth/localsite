@@ -2940,11 +2940,6 @@ function showList(dp,map) {
   });
   $("#detaillist").append("<div style='height:60px'></div>"); // For space behind absolute buttons at bottom.
 
-  // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
-  // Remove name from hash to trigger refresh
-  //let viewAllButton = " <div class='viewAllLink btn btn-white' style='float:right;display:none;'><a onclick='goHash({},[\"name\",\"loc\"]); return false;' href='#show=" + param["show"] + "'>View All</a></div>";
-  //$("#detaillist").append(viewAllButton);
-
   /*
   if (localObject.layerCategories[dp.show].length >= 0) {
     //alert("found")
@@ -3014,13 +3009,13 @@ function showList(dp,map) {
       if (searchFor) {
         //searchFor += "<br>"
       }
-      if ($("#catSearch").val()) {
+      if ($("#catSearch").val() && hash.cat) {
         searchFor += "<b>" + $("#catSearch").val() + "</b>";
       }
       if (hash.subcat) {
         searchFor += "<b>: " + hash.subcat + "</b>";
       }
-      if ($("#catSearch").val()) {
+      if (hash.cat) {
         searchFor += " - ";
       }
       if (countDisplay == validRowCount) {
@@ -3052,7 +3047,7 @@ function showList(dp,map) {
       }
       // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
       // Remove name from hash to trigger refresh
-      searchFor += " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\"]); return false;' href='#show=" + param["show"] + "'>View All</a></span>";
+      searchFor += " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\",\"cat\",\"subcat\"]); return false;' href='#show=" + param["show"] + "'>View All</a></span>";
 
       $("#dataList").html(searchFor);
       $("#resultsPanel").show();
