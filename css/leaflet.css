@@ -356,8 +356,10 @@
 	background-size: 20px 20px; /* CUSTOM */
 	}
 .leaflet-touch .leaflet-control-layers-toggle {
+	/* CUSTOM
 	width: 44px;
 	height: 44px;
+	*/
 	}
 .leaflet-control-layers .leaflet-control-layers-list,
 .leaflet-control-layers-expanded .leaflet-control-layers-toggle {
