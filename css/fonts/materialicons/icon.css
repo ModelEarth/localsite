@@ -1,4 +1,8 @@
 /* fallback */
+/* CUSTOM */
+.show-on-load {
+  display: inline-block;
+}
 /* CUSTOM replaced src below. Was: https://fonts.gstatic.com/s/materialicons/v133/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2 */
 @font-face {
   font-family: 'Material Icons';

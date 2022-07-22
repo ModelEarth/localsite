@@ -61,7 +61,6 @@
 .layerCbRow {
 	display:none;
 	padding: 1px 0px 0px 0px;
-	margin-left: 35px;
 	color: #888;
 	clear: both;
 }
@@ -70,8 +69,7 @@
 	border-left: 1px solid #ccc;
 	border-right: 1px solid #ccc;
 	border-bottom: 1px solid #333;
-	width: 179px; /* To overlap sideMenuColumnNarrow */
-	margin-left: 0px;
+	width: 180px; /* To overlap sideMenuColumnNarrow */
 }
 .layerCbTitle {
 	white-space:nowrap;
@@ -168,8 +166,10 @@
 		min-width: 38px;
 		/* max-width: 38px; Avoiding since page's .sidechildlist is injected. */
 		max-width: 38px; 
+		/*
 		top: 0;
 		bottom: 0;
+		*/
 		overflow: visible;
 		background: rgb(238, 238, 238);
 	}

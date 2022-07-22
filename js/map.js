@@ -105,6 +105,13 @@ function hashChangedMap() {
     hiddenhash.state = "GA";
   }
 
+  if (hash.cat || hash.name) {
+    $(".viewAllLink").show();
+  } else {
+    $(".viewAllLink").hide();
+  }
+  $("#changeHublistHeight").show();
+
   if (hash.name !== priorHashMap.name) {
     loadMap1("hashChanged() in map.js new name for View Details " + hash.name, hash.show);
     let offTop = $("#list_main").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height();
@@ -146,7 +153,9 @@ function hashChangedMap() {
     loadMap1("hashChanged() in map.js new cat " + hash.cat, hash.show);
   } else if (hash.subcat !== priorHashMap.subcat) {
     loadMap1("hashChanged() in map.js new subcat " + hash.subcat, hash.show);
-  } 
+  } else if (hash.details !== priorHashMap.details) {
+    loadMap1("hashChanged() in map.js new details = " + hash.details, hash.show);
+  }
   priorHashMap = getHash();
 }
 $(document).ready(function () {
@@ -1271,10 +1280,15 @@ function addIcons(dp,map,map2) {
       //$(this).css("background-color","rgb(250, 250, 250)");
       //$(this).css("padding","15px");
       $(this).addClass("detailActive");
+      if ($(".detailActive").height() < 250) {
+        $("#changeHublistHeight").hide();
+      }
+      
       var listingsVisible = $('#detaillist .detail:visible').length;
-      if (listingsVisible == 1) {
+      if (listingsVisible == 1 || hash.cat) {
         $(".viewAllLink").show();
       }
+
       if ($(this).attr("latitude") && $(this).attr("longitude")) {
         popMapPoint(dp, map2, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"));
       } else {
@@ -1666,7 +1680,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.itemsColumn = "NAICS Description"; // The column being search
 
       } else if (show == "recyclers") {
-        dp.listTitle = "Georgia Commercial Recyclers";
+        dp.listTitle = "Georgia B2B Recyclers";
         dp.adminNote = "maps.g";
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
         dp.googleCategories = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=381237740&single=true&output=csv";
@@ -1683,7 +1697,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
         // https://map.georgia.org/recycling/
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "Submit updates using our <a href='https://map.georgia.org/recycling/'>Google Form</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a>.&nbsp; View&nbsp;additional <a href='../map/recycling/ga/'>recycling datasets</a>.";
+        dp.listInfo = "<a href='https://map.georgia.org/recycling/'>Add Recycler Listings</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a>.&nbsp; View&nbsp;<a href='../map/recycling/ga/'>Recycling&nbsp;Datasets</a>.";
         dp.search = {"In Main Category": "Category", "In Materials Accepted": "Materials Accepted", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
 
       } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills")) { // recycling-processors
@@ -1721,7 +1735,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
           //dp.nameColumn = "organizationname";
           //dp.titleColumn = "organizationname";
 
-          dp.listInfo = "View additional <a href='../map/recycling/ga/'>recycling datasets</a>.<br>Submit updates by posting comments in our 5 <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing'>Google Sheet Tabs</a>.";
+          dp.listInfo = "<span>View <a href='../map/recycling/ga/'>Recycling Datasets</a>.</span><br>Submit updates by posting comments in our 5 <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing'>Google Sheet Tabs</a>.";
           
           //dp.latColumn = "latitude";
           //dp.lonColumn = "longitude";
@@ -2594,14 +2608,16 @@ function showList(dp,map) {
     var element={};
     let output = "";
     let output_details = "";
-
+    let avoidRepeating = ["description","address","website","phone","email","email address","county","admin note","your name","organization name"];
     while (n--) {
       key = keys[n];
       //element[key] = elementRaw[key]; // Also keep uppercase for element["Prepared"]
       element[key.toLowerCase()] = elementRaw[key];
       if (hash.details == "true" && location.host.indexOf('localhost') >= 0) {
         if (key && elementRaw[key]) {
-          output_details += "<b>" + key + "</b>: " + elementRaw[key] + "<br>";
+          if (avoidRepeating.indexOf(key.toLowerCase()) < 0) {
+            output_details += "<b>" + key + "</b>: " + elementRaw[key] + "<br>";
+          }
         }
       }
     }
@@ -2833,22 +2849,33 @@ function showList(dp,map) {
           output += "<b>" + dp.showLabels + ":</b> " + element[dp.showKeys] + "<br>";
         }
 
+        if(output_details) {
+          //output += "<br>Details:<br>" + output_details;
+          output += output_details;
+        }
+
+        output += "<div style='height:10px'></div>";
         if (element.mapframe) {
             output += "<a href='#show=360&m=" + element.mapframe + "'>Birdseye View<br>";
         }
         if (element.property_link) {
             output += "<a href='" + element.property_link + "'>Property Details</a><br>";
         }
+
         if (element.county) {
-            output += '<a href="' + theTitleLink + '" target="_blank">Google Map</a> ';
+            output += '<a href="' + theTitleLink + '" target="_blank">Google Map</a>';
         }
         
+        if (hash.details != "true") {
+          output += "&nbsp; | &nbsp;<a href='" + window.location + "&details=true'>Details</a>";
+        }
         if (dp.editLink) {
           if (element.county) {
-            output += "&nbsp;| &nbsp;"
+            output += "&nbsp; | &nbsp;"
           }
           output += "<a href='" + dp.editLink + "' target='edit" + param["show"] + "'>Make Updates</a><br>";
         }
+        
         if (!element.mapable == "false" && !element.county && !(element[dp.latColumn] && element[dp.lonColumn])) {
           if (!element[dp.lonColumn]) {
             output += "<span>Add latitude and longitude</span><br>";
@@ -2903,22 +2930,20 @@ function showList(dp,map) {
           }
         }
 
-        if(output_details) {
-          output += "<br>Details:<br>" + output_details;
-        }
         output += "</div>"; // End Lower
         output += "</div>"; // End detail
         
-        
+        // Here display:none is used when listings are excluded. Do we use script to show these, or simply re-run the list?
         $("#detaillist").append(output);
       }
     }
   });
+  $("#detaillist").append("<div style='height:60px'></div>"); // For space behind absolute buttons at bottom.
 
   // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
   // Remove name from hash to trigger refresh
-  let viewAllButton = " <div class='viewAllLink btn btn-white' style='float:right;display:none;'><a onclick='goHash({},[\"name\",\"loc\"]); return false;' href='#show=" + param["show"] + "'>View All</a></div>";
-  $("#detaillist").append(viewAllButton);
+  //let viewAllButton = " <div class='viewAllLink btn btn-white' style='float:right;display:none;'><a onclick='goHash({},[\"name\",\"loc\"]); return false;' href='#show=" + param["show"] + "'>View All</a></div>";
+  //$("#detaillist").append(viewAllButton);
 
   /*
   if (localObject.layerCategories[dp.show].length >= 0) {
@@ -2931,6 +2956,7 @@ function showList(dp,map) {
     $("#detaillist").prepend(subcatList);
   }
   */
+  $("#detaillist").prepend("<hr>");
   if (subcatObject["null"].count > 0) {
     $("#detaillist").prepend(hash.cat + " rows needing subcategory: " + subcatObject["null"].count);
   }
@@ -2979,8 +3005,15 @@ function showList(dp,map) {
   locmenu += "</div>";
   //$("#sidemapbar").prepend(locmenu);
 
+  let searchFor = "";
+  if (dp.listInfo) {
+    searchFor += dp.listInfo;
+    searchFor += "<hr styleX='margin-bottom:16px'>";
+  }
   if (dataMatchCount > 0) {
-      let searchFor = "";
+      if (searchFor) {
+        //searchFor += "<br>"
+      }
       if ($("#catSearch").val()) {
         searchFor += "<b>" + $("#catSearch").val() + "</b>";
       }
@@ -3019,14 +3052,8 @@ function showList(dp,map) {
       }
       // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
       // Remove name from hash to trigger refresh
-      searchFor += " <div class='viewAllLink' style='float:right;display:none;'><a onclick='goHash({},[\"name\",\"loc\"]); return false;' href='#show=" + param["show"] + "'>View All</a></div>";
+      searchFor += " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\"]); return false;' href='#show=" + param["show"] + "'>View All</a></span>";
 
-      if (dp.listInfo) {
-        if (searchFor) {
-          searchFor += "<br>"
-        }
-        searchFor += dp.listInfo;
-      }
       $("#dataList").html(searchFor);
       $("#resultsPanel").show();
       $("#dataList").show();
