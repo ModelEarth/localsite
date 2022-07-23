@@ -180,7 +180,8 @@ $(document).ready(function(){
  	$("body").addClass("flexbody"); // For footer to stick at bottom on short pages
  	$("body").wrapInner("<main class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
  	// min-height allows header to serve as #filterbaroffset when header.html not loaded
- 	$("body").prepend("<div id='local-header' class='flexheader hideprint' style='pointer-events:none;min-height:56px'></div>\r");
+ 	// pointer-events:none; // Avoid because sub-divs inherite and settings dropdowns are then not clickable.
+ 	$("body").prepend("<div id='local-header' class='flexheader hideprint' style='min-height:56px'></div>\r");
 	
 	if(document.getElementById("bodyFile") == null) {
 		$("#fullcolumn").prepend("<div id='bodyFile'></div>\r");
