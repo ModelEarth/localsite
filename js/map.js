@@ -2613,7 +2613,7 @@ function showList(dp,map) {
       key = keys[n];
       //element[key] = elementRaw[key]; // Also keep uppercase for element["Prepared"]
       element[key.toLowerCase()] = elementRaw[key];
-      if (hash.details == "true" && location.host.indexOf('localhost') >= 0) {
+      if (hash.details == "true") {
         if (key && elementRaw[key]) {
           if (avoidRepeating.indexOf(key.toLowerCase()) < 0) {
             output_details += "<b>" + key + "</b>: " + elementRaw[key] + "<br>";
