@@ -2867,7 +2867,11 @@ function showList(dp,map) {
         }
         
         if (hash.details != "true") {
-          output += "&nbsp; | &nbsp;<a href='" + window.location + "&details=true'>Details</a>";
+          if (hash.name) {
+            output += "&nbsp; | &nbsp;<a href='" + window.location + "&details=true'>Details</a>";
+          } else {
+            output += "&nbsp; | &nbsp;<a href='" + window.location + "&name=" + name.replace(/ /g,"+") + "&details=true'>Details</a>";
+          }
         }
         if (dp.editLink) {
           if (element.county) {
