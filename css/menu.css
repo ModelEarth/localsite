@@ -116,6 +116,7 @@
 .sideMenuColumn {
 		z-index: 1;
 		min-width: 160px;
+		background: rgb(238, 238, 238);
 }
 @media (min-width: 1401px) {
 	.layerSectionTitle {
