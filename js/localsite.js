@@ -836,7 +836,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       link.type = 'text/css';
       link.rel = 'stylesheet';
       //link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
-      link.href = '/localsite/css/fonts/materialicons/icon.css';
+      link.href = theroot + '../localsite/css/fonts/materialicons/icon.css';
       link.id = getUrlID3(link.href,"");
       head.appendChild(link);
     }();

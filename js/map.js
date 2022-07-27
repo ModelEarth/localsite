@@ -2608,7 +2608,7 @@ function showList(dp,map) {
     var element={};
     let output = "";
     let output_details = "";
-    let avoidRepeating = ["description","address","website","phone","email","email address","county","admin note","your name","organization name"];
+    let avoidRepeating = ["description","address","website","phone","email","email address","county","admin note","your name","organization name","cognito_id"];
     while (n--) {
       key = keys[n];
       //element[key] = elementRaw[key]; // Also keep uppercase for element["Prepared"]
@@ -2698,8 +2698,6 @@ function showList(dp,map) {
       // Bug, this overwrote element.latitude and element.longitude
       //element = mix(dp,element); // Adds existing column names, giving priority to dp assignments made within calling page.
       
-      var theTitleLink = 'https://www.google.com/maps/search/' + (name + ', ' + element.address + ', ' + element.county + ' County, ' + hash.state).replace(/ /g,"+");
-
       if (element.website && !element.website.toLowerCase().includes("http")) {
         element.website = "http://" + element.website;
       }
@@ -2862,8 +2860,24 @@ function showList(dp,map) {
             output += "<a href='" + element.property_link + "'>Property Details</a><br>";
         }
 
-        if (element.county) {
-            output += '<a href="' + theTitleLink + '" target="_blank">Google Map</a>';
+        var googleMapLink;
+        if (name.length || element.address || element.county) {
+          googleMapLink = name;
+          if (element.address) {
+            googleMapLink += ', ' + element.address;
+          }
+          if (element.county) {
+            googleMapLink += ', ' + element.county + ' County';
+          }
+          if (hash.state) {
+            googleMapLink += ', ' + hash.state;
+          }
+        }
+        if (googleMapLink) {
+          googleMapLink = 'https://www.google.com/maps/search/' + (googleMapLink).replace(/ /g,"+");
+        }
+        if (googleMapLink) {
+            output += '<a href="' + googleMapLink + '" target="_blank">Google Map</a>';
         }
         
         if (hash.details != "true") {
@@ -2874,7 +2888,7 @@ function showList(dp,map) {
           }
         }
         if (dp.editLink) {
-          if (element.county) {
+          if (googleMapLink) {
             output += "&nbsp; | &nbsp;"
           }
           output += "<a href='" + dp.editLink + "' target='edit" + param["show"] + "'>Make Updates</a><br>";

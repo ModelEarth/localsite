@@ -131,7 +131,7 @@ window.onload = function () {
       if (point["Status"] != "0") {
         rowcount++;
         var theTitle = capitalizeFirstLetter(point["Name"]);
-        var theTitleLink = 'https://www.google.com/maps/search/' + (point["Name"] + ', ' + point["County"] + ' County').replace(/ /g,"+");
+        var googleMapLink = 'https://www.google.com/maps/search/' + (point["Name"] + ', ' + point["County"] + ' County').replace(/ /g,"+");
         //var theRow = 
         var theRow = '<b>' + rowcount + " - " + theTitle + '</b> ';
         if (point["County"]) {
@@ -148,7 +148,7 @@ window.onload = function () {
         }
         theRow += '<br>';
         if (point["County"]) {
-          theRow += '<a href="' + theTitleLink + '">Google Map</a>';
+          theRow += '<a href="' + googleMapLink + '">Google Map</a>';
         }
         if (point["Webpage"]) {
           theRow += '&nbsp; | &nbsp;' + linkify(point["Webpage"]);
