@@ -18,18 +18,16 @@ var local_app = local_app || (function(module){
             alert(Object.keys(_args)[0]);
         },
         localsite_root : function() {
-            //alert("call localsite_repo");
             if (localsite_repo) { // Intensive, so allows to only run once
-              //alert(localsite_repo);
               return(localsite_repo);
             }
+            //alert("get localsite_repo");
 
             let scripts = document.getElementsByTagName('script'); 
             let myScript; // = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
             // Now try to find localsite.js
             //alert(myScript.length)
             for (var i = 0; i < scripts.length; ++i) {
-                //alert(scripts[i].src)
                 if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
                   myScript = scripts[i];
                 }
@@ -41,6 +39,22 @@ var local_app = local_app || (function(module){
                 }
               }
             }
+            if (!myScript) {
+              console.log('%cALERT: the current script localsite.js was not yet recognized in the DOM. Hit refresh.', 'color: red; background: yellow; font-size: 14px');
+              
+              // If this setTimeout works, we'll add it before extractHostnameAndPort is called.
+              setTimeout( function() {
+                for (var i = 0; i < scripts.length; ++i) {
+                    if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
+                      myScript = scripts[i];
+                    }
+                    console.log('%cGot script from DOM after delay! We need to modify code here to add additional attempts. ', 'color: green; background: yellow; font-size: 14px');
+              
+                }
+              }, 1000 );
+
+            }
+
             let hostnameAndPort = extractHostnameAndPort(myScript.src);
             let theroot = location.protocol + '//' + location.host + '/localsite/';
 
@@ -1010,7 +1024,7 @@ function loadMapFiltersJS(theroot, count) {
     setTimeout( function() {
       consoleLog("try loadMapFiltersJS again")
       loadMapFiltersJS(theroot,count+1);
-      }, 10 );
+    }, 10 );
   } else {
     consoleLog("ERROR: loadMapFiltersJS exceeded 100 attempts.");
   }
