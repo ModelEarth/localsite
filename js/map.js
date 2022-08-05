@@ -678,26 +678,19 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
   dp.iconName = 'star';
   //dataParameters.push(dp);
 
-
-  // Remove - clear the markers from the map for the layer
-  if (typeof overlays1[dp.dataTitle] != 'undefined') {
-   if (map.hasLayer(overlays1[dp.dataTitle])){
-      overlays1[dp.dataTitle].remove();
-   }
-  }
-  if (typeof overlays2[dp.dataTitle] != 'undefined') {
-   if (map2.hasLayer(overlays2[dp.dataTitle])){
-      overlays2[dp.dataTitle].remove();
-   }
-  }
-
    // Prevents dups of layer from appearing
    // Each dup shows a data subset when filter is being applied.
    if (overlays1[dp.dataTitle]) {
+      if (map.hasLayer(overlays1[dp.dataTitle])){
+        overlays1[dp.dataTitle].remove(); // clear the markers from the map for the layer
+      }
       layerControl[whichmap].removeLayer(overlays1[dp.dataTitle]);
    }
    if (overlays2[dp.dataTitle]) {
-      // Not working, multiple checkboxes appear
+      if (map2.hasLayer(overlays2[dp.dataTitle])){
+        overlays2[dp.dataTitle].remove();
+     }
+      // Not working, multiple checkboxes appear ...might be fixed now, haven't seen multiple lately.
       layerControl[whichmap2].removeLayer(overlays2[dp.dataTitle]);
       //controlLayers.removeLayer(overlays2[dp.dataTitle]);
    }
