@@ -455,8 +455,8 @@
 .leaflet-touch .leaflet-bar {
 	box-shadow: none;
 	}
-.leaflet-touch .leaflet-control-layers,
-.leaflet-touch .leaflet-bar {
+/* CUSTOM - Remove .leaflet-touch .leaflet-bar  */
+.leaflet-touch .leaflet-control-layers {
 	border: 2px solid rgba(0,0,0,0.2);
 	background-clip: padding-box;
 	}

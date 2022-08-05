@@ -89,9 +89,9 @@ function changeMenuLinks(itemid) {
   //});
 }
 
-setlinks.onmouseout = function(){
-    alert("TTZ");
-};
+//setlinks.onmouseout = function(){
+//    alert("TTZ");
+//};
 </script>
 
 <style>
@@ -113,7 +113,7 @@ setlinks.onmouseout = function(){
 }
 @media (max-width:1400px) {
   .menuPackage {
-    width:100px;
+    width:200px;
     padding-right:0px;
     margin-right:0px;
     border:0px;
@@ -160,22 +160,22 @@ setlinks.onmouseout = function(){
 
   <!-- 3 dots: … -->
 
-  <div class="menuPackage">
+  <div class="menuPackage sideMenuColumn">
   <div id="showScope" class="revealButton btn btn-white" style="cursor:pointer;">Scope</div>
   <div id="scopeMenu" class="menuWidth partnerCheckboxes"></div>
   </div>
 
-  <div class="menuPackage">
+  <div class="menuPackage sideMenuColumn">
 	<div id="showSiteNav" class="revealButton btn btn-white" style="cursor:pointer;">Map Layers</div>
 	<div id="localSiteMenu" class="menuWidth partnerCheckboxes"></div>
   </div>
 
-  <div class="menuPackage">
+  <div class="menuPackage sideMenuColumn">
   	<div id="showIndustryMenu" class="revealButton btn btn-white" style="cursor:pointer;">Industries</div>
   	<div id="partnerCheckboxes" class="menuWidth"></div>
   </div>
 
-  <div class="menuPackage" style="padding-right:0px;">
+  <div class="menuPackage sideMenuColumn" style="padding-right:0px;">
     <div class="hideMenuPackage hideAdvanced close-X btn btn-white" style="float:right; padding-left:12px; padding-right:12px;">✕</div>
   	<div id="showPartnerMenu" class="revealButton btn btn-white" style="cursor:pointer;">Partner Tools</div>
   	<div id="partnerMenu" class="menuWidth"></div>
