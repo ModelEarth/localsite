@@ -79,8 +79,9 @@ $(document).ready(function(){
 		param.headerLogoSmall = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
 		showClassInline(".lifecycle");
 		earthFooter = true;
-	} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 || (((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || false) && !param.headerLogo)) {
-		// Show locally for Brave Browser only
+	} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 || (((location.host.indexOf('localhost') >= 0) || false) && !param.headerLogo)) {
+		// Show locally for Brave Browser only - insert before:  ) || false
+		// && navigator && navigator.brave
 		showLeftIcon = true;
 		$(".siteTitleShort").text("Model Georgia");
 		param.titleArray = [];

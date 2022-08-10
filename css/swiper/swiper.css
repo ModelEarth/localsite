@@ -137,10 +137,10 @@
     right: 30px;
 }
 .prev-buttonXXX {
-	position: relative;
-	display: inline-block;
-	border: 5px solid red;
-	margin-left: 20px;
+  position: relative;
+  display: inline-block;
+  border: 5px solid red;
+  margin-left: 20px;
 }
 .nav-circle {
     content: "" !important;
@@ -167,7 +167,7 @@
 }
 /*
 .nav-circle-text {
-	position: absolute;
+  position: absolute;
     -webkit-appearance: none !important;
     display: block !important;
     color: rgb(34, 34, 34) !important;
@@ -186,8 +186,8 @@
 }
 */
 .circle-text {
-	height:50px;
-	padding:18px;
+  height:50px;
+  padding:18px;
   width:50px;
   text-align:center;
   pointer-events: none;
@@ -228,4 +228,65 @@
 }
 .top-credit a {
   color: #fff;
+}
+
+
+.swiper-button-next:after, .swiper-button-prev:after {
+  color: #fff;
+  text-shadow: 2px 2px 4px #000000;
+}
+.swiper-slide {
+  height: 732px;
+  overflow: scroll;
+}
+.swiper-button {
+  width: 100px;
+  background-color: #333;
+  border: 1px solid red;
+  display: none;
+}
+.swiper-button-prev, .swiper-button-next {
+  opacity: 0;
+  transition: all .5s ease-in;
+}
+.swiper-button-prev:hover {
+  opacity: 1;
+  transition: all .5s ease-out;
+  background-color: rgb(0, 0, 0, 0.1);
+  background-imageX: url(/localsite/img/plyr/arrow-prev.png);
+  text-shadow: 2px 2px 4px #000000;
+}
+.swiper-button-next:hover {
+  opacity: 1;
+  transition: all .5s ease-out;
+  background-color: rgb(0, 0, 0, 0.1);
+  background-imageX: url(/localsite/img/plyr/arrow-next.png);
+  text-shadow: 2px 2px 4px #000000;
+}
+
+.swiper-button-prev {
+  left: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  height: 100%;
+  background-size: 57px 57px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.swiper-button-next {
+  right: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  height: 100%;
+  background-size: 57px 57px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.swiper-container {
+  position: relative;
+  borderX: 1px solid red;
 }

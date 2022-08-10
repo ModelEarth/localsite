@@ -20,48 +20,6 @@
 	param.footer = "footer.html"
 </script>
 
-<style>
-.swiper-slide {
-  height: 732px !important;
-  overflow: scroll !important;
-}
-
-.swiper-button {
-    width: 100px;
-    background-color: #333 !important;
-    border: 1px solid red !important;
-    display: none !important;
-}
-.swiper-button-prev:hover {
-  background-color: rgb(0, 0, 0, 0.1) !important;
-  background-image: url(/localsite/img/plyr/arrow-prev.png) !important;
-}
-.swiper-button-next:hover {
-  background-color: rgb(0, 0, 0, 0.1) !important;
-  background-image: url(/localsite/img/plyr/arrow-next.png) !important;
-}
-
-.swiper-button-prev {
-  background-image: url(/localsite/img/plyr/arrow-prev.png) !important;
-}
-.swiper-button-next {
-    position: absolute;
-    top: 0 !important;
-    bottom: 0 !important;
-    right: 0 !important;
-    width: 80px !important;
-    height: 100% !important;
-    background-size: 57px 57px;
-    
-    background-repeat: no-repeat;
-    background-position: center;
-}
-.swiper-container {
-  position: relative !important;
-  borderX: 1px solid red;
-}
-</style>
-
 </head>
 
 <body>
@@ -89,9 +47,10 @@ Width:100% currently has to be included on the a href tag to prevent margins if 
 Set the height:100% on div within swiper-slide
 text-align:left; overflow:scroll; 
 -->
-<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-<link rel='stylesheet' href='/localsite/css/plyr.css'>
-<link rel='stylesheet' href='/localsite/css/swiper.css'>
+
+<link rel="stylesheet" href="/localsite/css/swiper/swiper-bundle.min.css" />
+<link rel='stylesheet' href='/localsite/css/swiper/plyr.css'>
+<link rel='stylesheet' href='/localsite/css/swiper/swiper.css'>
 <script src='/localsite/js/polyfill.min.js?features=es6,Array.prototype.includes,CustomEvent,Object.entries,Object.values,URL'></script>
 <script src='/localsite/js/plyr.min.js'></script>
 
@@ -181,16 +140,16 @@ text-align:left; overflow:scroll;
         <!--
          <svg aria-hidden="true" role="presentation" focusable="false" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="display: block;fill: none;height: 13px;width: 13px;stroke: currentcolor;stroke-width: 5.33333;overflow: visible;"><g fill="none"><path d="m12 4 11.2928932 11.2928932c.3905243.3905243.3905243 1.0236893 0 1.4142136l-11.2928932 11.2928932"></path></g></svg>
           -->
-          
+
       </div>
     </div>
 
     <!-- white arrows -->
     <div class="swiper-button-prev">
-      <div class="swiper-button-white"></div>
+      <!--<div class="swiper-button-white"></div>-->
     </div>
     <div class="swiper-button-next">
-      <div class="swiper-button-white"></div>
+      <!--<div class="swiper-button-white"></div>-->
     </div>
     <!-- /Swiper Arrows-->
 
@@ -200,7 +159,11 @@ text-align:left; overflow:scroll;
 
   <!-- Swiper Pagination -->
   <div class="swiper-pagination"></div>
+  <!--
   <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  -->
+  <script src="/localsite/js/swiper/swiper-bundle.min.js"></script>
+  
 
   <!-- Initialize Swiper -->
   <script>
@@ -261,7 +224,7 @@ text-align:left; overflow:scroll;
 
   <h1 style="padding-top: 0px">LocalSite - Map Layers</h1>
 
-  Localsite uses the MapBox <a href="https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/">Layers JSON Format</a> to manage multiple map layers within the <a href="js/map.js">styleObject in map.js</a>.  
+  Localsite uses <a href="https://swiperjs.com/">SwiperJS</a> with the MapBox <a href="https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/">Layers JSON Format</a> to manage multiple map layers in our <a href="js/map.js">map.js styleObject</a>.  
 
   <section id="parameters">
     <div id="paramsDiv" style="clear:both"></div>
