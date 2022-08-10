@@ -153,6 +153,40 @@ function changeMenuLinks(itemid) {
 </head>
 <body>
 
+<link type="text/css" rel="stylesheet" href="/core/css/default.css" id="/core/css/default.css" />
+<style>
+.rightWhenWide {
+    position: absolute;
+    right: 0;
+    padding: 10px;
+}
+</style>
+<div class="rightWhenWide">
+
+    <div class="user-4 partner-4" onmouseleave="$('#makeUpdatesPopup').hide();$('.makeUpdatesClick').show();">
+        <a class="makeUpdatesClick button" href="/core/item/edit.aspx?s=5542.0.0.5316&amp;golast=%2fhistory%3fdynamic%3d1" onclick="$('#makeUpdatesPopup').show();$('.makeUpdatesClick').hide();event.stopPropagation();return false;">Edit</a> 
+
+        <div id="makeUpdatesPopup" style="display: none;" class="dropdown hideOnDocClick">            
+            <ul class="dropdown-menu dropdown-menu-right" style="left: auto; right: 0px; display: block;">
+                <li><a id="menuEditContent" href="/core/item/edit.aspx?s=5542.0.0.5316&amp;golast=%2fhistory%3fdynamic%3d1">Edit Page</a></li>
+                
+                <li><a id="menuPageAdmin" href="/net/content/admin.aspx?s=5542.0.0.5316">Page Admin</a></li>
+                
+                <li class="enableBlurbListEdit"><a class="editPageAreas" href="/core/item/editblurb.aspx?s=5542.0.0.5316">Hide Edit Buttons</a></li>
+                
+                <li class="divider"></li>
+                
+                <li><a id="menuAddSubtopic" href="/core/item/add.aspx?s=0.0.0.5316&amp;parentid=5542">Add New Page</a></li>
+                
+                <li><a id="menuAdmin" href="/admin?s=0.0.0.5316">Site Admin</a></li>
+                
+            </ul>
+
+        </div>
+    </div>
+
+</div>
+
 <span class="material-icons blue-color">recycling</span>
 <a href="javascript:changeMenuLinks(1234);" id="setlinks">set links</a>
 
