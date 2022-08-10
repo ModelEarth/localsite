@@ -20,6 +20,14 @@
 	param.footer = "footer.html"
 </script>
 
+<style>
+.optionalText {
+  display: none;
+  position:absolute;
+  bottom:-30px;
+}
+</style>
+
 </head>
 
 <body>
@@ -74,17 +82,17 @@ text-align:left; overflow:scroll;
       <div class="swiper-slide" data-hash="web-challenge">
         <a href="https://model.earth/community/challenge/"><img class="swiper-lazy" data-src="/localsite/img/hero/web-challenge.png" style="opacity:0.9;width:100%;max-width:2000px"></a>
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+        <div class="optionalText content contentpadding" style="position:absolute; bottom:-30px">
           Add Optional Text 2
         </div>
       </div>
 
       <!-- Slide 3 -->
       <div class="swiper-slide" data-hash="explore">
-        <a href="https://model.earth/community/challenge/"><img class="swiper-lazy" data-src="/localsite/img/hero/future-teepee.png" style="opacity:0.9;width:100%;max-width:2000px;height:740px"></a>
+        <img class="swiper-lazy" data-src="/localsite/img/hero/future-teepee.png" style="opacity:0.9;width:100%;max-width:2000px;height:740px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
-          Add Optional Text 2
+        <div class="optionalText content contentpadding">
+          Add Optional Text 3
         </div>
       </div>
       
@@ -92,8 +100,8 @@ text-align:left; overflow:scroll;
       <div class="swiper-slide" data-hash="plant">
         <img class="swiper-lazy" data-src="/localsite/img/hero/plant.png" style="opacity:0.9;width:100%;max-width:2000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
-          Add Optional Text 2
+        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 4
         </div>
       </div>
 
@@ -101,8 +109,8 @@ text-align:left; overflow:scroll;
       <div class="swiper-slide" data-hash="2to1-ratio">
         <img class="swiper-lazy" data-src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
-          Add Optional Text 2
+        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 5
         </div>
       </div>
 
@@ -110,8 +118,8 @@ text-align:left; overflow:scroll;
       <div class="swiper-slide" data-hash="sun">
         <a href="" style="width:100%"><img class="swiper-lazy" data-src="/localsite/img/hero/solar-rect-sm.png" style="opacity:0.9;width:100%;max-width:2000px;"></a>
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
-          Add Optional Text 4
+        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 6
         </div>
       </div>
 
@@ -158,7 +166,7 @@ text-align:left; overflow:scroll;
 
 
   <!-- Swiper Pagination -->
-  <div class="swiper-pagination"></div>
+  <div class="swiper-pagination" style="margin-top:15px;"></div>
   <!--
   <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
   -->
