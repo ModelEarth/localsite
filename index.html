@@ -20,21 +20,72 @@
 	param.footer = "footer.html"
 </script>
 
+<style>
+.swiper-slide {
+  height: 732px !important;
+  overflow: scroll !important;
+}
+
+.swiper-button {
+    width: 100px;
+    background-color: #333 !important;
+    border: 1px solid red !important;
+    display: none !important;
+}
+.swiper-button-prev:hover {
+  background-color: rgb(0, 0, 0, 0.1) !important;
+  background-image: url(/localsite/img/plyr/arrow-prev.png) !important;
+}
+.swiper-button-next:hover {
+  background-color: rgb(0, 0, 0, 0.1) !important;
+  background-image: url(/localsite/img/plyr/arrow-next.png) !important;
+}
+
+.swiper-button-prev {
+  background-image: url(/localsite/img/plyr/arrow-prev.png) !important;
+}
+.swiper-button-next {
+    position: absolute;
+    top: 0 !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    width: 80px !important;
+    height: 100% !important;
+    background-size: 57px 57px;
+    
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.swiper-container {
+  position: relative !important;
+  borderX: 1px solid red;
+}
+</style>
+
 </head>
 
 <body>
 
 <div style="clear:both"></div>
 
-<div class="content contentpadding" style="padding-top: 0px">
+
 
 
 <!-- Swiper and Plyr -->
 
 <!--
+Coolness: Responds to keyboard arrows and swipes.
+
+To DO: 
+Make buttons visible when rolling over sides, expand click area to entire side.
+
+Sample in a circle
+http://localhost:8887/community/tools/
+
 To do: can swiper-lazy be replaced with existing lazy?
 
 Notes:
+Width:100% currently has to be included on the a href tag to prevent margins if image width is exceeded.
 Set the height:100% on div within swiper-slide
 text-align:left; overflow:scroll; 
 -->
@@ -44,18 +95,19 @@ text-align:left; overflow:scroll;
 <script src='/localsite/js/polyfill.min.js?features=es6,Array.prototype.includes,CustomEvent,Object.entries,Object.values,URL'></script>
 <script src='/localsite/js/plyr.min.js'></script>
 
-
   <div class="swiper-container">
 
     <div class="swiper-wrapper">
 
       <!-- Slide 1 -->
-      <div class="swiper-slide" data-hash="communities" style="position: relative;">
-        <a href="https://model.earth/apps/"><img class="swiper-lazy" data-src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:2000px; margin-top:0px"></a>
+      <div class="swiper-slide" data-hash="communities" style="positionX: relative;">
+        <a href="https://model.earth/apps/" style="width:100%"><img class="swiper-lazy" data-src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px"></a>
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="box" style="display:none">
+        <div class="box" style="displayX:none">
           <!--div class="title">Title</div-->
+          <!--
           <div class="subtitle" data-swiper-parallax="-200">Graphics project</div>
+          -->
         </div>
       </div>
 
@@ -63,10 +115,49 @@ text-align:left; overflow:scroll;
       <div class="swiper-slide" data-hash="web-challenge">
         <a href="https://model.earth/community/challenge/"><img class="swiper-lazy" data-src="/localsite/img/hero/web-challenge.png" style="opacity:0.9;width:100%;max-width:2000px"></a>
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="content contentpadding" style="display:none;position:absolute; bottom:-30px">
-          Add Optional Text
+        <div class="content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 2
         </div>
       </div>
+
+      <!-- Slide 3 -->
+      <div class="swiper-slide" data-hash="explore">
+        <a href="https://model.earth/community/challenge/"><img class="swiper-lazy" data-src="/localsite/img/hero/future-teepee.png" style="opacity:0.9;width:100%;max-width:2000px;height:740px"></a>
+        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <div class="content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 2
+        </div>
+      </div>
+      
+      <!-- Slide 4 -->
+      <div class="swiper-slide" data-hash="plant">
+        <img class="swiper-lazy" data-src="/localsite/img/hero/plant.png" style="opacity:0.9;width:100%;max-width:2000px">
+        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <div class="content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 2
+        </div>
+      </div>
+
+      <!-- Slide 5 -->
+      <div class="swiper-slide" data-hash="2to1-ratio">
+        <img class="swiper-lazy" data-src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
+        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <div class="content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 2
+        </div>
+      </div>
+
+      <!-- Slide 6 -->
+      <div class="swiper-slide" data-hash="sun">
+        <a href="" style="width:100%"><img class="swiper-lazy" data-src="/localsite/img/hero/solar-rect-sm.png" style="opacity:0.9;width:100%;max-width:2000px;"></a>
+        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <div class="content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 4
+        </div>
+      </div>
+
+      
+
 
     </div>
 
@@ -74,7 +165,7 @@ text-align:left; overflow:scroll;
     <!-- Swiper Arrows -->
       
     <!-- circle arrows -->
-    <div class="swiper-button-prev prev-buttonX swiper-button-circle">
+    <div class="swiper-button swiper-button-prev prev-buttonX swiper-button-circle">
       <div class="nav-circle"></div>
       <div class="circle-text">
 
@@ -83,19 +174,24 @@ text-align:left; overflow:scroll;
       </div>
     </div>
 
-    <div class="swiper-button-next prev-buttonX swiper-button-circle">
+    <div class="swiper-button swiper-button-next prev-buttonX swiper-button-circle">
       <div class="nav-circle"></div>
       <div class="circle-text">
       
+        <!--
          <svg aria-hidden="true" role="presentation" focusable="false" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="display: block;fill: none;height: 13px;width: 13px;stroke: currentcolor;stroke-width: 5.33333;overflow: visible;"><g fill="none"><path d="m12 4 11.2928932 11.2928932c.3905243.3905243.3905243 1.0236893 0 1.4142136l-11.2928932 11.2928932"></path></g></svg>
-
+          -->
+          
       </div>
     </div>
 
     <!-- white arrows -->
-    <div class="swiper-button-prev swiper-button-white" style="bottom:15px !important"></div>
-    <div class="swiper-button-next swiper-button-white" style="bottom:15px !important"></div>
-    
+    <div class="swiper-button-prev">
+      <div class="swiper-button-white"></div>
+    </div>
+    <div class="swiper-button-next">
+      <div class="swiper-button-white"></div>
+    </div>
     <!-- /Swiper Arrows-->
 
 
@@ -152,6 +248,8 @@ text-align:left; overflow:scroll;
 <!-- /Swiper and Plyr -->
 
 
+<div class="content contentpadding" style="padding-top: 0px">
+
   <div style="float:right">
     <!--
     <a href="https://github.com/localsite/planning/blob/main/schema.prisma">Real World 2.0 Data Structure</a> - Common tables for civic tech apps 
@@ -163,7 +261,7 @@ text-align:left; overflow:scroll;
 
   <h1 style="padding-top: 0px">LocalSite - Map Layers</h1>
 
-  Localsite uses the MapBox <a href="https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/">Layers JSON Format</a> to manage multiple map layers.  
+  Localsite uses the MapBox <a href="https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/">Layers JSON Format</a> to manage multiple map layers within the <a href="js/map.js">styleObject in map.js</a>.  
 
   <section id="parameters">
     <div id="paramsDiv" style="clear:both"></div>
