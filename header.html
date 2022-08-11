@@ -8,6 +8,112 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
 </style>
 <!-- Javascript may also reside in the header.html file. -->
 
+<!-- Menu and Secondary Menus -->
+<div id="rightTopMenuVisibility" style="display:none" class="georgia">
+<div id="rightTopMenu" style="float:right; display:none">
+    <div style="float:left;"><div class="rightTopMenuLeft"></div></div>
+    <div class="rightTopMenuInner topMenuOffset floater" style="displayX:none">
+            <!-- map icon -->
+            <!--
+            <div class="showMap showMapClick rightTopItem" style="display:none; padding-top:14px">
+                <i class="material-icons menuTopIcon">&#xE55B;</i>
+            </div>
+            <div class="hideMap rightTopItem" style="display:none; float:left">
+                <i class="material-icons menuTopIcon menuTopIconHot">&#xE55B;</i>
+            </div>
+            -->
+            <div class="hideEmbed">
+                <div class="showSections rightTopItem" style="padding-top:14px; padding-right:10px">
+                    <i class="material-icons menuTopIcon">&#xE5D2;</i>
+                    <span>Menu</span>
+                </div>
+            </div>
+
+            <div class="hideMobile expandToFullscreen" style="display: none;">
+                <div id="expandPanelHolder" class="expandFullScreen rightTopItem">
+                    <!-- font-size:20pt; padding:4px 5px 4px 4px; color:#aaa; font-weight:400 -->
+                    <i id="expandPanel" class="material-icons menuTopIcon enlargeIcon" style="font-size:28pt !important">&#xE5D0;</i>
+                    <span>Expand</span>
+                </div>
+            </div>
+
+            <div class="showFilters showFiltersClick rightTopItem" style="padding-top:14px; padding-right:10px">
+                <i class="material-icons menuTopIcon">&#xE8B6;</i>
+                <span>People</span>
+            </div>
+
+            <!--
+            <div class="hideMobileX">
+                <div class="showFilters showFiltersClick rightTopItem" style="padding-top:14px; padding-right:10px">
+                    <i class="material-icons menuTopIcon">&#xE8B6;</i>
+                    <span>Search</span>
+                </div>
+                <div class="hideFilters hideFiltersClick rightTopItem" style="display:none; padding-top:14px; padding-right:10px">
+                    <i class="material-icons menuTopIcon">&#xE8B6;</i>
+                    <span>Hide</span>
+                </div>
+            </div>
+            -->
+
+            <div class="showSettings rightTopItem">
+                <i class="material-icons menuTopIcon">&#xE8B8;</i>
+                <span>Settings</span>
+            </div>
+
+            <!-- mail outline icon -->
+            <div class="contactUs rightTopItem">
+                <i class="material-icons menuTopIcon contactIcon">&#xE0E1;</i>
+                <span>Contact</span>
+            </div>
+
+            <div class="addthis_button rightTopItem">
+                <i class="material-icons menuTopIcon" title="Share">&#xE80D;</i>
+                <span>Share</span>
+            </div>
+
+            <div class="addlisting_button rightTopItem" style="display:none">
+                <i class="material-icons menuTopIcon" style="font-weight:800;">&#xE145;</i>
+                <span>Add</span>
+            </div>
+
+            <div class="print_button rightTopItem">
+                <i class="material-icons menuTopIcon">&#xE8AD;</i>
+                <span>Print</span>
+            </div>
+
+            <!-- person icon -->
+            <div class="showAccountTools user-1 rightTopItem" style="display:none">
+                <div class="showAccount user-0">
+                    <i class="material-icons menuTopIcon">&#xE7FD;</i>
+                    <span>Account</span>
+                </div>
+
+                <div class="logoutAccount user-1" style="display:none">
+                    <i class="material-icons menuTopIcon">&#xE7FD;</i>
+                    <span>Log out</span>
+                </div>
+            </div>
+            
+
+            <!--
+            <div id="showSettings" class="showSettings hideEmbed" title="Settings"><i class="material-icons menuTopIcon hideMobile" style="font-size:18pt; padding:13px 5px 5px 5px;">&#xE8B8;</i></div>
+            <div id="hideSettings" style="display:none" title="Hide Settings"><i class="material-icons menuTopIcon menuTopIconHot" style="font-size:18pt; padding:13px 5px 5px 5px;">&#xE8B8;</i></div>
+            -->
+
+            <!-- share -->
+            <!--
+            <div class="rightTopItem shareThis">
+                <i class="material-icons menuTopIcon" style="padding-top:2px; padding-right:8px;">&#xE80D;</i>
+            </div>
+            -->
+
+            <div class="showSettingsInNavTop" style="float:left">
+            </div>
+    </div>
+</div>
+</div>
+<!-- /rightTopMenu -->
+
 <div id="menuHolder" style="pointer-events: auto; background:#333; display:none">
 
 	<!--
@@ -126,112 +232,6 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
 
 	</div>
 </div>
-
-<!-- Menu and Secondary Menus -->
-<div id="rightTopMenuVisibility" style="display:none" class="georgia">
-<div id="rightTopMenu" style="float:right; display:none">
-    <div style="float:left;"><div class="rightTopMenuLeft"></div></div>
-    <div class="rightTopMenuInner topMenuOffset floater" style="displayX:none">
-            <!-- map icon -->
-            <!--
-            <div class="showMap showMapClick rightTopItem" style="display:none; padding-top:14px">
-                <i class="material-icons menuTopIcon">&#xE55B;</i>
-            </div>
-            <div class="hideMap rightTopItem" style="display:none; float:left">
-                <i class="material-icons menuTopIcon menuTopIconHot">&#xE55B;</i>
-            </div>
-            -->
-            <div class="hideEmbed">
-                <div class="showSections rightTopItem" style="padding-top:14px; padding-right:10px">
-                    <i class="material-icons menuTopIcon">&#xE5D2;</i>
-                    <span>Menu</span>
-                </div>
-            </div>
-
-            <div class="hideMobile expandToFullscreen" style="display: none;">
-                <div id="expandPanelHolder" class="expandFullScreen rightTopItem">
-                    <!-- font-size:20pt; padding:4px 5px 4px 4px; color:#aaa; font-weight:400 -->
-                    <i id="expandPanel" class="material-icons menuTopIcon enlargeIcon" style="font-size:28pt !important">&#xE5D0;</i>
-                    <span>Expand</span>
-                </div>
-            </div>
-
-            <div class="showFilters showFiltersClick rightTopItem" style="padding-top:14px; padding-right:10px">
-                <i class="material-icons menuTopIcon">&#xE8B6;</i>
-                <span>People</span>
-            </div>
-
-            <!--
-            <div class="hideMobileX">
-                <div class="showFilters showFiltersClick rightTopItem" style="padding-top:14px; padding-right:10px">
-                    <i class="material-icons menuTopIcon">&#xE8B6;</i>
-                    <span>Search</span>
-                </div>
-                <div class="hideFilters hideFiltersClick rightTopItem" style="display:none; padding-top:14px; padding-right:10px">
-                    <i class="material-icons menuTopIcon">&#xE8B6;</i>
-                    <span>Hide</span>
-                </div>
-            </div>
-            -->
-
-            <div class="showSettings rightTopItem">
-                <i class="material-icons menuTopIcon">&#xE8B8;</i>
-                <span>Settings</span>
-            </div>
-
-            <!-- mail outline icon -->
-            <div class="contactUs rightTopItem">
-                <i class="material-icons menuTopIcon contactIcon">&#xE0E1;</i>
-                <span>Contact</span>
-            </div>
-
-            <div class="addthis_button rightTopItem">
-                <i class="material-icons menuTopIcon" title="Share">&#xE80D;</i>
-                <span>Share</span>
-            </div>
-
-            <div class="addlisting_button rightTopItem" style="display:none">
-                <i class="material-icons menuTopIcon" style="font-weight:800;">&#xE145;</i>
-                <span>Add</span>
-            </div>
-
-            <div class="print_button rightTopItem">
-                <i class="material-icons menuTopIcon">&#xE8AD;</i>
-                <span>Print</span>
-            </div>
-
-            <!-- person icon -->
-            <div class="showAccountTools user-1 rightTopItem" style="display:none">
-                <div class="showAccount user-0">
-                    <i class="material-icons menuTopIcon">&#xE7FD;</i>
-                    <span>Account</span>
-                </div>
-
-                <div class="logoutAccount user-1" style="display:none">
-                    <i class="material-icons menuTopIcon">&#xE7FD;</i>
-                    <span>Log out</span>
-                </div>
-            </div>
-            
-
-            <!--
-            <div id="showSettings" class="showSettings hideEmbed" title="Settings"><i class="material-icons menuTopIcon hideMobile" style="font-size:18pt; padding:13px 5px 5px 5px;">&#xE8B8;</i></div>
-            <div id="hideSettings" style="display:none" title="Hide Settings"><i class="material-icons menuTopIcon menuTopIconHot" style="font-size:18pt; padding:13px 5px 5px 5px;">&#xE8B8;</i></div>
-            -->
-
-            <!-- share -->
-            <!--
-            <div class="rightTopItem shareThis">
-                <i class="material-icons menuTopIcon" style="padding-top:2px; padding-right:8px;">&#xE80D;</i>
-            </div>
-            -->
-
-            <div class="showSettingsInNavTop" style="float:left">
-            </div>
-    </div>
-</div>
-</div>
-<!-- /rightTopMenu -->
 
 <!-- Settings Panel -->
 <div class="settingsPanel topMenuOffset floater" style="display:none; position:fixed">

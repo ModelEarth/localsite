@@ -1,3 +1,6 @@
+.menu-loaded {
+    display: block !important;
+}
 .table-cell, .table-cell-mobile {
   display: table-cell;
   vertical-align: top;
@@ -315,7 +318,24 @@
 	display: block;
 }
 
+.dropdown-menu-for-button {
+    z-index: 1000;
+    float: left;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    list-style: none;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    box-shadow: 0 5px 10px rgb(0 0 0 / 20%);
+    background-clip: padding-box;
+}
+
 .dropdown-menu {
+		position: absolute;
+		display: none;
     z-index: 1000;
     float: left;
     min-width: 160px;
@@ -351,3 +371,60 @@
     overflow: hidden;
     border-bottom: 1px solid #e5e5e5;
 }
+
+
+
+/* Open nav icons when rolling over. Originally Bootstrap. */
+ul.nav li.dropdown:hover ul.dropdown-menu {
+    display: block;    
+}
+.nav-pills .dropdown-menu {
+    margin-top: 0px;
+}
+.nav-pills {
+		padding: 0px;
+		margin: 0px;
+    margin-right:3px;
+    margin-bottom: 0px;
+}
+
+
+.nav-tabs>li, .nav-pills>li {
+    float: left;
+}
+.dropdown {
+    position: relative;
+}
+.nav {
+    display: block;
+}
+.nav-pills li a {
+    font-weight: normal;
+}
+.nav>li>a {
+    padding: 8px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+.nav-pills>li>a {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+.nav-tabs>li>a, .nav-pills>li>a {
+    padding-right: 12px;
+    padding-left: 12px;
+    margin-right: 2px;
+    line-height: 14px;
+}
+.nav>li>a {
+    display: block;
+}
+
