@@ -473,285 +473,287 @@ class="headerbarheight"
 
       <div id='sidecolumn-closed' class='hideprint' style='float:left'><div class="earth" style="display:none"><div id='showSide' class='showSide' style='top:109px;'><img src='/localsite/img/icon/hamburger.png' style='width:30px; opacity:0.5'></div></div></div>
 
-      <div id="logoholderbar" style="display:none;float:left;">
-      </div>
 
-
-      <div style="float:right;">
-        <div class="filterLabel">
-            <div class="filterLabelMain">
-            </div>
-        </div>
-      </div>
-
-      <div class="hideMobile localX" style="float:right;display:none;">
-        <ul class="filterUL" style="margin:18px 12px 0 10px;clear:both;min-width:120px;">
-
-            <li data-id="all"><a href="#">Earth</a></li>
-            <li data-id="country" geo="US"><a href="#">USA</a></li>
-            <!--
-            <li data-id="state" class="selected" style="white-space:nowrap"><a href="#">Entire State</a></li>
-            
-            <li data-id="state" geo="US13" class="selected" style="white-space:nowrap"><a href="#">Georgia</a></li>
-            -->
-            
-            <li data-id="city" class="local" style="display:none"><a href="#">Cities</a></li>
-            <li data-id="counties"><a href="#">Counties</a></li>
-            <li data-id="zip" class="local" style="display:none,white-space:nowrap"><a href="#">Zip Code</a></li>
-            
-            <li data-id="latlon" class="hideFilter"><a href="#">Lat/Lon</a></li>
-            <li data-id="nearby" class="hideFilter"><a href="#">Nearby</a></li>
-            
-        </ul>
-      </div>
-
-
-      <div style="float:left">
-        <div style="overflow:visible" class="filterField locationTab">
-          <div class="filterLabel">
-            <div class="filterLabelMain">
-              Where
-              </div>
-          </div>
-
-          <!--
-            https://www.maxon.net/en/buy
-
-            overflow:auto; causes vertical scroll to appear here:
-          -->
-          <div style="position:relative;">
-            <div class="filterClick" id="filterClickLocation" style="display:none">
-
-              <div class="select-menu-arrow-holder">
-                <!-- We could place over all select menus
-                  https://fabriceleven.com/design/clever-way-to-change-the-drop-down-selector-arrow-icon/ -->
-                <i id="showLocations" class="material-icons" style="font-size:24px;display:none">&#xE313;</i>
-                <i id="hideLocations"  class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
-              </div>
-              <div class="filterClickText locationTabText">Locations</div><!-- Entire State -->
-            </div>
-          </div>
+      <div style="overflow:auto">
+        <div id="logoholderbar" style="display:none;float:left;">
         </div>
 
 
-        <div id="appSelectHolder" class="filterField layerclass">
-          <div id="catSearchHolder">
-
-              <div class="filterLabel">
-                <div class="filterLabelMain">
-                Show
-                </div>
-              </div>
-
-              <div class="filterClick showApps" style="position:relative; overflow:auto">
-
-                <div class="select-menu-arrow-holder">
-                    <i class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
-                    <i class="material-icons" style="font-size:24px;cursor:pointer;display:none;">&#xE313;</i>
-                </div>
-                <div style="width:100%">
-                  <!-- Goods & Services -->
-                  <div class="filterClickText" id="showAppsText" title="Industries">Industries</div>
-                </div>
-              </div>
-          </div>
-        </div>
-      </div>
-
-      <div style="display:none;" class="local filterField layerclass mock-up suppliers exporter products">
-        <div id="catSearchHolder2">
-          <div class="filterLabel">
-            <div class="filterLabelMain">
-            Supply Categories<!--Goods & Services-->
-            </div>
-          </div>
-
-
-            <div id="catSearch" class="filterClick mobileWide textInput" placeholder="Categories" type="text" autocomplete="off" style="width: 200px; margin-top: 0px; position:relative; overflow:auto;">
-
-                <div class="select-menu-arrow-holder">
-                  <i class="material-icons" style="font-size:24px;cursor:pointer;">&#xE409;</i>
-                  <i class="material-icons show-on-load" style="font-size:24px;cursor:pointer;display:none;">&#xE313;</i>
-                </div>
-                <div style="width:100%">
-                  <div class="filterClickText" id="catSearchText">Categories</div>
-                </div>
-                <!--
-                <select id="selectProduct" class="selectMenu" style="float:left">
-                    <option value="1">HS Code(s)</option>
-                </select>
-                -->
-
-                <!--
-                onkeyup="return SearchCategories(event);"
-                readonly - prevents keyboard covering choices on mobile
-                -->
-                
-
-            </div>
-        </div>
-      </div>
-
-
-
-      <!-- KEYWORD SEARCH -->
-      <div>
-        <div class="filterField keywordField">
-
-          <!-- Search Companies -->
+        <div style="float:right;">
           <div class="filterLabel">
               <div class="filterLabelMain">
-                Search
               </div>
           </div>
-          <!--
-          <div style="position:absolute; right:8px; top:10px; z-index:1">
-            <i id="showAdvancedXXX" class="material-icons show-on-load" style="font-size:24px;cursor:pointer">&#xE409;</i>
-            
-          </div>
-          -->
+        </div>
 
-          <!-- speech input -->
-            <!-- was a button -->
-          
-          <div class="si-wrapper" style="position:relative; float:left">
-          
-            <div style="display:none; float:right; padding-left:7px" class="si-btn mock-up">
-                <span class="si-holder" style="font-size: 20px">&#127897;</span>
-            </div>
-        
+        <div class="hideMobile localX" style="float:right;display:none;">
+          <ul class="filterUL" style="margin:18px 12px 0 10px;clear:both;min-width:120px;">
 
-            <div class="searchField" style="overflow:auto">
+              <li data-id="all"><a href="#">Earth</a></li>
+              <li data-id="country" geo="US"><a href="#">USA</a></li>
+              <!--
+              <li data-id="state" class="selected" style="white-space:nowrap"><a href="#">Entire State</a></li>
+              
+              <li data-id="state" geo="US13" class="selected" style="white-space:nowrap"><a href="#">Georgia</a></li>
+              -->
+              
+              <li data-id="city" class="local" style="display:none"><a href="#">Cities</a></li>
+              <li data-id="counties"><a href="#">Counties</a></li>
+              <li data-id="zip" class="local" style="display:none,white-space:nowrap"><a href="#">Zip Code</a></li>
+              
+              <li data-id="latlon" class="hideFilter"><a href="#">Lat/Lon</a></li>
+              <li data-id="nearby" class="hideFilter"><a href="#">Nearby</a></li>
+              
+          </ul>
+        </div>
 
-                <div style="float:right; position:relative;">
-                    <!-- basicSearch goSearch searchHeight -->
-                    <div id="goSearch" class="detailbutton" href="#" style="float:left;min-height:32px;border:1px solid #ccc"><span style="font-size:11pt;line-height:13pt;padding-left:2px;color:#666;">GO</span></div>
 
-                    <!-- &#128269; showAll showAllResults searchHeight -->
-                    <!--
-                    <div id="clearButton" class="detailbutton" style="float:left;margin:0px 0px 0px 0px">Clear</div>
-                    -->
-                    
+        <div style="float:left">
+          <div style="overflow:visible" class="filterField locationTab">
+            <div class="filterLabel">
+              <div class="filterLabelMain">
+                Where
                 </div>
-
-                <div style="overflow:auto; padding-right:10px; ">
-                  <!-- maxlength="400"  -->
-
-                  <!--
-                    onblurXX="SearchFormTextCheck(this, 0)" 
-                    onfocusXX="SearchFormTextCheck(this, 1)"
-                    onkeypressX="return SearchEnter(event);"
-                  -->
-                  <input id="keywordsTB" autocomplete="off" 
-                  style="padding-right:27px; width:100%" 
-                  class="filterClick mobileWide textInput si-input" 
-                  type="text" value="" 
-                  onkeyup="return SearchEnter(event);" 
-                  placeholder="Search">
-                </div>
-            </div>
-            
-            <div style="clear:both"></div>
-
-            
-
-            <div class="keywordBubble">
-              <div id="keywordFields" class="fieldSelector filterBubbleHolder" style="position:relative; margin-top:5px">
-                    <div class="uparrow uparrow-grey" style="left: 34px;"></div>
-                    <div class="uparrow uparrow-white" style="left: 34px;">
-                    </div>
-
-                    <div class="filterBubble">
-
-                      <div id="findWhat" style="min-width: 176px">
-
-                        <!--
-                        <div class="hideAdvanced" style="float:right;cursor:pointer">&#10005;</div>
-                        -->
-
-                        <div style="display:none;float:left;margin-right:20px">
-                          <input type="checkbox" name="findLocation" id="findLocation" value="findLocation" checked><label for="findLocation" class="filterCheckboxTitle">Search Listings</label><br>
-                          <input type="checkbox" name="findNews" id="findNews" value="findNews" checked><label for="findNews" class="filterCheckboxTitle">Search Newsroom</label><br>
-                        </div>
-                        <div style="float:left;" id="selected_col_checkboxes"></div>
-                      </div>
-                    </div>
-                        
-              </div>
-            </div>
-
-          </div>
-        </div>    
-
-      </div>
-      <!-- END KEYWORD SEARCH -->
-
-      <!-- Down arrow -->
-        <div class="localX catchClick hideEmbed" style="position:relative;float:right;overflow:visible;display:none">
-
-          <div class="filterLabel">
-            <div class="filterLabelMain">
-            </div>
-          </div>
-
-          <div class="toggleListOptions pagebutton" style="margin-right:15px"><i class="material-icons show-on-load dots-vertical" style="font-weight:900; font-size: 32px; padding:0px; margin:0px">&#xE5C5;</i>
-          </div>
-
-          <div class="listOptions filterBubble">
-
-            <div class="hideEmbed" style="display:none">
-
-              <div class="reduceHeader menuItem" style="display:none"><i class="material-icons show-on-load" style="margin-top:-5px;">&#xE3C4;</i>Narrow Header</div>
-
-              <!-- Google Icons - search for "crop" -->
-              <div class="revealImage menuItem" style="display:none"><i class="material-icons" style="margin-top:-5px;">&#xE3C4;</i>Full Header Image</div>
-
-              <div class="hideInfo hideInfoLink menuItem"><i class="material-icons show-on-load" style="margin-top:-5px">&#xE88E;</i>Hide Bar</div>
-
-              <div class="showInfo showInfoLink menuItem" style="display:none"><i class="material-icons show-on-load" style="margin-top:-10px">&#xE88E;</i>Show Info</div>
-
-            </div>
-
-            
-            <div class="showImage menuItem" style="display:none"><i class="material-icons">slideshow</i>Slideshow</div>
-
-              <div class="hideMobile">
-              <div class="local menuItem refreshMap" style="display:none; cursor: pointer">
-                <i class="material-icons" style="font-weight:900; margin-top:-5px">&#xE5D5;</i> Refresh Map
-              </div>
-              <div class="local menuItem hashTest" style="display:none; cursor: pointer">
-                <i class="material-icons" style="font-weight:900; margin-top:-5px">&#xE5D5;</i> Hidden Hash
-              </div>
-
             </div>
 
             <!--
-            <div class="menuItem hideList" style="display:none">
-              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE5CD;</i> Hide List
+              https://www.maxon.net/en/buy
+
+              overflow:auto; causes vertical scroll to appear here:
+            -->
+            <div style="position:relative;">
+              <div class="filterClick" id="filterClickLocation" style="display:none">
+
+                <div class="select-menu-arrow-holder">
+                  <!-- We could place over all select menus
+                    https://fabriceleven.com/design/clever-way-to-change-the-drop-down-selector-arrow-icon/ -->
+                  <i id="showLocations" class="material-icons" style="font-size:24px;display:none">&#xE313;</i>
+                  <i id="hideLocations"  class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
+                </div>
+                <div class="filterClickText locationTabText">Locations</div><!-- Entire State -->
+              </div>
+            </div>
+          </div>
+
+
+          <div id="appSelectHolder" class="filterField layerclass">
+            <div id="catSearchHolder">
+
+                <div class="filterLabel">
+                  <div class="filterLabelMain">
+                  Show
+                  </div>
+                </div>
+
+                <div class="filterClick showApps" style="position:relative; overflow:auto">
+
+                  <div class="select-menu-arrow-holder">
+                      <i class="material-icons show-on-load" style="font-size:24px;cursor:pointer;">&#xE409;</i>
+                      <i class="material-icons" style="font-size:24px;cursor:pointer;display:none;">&#xE313;</i>
+                  </div>
+                  <div style="width:100%">
+                    <!-- Goods & Services -->
+                    <div class="filterClickText" id="showAppsText" title="Industries">Industries</div>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:none;" class="local filterField layerclass mock-up suppliers exporter products">
+          <div id="catSearchHolder2">
+            <div class="filterLabel">
+              <div class="filterLabelMain">
+              Supply Categories<!--Goods & Services-->
+              </div>
             </div>
 
-            <div class="menuItem showList">
-              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE8EF;</i> Show List
+
+              <div id="catSearch" class="filterClick mobileWide textInput" placeholder="Categories" type="text" autocomplete="off" style="width: 200px; margin-top: 0px; position:relative; overflow:auto;">
+
+                  <div class="select-menu-arrow-holder">
+                    <i class="material-icons" style="font-size:24px;cursor:pointer;">&#xE409;</i>
+                    <i class="material-icons show-on-load" style="font-size:24px;cursor:pointer;display:none;">&#xE313;</i>
+                  </div>
+                  <div style="width:100%">
+                    <div class="filterClickText" id="catSearchText">Categories</div>
+                  </div>
+                  <!--
+                  <select id="selectProduct" class="selectMenu" style="float:left">
+                      <option value="1">HS Code(s)</option>
+                  </select>
+                  -->
+
+                  <!--
+                  onkeyup="return SearchCategories(event);"
+                  readonly - prevents keyboard covering choices on mobile
+                  -->
+                  
+
+              </div>
+          </div>
+        </div>
+
+
+
+        <!-- KEYWORD SEARCH -->
+        <div>
+          <div class="filterField keywordField">
+
+            <!-- Search Companies -->
+            <div class="filterLabel">
+                <div class="filterLabelMain">
+                  Search
+                </div>
+            </div>
+            <!--
+            <div style="position:absolute; right:8px; top:10px; z-index:1">
+              <i id="showAdvancedXXX" class="material-icons show-on-load" style="font-size:24px;cursor:pointer">&#xE409;</i>
+              
             </div>
             -->
 
-            <div class="menuItem hideMap" style="display:none">
-              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE55B;</i> Hide Map
+            <!-- speech input -->
+              <!-- was a button -->
+            
+            <div class="si-wrapper" style="position:relative; float:left">
+            
+              <div style="display:none; float:right; padding-left:7px" class="si-btn mock-up">
+                  <span class="si-holder" style="font-size: 20px">&#127897;</span>
+              </div>
+          
+
+              <div class="searchField" style="overflow:auto; margin-bottom:10px">
+
+                  <div style="float:right; position:relative;">
+                      <!-- basicSearch goSearch searchHeight -->
+                      <div id="goSearch" class="detailbutton" href="#" style="float:left;min-height:32px;border:1px solid #ccc"><span style="font-size:11pt;line-height:13pt;padding-left:2px;color:#666;">GO</span></div>
+
+                      <!-- &#128269; showAll showAllResults searchHeight -->
+                      <!--
+                      <div id="clearButton" class="detailbutton" style="float:left;margin:0px 0px 0px 0px">Clear</div>
+                      -->
+                      
+                  </div>
+
+                  <div style="overflow:auto; padding-right:10px; ">
+                    <!-- maxlength="400"  -->
+
+                    <!--
+                      onblurXX="SearchFormTextCheck(this, 0)" 
+                      onfocusXX="SearchFormTextCheck(this, 1)"
+                      onkeypressX="return SearchEnter(event);"
+                    -->
+                    <input id="keywordsTB" autocomplete="off" 
+                    style="padding-right:27px; width:100%" 
+                    class="filterClick mobileWide textInput si-input" 
+                    type="text" value="" 
+                    onkeyup="return SearchEnter(event);" 
+                    placeholder="Search">
+                  </div>
+              </div>
+              
+              <div style="clear:both"></div>
+
+              
+
+              <div class="keywordBubble">
+                <div id="keywordFields" class="fieldSelector filterBubbleHolder" style="position:relative; margin-top:5px">
+                      <div class="uparrow uparrow-grey" style="left: 34px;"></div>
+                      <div class="uparrow uparrow-white" style="left: 34px;">
+                      </div>
+
+                      <div class="filterBubble">
+
+                        <div id="findWhat" style="min-width: 176px">
+
+                          <!--
+                          <div class="hideAdvanced" style="float:right;cursor:pointer">&#10005;</div>
+                          -->
+
+                          <div style="display:none;float:left;margin-right:20px">
+                            <input type="checkbox" name="findLocation" id="findLocation" value="findLocation" checked><label for="findLocation" class="filterCheckboxTitle">Search Listings</label><br>
+                            <input type="checkbox" name="findNews" id="findNews" value="findNews" checked><label for="findNews" class="filterCheckboxTitle">Search Newsroom</label><br>
+                          </div>
+                          <div style="float:left;" id="selected_col_checkboxes"></div>
+                        </div>
+                      </div>
+                          
+                </div>
+              </div>
+
             </div>
-            <div class="menuItem showMap" style="display:none">
-              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE55B;</i> Show Map
+          </div>    
+
+        </div>
+        <!-- END KEYWORD SEARCH -->
+
+        <!-- Down arrow -->
+          <div class="localX catchClick hideEmbed" style="position:relative;float:right;overflow:visible;display:none">
+
+            <div class="filterLabel">
+              <div class="filterLabelMain">
+              </div>
             </div>
 
-            <div class="menuItem showThumbnails layerContentHide" style="display:none">
-              <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE8F0;</i> Modules
+            <div class="toggleListOptions pagebutton" style="margin-right:15px"><i class="material-icons show-on-load dots-vertical" style="font-weight:900; font-size: 32px; padding:0px; margin:0px">&#xE5C5;</i>
+            </div>
+
+            <div class="listOptions filterBubble">
+
+              <div class="hideEmbed" style="display:none">
+
+                <div class="reduceHeader menuItem" style="display:none"><i class="material-icons show-on-load" style="margin-top:-5px;">&#xE3C4;</i>Narrow Header</div>
+
+                <!-- Google Icons - search for "crop" -->
+                <div class="revealImage menuItem" style="display:none"><i class="material-icons" style="margin-top:-5px;">&#xE3C4;</i>Full Header Image</div>
+
+                <div class="hideInfo hideInfoLink menuItem"><i class="material-icons show-on-load" style="margin-top:-5px">&#xE88E;</i>Hide Bar</div>
+
+                <div class="showInfo showInfoLink menuItem" style="display:none"><i class="material-icons show-on-load" style="margin-top:-10px">&#xE88E;</i>Show Info</div>
+
+              </div>
+
+              
+              <div class="showImage menuItem" style="display:none"><i class="material-icons">slideshow</i>Slideshow</div>
+
+                <div class="hideMobile">
+                <div class="local menuItem refreshMap" style="display:none; cursor: pointer">
+                  <i class="material-icons" style="font-weight:900; margin-top:-5px">&#xE5D5;</i> Refresh Map
+                </div>
+                <div class="local menuItem hashTest" style="display:none; cursor: pointer">
+                  <i class="material-icons" style="font-weight:900; margin-top:-5px">&#xE5D5;</i> Hidden Hash
+                </div>
+
+              </div>
+
+              <!--
+              <div class="menuItem hideList" style="display:none">
+                <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE5CD;</i> Hide List
+              </div>
+
+              <div class="menuItem showList">
+                <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE8EF;</i> Show List
+              </div>
+              -->
+
+              <div class="menuItem hideMap" style="display:none">
+                <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE55B;</i> Hide Map
+              </div>
+              <div class="menuItem showMap" style="display:none">
+                <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE55B;</i> Show Map
+              </div>
+
+              <div class="menuItem showThumbnails layerContentHide" style="display:none">
+                <i class="material-icons" style="font-size:28px;margin-top:-5px;">&#xE8F0;</i> Modules
+              </div>
+
             </div>
 
           </div>
+          <!-- /Down arrow -->
 
-        </div>
-        <!-- /Down arrow -->
-
-
+      </div><!-- overflow:auto -->
       </div><!-- /filterFields -->
 
 
@@ -1236,17 +1238,18 @@ Displayed by hashChanged() in map-filters.js
     <div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in">+</a><a class="leaflet-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out">−</a></div>
   </div>
 
+  <div class="hideMobile">
   <div id="mainbucket" style="display:none">
     <a href="../io/charts/"><img src="/community/img/logo/epa-circle.png" style="width:100px;float:left;margin-right:16px;"></a>
 
     <div style="padding-top:5px">
-      Join us in building Product Lifecycle Tools<br><!--with US EPA widgets -->
-      that increase positive environmental impacts through&nbsp;local innovation. <a href="/localsite/info/" class="linkondark">Explore&nbsp;Impacts</a>
+      Join us in building Product Lifecycle Tools that&nbsp;increase positive environmental impacts through&nbsp;local innovation. <a href="/localsite/info/" class="linkondark">Explore&nbsp;Impacts</a>
     </div>
     <!--
     <a href="projects/">Current Projects</a> and <a href="/localsite/info/">Data Visualizations</a><br>
     -->
 
+  </div>
   </div>
 
   <!-- https://earth.nullschool.net/#current/wind/surface/level/orthographic=-67.66,31.71,913 -->

@@ -268,6 +268,7 @@ $(document).ready(function(){
 			 			setTimeout( function() {
 							$(".showMenu").show();
 			 				$(".upperIcons .earth").show();
+			 				$(".earth").show();
 						}, 1000);
 			 		}
 			 		$("#filterEmbedHolder").insertAfter("#headeroffset");
