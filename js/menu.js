@@ -332,7 +332,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
     var menuaccessmax = 11;
     //for(item in menuDataset.items) {
     menuDataset.forEach(function(item) {
-        console.log("displaypartnerCheckboxes section: " + item.section);
+        //console.log("displaypartnerCheckboxes section: " + item.section);
         var menuaccess = 10; // no one
         try { // For IE error
             if (typeof(item.menuaccess) === "undefined") {
@@ -492,8 +492,8 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
     
 
     // json loaded within initmenuDataset. location.hash:
-    console.log("displaypartnerCheckboxes location.hash: " + location.hash);
-    console.log("displaypartnerCheckboxes - Layer Icon on map, stores active layers without map load");
+    //console.log("displaypartnerCheckboxes location.hash: " + location.hash);
+    //console.log("displaypartnerCheckboxes - Layer Icon on map, stores active layers without map load");
 
     //$('.partnerCheckboxes').columnize({ columns: 2 }); // Also called later since this won't have an effect when not visible.
 

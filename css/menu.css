@@ -388,7 +388,9 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     margin-bottom: 0px;
 }
 
-
+.navbar .nav.pull-right {
+    float: right;
+}
 .nav-tabs>li, .nav-pills>li {
     float: left;
 }
@@ -419,6 +421,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     border-radius: 5px;
 }
 .nav-tabs>li>a, .nav-pills>li>a {
+	text-decoration: none;
     padding-right: 12px;
     padding-left: 12px;
     margin-right: 2px;
