@@ -1,0 +1,433 @@
+REMOVED1
+
+
+// US Reaches here
+                    //alert("fips " + fips + " stateID " + stateID);
+                    if(fips==stateID){
+                    
+                        if(hash.census_scope=="state"){
+                            for (var i=0; i<rates_list.length; i++) {
+                                id = parseInt(getKeyByValue(rates_dict, rates_list[i]))
+                                delete rates_dict[id]
+
+                                if (dataSet.industryDataStateApi.ActualRate[id].hasOwnProperty(fips)) {
+                                    rateInFips = dataSet.industryDataStateApi.ActualRate[id][fips][which_state_api]
+                                    naicscode = dataSet.industryDataStateApi.ActualRate[id][fips]['relevant_naics']
+                                } else {
+                                    rateInFips = 0
+                                    naicscode = 1
+                                }
+                                
+                                if (keyFound(naicscode, cat_filter,params)){
+                                    if (rateInFips == null) {
+                                        rateInFips = 1
+                                        localObject.industryList.push(
+                                            {'data_id': dataNames[id], [which_state_api]: 1,'NAICScode': 1, 'rank': i}
+                                        )
+                                    }  else {
+
+                                        /// ENTIRE STATE
+                                        localObject.industryList.push(
+                                            {'data_id': dataNames[id], [which_state_api]: rateInFips, 'emp_api': dataSet.industryDataStateApi.ActualRate[id][fips]['emp_api'], 'estab_api': dataSet.industryDataStateApi.ActualRate[id][fips]['estab_api'], 'NAICScode': naicscode, 'rank': i}
+                                        )
+                                        top_data_ids.push(id)
+                                    }
+                                }
+                            }
+                        } else {
+                            for (var i=0; i<rates_list.length; i++) {
+                                id = parseInt(getKeyByValue(rates_dict, rates_list[i]))
+                                delete rates_dict[id]
+
+                                if (dataSet.industryDataState.ActualRate[id] && dataSet.industryDataState.ActualRate[id].hasOwnProperty(fips)) {
+                                    rateInFips = dataSet.industryDataState.ActualRate[id][fips][which_state]
+                                    naicscode = dataSet.industryDataState.ActualRate[id][fips]['relevant_naics']
+                                } else {
+                                    rateInFips = 0
+                                    naicscode = 1
+                                }
+                                
+                                if (keyFound(naicscode, cat_filter,params)){
+                                    if (rateInFips == null) {
+                                        rateInFips = 1
+                                        localObject.industryList.push(
+                                            {'data_id': dataNames[id], [which_state]: 1,'NAICScode': 1, 'rank': i}
+                                        )
+                                    }  else {
+                                        localObject.industryList.push(
+                                            {'data_id': dataNames[id], [which_state]: rateInFips,'NAICScode': naicscode, 'rank': i}
+                                        )
+                                        top_data_ids.push(id)
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        for (var i=0; i<rates_list.length; i++) {
+                            id = parseInt(getKeyByValue(rates_dict, rates_list[i]))
+                            delete rates_dict[id]
+
+                            if (localObject.industryList[id].hasOwnProperty(fips)) {
+                                rateInFips = localObject.industryList[id][fips][which]
+                                naicscode = localObject.industryList[id][fips]['relevant_naics']
+                                if(hash.catmethod!=0 & hash.catsort != 'estab'){
+                                    estim = localObject.industryList[id][fips][estimed]
+                                } else {
+                                    estim=0
+                                }
+                                //console.log(estim)
+                            } else {
+                                rateInFips = 0
+                                naicscode = 1
+                                estim = 0
+                            }
+                            
+                            if (keyFound(naicscode, cat_filter,params)){
+                                if (rateInFips == null) {
+                                    rateInFips = 1
+                                    localObject.industryList.push(
+                                        {'data_id': dataNames[id], [which]: 1,'NAICScode': 1, 'rank': i,'Estimate':0}
+                                    )
+                                }  else {
+                                    localObject.industryList.push(
+                                        {'data_id': dataNames[id], [which]: rateInFips, 'NAICScode': naicscode, 'rank': i,'Estimate':estim}
+                                    )
+                                    top_data_ids.push(id)
+                                }
+                            }
+                        }
+                    }
+
+
+
+
+
+
+function displayIndustryListOld(localObject) {
+    let hash = getHash(); // Includes hiddenhash
+    //let catcount = hash.catcount || 40;
+    let industrycount = 100; // localObject.industryCounties.length;
+
+    let icon = "";
+    let rightCol = "";
+    let midCol="";
+    let text = "";
+    let dollar = ""; // optionally: $
+    let totalLabel = "Total Payroll";
+    let stateAbbr;
+    let naicshash = "";
+    let mapLink = "nothing";
+    //localObject.industryCounties.forEach(function(element) {
+    //  console.log(element);
+    //})
+    if (hash.state) {
+        stateAbbr = hash.state.toUpperCase();
+    } else {
+        stateAbbr = "GA"; // Temp HACK to show US
+    }
+    //alert(localObject.industryCounties.length)
+    for (i = 0; i < industrycount; i++) { // Naics
+        rightCol="";
+        midCol="";
+        //console.log("NAICS ROW " + i);
+        // Update these:
+            let latitude = "";
+            let longitude = "";
+            console.log(i);
+            // Populate maplink with Google Map URL for each industry
+
+            //d3.csv(local_app.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {
+
+            // TODO: Save in a county_data object and append each new state. Track appended states with an array.
+            d3.csv(local_app.community_data_root() + "us/state/" + stateAbbr + "/" + stateAbbr + "counties.csv").then( function(county_data) {
+
+                //alert("HERE2 industrycount: " + industrycount)
+                
+                if(Array.isArray(fips)) { // && dataObject.counties.length != fips.length
+                    mapLink=[]
+                    for(var j=0; j<fips.length; j++) { // For each county (fips)
+                        //var filteredData = consdata.filter(function(d) {
+                            var filteredData = county_data.filter(function(county_data_row) {
+                                //alert(fips[j])
+                                if(j["geoid"]==fips[j]){
+                                    if(j["county"]==county_data_row["NAMELSAD"]){ // In the 
+                                        // BUGBUG - change to naics title
+
+                                        mapLink.push("https://www.google.com/maps/search/" + localObject.industryCounties[i]['NAICS'].replace(/ /g,"+") + "/@" + county_data_row['latitude'] + "," + county_data_row['longitude'] + ",11z")
+                                        
+                                    }
+                                }
+                            })
+                        //})
+                    }
+                } else if (fips == stateID) {
+                        //county=""
+                        console.log(i + " " + localObject.industryCounties[i]);
+                        // BUGBUG - change to county_data_row['latitude'] + "," + county_data_row['longitude']
+                        // ['title'] was ['data_id']
+                        mapLink = "https://www.google.com/maps/search/" + localObject.industryCounties[i].NAICS.replace(/ /g,"+") + "/@32.9406955,-84.5411485,8z"
+                        //mapLink = "https://bing.com/maps/?q=" + localObject.industryCounties[i]['data_id'].replace(/ /g,"+") + "&cp=32.94~-84.54&z=8"; // lvl not working
+                } else {
+                    var filteredData = consdata.filter(function(d) {
+                        var filteredData = county_data.filter(function(county_data_row) {
+                            if(d["id"]==fips ){      
+                                if(d["county"]==county_data_row["NAMELSAD"]){
+                                            //mapLink.push("https://www.google.com/search?q=" + localObject.industryCounties[i]['data_id'].replace(/ /g,"+") + " " + d["county"].replace(/ /g,"+") + ",+Georgia")
+                                    mapLink = "https://www.google.com/maps/search/" + localObject.industryCounties[i]['data_id'].replace(/ /g,"+") + "/@" + county_data_row['latitude'] + "," + county_data_row['longitude'] + ",11z"
+                                            //console.log("xxxxxxxxx" + county_data_row["longitude"])
+                                }
+                            }
+                        })
+                    })
+                }
+            })
+            //let mapLink = "https://www.google.com/maps/search/" + localObject.industryCounties[i]['data_id'].replace(/ /g,"+") + "/@" + latitude + "," + longitude + ",11z";
+
+
+        if(hash.catsort=="payann") {
+            //text += localObject.industryCounties[i]['NAICScode'] + ": <b>" +localObject.industryCounties[i]['data_id']+"</b>, "+String(whichVal.node().options[whichVal.node().selectedIndex].text).slice(3, )+": $"+String((localObject.industryCounties[i][whichVal.node().value]/1000).toFixed(2))+" million <br>";
+            
+            // Multiple counties
+            if(Array.isArray(fips)) {
+
+                //if(String((localObject.industryCounties[i][whichVal.node().value]/1000).toFixed(2)).length<7){
+                if (1==1) { // Always use million
+                    
+                    // The counties
+                    for (var j = 0; j < fips.length; j++) {
+                        if(localObject.industryCounties[i]['Firms'][j]){
+                            if(localObject.industryCounties[i]['Estimate'][j]){    
+                                if(localObject.industryCounties[i]['Estimate'][j]>0){
+                                    
+                                    midCol += "<div class='cell-right'>" + dollar +"<a href='" + mapLink[j] + "' target='_blank'>"+'<span style="color: #9933aa" >'+ String((localObject.industryCounties[i]['Firms'][j]/1000).toFixed(2)) + " million</span></a></div>";
+                                } else {
+                                    midCol += "<div class='cell-right'>" + dollar +"<a href='" + mapLink[j] + "' target='_blank'>"+ String((localObject.industryCounties[i]['Firms'][j]/1000).toFixed(2)) + " million</a></div>";
+                                }
+                            } else {
+                                midCol += "<div class='cell-right'>" + dollar +"<a href='" + mapLink[j] + "' target='_blank'>"+ String((localObject.industryCounties[i]['Firms'][j]/1000).toFixed(2)) + " million</a></div>";
+                            }
+                        } else {
+                            midCol += "<div class='cell-right'>" + "<a href='" + mapLink[j] + "' target='_blank'>" + "0</a></div>";
+                        }    
+                    }
+                    // The total
+                    rightCol += "<div class='cell-right'>" + dollar + String((localObject.industryCounties[i][which]/1000).toFixed(2)) + " million</div>";
+                } else {
+                    for (var j = 0; j<fips.length; j++){
+                        if(localObject.industryCounties[i]['Firms'][j]){
+                            
+                                midCol += "<div class='cell-right'>" + dollar + String((localObject.industryCounties[i]['Firms'][j]/1000000).toFixed(2)) + " million</div>";
+                            
+                        } else {
+                                midCol +="<div class='cell-right'>" + "<a href='" + mapLink[j] + "' target='_blank'>" + "0</a></div>";
+                        }   
+                    }
+                    // <span style="color: #9933aa">
+                    rightCol += "<div class='cell-right'>" + dollar + String((localObject.industryCounties[i][which]/1000000).toFixed(2)) + " billion</div>";
+                }
+                
+            } else { // One entity (state or county)
+                //if(String((localObject.industryCounties[i][whichVal.node().value]/1000).toFixed(2)).length<7){
+
+                if(localObject.industryCounties[i]['Estimate']){    
+                    if(localObject.industryCounties[i]['Estimate'] > 0){
+                        rightCol = "<div class='cell-right'>" + dollar + "<a href='" + mapLink + "' target='_blank'>"+'<span style="color: #9933aa" >'+String((localObject.industryCounties[i][which]/1000).toFixed(2))+" million</span></a></div>";
+                    } else {
+                        rightCol = "<div class='cell-right'>" + dollar + "<a href='" + mapLink + "' target='_blank'>"+String((localObject.industryCounties[i][which]/1000).toFixed(2))+" million</a></div>";  
+                    }
+                } else {
+                    if(fips==stateID){
+                        if(hash.census_scope=="state"){
+                            rightCol = "<div class='cell-right'>" + dollar + "<a href='" + mapLink + "' target='_blank'>"+String((localObject.industryCounties[i][which_state_api]/1000).toFixed(2))+" million</a></div>";  
+                        } else {
+                            rightCol = "<div class='cell-right'>" + dollar + "<a href='" + mapLink + "' target='_blank'>"+String((localObject.industryCounties[i][which_state]/1000).toFixed(2))+" million</a></div>";  
+                        }
+                    } else {
+                        rightCol = "<div class='cell-right'>" + dollar + "<a href='" + mapLink + "' target='_blank'>"+String((localObject.industryCounties[i][which]/1000).toFixed(2))+" million</a></div>";  
+                    
+                    }
+
+                    // ADDITIONAL COLUMNS
+
+                    // employee count
+                    if(fips==stateID){
+                        if(hash.census_scope=="state"){
+                            rightCol += "<div class='cell-right'><a href='" + mapLink + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i]["emp_api"])) + "</a></div>";
+                        } else {
+                            //rightCol += "<div class='cell-right'><a href='" + mapLink + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i][which_state])) + "</a></div>";
+                        }
+                    } else {
+                        //rightCol += "<div class='cell-right'><a href='" + mapLink + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i][which])) + "</a></div>";
+                    }
+
+                    // establishments
+                    if(fips==stateID){
+                        if(hash.census_scope=="state"){
+                            rightCol += "<div class='cell-right'><a href='" + mapLink + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i]["estab_api"])) + "</a></div>";
+                        } else {
+                            //rightCol += "<div class='cell-right'><a href='" + mapLink + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i][which_state])) + "</a></div>";
+                        }
+                    } else {
+                        //rightCol += "<div class='cell-right'><a href='" + mapLink + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i][which])) + "</a></div>";
+                    }
+                }
+            }
+ 
+        } else {
+
+            //rightCol = String(whichVal.node().options[whichVal.node().selectedIndex].text).slice(3, )+": "+Math.round(localObject.industryCounties[i][whichVal.node().value]);
+            if(Array.isArray(fips)) { // SELECTED COUNTIES
+                rightCol = ""
+                midCol = ""
+                for (var j = 0; j<fips.length; j++){ // FOR EACH SELECTED COUNTY
+                    if(localObject.industryCounties[i]['Firms'][j]){ // Was ratearray
+
+                        if(hash.catsort=="estab"){
+                            midCol += "<div class='cell-right'><a href='" + mapLink[j] + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i]['Firms'][j])) + "</a></div>";
+                            
+                        } else {
+                            if(localObject.industryCounties[i]['Wages'][j]){ // Was Estimate
+                                    if(localObject.industryCounties[i]['Wages'][j]>0) { // Was Estimate
+                                        // FIRST ONE HERE
+                                        midCol += "<div class='cell-right'><a href='" + mapLink[j] + "' target='_blank'>" + '<span style="color: #9933aa" >'+String(Math.round(localObject.industryCounties[i]['Firms'][j])) + "</span></a></div>";
+                            
+                                    } else {
+                                        midCol += "<div class='cell-right'><a href='" + mapLink[j] + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i]['Firms'][j])) + "</a></div>";
+                            
+                                    }
+                                } else {
+                                    midCol += "<div class='cell-right'><a href='" + mapLink[j] + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i]['Firms'][j])) + "</a></div>";
+                            
+                                }
+                        }
+
+                            
+                    } else {
+                        // NEXT TWO HERE
+                        midCol += "<div class='cell-right'>" + "<a href='" + mapLink[j] + "' target='_blank'>" + "0</a></div>";
+                    } 
+                }
+                //rightCol += "<div class='cell-right'>" + String(Math.round(localObject.industryCounties[i][which])) + "</div>";
+                rightCol += "<div class='cell-right'>PLACEHOLDER</div>";
+
+                //rightCol = String(Math.round(localObject.industryCounties[i][whichVal.node().value]));
+            } else {
+                if(hash.catsort=="estab"){
+                    if(fips==stateID){
+                        if(hash.census_scope=="state") {
+                            rightCol = "<div class='cell-right'><a href='" + mapLink + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i][which_state_api])) + "</a></div>";
+                        } else {
+                            rightCol = "<div class='cell-right'><a href='" + mapLink + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i][which_state])) + "</a></div>";
+                        }
+                    } else {
+                        rightCol = "<div class='cell-right'><a href='" + mapLink + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i][which])) + "</a></div>";
+                    }
+                } else {
+
+                    if(localObject.industryCounties[i]['Estimate']){    
+                        if(localObject.industryCounties[i]['Estimate']>0){
+                            
+                            rightCol = "<div class='cell-right'><a href='" + mapLink + "' target='_blank'><span style='color:#9933aa'>" + String(Math.round(localObject.industryCounties[i][which])) + "</span></a></div>";
+
+                        } else {
+                            rightCol = "<div class='cell-right'><a href='" + mapLink + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i][which])) + "</a></div>";
+                        }
+                    } else {
+                        if(fips==stateID){
+                            if(hash.census_scope=="state") {
+                                rightCol = "<div class='cell-right'><a href='" + mapLink + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i][which_state_api])) + "</a></div>";
+                            } else {
+                                //BUGBUG
+                                //rightCol = "<div class='cell-right'><a href='" + mapLink + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i][which_state])) + "</a></div>";
+                            }
+                        } else {
+                            rightCol = "<div class='cell-right'><a href='" + mapLink + "' target='_blank'>" + String(Math.round(localObject.industryCounties[i][which])) + "</a></div>";
+                        }
+                    }
+                }
+            }
+            
+        }
+
+
+        //rightCol += "<div class='cell mock-up' style='display:none'><img src='http://localhost:8887/localsite/info/img/plus-minus.gif' class='plus-minus'></div>";
+        ////text += localObject.industryCounties[i]['NAICScode'] + ": <b>" +localObject.industryCounties[i]['data_id']+"</b>, "+String(whichVal.node().options[whichVal.node().selectedIndex].text).slice(3, )+": "+Math.round(localObject.industryCounties[i][whichVal.node().value])+"<br>";
+        
+        // localObject.industryCounties[i].NAICS.replace("Other ","") 
+
+        // BUGBUG - lookup title in last instance
+        // .replace("Other ","") 
+        text += "<div class='row'><div class='cell'>" + icon + localObject.industryCounties[i].NAICS + "</div>";
+        text += "<div class='cell'><a href='#naics=" + localObject.industryCounties[i].NAICS + "' onClick='goHash({\"naics\":" + localObject.industryCounties[i].NAICS + "}); return false;' style='white-space:nowrap'>" + industries.get(localObject.industryCounties[i].NAICS) + "</a></div>"
+        text += "<div class='cell-right'>" + localObject.industryCounties[i].FIPS + "</div>";
+        text += "<div class='cell-right'>" + localObject.industryCounties[i].Firms + "</div>";
+        text += "<div class='cell-right'>" + localObject.industryCounties[i].Employees + "</div>";
+        text += "<div class='cell-right'>" + localObject.industryCounties[i].Wages + "</div>";
+        text += "<div class='cell-right'>" + localObject.industryCounties[i].Population + "</div>";
+
+        if(Array.isArray(fips)) {
+            text +=  midCol; // Columns for counties
+        }
+        text += rightCol + "</div>";
+        
+        // use GoHash()
+        
+        
+
+        if(i<=20){ // Avoids excessively long hash
+            if(i==0){
+                naicshash = naicshash+localObject.industryCounties[i]['NAICScode'];
+            } else {
+                naicshash = naicshash+","+localObject.industryCounties[i]['NAICScode']
+            }
+            
+        }
+    } // End looping through top naics row
+
+    $("#sector_list").append(text);
+}
+
+
+
+
+
+DUP
+        <!-- Also reside in info/info-template.html -->
+        <div id="detail_selection">
+            <div id="show_industry_settings" style="float:right;cursor:pointer" onclick="$('.industry_filter_settings').toggle();">
+                <span class="material-icons" style="font-size:24px;color:#777">
+                settings
+                </span>
+            </div>
+            
+            <select id="catsort" class="picklist" onchange="goHash({'catsort':this.value});" style="display:none">
+              <option value="payann" selected>By Annual Payroll</option>
+              <option value="emp" >By Employee Count</option>
+              <option value="estab">By Establishments</option>
+            </select>
+            <select id="catsize" class="picklist" onchange="goHash({'catsize':this.value});">
+              <option value="2">Sectors - 2 digits</option>
+              <!--option value="2">Subsectors - 3 digits</option-->
+              <option value="4">Industry Group - 4 digits</option>
+              <!--option value="4">NAICS Industry - 5 digits</option-->
+              <option value="6" selected>NAICS Codes - 6 digits</option>
+            </select>
+            <div style="clear:both;margin-bottom:2px"></div>
+            
+            <div class="industry_filter_settings" style="display:none">
+                <div class="state-view" style="margin:10px 0 0 10px">
+                    Choose a Location above to filter by state or county.
+                </div>
+                <div class="county-view" style="display:none">
+                    <select id="catmethod" class="picklist" onchange="goHash({'catmethod':this.value});">
+                      <option value="1" selected>Use average of payrolls not assigned to counties</option>
+                      <option value="2" >Use average of all state payrolls (less accurate)</option>
+                      <option value="0" >Leave unpublished values blank</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+
+
