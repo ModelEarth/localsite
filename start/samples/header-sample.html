@@ -1,0 +1,370 @@
+<!-- for menu, but messes with hamburger position -->
+<link type="text/css" rel="stylesheet" href="https://neighborhood.org/localsite/css/menu.css" id="/localsite/css/menu.css" />
+<style type="text/css">
+	/* Open nav when rolling over  - IMPORTANT copy these in MasterPage */
+    ul.nav li.dropdown:hover ul.dropdown-menu {
+	    display: block;    
+	}
+	.nav-pills .dropdown-menu {
+	    margin-top: 0px;
+	}
+	.nav-pills {
+	 	margin-right:3px;
+	    margin-bottom: 0px;
+	}
+	.footerTitle {
+	    color:#eee;
+	    font-weight: bold;
+	    font-size: 14pt;
+	  }
+	  .footerTitle:hover {
+	    color:#eee;
+	  }
+	.nav1 {
+		color:#fff !important;
+	}
+	.nav1:hover {
+		color:#333 !important;
+	}
+
+	.nav>li>a {
+	    color: #333 !important;
+	    font-size: 13.5px !important;
+
+	    padding: 8px;
+	    margin-top: 2px;
+	    margin-bottom: 2px;
+	    -webkit-border-radius: 5px;
+	    -moz-border-radius: 5px;
+	    border-radius: 5px;
+	}
+</style>
+
+<style>
+	.upperIconsX { display: none; }
+	.markdownEye { display: none; }
+	#logoholderX { background-image: none !important; }
+	#headerSiteTitle { font-size: 16px !important; }
+	.pageColumnTitleXX { position:absolute; bottom:0px; background-color: rgba(255, 255, 255, 0.7); margin-bottom:0px;}
+	h2 { font-weight: 600; }
+
+	#gpnaFooter {
+		clear: both;
+    position: relative;
+    z-index: 1000;
+    background: #dae8eb;
+    padding-bottom: 15px;
+    border-top: 6px solid #fff;
+	}
+	body, h2 {
+		font-family: 'PT Sans', sans-serif;
+	}
+	#topMenuHolder {
+		position: fixed;
+		padding-top: 5px;
+		padding-left: 20px;
+		padding-right: 15px;
+		padding-bottom: 2px;
+		z-index: 9999;
+		background-color: rgba(255,255,255,0.9);
+		border-bottom-right-radius: 20px;
+	}
+	#topMenuHolder .nav {
+		margin-bottom: 0px;
+	}
+</style>
+
+<div id="menuHolder" style="background:#333; display:none">
+
+	<div id="menuTop">
+		<div class="hideMenu"><span class="hideMenuInner" style="color:#aaa">✕</span></div>
+	</div>
+	<div style="clearX:both"></div>
+	
+	<div id="menuNav">
+
+		<!-- Side Nav -->
+
+		<!--
+		<div class="neighborhood" style="display:none">
+			<a target='_parent' href="../"><b>Neighborhood</b></a>
+			<hr>
+		</div>
+		-->
+		<br><br>
+
+
+
+		<a target='_parent' href="/news">News</a>
+
+		<a target='_parent' href="/calendar">Calendar</a>
+
+		<!--
+		<a target='_parent' href="/directory">Businesses</a>
+		-->
+
+		<a target='_parent' href="/committees">Committees</a>
+
+		<a target='_parent' href="/history/neighborhood">History</a>
+
+		<a target='_parent' href="/support-gpna">Support GPNA</a>
+
+		<a target='_parent' href="/get-involved">Get Involved</a>
+
+		<a target='_parent' href="/contact">Contact Us</a>
+
+		<!--
+		<hr>
+		<a target='_parent' href="../community/resources/input/" target="_parent">Send Input</a>
+		-->
+
+	</div>
+</div>
+
+<div class="headerbar headerbarheight" style="background:#fff;width:100%;position:fixed;overflow:visible;z-index:1002;">
+
+	<div class="upperIcons noprint" style="float:right;">
+
+
+		<!--
+		<div class="showSearch local" style="display:none;float:left">
+			<div style="font-size:18pt;padding:2px 4px 0 2px;">&#128269;</div>
+		</div>
+		-->
+
+		<!-- could reactivate -->
+		<!--
+		<div class="hideMobile" style="float:left;">
+		      <div class="expandToFullscreen" style="border:0px; padding: 3px 3px; cursor: pointer;">
+		          <span style="font-size:34px;line-height:34px;padding-right:4px; color:#777">&#10064;</span>
+		      </div>
+		      <div class="reduceFromFullscreen" style="display:none; border:0px; padding: 3px 3px; cursor: pointer">
+		          <span style="font-size:33px;line-height:34px;padding-right:4px; color:#777">&#10066;</span>
+		      </div>
+	    </div>
+	  -->
+
+
+		<!--
+		<div class="showApps local" style="display:none; float:left;">
+			<i class="material-icons" style="font-size:30px; color:#ccc; padding:5px 4px 4px 0px">&#xE5C3;</i>
+		</div>
+		-->
+
+		
+		<div class="showMenu" style="float:left;font-size:24px; color:#999;">
+			<div style="font-size: 28px; color:#999; padding: 2px 6px 0 2px; margin-top:-5px">☰</div>
+		</div>
+		
+
+	</div>
+
+	<div class="contentpadding" style="padding-top:0px">
+		<div id="logospace" class="headerbarheight">
+			<div id="logoholder">
+				
+				<div id="headerLogo">
+				</div>
+
+				<div id="headerLocTitleHolder">
+
+					<span id="headerSiteTitle"></span>
+					<div style="padding-top:8px; float:right; display:none" class="mock-up">
+						<div class="arrowdown"></div>
+					</div>
+
+					<!--
+					<div class="headerDropdown mock-up">
+						<span class='arrownext' style='margin:10px 10px 0 10px'></span>
+					</div>
+					-->
+
+					<a target='_parent' href="/" class="logolink">
+					<span id="headerLocTitle"></span>
+					</a>
+
+					<!-- Title Graphic -->
+					<!--
+					<a target='_parent' href="/"><img src="" alt="" style="margin:8px 0 6px 8px; width:100%; max-width:480px"></a><br>
+					-->
+
+<script>
+	function toggleDirectory() {
+        //$('#sm_outer').slideToggle(400);
+        //$('#HeaderImage').slideToggle(400);
+        ////return false;
+        location.href = "/directory/"; // Since directory menu is not in this page.
+    }
+</script>
+				<div class="hideMobile">
+<!-- top menu -->
+
+	<div style="display:none" class="menu-loaded">
+	<ul class='nav nav-pills'>
+
+	<!--
+	<b class='caret'></b>
+
+	<li class='dropdown'>
+	<a target='_parent' href='/#news' class='nav1 dropdown-toggle'>News</a>
+	</li>
+	-->
+
+	<li class='dropdown'>
+	<a target='_parent' href='/about-gpna' class='nav1 dropdown-toggle'>Who We Are</a>
+	<ul class='dropdown-menu' id='menu1'>
+	<li><a target='_parent' href='/about-gpna'>Mission Statement</a></li>
+	<li><a target='_parent' href='/net/content/contacts.aspx?s=2173'>Leadership</a></li>
+	<li><a target='_parent' href='/bylaws'>Bylaws</a></li>
+	<li><a target='_parent' href='/history/neighborhood'>Neighborhood History</a></li>
+	<li><a target='_parent' href='/grant-request'>Grant Requests</a></li>
+	<li><a target='_parent' href='/questions'>Questions & Answers</a></li>
+	<li><a target='_parent' href='/meeting-agendas'>Meeting Agendas</a></li>
+	<li><a target='_parent' href='/meeting-minutes'>Meeting Minutes</a></li>
+	
+	</ul>
+	</li>
+
+	<li class='dropdown'>
+	<a target='_parent' href='/calendar' class='nav1 dropdown-toggle'>Calendar</a>
+	<ul class='dropdown-menu' id='menu1'>
+	<!--
+	<li><a target='_parent' href="/calendar/?siteid=0">Calendar - Local and Surrounding</a></li>
+	-->
+	<li><a target='_parent' href="/news">News and Events</a></li>
+	<li><a target='_parent' href="/calendar">Calendar</a></li>
+	<li><a target='_parent' href="https://calendar.google.com/calendar/embed?src=theporchpress%40gmail.com&ctz=America%2FNew_York" target="_blank">Calendar - Porch Press</a></li>
+	<!--
+	<li><a target='_parent' href='/core/event/eventlist.aspx'>Show on Map</a></li>
+	-->
+	<li><a target='_parent' href='/net/calendar/addevent.aspx'>Add New Event</a></li>
+	</ul>
+	</li>
+
+	<!-- javascript:toggleDirectory();void 0; -->
+	<!--
+	<li class='dropdown'>
+	<a target='_parent' href='/directory' class='nav1 dropdown-toggle'>Businesses</a>
+	<ul class='dropdown-menu' id='menu1'>
+	<li><a target='_parent' href='javascript:toggleDirectory();void 0;'>Directory Categories</a></li>
+	<li><a target='_parent' href='/net/location/proximity.aspx?tid=16610'>Restaurants</a></li>
+	<li><a target='_parent' href='/net/location/proximity.aspx?tid=31270'>Real Estate</a></li>
+	<li><a target='_parent' href='/net/location/proximity.aspx?tid=30020'>Main Directory</a></li>
+	<li><a target='_parent' href='/directory/partners'>Add Your Organization</a></li>
+	<li><a target='_parent' href='/directory/partners'>Renew Your Listing</a></li>
+	</ul>
+	</li>
+	-->
+
+	<li class='dropdown'>
+	<a target='_parent' href='/localsite/impact/' class='nav1 dropdown-toggle'>No Subnav</a>
+	</li>
+
+	<li class='dropdown'>
+	<!-- Removed data-toggle='dropdown' to fix link containing dot and toggleDirectory. -->
+	<a target='_parent' href='/committees' class='nav1 dropdown-toggle'>Committees</a>
+	<ul class='dropdown-menu' id='menu1'>
+	<li><a target='_parent' href=''>Committee Chairs</a></li>
+	<li><a target='_parent' href='/net/content/forums.aspx'>Committee News</a></li>
+	<li><a target='_parent' href='/economic-development'>Economic Development</a></li>
+	<li><a target='_parent' href='/fundraising'>Fundraising</a></li>
+	<li><a target='_parent' href='/historic-committee'>Homes and History</a></li>
+	<li><a target='_parent' href='/land-use-and-zoning'>Land Use and Zoning</a></li>
+	<!--
+	<li><a target='_parent' href='/parks-and-recreation'>Parks and Recreation</a></li>
+	-->
+	<li><a target='_parent' href='/philanthropic'>Philanthropic</a></li>
+	<li><a target='_parent' href='/public-safety'>Public Safety</a></li>
+	<li><a target='_parent' href='/technology'>Technology</a></li>
+	<li><a target='_parent' href='/transportation'>Transportation</a></li>
+	</ul>
+	</li>
+
+	<!--
+	<li class='8'><a target='_parent' href='/core/item/topic.aspx?tid=100000'>Online Store (admin)</a></li>
+	<li class='5'><a target='_parent' href='/core/item/topic.aspx?tid=88025'>Fund Drives (level 5+)</a></li>
+	<li class='7'><a target='_parent' href='/e/summary.aspx'>Online Orders (level 7+)</a></li>
+	-->
+
+	<li class='dropdown'>
+	<!-- Removed data-toggle='dropdown' to fix link containing dot and toggleDirectory. -->
+	<a target='_parent' href='/support-gpna' class='nav1 dropdown-toggle'>Support Us</a>
+	<ul class='dropdown-menu' id='menu1'>
+	<li><a target='_parent' href='/donate'>Donations</a></li>
+	<li><a target='_parent' href='/info/29988'>Sunbursts</a></li>
+	<li><a target='_parent' href='/merchandise'>Merchandise</a></li>
+	</ul>
+	</li>
+
+	<!--
+	<li class='dropdown'>
+	<a target='_parent' href='/history/neighborhood' class='nav1 dropdown-toggle'>History <b class='caret'></b></a>
+	<ul class='dropdown-menu' id='menu1'>
+	<li><a target='_parent' href='/history'>Overview</a></li>
+	<li><a target='_parent' href='/search/?tid=16111' style='display:none' class='user-5'>Historic Homes</a></li>
+	<li><a target='_parent' href='/historic-landmarks'>Historic Landmarks</a></li>
+	<li><a target='_parent' href='http://preserveatlanta.com'>Atlanta Preservation Center</a></li>
+	</ul>
+	</li>
+	-->
+
+	<li class='dropdown'>
+	<a target='_parent' href='/resources' class='nav1 dropdown-toggle'>Community Resources</a>
+	<ul class='dropdown-menu' id='menu1'>
+
+	<li><a target='_parent' href='javascript:toggleDirectory();void 0;'>Business Directory</a></li>
+	<li><a target='_parent' href=''>Schools</a></li>
+	<li><a target='_parent' href='/net/location/proximity.aspx?tid=16610'>Restaurants</a></li>
+	
+	</ul>
+	</li>
+
+	<li class='dropdown'>
+	<a target='_parent' href='/get-involved' class='nav1 dropdown-toggle'>Get Involved</a>
+	<ul class='dropdown-menu' id='menu1'>
+
+	<li><a target='_parent' href="/get-involved" target="_parent">Become a Member</a></li>
+	<li><a target='_parent' href="/directory/partners" target="_parent">Become a Business Partner</a></li>
+	<li><a target='_parent' href="/event/101937" target="_parent">General Meetings (Zoom)</a></li>
+	<li><a target='_parent' href="/committees" target="_parent">Join a Committee</a></li>
+	<li><a target='_parent' href="/contact" target="_parent">Contact Us</a></li>
+	
+
+	<!--
+	<li><a target='_parent' href='/e/input.aspx?ot=d&ez=1&s=95903.0.0.20'>Make a Donation</a></li>
+	<li class='dropdown'>
+	<a target='_parent' href='/e/input.aspx?ot=d&ez=1&s=95903.0.0.20' class='nav1 dropdown-toggle'>Donations</a>
+	</li>
+	-->
+
+	</ul>
+	</li>
+
+	</ul>
+	</div>
+<!-- /top menu -->
+</div>
+
+
+
+</div>
+
+
+
+
+			</div>
+		</div>
+
+		
+	</div>
+</div>
+<!-- Also update headerbar and headerOffset -->
+<div class="headerbarheight" style="height:100px;"></div>
+
+<script>
+$(document).ready(function () {
+    $('.expandToFullscreen, .reduceFromFullscreen').click(function(event) {
+      toggleFullScreen();  
+    });
+});
+</script>
