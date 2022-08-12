@@ -1794,7 +1794,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         //dp.dataset = "https://model.earth/georgia-data/automotive/automotive.csv";
         dp.datastates = "GA";
         // Dark green map points indicate electric vehicle parts manufacturing.<br>
-        dp.listInfo = "Dark Green: Electric Vehicle (EV) Industry<br>Dark Blue: Internal Combustion Engine (ICE)<br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates.<br>Learn about <a href='../../community/projects/mobility/'>data sources</a>.";
+        dp.listInfo = "From 2020 to 2022 Georgia added more than 20 EV-related projects. <a href='https://www.georgiatrend.com/2022/07/29/electric-revolution/'>Learn&nbsp;more</a><br>Dark Green: Electric Vehicle (EV) Industry<br>Dark Blue: Internal Combustion Engine (ICE)<br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates.<br><a href='/localsite/info/input/'>Contact Us</a> to help maintain the sheet directly. Learn about <a href='../../community/projects/mobility/'>data sources</a>.";
         dp.valueColumn = "ev industry";
         dp.valueColumnLabel = "EV Industry";
         dp.markerType = "google";
