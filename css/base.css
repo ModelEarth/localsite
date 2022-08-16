@@ -576,6 +576,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 .nav {
   list-style: none;
+  font-size: 13.5px;
 }
 .nav>li>a {
   padding: 8px;
