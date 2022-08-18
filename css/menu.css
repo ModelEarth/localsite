@@ -25,9 +25,6 @@
 .layerSection.openMenu {
 	min-width: 200px; /* So hideMenuNav() is not triggered too often by a narrow div */
 }
-.layerSection.openMenu:last-child {
-	/* margin-bottom: 15px; */
-}
 .layerSectionClick {
     padding: 6px 8px 0px 12px;
     font-size: 16px;
@@ -64,10 +61,12 @@
 .layerCbRow {
 	display:none;
 	padding: 1px 0px 0px 0px;
+	margin-left: 35px;
+	min-height: 32px;
 	color: #888;
 	clear: both;
 }
-.sideMenuColumnNarrow	.layerCbRow {
+.sideMenuColumnNarrow .layerCbRow {
 	background-color: #fff;
 	border-left: 1px solid #ccc;
 	border-right: 1px solid #ccc;
@@ -81,9 +80,9 @@
 	pointer-events: none; /* Allow pass through */
 	font-family: 'Open Sans Condensed', sans-serif;
 }
+/* Not sure why this does not set hover color */
 .layerCbRow:hover {
-	background: #ececec;
-	color: #555;
+	background: #ccc;
 	cursor: pointer;
 }
 .sectionArrowHolder {
@@ -156,6 +155,9 @@
 	padding-bottom: 8px;
 	padding-right: 8px;
 	border-bottom: 1px solid #fff;
+}
+.openMenu {
+	margin-bottom: 12px;
 }
 @media (max-width: 1400px) {
 	.sideMenuColumnWide .layerCbRow { /* Allow submenu to be hidden on resize without using javascript */

@@ -270,9 +270,13 @@ function showSubmenu(id) { //onmouseclick
         }
     } else {
         console.log("showSubmenu for id: " + id);
-        $("#" + id).addClass("openMenu");
-        $("#" + id + ' .layerCbRow').show();
-        $("#" + id + " .layerSectionTitle").show();
+        if ($("#" + id).find('div.layerCbRow').length !== 0) {
+            $("#" + id).addClass("openMenu");
+            $("#" + id + ' .layerCbRow').show();
+            $("#" + id + " .layerSectionTitle").show();
+        } else {
+            console.log("This section has no sub-menus.")
+        }
     }
 }
 // For narrow nav
@@ -448,7 +452,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                     partnerCheckboxes += '</a></div><div class="layerCbTitle"><input type="checkbox" class="layersCB" name="layersCB" id="go-' + item.item + '" value="' + item.item + '"><a href="' + item.link + '">' + title + '</a></div></div></div>';
                     
                 }
-                partnerCheckboxes += '<div style="clearX:both"></div>';
+                //partnerCheckboxes += '<div style="clearX:both"></div>';
                 previousSet = item.section;
             }
         }
