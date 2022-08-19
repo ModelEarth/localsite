@@ -853,7 +853,12 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       //link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
       link.href = theroot + '../localsite/css/fonts/materialicons/icon.css';
       link.id = getUrlID3(link.href,"");
+      
+      // TO DO: Need to check if icon.css already in page.
       head.appendChild(link);
+      $(document).ready(function () {
+        //body.appendChild(link); // Doesn't get appended
+      });
     }();
   }
 

@@ -2103,6 +2103,7 @@ function displayBigThumbnails(attempts, activeLayer, layerName) {
     }
 }
 function getDirectLink(livedomain,directlink,rootfolder,hashStr) {
+    let hash = getHash();
     if (directlink) {
         directlink = removeFrontFolder(directlink);
     } else if (rootfolder) {
@@ -2110,11 +2111,17 @@ function getDirectLink(livedomain,directlink,rootfolder,hashStr) {
             //rootfolder = "/explore/" + rootfolder;
         }
         directlink = removeFrontFolder(rootfolder + "#" + hashStr);
-        alert(directlink)
+        //alert(directlink)
     } else {
         //directlink = removeFrontFolder("/explore/#" + hashStr);
     }
-    
+    if (hash.state && directlink.indexOf('state=') < 0) {
+        if (directlink.indexOf('#') >= 0) {
+            directlink = directlink + "&state=" + hash.state;
+        } else {
+            directlink = directlink + "#state=" + hash.state;
+        }
+    }
     if (livedomain && location.host.indexOf('localhost') < 0) {
     	return(livedomain + directlink);
     } else {

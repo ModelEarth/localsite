@@ -459,7 +459,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
       //if (containerExists == null) { // NOT NEEDED - need to detect L.map
         if (location.host.indexOf('localhost') >= 0) {
           // BUGBUG
-          alert("Trying again - An errror occured because the #" + whichmap + " div was not yet rendered.");
+          console.log("Trying again - An errror occured because the #" + whichmap + " div was not yet rendered.");
           loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback);
           return;
         }
