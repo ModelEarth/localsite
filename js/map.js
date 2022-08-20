@@ -121,8 +121,10 @@ function hashChangedMap() {
 
   if (hash.name !== priorHashMap.name) {
     loadMap1("hashChanged() in map.js new name for View Details " + hash.name, hash.show);
-    let offTop = $("#list_main").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height();
-    window.scroll(0, offTop);
+    $(document).ready(function () {
+      let offTop = $("#list_main").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height();
+      window.scroll(0, offTop);
+    });
   } else if (hash.layers !== priorHashMap.layers) {
     //applyIO(hiddenhash.naics);
     loadMap1("hashChangedMap() in map.js layers", hash.show);
@@ -687,6 +689,18 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
   }
 }
 
+var overlays1 = {};
+var overlays2 = {};
+
+// DELETE in 2023 - Not in use
+dataParameters.forEach(function(ele) {
+  if (location.host.indexOf('localhost') >= 0) {
+    alert("dataParameters in use")
+  }
+  overlays1[ele.name] = ele.group; // Add to layer menu
+  overlays2[ele.name] = ele.group2; // Add to layer menu
+})
+
 function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callback) {
   if (typeof map === 'undefined') {
     console.log("processOutput: map undefined");
@@ -699,22 +713,26 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
 
    // Prevents dups of layer from appearing
    // Each dup shows a data subset when filter is being applied.
-   if (overlays1[dp.dataTitle]) {
+
+   if (overlays1 && overlays1[dp.dataTitle]) {
       if (map.hasLayer(overlays1[dp.dataTitle])){
         overlays1[dp.dataTitle].remove(); // clear the markers from the map for the layer
       }
       layerControl[whichmap].removeLayer(overlays1[dp.dataTitle]);
    }
-   if (overlays2[dp.dataTitle]) {
+   if (overlays2 && overlays2[dp.dataTitle]) {
       if (map2.hasLayer(overlays2[dp.dataTitle])){
         overlays2[dp.dataTitle].remove();
      }
-      // Not working, multiple checkboxes appear ...might be fixed now, haven't seen multiple lately.
+      // Wasn't working, multiple checkboxes appeared ...seems to be fixed now, haven't seen multiple lately.
       layerControl[whichmap2].removeLayer(overlays2[dp.dataTitle]);
       //controlLayers.removeLayer(overlays2[dp.dataTitle]);
    }
 
   // Allows for use of dp.dataTitle with removeLayer and addLayer
+  console.log("dp.group");
+  console.log(dp.group); // Error here: http://localhost:8887/apps/brigades/
+  // Cannot set properties of undefined (setting 'Coding Brigades')
   overlays1[dp.dataTitle] = dp.group;
   overlays2[dp.dataTitle] = dp.group2;
 
@@ -815,15 +833,7 @@ var mapCenter = [33.7490,-84.3880]; // [latitude, longitude]
 // Two sets prevents one map from changing the other
 
 
-var overlays1 = {};
-var overlays2 = {};
-dataParameters.forEach(function(ele) {
-  if (location.host.indexOf('localhost') >= 0) {
-    alert("dataParameters in use")
-  }
-  overlays1[ele.name] = ele.group; // Add to layer menu
-  overlays2[ele.name] = ele.group2; // Add to layer menu
-})
+
 
 // NOT USED IN CURRENT REPO - Check if still used when transitioning PPE map
 function populateMap(whichmap, dp, callback) { // From JSON within page
