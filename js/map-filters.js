@@ -698,7 +698,14 @@ function filterClickLocation(loadGeoTable) {
         }
 	} else { // OPEN MAP FILTER
 		let hash = getHash();
-		if (hash.mapview == "country") {
+        //alert("hash.state " + hash.state);
+        //alert("param.state " + param.state);
+        if (!hash.state && param.state) {
+            hash.state = param.state; // For /apps/base/
+            console.log("filterClickLocation updatesHash state " + hash.state);
+            updateHash({"state":hash.state});
+        }
+        if (hash.mapview == "country") {
 			$("#geoPicker").show(); // Required for map to load
 		} else if (!hash.mapview) {
 			let currentStates = [];
@@ -1947,6 +1954,17 @@ function thumbClick(show,path) {
 	}
 }
 function displayBigThumbnails(attempts, activeLayer, layerName) {
+
+    // Setting param.state in navigation.js passes to hash here for menu to use theState:
+    let hash = getHash();
+    let theState = $("#state_select").find(":selected").val();
+    if (hash.state) {
+        theState = hash.state.split(",")[0].toUpperCase();
+    }
+    if (theState.length > 2) {
+        theState = theState.substring(0,2);
+    }
+
 	if (!$('.bigThumbUl').length) {
         if (!activeLayer) {
             activeLayer = "industries"; // Since Tab defaults to "Top Industries". Will change to site-wide search later.
@@ -2076,7 +2094,9 @@ function displayBigThumbnails(attempts, activeLayer, layerName) {
 	        }
 	    }
 	    $(".bigThumbMenu").append("<div class='bigThumbMenuInner'>" + sectionMenu + "</div>");
-	    if (hash.state && hash.state.split(",")[0].toUpperCase() == "GA") {
+
+        if (theState == "GA") {
+	    // if (hash.state && hash.state.split(",")[0].toUpperCase() == "GA") {
 	    	$(".geo-US13").show();
 	    }
 	    //$("#honeycombMenu").append("<ul class='bigThumbUl'>" + sectionMenu + "</ul>");

@@ -3644,7 +3644,7 @@ function styleShape(feature) { // Called FOR EACH topojson row
   } else if (hash.mapview == "countries") {
       let theValue = 2;
       //console.log("country: " + (feature.properties.name));
-      if (localObject.countries[feature.id]) {
+      if (localObject.countries && localObject.countries[feature.id]) {
         //alert("Country 2020 " + localObject.countries[feature.id]["2020"]);
         theValue = localObject.countries[feature.id]["2020"];
       }

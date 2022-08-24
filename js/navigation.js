@@ -57,7 +57,6 @@ $(document).ready(function(){
 	// Set here so path works at all levels.
 
 	// To do: fetch the existing background-image.
-
 	if (param.startTitle == "Code for America" ||  location.host.indexOf('codeforamerica') >= 0) {
 		showLeftIcon = true;
 		param.titleArray = []
@@ -82,6 +81,9 @@ $(document).ready(function(){
 	} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 || (((location.host.indexOf('localhost') >= 0) || false) && !param.headerLogo)) {
 		// Show locally for Brave Browser only - insert before:  ) || false
 		// && navigator && navigator.brave
+		if (!param.state) {
+			param.state = "GA"; // For displayBigThumbnails menu in map-filters.js
+		}
 		showLeftIcon = true;
 		$(".siteTitleShort").text("Model Georgia");
 		param.titleArray = [];
