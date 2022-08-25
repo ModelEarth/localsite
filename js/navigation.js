@@ -1,6 +1,7 @@
 // Maintained in localsite/js/navigation.js
 const page_scripts = document.getElementsByTagName("script");
 const current_code_path = page_scripts[page_scripts.length-1].src;
+console.log("current_code_path " + current_code_path);
 const slash_count = (current_code_path.match(/\//g) || []).length; // To set path to header.html
 
 if (window.location.protocol != 'https:' && location.host.indexOf('localhost') < 0) {
@@ -20,6 +21,8 @@ for (var i = 0; i < climbcount; i++) {
 }
 if (climbpath == "") {
 	climbpath += "./"; // Eliminates ? portion of URL
+	console.log("Why didn't the following get applied:")
+	//climbpath += "../";
 }
 //console.log("climbpath " + climbpath);
 let earthFooter = false;

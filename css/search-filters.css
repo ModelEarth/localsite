@@ -350,11 +350,7 @@
   display: inline-block;
 }
 .bigThumbSelected {
-  /*
-  margin-top: 5px;
-  height: 18px;
-  width: 18px;
-  */
+  margin-top: 2px;
   height: 12px;
   width: 12px;
   background-color: #ddd;

@@ -1573,18 +1573,23 @@ function getState(stateCode) {
 
 
 function showSearchFilter() {
-  if (!$("#filterFieldsHolder").length) { // If doesn't exist yet.
-
+  let headerHeight = $("#headerbar").height(); // Not sure why this is 99 rather than 100
+  if (!$("#filterFieldsHolder").length) { // Filter doesn't exist yet, initial load.
     if (!$("#bodyFile").length) {
       $('body').prepend("<div id='bodyFile'></div>");
     }
-
     loadLocalTemplate();
     loadSearchFilterIncludes();
     loadLeafletAndMapFilters();
+    $('html,body').scrollTop(0);
   } else {
-    console.log("showSearchFilter");
-    if ($("#filterFieldsHolder").is(':visible')) {
+
+    let filterTop = $("#filterFieldsHolder").offset().top - window.pageYOffset;
+
+    console.log("showSearchFilter #filterFieldsHolder offset top: " + filterTop);
+    //  || (!$("#headerbar").is(':visible') && filterTop >= 0)
+    if ($("#filterFieldsHolder").is(':visible') && (($("#headerbar").is(':visible') && filterTop >= headerHeight) )) { // Might need to allow for coverage by header.
+      console.log("#filterFieldsHolder is visible, hide it.");
       $("#filterFieldsHolder").hide();
       //$("#filterbaroffset").hide();
       ////$("#pageLinksHolder").hide();
@@ -1593,6 +1598,7 @@ function showSearchFilter() {
       $("#filterFieldsHolder").show();
       //$("#filterbaroffset").show();
       $(".hideWhenPop").show();
+      $('html,body').scrollTop(0);
     }
     return;
 
