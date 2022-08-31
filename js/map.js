@@ -732,9 +732,13 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
   // Allows for use of dp.dataTitle with removeLayer and addLayer
   console.log("dp.group");
   console.log(dp.group); // Error here: http://localhost:8887/apps/brigades/
-  // Cannot set properties of undefined (setting 'Coding Brigades')
-  overlays1[dp.dataTitle] = dp.group;
-  overlays2[dp.dataTitle] = dp.group2;
+  
+  if (overlays1) { // To avoid: Cannot set properties of undefined (setting 'Coding Brigades')
+    overlays1[dp.dataTitle] = dp.group;
+    overlays2[dp.dataTitle] = dp.group2;
+  } else {
+    console.log("ALERT: overlays1 not available.");
+  }
 
   if (layerControl[whichmap] !== undefined) {
     // Remove existing instance of layer
