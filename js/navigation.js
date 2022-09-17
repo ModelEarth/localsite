@@ -20,9 +20,9 @@ for (var i = 0; i < climbcount; i++) {
 	climbpath += "../";
 }
 if (climbpath == "") {
-	climbpath += "./"; // Eliminates ? portion of URL
+	//climbpath += "./"; // Eliminates ? portion of URL
 	console.log("Why didn't the following get applied:")
-	//climbpath += "../";
+	climbpath += "../";
 }
 //console.log("climbpath " + climbpath);
 let earthFooter = false;
@@ -338,6 +338,7 @@ $(document).ready(function(){
 				 	}
 					// WAS LIMITED TO HEADER
 
+					console.log("climbpath value: " + climbpath);
 				 	if (!param.headerLogo && param.headerLogoSmall) {
 				 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall + "</a>");
 				 	} else if (param.headerLogo) {

@@ -1654,3 +1654,29 @@ function showSearchFilter() {
       //$(".quickMenu").hide();
   }
 }
+function showGlobalMap(globalMap) { // Used by community/index.html, green-sah
+  $("#nullschoolHeader").show();
+
+  if($("#globalMapHolder").length <= 1) {
+    //$("#globalMapHolder").html('<iframe src="https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
+    
+    // Two steps prevent loading error
+    $("#globalMapHolder").html('<iframe src="" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
+    
+    loadIframe("mainframe",globalMap);
+
+    // Chem Currents NO2 - Since Wind makes NO2 clouds hard to see
+    //loadIframe("mainframe","https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
+
+  }
+}
+function loadIframe(iframeName, url) {  
+  var $iframe = $('#' + iframeName);
+  if ($iframe.length) {
+      //alert("loadIframe" + url)
+      $iframe.attr('src',url);
+      $("#nullschoolHeader #mainbucket").show();
+      return false;
+  }
+  return true;
+}
