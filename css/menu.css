@@ -390,7 +390,10 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     margin-bottom: 0px;
 }
 
-.navbar .nav>li>.dropdown-menu:before {
+.navbar .nav>li {
+	float: left;
+}
+.navbar .nav > li > .dropdown-menu:before {
     content: '';
     display: inline-block;
     border-left: 7px solid transparent;
@@ -401,9 +404,32 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     top: -7px;
     left: 9px;
 }
+.navbar .nav > li > .dropdown-menu:after {
+    content: '';
+    display: inline-block;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #ffffff;
+    position: absolute;
+    top: -6px;
+    left: 10px;
+}
+
 .navbar .nav.pull-right {
     float: right;
 }
+.pull-right .dropdown-menu {
+	right: 0px;
+}
+.navbar .pull-right > li > .dropdown-menu:before {
+	left: auto;
+	right: 12px;
+}
+.navbar .pull-right > li > .dropdown-menu:after {
+	left: auto;
+	right: 13px;
+}
+
 .nav-tabs>li, .nav-pills>li {
     float: left;
 }
