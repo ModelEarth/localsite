@@ -1,10 +1,9 @@
 # Getting Started  
 
-[View Community Pages](../../apps/)  
+[View Community Pages](https://model.earth/apps/)  
 You can use these steps to create a website with free GitHub hosting  
 
 <!--
-
 	Not using curretnly, made a physcial copy instead
 	https://github.com/ModelGeorgia/io/compare/master...modelearth:master
 
