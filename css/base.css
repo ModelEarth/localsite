@@ -384,7 +384,7 @@ summary::-webkit-details-marker {
 @media (max-width: 800px) {
   .floatRight {
     float:none !important;
-    width:100%;
+    width:100% !important;
     margin-left:0px;
     margin-bottom:40px;
   }
