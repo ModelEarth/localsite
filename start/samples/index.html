@@ -330,9 +330,14 @@ function changeMenuLinks(itemid) {
 
 
 <div class="rightWhenWide">
-
-    <div class="user-4 partner-4" onmouseleave="$('#makeUpdatesPopup').hide();$('.makeUpdatesClick').show();">
-        <a class="makeUpdatesClick button" href="/core/item/edit.aspx?s=5542.0.0.5316&amp;golast=%2fhistory%3fdynamic%3d1" onclick="$('#makeUpdatesPopup').show();$('.makeUpdatesClick').hide();event.stopPropagation();return false;">Edit</a> 
+    <style>
+        .showUpdatesPopup {
+            display: block !important;
+            border: 2px solid red;
+        }
+    </style>
+    <div class="user-4 partner-4" onmouseleave="$('#makeUpdatesPopup').hide();$('#makeUpdatesPopup').removeClass('showUpdatesPopup');$('.makeUpdatesClick').show();">
+        <a class="makeUpdatesClick button" href="/core/item/edit.aspx?s=5542.0.0.5316&amp;golast=%2fhistory%3fdynamic%3d1" onclick="$('#makeUpdatesPopup').addClass('showUpdatesPopup');$('.makeUpdatesClick').hide();event.stopPropagation();return false;">Edit</a> 
 
         <div id="makeUpdatesPopup" style="display: none;" class="dropdown hideOnDocClick">            
             <ul class="dropdown-menu dropdown-menu-right" style="left: auto; right: 0px; display: block;">
