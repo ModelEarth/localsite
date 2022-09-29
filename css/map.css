@@ -2,6 +2,7 @@
 
   #map1 {
     height: 600px;
+    height: 85vh;
     width: 100%;
   }
   
@@ -289,10 +290,6 @@
 
 b {
   font-weight: 600;
-}
-#map1 {
-  height: 280px;
-  height: 600px;
 }
 .showMobile { /* For delayed css load */
   displayX:none;

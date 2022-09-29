@@ -174,6 +174,161 @@ function changeMenuLinks(itemid) {
 
 <br><br><br>
 
+<!-- DELETE TEST -->
+
+<style>
+/*
+.pull-right .dropdown-menu:before {
+  left: auto !important;
+  right: 9px !important;
+}
+*/
+</style>
+
+<div style="float:right;margin-right:10px">
+        <div style="float:left">
+          <div id="ctl00_BootstrapMenu_BootstrapMenuPanel">
+  
+<!-- Bootstrap Menu -->
+
+
+
+
+<div id="aboveNavbar"></div>
+
+
+<div class="navbar navbar-inverseXXX">
+    <div class="navbar-inner">
+        
+            
+
+            <div class="nav-collapse" style="float:right;min-width:125px;white-space:nowrap">                
+                <span id="menu-insert"></span>
+                
+                
+<ul id="menuNotification" class="nav" style="display: none;">
+    <li class="divider-vertical"></li>
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="menuNotificationTopMenuText">Notifications</span> <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+            <li style="display: none;"><span id="menuNotificationSummary" style="white-space: nowrap; padding: 3px 20px;"></span></li>
+            <li><a id="menuAddNotification" href="/account/write/4363?s=0.0.0.20">Add Notification</a></li>
+            <li style="display: none;"><span style="white-space: nowrap; padding: 3px 20px;"></span></li>
+            <li><a href="/requests">View Requests</a></li>
+        </ul>
+    </li>
+</ul>
+
+
+
+                <!--
+                <i id="toggleMenuAccount" class="icon-user icon-white icon-margin" style="border:1px solid blue" 
+                onclick="$('#menuUser').show(); return false;" 
+                onmouseover="$('#menuUser').show(); return false;" 
+                onmouseout="$('#menuUser').hide(); return false;"></i>
+                -->
+
+                <!-- EDIT -->
+                <ul class="nav pull-right">
+                    <li style="display: none;" class="dropdown" id="menuEditItem">
+                        
+                        <span data-toggle="dropdown" class="dropdown-toggle button-topbar material-icons" data-icon="settings"></span>
+
+                        <!--
+                        <div data-toggle="dropdown" class="dropdown-toggle button-topbar icon ion-edit"></div>
+                        -->
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li style=""><a id="menuEditContent" href="/core/item/edit.aspx?golast=%2fdefault.aspx&amp;s=821.0.0.20">Edit Page</a></li>
+                            <li style="" class="enableBlurbListEdit"><a id="editPageAreas" class="editPageAreas" href="/core/item/editblurb.aspx">Edit Page Areas</a></li>
+                            <li style="display: none;"><a id="menuPageAdmin" href="/net/content/admin.aspx">Page Admin</a></li>
+                            <li class="divider"></li>
+                            <li style=""><a id="menuAddSubtopic" href="/core/item/add.aspx?s=0.0.0.20&amp;parentid=821">Add New Page</a></li>
+                            <li style="display: none;"><a id="menuAdmin" href="/admin">Site Admin</a></li>
+                            
+                                <li style="display: none;"><a id="menuMembership" href="/renew">Membership</a></li>
+                            
+                        </ul>
+
+                    </li>
+                </ul>
+                <!-- /EDIT -->
+
+                <!-- ACCOUNT NAV -->
+                <ul class="nav pull-right">
+                
+                    <li class="dropdown">
+
+                        <!--
+                        <div data-toggle="dropdown" class="dropdown-toggle button-topbar icon ion-person"></div>
+                        -->
+                        <span data-toggle="dropdown" class="dropdown-toggle button-topbar material-icons" data-icon="person"></span>
+
+                        <ul class="dropdown-menu dropdown-menu-right" id="menuUser" role="navigation" aria-label="My Account" style="z-index: 99999; display: none;">
+                            
+                                <li><a href="/account">My Account - <span id="menuUserName"></span></a></li>
+                            
+
+                            <li style="display: none;" class="user-4" aria-hidden="true"><a href="/account/add?gosearch=%2faccount%3fuid%3d%5buid%5d">Find Individual</a></li>
+                            <li class="divider"></li>
+                            <li><a href="/signout">Sign Out</a></li>
+                        </ul>
+
+                        <ul class="dropdown-menu dropdown-menu-right" id="menuGuest" role="navigation" aria-label="Sign In">
+                            <li><a href="/signin">Sign In</a></li>
+
+                            
+                        </ul>
+                    </li>
+                </ul>
+                <!-- /ACCOUNT NAV -->
+
+                
+                <!-- SEARCH -->
+                <ul class="nav pull-right">
+                    <li class="dropdown">
+
+                        <!--
+                        <div data-toggle="dropdown" class="dropdown-toggle button-topbar icon ion-search" style="padding-left:50px;padding-right:9px; font-size:24pt;"></div>
+                        -->
+                        <span data-toggle="dropdown" class="dropdown-toggle button-topbar material-icons" data-icon="search"></span>
+
+                        <ul class="dropdown-menu" style="padding:6px 8px 8px 10px; white-space:nowrap">
+                            <li>
+                            <form name="keywordSearch" id="keywordSearch" style="margin-top:3px" method="get" action="#" class="searchform" role="search"><input class="searchInput" name="gosearch" value="search" onblur="SearchFormTextCheck(this, 0)" onfocus="SearchFormTextCheck(this, 1)" type="text" maxlength="200" accesskey="S" title="Enter search words" onkeypress="return SearchEnter(event, this.form);">
+
+                            <input type="submit" value="GO" onclick="SearchSubmit(this.form);return false;">
+
+                            </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <!-- /SEARCH -->
+                
+
+            </div>
+            <!--/.nav-collapse -->
+
+            <div id="innavbar"></div>
+
+    </div>
+</div>
+
+
+</div>
+
+
+
+<!-- End Bootstrap Menu -->
+
+        </div>
+        
+      </div>
+
+<div style="clear:both"></div>
+<!-- /DELETE TEST -->
+
+
 <div class="rightWhenWide">
 
     <div class="user-4 partner-4" onmouseleave="$('#makeUpdatesPopup').hide();$('.makeUpdatesClick').show();">

@@ -640,8 +640,13 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
             console.log(partnerMenu.menuDiv + " .layerSectionClick");
             
             if ($(this).attr("data-layer-section")) {
-                console.log("data-layer-section parent, so no action if subnav");
                 //layerSectionOpen($(this).attr("data-layer-section").toLowerCase().replace(/ /g,"-"));
+                let pageLink = $(this).attr("link");
+                if (pageLink) {
+                    window.location = pageLink;
+                } else {
+                    console.log("CLICKED - But no link attr on data-layer-section for a section with no subnav");
+                }
             } else {
                 alert("layerSectionClick click, no data-layer-section attr");
                 //$('.layerSection').hide();

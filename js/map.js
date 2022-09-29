@@ -1184,7 +1184,7 @@ function addIcons(dp,map,map2) {
     } else if (element[dp.nameColumn] || element["name"]) {
       let entityName = element[dp.nameColumn] || element["name"];
       entityName = entityName.replace(/\ /g,"_").replace(/'/g,"\'")
-      output += "<a onclick='goHash({\"name\":\"" + entityName + "\"}); return false;' href='#show=" + hash.show + "&name=" + entityName + "'>View Details</a><br>";
+      output += "<a onclick='goHash({\"show\":\"" + hash.show + "\",\"name\":\"" + entityName + "\"}); return false;' href='#show=" + hash.show + "&name=" + entityName + "'>View Details</a><br>";
     }
     // ADD POPUP BUBBLES TO MAP POINTS
     if (circle) {
@@ -1710,10 +1710,27 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
         dp.listInfo = "<a href='https://map.georgia.org/recycling/'>Add Recycler Listings</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a>.&nbsp; View&nbsp;<a href='../map/recycling/ga/'>Recycling&nbsp;Datasets</a>.";
         dp.search = {"In Main Category": "Category", "In Materials Accepted": "Materials Accepted", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
-      } else if (show == "cameraready") {
-        dp.listTitle = "Cameraready";
+      
+      } else if (show == "cameraready-locations") {
+        dp.listTitle = "CameraReady Film Locations";
         dp.datatype = "json";
         dp.dataset = "https://raw.githubusercontent.com/GeorgiaFilm/cameraready_locations_curl/main/cameraready.json";
+        dp.color = "#548d1a"; // green
+        dp.markerType = "google";
+        dp.filters = {tag:"Locations"}; // Supports comma separated values
+        dp.showKeys = "hours_saturday";
+        dp.showLabels = "Saturday";
+        dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website", "Type": "tag"};
+        
+      } else if (show == "cameraready") {
+        dp.listTitle = "CameraReady County Liaisons";
+        dp.datatype = "json";
+        dp.dataset = "https://raw.githubusercontent.com/GeorgiaFilm/cameraready_locations_curl/main/cameraready.json";
+        dp.color = "#ff9819"; // orange - Since there is no type column. An item column is filtered. To do: Pull types from a tab and relate to the first type in each column.
+        dp.markerType = "google";
+        dp.filters = {tag:"Liaisons"}; // Supports comma separated values
+        dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website", "Type": "tag"};
+        
       } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills")) { // recycling-processors
         if (hash.state == "GA") {
           dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
@@ -2390,6 +2407,7 @@ function showList(dp,map) {
     count++;
     foundMatch = 0;
     productMatchFound = 0;
+    let filterMatchFound = true;
 
     if (count > 4000) {
         return;
@@ -2423,6 +2441,7 @@ function showList(dp,map) {
 
     // count "filtered" populated for active rows only
     if (localObject.layerCategories[dp.show] && localObject.layerCategories[dp.show].length >= 0) {
+
       if (elementRaw[dp.catColumn].length > 0 && elementRaw[dp.catColumn] == hash.cat) {
         if (dp.subcatColumn && elementRaw[dp.subcatColumn].length <= 0) {
           subcatObject["null"].count = subcatObject["null"].count + 1;
@@ -2446,6 +2465,50 @@ function showList(dp,map) {
           });
         }
       }
+    }
+
+    // Filter by object containing a set of keys and their possible values
+    if (dp.filters) {
+      filterMatchFound = false;
+      $.each(dp.filters, function(index,value) {
+        let value_array = value.split2(/\s*,\s*/); // Removes space when splitting possible values on comma
+        for(let i = 0; i < value_array.length; i++) {
+          if (value_array[i].length > 0) {
+            console.log("dp.filters key: " + index + " value " + value_array[i]);
+            if (elementRaw[index] == value_array[i]) {
+              console.log("found match dp.filters key: " + index + " value " + value_array[i]);
+              filterMatchFound = true;
+            }
+          }
+        }
+      });
+
+      /*
+      if (elementRaw[dp.filterKeys].length > && elementRaw[dp.filterValues].length > 0) {
+        if (dp.subcatColumn && elementRaw[dp.subcatColumn].length <= 0) {
+          subcatObject["null"].count = subcatObject["null"].count + 1;
+        } else {
+
+          // Should we walk on the current subcatObject?
+          console.log(localObject.layerCategories[dp.filterKeys])
+          $.each(localObject.layerCategories[dp.show], function(index,value) {
+            console.log("value.SubCategory: " + value.SubCategory);
+            //console.log(subcatObject[value.SubCategory]);
+            if (subcatObject[value.SubCategory] == elementRaw[dp.subcatColumn]) {
+              
+              subcatObject[value.SubCategory].count = subcatObject[value.SubCategory].count + 1;
+              subcatObject[value.SubCategory].count = 12345;
+              console.log(subcatObject[value.SubCategory]);
+              //alert(subcatObject[value.Category].count)
+            }
+          });
+        }
+      }
+      */
+
+    }
+    if (!filterMatchFound) {
+      return; // Go to next in foreach
     }
 
     //if (keyword.length > 0 || products_array.length > 0 || productcode_array.length > 0) {
