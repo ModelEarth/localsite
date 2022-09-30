@@ -384,10 +384,11 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     margin-top: 0px;
 }
 .nav-pills {
-		padding: 0px;
-		margin: 0px;
-    margin-right:3px;
+	padding: 0px;
+	margin: 0px;
+    margin-right: 3px;
     margin-bottom: 0px;
+    list-style-type: none;
 }
 
 .navbar .nav>li {
