@@ -610,11 +610,6 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   /* margin-top: 40px; */
   /* overflow:hidden; */  /* prevents footer from residing beside columns, but caused menu/accordion to be cut off. */
 }
-/*
-#mainColumn img {
-  width:100%;
-}
-*/
 #rightColumn img {
   /* messed up /account page */
   /*
