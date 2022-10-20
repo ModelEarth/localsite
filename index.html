@@ -247,6 +247,24 @@ text-align:left; overflow:scroll;
 	    </div>
 	</div>
   
+
+  <h2 style="clear:both">Local Storage</h2>
+  The following values reside in your browser's localStorage for persistance across site visits:<br><br>
+
+  <div id="displayStorage"></div>
+  <script>
+  // View localStorage values
+  for(var i=0, len=localStorage.length; i<len; i++) {
+      var key = localStorage.key(i);
+      var value = localStorage[key];
+      if (value.indexOf("<svg") > 0) {
+        $("#displayStorage").append("<b>" + key + ":</b> [svg]<br><br>");
+      } else {
+        $("#displayStorage").append("<b>" + key + ":</b> " + value + "<br><br>");
+      }
+  }
+  </script>
+
 </div>
 
 <script>
