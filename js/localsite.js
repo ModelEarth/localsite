@@ -588,7 +588,9 @@ function loadLeafletAndMapFilters() {
     loadScript(theroot + 'js/navigation.js', function(results) {
       // Might need to add a check here. Occasional:
       // Uncaught ReferenceError: applyNavigation is not defined
-      applyNavigation();
+      setTimeout( function() {
+        applyNavigation();
+      }, 10 );
     });
   }
 
