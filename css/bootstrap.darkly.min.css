@@ -41,6 +41,36 @@ a:link, a:visited {
 	background: #222;
 	border-bottom-color: #222;
 }
+#filterLocations {
+    background-color: rgb(55 55 55/95%);
+    color: #fff;
+}
+#filterFieldsHolder {
+    background-color: rgb(55 55 55/95%);
+    border-bottom: 0px solid #333;
+}
+.filterFieldsHolderFixed {
+    background-color: rgb(55 55 55/95%);
+    border-bottom: 0px solid #333;
+}
+#keywordsTB::placeholder {
+  color: #fff;
+  opacity: 1; /* Firefox */
+}
+#keywordsTB.text:focus {
+    border: auto !important;
+}
+.filterClick, .detailbutton {
+    background-color: rgb(55 55 55/95%) !important;
+    color: #fff !important;
+}
+.filterClick:hover, .detailbutton:hover {
+    background-color: rgb(77 77 77/95%) !important;
+    color: #fff !important;
+}
+.hamburger-circle {
+  content: url("/localsite/img/icon/hamburger-lite.png");
+}
 #sidecolumn {
 	background-colorX: #292929;
 	background-color: rgba(0, 0, 0, 0);

@@ -175,19 +175,25 @@ function initElements() {
 
     let layerName = "main"; // Added, could change to hash.show
 
-    var sitemode = Cookies.get('sitemode');
-    if (param["sitemode"]) { // From URL
-        sitemode = param["sitemode"]; 
-        Cookies.set('sitemode', sitemode);
-        $(".sitemode").val(sitemode);
-    } else if (params["sitemode"]) { // From index.html
-        sitemode = params["sitemode"];
-        $(".sitemode").val(sitemode);
-        console.log("Set sitemode from index.html: " + sitemode);
-    } else {
-        setSiteMode(sitemode);
+    var sitemode;
+    var sitesource;
+    var sitelook;
+    if(typeof Cookies!='undefined') {
+        sitemode = Cookies.get('sitemode');
+        sitesource = Cookies.get('sitesource');
+        sitelook = Cookies.get('sitelook');
+        if (param["sitemode"]) { // From URL
+            sitemode = param["sitemode"]; 
+            Cookies.set('sitemode', sitemode);
+            $(".sitemode").val(sitemode);
+        } else if (params["sitemode"]) { // From index.html
+            sitemode = params["sitemode"];
+            $(".sitemode").val(sitemode);
+            console.log("Set sitemode from index.html: " + sitemode);
+        } else {
+            setSiteMode(sitemode);
+        }
     }
-
     $(".moduleIntroHolder").append($(".moduleIntro"));
 
     if ($(".insertFilters").length > 0) {
@@ -212,7 +218,6 @@ function initElements() {
     // Initial load
     //$(".sitemode").val("widget").change();
 
-    var sitesource = Cookies.get('sitesource');
     $(document).ready(function () {
 
         //applyHash();
@@ -290,18 +295,18 @@ function initElements() {
         $('.bigThumbUl .user-4').detach(); // Prevents gap due to hidden divs when using nth-child in site.css
 
     });
-
-    if (Cookies.get('sitemode')) {
-        $(".sitemode").val(Cookies.get('sitemode'));
+    if(typeof Cookies!='undefined') {
+        if (Cookies.get('sitemode')) {
+            $(".sitemode").val(Cookies.get('sitemode'));
+        }
+        if (Cookies.get('sitesource')) {
+            $(".sitesource").val(Cookies.get('sitesource'));
+        }
+        if (Cookies.get('sitebasemap')) {
+            $(".sitebasemap").val(Cookies.get('sitebasemap'));
+        }
     }
-    if (Cookies.get('sitesource')) {
-        $(".sitesource").val(Cookies.get('sitesource'));
-    }
-    if (Cookies.get('sitebasemap')) {
-        $(".sitebasemap").val(Cookies.get('sitebasemap'));
-    }
-
-    var sitelook = Cookies.get('sitelook');
+    
     if (!$("#sitelook").is(':visible')) {
         sitelook = "default"; // For now, filterPanel background is always an image.
     }
@@ -313,12 +318,14 @@ function initElements() {
         sitelook = params["sitelook"]; 
         // Prevent video from appearing when going to menu. Cookies probably need to be specific to domain.
         //Cookies.set('sitelook', sitelook);
-    } else if (Cookies.get('sitelook')) {
+    } else if (typeof Cookies!='undefined' && Cookies.get('sitelook')) {
         sitelook = Cookies.get('sitelook');
     }
     console.log("sitelook init: " + sitelook);
     setSiteLook(sitelook,layerName);
-    $("#sitelook").val(Cookies.get('sitelook'));
+    if (typeof Cookies!='undefined') {
+        $("#sitelook").val(Cookies.get('sitelook'));
+    }
 }
 function getLayerName() {
     consoleLog("getLayerName location.hash: " + location.hash);
@@ -332,7 +339,7 @@ function hideSettings() {
     $(".showSettings").show();
     $(".showSettings").show();
     $(".showSettingsClick").show();
-    $(".settingsPanel").hide();
+    $(".settingsPanel").addClass("column-hidden");
 }
 var loc_hash="";
 function getCurrentLayer() {
@@ -386,18 +393,23 @@ $(document).on("change", ".sitesource", function(event) {
     event.stopPropagation();
 });
 $(document).on("change", "#sitelook", function(event) { // Style: default, coi, gc
-    Cookies.set('sitelook', $("#sitelook").val());
+    if (typeof Cookies!='undefined') {
+        Cookies.set('sitelook', $("#sitelook").val());
+    }
     changeSiteLook();
     event.stopPropagation();
 });
 $(document).on("change", ".sitebasemap", function(event) {
     sitebasemap = $(".sitebasemap").val();
-    Cookies.set('sitebasemap', $(".sitebasemap").val());
+    if (typeof Cookies!='undefined') {
+        Cookies.set('sitebasemap', $(".sitebasemap").val());
+    }
     setSiteSource($(".sitebasemap").val());
     event.stopPropagation();
 });
 
 function changeSiteLook() {
+    alert("changeSiteLook 1")
     layerName = getLayerName();
     consoleLog("changeSiteLook: " + $("#sitelook").val());
     setSiteLook($("#sitelook").val(),layerName);
@@ -680,21 +692,22 @@ function setSiteMode(sitemode) {
 }
 function initEvents() { // Once included file1 is loaded.
     $(document).ready(function () {
-
-        Cookies.remove('access_token'); // temp
-        Cookies.remove('a_access_token'); // temp
-        Cookies.remove('p_access_token'); // temp
-        Cookies.remove('mode'); // temp
-        if (Cookies.get('at_a')) {
-            if (location.host.indexOf('localhost') >= 0) {
-                loadUserAccess(8); // Local access for dev links.
+        if(typeof Cookies!='undefined'){
+            Cookies.remove('access_token'); // temp
+            Cookies.remove('a_access_token'); // temp
+            Cookies.remove('p_access_token'); // temp
+            Cookies.remove('mode'); // temp
+            if (Cookies.get('at_a')) {
+                if (location.host.indexOf('localhost') >= 0) {
+                    loadUserAccess(8); // Local access for dev links.
+                } else {
+                    loadUserAccess(5);
+                }
+            } else if (Cookies.get('at_f')) {
+                loadUserAccess(1);
             } else {
-                loadUserAccess(5);
+                loadUserAccess(0);
             }
-        } else if (Cookies.get('at_f')) {
-            loadUserAccess(1);
-        } else {
-            loadUserAccess(0);
         }
         if (showLogin) {
             $(".showAccountTools").show();
@@ -894,12 +907,27 @@ function initEvents() { // Once included file1 is loaded.
             event.stopPropagation();
         });
 
+        /*
         function hideOtherPopOuts() {
             $('.accountPanelClose').trigger("click");
             hideSettings();
         }
-        $('.showSettings').click(function(event) {
-            hideOtherPopOuts();
+        */
+        $(document).on("click", ".rightTopMenuInner>div", function(event) {
+            $(".rightTopMenuInner>div").removeClass("active");
+            $(event.currentTarget).addClass("active");
+            $(".menuExpanded").hide(); // Hide any open
+            //alert("rightTopMenuInner 3");
+            //event.stopPropagation();
+        });
+        $(document).on("click", ".showSections", function(event) {
+            alert("showSections click")
+            $('.menuExpanded').hide();
+            $(".topicsPanel").show();
+        });
+        $(document).on("click", ".showSettings", function(event) {
+            $('.menuExpanded').hide();
+            //hideOtherPopOuts();
             //$("#showSettings").hide();
             //$(".showSettings").hide(); // If used, would need to redisplay after changning Style > Header Images
             //$(".showSettingsClick").hide();
@@ -908,12 +936,22 @@ function initEvents() { // Once included file1 is loaded.
                 hideSettings();
             } else {
                 $(".settingsPanel").show();
-                $("#rightTopMenu").hide();
+                //$("#rightTopMenu").hide();
             }
-            event.stopPropagation();
+            //event.stopPropagation();
         });
-        $('.hideSettings').click(function(event) {
-            hideSettings();
+        $(document).on("click", ".hideSettings", function(event) {
+            //hideSettings();
+            $(".menuExpanded").hide(); // Hide any open
+        });
+
+        $(document).on("click", ".showPrintOptions, .print_button", function(event) {
+        //$('.showPrintOptions, .print_button').click(function(event) {
+            //alert("show print2")
+            $('.menuExpanded').hide();
+            $('.printOptionsText').show();
+            $('.printOptionsHolderWide').show();
+            event.stopPropagation();
         });
 
         $('.logoutAccount').click(function(event) {
@@ -977,10 +1015,6 @@ function initEvents() { // Once included file1 is loaded.
                 $('.listOptions').show();
             }
             event.stopPropagation();
-        });
-        $('.showPrintOptions, .print_button').click(function(event) {
-            $('.printOptionsText').show();
-            $('.printOptionsHolderWide').show();
         });
         $('.toggleListFormats').click(function(event) {
             if ($('.toggleListFormats').hasClass("expand")) {

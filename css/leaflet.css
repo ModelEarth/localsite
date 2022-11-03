@@ -467,8 +467,14 @@
 .leaflet-popup {
 	position: absolute;
 	text-align: center;
-	margin-bottom: 20px;
+	margin-bottom: 26px; /* CUSTOM was 20px */
 	}
+/* CUSTOM */
+.leaflet-popup-text {
+	overflow: auto;
+	max-height: 200px;
+}
+
 .leaflet-popup-content-wrapper {
 	padding: 1px;
 	text-align: left;
@@ -513,12 +519,12 @@
 	position: absolute;
 	top: 0;
 	right: 0;
-	padding: 4px 4px 0 0;
+	padding: 8px 22px 0 0; /* CUSTOM */
 	border: none;
 	text-align: center;
 	width: 18px;
 	height: 14px;
-	font: 16px/14px Tahoma, Verdana, sans-serif;
+	font: 18px/16px Tahoma, Verdana, sans-serif; /* CUSTOM */
 	color: #c3c3c3;
 	text-decoration: none;
 	font-weight: bold;

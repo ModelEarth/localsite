@@ -1,17 +1,6 @@
 .menu-loaded {
     display: block !important;
 }
-.table-cell, .table-cell-mobile {
-  display: table-cell;
-  vertical-align: top;
-  position: relative; /* Allows menu rollover/popups to overlap adjacent cell */
-}
-@media (max-width: 800px) {
-  .table-cell {
-    display: block;
-    float: left;
-  }
-}
 .moduleJS {
 	/* better button fonts:  /localsite/partner-menu.html */
     font-family: 'Open Sans', 'Helvetica Neue', HelveticaNeue, calibri, arial, sans-serif;
@@ -34,7 +23,6 @@
     white-space: nowrap;
 }
 @media (max-width: 1100px) {
-
 	.sectionArrowHolder {
 		display: none;
 	}
@@ -471,3 +459,257 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     display: block;
 }
 
+/* For sidecolumn from header.html */
+body {
+    background-color: rgb(250, 250, 250); /* For side nav */
+}
+.sidecolumn-inpage #sidecolumnLeft {
+    position: static !important;
+    float:left;
+    padding: 0px;
+}
+.sidecolumn-inpage .sidecolumnLeftScroll {
+    position: relative;
+    bottom:auto !important;
+    right:0 !important;
+}
+
+#sidecolumn {
+    float: left;
+    width: 200px;
+    height: 100%;
+    padding-right: 10px;
+    background-color: rgb(253, 253, 253);
+    background-color: #aaa;
+    position: relative;
+}
+#sidecolumnLeft {
+    padding: 24px;
+    line-height: 24px;
+    width: 178px;
+    width: 220px;
+    font-size: 14px;
+    bottom:0;
+    top:100px;
+    z-index:1; /* allows border highlight to overlap adjacent content area. */
+}
+#sidecolumnLeft {
+	position: fixed;
+	margin-top: 18px;
+}
+#cloneRight {
+	position:inherit;
+    line-height: 24px;
+    font-size: 14px;
+}
+#sidecolumnLeft b, #cloneRight b {
+    color:#333;
+}
+.sidecolumnLeftScroll {
+    position:absolute;
+    top:0px;
+    bottom:0px;
+    right:24px;
+    left:18px;
+    overflow-y:scroll;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    padding-bottom: 500px; /* Allows for footer */
+}
+.sidecolumnLeftScroll::-webkit-scrollbar {
+  display: none;
+}
+
+#sidecolumnLeft a, #cloneRight a {
+    display:block;
+    color: #fff;
+}
+#sidecolumnLeft b a {
+	color: #333;
+	font-size: 16px;
+	line-height: 1.8em;
+}
+#sidecolumnLeftX a:hover {
+    border-right: 4px solid #f3f3f3;
+    border-right: 4px solid #000;
+    margin-right: -4px;
+}
+#sidecolumnLeft a.active {
+    border-right: 4px solid #777;
+    margin-left:-20px;
+    padding-left:20px;
+}
+#fullcolumn {
+    overflow: auto;
+    position: relative;
+    min-height: 100%; /* For short samples page */
+    margin-bottomX: 80px;
+    heightX:100%; /* For counties map, but breaks fixed position map on tools page. */
+}
+@media (max-width: 800px) {
+    .content {
+      padding: 30px 22px 30px 25px;
+    }
+    #sidecolumn {
+      display: none;
+    }
+}
+.sidecolumn-inpage {
+    position: static !important;
+    position: relative;
+}
+.sidecolumn-inpage > #sidecolumnLeft {
+    position: static;
+}
+/* End For sidecolumn from header.html */
+
+/* Settings Menu */
+.settingsPanel select {
+    min-width: 215px;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 1;
+    border: 1px solid #d9d9de;
+    
+    border-radius: 6px;
+    /* height: 40px; */
+    /* -webkit-appearance: none; */
+    font-size: 16pt;
+    color: #000;
+    /* pointer-events: auto; */
+}
+
+.menuExpanded {
+    min-width: 400px;
+    display:none;
+    color: #cfcfcf;
+    background-color: #555;
+    box-sizing: border-box;
+    position: relative;
+}
+.menuExpandedScroll {
+    position:absolute;
+    top:0px;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    overflow-y:scroll;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    padding: 28px 24px 34px 28px;
+}
+.menuTitle {
+  font-size:18pt;
+  margin-bottom:30px
+}
+.accountPanel {
+    position:absolute;
+    right:0;
+    z-index: 500;
+    display:none;
+    color: #cfcfcf;
+    background-color: #353535;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    padding: 24px;
+    margin:0 0 17px 0;
+    width: 300px;
+}
+.setLeft {
+    float: left;
+    max-width: 250px;
+    min-width: 100px;
+    font-size: 18px;
+}
+.setDiv {
+    clear: both;
+    /* float:left; */
+    width:100%;
+    /* border-bottom: 1px solid #ddd; */
+    margin: 10px 0 10px 0;
+    padding-top:5px;
+}
+.setOverflow {
+    overflow: auto;
+    min-width: 120px;
+}
+.rightTopItem {
+    padding: 11px 4px 5px 10px;
+}
+
+#rightTopMenu {
+    position: fixed;
+    right: 0px;
+    top: 100px;
+    z-index: 1001; /* To exceed Leaflet */
+    pointer-events: auto; /* Prevents hover from reaching map below */
+    box-shadow: 2px 2px 6px #333;
+}
+.rightTopMenuLeft {
+    /* top: 48px; */
+    float:left;
+}
+/* Avoid adding .moduleJS to three-dot menu, else font-family not applied to left menu  */
+.rightTopMenuInner { /* lives outside .moduleJS when full header displayed */
+    min-width: 150px;
+    font-family: 'Open Sans', 'Helvetica Neue', HelveticaNeue, calibri, arial, sans-serif;
+}
+.rightTopMenuInner i {
+    color: #ddd !important;
+}
+.rightTopMenuInner {
+    background-color: rgba(33, 33, 33, 0.95);
+}
+@media (max-width: 500px) {
+    .rightTopMenuInner {
+        font-size: 24px;
+    }
+    .rightTopMenuInner i {
+        font-size: 30px;
+        padding-top: 10px;
+    }
+    .rightTopMenuInner .rightTopItem {
+        /* border-bottom: 1px solid #aaa; */
+    }
+}
+.rightTopMenuInner > .active {
+  background-color: #555;
+  /* border-left: 8px solid yellow; */
+}
+.rightTopItem {
+    clear: both;
+    /* border:1px solid #fff; */
+    overflow: auto;
+    padding-left: 20px;
+    padding-right: 25px;
+    cursor: pointer;
+}
+.rightTopItem:hover {
+    background-color: #000;
+}
+.rightTopItem i {
+    width:40px;
+    min-height: 36px;
+    float: left;
+}
+.rightTopItem span {
+    color:#fff;
+    padding: 5px 3px 8px 2px;
+    float:left;
+    color: #fff;
+}
+.rightTopItem .contactIcon {
+    font-size: 30px !important;
+    margin-top:-4px;
+    margin-left:-2px;
+    margin-right: 3px;
+}
+.rightTopItem .enlargeIcon {
+    font-size: 40px !important;
+    margin-top: -8px;
+    margin-left: -7px;
+    margin-right: 5px;
+}
+/* End Settings Menu */

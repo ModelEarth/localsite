@@ -48,10 +48,13 @@
   position: fixed;
   top: 0px;
   left: 0px;
-  background-color: #fff;
+  background-color: rgb(99 99 99/95%);
   border-bottom: #aaa;
   padding-right: 24px;
   z-index: 99999;
+}
+.filterFieldsHolderFixed .hamburger-circle {
+  content: url("/localsite/img/icon/hamburger-lite.png");
 }
 #filterLocations {
   background-color: #fcfcfc;

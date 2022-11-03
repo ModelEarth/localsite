@@ -78,7 +78,7 @@
   }
 
   #map1 .leaflet-popup {
-    bottom: 17px !important; /* Apply when map points used for "google" material icons */
+    /* bottom: 17px !important; */  /* Apply when map points used for "google" material icons */
     /* Need to move map down more when popup is near top.  Default is -7px. */
   }
   #floatingButtons {
@@ -127,6 +127,14 @@
     background-color: rgb(250, 250, 250);
     paddingX: 12px;
   }
+  .detailCurrent {
+    padding: 0px;
+  }
+  .detailCurrent:hover {
+    background-color: none;
+    cursor: auto;
+  }
+
   .popMenu {
     border:1px solid #ccc;
     padding: 5px 0 5px 0;
@@ -243,12 +251,12 @@
   }
 
 
-
 .sidemapCard {
   displayX: none; /* Also reactivate in dual-map. */
 }
 #map2 {
   height:500px;
+  border-radius: 18px;
 }
 #industriesX {
   display: none !important;
