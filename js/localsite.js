@@ -586,6 +586,8 @@ function loadLeafletAndMapFilters() {
   //if (param.shownav) {
   if (param.showheader != "false") {
     loadScript(theroot + 'js/navigation.js', function(results) {
+      // Might need to add a check here. Occasional:
+      // Uncaught ReferenceError: applyNavigation is not defined
       applyNavigation();
     });
   }
@@ -720,6 +722,11 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       clearInterval(waitForJQuery); // Escape the loop
 
+      if (param.showsearch == "true") {
+        waitForElm('#mapFilters').then((elm) => {
+          showSearchFilter();
+        });
+      }
 
   /**
   *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
