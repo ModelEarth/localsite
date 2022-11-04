@@ -316,7 +316,8 @@ $(document).ready(function () {
 	    	$("#geoPicker").show();
 	    	$("#region_select").val("");
             // Later a checkbox could be added to retain geo values across multiple states
-	    	goHash({'state':this.value,'geo':'','name':'','regiontitle':'','mapview':'state'}); // triggers renderMapShapes("geomap", hash); // County select map
+            // Omitting for BC apps page  ,'mapview':'state'
+	    	goHash({'state':this.value,'geo':'','name':'','regiontitle':''}); // triggers renderMapShapes("geomap", hash); // County select map
 	    	//$("#filterLocations").hide(); // So state appears on map immediately
 	    } else { // US selected
 	    	goHash({'mapview':'country','state':''});

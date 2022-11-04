@@ -582,6 +582,7 @@ body {
 
 .menuExpanded {
     min-width: 400px;
+    min-height: 200px;
     display:none;
     color: #cfcfcf;
     background-color: #555;

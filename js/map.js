@@ -4076,7 +4076,7 @@ function zoomEarth(zoomAmount) {
   //loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/" + hourStr + "00Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
 }
 function getEarthObject(url) {
-  alert("getEarthObject")
+  console.log("map.js getEarthObject " + url);
   if (url == undefined) {
     console.log("BUG - getEarthObject url undefined");
     return;
