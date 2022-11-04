@@ -26,6 +26,18 @@
 #hero-landscape-image {
   background-image: url(/community/img/hero/hero.png);
 }
+.lowerRightApp {
+  position: absolute;
+  right: 60px;
+  bottom: 40px;
+  border-radius: 20px;
+  background-color: #fff;
+}
+@media (max-width: 1200px) {
+  .lowerRightApp {
+    display: none;
+  }
+}
 </style>
 
 </head>
@@ -72,6 +84,20 @@
         <li>Modernize industry and infrastructure</li>
       </ul>
 
+    </div>
+
+  </div>
+
+  <div class="lowerRightApp">
+    <div class="close-X" style="float:right;margin-right:-8px" onclick="$('.lowerRightApp').hide()">✕</div>
+
+    <div style="padding: 30px; padding-bottom: 10px;">
+      <img src="img/logos/joro-gray.svg" style="width:70px"><br>
+      See the impact<br>
+      behind your dollars.<br>
+
+      <a href="https://www.joro.app/" class="btn btn-primary" style="margin-top:12px">Get the App</a> 
+      <a href="https://www.joro.app/" class="btn btn-primary" style="background-color:#fff; color:#6fa1d8; margin-top:12px; font-weight:bolder; padding-left:13px; padding-right:13px">?</a> 
     </div>
 
   </div>
