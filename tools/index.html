@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="utf-8">
+<title>Lifecycle Tools</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+
+<link type="text/css" rel="stylesheet" href="../css/base.css" id="/localsite/css/base.css" />
+<link type="text/css" rel="stylesheet" href="../../apps/css/apps.css" id="/apps/css/apps.css" />
+<script type="text/javascript" src="../js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/showdown.min.js" id="/localsite/js/showdown.min.js"></script>
+
+<!-- Set custom app values in the following include file parameters -->
+<script type="text/javascript" src="../js/localsite.js?display=everything&lat=37&lon=-95.7&set=air&indicators=GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS"></script>
+
+<!-- Interactive state menu - Display beyond carbon table in #dataDisplay -->
+<script type="text/javascript" src="../../apps/js/bc.js" id="/apps/js/bc.js"></script>
+<script>
+  // Page similar to /apps/beyondcarbon
+  showLocationStats();
+  //loadMarkdown("README.md", "readmeDiv", "_parent");
+</script>
+<style>
+#hero-landscape-image {
+  background-image: url(/community/img/hero/hero.png);
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- State image refreshed by localsite/js/map-filters.js -->
+<div id="hero_holder">
+<div id="hero-landscape-image" class="bgimg" style="z-index:-1; min-height: 550px; background-position: 0 54px; position: absolute; left:0; right:0; opacity: 0.75; background-color:#888">
+</div>
+
+
+<div class="content contentpadding" style="max-width: 1300px; min-height: 550px; padding-top:40px">
+
+  <div class="hero-text">
+    <div style="font-size:60px; line-height: 1em; font-weight:800; margin-right:30px; margin-bottom:10px; text-shadow: 2px 2px 6px #333;">Lifecycle Tools</div><br>
+  </div>
+
+  <div class="hero-bucket" style="max-width: 900px; width:100%">
+    
+    <div style="font-size:22px; margin-bottom:10px; font-weight:400">What's your local impact?</div>
+
+    <div id="relocatedStateMenu"></div><br>
+
+    <div id="dataHeader"></div>
+    <div id="dataDisplay"></div>
+
+    <div id="choose-your-state-intro">
+      Choose a state to view impacts and initiatives.<br>
+    </div>
+    <div id="choose-counties" style="display:none">
+      <a href="#mapview=counties" onclick="$('#filterClickLocation').click();return false;">Select one or more counties</a><br>
+    </div>
+
+    <div id="about-profile" style="display:none">
+
+      <a href="https://BeyondCarbon.org">State ranking data from Bloomberg’s BeyondCarbon.org</a> - 
+      "Climate scientists have said that in order to avoid the worst possible outcomes, we must decarbonize our entire global economy by mid-century. In order to move the United States toward a 100% clean energy economy we must:"
+
+      <ul>
+        <li>Transition to 100% clean power</li>
+        <li>Replace oil burning cars and trucks with electric vehicles</li>
+        <li>Eliminate building emissions</li>
+        <li>Modernize industry and infrastructure</li>
+      </ul>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<div style="clear:both">
+</div>
+
+<!--
+<div class="content contentpadding" style="margin-bottom:0px; padding-bottom:0px">
+  <div id="readmeDiv"></div>
+</div>
+<hr><br>
+-->
+
+<link rel="stylesheet" href="/localsite/css/fonts/materialicons/icon.css" id="/localsite/css/fonts/materialicons/icon.css" />
+
+</body>
+</html>
+
+
