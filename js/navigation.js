@@ -46,6 +46,10 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 	  }
 	}
 
+	// Try inserting a div here before DOM ready to trigger "wait for div" in localsite.js
+
+	
+
 	//$(document).ready(function(){
 		
 	 	var modelpath = climbpath;
@@ -59,7 +63,6 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 	 		modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
 	 		modelroot = "https://model.earth";
 	 	}
-
 
 	function applyNavigation() { // Called by localsite.js so local_app path is available.
 		// To do: fetch the existing background-image.

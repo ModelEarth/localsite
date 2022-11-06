@@ -588,9 +588,15 @@ function loadLeafletAndMapFilters() {
     loadScript(theroot + 'js/navigation.js', function(results) {
       // Might need to add a check here. Occasional:
       // Uncaught ReferenceError: applyNavigation is not defined
+
+      // To Do: wait for div from navigation.js
+
+
       setTimeout( function() {
+
+        console.log("applyNavigation() after 200 ms delay"); // 10 ms returned error on CloudFlare, but fine locally.
         applyNavigation();
-      }, 10 );
+      }, 200 ); // Bugbug - better to wait for a div to be available. Try inserting from within navigation.js before DOM ready.
     });
   }
 
