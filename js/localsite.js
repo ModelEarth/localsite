@@ -563,9 +563,14 @@ function loadLocalTemplate() {
     $("#headerbar").prependTo("body"); // Move back up to top.
     setTimeout( function() { // Delay needed for /info page.
       $("#headerbar").prependTo("body");
-    }, 100 );
+      //$("#headerbar").show(); // Avoid here, might not be moved yet.
+    }, 200 );
+    setTimeout( function() {
+      $("#headerbar").show();
+    }, 300 );
     setTimeout( function() {
       $("#headerbar").prependTo("body");
+      $("#headerbar").show();
     }, 1500 );
 
     if (location.host.indexOf('model') >= 0) {
@@ -589,8 +594,13 @@ function loadLeafletAndMapFilters() {
       // Might need to add a check here. Occasional:
       // Uncaught ReferenceError: applyNavigation is not defined
 
-      // To Do: wait for div from navigation.js
+      // if #local-header already exists, abort
 
+
+      // To Do: wait for div from navigation.js
+      //waitForElm('body').then((elm) => {
+
+      //});
 
       setTimeout( function() {
 
@@ -732,7 +742,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       if (param.showsearch == "true") {
         waitForElm('#mapFilters').then((elm) => {
-          showSearchFilter();
+          //showSearchFilter();
         });
       }
 
@@ -811,9 +821,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     includeCSS3(theroot + 'css/map.css',theroot); // Before naics.js so #industries can be overwritten.
     includeCSS3(theroot + 'css/naics.css',theroot);
     // customD3loaded
-    if (param.preloadmap != "false") {
+    if (param.preloadmap != "false" && param.showheader == "true") {
       loadLeafletAndMapFilters();
-      
     }
 
     //includeCSS3(theroot + 'css/bootstrap.darkly.min.css',theroot);
@@ -917,7 +926,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     if(location.host.indexOf('localhost') >= 0) {
       alert("Localhost alert: JQUERY NOT YET AVAILABLE!");
     } else {
-      consoleLog("JQUERY NOT YET AVAILABLE! Use this more widely.");
+      console.log('%cALERT: JQUERY NOT YET AVAILABLE! Use this more widely.', 'color: red; background: yellow; font-size: 14px');    
     }
   }
       
@@ -1636,6 +1645,7 @@ function showSearchFilter() {
     }
     //loadLocalTemplate(); // Loaded a second time on community page
     loadSearchFilterIncludes();
+    console.log('%cloadLeafletAndMapFilters called by showSearchFilter(). Might cause dup', 'color: red; background: yellow; font-size: 14px');
     loadLeafletAndMapFilters();
     $('html,body').scrollTop(0);
   } else {

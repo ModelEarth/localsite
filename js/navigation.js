@@ -48,7 +48,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 
 	// Try inserting a div here before DOM ready to trigger "wait for div" in localsite.js
 
-	
+
 
 	//$(document).ready(function(){
 		
@@ -197,6 +197,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 	 	// pointer-events:none; // Avoid because sub-divs inherite and settings dropdowns are then not clickable.
 
 	 	// Puts space above flexmain for sidecolumn to be visible after header  
+	 	//alert("Add local-header")
 	 	$("body").prepend("<div id='local-header' class='flexheader hideprint' style='min-height:100px'></div>\r");
 		
 		if(document.getElementById("bodyFile") == null) {
@@ -480,7 +481,8 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 						// Don't show header
 						$("#headerbar").addClass("headerbarhide");
 					} else {
-						$("#headerbar").show();
+						//alert("#headerbar show")
+						//$("#headerbar").show();
 					}
 				}); // End $("#header").load
 			//}
@@ -765,8 +767,9 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 				   }
 				   
 				  if (id == "intro") {
-				  	//console.log("headerbar show");
+				  	console.log("headerbar show");
 				    $('.headerbar').show();
+
 				    // For when entering from a #intro link from another page.
 				    // Would be better to disable browser jump to #intro elsewhere.
 				    //$('html,body').scrollTop(0); 
