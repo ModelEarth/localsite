@@ -2229,8 +2229,11 @@ $(window).scroll(function() {
     revealHeader = true; // For next manual scroll
   } else if ($(window).scrollTop() > previousScrollTop) { // Scrolling Up
     if ($(window).scrollTop() > previousScrollTop + 20) { // Scrolling Up fast
+      // Switch to smaller header
       $("#headerLarge").addClass("headerLargeHide"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); 
 
+      // Hide right side menu
+      $("#rightTopMenuVisibility").hide();
       // BUGBUG - occuring on initial reload when page is a little from top.
       //$('#logoholderside').show();
       
