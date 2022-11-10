@@ -1,4 +1,4 @@
-console.log("HERE settings.js loaded")
+console.log("HERE settings.js loaded.")
 /*******************************************/
 
 /*!

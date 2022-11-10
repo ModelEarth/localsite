@@ -26,7 +26,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 	}
 	if (climbpath == "") {
 		//climbpath += "./"; // Eliminates ? portion of URL
-		console.log("Why didn't the following get applied:")
+		console.log("climbpath = '', set to '../'")
 		climbpath += "../";
 	}
 	//console.log("climbpath " + climbpath);
@@ -398,7 +398,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 
 						$(document).on("click", ".showMenu", function(event) {
 
-							if (location.host.indexOf('localhost') >= 0) {
+							//if (location.host.indexOf('localhost') >= 0) {
 				 				if ($("#rightTopMenuVisibility").is(':visible') && $("#rightTopMenu").is(':visible')) {
 				 					$("#rightTopMenuVisibility").hide();
 				 					$("#rightTopMenu").hide();
@@ -407,10 +407,10 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 				          			$("#rightTopMenuVisibility").show();
 							 		$("#rightTopMenu").show();
 				 				}
-				 			} else {
-								$("#menuHolder").show();
-								$("#menuHolder").css('margin-right','0px')
-							}
+				 			//} else {
+							//	$("#menuHolder").show();
+							//	$("#menuHolder").css('margin-right','0px')
+							//}
 							event.stopPropagation();
 						});
 						$(document).on("click", ".showEarth", function(event) {
