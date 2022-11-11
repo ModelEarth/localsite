@@ -72,16 +72,7 @@ textarea {
     /* border:solid 1px #777; */
     border-color: rgb(238, 238, 238);
 }
-a {
-  text-decoration: none;
-}
-/* conflicts with buttons */
-a:link {
-  color: #0366d6;
-}
-a:visited {
-  color: #0366d6;
-}
+
 /* Lighter: #4091dd */
 p {
   margin-top: 0px;
@@ -276,6 +267,17 @@ summary::-webkit-details-marker {
   padding-right: 40px;
   padding-bottom: 45px;
 }
+.contentpadding a {
+  text-decoration: none;
+}
+/* conflicts with buttons */
+.contentpadding a:link {
+  color: #0366d6;
+}
+.contentpadding a:visited {
+  color: #0366d6;
+}
+
 .contentwide {
   max-width: 1400px;
   padding-left: 10px;
