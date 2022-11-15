@@ -648,7 +648,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                 //layerSectionOpen($(this).attr("data-layer-section").toLowerCase().replace(/ /g,"-"));
                 let pageLink = $(this).attr("link");
                 if (pageLink) {
-                    window.location = pageLink;
+                    //window.location = pageLink; // Comment out, causes top level menu item to open a page rather than just opening the sub-menu
                 } else {
                     console.log("CLICKED - But no link attr on data-layer-section for a section with no subnav");
                 }
