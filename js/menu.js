@@ -421,8 +421,10 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                         //sectionIcon = item.sectionicon;
                     }
                     let linktext = "";
-                    if (directlink)  { 
-                        linktext = ' link="' + directlink + '"';
+                    if (directlink)  {
+                        if (!showSublevel) {
+                            linktext = ' link="' + directlink + '"';
+                        }
                     }
                     partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" id="' + formatLinkId(item.section,item.title + "_parent") + '" style="display:none">'; //  onmouseleave="hideMenuNav(this.id)"
                     partnerCheckboxes += '<div ' + layerSectionDisplay + ' id="' + formatLinkId(item.section,item.title) + '" class="dontsplit layerSection layerSectionOpen layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '" onmouseenter="showMenuNav(this.id)" onmouseleave="hideMenuNav(this.id)"><div style="clearX:both; pointer-events: auto;" data-layer-section="' + item.section + '"' + linktext + '" class="layerSectionClick" onclick="showSubmenu(this.parentElement.id)">';
