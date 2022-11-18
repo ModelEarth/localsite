@@ -2228,30 +2228,37 @@ $(window).scroll(function() {
     
     revealHeader = true; // For next manual scroll
   } else if ($(window).scrollTop() > previousScrollTop) { // Scrolling Up
-    if ($(window).scrollTop() > previousScrollTop + 20) { // Scrolling Up fast
-      // Switch to smaller header
-      $("#headerLarge").addClass("headerLargeHide"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); 
+    if ($('#headerbar').is(':visible')) {
+      if ($(window).scrollTop() > previousScrollTop + 20) { // Scrolling Up fast
+        // Switch to smaller header
 
-      // Hide right side menu
-      $("#rightTopMenuVisibility").hide();
-      // BUGBUG - occuring on initial reload when page is a little from top.
-      //$('#logoholderside').show();
-      
+        $("#headerLarge").addClass("headerLargeHide"); 
+        $('.headerbar').hide();
+        $('.headerOffset').hide();
+        $('#logoholderbar').show(); 
 
-      $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
-      if (param.showheader != "false") {
-        $('.showMenuSmNav').show(); 
-      }
-      $('.headerOffset').hide();
-      $('#headerbar').hide(); // Not working
-      $('#headerbar').addClass("headerbarhide");
+        // Hide right side menu
+        $("#rightTopMenuVisibility").hide();
+        // BUGBUG - occuring on initial reload when page is a little from top.
+        //$('#logoholderside').show();
 
-      
-      $('#sidecolumnLeft').css("top","54px");
-      //console.log("#headerbar hide")
-      $('#showSide').css("top","7px");
-      if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
-        $('#headerLarge').hide();
+        $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
+        console.log("#filterFieldsHolder show");
+        $("#filterFieldsHolder").show();
+        if (param.showheader != "false") {
+          $('.showMenuSmNav').show(); 
+        }
+        $('.headerOffset').hide();
+        $('#headerbar').hide(); // Not working
+        $('#headerbar').addClass("headerbarhide");
+
+        
+        $('#sidecolumnLeft').css("top","54px");
+        //alert("#headerbar hide")
+        $('#showSide').css("top","7px");
+        if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
+          $('#headerLarge').hide();
+        }
       }
     }
   } else { // Scrolling Down
@@ -2275,7 +2282,7 @@ $(window).scroll(function() {
       $('#headerLarge').show();
     } else if ($(window).scrollTop() == 0) { // At top
       $("#headerLarge").removeClass("headerLargeHide"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
-      //$('#filterFieldsHolder').show();
+      $('#filterFieldsHolder').hide(); // But we might want to retain it sometimes, if it was already open.
       $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
       if ($("#headerbar").length) {
         if (param.showheader != "false") {
@@ -4183,7 +4190,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
 
   if (typeof d3 !== 'undefined') {
     if (!dp.dataset && !dp.googleCSV) {
-      console.log('CANCEL loadFromSheet. No dataset selected for top map. May not be one for state.');
+      console.log('%cCANCEL loadFromSheet. No dataset selected for top map. May not be one for state.', 'color: green; background: yellow; font-size: 14px');
       /*
       if (!hash.state) {
         if (location.host.indexOf('localhost') >= 0) {

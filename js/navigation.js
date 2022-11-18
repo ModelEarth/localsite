@@ -184,7 +184,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 
 	 	$("body").wrapInner( "<div id='fullcolumn'></div>"); // Creates space for sidecolumn
 	 	if(document.getElementById("sidecolumn") == null) {
-	 		$("body").prepend( "<div id='sidecolumn' class='hideprint' style='display:none'><div id='sidecolumnLeft'><div class='sidecolumnLeftScroll'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1'>✕</div><div id='cloneLeftTarget'></div></div></div></div>\r" );
+	 		$("body").prepend( "<div id='sidecolumn' class='hideprint' style='display:none'><div id='sidecolumnLeft'><div class='sidecolumnLeftScroll'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div id='cloneLeftTarget'></div></div></div></div>\r" );
 	 	} else {
 	 		// TODO - change to fixed when side reaches top of page
 	 		console.log("navigation.js report: sidecolumn already exists")

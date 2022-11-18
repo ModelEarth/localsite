@@ -742,7 +742,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       if (param.showsearch == "true") {
         waitForElm('#mapFilters').then((elm) => {
-          //showSearchFilter();
+          showSearchFilter();
         });
       }
 
@@ -1660,11 +1660,15 @@ function showSearchFilter() {
       //$("#filterbaroffset").hide();
       ////$("#pageLinksHolder").hide();
     } else {
-
-      $("#filterFieldsHolder").show();
-      //$("#filterbaroffset").show();
-      $(".hideWhenPop").show();
-      $('html,body').scrollTop(0);
+      // #bodyFile is needed for map/index.html to apply $("#filterFieldsHolder").show()
+      // Also prevents search filter from flashing briefly in map/index.html before moving into #bodyFile
+      // 
+      waitForElm('#bodyFile #filterFieldsHolder').then((elm) => {
+        $("#filterFieldsHolder").show();
+        //$("#filterbaroffset").show();
+        $(".hideWhenPop").show();
+        $('html,body').scrollTop(0);
+      });
     }
     return;
 
@@ -1754,19 +1758,28 @@ function waitForElm(selector) {
         if (document.querySelector(selector)) {
             return resolve(document.querySelector(selector));
         }
-
-        const observer = new MutationObserver(mutations => {
-            if (document.querySelector(selector)) {
-                resolve(document.querySelector(selector));
-                observer.disconnect();
-            }
-        });
-
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
+        if (document.body) {
+          waitForElmKickoff(selector,resolve);
+        } else {
+          // Wait for body to be available, but not stylesheets, images. Prevents error when body not yet available: TypeError: Failed to execute 'observe' on 'MutationObserver': parameter 1 is not of type 'Node'.
+          document.addEventListener("DOMContentLoaded", function(event) {
+            waitForElmKickoff(selector,resolve);
+          });
+        }
     });
+}
+function waitForElmKickoff(selector, resolve) {
+  const observer = new MutationObserver(mutations => {
+      if (document.querySelector(selector)) {
+          resolve(document.querySelector(selector));
+          observer.disconnect();
+      }
+  });
+
+  observer.observe(document.body, {
+      childList: true, //This is a must have for the observer with subtree
+      subtree: true //Set to true if changes must also be observed in descendants.
+  });
 }
 //waitForElm('#tabulator-geotable').then((elm) => {
 //    alert('Element is ready: ' + elm.textContent);

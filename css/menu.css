@@ -524,6 +524,10 @@ body {
 #sidecolumnLeft a, #cloneRight a {
     display:block;
     color: #fff;
+    text-decoration: none;
+}
+#sidecolumnLeft a:hover, #cloneRight a:hover {
+	text-decoration: underline;
 }
 #sidecolumnLeft b a {
 	color: #333;

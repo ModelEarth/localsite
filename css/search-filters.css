@@ -48,7 +48,8 @@
   position: fixed;
   top: 0px;
   left: 0px;
-  background-color: rgb(99 99 99/95%);
+  background-color: rgb(255 255 255/95%);
+  /* background-color: rgb(99 99 99/95%); */
   border-bottom: #aaa;
   padding-right: 24px;
   z-index: 99999;

@@ -270,7 +270,6 @@ summary::-webkit-details-marker {
 .contentpadding a {
   text-decoration: none;
 }
-/* conflicts with buttons */
 .contentpadding a:link {
   color: #0366d6;
 }
@@ -530,7 +529,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     margin-right:4px;
     margin-bottom:8px;
 }
-.btn:link, .btn:visited {
+.btn:link, .btn:visited, .contentpadding .btn:link, .contentpadding .btn:visited {
   color: #fff;
 }
 #hero-rect .btn:link, #hero-rect .btn:visited {
@@ -589,10 +588,10 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     background-color: #b9da79;
     border-color: #b9da79;
 }
-.btn-white:link {
+.btn-white:link, .contentpadding .btn-white:link {
   color: #333;
 }
-.btn-white:visited {
+.btn-white:visited, .contentpadding .btn-white:visited {
   color: #333;
 }
 @media (max-width: 500px) {
