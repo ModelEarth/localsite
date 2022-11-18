@@ -2106,6 +2106,7 @@ function displayBigThumbnails(attempts, activeLayer, layerName) {
 	            }
 	        }
 	    }
+        $("#honeycombPanel").prepend("<div class='hideThumbMenu close-X' style='float:right;'>✕</div>");
 	    $(".bigThumbMenu").append("<div class='bigThumbMenuInner'>" + sectionMenu + "</div>");
 
         if (theState == "GA") {

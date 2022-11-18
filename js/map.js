@@ -2271,9 +2271,9 @@ $(window).scroll(function() {
           $('.headerOffset').show();
           $('#headerbar').show();
           $('#headerbar').removeClass("headerbarhide");
+          $('#local-header').show();
           $('.showMenuSmNav').hide();
         }
-
         let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px
         $('#sidecolumnLeft').css("top",headerFixedHeight + "px");
         //$('#sidecolumnLeft').css("top","0px");
@@ -2289,6 +2289,7 @@ $(window).scroll(function() {
           $('.headerOffset').show();
           $('#headerbar').show();
           $('#headerbar').removeClass("headerbarhide");
+          $('#local-header').show();
           $('.showMenuSmNav').hide();
         }
         let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px

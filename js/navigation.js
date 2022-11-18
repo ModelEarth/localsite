@@ -197,8 +197,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 	 	// pointer-events:none; // Avoid because sub-divs inherite and settings dropdowns are then not clickable.
 
 	 	// Puts space above flexmain for sidecolumn to be visible after header  
-	 	//alert("Add local-header")
-	 	$("body").prepend("<div id='local-header' class='flexheader hideprint' style='min-height:100px'></div>\r");
+	 	$("body").prepend("<div id='local-header' class='flexheader hideprint' style='min-height:100px; display:none'></div>\r");
 		
 		if(document.getElementById("bodyFile") == null) {
 			$("#fullcolumn").prepend("<div id='bodyFile'></div>\r");
@@ -588,7 +587,9 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			$(document).on("click", ".hideAdvanced", function(event) {
 				hideAdvanced();
 			});
-
+			$(document).on("click", ".hideThumbMenu", function(event) {
+				$("#bigThumbPanelHolder").hide();
+			});
 			$(document).on("click", ".filterBubble", function(event) {
 				console.log('filterBubble click')
 			    event.stopPropagation(); // To keep location filter open when clicking

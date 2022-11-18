@@ -561,24 +561,34 @@ function loadLocalTemplate() {
     $("#mapFilters").prependTo("#fullcolumn");
     $("#local-header").prependTo("body"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
     $("#headerbar").prependTo("body"); // Move back up to top.
-    setTimeout( function() { // Delay needed for /info page.
-      $("#headerbar").prependTo("body");
-      //$("#headerbar").show(); // Avoid here, might not be moved yet.
-    }, 200 );
-    setTimeout( function() {
-      $("#headerbar").show();
-    }, 300 );
-    setTimeout( function() {
-      $("#headerbar").prependTo("body");
-      $("#headerbar").show();
-    }, 1500 );
-
+    if (param.showheader == "true") {
+      setTimeout( function() { // Delay needed for /info page.
+        $("#headerbar").prependTo("body");
+        //$("#headerbar").show(); // Avoid here, might not be moved yet.
+      }, 200 );
+      setTimeout( function() {
+        //$("#headerbar").show();
+        showHeaderBar();
+      }, 300 );
+      setTimeout( function() {
+        $("#headerbar").prependTo("body");
+        //$("#headerbar").show();
+        showHeaderBar();
+      }, 1500 );
+    }
     if (location.host.indexOf('model') >= 0) {
       $(".showSearch").show();
       $(".showSearch").removeClass("local");
     }
   });
 }
+function showHeaderBar() {
+  //$('.headerOffset').show();
+  $('#headerbar').show();
+  $('#headerbar').removeClass("headerbarhide");
+  $('#local-header').show();
+}
+
 function loadSearchFilterIncludes() {
   includeCSS3(theroot + 'css/base.css',theroot);
   includeCSS3(theroot + 'css/menu.css',theroot);
