@@ -422,8 +422,18 @@ summary::-webkit-details-marker {
   }
 }
 .litePanel {
-    background-color: #fff;
+    background-color: #eee; /* also set .litePanelFadeOut 238 */
     overflow:auto;
+}
+.litePanelFadeOut {
+  margin-top:10px;
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  z-index:999;
+  background-color:rgba(238, 238, 238, 0.7);
+  background: linear-gradient(to bottom, rgba(238,238,238,0) 0%,rgba(238,238,238,1) 100%);
 }
 .darkPanel {
     background-color: #ddd;
@@ -531,6 +541,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 .btn:link, .btn:visited, .contentpadding .btn:link, .contentpadding .btn:visited {
   color: #fff;
+  text-decoration: none;
 }
 #hero-rect .btn:link, #hero-rect .btn:visited {
   color: #fff;
@@ -587,6 +598,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 .btn-white:hover {
     background-color: #b9da79;
     border-color: #b9da79;
+    color: #fff;
 }
 .btn-white:link, .contentpadding .btn-white:link {
   color: #333;

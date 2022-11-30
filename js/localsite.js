@@ -1674,6 +1674,7 @@ function showSearchFilter() {
       // Also prevents search filter from flashing briefly in map/index.html before moving into #bodyFile
       // 
       waitForElm('#bodyFile #filterFieldsHolder').then((elm) => {
+        console.log("show #filterFieldsHolder");
         $("#filterFieldsHolder").show();
         //$("#filterbaroffset").show();
         $(".hideWhenPop").show();

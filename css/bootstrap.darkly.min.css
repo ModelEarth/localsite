@@ -41,12 +41,14 @@ a:link, a:visited {
 	background: #222;
 	border-bottom-color: #222;
 }
+.filterFields {
+    background-color: rgb(55 55 55/95%);
+}
 #filterLocations {
     background-color: rgb(55 55 55/95%);
     color: #fff;
 }
 #filterFieldsHolder {
-    background-color: rgb(55 55 55/95%);
     border-bottom: 0px solid #333;
 }
 .filterFieldsHolderFixed {

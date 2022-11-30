@@ -115,17 +115,23 @@
   .detail {
     position: relative;
     padding: 12px 8px 12px 12px;
-    border: 0px solid #eee;
+    border: 1px solid #eee;
     border-bottom: 1px solid #eee;
+    border-radius: 20px;
   }
   .detail:hover {
-    background-color: #fcfcfc;
+    background-colorX: #fcfcfc;
+    background-colorX: #ccc;
+    border: 1px solid #fff;
     cursor:pointer;
   }
   .detailActive {
-    border: 1px solid rgb(204, 204, 204);
+    borderX: 1px solid rgb(204, 204, 204);
     background-color: rgb(250, 250, 250);
     paddingX: 12px;
+  }
+  .detailActive:hover {
+    background-color: rgb(250, 250, 250);
   }
   .detailCurrent {
     padding: 0px;
@@ -189,15 +195,15 @@
     }
   }
   #sidemapbar {
-    background-color: #ddd;
-    background-color: #fff;
     position: relative;
     color: #555;
     font-size: 16px;
     min-height: 32px;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    background-color: #fff;
   }
   #sidemapMessage {
-
     padding: 10px;
     font-size: 12px;
   }
@@ -255,15 +261,14 @@
   displayX: none; /* Also reactivate in dual-map. */
 }
 #map2 {
-  height:500px;
-  border-radius: 18px;
+  height: 500px;
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
 }
 #industriesX {
   display: none !important;
 }
-#mapHolder {
-  /* background-color: rgb(250, 250, 250); */
-}
+
 #disclaimerText {
   /* To do: Apply height using Javascript when sidemap displayed. */;
   overflow: scroll;
@@ -462,7 +467,6 @@ label { /* override Drupal */
   }
 }
 .widgetbar {
-  background: #ddd;
   height:24px;
   max-height:24px;
   line-height: 18px;

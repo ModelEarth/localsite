@@ -1052,7 +1052,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
   <div style="overflow:auto;position:relative">
   <a name="sections"></a>
-  <div id="honeycombPanel" style="display: block;">
+  <div id="honeycombPanel" class="filterFields" style="display: block;">
     
     <!--
     <div style="float:left;display:flex;justify-content:left;">
@@ -1856,7 +1856,7 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 
 </div><!-- /tableSide -->
 
-<div id="list_main" style="display:none; overflow:auto; background: #fff">
+<div id="list_main" style="display:none; overflow:auto;">
 
 
 
@@ -1864,7 +1864,7 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 <div class="content contentpadding litePanel displayOnloadXX" style="displayX:none; max-width:2000px;padding-top:0px; padding-bottom:10px; padding-right:0px">
 
   <div id="flexwrapper">
-    <div id="hublist" style="margin-top:20px">
+    <div id="hublist" style="margin-top:20px; position:relative;">
 
       <div id="hublist-padding">
         
@@ -1980,16 +1980,24 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 
           </div>
 
+          
+
       </div>
 
-      <div style="margin-top:10px;position:absolute; bottom:0;left:0;right:0;z-index:999;background-color:rgba(255, 255, 255, 0.7);background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%);">
-        <div id="changeHublistHeight" style="cursor:pointer;float:left;display:none">
-          <div class="btn btn-white">EXPAND</div>
-        </div>
-        <div class='viewAllLink btn btn-white' style='display:none;float:left'><a onclick='goHash({},["name","loc","cat","subcat"]); return false;' href='#show=" + param["show"] + "' style='color:#333'>VIEW ALL</a></div>
-      </div>
 
-    </div>
+      
+
+
+    </div><!-- /hublist -->
+
+<div class="litePanelFadeOut">
+            <div id="changeHublistHeight" style="cursor:pointer;float:left;display:none">
+              <div class="btn btn-success">Expand</div>
+            </div>
+            
+            <div class='viewAllLink' style='display:none;float:left'><a class='btn btn-white' onclick='goHash({},["name","loc","cat","subcat"]); return false;' href='#show=" + param["show"] + "'>View All</a></div>
+            
+          </div>
 
 
     <a name="gomap"></a>
@@ -1999,7 +2007,7 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
           <div id="sidemapbar" class="widgetbar">
             <div id="sidemapName" style="position:absolute; left:0; padding:4px 4px 4px 10px">
             </div>
-            <div id="hideSideMap" class="close-X" style="position:absolute;right:0px;padding-top:4px;padding-right:2px;font-size:16px;color:#aaa">&#10005;</div>
+            <div id="hideSideMap" class="close-X" style="position:absolute;right:0px;padding-top:4px;padding-right:12px;font-size:16px;color:#aaa">&#10005;</div>
           </div>
 
           <div style="clear:both">  
