@@ -663,7 +663,6 @@ function filterClickLocation(loadGeoTable) {
 
 	$("#searchLocation").focus(); // Not working
 	//document.getElementById("searchLocation").focus(); // Not working
-
 	//$("#filterFieldsHolder").hide();
 
 	$("#bigThumbPanelHolder").hide();
@@ -2281,11 +2280,12 @@ function initSiteObject(layerName) {
           				$("#appSelectHolder .showApps").removeClass("filterClickActive");
           				$("#showAppsText").text($("#showAppsText").attr("title"));
           				$(".hideWhenPop").show();
-          				// To do: Only up scroll AND SHOW if not visible
+                        // To do: Only up scroll AND SHOW if not visible
+                        // Bug bug this closed filters
           				$('html,body').animate({
 							scrollTop: 0
 						});
-
+                        
           				$("#bigThumbPanelHolder").hide();
           				$('.showApps').removeClass("active");
 

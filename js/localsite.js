@@ -1667,6 +1667,7 @@ function showSearchFilter() {
     if ($("#filterFieldsHolder").is(':visible') && (($("#headerbar").is(':visible') && filterTop >= headerHeight) )) { // Might need to allow for coverage by header.
       console.log("#filterFieldsHolder is visible, hide it.");
       $("#filterFieldsHolder").hide();
+      $("#filterFieldsHolder").addClass("filterFieldsHidden");
       //$("#filterbaroffset").hide();
       ////$("#pageLinksHolder").hide();
     } else {
@@ -1676,6 +1677,7 @@ function showSearchFilter() {
       waitForElm('#bodyFile #filterFieldsHolder').then((elm) => {
         console.log("show #filterFieldsHolder");
         $("#filterFieldsHolder").show();
+        $("#filterFieldsHolder").removeClass("filterFieldsHidden");
         //$("#filterbaroffset").show();
         $(".hideWhenPop").show();
         $('html,body').scrollTop(0);

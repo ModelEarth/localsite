@@ -2205,7 +2205,6 @@ var scrollItems = menuItems.map(function(){
 var topMenuHeight = 150;
 */
 
-//alert("#headerbar hide test")
 var mapFixed = false;
 var previousScrollTop = $(window).scrollTop();
 $(window).scroll(function() {
@@ -2242,16 +2241,17 @@ $(window).scroll(function() {
         // BUGBUG - occuring on initial reload when page is a little from top.
         //$('#logoholderside').show();
 
-        $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
-        console.log("#filterFieldsHolder show");
-        $("#filterFieldsHolder").show();
-        if (param.showheader != "false") {
-          $('.showMenuSmNav').show(); 
+        if (!$("#filterFieldsHolder").hasClass("filterFieldsHidden")) {
+          $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
+          console.log("#filterFieldsHolder show");
+          $("#filterFieldsHolder").show();
+          if (param.showheader != "false") {
+            $('.showMenuSmNav').show(); 
+          }
+          $('.headerOffset').hide();
+          $('#headerbar').hide(); // Not working
+          $('#headerbar').addClass("headerbarhide");
         }
-        $('.headerOffset').hide();
-        $('#headerbar').hide(); // Not working
-        $('#headerbar').addClass("headerbarhide");
-
         
         $('#sidecolumnLeft').css("top","54px");
         //alert("#headerbar hide")
@@ -2282,7 +2282,7 @@ $(window).scroll(function() {
       $('#headerLarge').show();
     } else if ($(window).scrollTop() == 0) { // At top
       $("#headerLarge").removeClass("headerLargeHide"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
-      $('#filterFieldsHolder').hide(); // But we might want to retain it sometimes, if it was already open.
+      // We avoid hiding #filterFieldsHolder here since we retain it if already open.
       $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
       if ($("#headerbar").length) {
         if (param.showheader != "false") {

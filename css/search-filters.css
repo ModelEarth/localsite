@@ -281,6 +281,7 @@
 
 .bigThumbHolder a:link {
   color: #777;
+  text-decoration: none;
 }
 .bigThumbHolder a:link:hover {
   color: #333;
@@ -334,6 +335,7 @@
   padding-top: 9px;
   font-size: 16px;
   font-family: 'Roboto Condensed', sans-serif;
+  text-decoration: none;
 }
 .bigThumb:hover .bigThumbText {
   font-weight: 400;
@@ -378,7 +380,6 @@
     border-bottom: 1px solid #eee;
 }
 .bigThumbMenuInner {
-  margin-top: 50px;
   margin-bottom: 20px;
   display: grid;
 }

@@ -589,6 +589,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			});
 			$(document).on("click", ".hideThumbMenu", function(event) {
 				$("#bigThumbPanelHolder").hide();
+				$(".showApps").removeClass("filterClickActive");
 			});
 			$(document).on("click", ".filterBubble", function(event) {
 				console.log('filterBubble click')
