@@ -203,7 +203,16 @@
   z-index: 1000;
 }
 #geomap {
-  width:702px; height:530px; margin:0 30px 30px 0; border:1px solid blue; position: relative;
+  width:699px;
+  height:530px;
+  margin:0 30px 30px 0;
+  border:1px solid blue;
+  position: relative;
+}
+@media (max-width: 1000px) {
+  #geomap {
+    width:450px;
+  }
 }
 @media (max-width: 600px) {
   #geomap {

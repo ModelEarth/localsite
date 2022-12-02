@@ -185,7 +185,7 @@ $(document).ready(function () {
        	//$(".fieldSelector").hide();
         event.stopPropagation();
     });
-    $('#mapButton').click(function () {
+    $(document).on("click", "#mapButton", function(event) {
 		if ($('#mapPanel').css('display') === 'none') {
         	$('#mapPanel').show();
     	} else {
@@ -194,15 +194,17 @@ $(document).ready(function () {
        	$("#introText").hide();
         event.stopPropagation();
     });
-    $('#topPanel').click(function () {
+    $(document).on("click", "#topPanel", function(event) {
     	event.stopPropagation(); // Allows HS codes to remain visible when clicking in panel.
     });
 
     $('#mainCats > div').each(function(index) { // Initial load
     	$(this).attr("text", $(this).text());
     });
-    $('#catSearch').click(function () {
+    $(document).on("click", "#catSearch", function(event) {
+        alert("#catSearch click - #toppanel has been deactivated and moved to map/index-categories.html")
     	if ($('#topPanel').css('display') === 'none') {
+            
 			$('#productSubcats').css("max-height","300px");
 			$('#topPanelFooter').show();
         	$('#topPanel').show();

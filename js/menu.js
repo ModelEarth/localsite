@@ -545,7 +545,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
         event.stopPropagation();
     });
     //$(document).on("click", partnerMenu.menuDiv + ' .layerAction', function(event) { // Second level menus
-    $(document).on("click", '.layerCbRow', function(event) { // Second level menus
+    $(document).on("click", ".layerCbRow", function(event) { // Second level menus
          // Clear all layers
         clearAll(menuDataset);
         console.log('.layerAction');

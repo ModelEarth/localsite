@@ -112,7 +112,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
 <style>
 #headerbar {
-  display: block; /* Since navigation.js detects #headerbar prior to move
+  /* display: block; */ /* Since navigation.js detects #headerbar prior to move */
 }
 </style>
 
@@ -285,7 +285,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 -->
 <div id="rightTopMenu" class="row" style="float:right; display:none">
     <div class="column column-hidden" style="float:left;"><div class="rightTopMenuLeft"></div></div>
-    <div class="column rightTopMenuInner topMenuOffset floater" style="display:none">
+    <div class="local column rightTopMenuInner topMenuOffset floater" style="display:none">
             <!-- map icon -->
             <!--
             <div class="showMap showMapClick rightTopItem" style="display:none; padding-top:14px">
@@ -831,7 +831,8 @@ localsite.js pulls the #insertedText div from this page as the template for head
           </div>
         </div>
 
-        <div style="display:none;" class="local filterField layerclass mock-up suppliers exporter products">
+        <!-- inactive -->
+        <div style="display:none;" class="localX filterField layerclass mock-up suppliers exporter products">
           <div id="catSearchHolder2">
             <div class="filterLabel">
               <div class="filterLabelMain">
