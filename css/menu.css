@@ -105,6 +105,7 @@
 }
 .sideMenuColumn {
 		z-index: 1;
+        width: 200px;
 		min-width: 160px;
 		background: rgb(238, 238, 238);
 }
