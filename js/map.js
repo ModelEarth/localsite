@@ -1798,6 +1798,11 @@ function showList(dp,map) {
   }
     //$("#detaillist > [name='"+ name.replace(/'/g,'&#39;') +"']").show();
 
+  if(location.host.indexOf('localhost') >= 0) {
+    var $detailListClone = $('#detaillist').clone().prop('id', 'detailListClone');
+    $('#mapList1').html($detailListClone);
+  }
+
   // BUGBUG - May need to clear first to avoid multiple calls.
   $('.detail').mouseover(
       function() { 
@@ -3302,7 +3307,7 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
     if (overlays1) { // Avoids: Cannot read properties of undefined (reading '[The Layer Title]')
       // These do not effect the display of layer checkboxes
       map.addLayer(overlays1[dp.dataTitle]);
-      map2.addLayer(overlays2[dp.dataTitle]);
+      map2.addLayer(overlays2[dp.dataTitle]); // Add small circle icons
     }
   }
   $("#activeLayer").text(dp.dataTitle); // Resides after showList
@@ -3423,7 +3428,7 @@ function populateMap(whichmap, dp, callback) { // From JSON within page
         icon: 'local_shipping',            // Name of Material icon
         iconColor: '#fff',              // Material icon color (could be rgba, hex, html name...)
         markerColor: 'rgba(255,0,0,0.5)',  // Marker fill color
-        outlineColor: 'rgba(255,0,0,0.5)',            // Marker outline color
+        outlineColor: 'rgba(255,0,0,0.5)',  // Marker outline color
         outlineWidth: 1,                   // Marker outline width 
       });
 
@@ -3527,7 +3532,7 @@ function addIcons(dp,map,map2) {
   //console.log(colorScale)
 
   let hash = getHash();
-
+  //console.log("dp.color " + dp.color);
   dp.data.forEach(function(element) {
     // Add a lowercase instance of each column name
     var key, keys = Object.keys(element);
@@ -4274,12 +4279,14 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
 
 
     waitForElm('#bodyFile #' + whichmap).then((elm) => {
-
-          let map;
-          //alert(whichmap + " length: " + $('#' + whichmap).length);
-          if( $('#bodyFile #' + whichmap).length >= 1) {
-            console.log("#" + whichmap + " div found. Length: " + $('#' + whichmap).length);
-            map = document.querySelector('#'+whichmap)._leaflet_map; // Recall existing map
+          $(".displayMapForLoad").show(); // Might not work since !important might be needed.
+          $('#bodyFile #' + whichmap).show();
+          let map = {};
+          console.log(whichmap + " length: " + $('#bodyFile #' + whichmap).length);
+          if( $('#bodyFile #' + whichmap).text().trim().length > 1) {
+            console.log("#" + whichmap + " div found! Length: " + $('#bodyFile #' + whichmap).text().trim().length);
+            map = document.querySelector('#bodyFile #'+whichmap)._leaflet_map; // Recall existing map
+            console.log("typeof map1: " + typeof map);
           } else {
             //alert("#" + whichmap + " not found");
             //var containerExists = L.DomUtil.get(map); // NOT NEEDED
@@ -4288,14 +4295,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
             // if(container != null){ container._leaflet_id = null; }
 
             //if (containerExists == null) { // NOT NEEDED - need to detect L.map
-              //if (location.host.indexOf('localhost') >= 0) {
-                // BUGBUG - intermitant, every other time.
-                console.log("Attempt " + attempts + ". Trying again - An error occurred because the #" + whichmap + " div was not yet rendered.");
-                setTimeout( function() {
-                  loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts+1,callback);
-                }, 200 );
-                return;
-              //}
+              // Runagain was here
 
               // Error: Map container not found.
               // This can be deleted since return occurs above.
@@ -4319,7 +4319,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
           console.log("dp.zoom " + dp.zoom);
           console.log(mapCenter);
           if (container == null) { // Initialize map
-            console.log("loadFromSheet Initialize " +  whichmap + " (map container was null)");
+            alert("loadFromSheet Initialize " +  whichmap + " (map container was null)");
             //$("#"+whichmap).show();
             //$("#"+whichmap).addClass("itsAvailable"); // Temp, remove
             
@@ -4359,16 +4359,27 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
             map.setView(mapCenter,dp.zoom);
           }
 
+        // Runagain moved here
+        //if (location.host.indexOf('localhost') >= 0) {
+          // BUGBUG - intermitant, every other time.
+          /*
+          console.log("Attempt " + attempts + ". Trying again - An error occurred because the #" + whichmap + " div was not yet rendered.");
+          setTimeout( function() {
+            loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts+1,callback);
+          }, 200 );
+          return;
+          */
+        //}
 
 
-    waitForElm('#bodyFile #' + whichmap2).then((elm) => {
+      waitForElm('#bodyFile #' + whichmap2).then((elm) => {
 
           // Right column map
           let map2 = {};
           if (whichmap2) {
             $("#list_main").show();
             $("#tableSide").show();
-            map2 = document.querySelector('#' + whichmap2)._leaflet_map; // Recall existing map
+            map2 = document.querySelector('#bodyFile #' + whichmap2)._leaflet_map; // Recall existing map
             var container2 = L.DomUtil.get(map2);
             if (container2 == null) { // Initialize map
               map2 = L.map(whichmap2, {
@@ -4499,6 +4510,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
                           //console.log(dp.data[i]);
                         }
                         */
+                        // For both maps:
                         processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
                     })
                   } else if (dp.googleCSV) {
@@ -4536,9 +4548,14 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
                     }
                 }
                 */
-
+                //setTimeout( function() {
+                //  alert("#" + whichmap + " div is now length: " + $('#' + whichmap).text().trim().length);
+                //  $('#' + whichmap).show();
+                //}, 3000 );
       }); // End wait for element #map1
-      }); // End wait for element #map2
+    }); // End wait for element #map2
+  
+  } // 
 } // end function loadFromSheet
 
 
@@ -4555,13 +4572,11 @@ dataParameters.forEach(function(ele) {
 */
 
 
-
-
-console.log('end of localsite/js/map.js');
-
 // Why does this work on /community/start/maps/counties/counties.html
 //console.timeEnd("End of localsite/js/map.js: ");
 //console.timeEnd("Processing time: ");
 
 
-} // Prevents error, but not sure why needed.
+
+
+console.log('end of localsite/js/map.js');

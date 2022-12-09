@@ -97,28 +97,28 @@ $(document).ready(function () {
 	}
 	
 	if(location.host.indexOf('localhost') >= 0) {
-		console.log("Loaded Harmonized System (HS) codes");
+		console.log("Loaded Harmonized System (HS) codes - harmonized-system.txt");
 	}
 
-    // This avoids cross domain CORS error
-    d3.text(local_app.community_data_root() + 'global/hs/harmonized-system.txt').then(function(data) {
-        let catLines = d3.csvParseRows(data);
-        //alert(catLines.length)
-        for(var i = 0; i < catLines.length; i++) {
-            catArray.push([catLines[i][0], catLines[i][1]]);
-        }
+    loadScript(local_app.modelearth_root() + '/localsite/js/d3.v5.min.js', function(results) {
 
-        /*
-        catLines.forEach(function(element) {
-          
-          //catArray.push([element.substr(0,4), element.substr(5)]);
-          catArray.push([element[0], element.[1]]);
+        // This avoids cross domain CORS error
+        d3.text(local_app.community_data_root() + 'global/hs/harmonized-system.txt').then(function(data) {
+            let catLines = d3.csvParseRows(data);
+            //alert(catLines.length)
+            for(var i = 0; i < catLines.length; i++) {
+                catArray.push([catLines[i][0], catLines[i][1]]);
+            }
+
+            //catLines.forEach(function(element) {
+            //  //catArray.push([element.substr(0,4), element.substr(5)]);
+            //  catArray.push([element[0], element.[1]]);
+            //});
+            ////$('#mainCats > div:nth-child(11)').trigger("click"); // Specific category
+
+            productList("01","99","Harmonized System (HS) Product Categories")
+
         });
-        //$('#mainCats > div:nth-child(11)').trigger("click"); // Specific category
-        */
-
-        productList("01","99","Harmonized System (HS) Product Categories")
-
     });
 
     /*
@@ -1981,7 +1981,7 @@ function displayBigThumbnails(attempts, activeLayer, layerName) {
 
 	if (!$('.bigThumbUl').length) {
         if (!activeLayer) {
-            activeLayer = "industries"; // Since Tab defaults to "Local Industries". Will change to site-wide search later.
+            activeLayer = "industries"; // Since Tab defaults to "Local Topics". Will change to site-wide search later.
         }
         if (attempts > 100) {
             alert("EXIT load localObject.layers");
@@ -2299,7 +2299,7 @@ function initSiteObject(layerName) {
           				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
           				$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
 
-          				$("#showAppsText").text("Local Industries");
+          				$("#showAppsText").text("Local Topics");
           				$("#appSelectHolder .showApps").addClass("filterClickActive");
 						showThumbMenu(hash.show);
                         $('html,body').animate({

@@ -301,7 +301,7 @@ function getNaics_setHiddenHash2(go) {
             showtitle = "Manufacturing";
             cat_filter=["manufacturing placeholder"];
         } else if (go=="industries") {
-            showtitle = "Local Industries";
+            showtitle = "Local Topics";
             $("#keywordsTB").attr("placeholder","City name..."); // For layers = brigades
         } else if (param.naics) {
             showtitle = go.charAt(0).toUpperCase() + go.substr(1).replace(/\_/g," ");
@@ -330,9 +330,9 @@ function getNaics_setHiddenHash2(go) {
         }
         
     } else if (param.naics) {
-        showtitle = "Local Industries";
+        showtitle = "Local Topics";
         //
-        showtab = "Local Industries";
+        showtab = "Local Topics";
         cat_filter = param.naics.split(',');
     }
 
@@ -379,7 +379,7 @@ function populateTitle(showtitle,showtab) {
         if (showtitle) {
             showtitle = thestate + " - " + showtitle;
         } else {
-            showtitle = thestate + " - Local Industries";
+            showtitle = thestate + " - Local Topics";
         }
         
     }
@@ -576,12 +576,12 @@ $(document).ready(function() {
             let currentState = $("#state_select").find(":selected").text();
             if (currentState) {
                 local_app.loctitle = currentState;
-                local_app.showtitle = "Local Industries";
-                $(".regiontitle").text(currentState + "'s Local Industries");
+                local_app.showtitle = "Local Topics";
+                $(".regiontitle").text(currentState + "'s Local Topics");
             } else {
                 local_app.loctitle = "United States";
-                local_app.showtitle = "Local Industries";
-                $(".regiontitle").text("US Local Industries");
+                local_app.showtitle = "Local Topics";
+                $(".regiontitle").text("US Local Topics");
             }
             refreshNaicsWidget();
             return; 
@@ -1608,7 +1608,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                         } else {
                             // Temp, reactivate after iogrid stops deleteing hash values.
                             $(".regiontitle").text("Industries");
-                            //$(".regiontitle").text(String(d['Name'])+"'s Local Industries");
+                            //$(".regiontitle").text(String(d['Name'])+"'s Local Topics");
                         }
                         //alert("locationTabText2")
                         //$(".locationTabText").text("State"); // Temp

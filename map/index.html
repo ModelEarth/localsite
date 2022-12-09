@@ -824,7 +824,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
                   </div>
                   <div style="width:100%">
                     <!-- Goods & Services -->
-                    <div class="filterClickText" id="showAppsText" title="Local Industries">Local Industries</div>
+                    <div class="filterClickText" id="showAppsText" title="Local Topics">Local Topics</div>
                   </div>
                 </div>
             </div>
@@ -1554,9 +1554,10 @@ Displayed by hashChanged() in map-filters.js
 
 
 
-
-<div class="displayOnload" style="display:none;position:relative">
-  <div id="map1" style="display:none"></div>
+<!-- Try to reactivate both of these display:none and update map.js waitForElm('#bodyFile #' + whichmap -->
+<div class="displayOnload displayMapForLoad" style="display:none;position:relative;overflow:hidden;">
+  <div id="mapList1" class="always-show-scroll"></div>
+  <div id="map1" class="displayMapForLoad" style="display:none"></div>
 
   <!-- not in use -->
   <div id="legendHolder" style="display:none">
@@ -2080,13 +2081,19 @@ $(document).ready(function () {
 
 
 // COMMON - also resides in embed-map.js and info/index.html
+/*
 function loadScript(url, callback)
 {
   if (!document.getElementById(url)) { // Prevents multiple loads.
     var script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = url;
-    script.id = url; // Prevents multiple loads.
+
+    // Didn't test. Using getUrlID3 instead.
+    let urlshort = url;
+    urlshort = "/" + url.replace(/^[a-z]{4,5}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1'); // http or https
+
+    script.id = urlshort; // Prevents multiple loads.
     // Bind the event to the callback function. Two events for cross browser compatibility.
     script.onreadystatechange = callback;
     script.onload = callback;
@@ -2101,6 +2108,7 @@ function loadScript(url, callback)
   }
   // Nested calls are described here: https://books.google.com/books?id=ZOtVCgAAQBAJ&pg=PA6&lpg=PA6
 }
+*/
 
 // INIT
 let hash = getHash(); // Allows hiddenhash set above to be included.

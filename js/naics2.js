@@ -1169,7 +1169,7 @@ function topRatesInFipsOld(dataSet, fips) { // REMOVED , hash
                         } else {
                             // Temp, reactivate after iogrid stops deleteing hash values.
                             $(".regiontitle").text("Industries");
-                            //$(".regiontitle").text(String(d['Name'])+"'s Local Industries");
+                            //$(".regiontitle").text(String(d['Name'])+"'s Local Topics");
                         }
                         //alert("locationTabText2")
                         //$(".locationTabText").text("State"); // Temp
