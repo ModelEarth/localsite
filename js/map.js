@@ -1542,7 +1542,7 @@ function showList(dp,map) {
                   
         //output += "<div style='overflow:auto'>";
         
-        output += "<b style='font-size:20px; font-weight:400; color:#333;'>" + name + "</b></div>";
+        output += "<div class='detailTitle'>" + name + "</div></div>";
         if (element[dp.description]) {
           output += "<div style='padding-bottom:8px'>" + element[dp.description] + "</div>";
         } else if (element.description) {
@@ -1658,100 +1658,102 @@ function showList(dp,map) {
         }
 
         output += "<div style='height:10px'></div>";
-        if (element.mapframe) {
-            output += "<a href='#show=360&m=" + element.mapframe + "'>Birdseye View<br>";
-        }
-        if (element.property_link) {
-            output += "<a href='" + element.property_link + "'>Property Details</a><br>";
-        }
+        output += "<div class='detailLinks'>";
+          if (element.mapframe) {
+              output += "<a href='#show=360&m=" + element.mapframe + "'>Birdseye View<br>";
+          }
+          if (element.property_link) {
+              output += "<a href='" + element.property_link + "'>Property Details</a><br>";
+          }
 
-        var googleMapLink;
-        if (name.length || element.address || element.county) {
-          googleMapLink = name;
-          if (element.address) {
-            googleMapLink += ', ' + element.address;
-          }
-          if (element.county) {
-            googleMapLink += ', ' + element.county + ' County';
-          }
-          if (hash.state) {
-            googleMapLink += ', ' + hash.state;
-          }
-        }
-        if (googleMapLink) {
-          googleMapLink = 'https://www.google.com/maps/search/' + (googleMapLink).replace(/ /g,"+");
-        }
-        if (googleMapLink) {
-            output += '<a href="' + googleMapLink + '" target="_blank">Google Map</a>';
-        }
-        
-        if (hash.details != "true") {
-          if (hash.name) {
-            output += "&nbsp; | &nbsp;<a href='" + window.location + "&details=true'>Details</a>";
-          } else {
-            output += "&nbsp; | &nbsp;<a href='" + window.location + "&name=" + name.replace(/ /g,"+") + "&details=true'>Details</a>";
-          }
-        }
-        if (dp.editLink) {
-          if (googleMapLink) {
-            output += "&nbsp; | &nbsp;"
-          }
-          output += "<a href='" + dp.editLink + "' target='edit" + param["show"] + "'>Make Updates</a><br>";
-        }
-        
-        if (!element.mapable == "false" && !element.county && !(element[dp.latColumn] && element[dp.lonColumn])) {
-          if (!element[dp.lonColumn]) {
-            output += "<span>Add latitude and longitude</span><br>";
-          } else {
-            output += "<span>Add address or lat/lon values</span><br>";
-          }
-        }
-
-        //alert(dp.listLocation)
-        if (dp.listLocation != false) {
-          
-          if (element[dp.latColumn]) {
-              output += "<a href='https://www.waze.com/ul?ll=" + element[dp.latColumn] + "%2C" + element[dp.lonColumn] + "&navigate=yes&zoom=17'>Waze Directions</a>";
-          }
-        }
-
-        if (element.facebook) {
-          if (element.facebook.toLowerCase().indexOf('facebook.com') < 0) {
-            element.facebook = 'https://facebook.com/search/top/?q=' + element.facebook.replace(/'/g,'%27').replace(/ /g,'%20')
-          }
-          if (element[dp.latColumn] && dp.listLocation != false) {
-            output += " | ";
-          }
-          output += "<a href='" + element.facebook + "' target='_blank'>Facebook</a>";
-        }
-        if (element.twitter) {
-          if (element[dp.latColumn] || element.facebook) {
-            output += " | ";
-          }
-          output += "<a href='" + element.twitter + "' target='_blank'>Twitter</a>";
-        }
-        if ((element[dp.latColumn] && dp.listLocation != false) || element.facebook || element.twitter) {
-          output += "<br>";
-        }
-
-        if (element.county) {
-          //output += element.county + " County<br>";
-        }
-
-        
-        if (element.distance) {
-            output += "<b>Distance:</b> " + element.distance + " miles<br>"; 
-          
-        }
-
-        if (dp.skips) {
-          dp.skips = "," + dp.skips + ",";
-          for (i in element) {
-            if (element[i] != null && dp.skips.indexOf("," + i + ",") == -1) {
-              output += "<b>" + i + ":</b> " + element[i] + "<br>"; 
+          var googleMapLink;
+          if (name.length || element.address || element.county) {
+            googleMapLink = name;
+            if (element.address) {
+              googleMapLink += ', ' + element.address;
+            }
+            if (element.county) {
+              googleMapLink += ', ' + element.county + ' County';
+            }
+            if (hash.state) {
+              googleMapLink += ', ' + hash.state;
             }
           }
-        }
+          if (googleMapLink) {
+            googleMapLink = 'https://www.google.com/maps/search/' + (googleMapLink).replace(/ /g,"+");
+          }
+          if (googleMapLink) {
+              output += '<a href="' + googleMapLink + '" target="_blank">Google Map</a>';
+          }
+          
+          if (hash.details != "true") {
+            if (hash.name) {
+              output += "&nbsp; | &nbsp;<a href='" + window.location + "&details=true'>Details</a>";
+            } else {
+              output += "&nbsp; | &nbsp;<a href='" + window.location + "&name=" + name.replace(/ /g,"+") + "&details=true'>Details</a>";
+            }
+          }
+          if (dp.editLink) {
+            if (googleMapLink) {
+              output += "&nbsp; | &nbsp;"
+            }
+            output += "<a href='" + dp.editLink + "' target='edit" + param["show"] + "'>Make Updates</a><br>";
+          }
+          
+          if (!element.mapable == "false" && !element.county && !(element[dp.latColumn] && element[dp.lonColumn])) {
+            if (!element[dp.lonColumn]) {
+              output += "<span>Add latitude and longitude</span><br>";
+            } else {
+              output += "<span>Add address or lat/lon values</span><br>";
+            }
+          }
+
+          //alert(dp.listLocation)
+          if (dp.listLocation != false) {
+            
+            if (element[dp.latColumn]) {
+                output += "<a href='https://www.waze.com/ul?ll=" + element[dp.latColumn] + "%2C" + element[dp.lonColumn] + "&navigate=yes&zoom=17'>Waze Directions</a>";
+            }
+          }
+
+          if (element.facebook) {
+            if (element.facebook.toLowerCase().indexOf('facebook.com') < 0) {
+              element.facebook = 'https://facebook.com/search/top/?q=' + element.facebook.replace(/'/g,'%27').replace(/ /g,'%20')
+            }
+            if (element[dp.latColumn] && dp.listLocation != false) {
+              output += " | ";
+            }
+            output += "<a href='" + element.facebook + "' target='_blank'>Facebook</a>";
+          }
+          if (element.twitter) {
+            if (element[dp.latColumn] || element.facebook) {
+              output += " | ";
+            }
+            output += "<a href='" + element.twitter + "' target='_blank'>Twitter</a>";
+          }
+          if ((element[dp.latColumn] && dp.listLocation != false) || element.facebook || element.twitter) {
+            output += "<br>";
+          }
+
+          if (element.county) {
+            //output += element.county + " County<br>";
+          }
+
+          
+          if (element.distance) {
+              output += "<b>Distance:</b> " + element.distance + " miles<br>"; 
+            
+          }
+
+          if (dp.skips) {
+            dp.skips = "," + dp.skips + ",";
+            for (i in element) {
+              if (element[i] != null && dp.skips.indexOf("," + i + ",") == -1) {
+                output += "<b>" + i + ":</b> " + element[i] + "<br>"; 
+              }
+            }
+          }
+        output += "</div>"; // detailLinks
 
         output += "</div>"; // End Lower
         output += "</div>"; // End detail
@@ -1774,7 +1776,6 @@ function showList(dp,map) {
     $("#detaillist").prepend(subcatList);
   }
   */
-  $("#detaillist").prepend("<hr>");
   if (subcatObject["null"].count > 0) {
     $("#detaillist").prepend(hash.cat + " rows needing subcategory: " + subcatObject["null"].count);
   }
