@@ -156,16 +156,11 @@
 	#partnerMenuHolder {
 		min-width: 32px;
 	}
-
 	.sideMenuColumn {
 		z-index: 1;
 		min-width: 38px;
-		/* max-width: 38px; Avoiding since page's .sidechildlist is injected. */
-		max-width: 38px; 
-		/*
-		top: 0;
-		bottom: 0;
-		*/
+		max-width: 38px;
+		width: 38px;
 		overflow: visible;
 		background: rgb(238, 238, 238);
 	}
@@ -463,7 +458,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 
 /* For sidecolumn from header.html */
 body {
-    background-color: rgb(250, 250, 250); /* For side nav */
+    background-color: #595959;
 }
 .sidecolumn-inpage #sidecolumnLeft {
     position: static !important;
