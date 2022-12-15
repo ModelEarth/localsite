@@ -10,10 +10,10 @@ You can copy parameters from the URL.  Here's a sample with [Air impacts for Ful
     param.geo = "US13121,US13089" // Fulton and DeKalb Counties
     param.zip = "30318" // See zip output sample link below
     param.set = "air"
-    param.indicators = "GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS"
+    param.indicators = "GHG,GCC,MGHG,OGHG,HRSP"
     param.naics = "327310,321213" // Cement and Engineered Wood
     param.sectors = "562111,562212,562213,562910,562920,562HAZ,562OTH" // Recycling Sectors
-
+<!-- Additional param.indicators OZON,SMOG,HAPS -->
 Thus far, zip is only implemented in our [zip output sample](https://model.earth/zip/io/#zip=30318)
 
 Learn about [Recycling sector deaggregation](https://github.com/USEPA/useeior/wiki/Disaggregation-of-Sectors#disaggregation-inputs-for-envfile) - The EPA will be updating so more than one recycling sector is returned.

@@ -1,0 +1,42 @@
+    var swiper = new Swiper('.swiper-container', {
+      slidesPerView: 1,
+      spaceBetween: 30,
+      /* mousewheel: true, */ /* In addition to hold and swipe. Jumps to quick and bypasses elements below images. */
+      /* Issue: the last slide is also preloaded. */
+      slidesPerView: 'auto',
+      lazy: {
+        loadPrevNext: true,
+      },
+      /* preloadImages: false, No difference */
+      loop: true,
+      /* effect: 'fade', */
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      hashNavigation: {
+        watchState: true,
+      },
+      keyboard: {
+        enabled: true,
+        onlyInViewport: false
+      },
+
+      direction: 'horizontal',
+      history: {
+        keepQuery: true
+      },
+      /*
+      freeMode: true,
+      scrollbar: {
+        el: '.swiper-scrollbar',
+      },
+      */
+    });
+
+    // Fast forward: https://codepen.io/sampotts/pen/jARJYp
+    //player.play();

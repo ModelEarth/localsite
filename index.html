@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 
-<title>LocalSite - Map Layers</title>
+<title>LocalSite - Player</title>
 <link type="text/css" rel="stylesheet" href="/localsite/css/base.css" id="/localsite/css/base.css" />
 <script type="text/javascript" src="/localsite/js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
 <script type="text/javascript" src="/localsite/js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
@@ -50,13 +50,17 @@ Set the height:100% on div within swiper-slide
 text-align:left; overflow:scroll; 
 -->
 
+<!-- update
 <link rel="stylesheet" href="/localsite/css/swiper/swiper-bundle.min.css" />
+-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
 <link rel='stylesheet' href='/localsite/css/swiper/plyr.css'>
 <link rel='stylesheet' href='/localsite/css/swiper/swiper.css'>
 <script src='/localsite/js/polyfill.min.js?features=es6,Array.prototype.includes,CustomEvent,Object.entries,Object.values,URL'></script>
 <script src='/localsite/js/plyr.min.js'></script>
 
-  <div class="swiper-container">
+  <!-- data-id="sample1" -->
+  <div class="swiper-container" style="overflow:hidden;" id="sample1">
 
     <div class="swiper-wrapper">
 
@@ -124,91 +128,140 @@ text-align:left; overflow:scroll;
     </div>
 
   
-    <!-- Swiper Arrows -->
-      
-    <!-- circle arrows -->
-    <div class="swiper-button swiper-button-prev prev-buttonX swiper-button-circle">
-      <div class="nav-circle"></div>
-      <div class="circle-text">
-
-        <svg aria-hidden="true" role="presentation" focusable="false" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="display: block; fill: none; height: 13px; width: 13px; stroke: currentcolor; stroke-width: 5.33333; overflow: visible;"><g fill="none"><path d="m20 28-11.29289322-11.2928932c-.39052429-.3905243-.39052429-1.0236893 0-1.4142136l11.29289322-11.2928932"></path></g></svg>
-
-      </div>
-    </div>
-
-    <div class="swiper-button swiper-button-next prev-buttonX swiper-button-circle">
-      <div class="nav-circle"></div>
-      <div class="circle-text">
-      
-        <!--
-         <svg aria-hidden="true" role="presentation" focusable="false" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="display: block;fill: none;height: 13px;width: 13px;stroke: currentcolor;stroke-width: 5.33333;overflow: visible;"><g fill="none"><path d="m12 4 11.2928932 11.2928932c.3905243.3905243.3905243 1.0236893 0 1.4142136l-11.2928932 11.2928932"></path></g></svg>
-          -->
-
-      </div>
-    </div>
-
-    <!-- white arrows -->
-    <div class="swiper-button-prev">
+    <!-- Swiper Nav -->
+    <div class="swiper-button-prev swiper-button-prev-sample1">
       <!--<div class="swiper-button-white"></div>-->
     </div>
-    <div class="swiper-button-next">
+    <div class="swiper-button-play swiper-button-play-sample1"></div>
+    <!-- e034 -->
+    <div class="swiper-button-pause swiper-button-pause-sample1"></div>
+
+    <div class="swiper-button-next swiper-button-next-sample1">
       <!--<div class="swiper-button-white"></div>-->
     </div>
-    <!-- /Swiper Arrows-->
+    <!-- /Swiper Nav-->
 
 
   </div>
 
+  
+
 
   <!-- Swiper Pagination -->
-  <div class="swiper-pagination" style="margin-top:15px;"></div>
+  <div class="swiper-pagination swiper-pagination-sample1" style="margin-top:15px;"></div>
   <!--
-  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-  -->
   <script src="/localsite/js/swiper/swiper-bundle.min.js"></script>
-  
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
 
   <!-- Initialize Swiper -->
   <script>
-    var swiper = new Swiper('.swiper-container', {
-      slidesPerView: 1,
-      spaceBetween: 30,
-      /* mousewheel: true, */ /* In addition to hold and swipe. Jumps to quick and bypasses elements below images. */
-      /* Issue: the last slide is also preloaded. */
-      slidesPerView: 'auto',
-      lazy: {
-        loadPrevNext: true,
-      },
-      /* preloadImages: false, No difference */
-      loop: true,
-      /* effect: 'fade', */
-      pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-      },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-      hashNavigation: {
-        watchState: true,
-      },
-      keyboard: {
-        enabled: true,
-        onlyInViewport: false
-      },
+// https://stackoverflow.com/questions/32118999/how-can-i-have-multiple-swiper-slideshows-on-a-single-page
+// Function that builds the swiper 
+const buildSwiperSlider = sliderElm => {
+    const sliderIdentifier = sliderElm.id;
+    const homeSwiper = new Swiper(`#${sliderElm.id}`, {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        loop: true,
+        speed: 2500, /* transition */
+        slidesPerView: 'auto',
+        lazy: {
+          loadPrevNext: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next-' + sliderIdentifier,
+            prevEl: '.swiper-button-prev-' + sliderIdentifier
+        },
+        pagination: {
+            el: '.swiper-pagination-' + sliderIdentifier,
+            clickable: true,
+        },
+        
+        effect: 'fade',
 
-      direction: 'horizontal',
-      /*
-      freeMode: true,
-      scrollbar: {
-        el: '.swiper-scrollbar',
-      },
-      */
+        /* change hash value (and load based on hash) -- problem: overwrites other hash values */
+        /*
+        hashNavigation: {
+          watchState: true,
+        },
+        */
+
+        keyboard: {
+          enabled: true,
+          onlyInViewport: false
+        },
+        direction: 'horizontal',
+        /*
+        history: {
+          keepQuery: true
+        },
+        */
     });
 
-    // Fast forward: https://codepen.io/sampotts/pen/jARJYp
-    //player.play();
+    $(".swiper-button-pause-" + sliderIdentifier).click(function(){
+      $(".swiper-button-pause-" + sliderIdentifier).hide();
+      $(".swiper-button-play-" + sliderIdentifier).show();
+      $(".swiper-button-pause-" + sliderIdentifier).addClass("overrideShowPauseQuick");
+      homeSwiper.autoplay.stop(); // Tiggers icon change below at autoplayStop event
+    });
+
+    $(".swiper-button-play-" + sliderIdentifier).click(function(){
+      homeSwiper.slideNext(); // Immidiately advance to next on click.
+      $(".swiper-button-play-" + sliderIdentifier).hide();
+      $(".swiper-button-pause-" + sliderIdentifier).show();
+      homeSwiper.autoplay.start();
+    });
+
+    $(".swiper-pagination-" + sliderIdentifier + " .swiper-pagination-bullet").click(function(){
+      $(".swiper-button-pause-" + sliderIdentifier).hide();
+      $(".swiper-button-play-" + sliderIdentifier).show();
+    });
+    $(".swiper-button-prev-" + sliderIdentifier).click(function(){
+      $(".swiper-button-pause-" + sliderIdentifier).hide();
+      $(".swiper-button-play-" + sliderIdentifier).show();
+    });
+    $(".swiper-button-next-" + sliderIdentifier).click(function(){
+      $(".swiper-button-pause-" + sliderIdentifier).hide();
+      $(".swiper-button-play-" + sliderIdentifier).show();
+    });
+    homeSwiper.on('autoplayStart', function () {
+      //$(".swiper-pagination-bullet-active").css("background","green");
+      $('head').append('<style id="customCSS">.swiper-pagination-bullet-active { background:green !important }</style>');
+    });
+    // Triggered by keyboard arrow keys and pause button:
+    homeSwiper.on('autoplayStop', function () {
+      //$(".swiper-pagination-bullet-active").css("background","#888");
+      $('#customCSS').remove();
+      // Briefly show the pause button
+      $(".swiper-button-pause-" + sliderIdentifier).show();
+      $(".swiper-button-pause-" + sliderIdentifier).addClass("showPauseQuick");
+      //alert("stop")
+      setTimeout(() => {
+        $(".swiper-button-pause-" + sliderIdentifier).hide();
+        $(".swiper-button-pause-" + sliderIdentifier).removeClass("showPauseQuick"); // to do: figure out why not fading
+        $(".swiper-button-pause-" + sliderIdentifier).removeClass("overrideShowPauseQuick"); // Allows pause not to be retained briefly when clicking actual pause button.
+      },1000);
+      $(".swiper-button-play-" + sliderIdentifier).show();
+    });
+
+    // Play on iniital load
+    $(".swiper-button-play-" + sliderIdentifier).hide();
+    $(".swiper-button-pause-" + sliderIdentifier).show();
+    homeSwiper.autoplay.start();
+
+    //return homeSwiper;
+}
+
+// Get all of the swipers on the page
+const allSliders = document.querySelectorAll('.swiper-container');
+
+// Loop over all of the fetched sliders and apply Swiper on each one.
+allSliders.forEach(slider => buildSwiperSlider(slider));
+
+$(".swiper-button-play").show();
+//$(".swiper-button-play").css('opacity', '0.8');
+
   </script>
 
 <!-- /Swiper and Plyr -->
@@ -225,9 +278,9 @@ text-align:left; overflow:scroll;
     -->
   </div>
 
-  <h1 style="padding-top: 0px">LocalSite - Map Layers</h1>
+  <h1 style="padding-top: 0px">LocalSite - Player</h1>
 
-  Localsite uses <a href="https://swiperjs.com/">SwiperJS</a> with the MapBox <a href="https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/">Layers JSON Format</a> to manage multiple map layers in our <a href="js/map.js">map.js styleObject</a>.  
+  Localsite uses <a href="https://swiperjs.com/">SwiperJS</a> (<a href="https://swiperjs.com/demos">demos</a>) with the MapBox <a href="https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/">Layers JSON Format</a> to manage multiple map layers in our <a href="js/map.js">map.js styleObject</a>.  
 
   <section id="parameters">
     <div id="paramsDiv" style="clear:both"></div>

@@ -12,9 +12,6 @@
   displayX: none; /* remove to change arrow style */
   color: #fff;
 }
-.swiper-button-circle {
-  display: none; /* remove to change arrow style */
-}
 .swiper-pagination {
   position: relative;
 }
@@ -254,14 +251,14 @@
   transition: all .5s ease-out;
   background-color: rgb(0, 0, 0, 0.03);
   background-imageX: url(/localsite/img/plyr/arrow-prev.png);
-  text-shadow: 2px 2px 4px #000000;
+  text-shadow: 2px 2px 2px rgba(33,33,33,0.3);
 }
 .swiper-button-next:hover {
   opacity: 1;
   transition: all .5s ease-out;
   background-color: rgb(0, 0, 0, 0.03);
   background-imageX: url(/localsite/img/plyr/arrow-next.png);
-  text-shadow: 2px 2px 4px #000000;
+  text-shadow: 2px 2px 2px rgba(33,33,33,0.3);
 }
 
 .swiper-button-prev {
@@ -271,7 +268,7 @@
   bottom: 0;
   width: 80px;
   height: 100%;
-  background-size: 57px 57px;
+  background-size: 57px;
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -282,9 +279,43 @@
   bottom: 0;
   width: 80px;
   height: 100%;
-  background-size: 57px 57px;
+  background-size: 57px;
   background-repeat: no-repeat;
   background-position: center;
+}
+.swiper-button-play, .swiper-button-pause {
+  position: absolute;
+  top: 30%;
+  bottom: 30%;
+  left: 40%;
+  right: 40%;
+  z-index: 1;
+  transition: all .5s ease-in;
+  background-size: 50px;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0;
+}
+.swiper-button-pause {
+  background-image: url(/localsite/img/plyr/pause.png);
+}
+.swiper-button-play {
+  background-image: url(/localsite/img/plyr/play.png);
+  z-indexX: 1; /* in front of pause */
+  displayX: none;
+}
+.swiper-button-play:hover, .swiper-button-pause:hover {
+  opacity: .8;
+  transition: all .5s ease-out;
+  cursor: pointer;
+}
+.showPauseQuick {
+  opacity: .8;
+  transition: 2s ease-out; /* no effect, jumps off */
+}
+.overrideShowPauseQuick {
+  opacity: 0;
+  display: none !important;
 }
 .swiper-container {
   position: relative;
