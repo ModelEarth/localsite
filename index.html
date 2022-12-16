@@ -147,6 +147,7 @@ text-align:left; overflow:scroll;
 
   <!-- Initialize Swiper -->
   <script>
+// Init multiple slider on a single page
 // https://stackoverflow.com/questions/32118999/how-can-i-have-multiple-swiper-slideshows-on-a-single-page
 // Function that builds the swiper 
 const buildSwiperSlider = sliderElm => {
@@ -271,7 +272,14 @@ $(".swiper-button-play").show();
 
   <h1 style="padding-top: 0px">LocalSite - Player</h1>
 
-  Localsite uses <a href="https://swiperjs.com/">SwiperJS</a> (<a href="https://swiperjs.com/demos">demos</a>) with the MapBox <a href="https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/">Layers JSON Format</a> to manage multiple map layers in our <a href="js/map.js">map.js styleObject</a>.  
+  <!--
+    Swiper demos:
+    https://swiperjs.com/demos
+
+    Also parallax:
+    https://codesandbox.io/s/empty-feather-sqgrj?file=/src/App.js
+  -->
+  Localsite uses <a href="https://swiperjs.com/">SwiperJS</a> with the MapBox <a href="https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/">Layers JSON Format</a> to manage multiple map layers in our <a href="js/map.js">map.js styleObject</a>.  
 
   <section id="parameters">
     <div id="paramsDiv" style="clear:both"></div>
