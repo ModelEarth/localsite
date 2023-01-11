@@ -16,6 +16,12 @@
     color: #fff;
     z-index: 1000;
   }
+  #mapList1 .detailTitle {
+    overflow: auto;
+    font-size: 18px;
+    margin-top: -4px;
+    padding-bottom: 8px;
+  }
   #mapList1 .detailLinks {
     display: none;
   }
@@ -36,13 +42,15 @@
     background-color: #666;
     border-left: 1px solid #777;
     border-radius: 10px;
-    width: 10px;
+    width: 16px;
   }
-  /* Thumb (scrolling part). */
+  /* Thumb (scrolling part) */
   .always-show-scroll::-webkit-scrollbar-thumb {
     background-color: grey;
-    border-radius: 5px;
-    border: 0px solid white;
+    border-radius: 8px;
+    border: 1px solid #aaa;
+    margin-top: 2px;
+    margin-bottom: 2px;
   }
   .always-show-scroll::-webkit-scrollbar-thumb:vertical {
     height: 40px !important;
@@ -144,7 +152,7 @@
     position: relative;
   }
   #hublist {
-    overflow: auto;
+    overflow: auto; /* allows Expand button to remain at bottom */
     width:56%;
   }
   #mapHolder {
@@ -179,7 +187,7 @@
     background-color: rgb(250, 250, 250);
   }
   #detaillist .detailCurrent {
-    padding: 0px;
+    paddingX: 0px;
   }
   #detaillist .detailCurrent:hover {
     background-color: none;
@@ -187,6 +195,7 @@
   }
   #detaillist .detailTitle {
     font-size:20px;
+    margin-top: -7px;
     font-weight:400;
     color:#333;
   }
@@ -212,6 +221,7 @@
   }
   .showItemMenu {
     font-size: 24px;
+    margin-top: -24px;
     cursor: pointer;
   }
   .showItemMenu:hover {

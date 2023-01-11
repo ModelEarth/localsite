@@ -647,7 +647,7 @@ body {
     right: 0px;
     top: 100px;
     z-index: 1001; /* To exceed Leaflet */
-    pointer-events: auto; /* Prevents hover from reaching map below */
+    pointer-events: auto; /* Prevents click from reching image, and hover from reaching map below */
     box-shadow: 2px 2px 6px #333;
 }
 .rightTopMenuLeft {

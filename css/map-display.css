@@ -1,6 +1,5 @@
 body {
 	margin: 0px;
-	font-family: Lato, sans-serif;
 	-webkit-font-smoothing: antialiased;
 }
 .sectionContent {
@@ -206,7 +205,7 @@ body {
 #dataList {
 	overflow: auto;
 	position: relative;
-	max-widthX: 400px;
+	margin-bottom: 10px;
 }
 .catListSelected {
 	border: solid 1px #aaa !important;

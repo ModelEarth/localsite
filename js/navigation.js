@@ -396,9 +396,11 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 						*/
 
 						$(document).on("click", ".showMenu", function(event) {
-
+							console.log("Clicked .showMenu 4");
 							//if (location.host.indexOf('localhost') >= 0) {
-				 				if ($("#rightTopMenuVisibility").is(':visible') && $("#rightTopMenu").is(':visible')) {
+								//if ($("#rightTopMenuVisibility").is(':visible') && $("#rightTopMenu").is(':visible')) { // Didn't work, issue seemed to be with #rightTopMenu
+				 				if ($("#rightTopMenu").css('display') != "none") {
+				 					console.log("Clicked .showMenu - visible so hide");
 				 					$("#rightTopMenuVisibility").hide();
 				 					$("#rightTopMenu").hide();
 				          		} else {
@@ -619,7 +621,8 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 	}
 
 	function hideAdvanced() {
-		//updateHash({"mapview":""}); // Not using since retaining mapview=earth
+		// We might want to omit this line to retain mapview=earth
+		updateHash({"mapview":""});
 		$(".fieldSelector").hide();
 		$("#filterLocations").hide();
 		$("#filterClickLocation").removeClass("filterClickActive");

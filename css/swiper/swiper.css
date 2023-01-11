@@ -285,10 +285,10 @@
 }
 .swiper-button-play, .swiper-button-pause {
   position: absolute;
-  top: 30%;
-  bottom: 30%;
-  left: 40%;
-  right: 40%;
+  top: 2%;
+  bottom: 2%;
+  left: 2%;
+  right: 2%;
   z-index: 1;
   transition: all .5s ease-in;
   background-size: 50px;
@@ -320,4 +320,17 @@
 .swiper-container {
   position: relative;
   borderX: 1px solid red;
+}
+.swiper-blur {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1px;
+  opacity: 0.3;
+
+  -webkit-filter: blur(25px);
+  -moz-filter: blur(25px);
+  -o-filter: blur(25px);
+  -ms-filter: blur(25px);
+  filter: blur(25px);
 }

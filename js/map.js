@@ -943,8 +943,8 @@ function getMapframe(element) {
 }
 
 function showList(dp,map) {
-  
-  console.log("Call showList for " + dp.dataTitle + " list")
+  console.log("Call showList for " + dp.dataTitle + " list");
+  //return; // Temp
   var iconColor, iconColorRGB;
   var colorScale = dp.scale;
   let count = 0
@@ -1531,231 +1531,240 @@ function showList(dp,map) {
           output += "<div style='display:none' class='detail' name='" + name.replace(/'/g,'&#39;') + "' color='" + bulletColor + "'>";
         }
 
+        if (element.photo1) {
+          // unique data-id used by buildSwiperSlider to init multiple sliders.
+          // Might not need id
+          output += "<div class='swiper-container' id='swiper" + count + "' data-id='swiper" + count + "'><div class='swiper-wrapper'><div class='swiper-slide'>";
+          output += "<img style='width:100%;max-width:800px' class='swiper-lazy' data-src='" + element.photo1 + "'>";
+          output += "</div></div></div>";
+        }
+
         output += "<div class='showItemMenu' style='float:right'>&mldr;</div>";
 
         //console.log("dp.valueColumn 1 " + element[dp.valueColumn]); // Works, but many recyclers have blank Category value.
         //console.log("dp.valueColumn 3 " + element["category"]); // Lowercase required (basing on recyclers)
 
-        output += "<div style='padding-bottom:4px' title='test'><div style='width:15px;height:15px;margin-right:6px;margin-top:8px;background:" + bulletColor + ";float:left'></div>";
+        output += "<div style='padding-bottom:4px;float:left'><div style='width:15px;height:15px;margin-right:6px;background:" + bulletColor + ";float:left'></div></div>";
 
         //output += "<div style='position:relative'><div style='float:left;min-width:28px;margin-top:2px'><input name='contact' type='checkbox' value='" + name + "'></div><div style='overflow:auto'><div>" + name + "</div>";
                   
-        //output += "<div style='overflow:auto'>";
-        
-        output += "<div class='detailTitle'>" + name + "</div></div>";
-        if (element[dp.description]) {
-          output += "<div style='padding-bottom:8px'>" + element[dp.description] + "</div>";
-        } else if (element.description) {
-          output += "<div style='padding-bottom:8px'>" + element.description + "</div>";
-        } else if (element["business description"]) {
-          output += "<div style='padding-bottom:8px'>" + element["business description"] + "</div>";
-        }
-
-        // Lower
-        output += "<div style='font-size:0.95em;line-height:1.5em'>";
-
-        if (element.items) {
-          output += "<b>Items:</b> " + element.items + "<br>";
-        }
-        
-        if (element[dp.addressColumn]) { 
-            output +=  element[dp.addressColumn] + "<br>"; 
-        } else if (element.address || element.city || element.state || element.zip) {
-          output += "<b>Location:</b> ";
-          if (element.address) {
-            output += element.address + "<br>";
-          } else {
-            if (element.city) {
-              output += element.city;
-            }
-            if (element.state || element.zip) {
-              output += ", ";
-            }
-            if (element.state) {
-              output += element.state + " ";
-            }
-            if (element.zip) {
-              output += element.zip;
-            }
-            if (element.city || element.state || element.zip) {
-              output += "<br>";
-            }
-          }
-        }
-        if (element.county) {
-          output += '<b>Location:</b> ' + element.county + " County<br>";
-        }
-
-        if (element.website) {
-          if (element.website.length <= 50) {
-            output += "<b>Website:</b> <a href='" + element.website + "' target='_blank'>" + element.website.replace("https://","").replace("http://","").replace("www.","").replace(/\/$/, "") + "</a><br>";
-          } else {
-            // To Do: Display domain only
-            output += "<b>Website:</b> <a href='" + element.website + "' target='_blank'>" + element.website.replace("https://","").replace("http://","").replace("www.","").replace(/\/$/, "") + "</a><br>"; 
-          }
-        } else if (element.webpage) {
-          // Switch to calling Webpage, probably add linkify above.
-          output += '<b>Webpage:</b> ' + linkify(element.webpage + "<br>");
-        }
-        if (element.category1) {
-          output += "<b>Type:</b> " + element.category1 + "<br>";
-        }
-        if (element.district) {
-          output += "<b>District:</b> " + element.district + "<br>";
-        }
-        if (element.location) {
-          if (isObject(element.location)) {
-            // No need to display since Location is also proviced as a string in Brigade data
-            //output += "<b>Location Object:</b><br>" + element.location + "<br>";
-            //for (e in element.location){
-            //  output += "<div>" + e + ": " + element.location[e] + "</div>";
-            //}             
-          } else {
-            output += "<b>Location:</b> " + element.location + "<br>";
-          }
-        }
-        if (element.comments) {
-          output += element.comments + "<br>";
-        }
-        if (element.availability) {
-          output += element.availability + "<br>";
-        }
-        //output += element.name + " View Details<br>";
-
-        if (element.phone || element.phone_afterhours) {
-          if (element.phone) {
-            output += "<b>Phone:</b> " + element.phone + " ";
-          }
-          if (element.phone_afterhours) {
-           output += element.phone_afterhours;
-          }
-          output += "<br>";
-        }
-
-        if (element.schedule) {
-          output += "<b>Hours:</b> " + element.schedule + "<br>";
-        }
-        if (element["jobs range"]) {
-          output += "<b>Employees:</b> " + element["jobs range"] + "<br>";
-        } else if (element["jobs 2021"]) {
-          output += "<b>Employees:</b> " + element["jobs 2021"] + "<br>";
-        }
-
-        if (element[dp.valueColumn]) {
-          if (dp.valueColumnLabel) {
-            output += "<b>" + dp.valueColumnLabel + ":</b> " + element[dp.valueColumn] + "<br>";
-          } else if (element[dp.valueColumn] != element.name) {
-            output += element[dp.valueColumn] + "<br>";
-          }
-        }
-        if (element[dp.showKeys]) {
-          output += "<b>" + dp.showLabels + ":</b> " + element[dp.showKeys] + "<br>";
-        }
-
-        if(output_details) {
-          //output += "<br>Details:<br>" + output_details;
-          output += output_details;
-        }
-
-        output += "<div style='height:10px'></div>";
-        output += "<div class='detailLinks'>";
-          if (element.mapframe) {
-              output += "<a href='#show=360&m=" + element.mapframe + "'>Birdseye View<br>";
-          }
-          if (element.property_link) {
-              output += "<a href='" + element.property_link + "'>Property Details</a><br>";
+        output += "<div style='overflow:auto'>";
+          
+          output += "<div class='detailTitle'>" + name + "</div>";
+          if (element[dp.description]) {
+            output += "<div style='padding-bottom:8px'>" + element[dp.description] + "</div>";
+          } else if (element.description) {
+            output += "<div style='padding-bottom:8px'>" + element.description + "</div>";
+          } else if (element["business description"]) {
+            output += "<div style='padding-bottom:8px'>" + element["business description"] + "</div>";
           }
 
-          var googleMapLink;
-          if (name.length || element.address || element.county) {
-            googleMapLink = name;
+          // Lower
+          output += "<div style='clear:both;font-size:0.95em;line-height:1.5em'>";
+
+          if (element.items) {
+            output += "<b>Items:</b> " + element.items + "<br>";
+          }
+          
+          if (element[dp.addressColumn]) { 
+              output +=  element[dp.addressColumn] + "<br>"; 
+          } else if (element.address || element.city || element.state || element.zip) {
+            output += "<b>Location:</b> ";
             if (element.address) {
-              googleMapLink += ', ' + element.address;
-            }
-            if (element.county) {
-              googleMapLink += ', ' + element.county + ' County';
-            }
-            if (hash.state) {
-              googleMapLink += ', ' + hash.state;
-            }
-          }
-          if (googleMapLink) {
-            googleMapLink = 'https://www.google.com/maps/search/' + (googleMapLink).replace(/ /g,"+");
-          }
-          if (googleMapLink) {
-              output += '<a href="' + googleMapLink + '" target="_blank">Google Map</a>';
-          }
-          
-          if (hash.details != "true") {
-            if (hash.name) {
-              output += "&nbsp; | &nbsp;<a href='" + window.location + "&details=true'>Details</a>";
+              output += element.address + "<br>";
             } else {
-              output += "&nbsp; | &nbsp;<a href='" + window.location + "&name=" + name.replace(/ /g,"+") + "&details=true'>Details</a>";
-            }
-          }
-          if (dp.editLink) {
-            if (googleMapLink) {
-              output += "&nbsp; | &nbsp;"
-            }
-            output += "<a href='" + dp.editLink + "' target='edit" + param["show"] + "'>Make Updates</a><br>";
-          }
-          
-          if (!element.mapable == "false" && !element.county && !(element[dp.latColumn] && element[dp.lonColumn])) {
-            if (!element[dp.lonColumn]) {
-              output += "<span>Add latitude and longitude</span><br>";
-            } else {
-              output += "<span>Add address or lat/lon values</span><br>";
-            }
-          }
-
-          //alert(dp.listLocation)
-          if (dp.listLocation != false) {
-            
-            if (element[dp.latColumn]) {
-                output += "<a href='https://www.waze.com/ul?ll=" + element[dp.latColumn] + "%2C" + element[dp.lonColumn] + "&navigate=yes&zoom=17'>Waze Directions</a>";
-            }
-          }
-
-          if (element.facebook) {
-            if (element.facebook.toLowerCase().indexOf('facebook.com') < 0) {
-              element.facebook = 'https://facebook.com/search/top/?q=' + element.facebook.replace(/'/g,'%27').replace(/ /g,'%20')
-            }
-            if (element[dp.latColumn] && dp.listLocation != false) {
-              output += " | ";
-            }
-            output += "<a href='" + element.facebook + "' target='_blank'>Facebook</a>";
-          }
-          if (element.twitter) {
-            if (element[dp.latColumn] || element.facebook) {
-              output += " | ";
-            }
-            output += "<a href='" + element.twitter + "' target='_blank'>Twitter</a>";
-          }
-          if ((element[dp.latColumn] && dp.listLocation != false) || element.facebook || element.twitter) {
-            output += "<br>";
-          }
-
-          if (element.county) {
-            //output += element.county + " County<br>";
-          }
-
-          
-          if (element.distance) {
-              output += "<b>Distance:</b> " + element.distance + " miles<br>"; 
-            
-          }
-
-          if (dp.skips) {
-            dp.skips = "," + dp.skips + ",";
-            for (i in element) {
-              if (element[i] != null && dp.skips.indexOf("," + i + ",") == -1) {
-                output += "<b>" + i + ":</b> " + element[i] + "<br>"; 
+              if (element.city) {
+                output += element.city;
+              }
+              if (element.state || element.zip) {
+                output += ", ";
+              }
+              if (element.state) {
+                output += element.state + " ";
+              }
+              if (element.zip) {
+                output += element.zip;
+              }
+              if (element.city || element.state || element.zip) {
+                output += "<br>";
               }
             }
           }
-        output += "</div>"; // detailLinks
+          if (element.county) {
+            output += '<b>Location:</b> ' + element.county + " County<br>";
+          }
+
+          if (element.website) {
+            if (element.website.length <= 50) {
+              output += "<b>Website:</b> <a href='" + element.website + "' target='_blank'>" + element.website.replace("https://","").replace("http://","").replace("www.","").replace(/\/$/, "") + "</a><br>";
+            } else {
+              // To Do: Display domain only
+              output += "<b>Website:</b> <a href='" + element.website + "' target='_blank'>" + element.website.replace("https://","").replace("http://","").replace("www.","").replace(/\/$/, "") + "</a><br>"; 
+            }
+          } else if (element.webpage) {
+            // Switch to calling Webpage, probably add linkify above.
+            output += '<b>Webpage:</b> ' + linkify(element.webpage + "<br>");
+          }
+          if (element.category1) {
+            output += "<b>Type:</b> " + element.category1 + "<br>";
+          }
+          if (element.district) {
+            output += "<b>District:</b> " + element.district + "<br>";
+          }
+          if (element.location) {
+            if (isObject(element.location)) {
+              // No need to display since Location is also proviced as a string in Brigade data
+              //output += "<b>Location Object:</b><br>" + element.location + "<br>";
+              //for (e in element.location){
+              //  output += "<div>" + e + ": " + element.location[e] + "</div>";
+              //}             
+            } else {
+              output += "<b>Location:</b> " + element.location + "<br>";
+            }
+          }
+          if (element.comments) {
+            output += element.comments + "<br>";
+          }
+          if (element.availability) {
+            output += element.availability + "<br>";
+          }
+          //output += element.name + " View Details<br>";
+
+          if (element.phone || element.phone_afterhours) {
+            if (element.phone) {
+              output += "<b>Phone:</b> " + element.phone + " ";
+            }
+            if (element.phone_afterhours) {
+             output += element.phone_afterhours;
+            }
+            output += "<br>";
+          }
+
+          if (element.schedule) {
+            output += "<b>Hours:</b> " + element.schedule + "<br>";
+          }
+          if (element["jobs range"]) {
+            output += "<b>Employees:</b> " + element["jobs range"] + "<br>";
+          } else if (element["jobs 2021"]) {
+            output += "<b>Employees:</b> " + element["jobs 2021"] + "<br>";
+          }
+
+          if (element[dp.valueColumn]) {
+            if (dp.valueColumnLabel) {
+              output += "<b>" + dp.valueColumnLabel + ":</b> " + element[dp.valueColumn] + "<br>";
+            } else if (element[dp.valueColumn] != element.name) {
+              output += element[dp.valueColumn] + "<br>";
+            }
+          }
+          if (element[dp.showKeys]) {
+            output += "<b>" + dp.showLabels + ":</b> " + element[dp.showKeys] + "<br>";
+          }
+
+          if(output_details) {
+            //output += "<br>Details:<br>" + output_details;
+            output += output_details;
+          }
+
+          output += "<div style='height:10px'></div>";
+          output += "<div class='detailLinks'>";
+            if (element.mapframe) {
+                output += "<a href='#show=360&m=" + element.mapframe + "'>Birdseye View<br>";
+            }
+            if (element.property_link) {
+                output += "<a href='" + element.property_link + "'>Property Details</a><br>";
+            }
+
+            var googleMapLink;
+            if (name.length || element.address || element.county) {
+              googleMapLink = name;
+              if (element.address) {
+                googleMapLink += ', ' + element.address;
+              }
+              if (element.county) {
+                googleMapLink += ', ' + element.county + ' County';
+              }
+              if (hash.state) {
+                googleMapLink += ', ' + hash.state;
+              }
+            }
+            if (googleMapLink) {
+              googleMapLink = 'https://www.google.com/maps/search/' + (googleMapLink).replace(/ /g,"+");
+            }
+            if (googleMapLink) {
+                output += '<a href="' + googleMapLink + '" target="_blank">Google Map</a>';
+            }
+            
+            if (hash.details != "true") {
+              if (hash.name) {
+                output += "&nbsp; | &nbsp;<a href='" + window.location + "&details=true'>Details</a>";
+              } else {
+                output += "&nbsp; | &nbsp;<a href='" + window.location + "&name=" + name.replace(/ /g,"+") + "&details=true'>Details</a>";
+              }
+            }
+            if (dp.editLink) {
+              if (googleMapLink) {
+                output += "&nbsp; | &nbsp;"
+              }
+              output += "<a href='" + dp.editLink + "' target='edit" + param["show"] + "'>Make Updates</a><br>";
+            }
+            
+            if (!element.mapable == "false" && !element.county && !(element[dp.latColumn] && element[dp.lonColumn])) {
+              if (!element[dp.lonColumn]) {
+                output += "<span>Add latitude and longitude</span><br>";
+              } else {
+                output += "<span>Add address or lat/lon values</span><br>";
+              }
+            }
+
+            //alert(dp.listLocation)
+            if (dp.listLocation != false) {
+              
+              if (element[dp.latColumn]) {
+                  output += "<a href='https://www.waze.com/ul?ll=" + element[dp.latColumn] + "%2C" + element[dp.lonColumn] + "&navigate=yes&zoom=17'>Waze Directions</a>";
+              }
+            }
+
+            if (element.facebook) {
+              if (element.facebook.toLowerCase().indexOf('facebook.com') < 0) {
+                element.facebook = 'https://facebook.com/search/top/?q=' + element.facebook.replace(/'/g,'%27').replace(/ /g,'%20')
+              }
+              if (element[dp.latColumn] && dp.listLocation != false) {
+                output += " | ";
+              }
+              output += "<a href='" + element.facebook + "' target='_blank'>Facebook</a>";
+            }
+            if (element.twitter) {
+              if (element[dp.latColumn] || element.facebook) {
+                output += " | ";
+              }
+              output += "<a href='" + element.twitter + "' target='_blank'>Twitter</a>";
+            }
+            if ((element[dp.latColumn] && dp.listLocation != false) || element.facebook || element.twitter) {
+              output += "<br>";
+            }
+
+            if (element.county) {
+              //output += element.county + " County<br>";
+            }
+
+            
+            if (element.distance) {
+                output += "<b>Distance:</b> " + element.distance + " miles<br>"; 
+              
+            }
+
+            if (dp.skips) {
+              dp.skips = "," + dp.skips + ",";
+              for (i in element) {
+                if (element[i] != null && dp.skips.indexOf("," + i + ",") == -1) {
+                  output += "<b>" + i + ":</b> " + element[i] + "<br>"; 
+                }
+              }
+            }
+          output += "</div>"; // detailLinks
 
         output += "</div>"; // End Lower
+        output += "</div>"; // End overflow:auto
         output += "</div>"; // End detail
         
         // Here display:none is used when listings are excluded. Do we use script to show these, or simply re-run the list?
@@ -1800,6 +1809,8 @@ function showList(dp,map) {
     //$("#detaillist > [name='"+ name.replace(/'/g,'&#39;') +"']").show();
 
   if(location.host.indexOf('localhost') >= 0) {
+    //alert("test - reactivate")
+    //Reactivate both lines
     var $detailListClone = $('#detaillist').clone().prop('id', 'detailListClone');
     $('#mapList1').html($detailListClone);
   }
@@ -2449,18 +2460,18 @@ function styleShape(feature) { // Called FOR EACH topojson row
       // TO DO - Adjust for 2e-7
       theValue = theValue/10000000;
       fillColor = colorTheCountry(theValue);
-      console.log("fillColor: " + fillColor + "; theValue: " + theValue + " " + feature.properties.name);
+      //console.log("fillColor: " + fillColor + "; theValue: " + theValue + " " + feature.properties.name);
       fillOpacity = .5;
   } else if ((hash.mapview == "country" || (hash.mapview == "state" && !hash.state)) && typeof localObject.state != 'undefined') {
       let theValue = 2;
        if (localObject.state[getState(stateID)] && localObject.state[getState(stateID)].CO2_per_capita != "No data") {
-        console.log(stateID + " " + getState(stateID));
-        console.log(stateID + " " + localObject.state[getState(stateID)].CO2_per_capita);
+        //console.log("state: " + stateID + " " + getState(stateID));
+        //console.log("state: " + stateID + " " + localObject.state[getState(stateID)].CO2_per_capita);
         theValue = localObject.state[getState(stateID)].CO2_per_capita;
       }
       theValue = theValue/4; // Ranges from 0 to 26
       fillColor = colorTheStateCarbon(theValue);
-      console.log("fillColor: " + fillColor + "; theValue: " + theValue + " " + feature.properties.name);
+      //console.log("fillColor: " + fillColor + "; theValue: " + theValue + " " + feature.properties.name);
       fillOpacity = .5;
   } return {
       weight: 1,
@@ -4197,7 +4208,8 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
 
   if (typeof d3 !== 'undefined') {
     if (!dp.dataset && !dp.googleCSV) {
-      console.log('%cCANCEL loadFromSheet. No dataset selected for top map. May not be one for state.', 'color: green; background: yellow; font-size: 14px');
+      let hash = getHash();
+      console.log('%cCANCEL loadFromSheet show: ' + hash.show + '. No dataset selected for top map. Data may not be setup for state. hash.state: ' + hash.state, 'color: green; background: yellow; font-size: 14px');
       /*
       if (!hash.state) {
         if (location.host.indexOf('localhost') >= 0) {

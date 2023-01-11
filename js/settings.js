@@ -913,17 +913,18 @@ function initEvents() { // Once included file1 is loaded.
             hideSettings();
         }
         */
-        $(document).on("click", ".rightTopMenuInner>div", function(event) {
+        //$(document).on("click", ".rightTopMenuInner>div", function(event) {
+        function closeExpandedMenus() {
             $(".rightTopMenuInner>div").removeClass("active");
             $(event.currentTarget).addClass("active");
             $(".menuExpanded").hide(); // Hide any open
             //alert("rightTopMenuInner 3");
-            //event.stopPropagation();
-        });
+        }
         $(document).on("click", ".showSections", function(event) {
-            alert("showSections click")
-            $('.menuExpanded').hide();
+            closeExpandedMenus();
+            //$('.menuExpanded').hide();
             $(".topicsPanel").show();
+            //alert("showSections clicked2")
         });
         $(document).on("click", ".showSettings", function(event) {
             $('.menuExpanded').hide();

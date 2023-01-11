@@ -17,6 +17,9 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
 
 
+
+
+
 <!-- Also in localsite.js. Added here to prevent error "Tabulator JS not available for displaying list." that otherwise pops up after a minute. -->
 <!--
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
@@ -86,7 +89,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 <script src="../js/d3/d3-legend.js"></script>
 -->
 
-<link rel="stylesheet" href="../css/map.css" />
+<link rel="stylesheet" href="../css/map.css" id="/localsite/css/map.css" />
 
 
 <!-- For Facebook -->
@@ -146,6 +149,229 @@ localsite.js pulls the #insertedText div from this page as the template for head
   }
 </script>
 <!-- /INTRO -->
+
+
+
+
+<!-- Swiper and Plyr -->
+
+<style>
+.optionalText {
+  display: none;
+  position:absolute;
+  bottom:-30px;
+}
+</style>
+
+<!-- update
+<link rel="stylesheet" href="/localsite/css/swiper/swiper-bundle.min.css" />
+-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
+<link rel='stylesheet' href='/localsite/css/swiper/plyr.css'>
+<link rel='stylesheet' href='/localsite/css/swiper/swiper.css'>
+<script src='/localsite/js/polyfill.min.js?features=es6,Array.prototype.includes,CustomEvent,Object.entries,Object.values,URL'></script>
+<script src='/localsite/js/plyr.min.js'></script>
+
+
+
+  <div class="swiper-container" tyle="overflow:hidden;" id="sample1">
+
+    <div class="swiper-wrapper">
+      
+      
+      <!-- Slide 1 -->
+      <div class="swiper-slide" data-hash="plant">
+        <img class="swiper-lazy" data-src="/localsite/img/hero/plant.png" style="opacity:0.9;width:100%;max-width:2000px">
+        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 1
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="swiper-slide" data-hash="2to1-ratio">
+        <img class="swiper-lazy" data-src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
+        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 2
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="swiper-slide" data-hash="sun">
+        <!-- Example of smaller: solar-rect-sm.png -->
+        <img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/solar-rect.png" style="width:100%;max-width:2000px;"><img class="swiper-lazy" data-src="/localsite/img/hero/solar-rect.png" style="opacity:0.9;max-width:2000px;">
+        <div class="swiper-lazy-preloader swiper-lazy-preloader-white" style="position: relative; border: 10px solid red;"></div>
+        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 3
+        </div>
+      </div>
+
+      <!-- Slide 4: A Walkable Street -->
+      <div class="swiper-slide" data-hash="communities" style="positionX: relative;">
+        <img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/sustainable-communities.jpg" style="width:100%;max-width:2000px;">
+        <img class="swiper-lazy" data-src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px">
+        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <div class="box" style="display:none">
+          <!--div class="title">Title</div-->
+          <!--
+          <div class="subtitle" data-swiper-parallax="-200">Graphics project</div>
+          -->
+        </div>
+      </div>
+
+      <!-- Slide 5 -->
+      <div class="swiper-slide" data-hash="explore">
+        <img class="swiper-lazy" data-src="/localsite/img/hero/future-teepee.png" style="opacity:0.9;width:100%;max-width:2000px;height:740px">
+        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <div class="optionalText content contentpadding">
+          Add Optional Text 5
+        </div>
+      </div>
+      
+
+    </div>
+
+  
+    <!-- Swiper Nav -->
+    <div class="swiper-button-prev swiper-button-prev-sample1">
+      <!--<div class="swiper-button-white"></div>-->
+    </div>
+    <div class="swiper-button-play swiper-button-play-sample1"></div>
+    <!-- e034 -->
+    <div class="swiper-button-pause swiper-button-pause-sample1"></div>
+
+    <div class="swiper-button-next swiper-button-next-sample1">
+      <!--<div class="swiper-button-white"></div>-->
+    </div>
+    <!-- /Swiper Nav-->
+
+  </div>
+
+  <!-- Swiper Pagination -->
+  <div class="swiper-pagination swiper-pagination-sample1" style="margin-top:15px;"></div>
+  <!-- /Swiper Pagination -->
+
+  <!--
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  -->
+  <script src="/localsite/js/swiper/swiper-bundle.min.js"></script>
+  
+
+<!-- Initialize Swiper -->
+<script>
+// Init multiple slider on a single page
+// https://stackoverflow.com/questions/32118999/how-can-i-have-multiple-swiper-slideshows-on-a-single-page
+// Function that builds the swiper 
+const buildSwiperSlider = sliderElm => {
+    const sliderIdentifier = sliderElm.id;
+    const homeSwiper = new Swiper(`#${sliderElm.id}`, {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        loop: true,
+        speed: 2500, /* transition */
+        slidesPerView: 'auto',
+        lazy: {
+          loadPrevNext: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next-' + sliderIdentifier,
+            prevEl: '.swiper-button-prev-' + sliderIdentifier
+        },
+        pagination: {
+            el: '.swiper-pagination-' + sliderIdentifier,
+            clickable: true,
+        },
+        
+        effect: 'fade',
+
+        /* change hash value (and load based on hash) -- problem: overwrites other hash values */
+        /*
+        hashNavigation: {
+          watchState: true,
+        },
+        */
+
+        keyboard: {
+          enabled: true,
+          onlyInViewport: false
+        },
+        direction: 'horizontal',
+        /*
+        history: {
+          keepQuery: true
+        },
+        */
+    });
+
+    $(".swiper-button-pause-" + sliderIdentifier).click(function(){
+      $(".swiper-button-pause-" + sliderIdentifier).hide();
+      $(".swiper-button-play-" + sliderIdentifier).show();
+      $(".swiper-button-pause-" + sliderIdentifier).addClass("overrideShowPauseQuick");
+      homeSwiper.autoplay.stop(); // Tiggers icon change below at autoplayStop event
+    });
+
+    $(".swiper-button-play-" + sliderIdentifier).click(function(){
+      homeSwiper.slideNext(); // Immidiately advance to next on click.
+      $(".swiper-button-play-" + sliderIdentifier).hide();
+      $(".swiper-button-pause-" + sliderIdentifier).show();
+      homeSwiper.autoplay.start();
+    });
+
+    $(".swiper-pagination-" + sliderIdentifier + " .swiper-pagination-bullet").click(function(){
+      $(".swiper-button-pause-" + sliderIdentifier).hide();
+      $(".swiper-button-play-" + sliderIdentifier).show();
+    });
+    $(".swiper-button-prev-" + sliderIdentifier).click(function(){
+      $(".swiper-button-pause-" + sliderIdentifier).hide();
+      $(".swiper-button-play-" + sliderIdentifier).show();
+    });
+    $(".swiper-button-next-" + sliderIdentifier).click(function(){
+      $(".swiper-button-pause-" + sliderIdentifier).hide();
+      $(".swiper-button-play-" + sliderIdentifier).show();
+    });
+    homeSwiper.on('autoplayStart', function () {
+      //$(".swiper-pagination-bullet-active").css("background","green");
+      $('head').append('<style id="customCSS">.swiper-pagination-bullet-active { background:green !important }</style>');
+    });
+    // Triggered by keyboard arrow keys and pause button:
+    homeSwiper.on('autoplayStop', function () {
+      //$(".swiper-pagination-bullet-active").css("background","#888");
+      $('#customCSS').remove();
+      // Briefly show the pause button
+      $(".swiper-button-pause-" + sliderIdentifier).show();
+      $(".swiper-button-pause-" + sliderIdentifier).addClass("showPauseQuick");
+      //alert("stop")
+      setTimeout(() => {
+        $(".swiper-button-pause-" + sliderIdentifier).hide();
+        $(".swiper-button-pause-" + sliderIdentifier).removeClass("showPauseQuick"); // to do: figure out why not fading
+        $(".swiper-button-pause-" + sliderIdentifier).removeClass("overrideShowPauseQuick"); // Allows pause not to be retained briefly when clicking actual pause button.
+      },1000);
+      $(".swiper-button-play-" + sliderIdentifier).show();
+    });
+
+    // Play on iniital load
+    $(".swiper-button-play-" + sliderIdentifier).hide();
+    $(".swiper-button-pause-" + sliderIdentifier).show();
+    homeSwiper.autoplay.start();
+
+    //return homeSwiper;
+}
+
+// Get all of the swipers on the page
+const allSliders = document.querySelectorAll('.swiper-container');
+
+// Loop over all of the fetched sliders and apply Swiper on each one.
+allSliders.forEach(slider => buildSwiperSlider(slider));
+
+$(".swiper-button-play").show();
+//$(".swiper-button-play").css('opacity', '0.8');
+
+</script>
+<!-- /Initialize Swiper -->
+
+<!-- /Swiper and Plyr -->
+
 
 <div id="insertedTextSource">
 <div id="insertedText">
@@ -279,11 +505,11 @@ localsite.js pulls the #insertedText div from this page as the template for head
 <!-- RIGHT MENU -->
 
 <!-- Menu and Secondary Menus -->
-<div id="rightTopMenuVisibility" style="display:none" class="georgia">
+<div id="rightTopMenuVisibility"><!-- Can we remove this? -->
 <!--
 <div id="hideTopPanel" class="close-X" style="position:absolute;right:5px;top:8px;padding-right:10px; z-index:99999">✕</div>
 -->
-<div id="rightTopMenu" class="row" style="float:right; display:none">
+<div id="rightTopMenu" onclick="event.stopPropagation()" class="row hideOnBodyClick" style="float:right; display:none">
     <div class="column column-hidden" style="float:left;"><div class="rightTopMenuLeft"></div></div>
     <div class="local column rightTopMenuInner topMenuOffset floater" style="display:none">
             <!-- map icon -->
@@ -404,7 +630,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
     <!-- Topics Panel -->
     <div class="column column-hidden topicsPanel menuExpanded topMenuOffset floater" style="min-width: 400px; display:block">
-        <div class="menuExpandedScroll">
+        <div class="menuExpandedScroll always-show-scroll">
           <div class="menuTitle" style="display:none">Topics</div>
           <div id="topicsMenu"></div>
         </div>
@@ -1115,7 +1341,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
                 <!--
                 <option value="countries">Countries</option>
                 -->
-                <option value="country">Country</option>
+                <option value="country">United States</option>
                 <option value="state" selected>State</option><!-- was counties -->
               </select>
 
@@ -1353,7 +1579,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
         <div style="clear:both; margin-bottom:12px"></div>
 
-        <div id="geoPicker" style="display:none">
+        <div id="geoPicker">
           <div style="float:left">
             <!-- Must be displayed initiallly so tiles are visible -->
               <div id="geomap">
@@ -1862,7 +2088,7 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 
 
 <section class="data-section" id="data" style="overflow:auto">
-<div class="content contentpadding litePanel displayOnloadXX" style="displayX:none; max-width:2000px;padding-top:0px; padding-bottom:10px; padding-right:0px">
+<div class="content contentpadding litePanel" style="max-width:2000px;padding:0px 0px 10px 20px;">
 
   <div id="flexwrapper">
     <div id="hublist" style="margin-top:20px; position:relative;">
@@ -1993,7 +2219,7 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 
 <div class="litePanelFadeOut">
             <div id="changeHublistHeight" style="cursor:pointer;float:left;display:none">
-              <div class="btn btn-success">Expand</div>
+              <div class="btn btn-success">Show All</div>
             </div>
             
             <div class='viewAllLink' style='display:none;float:left'><a class='btn btn-white' onclick='goHash({},["name","loc","cat","subcat"]); return false;' href='#show=" + param["show"] + "'>View All</a></div>

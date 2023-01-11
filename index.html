@@ -19,6 +19,12 @@
 	param.footer = "footer.html"
 </script>
 
+</head>
+
+<body>
+
+<!-- Swiper and Plyr -->
+
 <style>
 .optionalText {
   display: none;
@@ -26,12 +32,6 @@
   bottom:-30px;
 }
 </style>
-
-</head>
-
-<body>
-
-<!-- Swiper and Plyr -->
 
 <!--
 Coolness: Responds to keyboard arrows and swipes.
@@ -63,10 +63,39 @@ text-align:left; overflow:scroll;
   <div class="swiper-container" style="overflow:hidden;" id="sample1">
 
     <div class="swiper-wrapper">
-
+      
       <!-- Slide 1 -->
+      <div class="swiper-slide" data-hash="plant">
+        <img class="swiper-lazy" data-src="/localsite/img/hero/plant.png" style="opacity:0.9;width:100%;max-width:2000px">
+        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 1
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="swiper-slide" data-hash="2to1-ratio">
+        <img class="swiper-lazy" data-src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
+        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 2
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="swiper-slide" data-hash="sun">
+        <!-- Example of smaller: solar-rect-sm.png -->
+        <img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/solar-rect.png" style="width:100%;max-width:2000px;"><img class="swiper-lazy" data-src="/localsite/img/hero/solar-rect.png" style="opacity:0.9;max-width:2000px;">
+        <div class="swiper-lazy-preloader swiper-lazy-preloader-white" style="position: relative; border: 10px solid red;"></div>
+        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+          Add Optional Text 3
+        </div>
+      </div>
+
+      <!-- Slide 4: A Walkable Street -->
       <div class="swiper-slide" data-hash="communities" style="positionX: relative;">
-        <a href="https://model.earth/apps/" style="width:100%"><img class="swiper-lazy" data-src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px"></a>
+        <img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/sustainable-communities.jpg" style="width:100%;max-width:2000px;">
+        <img class="swiper-lazy" data-src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
         <div class="box" style="display:none">
           <!--div class="title">Title</div-->
@@ -76,46 +105,16 @@ text-align:left; overflow:scroll;
         </div>
       </div>
 
-      <!-- Slide 3 -->
+      <!-- Slide 5 -->
       <div class="swiper-slide" data-hash="explore">
         <img class="swiper-lazy" data-src="/localsite/img/hero/future-teepee.png" style="opacity:0.9;width:100%;max-width:2000px;height:740px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
         <div class="optionalText content contentpadding">
-          Add Optional Text 3
-        </div>
-      </div>
-      
-      <!-- Slide 4 -->
-      <div class="swiper-slide" data-hash="plant">
-        <img class="swiper-lazy" data-src="/localsite/img/hero/plant.png" style="opacity:0.9;width:100%;max-width:2000px">
-        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
-          Add Optional Text 4
-        </div>
-      </div>
-
-      <!-- Slide 5 -->
-      <div class="swiper-slide" data-hash="2to1-ratio">
-        <img class="swiper-lazy" data-src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
-        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
           Add Optional Text 5
         </div>
       </div>
 
-      <!-- Slide 6 -->
-      <div class="swiper-slide" data-hash="sun">
-        <!-- Example of smaller: solar-rect-sm.png -->
-        <a href="" style="width:100%"><img class="swiper-lazy" data-src="/localsite/img/hero/solar-rect.png" style="opacity:0.9;widthX:100%;max-width:2000px;"></a>
-        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
-          Add Optional Text 6
-        </div>
-      </div>
-
       
-
-
     </div>
 
   
@@ -132,21 +131,25 @@ text-align:left; overflow:scroll;
     </div>
     <!-- /Swiper Nav-->
 
-
   </div>
-
-  
-
 
   <!-- Swiper Pagination -->
   <div class="swiper-pagination swiper-pagination-sample1" style="margin-top:15px;"></div>
-  <!--
-  <script src="/localsite/js/swiper/swiper-bundle.min.js"></script>
-  -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+  <!-- /Swiper Pagination -->
 
-  <!-- Initialize Swiper -->
-  <script>
+  <!--
+    To avoid 404 warning in inspector:
+    Downloaded and renamed swiper.min.js.map to swiper-bundle.min.js.map
+    Haven't yet confirmed that's the correct file to use, but reolved 404 error.
+  -->
+  <script src="/localsite/js/swiper/swiper-bundle.min.js"></script>
+  
+  <!--
+  <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+-->
+
+<!-- Initialize Swiper -->
+<script>
 // Init multiple slider on a single page
 // https://stackoverflow.com/questions/32118999/how-can-i-have-multiple-swiper-slideshows-on-a-single-page
 // Function that builds the swiper 
@@ -254,7 +257,8 @@ allSliders.forEach(slider => buildSwiperSlider(slider));
 $(".swiper-button-play").show();
 //$(".swiper-button-play").css('opacity', '0.8');
 
-  </script>
+</script>
+<!-- /Initialize Swiper -->
 
 <!-- /Swiper and Plyr -->
 
