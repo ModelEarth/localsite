@@ -393,12 +393,24 @@ summary::-webkit-details-marker {
     float:none;
   }
 }
-
+.roundedCorners {
+  border-radius: 20px;
+}
+.floatLeft {
+  float:left;
+  margin-right:40px;
+}
 .floatRight {
   float:right;
   margin-left:40px;
 }
 @media (max-width: 800px) {
+  .floatLeft {
+    float:none !important;
+    width:100% !important;
+    margin-right:0px;
+    margin-bottom:40px;
+  }
   .floatRight {
     float:none !important;
     width:100% !important;
@@ -668,6 +680,9 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   margin:6px 6px 11px 22px;
   font-size:18px;
   color:#444;
+  /* If code appear instead of x, check if some other font is being applied. Try activating this line to fix (copied from an x that worked).
+  font-family: 'Nunito Sans', Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  */
 }
 .close-X-sm:hover {
   color:#777;
@@ -1099,4 +1114,29 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 .level2 div:last-of-type {
   border-bottom: 0px #fff solid !important;
+}
+.two-wide {
+  overflow: hidden;
+  margin-right: 0px;
+}
+.two-wide div {
+  float:left;
+  width:33.3%;
+}
+.two-wide div img {
+  width: 100%;
+  padding-right:12px;
+  padding-bottom:12px;
+}
+@media (max-width: 1400px) {
+  .two-wide div {
+    width: 50%;
+    max-width: 1000px;
+  }
+}
+@media (max-width: 800px) {
+  .two-wide div {
+    width: 100% !important;
+    clear: none !important;
+  }
 }
