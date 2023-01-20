@@ -18,7 +18,7 @@
   }
   #mapList1 .detailTitle {
     overflow: auto;
-    font-size: 18px;
+    font-size: 16px;
     margin-top: -4px;
     padding-bottom: 8px;
   }
@@ -32,6 +32,12 @@
     margin-bottom: 2px;
     position: relative;
     border-bottom: 1px solid #777;
+  }
+  #mapList1 .detail:hover {
+    background-color: #333;
+  }
+  #mapList1 .detailLocation {
+    font-size:11px;
   }
 
   .always-show-scroll {
@@ -174,7 +180,7 @@
   }
   #detaillist .detail:hover {
     background-colorX: #fcfcfc;
-    background-colorX: #ccc;
+    background-color: #ccc;
     border: 1px solid #fff;
     cursor:pointer;
   }

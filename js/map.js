@@ -960,6 +960,7 @@ function showList(dp,map) {
   var productcodes = "";
   var products_array = [];
   var productcode_array = [];
+  let shortout = "";
 
   isObject = function(a) {
       return (!!a) && (a.constructor === Object);
@@ -1110,6 +1111,12 @@ function showList(dp,map) {
   console.log("showlist() VIEW DATA (dp.data) ")
   console.log(dp.data)
 
+  //alert("what1")
+    
+  let output = "";
+  let output_details = "";
+  let avoidRepeating = ["description","address","website","phone","email","email address","county","admin note","your name","organization name","cognito_id"];
+    
   dp.data.forEach(function(elementRaw) {
     count++;
     foundMatch = 0;
@@ -1389,13 +1396,11 @@ function showList(dp,map) {
         }
       }
     }
-
     var key, keys = Object.keys(elementRaw);
     var n = keys.length;
     var element={};
-    let output = "";
-    let output_details = "";
-    let avoidRepeating = ["description","address","website","phone","email","email address","county","admin note","your name","organization name","cognito_id"];
+    output_details = ""; // Reuse for each row
+
     while (n--) {
       key = keys[n];
       //element[key] = elementRaw[key]; // Also keep uppercase for element["Prepared"]
@@ -1549,7 +1554,7 @@ function showList(dp,map) {
         //output += "<div style='position:relative'><div style='float:left;min-width:28px;margin-top:2px'><input name='contact' type='checkbox' value='" + name + "'></div><div style='overflow:auto'><div>" + name + "</div>";
                   
         output += "<div style='overflow:auto'>";
-          
+
           output += "<div class='detailTitle'>" + name + "</div>";
           if (element[dp.description]) {
             output += "<div style='padding-bottom:8px'>" + element[dp.description] + "</div>";
@@ -1566,29 +1571,32 @@ function showList(dp,map) {
             output += "<b>Items:</b> " + element.items + "<br>";
           }
           
+          var outaddress = "";
           if (element[dp.addressColumn]) { 
-              output +=  element[dp.addressColumn] + "<br>"; 
+              outaddress +=  element[dp.addressColumn] + "<br>"; 
           } else if (element.address || element.city || element.state || element.zip) {
-            output += "<b>Location:</b> ";
             if (element.address) {
-              output += element.address + "<br>";
+              outaddress += element.address + "<br>";
             } else {
               if (element.city) {
-                output += element.city;
+                outaddress += element.city;
               }
               if (element.state || element.zip) {
-                output += ", ";
+                outaddress += ", ";
               }
               if (element.state) {
-                output += element.state + " ";
+                outaddress += element.state + " ";
               }
               if (element.zip) {
-                output += element.zip;
+                outaddress += element.zip;
               }
               if (element.city || element.state || element.zip) {
-                output += "<br>";
+                outaddress += "<br>";
               }
             }
+          }
+          if (outaddress) {
+            output += "<b>Location:</b> " + outaddress;
           }
           if (element.county) {
             output += '<b>Location:</b> ' + element.county + " County<br>";
@@ -1622,6 +1630,15 @@ function showList(dp,map) {
               output += "<b>Location:</b> " + element.location + "<br>";
             }
           }
+
+          shortout += "<div class='detail'>";
+          shortout += "<div class='detailTitle'>" + name + "</div>";
+          if (outaddress) {
+            shortout += "<div class='detailLocation'>" + outaddress + "</div>";
+          }
+          shortout += "</div>";
+
+
           if (element.comments) {
             output += element.comments + "<br>";
           }
@@ -1768,10 +1785,12 @@ function showList(dp,map) {
         output += "</div>"; // End detail
         
         // Here display:none is used when listings are excluded. Do we use script to show these, or simply re-run the list?
-        $("#detaillist").append(output);
+        
       }
     }
   });
+
+  $("#detaillist").append(output);
   $("#detaillist").append("<div style='height:60px'></div>"); // For space behind absolute buttons at bottom.
 
   /*
@@ -1809,19 +1828,22 @@ function showList(dp,map) {
     //$("#detaillist > [name='"+ name.replace(/'/g,'&#39;') +"']").show();
 
   if(location.host.indexOf('localhost') >= 0) {
-    //alert("test - reactivate")
-    //Reactivate both lines
-    var $detailListClone = $('#detaillist').clone().prop('id', 'detailListClone');
-    $('#mapList1').html($detailListClone);
+
+    // For full list clone to side of map - may impact performance
+    //var $detailListClone = $('#detaillist').clone().prop('id', 'detailListClone');
+    //$('#mapList1').html($detailListClone);
+
+    // Alternative
+    $("#mapList1").append(shortout);
   }
 
   // BUGBUG - May need to clear first to avoid multiple calls.
-  $('.detail').mouseover(
+  //$('.detail').mouseover(
+  $('.detail').mouseenter(
       function() { 
         // Triggered when rolling over list.
         // TO DO: make mappoint bigger when rolling over list.
-        //popMapPoint(dp, map, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
-        console.log("popMapPoint");
+        popMapPoint(dp, map, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
       }
   );
 
@@ -1973,6 +1995,11 @@ var colorTheCountry = d3.scaleThreshold()
 function popMapPoint(dp, map, latitude, longitude, name, color) {
   // Place large icon on side map and zoom
 
+  if (!latitude || !longitude) {
+    console.log("No latitude or longitude for " + name)
+    return;
+  }
+  console.log("popMapPoint for: " + name);
   let center = [latitude,longitude];
 
   // BUGBUG - causes map point on other map to temporarily disappear.
