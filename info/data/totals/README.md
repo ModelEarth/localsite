@@ -10,5 +10,5 @@
 
 ## Update to Inflow-Outflow Chart
 
-The existing [Inflow-Outflow Chart](/io/charts/) (which uses Material UI) will be updated to default to displaying totals (rather than per-dollar) within the [USEEIO-widgets repo](https://github.com/USEPA/useeio-widgets/).
+In the EPA's [USEEIO-widgets repo](https://github.com/USEPA/useeio-widgets/), the existing [Inflow-Outflow Chart](/io/charts/) (which uses Material UI) will be updated to default to displaying totals <span style='white-space: nowrap;'>(rather than per-dollar)</span>.
 <br>
