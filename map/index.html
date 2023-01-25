@@ -486,7 +486,7 @@ $(".swiper-button-play").show();
           </div>
       </div>
 
-    <div class="earthX local" style="float:left; display:none">
+    <div class="earth local" style="float:left; display:none">
       <div class="showEarth">
         <i class="material-icons show-on-load" style="font-size:34px;opacity:0.2; margin-top:-3px" data="apps">&#xE894;</i>
       </div>
@@ -1791,7 +1791,11 @@ Displayed by hashChanged() in map-filters.js
 
 <!-- Try to reactivate both of these display:none and update map.js waitForElm('#bodyFile #' + whichmap -->
 <div class="displayOnload displayMapForLoad" style="display:none;position:relative;overflow:hidden;">
-  <div id="mapList1" class="always-show-scroll"></div>
+  <div id="mapList1Holder" class="local" style="display:none">
+    <div id="mapList1Header">Locations</div>
+    <div id="mapList1" class="always-show-scroll"></div>
+  </div>
+
   <div id="map1" class="displayMapForLoad" style="display:none"></div>
 
   <!-- not in use -->

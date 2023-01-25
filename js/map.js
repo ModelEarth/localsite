@@ -509,7 +509,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         //dp.dataset = "https://model.earth/georgia-data/automotive/automotive.csv";
         dp.datastates = "GA";
         // Dark green map points indicate electric vehicle parts manufacturing.<br>
-        dp.listInfo = "From 2020 to 2022 Georgia added more than 20 EV-related projects. <a href='https://www.georgiatrend.com/2022/07/29/electric-revolution/'>Learn&nbsp;more</a><br>Dark Green: Electric Vehicle (EV) Industry<br>Dark Blue: Internal Combustion Engine (ICE)<br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates.<br><a href='/localsite/info/input/'>Contact Us</a> to help maintain the sheet directly. Learn about <a href='../../community/projects/mobility/'>data sources</a>.";
+        dp.listInfo = "From 2020 to 2022 Georgia added more than 20 EV-related projects. <a href='https://www.georgiatrend.com/2022/07/29/electric-revolution/'>Learn&nbsp;more</a><br>Dark Green: Electric Vehicle (EV) Industry<br>Dark Blue: Internal Combustion Engine (ICE)<br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates.<br><a href='/localsite/info/input/'>Contact Us</a> to help maintain the sheet directly. Learn about <a href='../../community/projects/mobility/'>data&nbsp;sources</a>.";
         dp.valueColumn = "ev industry";
         dp.valueColumnLabel = "EV Industry";
         dp.markerType = "google";
@@ -766,10 +766,10 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   loadIframe("mainframe","https://earth.nullschool.net/#current/wind/surface/level/orthographic=" +  dp.longitude + "," + dp.latitude + ",1381");
 
 }
-
 function initialHighlight(hash) {
+  // When is this called - not for list highlight
   if (hash.name) {
-    let locname = hash.name.replace(/_/g," ");
+    let locname = hash.name.replace(/_/g," ").replace(/ & /g,' AND ');
 
     // console.log("Auto select the first location in list")
     //$("#detaillist > [name='"+locname+"']" ).trigger("click");
@@ -1631,13 +1631,19 @@ function showList(dp,map) {
             }
           }
 
-          shortout += "<div class='detail'>";
-          shortout += "<div class='detailTitle'>" + name + "</div>";
-          if (outaddress) {
-            shortout += "<div class='detailLocation'>" + outaddress + "</div>";
+          if (outaddress) { // Only listings with locations, for map points. 
+            // To do: Adjust so Google link is used when address but no latitude and longitude.
+            if (element[dp.latColumn] && element[dp.lonColumn]) {
+              shortout += "<div class='detail' name='" + name.replace(/'/g,'&#39;') + "' latitude='" + element[dp.latColumn] + "' longitude='" + element[dp.lonColumn] + "' color='" + bulletColor + "'>";
+            } else {
+              shortout += "<div class='detail' name='" + name.replace(/'/g,'&#39;') + "' color='" + bulletColor + "'>";
+            }
+            shortout += "<div class='detailTitle'>" + name + "</div>";
+            if (outaddress) {
+              shortout += "<div class='detailLocation'>" + outaddress + "</div>";
+            }
+            shortout += "</div>";
           }
-          shortout += "</div>";
-
 
           if (element.comments) {
             output += element.comments + "<br>";
@@ -1715,7 +1721,7 @@ function showList(dp,map) {
               if (hash.name) {
                 output += "&nbsp; | &nbsp;<a href='" + window.location + "&details=true'>Details</a>";
               } else {
-                output += "&nbsp; | &nbsp;<a href='" + window.location + "&name=" + name.replace(/ /g,"+") + "&details=true'>Details</a>";
+                output += "&nbsp; | &nbsp;<a href='" + window.location + "&name=" + name.replace(/ & /g,' AND ').replace(/ /g,"+") + "&details=true'>Details</a>";
               }
             }
             if (dp.editLink) {
@@ -1812,8 +1818,8 @@ function showList(dp,map) {
   if (hash.show != showprevious || $("#tableSide > .catList").text().length == 0) { // Prevents selected category from being overwritten.
     renderCatList(catList);
   }
-  if (hash.name && $("#detaillist > [name='"+ hash.name.replace(/_/g,' ') +"']").length) {
-    let listingName = hash.name.replace(/_/g,' ');
+  if (hash.name && $("#detaillist > [name='"+ hash.name.replace(/_/g,' ').replace(/ AND /g,' & ') +"']").length) {
+    let listingName = hash.name.replace(/_/g,' ').replace(/ AND /g,' & ');
     $("#detaillist > [name='"+ listingName.replace(/'/g,'&#39;') +"']").show(); // To do: check if this or next line for apostrophe in name.
     $("#detaillist > [name='"+ listingName +"']").show();
     // Clickit
@@ -1821,11 +1827,13 @@ function showList(dp,map) {
       $("#detaillist > [name='"+ listingName +"']" ).trigger("click"); // Not working to show close-up map
       $("#detaillist > [name='"+ listingName +"']" ).removeClass("detailActive");
       $("#detaillist > [name='"+ listingName +"']" ).addClass("detailCurrent");
+      $("#changeHublistHeight").hide(); // Since only one is being displayed
     }, 100);
   } else {
     $("#detaillist .detail").show(); // Show all
+    $("#changeHublistHeight").show();
   }
-    //$("#detaillist > [name='"+ name.replace(/'/g,'&#39;') +"']").show();
+    //$("#detaillist > [name='"+ name.replace(/'/g,'&#39;').replace(/& /g,'AND ') +"']").show();
 
   if(location.host.indexOf('localhost') >= 0) {
 
@@ -1837,12 +1845,10 @@ function showList(dp,map) {
     $("#mapList1").append(shortout);
   }
 
-  // BUGBUG - May need to clear first to avoid multiple calls.
-  //$('.detail').mouseover(
   $('.detail').mouseenter(
       function() { 
         // Triggered when rolling over list.
-        // TO DO: make mappoint bigger when rolling over list.
+        // TO DO: make mappoint bigger when rolling over list, but don't zoom until click.
         popMapPoint(dp, map, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
       }
   );
@@ -1914,7 +1920,7 @@ function showList(dp,map) {
       }
       // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
       // Remove name from hash to trigger refresh
-      searchFor += " <span class='viewAllLink' style='display:none;'><a class='btn btn-success' onclick='goHash({},[\"name\",\"loc\",\"cat\",\"subcat\"]); return false;' href='#show=" + param["show"] + "'>View All</a></span>";
+      searchFor += " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\",\"cat\",\"subcat\"]); return false;' href='#show=" + param["show"] + "'>Show All</a></span>";
 
       $("#dataList").html(searchFor);
       $("#resultsPanel").show();
@@ -2000,13 +2006,8 @@ function popMapPoint(dp, map, latitude, longitude, name, color) {
     return;
   }
   console.log("popMapPoint for: " + name);
-  let center = [latitude,longitude];
 
-  // BUGBUG - causes map point on other map to temporarily disappear.
-  //map.flyTo(center, 15); // 19 in lake
-
-  // Because flyTo causes points on other map to disappear
-  map.setView(center, 11);
+  // TODO: Remove prior red highlighted markers
 
   // Add a single map point
   var iconColor, iconColorRGB, iconName;
@@ -2027,9 +2028,16 @@ function popMapPoint(dp, map, latitude, longitude, name, color) {
   // Attach the icon to the marker and add to the map
   //dp.group2 = 
 
-  // To do: Make this point clickable. Associate popup somehow.
+  // To do: Make this point clickable. Associate popup somehow. OR allow click to pass through to mappoint below.
+  // Currently appears on map1
   circle = L.marker([latitude,longitude], {icon: busIcon}).addTo(map)
+
+  // Temp - shows name only
   circle.bindPopup(name + " &nbsp;");
+
+  // TO DO - send in output or other
+  //circle.bindPopup(L.popup({paddingTopLeft:[200,200]}).setContent(output));
+  //console.log("what2");
 
   //var markerGroup = L.layerGroup().addTo(map);
   //L.marker([latitude,longitude]).addTo(markerGroup);
@@ -2052,6 +2060,70 @@ function popMapPoint(dp, map, latitude, longitude, name, color) {
           }).addTo(dp.group);
   }
   */
+}
+function zoomMapPoint(dp, map, latitude, longitude, name, color) {
+  // Place large icon on side map and zoom
+
+  if (!latitude || !longitude) {
+    console.log("No latitude or longitude for " + name)
+    return;
+  }
+  console.log("zoomMapPoint for: " + name);
+
+  let center = [latitude,longitude];
+
+  // BUGBUG - causes map point on other map to temporarily disappear.
+  //map.flyTo(center, 15); // 19 in lake
+
+  // Because flyTo causes points on other map to disappear
+  // TODO IMPORTANT: Reactivate this for some clicks, but not rollover.
+  map.setView(center, 11);
+
+  // Add a single map point - RED, uses a star Google Material Icon
+  var iconColor, iconColorRGB, iconName;
+  var colorScale = dp.scale;
+
+  iconColorRGB = hex2rgb(color);
+  iconName = dp.iconName;
+  /*
+  var busIcon = L.IconMaterial.icon({
+    icon: iconName,            // Name of Material icon - star
+    iconColor: '#fff',         // Material icon color (could be rgba, hex, html name...)
+    markerColor: 'rgba(' + iconColorRGB + ',0.7)',  // Marker fill color
+    outlineColor: 'rgba(' + iconColorRGB + ',0.7)', // Marker outline color
+    outlineWidth: 1,                   // Marker outline width 
+  })
+  */
+  //dp.group2.clearLayers();
+
+  // Attach the icon to the marker and add to the map
+  //dp.group2 = 
+
+  // To do: Make this point clickable. Associate popup somehow.
+  //circle = L.marker([latitude,longitude], {icon: busIcon}).addTo(map)
+  //circle.bindPopup(name + " &nbsp;");
+
+  //var markerGroup = L.layerGroup().addTo(map);
+  //L.marker([latitude,longitude]).addTo(markerGroup);
+
+  // Didn't work here
+  /*
+  if (dp.markerType == "google") {
+      if (location.host == 'georgia.org' || location.host == 'www.georgia.org') {
+        circle = L.marker([element[dp.latColumn], element[dp.lonColumn]]).addTo(dp.group);
+      } else {
+        // If this line returns an error, try setting dp1.latColumn and dp1.latColumn to the names of your latitude and longitude columns.
+        circle = L.marker([latitude,longitude], {icon: busIcon}).addTo(dp.group); // Works, but not in Drupal site.
+      }
+  } else {
+    circle = L.circle([element[dp.latColumn], element[dp.lonColumn]], {
+              color: colorScale(element[dp.valueColumn]),
+              fillColor: colorScale(element[dp.valueColumn]),
+              fillOpacity: 1,
+              radius: markerRadius(1,map) // was 50.  Aiming for 1 to 10
+          }).addTo(dp.group);
+  }
+
   if (param["initial"] == "response") {
     if (dp.public == "Yes") {
       $(".suppliers_pre_message").hide();
@@ -2060,6 +2132,7 @@ function popMapPoint(dp, map, latitude, longitude, name, color) {
       $(".suppliers_pre_message").show();
     }
   }
+  */
 }
 
 // Scales: http://d3indepth.com/scales/
@@ -3838,9 +3911,6 @@ function addIcons(dp,map,map2) {
       //elements[i].style.marginLeft = 8;
       //elements[i].style.marginTop  = 22;
     }
-    
-
-
   });
   map2.on('zoomend', function() { // zoomend
     // Resize the circle to avoid large circles on close-ups
@@ -3878,8 +3948,9 @@ function addIcons(dp,map,map2) {
       //$('.detail').css("padding","12px 0 12px 4px");
       $('.detail').removeClass("detailActive");
 
+      // BUGBUG - Click is sent twice for top list, apparently because bottom list is already rendered when it loads.
       console.log("List detail click");
-      let locname = $(this).attr("name").replace(/ /g,"_");
+      let locname = $(this).attr("name").replace(/ & /g," AND ").replace(/ /g,"_");
       updateHash({"name":locname});
       $('#sidemapName').text($(this).attr("name"));
 
@@ -3898,6 +3969,7 @@ function addIcons(dp,map,map2) {
 
       if ($(this).attr("latitude") && $(this).attr("longitude")) {
         popMapPoint(dp, map2, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
+        zoomMapPoint(dp, map2, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
       } else {
         $("#sidemapCard").hide();
       }
@@ -3994,7 +4066,6 @@ function hashChangedMap() {
   } else {
     $(".viewAllLink").hide();
   }
-  $("#changeHublistHeight").show();
 
   if (hash.name !== priorHashMap.name) {
     loadMap1("hashChanged() in map.js new name for View Details " + hash.name, hash.show);

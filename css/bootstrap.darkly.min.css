@@ -37,6 +37,9 @@ html, body, #fullcolumn,
 a:link, a:visited {
   color: #CF6679;
 }
+#headerbar {
+    border-bottom: 0px solid #999 !important;
+}
 .headerbar {
 	background: #222;
 	border-bottom-color: #222;
@@ -49,7 +52,8 @@ a:link, a:visited {
     color: #fff;
 }
 #filterFieldsHolder {
-    border-bottom: 0px solid #333;
+    border-top: 0px solid #333 !important;
+    border-bottom: 0px solid #333 !important;
 }
 .filterFieldsHolderFixed {
     background-color: rgb(55 55 55/95%);
