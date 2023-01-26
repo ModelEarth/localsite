@@ -674,7 +674,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             $('body').prepend("<div id='bodyFile'></div>");
           }
           if (param.showheader == "true" || param.showsearch == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "map") {
-            if (param.showheader != "false") { // Prevents dup header on map/index.html
+            if (param.templatepage != "true") { // Prevents dup header on map/index.html
               loadLocalTemplate();
             }
             //else {
@@ -826,13 +826,17 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   let fullsite = false;
   // FULL SITE - everything or map
   if (param.showheader == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "navigation" || param.display == "map") {
-    if (param.showheader != "false") {
+    //alert("added param.show above as test " + param.show)
+    if (param.showheader != "false" || param.display == "map") {
 
       fullsite = true;
       includeCSS3(theroot + 'css/map.css',theroot); // Before naics.js so #industries can be overwritten.
+
+      // TODO - Try limiting to param.display == "everything"
       includeCSS3(theroot + 'css/naics.css',theroot);
+      
       // customD3loaded
-      if (param.preloadmap != "false" && param.showheader == "true") {
+      if (param.preloadmap != "false" && (param.showheader == "true" || param.display == "map")) {
         loadLeafletAndMapFilters();
       }
 
