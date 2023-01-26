@@ -86,7 +86,6 @@ p {
 h1,h2,h3,h4 {
   font-family: Raleway;
   line-height: 1.5;
-  overflow: auto;
 }
 h2, h3, h4 {
     font-family: 'PT Sans', sans-serif;
