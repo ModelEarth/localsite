@@ -87,7 +87,7 @@
 .filterClick {
     position: relative;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 20px;
     border: 0px;
     border-right: 1px solid lightgray;
     border-bottom: 1px solid lightgray;
@@ -99,6 +99,10 @@
     text-shadow: none;
     float: left;
 }
+input.filterClick[type="text"] { 
+    outline: none; /* prevents jagged edge when clicking to use search field. */
+}
+
 @media (max-width: 600px) {
   .filterClick {
     float:none;
