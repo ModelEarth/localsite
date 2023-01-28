@@ -532,7 +532,7 @@ function consoleLog(text,value) {
     }
   }
 }
-//alert("test")
+
 function loadLocalTemplate() {
   let bodyFile = theroot + "map/index.html #insertedText";
   //alert("Before template Loaded: " + bodyFile);
@@ -674,9 +674,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             $('body').prepend("<div id='bodyFile'></div>");
           }
           if (param.showheader == "true" || param.showsearch == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "map") {
-            if (param.templatepage != "true") { // Prevents dup header on map/index.html
+            //if (param.templatepage != "true") { // Prevents dup header on map/index.html - Correction, this is needed. param.templatepage can probably be removed.
               loadLocalTemplate();
-            }
+            //}
             //else {
             //  $("#headerbar").prependTo("body"); // For map/index.html
           }

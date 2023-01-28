@@ -119,9 +119,10 @@ localsite.js pulls the #insertedText div from this page as the template for head
 }
 </style>
 
+
 <!-- INTRO -->
 
-<div id="introDiv" style="display:none" class="content contentpadding"></div>
+<div id="introDiv" style="displayX:none" class="local content contentpadding"></div>
 
 <div id="readmeHolder" class="content contentpadding" style="display:none; margin-top:0px; padding-bottom:40px">
   <div id="readmeEdit" style='float:right' class='editButton'><a style="text-decoration: none" href='https://github.com/modelearth/community/tree/master/resources/useeio/design'>Edit</a></div>
@@ -149,228 +150,6 @@ localsite.js pulls the #insertedText div from this page as the template for head
   }
 </script>
 <!-- /INTRO -->
-
-
-
-
-<!-- Swiper and Plyr -->
-
-<style>
-.optionalText {
-  display: none;
-  position:absolute;
-  bottom:-30px;
-}
-</style>
-
-<!-- update
-<link rel="stylesheet" href="/localsite/css/swiper/swiper-bundle.min.css" />
--->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
-<link rel='stylesheet' href='/localsite/css/swiper/plyr.css'>
-<link rel='stylesheet' href='/localsite/css/swiper/swiper.css'>
-<script src='/localsite/js/polyfill.min.js?features=es6,Array.prototype.includes,CustomEvent,Object.entries,Object.values,URL'></script>
-<script src='/localsite/js/plyr.min.js'></script>
-
-
-
-  <div class="swiper-container" tyle="overflow:hidden;" id="sample1">
-
-    <div class="swiper-wrapper">
-      
-      
-      <!-- Slide 1 -->
-      <div class="swiper-slide" data-hash="plant">
-        <img class="swiper-lazy" data-src="/localsite/img/hero/plant.png" style="opacity:0.9;width:100%;max-width:2000px">
-        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
-          Add Optional Text 1
-        </div>
-      </div>
-
-      <!-- Slide 2 -->
-      <div class="swiper-slide" data-hash="2to1-ratio">
-        <img class="swiper-lazy" data-src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
-        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
-          Add Optional Text 2
-        </div>
-      </div>
-
-      <!-- Slide 3 -->
-      <div class="swiper-slide" data-hash="sun">
-        <!-- Example of smaller: solar-rect-sm.png -->
-        <img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/solar-rect.png" style="width:100%;max-width:2000px;"><img class="swiper-lazy" data-src="/localsite/img/hero/solar-rect.png" style="opacity:0.9;max-width:2000px;">
-        <div class="swiper-lazy-preloader swiper-lazy-preloader-white" style="position: relative; border: 10px solid red;"></div>
-        <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
-          Add Optional Text 3
-        </div>
-      </div>
-
-      <!-- Slide 4: A Walkable Street -->
-      <div class="swiper-slide" data-hash="communities" style="positionX: relative;">
-        <img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/sustainable-communities.jpg" style="width:100%;max-width:2000px;">
-        <img class="swiper-lazy" data-src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px">
-        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="box" style="display:none">
-          <!--div class="title">Title</div-->
-          <!--
-          <div class="subtitle" data-swiper-parallax="-200">Graphics project</div>
-          -->
-        </div>
-      </div>
-
-      <!-- Slide 5 -->
-      <div class="swiper-slide" data-hash="explore">
-        <img class="swiper-lazy" data-src="/localsite/img/hero/future-teepee.png" style="opacity:0.9;width:100%;max-width:2000px;height:740px">
-        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="optionalText content contentpadding">
-          Add Optional Text 5
-        </div>
-      </div>
-
-
-    </div>
-
-  
-    <!-- Swiper Nav -->
-    <div class="swiper-button-prev swiper-button-prev-sample1">
-      <!--<div class="swiper-button-white"></div>-->
-    </div>
-    <div class="swiper-button-play swiper-button-play-sample1"></div>
-    <!-- e034 -->
-    <div class="swiper-button-pause swiper-button-pause-sample1"></div>
-
-    <div class="swiper-button-next swiper-button-next-sample1">
-      <!--<div class="swiper-button-white"></div>-->
-    </div>
-    <!-- /Swiper Nav-->
-
-  </div>
-
-  <!-- Swiper Pagination -->
-  <div class="swiper-pagination swiper-pagination-sample1" style="margin-top:15px;"></div>
-  <!-- /Swiper Pagination -->
-
-  <!--
-  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-  -->
-  <script src="/localsite/js/swiper/swiper-bundle.min.js"></script>
-  
-
-<!-- Initialize Swiper -->
-<script>
-// Init multiple slider on a single page
-// https://stackoverflow.com/questions/32118999/how-can-i-have-multiple-swiper-slideshows-on-a-single-page
-// Function that builds the swiper 
-const buildSwiperSlider = sliderElm => {
-    const sliderIdentifier = sliderElm.id;
-    const homeSwiper = new Swiper(`#${sliderElm.id}`, {
-        slidesPerView: 1,
-        spaceBetween: 30,
-        loop: true,
-        speed: 2500, /* transition */
-        slidesPerView: 'auto',
-        lazy: {
-          loadPrevNext: true,
-        },
-        navigation: {
-            nextEl: '.swiper-button-next-' + sliderIdentifier,
-            prevEl: '.swiper-button-prev-' + sliderIdentifier
-        },
-        pagination: {
-            el: '.swiper-pagination-' + sliderIdentifier,
-            clickable: true,
-        },
-        
-        effect: 'fade',
-
-        /* change hash value (and load based on hash) -- problem: overwrites other hash values */
-        /*
-        hashNavigation: {
-          watchState: true,
-        },
-        */
-
-        keyboard: {
-          enabled: true,
-          onlyInViewport: false
-        },
-        direction: 'horizontal',
-        /*
-        history: {
-          keepQuery: true
-        },
-        */
-    });
-
-    $(".swiper-button-pause-" + sliderIdentifier).click(function(){
-      $(".swiper-button-pause-" + sliderIdentifier).hide();
-      $(".swiper-button-play-" + sliderIdentifier).show();
-      $(".swiper-button-pause-" + sliderIdentifier).addClass("overrideShowPauseQuick");
-      homeSwiper.autoplay.stop(); // Tiggers icon change below at autoplayStop event
-    });
-
-    $(".swiper-button-play-" + sliderIdentifier).click(function(){
-      homeSwiper.slideNext(); // Immidiately advance to next on click.
-      $(".swiper-button-play-" + sliderIdentifier).hide();
-      $(".swiper-button-pause-" + sliderIdentifier).show();
-      homeSwiper.autoplay.start();
-    });
-
-    $(".swiper-pagination-" + sliderIdentifier + " .swiper-pagination-bullet").click(function(){
-      $(".swiper-button-pause-" + sliderIdentifier).hide();
-      $(".swiper-button-play-" + sliderIdentifier).show();
-    });
-    $(".swiper-button-prev-" + sliderIdentifier).click(function(){
-      $(".swiper-button-pause-" + sliderIdentifier).hide();
-      $(".swiper-button-play-" + sliderIdentifier).show();
-    });
-    $(".swiper-button-next-" + sliderIdentifier).click(function(){
-      $(".swiper-button-pause-" + sliderIdentifier).hide();
-      $(".swiper-button-play-" + sliderIdentifier).show();
-    });
-    homeSwiper.on('autoplayStart', function () {
-      //$(".swiper-pagination-bullet-active").css("background","green");
-      $('head').append('<style id="customCSS">.swiper-pagination-bullet-active { background:green !important }</style>');
-    });
-    // Triggered by keyboard arrow keys and pause button:
-    homeSwiper.on('autoplayStop', function () {
-      //$(".swiper-pagination-bullet-active").css("background","#888");
-      $('#customCSS').remove();
-      // Briefly show the pause button
-      $(".swiper-button-pause-" + sliderIdentifier).show();
-      $(".swiper-button-pause-" + sliderIdentifier).addClass("showPauseQuick");
-      //alert("stop")
-      setTimeout(() => {
-        $(".swiper-button-pause-" + sliderIdentifier).hide();
-        $(".swiper-button-pause-" + sliderIdentifier).removeClass("showPauseQuick"); // to do: figure out why not fading
-        $(".swiper-button-pause-" + sliderIdentifier).removeClass("overrideShowPauseQuick"); // Allows pause not to be retained briefly when clicking actual pause button.
-      },1000);
-      $(".swiper-button-play-" + sliderIdentifier).show();
-    });
-
-    // Play on iniital load
-    $(".swiper-button-play-" + sliderIdentifier).hide();
-    $(".swiper-button-pause-" + sliderIdentifier).show();
-    homeSwiper.autoplay.start();
-
-    //return homeSwiper;
-}
-
-// Get all of the swipers on the page
-const allSliders = document.querySelectorAll('.swiper-container');
-
-// Loop over all of the fetched sliders and apply Swiper on each one.
-allSliders.forEach(slider => buildSwiperSlider(slider));
-
-$(".swiper-button-play").show();
-//$(".swiper-button-play").css('opacity', '0.8');
-
-</script>
-<!-- /Initialize Swiper -->
-
-<!-- /Swiper and Plyr -->
 
 
 <div id="insertedTextSource">
@@ -2359,8 +2138,8 @@ local_app.init(["somevalue", 1, "controlId"]); // Used by link to feedback form
 
 document.addEventListener('hashChangeEvent', function (elem) {
   //param = loadParam(location.search,location.hash);
-  console.log("index.html detects hashChangeEvent");
-  hash = getHash();  
+  //console.log("index.html detects hashChangeEvent");
+  //hash = getHash();  
 }, false);
 
 // Try appending railroads here, somehow
@@ -2369,6 +2148,231 @@ document.addEventListener('hashChangeEvent', function (elem) {
 //localmap.addOverlay(baselayers["Rail"], "Railroads"); // Appends to existing layers
 
 </script>
+
+
+
+
+
+
+<!-- Swiper and Plyr -->
+
+<style>
+.optionalText {
+  display: none;
+  position:absolute;
+  bottom:-30px;
+}
+</style>
+
+<!-- update
+<link rel="stylesheet" href="/localsite/css/swiper/swiper-bundle.min.css" />
+-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
+<link rel='stylesheet' href='/localsite/css/swiper/plyr.css'>
+<link rel='stylesheet' href='/localsite/css/swiper/swiper.css'>
+<script src='/localsite/js/polyfill.min.js?features=es6,Array.prototype.includes,CustomEvent,Object.entries,Object.values,URL'></script>
+<script src='/localsite/js/plyr.min.js'></script>
+
+
+
+<!-- For testing slider -->
+<div class="swiper-container local" style="display:none;overflow:hidden;clear:both" id="sample1">
+
+  <div class="swiper-wrapper">
+    
+    
+    <!-- Slide 1 -->
+    <div class="swiper-slide" data-hash="plant">
+      <img class="swiper-lazy" data-src="/localsite/img/hero/plant.png" style="opacity:0.9;width:100%;max-width:2000px">
+      <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+      <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+        Add Optional Text 1
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="swiper-slide" data-hash="2to1-ratio">
+      <img class="swiper-lazy" data-src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
+      <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+      <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+        Add Optional Text 2
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="swiper-slide" data-hash="sun">
+      <!-- Example of smaller: solar-rect-sm.png -->
+      <img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/solar-rect.png" style="width:100%;max-width:2000px;"><img class="swiper-lazy" data-src="/localsite/img/hero/solar-rect.png" style="opacity:0.9;max-width:2000px;">
+      <div class="swiper-lazy-preloader swiper-lazy-preloader-white" style="position: relative; border: 10px solid red;"></div>
+      <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
+        Add Optional Text 3
+      </div>
+    </div>
+
+    <!-- Slide 4: A Walkable Street -->
+    <div class="swiper-slide" data-hash="communities" style="positionX: relative;">
+      <img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/sustainable-communities.jpg" style="width:100%;max-width:2000px;">
+      <img class="swiper-lazy" data-src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px">
+      <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+      <div class="box" style="display:none">
+        <!--div class="title">Title</div-->
+        <!--
+        <div class="subtitle" data-swiper-parallax="-200">Graphics project</div>
+        -->
+      </div>
+    </div>
+
+    <!-- Slide 5 -->
+    <div class="swiper-slide" data-hash="explore">
+      <img class="swiper-lazy" data-src="/localsite/img/hero/future-teepee.png" style="opacity:0.9;width:100%;max-width:2000px;height:740px">
+      <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+      <div class="optionalText content contentpadding">
+        Add Optional Text 5
+      </div>
+    </div>
+
+
+  </div>
+
+
+  <!-- Swiper Nav -->
+  <div class="swiper-button-prev swiper-button-prev-sample1">
+    <!--<div class="swiper-button-white"></div>-->
+  </div>
+  <div class="swiper-button-play swiper-button-play-sample1"></div>
+  <!-- e034 -->
+  <div class="swiper-button-pause swiper-button-pause-sample1"></div>
+
+  <div class="swiper-button-next swiper-button-next-sample1">
+    <!--<div class="swiper-button-white"></div>-->
+  </div>
+  <!-- /Swiper Nav-->
+
+</div>
+
+<!-- Swiper Pagination -->
+<div class="swiper-pagination swiper-pagination-sample1" style="margin-top:15px;"></div>
+<!-- /Swiper Pagination -->
+
+<!--
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+-->
+<script src="/localsite/js/swiper/swiper-bundle.min.js"></script>
+
+
+<!-- Initialize Swiper -->
+<script>
+// Init multiple slider on a single page
+// https://stackoverflow.com/questions/32118999/how-can-i-have-multiple-swiper-slideshows-on-a-single-page
+// Function that builds the swiper 
+const buildSwiperSlider = sliderElm => {
+    const sliderIdentifier = sliderElm.id;
+    const homeSwiper = new Swiper(`#${sliderElm.id}`, {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        loop: true,
+        speed: 2500, /* transition */
+        slidesPerView: 'auto',
+        lazy: {
+          loadPrevNext: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next-' + sliderIdentifier,
+            prevEl: '.swiper-button-prev-' + sliderIdentifier
+        },
+        pagination: {
+            el: '.swiper-pagination-' + sliderIdentifier,
+            clickable: true,
+        },
+        
+        effect: 'fade',
+
+        /* change hash value (and load based on hash) -- problem: overwrites other hash values */
+        /*
+        hashNavigation: {
+          watchState: true,
+        },
+        */
+
+        keyboard: {
+          enabled: true,
+          onlyInViewport: false
+        },
+        direction: 'horizontal',
+        /*
+        history: {
+          keepQuery: true
+        },
+        */
+    });
+
+    $(".swiper-button-pause-" + sliderIdentifier).click(function(){
+      $(".swiper-button-pause-" + sliderIdentifier).hide();
+      $(".swiper-button-play-" + sliderIdentifier).show();
+      $(".swiper-button-pause-" + sliderIdentifier).addClass("overrideShowPauseQuick");
+      homeSwiper.autoplay.stop(); // Tiggers icon change below at autoplayStop event
+    });
+
+    $(".swiper-button-play-" + sliderIdentifier).click(function(){
+      homeSwiper.slideNext(); // Immidiately advance to next on click.
+      $(".swiper-button-play-" + sliderIdentifier).hide();
+      $(".swiper-button-pause-" + sliderIdentifier).show();
+      homeSwiper.autoplay.start();
+    });
+
+    $(".swiper-pagination-" + sliderIdentifier + " .swiper-pagination-bullet").click(function(){
+      $(".swiper-button-pause-" + sliderIdentifier).hide();
+      $(".swiper-button-play-" + sliderIdentifier).show();
+    });
+    $(".swiper-button-prev-" + sliderIdentifier).click(function(){
+      $(".swiper-button-pause-" + sliderIdentifier).hide();
+      $(".swiper-button-play-" + sliderIdentifier).show();
+    });
+    $(".swiper-button-next-" + sliderIdentifier).click(function(){
+      $(".swiper-button-pause-" + sliderIdentifier).hide();
+      $(".swiper-button-play-" + sliderIdentifier).show();
+    });
+    homeSwiper.on('autoplayStart', function () {
+      //$(".swiper-pagination-bullet-active").css("background","green");
+      $('head').append('<style id="customCSS">.swiper-pagination-bullet-active { background:green !important }</style>');
+    });
+    // Triggered by keyboard arrow keys and pause button:
+    homeSwiper.on('autoplayStop', function () {
+      //$(".swiper-pagination-bullet-active").css("background","#888");
+      $('#customCSS').remove();
+      // Briefly show the pause button
+      $(".swiper-button-pause-" + sliderIdentifier).show();
+      $(".swiper-button-pause-" + sliderIdentifier).addClass("showPauseQuick");
+      //alert("stop")
+      setTimeout(() => {
+        $(".swiper-button-pause-" + sliderIdentifier).hide();
+        $(".swiper-button-pause-" + sliderIdentifier).removeClass("showPauseQuick"); // to do: figure out why not fading
+        $(".swiper-button-pause-" + sliderIdentifier).removeClass("overrideShowPauseQuick"); // Allows pause not to be retained briefly when clicking actual pause button.
+      },1000);
+      $(".swiper-button-play-" + sliderIdentifier).show();
+    });
+
+    // Play on iniital load
+    $(".swiper-button-play-" + sliderIdentifier).hide();
+    $(".swiper-button-pause-" + sliderIdentifier).show();
+    homeSwiper.autoplay.start();
+
+    //return homeSwiper;
+}
+
+// Get all of the swipers on the page
+const allSliders = document.querySelectorAll('.swiper-container');
+
+// Loop over all of the fetched sliders and apply Swiper on each one.
+allSliders.forEach(slider => buildSwiperSlider(slider));
+
+$(".swiper-button-play").show();
+//$(".swiper-button-play").css('opacity', '0.8');
+
+</script>
+<!-- /Initialize Swiper -->
+
+<!-- /Swiper and Plyr -->
 
 </body>
 </html>
