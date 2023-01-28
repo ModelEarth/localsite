@@ -40,7 +40,6 @@
   padding:20px 0 20px 40px;
 }
 #filterFieldsHolder {
-  background-color: rgb(255 255 255/95%);
   background-color: rgb(77 77 77/50%);
   z-index: 9999;
 }
@@ -49,6 +48,7 @@
     /* background-color: red; */
   }
 }
+
 .filterFieldsHolderFixed {
   position: fixed;
   top: 0px;
@@ -59,11 +59,24 @@
   padding-right: 24px;
   z-index: 99999;
 }
+/* brave still sees this since it's darkmode ignores the use of prefers-color-scheme: dark */
+@media (not (prefers-color-scheme: dark)) {
+  #filterFieldsHolder {
+    background-color: inherit;
+    background-color: rgb(250 250 250/95%);
+    border-bottom: 1px solid #eee;
+  }
+  .filterFieldsHolderFixed {
+    /* importatnt for FireFox because #filterFieldsHolder as ID seems to override class. */
+    background-color: rgb(255 255 255/95%) !important;
+  }
+}
+
 .filterFieldsHolderFixed .hamburger-circle {
   content: url("/localsite/img/icon/hamburger-lite.png");
 }
-#filterLocations {
-  background-color: #fcfcfc;
+#filterLocations, #honeycombPanel {
+  background-color: #fcfcfc; /* fcfcfc not visible to Brave darkmode, but #eee too dark in light mode */
   border-bottom: 1px solid #eee;
 }
 .fieldSelector {
