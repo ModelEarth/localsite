@@ -478,7 +478,7 @@ body {
     height: 100%;
     padding-right: 10px;
     background-color: rgb(253, 253, 253);
-    background-color: #aaa;
+    background-color: rgb(99 99 99/50%);
     position: relative;
 }
 #sidecolumnLeft {

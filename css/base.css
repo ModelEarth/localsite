@@ -924,6 +924,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 .headerbar {
   background:#fff;
+  background-color: rgb(230 230 230/50%);
   pointer-events: auto;
 }
 .headerbarhide {
