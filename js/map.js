@@ -1836,12 +1836,6 @@ function showList(dp,map) {
     //$("#detaillist > [name='"+ name.replace(/'/g,'&#39;').replace(/& /g,'AND ') +"']").show();
 
   if(location.host.indexOf('localhost') >= 0) {
-
-    // For full list clone to side of map - may impact performance
-    //var $detailListClone = $('#detaillist').clone().prop('id', 'detailListClone');
-    //$('#mapList1').html($detailListClone);
-
-    // Alternative
     $("#mapList1").append(shortout);
   }
 
@@ -1922,6 +1916,7 @@ function showList(dp,map) {
       // Remove name from hash to trigger refresh
       searchFor += " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\",\"cat\",\"subcat\"]); return false;' href='#show=" + param["show"] + "'>Show All</a></span>";
 
+      $("#mapList1").prepend(searchFor);
       $("#dataList").html(searchFor);
       $("#resultsPanel").show();
       $("#dataList").show();
