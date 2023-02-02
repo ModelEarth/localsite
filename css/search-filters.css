@@ -40,7 +40,7 @@
   padding:20px 0 20px 40px;
 }
 #filterFieldsHolder {
-  background-color: rgb(77 77 77/50%);
+  /* background-color: rgb(77 77 77/50%); */
   z-index: 9999;
 }
 @media (prefers-color-scheme: dark) {
