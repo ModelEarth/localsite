@@ -22,7 +22,8 @@ Also lacks CHARM.  Far from comprehensive.
 **Business to Business (B2B)**
 <a href="https://map.georgia.org/localsite/map/#show=recyclers&state=GA" target="_parent">Commercial Recyclers and Recovered Materials Manufacturers</a>
 
-**Municiple**
+**Municiple**<!-- https://map.georgia.org -->
+<a href="/localsite/map/#show=wastewater&state=GA" target="_parent">Wastewater</a>
 [Transfer Stations](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
 [Georgia Landfills](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
 [Inert Waste Landfills](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  

@@ -87,13 +87,15 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			param.headerLogoSmall = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
 			showClassInline(".lifecycle");
 			earthFooter = true;
-		} else if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("dreamstudio") >= 0) {
+		} else if (location.host.indexOf("dreamstudio") >= 0) {
 			//showLeftIcon = true;
 			$(".siteTitleShort").text("DreamStudio");
 			param.titleArray = [];
 			param.headerLogo = "<a href='https://dreamstudio.com'><img src='https://dreamstudio.com/dreamstudio/img/logo/dreamstudio.png' style='height:23px'></a>";
 			param.headerLogoNoText = " ";
-		// || (((location.host.indexOf('localhost') >= 0) || false) && !param.headerLogo)
+		} else if (location.host.indexOf("nxtwave") >= 0) {
+			param.titleArray = ["Nxt","Wave"];
+			$(".siteTitleShort").text("NxtWave");
 		} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 ) {
 			// Show locally for Brave Browser only - insert before:  ) || false
 			// && navigator && navigator.brave
