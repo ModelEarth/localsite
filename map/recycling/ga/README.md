@@ -28,7 +28,7 @@ Also lacks CHARM.  Far from comprehensive.
 **Consumer Recycling Services**
 <a href="https://www.google.com/search?q=Recycling+near+me" target="_parent">Consumer Recycling Centers - Google</a>
 
-**Municiple**<!-- https://map.georgia.org -->
+**Municipal**<!-- https://map.georgia.org -->
 [Transfer Stations](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
 [Georgia Landfills](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
 [Inert Waste Landfills](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
@@ -45,8 +45,6 @@ Also lacks CHARM.  Far from comprehensive.
 | <a href="../../../info/#show=landfills&state=GA" target="_parent">Landfills</a> | <a href="https://map.georgia.org/explore/#landfills" target="_parent" style="display:none">cartodb</a>
 <div style="clear:both"></div>
 -->
-
-
 
 ## B2B Recyclers
 
