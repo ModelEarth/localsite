@@ -1,11 +1,13 @@
 <div class="floatright">
+
+<a href="https://georgiarecycles.org" target="_parent"><img src="/recycling/img/georgia-epd-logo.png" style="width: 100%; max-width: 350px !important;" title="Georgia EPD" alt="Georgia EPD"></a><br><br>
+
 <a href="https://georgiarecycles.org" target="_parent"><img src="https://map.georgia.org/recycling/img/grc-logo-320.png" style="width: 100%; max-width: 350px !important;" title="GRC" alt="Georgia Recycling Coalition"></a><br><br>
 Our Commercial and Manufacturer Recycler list is maintained by the Georgia Recycling Coalition (GRC) in partnership with the <a href="https://www.georgia.org/center-of-innovation" target="_parent">Georgia Center of Innovation</a>.
 <br><br>
 </div>
 
-# Georgia Recycling
-
+# Georgia Center of Innovation
 
 <!--
 RecycleSearch.com doesn't work in iFrame. Returns New York.
@@ -15,15 +17,18 @@ Also lacks CHARM.  Far from comprehensive.
 <a href="https://recyclesearch.com" target="_parent">Recycling Centers - RecycleSearch.com</a>
 -->
 
+**Maps for Hydrogen Initiative**
+<a href="/localsite/map/#show=wastewater&state=GA" target="_parent">Georgia Wastewater Facilities Map</a>  
+<a href="/localsite/map/#show=landfills&state=GA" target="_parent">Georgia Landfill Map (97)</a> - [Source: EPD Regulated Solid Waste](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities)  
+<a href="/localsite/map/#show=solidwaste&state=GA" target="_parent">Solid Waste Map (3325)</a> - [Source: EPD Regulated Solid Waste](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities)  
 
-**Public**
+**Business to Business (B2B) Recycling**
+<a href="/localsite/map/#show=recyclers&state=GA" target="_parent">Commercial Recyclers and Recovered Materials Manufacturers Map</a>
+
+**Consumer Recycling Services**
 <a href="https://www.google.com/search?q=Recycling+near+me" target="_parent">Consumer Recycling Centers - Google</a>
 
-**Business to Business (B2B)**
-<a href="https://map.georgia.org/localsite/map/#show=recyclers&state=GA" target="_parent">Commercial Recyclers and Recovered Materials Manufacturers</a>
-
 **Municiple**<!-- https://map.georgia.org -->
-<a href="/localsite/map/#show=wastewater&state=GA" target="_parent">Wastewater</a>
 [Transfer Stations](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
 [Georgia Landfills](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  
 [Inert Waste Landfills](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities) - Georgia EPD  

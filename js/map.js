@@ -422,26 +422,83 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.search = {"In Main Category": "Category", "In Materials Accepted": "Materials Accepted", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
       
       } else if (show == "wastewater") {
-        dp.listTitle = "Georgia Waste Water Facilities";
-        // Changed the gid using sheet's Share > Publish to copy from tab's URL
+        //alert("wastewater4")
+        dp.listTitle = "Georgia Wastewater Facilities";
+        dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
+        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.&nbsp; View&nbsp;<a href='../map/recycling/ga/'>Landfill and Recycling&nbsp;Datasets</a>.";
+        // Wastewater tab. Path including gid from sheet's Share > Publish [choose tab]
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=2016874057&single=true&output=csv";
         
-        // PERMIT_NAME
-        dp.nameColumn = "PERMIT_NAME";
-        dp.titleColumn = "PERMIT_NAME";
-        dp.searchFields = "PERMIT_NAME";
-        dp.addressColumn = "FACILITY_ADDR";
+        // From sheet tab with SIC values
+        // Reactivate both of these, and additional two below
+        //dp.googleCategories = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1844952458&single=true&output=csv";
+        dp.catColumn = "sic_code_list";
 
-        dp.valueColumn = "SIC_CODE_LIST";
-        dp.valueColumnLabel = "SIC Code";
-        dp.catColumn = "SIC_CODE_LIST";
+        // PERMIT_NAME
+        // BUGBUG - Allow these to start with uppercase to match sheet
+        dp.nameColumn = "permit_name"; // PERMIT_NAME
+        dp.titleColumn = "permit_name";
+        dp.searchFields = "permit_name";
+        //dp.addressColumn = "FACILITY_ADDR";
+        dp.addressColumn = "facility_addr";
+
+        // BUGBUG ONLY WORKS WHEN LOWERCASE, Column in database does NOT need to be lowercase too.
+        // Reactivate both of these, and additional two above
+        //dp.valueColumn = "sic_code_list";
+        //dp.valueColumnLabel = "SIC Code";
+        ////dp.showKeys = "description"; // How would this be used
+        
+        
+
+        //dp.subcatColumn = "siccode";
+        dp.itemsColumn = "SIC_CODE_LIST"; // Needs to remain capitalized. Equivalent to PPE items column, checkboxes
+        
 
         dp.markerType = "google";
         dp.color = "#339";
+        dp.search = {"In Name": "PERMIT_NAME", "In Address": "facility_addr", "In County Name": "county", "SIC Code": "siccode", };
+
+      } else if (show == "landfills") {
+        dp.listTitle = "Georgia Landfills";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.&nbsp; View&nbsp;<a href='../map/recycling/ga/'>Recycling&nbsp;Datasets</a>.";
-        dp.search = {"In Main Category": "Category", "In Materials Accepted": "Materials Accepted", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
+        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.&nbsp; View&nbsp;<a href='../map/recycling/ga/'>Wastewater and Recycling&nbsp;Datasets</a>.";
+
+        // From Landfills tab (temporary until Solid Waste ready)
+        dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=2088666243&single=true&output=csv";
+        // Old data from approx 2017 or earlier
+        // The lastest data resides at: https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/permitted-solid-waste-facilities and has been pulled into the Solid Waste tab
+
+        // BUGBUG - Allow these to start with uppercase to match sheet
+        dp.nameColumn = "name";
+        dp.titleColumn = "name";
+        dp.searchFields = "name";
+
+        // hack
+        dp.addressColumn = "name";
+
+        dp.search = {"In Name": "Name","In County": "County"};
+    
+        dp.markerType = "google";
+        dp.color = "#393";
+        dp.latColumn = "Latitude";
+        dp.lonColumn = "Longitude";
+
+      } else if (show == "solidwaste") {
+        dp.listTitle = "Georgia Solid Waste";
+        dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
+        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.&nbsp; View&nbsp;<a href='../map/recycling/ga/'>Wastewater / Landfill / Recycling&nbsp;Datasets</a>.<br>Geocoding not yet complete - please return Feb 21, 2023.";
       
+        // From Solid Waste tab
+        dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=809637033&single=true&output=csv";
+        // BUGBUG - Allow these to start with uppercase to match sheet
+        dp.nameColumn = "facility name";
+        dp.titleColumn = "facility name";
+        dp.searchFields = "facility name";
+        dp.search = {"In Name": "Facility Name","In Address": "Address"};
+
+        dp.markerType = "google";
+        dp.color = "#933";
+        
       } else if (show == "cameraready-locations") {
         dp.listTitle = "CameraReady Film Locations";
         dp.dataTitle = "Filming Locations";
@@ -464,7 +521,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.filters = {tag:"Liaisons"}; // Supports comma separated values
         dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website", "Type": "tag"};
         
-      } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfills")) { // recycling-processors
+      } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfillsX")) { // recycling-processors
         // NOT USED - LOOK ABOVE
         if (hash.state == "GA") {
           dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
@@ -480,7 +537,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
             dp.sheetName = "Manufacturer Recyclers";
             dp.valueColumn = "category"; // Bug - need to support uppercase too. Also, most don't have a Category value
             dp.valueColumnLabel = "Recycles";
-          } else if (show == "landfills") {
+          } else if (show == "landfillsX") {
             dp.listTitle = "Georgia Landfills";
             dp.sheetName = "Landfills";
             dp.valueColumn = "sector"; // Bug - need to support uppercase too.
@@ -1060,12 +1117,16 @@ function showList(dp,map) {
       $.each(localObject.layerCategories[dp.show], function(index,value) {
         if (value.Category == hash.cat || !hash.cat) {
           let subcatTitle = value.SubCategoryLong || value.SubCategory;
-          subcatList += "<li><a href='#' onClick='goHash({\"cat\":\"" + value.Category + "\", \"subcat\":\"" + value.SubCategory.replace("&","%26") + "\"}); return false;'>" + subcatTitle + "</a></li>";
-          subcatArray.push(value.SubCategory);
-          if (value.SubCategory.length > 0) {
-            //console.log("value.SubCategory " + value.SubCategory)
-            subcatObject[value.SubCategory] = {};
-            subcatObject[value.SubCategory].count = 0; // A count for matches later
+          if (value.SubCategory) {
+            subcatList += "<li><a href='#' onClick='goHash({\"cat\":\"" + value.Category + "\", \"subcat\":\"" + value.SubCategory.replace("&","%26") + "\"}); return false;'>" + subcatTitle + "</a></li>";
+            subcatArray.push(value.SubCategory);
+            if (value.SubCategory.length > 0) {
+              //console.log("value.SubCategory " + value.SubCategory)
+              subcatObject[value.SubCategory] = {};
+              subcatObject[value.SubCategory].count = 0; // A count for matches later
+            }
+          } else {
+            subcatList += "<li><a href='#' onClick='goHash({\"cat\":\"" + value.Category + "\"}); return false;'>" + subcatTitle + "</a></li>";
           }
         }
       });
@@ -1098,7 +1159,8 @@ function showList(dp,map) {
   var data_sorted = []; // An array of objects
   var data_out = [];
   let catList = {}; // An array of objects, one for each unique category
-  if (localObject.layerCategories[hash.show] && localObject.layerCategories[hash.show].toLowerCase >= 0) {
+  //alert(localObject.layerCategories[hash.show].length)
+  if (localObject.layerCategories[hash.show] && localObject.layerCategories[hash.show].length >= 0) { // The lenght includes multiple subcats for each cat
     catList = localObject.layerCategories[hash.show];
   }
 
@@ -1137,7 +1199,7 @@ function showList(dp,map) {
   let output = "";
   let output_details = "";
   let avoidRepeating = ["description","address","website","phone","email","email address","county","admin note","your name","organization name","cognito_id"];
-    
+  
   dp.data.forEach(function(elementRaw) {
     count++;
     foundMatch = 0;
@@ -1145,6 +1207,7 @@ function showList(dp,map) {
     let filterMatchFound = true;
 
     if (count > 4000) {
+        console.log("Count exceeds 4000");
         return;
     }
 
@@ -1177,7 +1240,7 @@ function showList(dp,map) {
     // count "filtered" populated for active rows only
     if (localObject.layerCategories[dp.show] && localObject.layerCategories[dp.show].length >= 0) {
 
-      if (elementRaw[dp.catColumn].length > 0 && elementRaw[dp.catColumn] == hash.cat) {
+      if (elementRaw[dp.catColumn] && elementRaw[dp.catColumn] == hash.cat) {
         if (dp.subcatColumn && elementRaw[dp.subcatColumn].length <= 0) {
           subcatObject["null"].count = subcatObject["null"].count + 1;
         } else {
@@ -1185,15 +1248,15 @@ function showList(dp,map) {
           // Since some will have multiple subcats
           // This could be performed asynchronously during second iteration of rows.
 
-          // Should we walk on the current subcatObject?
+          // Should we walk the current subcatObject?
           console.log(localObject.layerCategories[dp.show])
           $.each(localObject.layerCategories[dp.show], function(index,value) {
             console.log("value.SubCategory: " + value.SubCategory);
             //console.log(subcatObject[value.SubCategory]);
-            if (subcatObject[value.SubCategory] == elementRaw[dp.subcatColumn]) {
+            if (elementRaw[dp.subcatColumn] && subcatObject[value.SubCategory] == elementRaw[dp.subcatColumn]) {
               
               subcatObject[value.SubCategory].count = subcatObject[value.SubCategory].count + 1;
-              subcatObject[value.SubCategory].count = 12345;
+              //subcatObject[value.SubCategory].count = 12345;
               console.log(subcatObject[value.SubCategory]);
               //alert(subcatObject[value.Category].count)
             }
@@ -1246,6 +1309,7 @@ function showList(dp,map) {
 
     }
     if (!filterMatchFound) {
+      console.log("No filterMatchFound")
       return; // Go to next in foreach
     }
 
@@ -1445,6 +1509,7 @@ function showList(dp,map) {
     //iconColorRGB = hex2rgb(iconColor);
     //console.log("element state2 " + element.state + " iconColor: " + iconColor)
 
+    // INCREMENT THE CATEGORY COUNT for the value in the row's valueColumn
     //console.log("element[dp.valueColumn] " + element[dp.valueColumn]);
     if (dp.valueColumn) {
       // Requires only ONE category value in the valueColumn.
@@ -1573,8 +1638,8 @@ function showList(dp,map) {
         output += "<div style='padding-bottom:4px;float:left'><div style='width:15px;height:15px;margin-right:6px;background:" + bulletColor + ";float:left'></div></div>";
 
         //output += "<div style='position:relative'><div style='float:left;min-width:28px;margin-top:2px'><input name='contact' type='checkbox' value='" + name + "'></div><div style='overflow:auto'><div>" + name + "</div>";
-                  
-        output += "<div style='overflow:auto'>";
+        
+        output += "<div style='overflow:auto;margin-top:-7px'>";
 
           output += "<div class='detailTitle'>" + name + "</div>";
           if (element[dp.description]) {
@@ -1817,8 +1882,12 @@ function showList(dp,map) {
     }
   });
 
-  $("#detaillist").append(output);
-  $("#detaillist").append("<div style='height:60px'></div>"); // For space behind absolute buttons at bottom.
+  //if (count >= 1) {
+    $("#detaillist").append(output);
+    $("#detaillist").append("<div style='height:60px'></div>"); // For space behind absolute buttons at bottom.
+  //} else {
+  //  console.log("NO OUTPUT")
+  //}
 
   /*
   if (localObject.layerCategories[dp.show].length >= 0) {
@@ -1837,6 +1906,7 @@ function showList(dp,map) {
   console.log("Total " + dp.dataTitle + " " + countDisplay + " of " + count);
 
   if (hash.show != showprevious || $("#tableSide > .catList").text().length == 0) { // Prevents selected category from being overwritten.
+    //alert("a catList " + catList)
     renderCatList(catList);
   }
   if (hash.name && $("#detaillist > [name='"+ hash.name.replace(/_/g,' ').replace(/ AND /g,' & ') +"']").length) {
@@ -1893,6 +1963,7 @@ function showList(dp,map) {
     searchFor += dp.listInfo;
     searchFor += "<hr styleX='margin-bottom:16px'>";
   }
+
   if (dataMatchCount > 0) {
       if (searchFor) {
         //searchFor += "<br>"
@@ -1912,8 +1983,9 @@ function showList(dp,map) {
         } else {
           searchFor += countDisplay + " active records. ";
         }
-        console.log("Active records: ") + countDisplay;
-        console.log("Rows: ") + count;
+        console.log("dataMatchCount: " + dataMatchCount);
+        console.log("Active records: " + countDisplay);
+        console.log("Rows: " + count);
       } else if (count==1) {
         searchFor += countDisplay + " displayed from " + validRowCount + " active record. ";
       } else if (validRowCount > 0) { // Hide when status row is not in use.
@@ -1961,16 +2033,43 @@ function showList(dp,map) {
   return dp;
 }
 function renderCatList(catList) {
-  console.log("catList");
+  console.log("the catList");
   console.log(catList);
   // Using param since hash.show is not available when passed in on localsite.js embed link.
   if (param.show != "ppe" && param.show != "suppliers") { // PPE cats are still hardcoded in localsite/map/index.html. "suppliers" is used in site embed
       if (catList && Object.keys(catList).length > 0) {
         let catNavSide = "<div class='all_categories'>All Categories</div>";
 
+        console.log("Object.keys(catList)");
+        console.log(Object.keys(catList));
+
+        console.log("localObject.layerCategories[param.show]");
+        console.log(localObject.layerCategories[param.show]);
+
         Object.keys(catList).forEach(key => {
+          // The key is pulled from the first key-value pair in the row's object.
           if (key != "") {
-            catNavSide += "<div style='background:" + catList[key].color + ";padding:0px;width:13px;height:13px;border:1px solid #ccc;margin-top:12px;margin-left:12px;margin-right:5px;float:left'></div><div title='" + key + "' style='min-height:38px'>" + key + "<span class='local'>&nbsp;(" + catList[key].count + ")</span></div>";
+            let catTitle = key; // Number index, starting from 0.
+            // For wastewater, the value is the SIC number from the listing rows. Sometimes the SIC value is comma separated.
+
+            if (catList[key].count) { // Hides when none. BUGBUG - need to figure out why wastewater include 1002 none.
+              console.log(key + " localObject.layerCategories[\"" + param.show + "\"]");
+              console.log(localObject.layerCategories[param.show]);
+
+
+              if (catList[key].catTitle) {
+                //catTitle = catList[key].catTitle;
+                console.log("catTitle found: " + catTitle);
+              } else if (localObject.layerCategories[param.show] && localObject.layerCategories[param.show][key]) {
+                //catTitle = localObject.layerCategories[param.show][key];
+              }
+              catNavSide += "<div style='background:" + catList[key].color + ";padding:0px;width:13px;height:13px;border:1px solid #ccc;margin-top:12px;margin-left:12px;margin-right:5px;float:left'></div><div title='" + key + "' style='min-height:38px'>" + catTitle;
+              if (catList[key].count) {
+                // The number of occurances of the category
+                catNavSide += "<span class='local'>&nbsp;(" + catList[key].count + ")</span>"
+              }
+              catNavSide += "</div>"
+            }
           }
         });
         //console.log(catNavSide)
@@ -3687,7 +3786,7 @@ function addIcons(dp,map,map2) {
       iconColor = "#548d1a"; // Green. Was "blue"
     }
     
-    console.log("element[dp.valueColumn] " + element[dp.valueColumn] + " iconColor: " + iconColor + " dp.valueColumn: " + dp.valueColumn);
+    //console.log("element[dp.valueColumn] " + element[dp.valueColumn] + " iconColor: " + iconColor + " dp.valueColumn: " + dp.valueColumn);
     
     if (typeof dp.latColumn == "undefined") {
       dp.latColumn = "lat";
@@ -4533,8 +4632,9 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
 
                   // We are currently loading dp.dataset from a CSV file.
                   // Later we will check if the filename ends with .csv
-
-                  if (dp.googleCategories && !dp.googleCSV) {          
+                  
+                  // NOT used by wastewater and recyclers
+                  if (dp.googleCategories && !dp.googleCSV) { // && !dp.googleCSV
                     d3.csv(dp.googleCategories).then(function(data) {
                       // LOAD CATEGORIES TAB - Category, SubCategory, SubCategoryLong
                       //localObject.layerCategories[dp.show] = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
@@ -4567,9 +4667,11 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
                             catList[preCatList[i].Category].count++;
                           }
                           catList[preCatList[i].Category].color = iconColor;
+
+                          //catList[preCatList[i].Category].catTitle = "test";
                         //}
                       }
-                      console.log("catList");
+                      console.log("catList 2:");
                       console.log(catList);
 
                       localObject.layerCategories[dp.show] = catList;
@@ -4649,7 +4751,11 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
                           d3.csv(dp.googleCategories).then(function(data) {
                             // LOAD CATEGORIES TAB - Category, SubCategory, SubCategoryLong
                             //localObject.layerCategories[dp.show] = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
+                            
+                            // BugBug - this seems to append, 32 of recyclers are duplicated but have no titles
+                            // But this is needed for subcategories to appear.
                             localObject.layerCategories[dp.show] = data;
+
                             processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
                           });
                         } else {
