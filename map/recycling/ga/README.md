@@ -17,7 +17,7 @@ Also lacks CHARM.  Far from comprehensive.
 <a href="https://recyclesearch.com" target="_parent">Recycling Centers - RecycleSearch.com</a>
 -->
 
-**Maps for Hydrogen Initiative**
+**Maps for Hydrogen Initiative and Methane Capture**
 <a href="/localsite/map/#show=wastewater&state=GA" target="_parent">Georgia Wastewater Facilities Map</a>  
 <a href="/localsite/map/#show=landfills&state=GA" target="_parent">Georgia Landfill Map (97)</a> - [Source: EPD Regulated Solid Waste](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities)  
 <a href="/localsite/map/#show=solidwaste&state=GA" target="_parent">Solid Waste Map (3325)</a> - [Source: EPD Regulated Solid Waste](https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities)  
