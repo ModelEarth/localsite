@@ -30,7 +30,14 @@
     bottom: 0px;
     width: 100%;
     padding: 6px;
-    background-color: #333;
+    background-color: rgb(44, 44, 44);
+  }
+  #mapList1 a:link, #mapList1 a:visited {
+    color: #66CF79;
+    text-decoration: none;
+  }
+  #mapList1 a:link:hover, #mapList1 a:visited:hover {
+    text-decoration: underline;
   }
   #mapList1 .detailTitle {
     overflow: auto;
