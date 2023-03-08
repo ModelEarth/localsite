@@ -20,7 +20,7 @@ Also lacks CHARM.  Far from comprehensive.
 **Maps for Hydrogen Initiative and Methane Capture**
 <a href="/localsite/map/#show=wastewater&state=GA" target="_parent">Georgia Wastewater Facilities Map (865)</a>  
 <a href="/localsite/map/#show=landfills&state=GA" target="_parent">Georgia Landfill Map (98)</a>   
-<a href="/localsite/map/#show=solidwaste&state=GA" target="_parent">Solid Waste Map (3325)</a>  
+<a href="/localsite/map/#show=solidwaste&state=GA" target="_parent">Solid Waste Map (2055)</a>  
 
 **Business to Business (B2B) Recycling**
 <a href="/localsite/map/#show=recyclers&state=GA" target="_parent">Commercial Recyclers and Recovered Materials Manufacturers Map (421)</a>
