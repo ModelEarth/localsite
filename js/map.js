@@ -461,7 +461,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       } else if (show == "landfills") {
         dp.listTitle = "Georgia Landfills";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.&nbsp; View&nbsp;<a href='../map/recycling/ga/'>Wastewater and Recycling&nbsp;Datasets</a>.";
+        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.<br>Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='../map/recycling/ga/'>Wastewater and Recycling&nbsp;Datasets</a>.";
 
         // From Landfills tab (temporary until Solid Waste ready)
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=2088666243&single=true&output=csv";
@@ -486,7 +486,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       } else if (show == "solidwaste") {
         dp.listTitle = "Georgia Solid Waste";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.&nbsp; View&nbsp;<a href='../map/recycling/ga/'>Wastewater / Landfill / Recycling&nbsp;Datasets</a>.";
+        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.<br>Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='../map/recycling/ga/'>Wastewater / Landfill / Recycling&nbsp;Datasets</a>.";
       
         // From Solid Waste tab
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=809637033&single=true&output=csv";
