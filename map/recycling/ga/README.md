@@ -1,8 +1,8 @@
 <div class="floatright">
 
-<a href="https://georgiarecycles.org" target="_parent"><img src="/recycling/img/georgia-epd-logo.png" style="width: 100%; max-width: 350px !important;" title="Georgia EPD" alt="Georgia EPD"></a><br><br>
+<a href="https://georgiarecycles.org" target="_parent"><img src="img/ga-epd-logo.png" style="width: 100%; max-width: 350px !important;" title="Georgia EPD" alt="Georgia EPD"></a><br><br>
 
-<a href="https://georgiarecycles.org" target="_parent"><img src="https://map.georgia.org/recycling/img/grc-logo-320.png" style="width: 100%; max-width: 350px !important;" title="GRC" alt="Georgia Recycling Coalition"></a><br><br>
+<a href="https://georgiarecycles.org" target="_parent"><img src="img/grc-logo-320.png" style="width: 100%; max-width: 350px !important;" title="GRC" alt="Georgia Recycling Coalition"></a><br><br>
 Our Commercial and Manufacturer Recycler list is maintained by the Georgia Recycling Coalition (GRC) in partnership with the <a href="https://www.georgia.org/center-of-innovation" target="_parent">Georgia Center of Innovation</a>.
 <br><br>
 </div>
