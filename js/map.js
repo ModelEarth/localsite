@@ -426,7 +426,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         //alert("wastewater4")
         dp.listTitle = "Georgia Wastewater Facilities (2023)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.&nbsp; <a href='#show=landfills&state=GA'>Add Landfill Layer</a>  View&nbsp;<a href='../map/recycling/ga/'>Recycling&nbsp;Datasets</a>.";
+        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.<br>View&nbsp;<a href='../map/recycling/ga/'>Solid Waste and Recycling&nbsp;Datasets</a>.";
         // Wastewater tab. Path including gid from sheet's Share > Publish [choose tab]
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=2016874057&single=true&output=csv";
         
@@ -2111,7 +2111,12 @@ function renderCatList(catList) {
               catNavSide += "<div style='background:" + catList[key].color + ";padding:0px;width:13px;height:13px;border:1px solid #ccc;margin-top:12px;margin-left:12px;margin-right:5px;float:left'></div><div title='" + key + "' style='min-height:38px'>" + catTitle;
               if (catList[key].count) {
                 // The number of occurances of the category
-                catNavSide += "<span class='local'>&nbsp;(" + catList[key].count + ")</span>"
+                if (param.show == "solidwaste" || param.show == "wastewater") {
+                  // Show the count
+                  catNavSide += "<span>&nbsp;(" + catList[key].count + ")</span>";
+                } else {
+                  catNavSide += "<span class='local'>&nbsp;(" + catList[key].count + ")</span>";
+                }
               }
               catNavSide += "</div>"
             }
