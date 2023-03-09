@@ -1204,7 +1204,9 @@ function showList(dp,map) {
   let output = "";
   let output_details = "";
   let avoidRepeating = ["description","address","website","phone","email","email address","county","admin note","your name","organization name","cognito_id"];
-  
+  if (dp.valueColumn) { // Avoids showing "Category" twice
+    avoidRepeating.push(dp.valueColumn);
+  }
   dp.data.forEach(function(elementRaw) {
     count++;
     foundMatch = 0;
@@ -1768,6 +1770,7 @@ function showList(dp,map) {
           } else if (element["jobs 2021"]) {
             output += "<b>Employees:</b> " + element["jobs 2021"] + "<br>";
           }
+
 
           if (element[dp.valueColumn]) {
             if (dp.valueColumnLabel) {
