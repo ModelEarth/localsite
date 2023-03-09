@@ -2064,12 +2064,14 @@ function renderCatList(catList) {
         // Loop through possible categories from SIC tab and append the titles to our catList object
         //alert("Cats " + localObject.layerCategories[param.show].length);
         if (param.show == "wastewater") {
+          // This would cause recyclers subcategory to appear in left legend
           for (var i = 0; i < localObject.layerCategories[param.show].length; i++) {
               let arrayEntry = localObject.layerCategories[param.show][i];
               let name = "";
               if (arrayEntry) {
                 let catKey = Object.values(arrayEntry)[0];
                 name = Object.keys(arrayEntry)[1]; // HACK, need to specify CatTitle instead of 1. Note that 0 returns the single digit SIC from SIC tab.
+                // Until fixed, color is now #______ occurs for somw
                 console.log(catKey + " - " + name + " is now " + arrayEntry[name]);
                 if(catList[catKey]) {
                   catList[catKey].catTitle = arrayEntry[name];
@@ -2091,8 +2093,7 @@ function renderCatList(catList) {
             // The count is the number of rows found in that category.
             if (catList[key].count) { // Hides when none. BUGBUG - need to figure out why wastewater include 1002 none.
               console.log(catList[key].count + " Parse localObject.layerCategories[\"" + param.show + "\"] for " + key);
-              console.log(localObject.layerCategories[param.show]);
-
+              //console.log(localObject.layerCategories[param.show]);
 
               //if (catList[key].CatTitle) { // Assuming this will never apply.
                 //catTitle = catList[key].catTitle;
@@ -2105,8 +2106,7 @@ function renderCatList(catList) {
                 } else {
                   catTitle = key; // Multiple SIC
                 }
-                console.log("catTitle:");
-                console.log(catTitle);
+                console.log("catTitle:" + catTitle);
               }
               catNavSide += "<div style='background:" + catList[key].color + ";padding:0px;width:13px;height:13px;border:1px solid #ccc;margin-top:12px;margin-left:12px;margin-right:5px;float:left'></div><div title='" + key + "' style='min-height:38px'>" + catTitle;
               if (catList[key].count) {
