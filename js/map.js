@@ -430,8 +430,9 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=2016874057&single=true&output=csv";
         
         // From sheet tab with SIC values
-        // Reactivate both of these, and additional two below
-        //dp.googleCategories = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1844952458&single=true&output=csv";
+        // Reactivate this one, and additional two below
+        dp.googleCategories = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1844952458&single=true&output=csv";
+        
         dp.catColumn = "sic_code_list";
 
         // PERMIT_NAME
@@ -444,9 +445,9 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
         // BUGBUG ONLY WORKS WHEN LOWERCASE, Column in database does NOT need to be lowercase too.
         // Reactivate both of these, and additional two above
-        //dp.valueColumn = "sic_code_list";
-        //dp.valueColumnLabel = "SIC Code";
-        ////dp.showKeys = "description"; // How would this be used
+        dp.valueColumn = "sic_code_list";
+        dp.valueColumnLabel = "SIC Code";
+        ////dp.showKeys = "description"; // How would this be used?
         
         
 
@@ -456,7 +457,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
         dp.markerType = "google";
         dp.color = "#339";
-        dp.search = {"In Name": "PERMIT_NAME", "In Address": "facility_addr", "In County Name": "county", "SIC Code": "siccode", };
+        dp.search = {"In Name": "PERMIT_NAME", "In Address": "facility_addr", "In County Name": "county", "SIC Code": "SIC_CODE_LIST", };
 
       } else if (show == "landfills") {
         dp.listTitle = "Georgia Landfills (2017)";
@@ -494,7 +495,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.nameColumn = "facility name";
         dp.titleColumn = "facility name";
         dp.searchFields = "facility name";
-        dp.search = {"In Name": "Facility Name","In Address": "Address"};
+        dp.search = {"In Name": "Facility Name","In Address": "Address", "Status": "Operating Status"};
 
         //dp.showWhenStatus = "Operating"
         dp.valueColumn = "operating status";
@@ -1317,8 +1318,7 @@ function showList(dp,map) {
       return; // Go to next in foreach
     }
 
-    //if (keyword.length > 0 || products_array.length > 0 || productcode_array.length > 0) {
-
+    if (keyword.length > 0 || products_array.length > 0 || productcode_array.length > 0) {
           if (products_array.length > 0) { // A list from #catSearch field, typically just one
             for(var p = 0; p < products_array.length; p++) {
               if (products_array[p].length > 0) {
@@ -1364,8 +1364,8 @@ function showList(dp,map) {
             
             if (typeof dp.search != "undefined") { // An object containing interface labels and names of columns to search.
 
-            //console.log("Search in selected_col ")
-            //console.log(selected_col)
+              //console.log("Search in selected_col ")
+              //console.log(selected_col)
 
               $.each(dp.search, function( key, value ) { // Works for arrays and objects. key is the index value for arrays.
                 //console.log(value + " " + elementRaw[value]);
@@ -1397,7 +1397,7 @@ function showList(dp,map) {
 
             }
 
-            
+            //foundMatch++; // TEMP
 
             /*
             //if ($(dataSet[i][0].length > 0)) {
@@ -1460,11 +1460,11 @@ function showList(dp,map) {
             }
           //}
 
-    //} else {
-    //  // Automatically find match since there are no filters
+    } else {
+      // Automatically find match since there are no filters
     //  //console.log("foundMatch - since no filters");
-    //  foundMatch++;
-    //}
+      foundMatch++;
+    }
 
     //console.log("foundMatch: " + foundMatch + ", productMatchFound: " + productMatchFound);
 
@@ -1555,11 +1555,13 @@ function showList(dp,map) {
       Hide - Temporarily closed
       Delete
       */
-      if (!jQuery.isEmptyObject(element.status) && (element.status != "Update" && element.status != "Active")) {
+      //console.log("Status: " + element.status + ". Name: " + name)
+      if (!jQuery.isEmptyObject(element.status) && element.status != "Update" && element.status != "Active") {
           if (dp.showWhenStatus != "null") { // Allow status column to be blank. Used by EV.
             foundMatch = 0;
           }
       } else {
+        //console.log("validRowCount " + validRowCount);
         validRowCount++;
         //console.log("Status: " + element.status + ". Name: " + name)
       }
@@ -1660,7 +1662,12 @@ function showList(dp,map) {
           if (element.items) {
             output += "<b>Items:</b> " + element.items + "<br>";
           }
-          
+          if (dp.valueColumn && !dp.color) {
+            // Temp
+            if(location.host.indexOf('localhost') >= 0) {
+              output += "No main category<br>";
+            }
+          }
           var outaddress = "";
           if (element[dp.addressColumn]) { 
               outaddress +=  element[dp.addressColumn] + "<br>"; 
@@ -1973,10 +1980,10 @@ function showList(dp,map) {
         //searchFor += "<br>"
       }
       if ($("#catSearch").val() && hash.cat) {
-        searchFor += "<b>" + $("#catSearch").val() + "</b>";
+        searchFor += "<b style='font-size:1.2em'>" + $("#catSearch").val() + "</b>";
       }
       if (hash.subcat) {
-        searchFor += "<b>: " + hash.subcat + "</b>";
+        searchFor += "<b style='font-size:1.2em'>: " + hash.subcat + "</b>";
       }
       if (hash.cat) {
         searchFor += " - ";
