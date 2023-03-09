@@ -402,6 +402,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.dataTitle = "B2B Recyclers";
         dp.adminNote = "maps.g";
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
+        // Materials Tab
         dp.googleCategories = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=381237740&single=true&output=csv";
         dp.nameColumn = "organization name";
         dp.titleColumn = "organization name";
@@ -430,7 +431,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=2016874057&single=true&output=csv";
         
         // From sheet tab with SIC values
-        // Reactivate this one, and additional two below
+        // SIC Tab
         dp.googleCategories = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1844952458&single=true&output=csv";
         
         dp.catColumn = "sic_code_list";
@@ -444,12 +445,9 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.addressColumn = "facility_addr";
 
         // BUGBUG ONLY WORKS WHEN LOWERCASE, Column in database does NOT need to be lowercase too.
-        // Reactivate both of these, and additional two above
         dp.valueColumn = "sic_code_list";
         dp.valueColumnLabel = "SIC Code";
         ////dp.showKeys = "description"; // How would this be used?
-        
-        
 
         //dp.subcatColumn = "siccode";
         dp.itemsColumn = "SIC_CODE_LIST"; // Needs to remain capitalized. Equivalent to PPE items column, checkboxes
@@ -1993,9 +1991,9 @@ function showList(dp,map) {
       }
       if (countDisplay == validRowCount) {
         if (countDisplay == 1) {
-          searchFor += countDisplay + " active record. ";
+          searchFor += countDisplay + " record ";
         } else {
-          searchFor += countDisplay + " active records. ";
+          searchFor += countDisplay + " records ";
         }
         console.log("dataMatchCount: " + dataMatchCount);
         console.log("Active records: " + countDisplay);
@@ -2054,11 +2052,35 @@ function renderCatList(catList) {
       if (catList && Object.keys(catList).length > 0) {
         let catNavSide = "<div class='all_categories'>All Categories</div>";
 
-        console.log("Object.keys(catList)");
-        console.log(Object.keys(catList));
+        //console.log("Object.keys(catList)");
+        //console.log(Object.keys(catList));
 
         console.log("localObject.layerCategories[param.show]");
         console.log(localObject.layerCategories[param.show]);
+
+        //BUGBUG - catList already contains CatTitle at this point
+        // SO THE FOLLOWING LOOP MAY NOT BE NECESSARY if we fetch from catList instead. Test with wastewater.
+
+        // Loop through possible categories from SIC tab and append the titles to our catList object
+        //alert("Cats " + localObject.layerCategories[param.show].length);
+        if (param.show == "wastewater") {
+          for (var i = 0; i < localObject.layerCategories[param.show].length; i++) {
+              let arrayEntry = localObject.layerCategories[param.show][i];
+              let name = "";
+              if (arrayEntry) {
+                let catKey = Object.values(arrayEntry)[0];
+                name = Object.keys(arrayEntry)[1]; // HACK, need to specify CatTitle instead of 1. Note that 0 returns the single digit SIC from SIC tab.
+                console.log(catKey + " - " + name + " is now " + arrayEntry[name]);
+                if(catList[catKey]) {
+                  catList[catKey].catTitle = arrayEntry[name];
+                } else {
+                  // Multiple keys split by commas
+                  console.log("Does not exist in listings: " + catKey + " - " + arrayEntry[name]);
+                  //catList[catKey].catTitle = "OKAY"
+                }
+              }
+          }
+        }
 
         Object.keys(catList).forEach(key => {
           // The key is pulled from the first key-value pair in the row's object.
@@ -2066,16 +2088,25 @@ function renderCatList(catList) {
             let catTitle = key; // Number index, starting from 0.
             // For wastewater, the value is the SIC number from the listing rows. Sometimes the SIC value is comma separated.
 
+            // The count is the number of rows found in that category.
             if (catList[key].count) { // Hides when none. BUGBUG - need to figure out why wastewater include 1002 none.
-              console.log(key + " localObject.layerCategories[\"" + param.show + "\"]");
+              console.log(catList[key].count + " Parse localObject.layerCategories[\"" + param.show + "\"] for " + key);
               console.log(localObject.layerCategories[param.show]);
 
 
-              if (catList[key].catTitle) {
+              //if (catList[key].CatTitle) { // Assuming this will never apply.
                 //catTitle = catList[key].catTitle;
-                console.log("catTitle found: " + catTitle);
-              } else if (localObject.layerCategories[param.show] && localObject.layerCategories[param.show][key]) {
-                //catTitle = localObject.layerCategories[param.show][key];
+              //  console.log("catTitle found: " + catList[key].CatTitle);
+              //} else 
+              if (localObject.layerCategories[param.show] && localObject.layerCategories[param.show][key]) {
+                // For wastewater, use titles from SIC tab.
+                if (catList[key].catTitle) {
+                  catTitle = catList[key].catTitle;
+                } else {
+                  catTitle = key; // Multiple SIC
+                }
+                console.log("catTitle:");
+                console.log(catTitle);
               }
               catNavSide += "<div style='background:" + catList[key].color + ";padding:0px;width:13px;height:13px;border:1px solid #ccc;margin-top:12px;margin-left:12px;margin-right:5px;float:left'></div><div title='" + key + "' style='min-height:38px'>" + catTitle;
               if (catList[key].count) {
@@ -4691,7 +4722,6 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
                       localObject.layerCategories[dp.show] = catList;
 
                       renderCatList(catList);
-                      //processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
                     });
                   }
 
