@@ -425,7 +425,11 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 						$(document).on("click", ".showEarth", function(event) {
 							if ($("#nullschoolHeader").is(':visible')) {
 								$("#nullschoolHeader").hide();
+								//$("#globalMapHolder").show();
+								$("#hero_holder").show();
 							} else {
+								//$("#globalMapHolder").hide(); // Home page nullschool map.
+								$("#hero_holder").hide();
 								// Add a setting to choose map: Temperatures or just wind
 								// Big blue: https://earth.nullschool.net/#current/wind/surface/level/orthographic=-35.06,40.67,511
 								showGlobalMap("https://earth.nullschool.net/#current/wind/surface/level/overlay=temp/orthographic=-72.24,46.06,511"); //   /loc=-81.021,33.630
