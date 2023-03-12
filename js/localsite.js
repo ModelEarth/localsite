@@ -562,19 +562,26 @@ function loadLocalTemplate() {
     $("#local-header").prependTo("body"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
     $("#headerbar").prependTo("body"); // Move back up to top.
     if (param.showheader == "true") {
-      setTimeout( function() { // Delay needed for /info page.
-        $("#headerbar").prependTo("body");
-        //$("#headerbar").show(); // Avoid here, might not be moved yet.
-      }, 200 );
-      setTimeout( function() {
-        //$("#headerbar").show();
-        showHeaderBar();
-      }, 300 );
-      setTimeout( function() {
-        $("#headerbar").prependTo("body");
-        //$("#headerbar").show();
-        showHeaderBar();
-      }, 1500 );
+
+      waitForElm('body').then((elm) => {
+        waitForElm('#headerbar').then((elm) => { 
+          $('#headerbar').hide();
+          $("#headerbar").prependTo("body");
+          setTimeout( function() {
+            $("#headerbar").prependTo("body");
+            //showHeaderBar();
+          }, 200 );
+          setTimeout( function() {
+            $("#headerbar").prependTo("body");
+            showHeaderBar();
+          }, 400 );
+          //showHeaderBar();
+        });
+        waitForElm('#local-header').then((elm) => {
+          //$('#headerbar').removeClass("headerbarhide");
+          //$('#local-header').show();
+        });
+      });
     }
     if (location.host.indexOf('model') >= 0) {
       $(".showSearch").show();
@@ -583,10 +590,11 @@ function loadLocalTemplate() {
   });
 }
 function showHeaderBar() {
-  //$('.headerOffset').show();
+  //$('.headerOffset').show(); 
   $('#headerbar').show();
   $('#headerbar').removeClass("headerbarhide");
   $('#local-header').show();
+  //alert("showHeaderBar")
 }
 
 function loadSearchFilterIncludes() {

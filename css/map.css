@@ -92,11 +92,13 @@
      border:none;
      margin-left:30px;
   }
-  .leaflet-touch .leaflet-bar a {
+  .leaflet-touch .leaflet-bar a, #earthZoom .leaflet-bar a {
     width:38px !important;
     height:38px !important;
     font-size: 26px !important;
-    color: #333;
+    color: #fff;
+    background-color: #555;
+    border: 0px !important;
     border-radius: 6px !important;
   }
   .leaflet-control-zoom-in {
@@ -106,7 +108,7 @@
   }
   .leaflet-control-zoom-out {
     border:#bbb 2px solid !important;
-    line-height: 36px !important;
+    line-height: 32px !important;
   }
   .leaflet-top > .info {
     background-color: rgba(33, 33, 33, 0.5);
