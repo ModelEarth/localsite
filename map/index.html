@@ -2182,7 +2182,6 @@ document.addEventListener('hashChangeEvent', function (elem) {
 <script src='/localsite/js/plyr.min.js'></script>
 
 
-
 <!-- For testing slider -->
 <div class="swiper-container local" style="display:none;overflow:hidden;clear:both" id="sample1">
 
@@ -2191,7 +2190,8 @@ document.addEventListener('hashChangeEvent', function (elem) {
     
     <!-- Slide 1 -->
     <div class="swiper-slide" data-hash="plant">
-      <img class="swiper-lazy" data-src="/localsite/img/hero/plant.png" style="opacity:0.9;width:100%;max-width:2000px">
+      <!-- BUG why does this need to be swiper-lazyX and src. Scroll to the far right to see -->
+      <img class="swiper-lazyX" src="/localsite/img/hero/plant.png" style="opacity:0.9;width:100%;max-width:2000px">
       <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
       <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
         Add Optional Text 1
@@ -2275,6 +2275,7 @@ document.addEventListener('hashChangeEvent', function (elem) {
 // Function that builds the swiper 
 const buildSwiperSlider = sliderElm => {
     const sliderIdentifier = sliderElm.id;
+    //alert("test " + sliderIdentifier)
     const homeSwiper = new Swiper(`#${sliderElm.id}`, {
         slidesPerView: 1,
         spaceBetween: 30,
@@ -2373,6 +2374,13 @@ const allSliders = document.querySelectorAll('.swiper-container');
 
 // Loop over all of the fetched sliders and apply Swiper on each one.
 allSliders.forEach(slider => buildSwiperSlider(slider));
+
+
+const allListSliders = document.querySelectorAll('#detaillist');
+// Loop over all of the fetched sliders and apply Swiper on each one.
+allListSliders.forEach(slider => buildSwiperSlider(slider));
+
+
 
 $(".swiper-button-play").show();
 //$(".swiper-button-play").css('opacity', '0.8');

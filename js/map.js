@@ -1623,17 +1623,24 @@ function showList(dp,map) {
 
         // Hide all until displayed after adding to dom
         if (element[dp.latColumn] && element[dp.lonColumn]) {
-          output += "<div style='display:none' class='detail' name='" + name.replace(/'/g,'&#39;') + "' latitude='" + element[dp.latColumn] + "' longitude='" + element[dp.lonColumn] + "' color='" + bulletColor + "'>";
+          output += "<div style='clear:both;display:none' class='detail' name='" + name.replace(/'/g,'&#39;') + "' latitude='" + element[dp.latColumn] + "' longitude='" + element[dp.lonColumn] + "' color='" + bulletColor + "'>";
         } else {
-          output += "<div style='display:none' class='detail' name='" + name.replace(/'/g,'&#39;') + "' color='" + bulletColor + "'>";
+          output += "<div style='clear:both;display:none' class='detail' name='" + name.replace(/'/g,'&#39;') + "' color='" + bulletColor + "'>";
         }
 
         if (element.photo1) {
-          // unique data-id used by buildSwiperSlider to init multiple sliders.
-          // Might not need id
-          output += "<div class='swiper-container' id='swiper" + count + "' data-id='swiper" + count + "'><div class='swiper-wrapper'><div class='swiper-slide'>";
-          output += "<img style='width:100%;max-width:800px' class='swiper-lazy' data-src='" + element.photo1 + "'>";
-          output += "</div></div></div>";
+          if (location.host.indexOf('localhost') >= 0) {
+            //output += "<img style='width:100%;max-width:200px;float:right' src='" + element.photo1 + "'>";
+
+            output += "Local Test<img style='width:100%;max-width:200px;float:right' class='swiper-lazy' data-src='" + element.photo1 + "'>";
+
+            // unique data-id used by buildSwiperSlider to init multiple sliders.
+            // Might not need id
+            //Reactivete these 3 lines
+            //output += "<div class='swiper-container' id='swiper" + count + "' data-id='swiper" + count + "'><div class='swiper-wrapper'><div class='swiper-slide'>";
+            //output += "<img style='width:100%;max-width:800px' class='swiper-lazy' data-src='" + element.photo1 + "'>";
+            //output += "</div></div></div>";
+          }
         }
 
         output += "<div class='showItemMenu' style='float:right'>&mldr;</div>";
@@ -2915,7 +2922,7 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
     url = local_app.modelearth_root() + "/topojson/countries/us-states/" + stateAbbr + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
     topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + countyTopoTerm;
 
-    //url = local_app.modelearth_root() + "/opojson/countries/us-states/GA-13-georgia-counties.json";
+    //url = local_app.modelearth_root() + "/topojson/countries/us-states/GA-13-georgia-counties.json";
     // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
   } else { // ALL COUNTRIES
   //} else if (hash.mapview == "earth") {
