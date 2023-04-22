@@ -66,36 +66,12 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 
 	function applyNavigation() { // Called by localsite.js so local_app path is available.
 		// To do: fetch the existing background-image.
-		if (param.startTitle == "Code for America" ||  location.host.indexOf('codeforamerica') >= 0) {
-			showLeftIcon = true;
-			param.titleArray = []
-			param.headerLogo = "<img src='/localsite/img/logo/partners/code-for-america.png' style='width:110px;margin:10px 10px 10px 0;'>";
-			document.title = "Code for America - " + document.title
-			// BUGBUG - error in console
-			//changeFavicon("https://lh3.googleusercontent.com/HPVBBuNWulVbWxHAT3Nk_kIhJPFpFObwNt4gU2ZtT4m89tqjLheeRst_cMnO8mSrVt7FOSlWXCdg6MGcGV6kwSyjBVxk5-efdw")
-		} else if (param.startTitle == "Code for Atlanta" ||  location.host.indexOf('atlanta') >= 0) {
-			showLeftIcon = true;
-			param.titleArray = []
-			param.headerLogo = "<img src='https://scienceatl.org/wp-content/uploads/2020/04/code.png' style='width:150px;'>";
-			document.title = "Code for Atlanta - " + document.title
-			// BUGBUG - error in console
-			//changeFavicon("https://lh3.googleusercontent.com/HPVBBuNWulVbWxHAT3Nk_kIhJPFpFObwNt4gU2ZtT4m89tqjLheeRst_cMnO8mSrVt7FOSlWXCdg6MGcGV6kwSyjBVxk5-efdw")
-		// localhost will be removed from the following. Currently allows Georgia branding during testing.
-		// location.host.indexOf('localhost') >= 0 || 
-		} else if (location.host.indexOf("lifecycle.tools") >= 0) {
-			param.titleArray = ["lifecycle","tools"];
-			param.headerLogoSmall = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
-			showClassInline(".lifecycle");
-			earthFooter = true;
-		} else if (location.host.indexOf("dreamstudio") >= 0) {
+		if (location.host.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio") {
 			//showLeftIcon = true;
 			$(".siteTitleShort").text("DreamStudio");
 			param.titleArray = [];
 			param.headerLogo = "<a href='https://dreamstudio.com'><img src='https://dreamstudio.com/dreamstudio/img/logo/dreamstudio.png' style='height:23px'></a>";
 			param.headerLogoNoText = " ";
-		} else if (location.host.indexOf("nxtwave") >= 0) {
-			param.titleArray = ["Nxt","Wave"];
-			$(".siteTitleShort").text("NxtWave");
 		} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 ) {
 			// Show locally for Brave Browser only - insert before:  ) || false
 			// && navigator && navigator.brave
@@ -163,8 +139,8 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 				param.titleArray = ["model","earth"]
 				document.title = "Model Earth - " + document.title
 			}
-			param.headerLogoSmall = "<img src='/localsite/img/logo/partners/model-earth.png' style='width:34px; margin-right:2px'>";
-			changeFavicon(modelpath + "../localsite/img/logo/partners/model-earth.png")
+			param.headerLogoSmall = "<img src='/localsite/img/logo/earth/model-earth.png' style='width:34px; margin-right:2px'>";
+			changeFavicon(modelpath + "../localsite/img/logo/earth/model-earth.png")
 			showClassInline(".earth");
 			console.log(".earth display");
 			earthFooter = true;
@@ -178,17 +154,6 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			earthFooter = false;
 			console.log("param.footer " + param.footer);
 		}
-		if (param["show"] == "mockup") {
-			if(location.host.indexOf("georgia") >= 0) {
-				$('#headerLocTitle').html("West Central Georgia");
-	 		//$('#headerLocTitle').html("<span class='arrownext' style='margin:10px 10px 0 10px'></span><span style='float:left'> West Central Georgia</span>");
-	 	}
-	 	// Hack, since called too early for header
-	 	$('.mock-up').css('display', 'block');
-		}
-
-
-
 
 	 	$("body").wrapInner( "<div id='fullcolumn'></div>"); // Creates space for sidecolumn
 	 	if(document.getElementById("sidecolumn") == null) {
@@ -269,8 +234,8 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 
 				if (param.header) headerFile = param.header;
 
-				if (earthFooter && param.showMenu != "false") { // Sites includieng modelearth and neighborhood
-				 	$(".showMenu").show(); // Before load headerFile for faster display.
+				if (earthFooter && param.showEarthMenu != "false") { // Sites includieng modelearth and neighborhood
+				 	$(".showEarthMenu").show(); // Before load headerFile for faster display.
 				}
 
 				// headerFile contains only navigation
@@ -298,14 +263,14 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 				 		// Move filterbarOffset and filterEmbedHolder immediately after body tag start.
 				 		// Allows map embed to reside below intro text and additional navigation on page.
 
-				 		//if (param.showMenu != "false") { // brig
+				 		//if (param.showEarthMenu != "false") { // brig
 				 		
 				 		if (location.host.indexOf('localhost') >= 0) {
 				 			console.log("LOCAL ONLY - Show menu icon for localhost")
-				 			$(".showMenu").show();
+				 			$(".showEarthMenu").show();
 				 			$(".upperIcons .earth").show();
 				 			setTimeout( function() {
-								$(".showMenu").show();
+								$(".showEarthMenu").show();
 				 				$(".upperIcons .earth").show();
 				 				$(".earth").show();
 							}, 1000);
@@ -403,24 +368,26 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 				 		$('#headerLogo').css('background-position', 'center');
 						*/
 
-						$(document).on("click", ".showMenu", function(event) {
-							console.log("Clicked .showMenu 4");
-							//if (location.host.indexOf('localhost') >= 0) {
-								//if ($("#rightTopMenuVisibility").is(':visible') && $("#rightTopMenu").is(':visible')) { // Didn't work, issue seemed to be with #rightTopMenu
-				 				if ($("#rightTopMenu").css('display') != "none") {
-				 					console.log("Clicked .showMenu - visible so hide");
-				 					$("#rightTopMenuVisibility").hide();
-				 					$("#rightTopMenu").hide();
-				          		} else {
-				          			loadScript('/localsite/js/settings.js', function(results) {}); // For "Settings" popup
-				          			$("#rightTopMenuVisibility").show();
-							 		$("#rightTopMenu").show();
-				 				}
-				 			//} else {
-							//	$("#menuHolder").show();
-							//	$("#menuHolder").css('margin-right','0px')
-							//}
+						$(document).on("click", ".showTheMenu", function(event) { // Seasons
+							console.log("Clicked .showTheMenu");
+		          			$(".navLinks").show();
+					 		//$("#showEarthMenu").hide();
+					 		//$("#hideMenu").show();
 							event.stopPropagation();
+						});
+
+						$(document).on("click", ".showEarthMenu", function(event) {
+							console.log("Clicked .showEarthMenu");
+		          			loadScript('/localsite/js/settings.js', function(results) {}); // For "Settings" popup
+		          			$("#rightTopMenu").show();
+					 		$("#showEarthMenu").hide();
+					 		$("#hideMenu").show();
+							event.stopPropagation();
+						});
+						$(document).on("click", ".hideEarthMenu", function(event) {
+							$("#hideMenu").hide();
+				 			$("#showEarthMenu").show();
+				 			$("#rightTopMenu").hide();
 						});
 						$(document).on("click", ".showEarth", function(event) {
 							if ($("#nullschoolHeader").is(':visible')) {
@@ -476,7 +443,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 
 
 								// /localsite/img/icon/sidemenu.png  // width:15px;height:14px
-				 					//<div class="showMenu" style="displayX:none; float:left;font-size:24px; color:#999;">
+				 					//<div class="showEarthMenu" style="displayX:none; float:left;font-size:24px; color:#999;">
 				 		}
 
 				 		// Only apply if id="/icon?family=Material+Icons" is already in DOM.

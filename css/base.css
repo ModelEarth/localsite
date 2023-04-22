@@ -572,11 +572,18 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 .btn-primary {
     color: #fff;
     background-color: #6fa1d8;
+    background-color: #375a7f;
     border-color: #6fa1d8;
+    border-color: #375a7f;
+}
+.btn-primary:visited {
+    color: #fff !important;
 }
 .btn-primary:hover {
     background-color: #91bbef;
+    background-color: #6fa1d8;
     border-color: #91bbef;
+    border-color: #6fa1d8;
 }
 .btn-success {
     color: #fff;
@@ -969,8 +976,8 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   margin-right: 18px;
 }
 .upperIcons > div {
-  padding:32px 6px 32px 6px;
-  padding-left:37px;
+  padding:32px 6px 32px 37px;
+  padding-leftX:37px;
 }
 .upperIcons > div:hover {
   cursor: pointer;

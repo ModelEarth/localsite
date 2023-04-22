@@ -6,18 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 
-<title>LocalSite - Player</title>
-<link type="text/css" rel="stylesheet" href="/localsite/css/base.css" id="/localsite/css/base.css" />
-<script type="text/javascript" src="/localsite/js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
-<script type="text/javascript" src="/localsite/js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
-<script type="text/javascript" src="/localsite/js/showdown.min.js" id="/localsite/js/showdown.min.js"></script>
-<script type="text/javascript" src="/localsite/js/localsite.js?showheader=true&showsearch=true"></script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
 
-<script>
-  //param.startTitle = "Neighborhood.org"
-  //param.titleArray = ["local","site"] // The header title will default to Neighborhood when no titleArray.
-	param.footer = "footer.html"
-</script>
+<title>Swiper Alone</title>
 
 </head>
 
@@ -54,10 +45,9 @@ text-align:left; overflow:scroll;
 <script src='/localsite/js/plyr.min.js'></script>
 
   <!-- data-id="sample1" -->
-  <!-- overflow:hidden here caused slides to be hidden -->
-  <div class="swiper-container" style="overflowX:hidden; background: #000; background-color: #000;" id="sample1">
+  <div class="swiper-container" style="overflow:hidden;" id="sample1">
 
-    <div class="swiper-wrapper" style="">
+    <div class="swiper-wrapper">
       
       <!-- Slide 1 -->
       <div class="swiper-slide" data-hash="plant">
@@ -80,7 +70,7 @@ text-align:left; overflow:scroll;
       <!-- Slide 3 -->
       <div class="swiper-slide" data-hash="sun">
         <!-- Example of smaller: solar-rect-sm.png -->
-        <!--img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/solar-rect.png" style="width:100%;max-width:2000px;"--><img class="swiper-lazy" data-src="/localsite/img/hero/solar-rect.png" style="opacity:0.9;max-width:2000px;">
+        <img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/solar-rect.png" style="width:100%;max-width:2000px;"><img class="swiper-lazy" data-src="/localsite/img/hero/solar-rect.png" style="opacity:0.9;max-width:2000px;">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white" style="position: relative; border: 10px solid red;"></div>
         <div class="optionalText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
           Add Optional Text 3
@@ -89,7 +79,7 @@ text-align:left; overflow:scroll;
 
       <!-- Slide 4: A Walkable Street -->
       <div class="swiper-slide" data-hash="communities" style="positionX: relative;">
-        <!--img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/sustainable-communities.jpg" style="width:100%;max-width:2000px;"-->
+        <img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/sustainable-communities.jpg" style="width:100%;max-width:2000px;">
         <img class="swiper-lazy" data-src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
         <div class="box" style="display:none">
@@ -317,11 +307,6 @@ $(".swiper-button-play").show();
 
 </div>
 
-<script>
-    loadMarkdown("README.md", "readmeDiv", "_parent");
-    loadMarkdown("start/features.md", "featuresDiv", "_parent");
-    loadMarkdown("start/params.md", "paramsDiv", "_parent");
-</script>
 
 <div id="footer"></div>
 

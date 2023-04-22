@@ -272,7 +272,10 @@ localsite.js pulls the #insertedText div from this page as the template for head
     </div>
 
     <div class="earth" style="float:left; display:none">
-      <div class="showMenu">
+      <div id="showEarthMenu" class="showEarthMenu">
+        <i class="material-icons show-on-load" style="font-size:34px;opacity:0.3; margin-top:-3px" data="apps">&#xE5D2;</i>
+      </div>
+      <div id="hideMenu" class="hideEarthMenu" style="display:none">
         <i class="material-icons show-on-load" style="font-size:34px;opacity:0.3; margin-top:-3px" data="apps">&#xE5D2;</i>
       </div>
     </div>
@@ -284,7 +287,6 @@ localsite.js pulls the #insertedText div from this page as the template for head
 <!-- RIGHT MENU -->
 
 <!-- Menu and Secondary Menus -->
-<div id="rightTopMenuVisibility"><!-- Can we remove this? -->
 <!--
 <div id="hideTopPanel" class="close-X" style="position:absolute;right:5px;top:8px;padding-right:10px; z-index:99999">✕</div>
 -->
@@ -634,7 +636,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
     <!-- End Print Options -->
 
 </div>
-</div>
+
 <!-- /rightTopMenu -->
 
 <div id="menuHolder" style="pointer-events: auto; background:#333; display:none">
@@ -740,7 +742,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
       </div>
       -->
       <div class="localX earthX" style="display:none">
-        <div class="showMenu" style="cursor:pointer;font-size:24px;color:#999;padding-top:9px;float:left">
+        <div class="showEarthMenu" style="cursor:pointer;font-size:24px;color:#999;padding-top:9px;float:left">
           <i class="material-icons show-on-load" style="font-size:35px; opacity:0.4;" data="apps">&#xE5C3;</i>
         </div>
       </div>
@@ -2183,7 +2185,8 @@ document.addEventListener('hashChangeEvent', function (elem) {
 
 
 <!-- For testing slider -->
-<div class="swiper-container local" style="display:none;overflow:hidden;clear:both" id="sample1">
+<!-- overflow:hidden here might cause slides to be hidden, it did on localhost page. -->
+<div class="swiper-container local" style="display:none;clear:both" id="sample1">
 
   <div class="swiper-wrapper">
     

@@ -91,3 +91,11 @@ CSV data above was copied into this GitHub Repo from CartoDB on Sept 25, 2019.
 Post a GitHub issue to contribute updates.
 https://github.com/modelearth/community/tree/master/recycling/ga
 -->
+
+### Notes on import of Wastewater rows to Google Sheet.
+
+The following four SIC values need to have zeros removed to match value in tab for side navigation:
+
+033, 038, 000, 032
+
+

@@ -523,7 +523,42 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.markerType = "google";
         dp.filters = {tag:"Liaisons"}; // Supports comma separated values
         dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website", "Type": "tag"};
+      
+      } else if (show == "aerospace") {
+        dp.listTitle = "Georgia Aerospace Directory";
+        dp.dataTitle = "Aerospace Directory";
+        dp.listInfo = "The Aerospace Directory is a free listing service provided by the Center of Innovation for Aerospace for any aerospace-related company or organization in Georgia. <a href='https://www.cognitoforms.com/GDECD1/GeorgiaDirectory' target='_blank'>Add and Update Listings</a>";
+        // Participating in this directory gives a company/organization visibility to national, regional, and state partners who are looking for local suppliers or potential suppliers for new economic development prospects. 
+
+        dp.nameColumn = "organization name";
+        dp.titleColumn = "organization name";
+        dp.searchFields = "organization name";
+
+        dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSkK4mAiyQoplKH40yhYondpbZCctjz7EHDq5ZSCHVTTYC4Pmk7J-C_k361MXXNRY8YGuNeripB6cwU/pub?gid=851472293&single=true&output=csv";
+        dp.markerType = "google";
+        //dp.color = "#ff9819"; // orange - Since there is no type column. An item column is filtered. To do: Pull types from a tab and relate to the first type in each column.
         
+        //dp.filters = {tag:"Liaisons"}; // Supports comma separated values
+        //dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website", "Type": "tag"};
+        
+        // CatAerospace Tab
+        dp.googleCategories = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSkK4mAiyQoplKH40yhYondpbZCctjz7EHDq5ZSCHVTTYC4Pmk7J-C_k361MXXNRY8YGuNeripB6cwU/pub?gid=239772657&single=true&output=csv";
+        dp.catColumn = "categories";
+
+        ////dp.showWhenStatus = "Operating"
+        dp.valueColumn = "categories";
+        dp.valueColumnLabel = "Categories";
+
+        dp.omitColumns = "lastconfirmed,pdf,salesforce"; // Currently make these lowercase here regardless of column capitalization
+        // Questions: Can the pdf column be deleted?
+        // Can the free listing / premium listing column be deleted?
+        // Should the green "RETAIN IN CONTACTS LIST" also be deleted?
+        // Proably to delete: georgiadirectory_id
+        // Can 12 "Air Transport" be renamed to "Air Transportation" (which has 50+ rows, and it's a main category)
+
+        dp.filters = {type:"aerospace"}; // Supports comma separated values
+        dp.search = {"In Main Category": "Category", "In Location Name": "Organization Name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
+      
       } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfillsX")) { // recycling-processors
         // NOT USED - LOOK ABOVE
         if (hash.state == "GA") {
@@ -1162,8 +1197,10 @@ function showList(dp,map) {
   var data_sorted = []; // An array of objects
   var data_out = [];
   let catList = {}; // An array of objects, one for each unique category
-  //alert(localObject.layerCategories[hash.show].length)
-  if (localObject.layerCategories[hash.show] && localObject.layerCategories[hash.show].length >= 0) { // The lenght includes multiple subcats for each cat
+
+  //console.log("layerCategories test");
+  //console.log(localObject.layerCategories[hash.show])
+  if (localObject.layerCategories[hash.show] && localObject.layerCategories[hash.show].length >= 0) { // The length includes multiple subcats for each cat
     catList = localObject.layerCategories[hash.show];
   }
 
@@ -1202,6 +1239,14 @@ function showList(dp,map) {
   let output = "";
   let output_details = "";
   let avoidRepeating = ["description","address","website","phone","email","email address","county","admin note","your name","organization name","cognito_id"];
+  if (dp.omitColumns) {
+    let omit_array = dp.omitColumns.split(/\s*,\s*/); // Removes space when splitting possible values on comma
+    for(let i = 0; i < omit_array.length; i++) {
+      if (omit_array[i].length > 0) {
+        avoidRepeating.push(omit_array[i]);
+      }
+    }
+  }
   if (dp.valueColumn) { // Avoids showing "Category" twice
     avoidRepeating.push(dp.valueColumn);
   }
@@ -1503,27 +1548,35 @@ function showList(dp,map) {
       }
     }
 
-    iconColor = colorScale(element[dp.valueColumn]);
-    if (!iconColor && dp.color) { 
-      iconColor = dp.color;
-    } else if (!iconColor && !dp.color) { 
-      iconColor = "#777"; // Grey - for side category list
-    }
+
 
     //iconColorRGB = hex2rgb(iconColor);
     //console.log("element state2 " + element.state + " iconColor: " + iconColor)
 
     // INCREMENT THE CATEGORY COUNT for the value in the row's valueColumn
-    //console.log("element[dp.valueColumn] " + element[dp.valueColumn]);
+    console.log("element[dp.valueColumn] " + element[dp.valueColumn]);
     if (dp.valueColumn) {
-      // Requires only ONE category value in the valueColumn.
-      if(!catList[element[dp.valueColumn]]) {
-        catList[element[dp.valueColumn]] = {};
-        catList[element[dp.valueColumn]].count = 1;
-      } else {
-        catList[element[dp.valueColumn]].count++;
+      // Split row's category's on commas.
+      let rowsCatArray = element[dp.valueColumn].split(",");
+      for(var i = 0 ; i < rowsCatArray.length ; i++) {
+        // Reactivate and test aerospace
+        //$("#" + rowsCatArray[i]).prop('checked', true);
+        let oneCat = rowsCatArray[i].trim(); // From element[dp.valueColumn]
+        if(!catList[oneCat]) {
+          catList[oneCat] = {};
+          catList[oneCat].count = 1;
+        } else {
+          catList[oneCat].count++;
+        }
+
+        iconColor = colorScale(oneCat);
+        if (!iconColor && dp.color) { 
+          iconColor = dp.color;
+        } else if (!iconColor && !dp.color) { 
+          iconColor = "#777"; // Grey - for side category list
+        }
+        catList[oneCat].color = iconColor;
       }
-      catList[element[dp.valueColumn]].color = iconColor;
     }
     // BUGBUG - Is it valid to search above before making key lowercase? Should elementRaw key be made lowercase?
 
@@ -1632,7 +1685,7 @@ function showList(dp,map) {
           if (location.host.indexOf('localhost') >= 0) {
             //output += "<img style='width:100%;max-width:200px;float:right' src='" + element.photo1 + "'>";
 
-            output += "Local Test<img style='width:100%;max-width:200px;float:right' class='swiper-lazy' data-src='" + element.photo1 + "'>";
+            output += "Local Image Test<img style='width:100%;max-width:200px;float:right' class='swiper-lazy' data-src='" + element.photo1 + "'>";
 
             // unique data-id used by buildSwiperSlider to init multiple sliders.
             // Might not need id
@@ -1672,7 +1725,7 @@ function showList(dp,map) {
           if (dp.valueColumn && !dp.color) {
             // Temp
             if(location.host.indexOf('localhost') >= 0) {
-              output += "No main category<br>";
+              output += "No main category (localhost)<br>";
             }
           }
           var outaddress = "";
@@ -2070,7 +2123,7 @@ function renderCatList(catList) {
 
         // Loop through possible categories from SIC tab and append the titles to our catList object
         //alert("Cats " + localObject.layerCategories[param.show].length);
-        if (param.show == "wastewater") {
+        if (param.show == "wastewater" || param.show == "aerospace") {
           // This would cause recyclers subcategory to appear in left legend
           for (var i = 0; i < localObject.layerCategories[param.show].length; i++) {
               let arrayEntry = localObject.layerCategories[param.show][i];
@@ -2111,7 +2164,7 @@ function renderCatList(catList) {
                 if (catList[key].catTitle) {
                   catTitle = catList[key].catTitle;
                 } else {
-                  catTitle = key; // Multiple SIC
+                  catTitle = key; // Some are current Multiple SIC for wastewater, where no match was found due to comma list
                 }
                 console.log("catTitle:" + catTitle);
               }
@@ -2523,10 +2576,10 @@ $(window).scroll(function() {
         $("#headerLarge").addClass("headerLargeHide"); 
         $('.headerbar').hide();
         $('.headerOffset').hide();
-        $('#logoholderbar').show(); 
+        $('#logoholderbar').show();
 
         // Hide right side menu
-        $("#rightTopMenuVisibility").hide();
+        $("#rightTopMenu").hide();
         // BUGBUG - occuring on initial reload when page is a little from top.
         //$('#logoholderside').show();
 
@@ -4799,19 +4852,37 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
                         processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
                     })
                   } else if (dp.googleCSV) {
-                    d3.csv(dp.googleCSV).then(function(data) { // One row per line
+                    d3.csv(dp.googleCSV).then(function(data) { // One element containing all rows from spreadsheet
                       // LOAD GOOGLE SHEET
                         //dp.data = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
                         dp.data = data;
                         if (dp.googleCategories) {            
                           d3.csv(dp.googleCategories).then(function(data) {
+
+                            // BUGBUG
+                            // Seems to be an array of object, then arrays (key value pari where the value is an object containing count and color)
+                            console.log(data);
+
+                            //BUGBUG - commas need to be split for wastewater before here.
+                            // TO DO Loop through data and check for commas:
+                            for (let i = 0; i < data.length; i++) {
+                              console.log("not reaching");
+                              if (data[i]) {
+                                    console.log("data.key: ");
+                                    console.log(data[i]);
+                              }
+                            }
+
                             // LOAD CATEGORIES TAB - Category, SubCategory, SubCategoryLong
                             //localObject.layerCategories[dp.show] = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
                             
-                            // BugBug - this seems to append, 32 of recyclers are duplicated but have no titles
-                            // But this is needed for subcategories to appear.
+                            
+
+                            // The category look up, not the actual counts.
                             localObject.layerCategories[dp.show] = data;
 
+                            console.log("FOR CATEGORIES NAV - Some may not be used")
+                            console.log(localObject.layerCategories[dp.show]); // Include color for mappoint at this point.
                             processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
                           });
                         } else {

@@ -907,7 +907,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   
 
   if (param.material_icons != "false") {
-    param.material_icons = "true"; // Could lazy load if showMenu changed to graphic.
+    param.material_icons = "true"; // Could lazy load if showEarthMenu changed to graphic.
   }
   if (fullsite || param.material_icons == "true") {
     // This was inside FULL SITE above, but it is needed for menus embedded in external sites.
@@ -1458,6 +1458,10 @@ addEventListener("load", function(){
   };
   document.querySelector("body").addEventListener('click', function(e) {
     $(".hideOnBodyClick").hide();
+
+    $("#hideMenu").hide(); // Avoids double clicking.
+    $("#showEarthMenu").show();
+
     //consoleLog('click ' + Date.now())
     var anchor = getParentAnchor(e.target);
     if(anchor !== null) {

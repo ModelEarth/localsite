@@ -2267,10 +2267,13 @@ function initSiteObject(layerName) {
         }
 	    let layerObject = (function() {
 
+            if(!localObject.layers) {
+                console.log("Error: no localObject.layers");
+            }
             $.getJSON(layerJson, function (layers) {
 
-                console.log("The localObject.layers");
-                console.log(localObject.layers);
+                //console.log("The localObject.layers");
+                //console.log(localObject.layers);
 
                 // Create an object of objects so show.hash is the layers key
                 $.each(layers, function (i) {
@@ -2368,8 +2371,9 @@ function callInitSiteObject(attempt) {
     }
 	if (typeof local_app !== 'undefined') { // wait for local_app
 		initSiteObject("");
-        console.log("localObject.layers");
-        console.log(localObject.layers);
+        //console.log("localObject.layers");
+        //console.log(localObject.layers);
+
 		// Not available here since async in initSiteObject()
 		//showThumbMenu(hash.show;
 		//return layerObject.layers; // Not always returning yet

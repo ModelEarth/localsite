@@ -27,7 +27,8 @@
 }
 .swiper-slide {
   text-align: center;
-  background: #fff;
+  /* background: #fff; */
+  background: #000;
   /* Center slide text vertically, and horizontally */
   display: -webkit-box;
   display: -ms-flexbox;

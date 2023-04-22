@@ -651,6 +651,11 @@ body {
     box-shadow: 2px 2px 6px #333;
     bottom: 0;
 }
+@media (max-width: 800px) {
+	#rightTopMenu {
+		left: 0px;
+	}
+}
 .rightTopMenuLeft {
     /* top: 48px; */
     float:left;
@@ -659,6 +664,7 @@ body {
 .rightTopMenuInner { /* lives outside .moduleJS when full header displayed */
     min-width: 150px;
     font-family: 'Open Sans', 'Helvetica Neue', HelveticaNeue, calibri, arial, sans-serif;
+    max-width: 200px;
 }
 .rightTopMenuInner i {
     color: #ddd !important;
