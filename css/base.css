@@ -70,7 +70,7 @@ Creates gap on some image buttons. Might reactivate after search page graphic bu
 */
 textarea {
     /* border:solid 1px #777; */
-    border-color: rgb(238, 238, 238);
+    border-color: #777;
 }
 
 /* Lighter: #4091dd */
