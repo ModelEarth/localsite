@@ -474,41 +474,40 @@ body {
 
 #sidecolumn {
     float: left;
-    width: 200px;
+    width: 240px;
     height: 100%;
-    padding-right: 10px;
+    padding-right: 0px;
     background-color: rgb(253, 253, 253);
     background-color: rgb(99 99 99/50%);
     position: relative;
 }
 #sidecolumnLeft {
     padding: 24px;
-    line-height: 24px;
-    width: 178px;
-    width: 220px;
-    font-size: 14px;
+    line-height: 28px;
+    width: 240px;
+    font-size: 16px;
     bottom:0;
     top:100px;
     z-index:1; /* allows border highlight to overlap adjacent content area. */
 }
 #sidecolumnLeft {
 	position: fixed;
-	margin-top: 18px;
 }
 #cloneRight {
 	position:inherit;
-    line-height: 24px;
-    font-size: 14px;
+    line-height: 34px;
+    font-size: 18px;
 }
 #sidecolumnLeft b, #cloneRight b {
     color:#333;
+    font-weight:800;
 }
 .sidecolumnLeftScroll {
     position:absolute;
-    top:0px;
+    top:24px;
     bottom:0px;
-    right:24px;
-    left:18px;
+    right:0px;
+    left:10px;
     overflow-y:scroll;
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none;  /* IE and Edge */
@@ -521,25 +520,23 @@ body {
 
 #sidecolumnLeft a, #cloneRight a {
     display:block;
+    padding-left: 15px;
     color: #fff;
     text-decoration: none;
 }
-#sidecolumnLeft a:hover, #cloneRight a:hover {
-	text-decoration: underline;
+#sidecolumnLeft a:hover, #sidecolumnLeft a.active:hover, #cloneRight a:hover {
+	background-color: #333;
+	color: #fff;
 }
 #sidecolumnLeft b a {
 	color: #333;
 	font-size: 16px;
 	line-height: 1.8em;
 }
-#sidecolumnLeftX a:hover {
-    border-right: 4px solid #f3f3f3;
-    border-right: 4px solid #000;
-    margin-right: -4px;
-}
 #sidecolumnLeft a.active {
-    border-right: 4px solid #777;
-    margin-left:-20px;
+    border-right: 4px solid #888;
+    background-color: rgba(33, 33, 33, 0.06);
+    margin-left:-6px;
     padding-left:20px;
 }
 #fullcolumn {
@@ -698,6 +695,9 @@ body {
 }
 .rightTopItem:hover {
     background-color: #000;
+}
+.rightTopItem.active {
+    background-color: #555;
 }
 .rightTopItem i {
     width:40px;

@@ -11,7 +11,7 @@
 <script type="text/javascript" src="/localsite/js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
 <script type="text/javascript" src="/localsite/js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
 <script type="text/javascript" src="/localsite/js/showdown.min.js" id="/localsite/js/showdown.min.js"></script>
-<script type="text/javascript" src="/localsite/js/localsite.js?showheader=true&showsearch=true"></script>
+<script type="text/javascript" src="/localsite/js/localsite.js?showheader=true&showsearch=true&showfilters=false"></script>
 
 <script>
   //param.startTitle = "Neighborhood.org"
@@ -154,7 +154,8 @@ const buildSwiperSlider = sliderElm => {
         slidesPerView: 1,
         spaceBetween: 30,
         loop: true,
-        speed: 2500, /* transition */
+        speedX: 2500, /* transition */
+        speed: 300, /* transition */
         slidesPerView: 'auto',
         lazy: {
           loadPrevNext: true,

@@ -1668,8 +1668,9 @@ function getState(stateCode) {
 
 
 function showSearchFilter() {
+  let loadFilters = false;
   let headerHeight = $("#headerbar").height(); // Not sure why this is 99 rather than 100
-  if (!$("#filterFieldsHolder").length) { // Filter doesn't exist yet, initial load.
+  if (!$("#filterFieldsHolder").length) { // Filter doesn't exist yet, initial map/index.html load.
     if (!$("#bodyFile").length) {
       $('body').prepend("<div id='bodyFile'></div>");
     }
@@ -1678,6 +1679,7 @@ function showSearchFilter() {
     console.log('%cloadLeafletAndMapFilters called by showSearchFilter(). Might cause dup', 'color: red; background: yellow; font-size: 14px');
     loadLeafletAndMapFilters();
     $('html,body').scrollTop(0);
+    loadFilters = true;
   } else {
 
     let filterTop = $("#filterFieldsHolder").offset().top - window.pageYOffset;
@@ -1690,11 +1692,27 @@ function showSearchFilter() {
       $("#filterFieldsHolder").addClass("filterFieldsHidden");
       //$("#filterbaroffset").hide();
       ////$("#pageLinksHolder").hide();
+      if(location.host.indexOf('localhost') >= 0) {
+        alert("#filterFieldsHolder visible (locahost)"); //BUGBUG - should not be visible here
+      }
     } else {
       // #bodyFile is needed for map/index.html to apply $("#filterFieldsHolder").show()
       // Also prevents search filter from flashing briefly in map/index.html before moving into #bodyFile
       // 
-      waitForElm('#bodyFile #filterFieldsHolder').then((elm) => {
+
+      let filterFile = modelroot + "/localsite/map/filter.html";
+      $("#filterFieldsHolder").load(filterFile, function( response, status, xhr ) {
+
+      }); // End $("#filters").load
+
+      loadFilters = true;
+    }
+
+    if (loadFilters) {
+      if(location.host.indexOf('localhost') >= 0) {
+        alert("loadFilters (localhost)");
+      }
+      waitForElm('#bodyFile #filterFieldContent').then((elm) => {
         console.log("show #filterFieldsHolder");
         $("#filterFieldsHolder").show();
         $("#filterFieldsHolder").removeClass("filterFieldsHidden");
@@ -1704,7 +1722,6 @@ function showSearchFilter() {
       });
     }
     return;
-
 
 
 

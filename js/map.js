@@ -2585,9 +2585,11 @@ $(window).scroll(function() {
 
         if (!$("#filterFieldsHolder").hasClass("filterFieldsHidden")) {
           $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
-          console.log("#filterFieldsHolder show");
-          $("#filterFieldsHolder").show();
-          if (param.showheader != "false") {
+          console.log("Called when scrolling #filterFieldsHolder show");
+          //$("#filterFieldsHolder").show();
+
+          //if (param.showheader != "false") {
+          if (param.showfilters == "true") {
             $('.showMenuSmNav').show(); 
           }
           $('.headerOffset').hide();
