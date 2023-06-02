@@ -795,8 +795,10 @@ function initEvents() { // Once included file1 is loaded.
             $("#showAdvanced").show();
             $(".fieldSelector").hide();
             $('#keywordsTB').focus();
+            alert("what next")
         }
-        $('#hideAdvanced').click(function(event) {
+        $(document).on("click","#hideAdvanced", function(event) {
+        //$('#hideAdvanced').click(function(event) {
             hideFieldSelector();
         });
 

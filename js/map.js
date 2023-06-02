@@ -2561,7 +2561,7 @@ $(window).scroll(function() {
     $('#headerbar').hide();
 
     $('#sidecolumnLeft').css("top","54px");
-    $('#showSide').css("top","7px");
+    //$('#showSide').css("top","7px");
 
     if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
       $('#headerLarge').hide();
@@ -2579,14 +2579,13 @@ $(window).scroll(function() {
         $('#logoholderbar').show();
 
         // Hide right side menu
-        $("#rightTopMenu").hide();
+        //$("#rightTopMenu").hide();
+
         // BUGBUG - occuring on initial reload when page is a little from top.
         //$('#logoholderside').show();
 
         if (!$("#filterFieldsHolder").hasClass("filterFieldsHidden")) {
           $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
-          console.log("Called when scrolling #filterFieldsHolder show");
-          //$("#filterFieldsHolder").show();
 
           //if (param.showheader != "false") {
           if (param.showfilters == "true") {
@@ -2599,7 +2598,7 @@ $(window).scroll(function() {
         
         $('#sidecolumnLeft').css("top","54px");
         //alert("#headerbar hide")
-        $('#showSide').css("top","7px");
+        //$('#showSide').css("top","7px");
         if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
           $('#headerLarge').hide();
         }
@@ -2621,7 +2620,7 @@ $(window).scroll(function() {
         let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px
         $('#sidecolumnLeft').css("top",headerFixedHeight + "px");
         //$('#sidecolumnLeft').css("top","0px");
-        $('#showSide').css("top","108px");
+        //$('#showSide').css("top","108px");
       }
       $('#headerLarge').show();
     } else if ($(window).scrollTop() == 0) { // At top
@@ -2639,7 +2638,7 @@ $(window).scroll(function() {
         let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px
         $('#sidecolumnLeft').css("top",headerFixedHeight + "px");
         //$('#sidecolumnLeft').css("top","0px");
-        $('#showSide').css("top","108px");
+        //$('#showSide').css("top","108px");
       }
       $('#headerLarge').show();
     }

@@ -548,7 +548,7 @@ body {
 }
 @media (max-width: 800px) {
     .content {
-      padding: 30px 22px 30px 25px;
+      padding: 30px 22px 30px 40px;
     }
     #sidecolumn {
       display: none;
@@ -640,13 +640,9 @@ body {
 }
 
 #rightTopMenu {
-    position: fixed;
-    right: 0px;
-    top: 100px;
-    z-index: 1001; /* To exceed Leaflet */
     pointer-events: auto; /* Prevents click from reching image, and hover from reaching map below */
     box-shadow: 2px 2px 6px #333;
-    bottom: 0;
+    height: 100%;
 }
 @media (max-width: 800px) {
 	#rightTopMenu {
@@ -679,6 +675,9 @@ body {
     }
     .rightTopMenuInner .rightTopItem {
         /* border-bottom: 1px solid #aaa; */
+    }
+    .rightTopItem span {
+    	display: none;
     }
 }
 .rightTopMenuInner > .active {

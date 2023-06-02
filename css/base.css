@@ -38,6 +38,24 @@ body {
   color: #333;
   line-heightX:0; /* prevents gaps betweet images, but 0 caused text to overlap on start and nav icons. */
 }
+.bodySideMargin {
+  margin-right: 600px;
+}
+@media (max-width: 1800px) {
+  .mobileView .hideMobile {
+    display: none;
+  }
+  .mobileView .maintext {
+    padding: 30px;
+  }
+}
+@media (max-width: 1500px) {
+  .mobileView .containerLayout {
+      margin-left: 0px;
+      width: 100%;
+  }
+}
+
 .flexbody {
   display: flex; /* for footer */
   flex-direction: column; /* for footer */
@@ -634,6 +652,25 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   list-style: none;
   font-size: 13.5px;
 }
+
+.navLinks, .navLinks a {
+    color: #aaa;
+    text-decoration: none !important;
+    /* font-size: 16px !important; */
+    margin-right:8px !important;
+    margin-left:8px !important;
+    font: 400 16px/1.8 "Lato", sans-serif;
+    -webkit-font-smoothing: inherit !important;
+}
+.navLinks .navActive {
+    font: 600 16px/1.8 "Lato", sans-serif !important;
+    color: #444 !important;
+}
+.navLinks a:hover {
+    color: #555 !important;
+    text-decoration: none !important;
+}
+
 .nav>li>a {
   padding: 8px;
   margin-top: 2px;
@@ -931,7 +968,8 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   font-size: 22px;
 }
 .headerbar {
-  background-color: rgb(230 230 230/50%);
+  background-color: rgb(230 230 230/50%); /* Don't use. Doesn't overlap left side nav */
+  background-color: rgb(239 239 239);
   pointer-events: auto;
 }
 /* Seems that brave darkmode ignores the use of prefers-color-scheme: dark */
@@ -976,9 +1014,14 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 .upperIcons {
   margin-right: 18px;
 }
-.upperIcons > div {
-  padding:32px 6px 32px 37px;
-  padding-leftX:37px;
+/* .upperIcons > */
+.iconPadding {
+  padding:14px 12px 20px 12px;
+  cursor: pointer;
+}
+.iconPadding:hover {
+  background-color: #ccc;
+  color: #000;
 }
 .upperIcons > div:hover {
   cursor: pointer;

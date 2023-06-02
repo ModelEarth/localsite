@@ -1,5 +1,6 @@
 // Site specific settings
 // Maintained in localsite/js/navigation.js
+
 if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 	const page_scripts = document.getElementsByTagName("script");
 	const current_code_path = page_scripts[page_scripts.length-1].src;
@@ -66,12 +67,19 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 
 	function applyNavigation() { // Called by localsite.js so local_app path is available.
 		// To do: fetch the existing background-image.
-		if (location.host.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio") {
+		if (location.host.indexOf('localhost') >= 0 || location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio") {
 			//showLeftIcon = true;
 			$(".siteTitleShort").text("DreamStudio");
 			param.titleArray = [];
-			param.headerLogo = "<a href='https://dreamstudio.com'><img src='https://dreamstudio.com/dreamstudio/img/logo/dreamstudio.png' style='height:23px'></a>";
-			param.headerLogoNoText = " ";
+			//param.headerLogo = "<a href='https://dreamstudio.com'><img src='https://dreamstudio.com/dreamstudio/img/logo/dreamstudio.png' style='height:23px'></a>";
+			
+			param.headerLogo = "<a href='/dreamstudio/''><img src='/dreamstudio/img/logo/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/dreamstudio/img/logo/dreamstudio.png' alt='DreamStudio' style='height:22px; margin-top:9px'></a>";
+			if (location.host.indexOf("dreamstudio") >= 0) {
+				param.headerLogo = param.headerLogo.replace(/\dreamstudio\//g,"\/");
+			}
+			param.headerLogoNoText = "<img src='/dreamstudio/img/logo/favicon.png' style='float:left;width:38px;margin-right:7px'>";
+			showClassInline(".dreamstudio");
+		// 
 		} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 ) {
 			// Show locally for Brave Browser only - insert before:  ) || false
 			// && navigator && navigator.brave
@@ -83,7 +91,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			showLeftIcon = true;
 			$(".siteTitleShort").text("Model Georgia");
 			param.titleArray = [];
-			param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.localsite_root() + "img/logo/states/GA.png' style='width:130px;padding-top:4px'></a>";
+			param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.localsite_root() + "img/logo/states/GA.png' style='width:140px;padding-top:4px'></a>";
 			param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.localsite_root() + "img/logo/states/GA-notext.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
 			if (document.title) {
 		 		document.title = "Georgia.org - " + document.title;
@@ -93,19 +101,9 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			
 			changeFavicon("/localsite/img/logo/states/GA-favicon.png");
 
-			// BUGBUG - This needs to be css insert rather than being applied before README loads
 			showClassInline(".georgia");
+			showClassInline(".earth"); // Could remove if Georgia sidenav added.
 			$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
-
-			// TEMP
-			setTimeout( function() {
-				showClassInline(".georgia");
-				$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
-			}, 1500);
-			setTimeout( function() {
-				showClassInline(".georgia");
-				$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
-			}, 3500);
 
 			earthFooter = true;
 
@@ -118,7 +116,6 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			changeFavicon("/localsite/img/logo/partners/neighborhood-icon.png")
 			showClassInline(".neighborhood");
 			earthFooter = true;
-		// location.host.indexOf('localhost') >= 0 || 
 		} else if (!Array.isArray(param.titleArray) && (location.host.indexOf("democracy.lab") >= 0)) {
 			showLeftIcon = true;
 			$(".siteTitleShort").text("Democracy Lab");
@@ -169,9 +166,6 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 	 	// min-height allows header to serve as #filterbaroffset when header.html not loaded
 	 	// pointer-events:none; // Avoid because sub-divs inherite and settings dropdowns are then not clickable.
 
-	 	// Puts space above flexmain for sidecolumn to be visible after header  
-	 	$("body").prepend("<div id='local-header' class='flexheader hideprint' style='min-height:100px; display:none'></div>\r");
-		
 		if(document.getElementById("bodyFile") == null) {
 			$("#fullcolumn").prepend("<div id='bodyFile'></div>\r");
 		}
@@ -234,8 +228,8 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 
 				if (param.header) headerFile = param.header;
 
-				if (earthFooter && param.showEarthMenu != "false") { // Sites includieng modelearth and neighborhood
-				 	$(".showEarthMenu").show(); // Before load headerFile for faster display.
+				if (earthFooter && param.showSideTabs != "false") { // Sites includieng modelearth and neighborhood
+				 	$(".showSideTabs").show(); // Before load headerFile for faster display.
 				}
 
 				// headerFile contains only navigation
@@ -263,16 +257,16 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 				 		// Move filterbarOffset and filterEmbedHolder immediately after body tag start.
 				 		// Allows map embed to reside below intro text and additional navigation on page.
 
-				 		//if (param.showEarthMenu != "false") { // brig
+				 		//if (param.showSideTabs != "false") { // brig
 				 		
 				 		if (location.host.indexOf('localhost') >= 0) {
 				 			console.log("LOCAL ONLY - Show menu icon for localhost")
-				 			$(".showEarthMenu").show();
+				 			$(".showSideTabs").show();
 				 			$(".upperIcons .earth").show();
 				 			setTimeout( function() {
-								$(".showEarthMenu").show();
-				 				$(".upperIcons .earth").show();
-				 				$(".earth").show();
+								$(".showSideTabs").show();
+				 				//$(".upperIcons .earth").show();
+				 				//$(".earth").show();
 							}, 1000);
 				 		}
 				 		$("#filterEmbedHolder").insertAfter("#headeroffset");
@@ -342,52 +336,57 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 					// Equivalent to checking for #headerbar, but using #localsiteDetails since template pages already have a #headerbar.
 					waitForElm('#localsiteDetails').then((elm) => {
 						//console.log("climbpath value: " + climbpath);
-					 	if (!param.headerLogo && param.headerLogoSmall) {
-					 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall + "</a>");
-					 	} else if (param.headerLogo) {
-					 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
-					 	} else if (param.favicon) {
-					 		let imageUrl = climbpath + ".." + param.favicon;
-						 	$('#headerLogo').css('background-image', 'url(' + imageUrl + ')');
-							$('#headerLogo').css('background-repeat', 'no-repeat');
-						}
 
-						if (param.headerLogoSmall) {
-							$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall+ "</a>");
-						} else if (param.headerLogoNoText) {
-							$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoNoText + "</a>");
-						} else if (param.headerLogo) {
-							$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
-						}
-						/*
-				 		//$('#headerLogo').css('background-size', '70% 70%');
+						waitForElm('#localsiteDetails').then((elm) => {
+						 	if (!param.headerLogo && param.headerLogoSmall) {
+						 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall + "</a>");
+						 	} else if (param.headerLogo) {
+						 		//alert("Display param.headerLogo")
+						 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
+						 	} else if (param.favicon) {
+						 		let imageUrl = climbpath + ".." + param.favicon;
+							 	$('#headerLogo').css('background-image', 'url(' + imageUrl + ')');
+								$('#headerLogo').css('background-repeat', 'no-repeat');
+							}
+						});
 
-				 		$('#headerLogo').css('margin-left', '20px');
-
-				 		//$('#headerLogo').css('background-size', '70% 70%');
-				 		$('#headerLogo').css('background-position', 'center');
-						*/
+						// Resides in map/filter.html
+						waitForElm('#logoholderbar').then((elm) => { // Note, #logoholderbar becomes available after #localsiteDetails
+							if (param.headerLogoSmall) {
+								$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall+ "</a>");
+							} else if (param.headerLogoNoText) {
+								$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoNoText + "</a>");
+							} else if (param.headerLogo) {
+								$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
+							}
+						});
 
 						$(document).on("click", ".showTheMenu", function(event) { // Seasons
 							console.log("Clicked .showTheMenu");
 		          			$(".navLinks").show();
-					 		//$("#showEarthMenu").hide();
+					 		//$("#showSideTabs").hide();
 					 		//$("#hideMenu").show();
 							event.stopPropagation();
 						});
 
-						$(document).on("click", ".showEarthMenu", function(event) {
-							console.log("Clicked .showEarthMenu");
+						$(document).on("click", ".showSideTabs", function(event) {
+							console.log("Clicked .showSideTabs");
 		          			loadScript('/localsite/js/settings.js', function(results) {}); // For "Settings" popup
-		          			$("#rightTopMenu").show();
-					 		$("#showEarthMenu").hide();
+		          			$('body').addClass('bodySideMargin'); // Creates margin on right for sidenav to reside above.
+		          			$('body').addClass('mobileView');
+		          			
+		          			$("#sideTabs").show();
+					 		$("#showSideTabs").hide();
 					 		$("#hideMenu").show();
 							event.stopPropagation();
 						});
-						$(document).on("click", ".hideEarthMenu", function(event) {
-							$("#hideMenu").hide();
-				 			$("#showEarthMenu").show();
-				 			$("#rightTopMenu").hide();
+						$(document).on("click", ".closeSideTabs", function(event) {
+							$("#sideTabs").hide();
+							$("body").removeClass("bodySideMargin");
+							$('body').removeClass('mobileView');
+							//$("#hideMenu").hide();
+							$("#closeSideTabs").hide();
+				 			$("#showSideTabs").show();
 						});
 						$(document).on("click", ".showEarth", function(event) {
 							if ($("#nullschoolHeader").is(':visible')) {
@@ -443,7 +442,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 
 
 								// /localsite/img/icon/sidemenu.png  // width:15px;height:14px
-				 					//<div class="showEarthMenu" style="displayX:none; float:left;font-size:24px; color:#999;">
+				 					//<div class="showSideTabs" style="displayX:none; float:left;font-size:24px; color:#999;">
 				 		}
 
 				 		// Only apply if id="/icon?family=Material+Icons" is already in DOM.
@@ -580,8 +579,16 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 
 	function showClassInline(theclass) {
 
-		$(theclass).css('display', 'inline');
+		//$(theclass).css('display', 'inline');
 
+		// Load when body div becomes available, faster than waiting for all DOM .js files to load.
+        waitForElm('head').then((elm) => {
+        	var div = $("<style />", {
+            	html: theclass + ' {display: inline !important}'
+            }).appendTo("head");
+        });
+
+		/*
 		setTimeout( function() {
 			$(theclass).css('display', 'inline');
 		}, 1000);
@@ -597,6 +604,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			setTimeout( function() {
 			$(theclass).css('display', 'inline');
 		}, 30000);
+		*/
 	}
 
 	function hideAdvanced() {

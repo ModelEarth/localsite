@@ -107,6 +107,8 @@
     cursor: pointer;
     border-radius: 20px;
     border: 0px;
+    border-left: 1px solid #e0e0e0;
+    border-top: 1px solid #ddd;
     border-right: 1px solid lightgray;
     border-bottom: 1px solid lightgray;
     padding: 0px 9px 0px 12px;

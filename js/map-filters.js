@@ -257,10 +257,10 @@ $(document).ready(function () {
         $('#rightTopMenu').hide(); // Temp here, call the function that closes open menus instead. Where is it?
     });
 
-    // Odd: $(document).on("click" does not work here, perhaps jquery is not loaded prior to DOM.
+    // Odd: $(document).on("click" did not work here, perhaps jquery is not loaded prior to DOM.
     // But why would surrounding $(document).ready work?
-    //$(document).on("click", "#filterClickLocation", function(event) {
-    $("#filterClickLocation").click(function(e) {
+    $(document).on("click", "#filterClickLocation", function(event) {
+    //$("#filterClickLocation").click(function(e) { // This does not work on localhost
         //let hash = getHash();
     	//if (!hash.mapview) {
     	//	// These will trigger call to filterClickLocation() and map display.
@@ -270,6 +270,7 @@ $(document).ready(function () {
 	    //		goHash({'mapview':'country'});
 	    //	}
     	//} else {
+            console.log("Call filterClickLocation()");
     		filterClickLocation();
     	//}
         //event.stopPropagation();

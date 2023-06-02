@@ -18,8 +18,6 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
 
 
-
-
 <!-- Also in localsite.js. Added here to prevent error "Tabulator JS not available for displaying list." that otherwise pops up after a minute. -->
 <!--
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
@@ -167,486 +165,516 @@ localsite.js pulls the #insertedText div from this page as the template for head
   .visually-hidden {display: none !important;}
 </style>
 
-<!-- HEADER BAR -->
-<div id="headerbar" class="headerbar headerbarheight headerbarhide" style="display:none;width:100%;position:fixed;overflow:visible;z-index:1002;pointer-events:auto;">
+  
 
-  <div class="contentpadding" style="padding-top:0px; padding-bottom:0px; float:left; min-width: 200px">
-    <div id="logospace" class="headerbarheight">
-      <div id="logoholder">
-        
-        <div id="headerLogo">
-        </div>
-        
-        <div id="headerLocTitleHolder">
-          <span id="headerSiteTitle"></span>
-          
-          <a href="../community/tools" class="logolink">
-          <span id="headerLocTitle"></span>
-          </a>
-        </div>
+  <!-- SIDETABS -->
+  <div id="sideTabs" style="position:fixed; z-index:10000; top:0px; bottom:0px; right: 0px; width:600px; display:none">
+    <!-- RIGHT MENU -->
 
-      </div>
-    </div>    
-  </div>
+    <!-- Menu and Secondary Menus -->
+    <!--
+    <div id="hideTopPanel" class="close-X" style="position:absolute;right:5px;top:8px;padding-right:10px; z-index:99999">✕</div>
+    -->
 
-  <div style="float:left; border-left:1px solid #ccc;">
-    <style>
-      .topstack {
-        float:left;
-        
-        padding-right: 10px;
-        padding:18px;
-        border-right:1px solid #ccc;
-      }
-      .topsm {
-        font-size: 11px;
-        float: left;
-      }
-      .toplg {
-        clear:both;
-        font-size: 17px;
-        color: #686868;
-      }
-      .arrow_down_sm {
-          width: 0;
-          height: 0;
-          border-left: 4px solid transparent;
-          border-right: 4px solid transparent;
-          border-top: 4px solid #999;
-          margin: 4px;
-          float: left;
-          pointer-events: auto;
-      }
+    <!-- event.stopPropagation() here breaks top icon clicks -->
+    <div id="rightTopMenu" onclickX="event.stopPropagation()" class="hideOnBodyClickXX">
+      
+      <div id="goatIcons" style="background-color:#aaa; width:100%; height:53px; padding-right:6px; overflow:hidden">
 
-    </style>
-    <!-- Cool top menu option -->
-    <div class="localX" style="display:none">
-      <div class="hideMobile">
-        <div class="topstack">
-          <div class="topsm">Locations</div><div class="arrow_down_sm"></div>
-          <div class="toplg">3 counties in Arizona</div>
-        </div>
-
-        <div class="topstack">
-          <div class="topsm">Goods & Services</div><div class="arrow_down_sm"></div>
-          <div class="toplg">Recycling Industries</div>
-        </div>
-
-        <div class="topstack">
-          <div class="topsm">Project Teams</div><div class="arrow_down_sm"></div>
-          <div class="toplg">React Developers</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="upperIcons noprint" style="float:right;">
-    <div style="float:left">
-      <div class="showSearch earth georgia" style="display:none">
-        <!-- To do: use javascript to retain the current window.location.search value from URL when on a search page. 
-        add -active rollover
-        -->
-        <img src="/localsite/img/icon/search.png" style="width:27px; opacity:0.5">
-        <!--
-        <div style="font-size:18pt;padding:2px 4px 0 2px;">&#128269;</div>
-        -->
-      </div>
-    </div>
-    <div class="hideMobile" style="float:left;">
-          <div class="expandToFullscreen" style="border:0px; padding: 3px 3px; cursor: pointer;">
-              <img src="/localsite/img/icon/fullscreen.png" style="width:22px; opacity:0.5">
-              <!--span style="font-size:34px;line-height:34px;padding-right:4px; color:#777">&#10064;</span-->
-          </div>
-          <div class="reduceFromFullscreen" style="display:none; border:0px; padding: 3px 3px; cursor: pointer">
-              <img src="/localsite/img/icon/minimize.png" style="width:25px; opacity:0.5">
-              <!--
-              <span style="font-size:33px;line-height:34px;padding-right:4px; color:#777">&#10066;</span>
+        <div style="float:right">
+          <div style="float:left">
+            <div class="earth georgia" style="display:none">
+            <div class="showSearch iconPadding">
+              <!-- To do: use javascript to retain the current window.location.search value from URL when on a search page. 
+              add -active rollover
               -->
+              <img src="/localsite/img/icon/search.png" style="width:27px; opacity:0.5">
+              <!--
+              <div style="font-size:18pt;padding:2px 4px 0 2px;">&#128269;</div>
+              -->
+            </div>
+            </div>
           </div>
-      </div>
-
-    <div style="float:left;">
-      <div class="showEarth">
-        <i class="material-icons show-on-load" style="font-size:34px;opacity:0.2; margin-top:-3px" data="apps">&#xE894;</i>
-      </div>
-    </div>
-
-    <div class="earth" style="float:left; display:none">
-      <div id="showEarthMenu" class="showEarthMenu">
-        <i class="material-icons show-on-load" style="font-size:34px;opacity:0.3; margin-top:-3px" data="apps">&#xE5D2;</i>
-      </div>
-      <div id="hideMenu" class="hideEarthMenu" style="display:none">
-        <i class="material-icons show-on-load" style="font-size:34px;opacity:0.3; margin-top:-3px" data="apps">&#xE5D2;</i>
-      </div>
-    </div>
-
-  </div>
-</div>
-<!-- /HEADER BAR -->
-
-<!-- RIGHT MENU -->
-
-<!-- Menu and Secondary Menus -->
-<!--
-<div id="hideTopPanel" class="close-X" style="position:absolute;right:5px;top:8px;padding-right:10px; z-index:99999">✕</div>
--->
-<div id="rightTopMenu" onclick="event.stopPropagation()" class="row hideOnBodyClick" style="float:right; display:none">
-    <div class="column column-hidden" style="float:left;"><div class="rightTopMenuLeft"></div></div>
-    <div class="local column rightTopMenuInner topMenuOffset floater" style="display:none">
-            <!-- map icon -->
-            <!--
-            <div class="showMap showMapClick rightTopItem" style="display:none; padding-top:14px">
-                <i class="material-icons menuTopIcon">&#xE55B;</i>
+          <div style="float:left;">
+            <div class="showEarth iconPadding">
+              <i class="material-icons show-on-load" style="font-size:34px;opacity:0.2; margin-top:-3px" data="apps">&#xE894;</i>
             </div>
-            <div class="hideMap rightTopItem" style="display:none; float:left">
-                <i class="material-icons menuTopIcon menuTopIconHot">&#xE55B;</i>
+          </div>
+          <div class="hideMobile" style="float:left;">
+              <div class="expandToFullscreen iconPadding" style="border:0px;">
+                  <img src="/localsite/img/icon/fullscreen.png" style="width:22px; opacity:0.5; margin:3px">
+                  <!--span style="font-size:34px;line-height:34px;padding-right:4px; color:#777">&#10064;</span-->
+              </div>
+              <div class="reduceFromFullscreen iconPadding" style="display:none; border:0px;">
+                  <img src="/localsite/img/icon/minimize.png" style="width:25px; opacity:0.5; margin:3px">
+                  <!--
+                  <span style="font-size:33px;line-height:34px;padding-right:4px; color:#777">&#10066;</span>
+                  -->
+              </div>
+          </div>
+          <div style="float:left;">
+            <div class="closeSideTabs iconPadding">
+              <div style="font-size: 28px; line-height: 28px; opacity: 0.5;">✕</div>
             </div>
+          </div>
 
-            <div class="hideEmbed">
-                <div class="showSections rightTopItem" style="padding-top:14px; padding-right:10px">
-                    <i class="material-icons menuTopIcon">&#xE5D2;</i>
-                    <span>Topics</span>
+        </div>
+
+      </div>
+
+
+
+    <div class="row" style="height:100%">
+        <div class="column column-hidden" style="float:left;"><div class="rightTopMenuLeft"></div></div>
+        <div class="local column rightTopMenuInner topMenuOffset floater">
+                <!-- map icon -->
+                <!--
+                <div class="showMap showMapClick rightTopItem" style="display:none; padding-top:14px">
+                    <i class="material-icons menuTopIcon">&#xE55B;</i>
                 </div>
-            </div>
-
-            -->
-            <div class="hideEmbed">
-                <div class="showSections rightTopItem active" style="padding-top:14px; padding-right:10px">
-                    <i class="material-icons menuTopIcon">&#xE5C3;</i>
-                    <span>Topics</span>
+                <div class="hideMap rightTopItem" style="display:none; float:left">
+                    <i class="material-icons menuTopIcon menuTopIconHot">&#xE55B;</i>
                 </div>
-            </div>
 
-            <div class="hideMobile expandToFullscreen" style="display: none;">
-                <div id="expandPanelHolder" class="expandFullScreen rightTopItem">
-                    <!-- font-size:20pt; padding:4px 5px 4px 4px; color:#aaa; font-weight:400 -->
-                    <i id="expandPanel" class="material-icons menuTopIcon enlargeIcon" style="font-size:28pt !important">&#xE5D0;</i>
-                    <span>Expand</span>
+                <div class="hideEmbed">
+                    <div class="showSections rightTopItem" style="padding-top:14px; padding-right:10px">
+                        <i class="material-icons menuTopIcon">&#xE5D2;</i>
+                        <span>Topics</span>
+                    </div>
                 </div>
-            </div>
 
-            <!--
-            <div class="showFilters showFiltersClick rightTopItem" style="padding-top:14px; padding-right:10px">
-                <i class="material-icons menuTopIcon">&#xE8B6;</i>
-                <span>People</span>
-            </div>
+                -->
+                <div class="hideEmbed">
+                    <div class="showSections rightTopItem active" style="padding-top:14px; padding-right:10px">
+                        <i class="material-icons menuTopIcon">&#xE5C3;</i>
+                        <span>Topics</span>
+                    </div>
+                </div>
 
-            <div class="hideMobileX">
+                <div class="hideMobile expandToFullscreen" style="display: none;">
+                    <div id="expandPanelHolder" class="expandFullScreen rightTopItem">
+                        <i id="expandPanel" class="material-icons menuTopIcon enlargeIcon" style="font-size:28pt !important">&#xE5D0;</i>
+                        <span>Expand</span>
+                    </div>
+                </div>
+
+                <!--
                 <div class="showFilters showFiltersClick rightTopItem" style="padding-top:14px; padding-right:10px">
+                    <i class="material-icons menuTopIcon">&#xE8B6;</i>
+                    <span>People</span>
+                </div>
+
+                <div class="hideMobileX">
+                    <div class="showFilters showFiltersClick rightTopItem" style="padding-top:14px; padding-right:10px">
+                        <i class="material-icons menuTopIcon">&#xE8B6;</i>
+                        <span>Search</span>
+                    </div>
+                    <div class="hideFilters hideFiltersClick rightTopItem" style="display:none; padding-top:14px; padding-right:10px">
+                        <i class="material-icons menuTopIcon">&#xE8B6;</i>
+                        <span>Hide</span>
+                    </div>
+                </div>
+                -->
+
+                <div class="showSearch rightTopItem">
                     <i class="material-icons menuTopIcon">&#xE8B6;</i>
                     <span>Search</span>
                 </div>
-                <div class="hideFilters hideFiltersClick rightTopItem" style="display:none; padding-top:14px; padding-right:10px">
-                    <i class="material-icons menuTopIcon">&#xE8B6;</i>
-                    <span>Hide</span>
-                </div>
-            </div>
-            -->
 
-            <div class="showSearch rightTopItem">
-                <i class="material-icons menuTopIcon">&#xE8B6;</i>
-                <span>Search</span>
-            </div>
-
-            <div class="showSettings rightTopItem">
-                <i class="material-icons menuTopIcon">&#xE8B8;</i>
-                <span>Settings</span>
-            </div>
-
-            <!-- mail outline icon -->
-            <div class="contactUs rightTopItem">
-                <i class="material-icons menuTopIcon contactIcon">&#xE0E1;</i>
-                <span>Contact</span>
-            </div>
-
-            <div class="addthis_button rightTopItem">
-                <i class="material-icons menuTopIcon" title="Share">&#xE80D;</i>
-                <span>Share</span>
-            </div>
-
-            <div class="addlisting_button rightTopItem" style="display:none">
-                <i class="material-icons menuTopIcon" style="font-weight:800;">&#xE145;</i>
-                <span>Add</span>
-            </div>
-
-            <div class="print_button rightTopItem">
-                <i class="material-icons menuTopIcon">&#xE8AD;</i>
-                <span>Print</span>
-            </div>
-
-            <!-- person icon -->
-            <div class="showAccountTools user-1 rightTopItem" style="display:none">
-                <div class="showAccount user-0">
-                    <i class="material-icons menuTopIcon">&#xE7FD;</i>
-                    <span>Account</span>
+                <div class="showSettings rightTopItem">
+                    <i class="material-icons menuTopIcon">&#xE8B8;</i>
+                    <span>Settings</span>
                 </div>
 
-                <div class="logoutAccount user-1" style="display:none">
-                    <i class="material-icons menuTopIcon">&#xE7FD;</i>
-                    <span>Log out</span>
+                <!-- mail outline icon -->
+                <div class="contactUs rightTopItem">
+                    <i class="material-icons menuTopIcon contactIcon">&#xE0E1;</i>
+                    <span>Contact</span>
                 </div>
-            </div>
-            
 
-            <!--
-            <div id="showSettings" class="showSettings hideEmbed" title="Settings"><i class="material-icons menuTopIcon hideMobile" style="font-size:18pt; padding:13px 5px 5px 5px;">&#xE8B8;</i></div>
-            <div id="hideSettings" style="display:none" title="Hide Settings"><i class="material-icons menuTopIcon menuTopIconHot" style="font-size:18pt; padding:13px 5px 5px 5px;">&#xE8B8;</i></div>
-            -->
+                <div class="addthis_button rightTopItem">
+                    <i class="material-icons menuTopIcon" title="Share">&#xE80D;</i>
+                    <span>Share</span>
+                </div>
 
-            <!-- share -->
-            <!--
-            <div class="rightTopItem shareThis">
-                <i class="material-icons menuTopIcon" style="padding-top:2px; padding-right:8px;">&#xE80D;</i>
-            </div>
-            -->
+                <div class="addlisting_button rightTopItem" style="display:none">
+                    <i class="material-icons menuTopIcon" style="font-weight:800;">&#xE145;</i>
+                    <span>Add</span>
+                </div>
 
-            <div class="showSettingsInNavTop" style="float:left">
-            </div>
-    </div>
+                <div class="print_button rightTopItem">
+                    <i class="material-icons menuTopIcon">&#xE8AD;</i>
+                    <span>Print</span>
+                </div>
 
+                <!-- person icon -->
+                <div class="showAccountTools user-1 rightTopItem" style="display:none">
+                    <div class="showAccount user-0">
+                        <i class="material-icons menuTopIcon">&#xE7FD;</i>
+                        <span>Account</span>
+                    </div>
 
-    <!-- Topics Panel -->
-    <div class="column column-hidden topicsPanel menuExpanded topMenuOffset floater" style="min-width: 400px; display:block">
-        <div class="menuExpandedScroll always-show-scroll">
-          <div class="menuTitle" style="display:none">Topics</div>
-          <div id="topicsMenu"></div>
+                    <div class="logoutAccount user-1" style="display:none">
+                        <i class="material-icons menuTopIcon">&#xE7FD;</i>
+                        <span>Log out</span>
+                    </div>
+                </div>
+                
+
+                <!--
+                <div id="showSettings" class="showSettings hideEmbed" title="Settings"><i class="material-icons menuTopIcon hideMobile" style="font-size:18pt; padding:13px 5px 5px 5px;">&#xE8B8;</i></div>
+                <div id="hideSettings" style="display:none" title="Hide Settings"><i class="material-icons menuTopIcon menuTopIconHot" style="font-size:18pt; padding:13px 5px 5px 5px;">&#xE8B8;</i></div>
+                -->
+
+                <!-- share -->
+                <!--
+                <div class="rightTopItem shareThis">
+                    <i class="material-icons menuTopIcon" style="padding-top:2px; padding-right:8px;">&#xE80D;</i>
+                </div>
+                -->
+
+                <div class="showSettingsInNavTop" style="float:left">
+                </div>
         </div>
-    </div>
-    <!-- /Topics Panel -->
 
-    <!-- Settings Panel -->
-    <div class="column column-hidden settingsPanel menuExpanded topMenuOffset floater" style="min-width: 400px;">
-      <div class="menuExpandedScroll">
-      <div class="hideSettings hideSettingsClick close-X-sm" style="position:absolute;right:0;padding:0 12px 12px 12px;"><i class="material-icons" style="font-size:28px">&#xE5CD;</i></div>
 
-      <div class="menuTitle">Settings</div>
+        <!-- Topics Panel -->
+        <div class="column column-hidden topicsPanel menuExpanded topMenuOffset floater" style="min-width: 400px; display:block">
+            <div class="menuExpandedScroll always-show-scroll">
+              <div class="menuTitle" style="display:none">Topics</div>
+              <div id="topicsMenu"></div>
+            </div>
+        </div>
+        <!-- /Topics Panel -->
 
-      <div class="hideMobile">
-        <div classX="user-6" style="displayX:none">
-          <div class="sitemodeHolder" style="display:none;">
-            <div class="setLeft">Header</div>
+        <!-- Settings Panel -->
+        <div class="column column-hidden settingsPanel menuExpanded topMenuOffset floater" style="min-width: 400px;">
+          <div class="menuExpandedScroll">
+          <div class="hideSettings hideSettingsClick close-X-sm" style="position:absolute;right:0;padding:0 12px 12px 12px;"><i class="material-icons" style="font-size:28px">&#xE5CD;</i></div>
+
+          <div class="menuTitle">Settings</div>
+
+          <div class="hideMobile">
+            <div classX="user-6" style="displayX:none">
+              <div class="sitemodeHolder" style="display:none;">
+                <div class="setLeft">Header</div>
+                    <div class="setOverflow"><div class="setRight">
+                      <select class="sitemode" id="sitemode">
+                        <option value="widget" selected>Section Navigation</option>
+                        <option value="fullnav">Full Navigation</option>
+                        </select>
+                    </div></div>
+                    <div class="setDiv"></div>
+                </div>
+              </div>
+            </div>
+
+          <div class="setLeft">Style</div>
+            <div class="setOverflow"><div class="setRight">
+                <select id="sitelook">
+                  <option value="default" selected>Default</option>
+                  <option value="light">Light Colors</option>
+                  <option value="dark">Night Vision</option>
+                </select>
+            </div></div>
+            <div class="setDiv"></div>
+
+            <div class="user-10" style="display:none">
+              <div class="sitesourceHolder" style="display:none">
+              <div class="setLeft">Display</div>
                 <div class="setOverflow"><div class="setRight">
-                  <select class="sitemode" id="sitemode">
-                    <option value="widget" selected>Section Navigation</option>
-                    <option value="fullnav">Full Navigation</option>
+                    <select class="sitesource">
+                      <option value="overview" selected>Overview</option>
+                      <option value="directory">Directory</option>
                     </select>
                 </div></div>
                 <div class="setDiv"></div>
             </div>
           </div>
-        </div>
 
-      <div class="setLeft">Style</div>
-        <div class="setOverflow"><div class="setRight">
-            <select id="sitelook">
-              <option value="default" selected>Default</option>
-              <option value="light">Light Colors</option>
-              <option value="dark">Night Vision</option>
-            </select>
-        </div></div>
-        <div class="setDiv"></div>
-
-        <div class="user-10" style="display:none">
-          <div class="sitesourceHolder" style="display:none">
-          <div class="setLeft">Display</div>
-            <div class="setOverflow"><div class="setRight">
-                <select class="sitesource">
-                  <option value="overview" selected>Overview</option>
-                  <option value="directory">Directory</option>
-                </select>
-            </div></div>
-            <div class="setDiv"></div>
-        </div>
-      </div>
-
-        <div style="display:none">
-            <div class="setLeft">Layout</div>
-            <div class="setOverflow"><div class="setRight">
-              <select id="bts">
-                <option value="12">Overview, Directory</option>
-                <option value="21">Directory, Overview</option>
-                <option value="02">Directory Only</option>
-                    <option value="01">Overview Only</option>
-                </select>
-            </div></div>
-            <div class="setDiv"></div>
-        </div>
-        
-        <div class="setLeft"><div>Basemap</div></div>
-        <div class="setOverflow">
-          <div id='selector_menu' class="setRight">
-        
-            <select id='basemapSelector' class='layerSelector sitebasemap catchClick'>
-              <option value='positron_light_nolabels'>Positron</option>
-              <option value='osm'>Open Street Map</option>
-              <option value='esri'><!--- Esri -->Satellite Map</option>
-              <!-- Zoom not appearing -->
-              <!--<option value='default'>Open Street Map 2</option>-->
-              <!-- Zoom not appearing -->
-              <!-- <option value='green'>Green Topo Map</option>-->
-              <option value='dark'>Dark Background</option>
-              <option value='firemap'>Fire Map</option>
-            </select>
-        
-        </div>
-      </div>
-      
-
-      <!--
-      <div class="setDiv"></div>
-
-      <div class="setLeft"><div>Zoom To</div></div>
-        <div class="setOverflow">
-          <div class="setRight">
-        
-            <select class='center'>
-              <option value='mylocation'>My Location</option>
-              <option value='filter'>Nearby</option>
-              <option value='state'>State</option>
-              <option value='country'>Country</option>
-              <option value='world'>World</option>
-            </select>
-        
-        </div>
-      </div>
-      <div class="setDiv"></div>
-
-      <div style="displayX:none">
-            <div class="setLeft">My Latitude</div>
-            <div class="setOverflow"><div class="setRight">
-              
-                <input class="mylat filterClick mobileWide textInput" placeholder="Latitude" type="text" style="width: 120px; margin-top: 0px" />
-
-            </div></div>
-            <div class="setDiv"></div>
-        </div>
-        <div style="displayX:none">
-            <div class="setLeft">My Longitude</div>
-            <div class="setOverflow"><div class="setRight">
-              
-                <input class="mylon filterClick mobileWide textInput" placeholder="Longitude" type="text" style="width: 120px; margin-top: 0px" />
-
-            </div></div>
-            <div class="setDiv"></div>
-        </div>
-      -->
-
-        <!-- Multilayer Checkboxes -->
-        <!--
-      <div class="setLeft"><div>Layer Checkboxes</div></div>
-        <div class="setOverflow">
-          <div class="setRight">
-          <div class="hideMultiselect settingsButton">Visible</div>
-            <div class="showMultiselect settingsButton" style="display:none; background:#ddd">Hidden</div>
-          </div>
-        </div>
-        <div class="setDiv"></div>
-      -->
-
-        <!--
-        <div class="hideHero layoutTab filterTab buttonUnderCategories" style="margin:15px 10px 0 0;display:none">Hide Hero</div>
-        <div class="showHero layoutTab filterTab buttonUnderCategories" style="margin:15px 10px 0 0;">Show Hero</div>
-
-        <div class="setDiv"></div>
-      -->
-
-      <!--
-      <div><strong>Link</strong></div>
-      <input type="text" value='https://georgiadata.github.io/site/' style='line-height:18pt;display:block;width:100%;font-size:12pt;color:#333;background:#fff;border:1px solid #aaa;'><br>
-      -->
-
-        <!-- Embed Directory -->
-        <!--
-        <div class="setLeft">Embed</div>
-        <div class="setOverflow">
-          <div class="setRight">
-          
-            <div class="showEmbedTag settingsButton">View Sample</div>
-
-          </div>
-        </div>
-        <div class="embedTag" style="display:none">
-          <div style="margin-bottom:4px"><a href="widget.html#aerospace&sitelook=coi">Get HTML</a> - view source</div>
-
-
-          <input type="text" value='<script src="//georgiadata.github.io/site/js/embed.js?site=georgia&v=0.1"></script><div id="map"></div>' 
-          style='display:none;line-height:18pt;width:100%;font-size:12pt;color:#333;background:#fff;border:1px solid #aaa;'>
-        </div>
-        -->
-
-      <br />
-
-      <div class="user-5" style="display:none">
-        <hr>Staff only - 
-        <a href="/maps/leaflet/providers/preview/" target="basemaps">View Basemaps</a><br>
-        <div class="settingAdminNotes"></div>
-      </div>
-
-      </div>
-    </div>
-    <!-- End Settings Panel -->
-
-
-    <!-- Print Options -->
-    <div class="column column-hidden menuExpanded printOptionsHolderWide">
-      <div class="menuExpandedScroll">
-        <div class="printOptionsHolder">
-            <div class="printOptionsText">
-                <div class="printOptionsPosition"></div>
-
-                <div class="menuTitle">Print</div>
-
-                <div style="line-height: 23px">
-                    <div class="printContent" style="display:none"><input type="checkbox" name="printcontent" id="printcontent" value="printcontent"><label for="printcontent">Content</label></div>
-                    <div class="printMap" style="display:none"><input type="checkbox" name="printmap" id="printmap" value="printmap"><label for="printmap">Map</label></div>
-                    <div class="printList" style="display:none"><input type="checkbox" name="printlist" id="printlist" value="printlist" checked><label for="printlist">List</label></div>
-                    
-                    <!-- Hidden until resolving simultneous selection of list and grid. -->
-                    <div class="printGrid" style="display:none"><input type="checkbox" name="printgrid" id="printgrid" value="printgrid"><label for="printgrid">Grid</label></div>
-                </div>
-
-                <div style="margin-top:10px"></div>
-
-                <div style="font-size:16px;margin-bottom:3px"><b>Orientation:</b>
-                    <!--
-                    <input type="checkbox" name="landscape" id="landscape" value="landscape" checked><label for="landscape">Landscape</label>
-                    -->
-                    <input id="landscape" type="radio" name="printOrientation" value="landscape" checked><label for="landscape">Landscape</label> 
-                    <input id="portrait" type="radio" name="printOrientation" value="portrait" ><label for="portrait">Portrait</label>
-                </div>
-                <br>
-
-                <div style="font-size:14px; line-height:17px; padding-top:8px; padding-bottom:12px; clear:both">
-                To output as a PDF file, choose PDF as your printer<br>after clicking the button below.
-                </div><br>
-
-                <div class="printPage btn btn-primary" style="margin-top:12px;margin-left:0px;min-width:80px;text-align:center; clear:both"> Print </div>
-            
-                
-
+            <div style="display:none">
+                <div class="setLeft">Layout</div>
+                <div class="setOverflow"><div class="setRight">
+                  <select id="bts">
+                    <option value="12">Overview, Directory</option>
+                    <option value="21">Directory, Overview</option>
+                    <option value="02">Directory Only</option>
+                        <option value="01">Overview Only</option>
+                    </select>
+                </div></div>
+                <div class="setDiv"></div>
             </div>
+            
+            <div class="setLeft"><div>Basemap</div></div>
+            <div class="setOverflow">
+              <div id='selector_menu' class="setRight">
+            
+                <select id='basemapSelector' class='layerSelector sitebasemap catchClick'>
+                  <option value='positron_light_nolabels'>Positron</option>
+                  <option value='osm'>Open Street Map</option>
+                  <option value='esri'><!--- Esri -->Satellite Map</option>
+                  <!-- Zoom not appearing -->
+                  <!--<option value='default'>Open Street Map 2</option>-->
+                  <!-- Zoom not appearing -->
+                  <!-- <option value='green'>Green Topo Map</option>-->
+                  <option value='dark'>Dark Background</option>
+                  <option value='firemap'>Fire Map</option>
+                </select>
+            
+            </div>
+          </div>
+          
+
+          <!--
+          <div class="setDiv"></div>
+
+          <div class="setLeft"><div>Zoom To</div></div>
+            <div class="setOverflow">
+              <div class="setRight">
+            
+                <select class='center'>
+                  <option value='mylocation'>My Location</option>
+                  <option value='filter'>Nearby</option>
+                  <option value='state'>State</option>
+                  <option value='country'>Country</option>
+                  <option value='world'>World</option>
+                </select>
+            
+            </div>
+          </div>
+          <div class="setDiv"></div>
+
+          <div style="displayX:none">
+                <div class="setLeft">My Latitude</div>
+                <div class="setOverflow"><div class="setRight">
+                  
+                    <input class="mylat filterClick mobileWide textInput" placeholder="Latitude" type="text" style="width: 120px; margin-top: 0px" />
+
+                </div></div>
+                <div class="setDiv"></div>
+            </div>
+            <div style="displayX:none">
+                <div class="setLeft">My Longitude</div>
+                <div class="setOverflow"><div class="setRight">
+                  
+                    <input class="mylon filterClick mobileWide textInput" placeholder="Longitude" type="text" style="width: 120px; margin-top: 0px" />
+
+                </div></div>
+                <div class="setDiv"></div>
+            </div>
+          -->
+
+            <!-- Multilayer Checkboxes -->
+            <!--
+          <div class="setLeft"><div>Layer Checkboxes</div></div>
+            <div class="setOverflow">
+              <div class="setRight">
+              <div class="hideMultiselect settingsButton">Visible</div>
+                <div class="showMultiselect settingsButton" style="display:none; background:#ddd">Hidden</div>
+              </div>
+            </div>
+            <div class="setDiv"></div>
+          -->
+
+            <!--
+            <div class="hideHero layoutTab filterTab buttonUnderCategories" style="margin:15px 10px 0 0;display:none">Hide Hero</div>
+            <div class="showHero layoutTab filterTab buttonUnderCategories" style="margin:15px 10px 0 0;">Show Hero</div>
+
+            <div class="setDiv"></div>
+          -->
+
+          <!--
+          <div><strong>Link</strong></div>
+          <input type="text" value='https://georgiadata.github.io/site/' style='line-height:18pt;display:block;width:100%;font-size:12pt;color:#333;background:#fff;border:1px solid #aaa;'><br>
+          -->
+
+            <!-- Embed Directory -->
+            <!--
+            <div class="setLeft">Embed</div>
+            <div class="setOverflow">
+              <div class="setRight">
+              
+                <div class="showEmbedTag settingsButton">View Sample</div>
+
+              </div>
+            </div>
+            <div class="embedTag" style="display:none">
+              <div style="margin-bottom:4px"><a href="widget.html#aerospace&sitelook=coi">Get HTML</a> - view source</div>
+
+
+              <input type="text" value='<script src="//georgiadata.github.io/site/js/embed.js?site=georgia&v=0.1"></script><div id="map"></div>' 
+              style='display:none;line-height:18pt;width:100%;font-size:12pt;color:#333;background:#fff;border:1px solid #aaa;'>
+            </div>
+            -->
+
+          <br />
+
+          <div class="user-5" style="display:none">
+            <hr>Staff only - 
+            <a href="/maps/leaflet/providers/preview/" target="basemaps">View Basemaps</a><br>
+            <div class="settingAdminNotes"></div>
+          </div>
+
+          </div>
+        </div>
+        <!-- End Settings Panel -->
+
+
+        <!-- Print Options -->
+        <div class="column column-hidden menuExpanded printOptionsHolderWide">
+          <div class="menuExpandedScroll">
+            <div class="printOptionsHolder">
+                <div class="printOptionsText">
+                    <div class="printOptionsPosition"></div>
+
+                    <div class="menuTitle">Print</div>
+
+                    <div style="line-height: 23px">
+                        <div class="printContent" style="display:none"><input type="checkbox" name="printcontent" id="printcontent" value="printcontent"><label for="printcontent">Content</label></div>
+                        <div class="printMap" style="display:none"><input type="checkbox" name="printmap" id="printmap" value="printmap"><label for="printmap">Map</label></div>
+                        <div class="printList" style="display:none"><input type="checkbox" name="printlist" id="printlist" value="printlist" checked><label for="printlist">List</label></div>
+                        
+                        <!-- Hidden until resolving simultneous selection of list and grid. -->
+                        <div class="printGrid" style="display:none"><input type="checkbox" name="printgrid" id="printgrid" value="printgrid"><label for="printgrid">Grid</label></div>
+                    </div>
+
+                    <div style="margin-top:10px"></div>
+
+                    <div style="font-size:16px;margin-bottom:3px"><b>Orientation:</b>
+                        <!--
+                        <input type="checkbox" name="landscape" id="landscape" value="landscape" checked><label for="landscape">Landscape</label>
+                        -->
+                        <input id="landscape" type="radio" name="printOrientation" value="landscape" checked><label for="landscape">Landscape</label> 
+                        <input id="portrait" type="radio" name="printOrientation" value="portrait" ><label for="portrait">Portrait</label>
+                    </div>
+                    <br>
+
+                    <div style="font-size:14px; line-height:17px; padding-top:8px; padding-bottom:12px; clear:both">
+                    To output as a PDF file, choose PDF as your printer<br>after clicking the button below.
+                    </div><br>
+
+                    <div class="printPage btn btn-primary" style="margin-top:12px;margin-left:0px;min-width:80px;text-align:center; clear:both"> Print </div>
                 
+                    
+
+                </div>
+                    
+            </div>
+          </div>
+        </div>
+        <!-- End Print Options -->
+
+    </div>
+    </div>
+    <!-- /RIGHT MENU -->
+  </div>
+  <!-- /SIDETABS -->
+
+    <!-- HEADER BAR -->
+    <div id="headerbar" class="headerbar headerbarheight headerbarhide" style="display:none;width:100%;position:fixed;overflow:visible;z-index:1002;pointer-events:auto;">
+
+      <div class="contentpadding" style="padding-top:0px; padding-bottom:0px; float:left; min-width: 200px">
+        <div id="logospace" class="headerbarheight">
+          <div id="logoholder">
+            
+            <div id="headerLogo">
+            </div>
+            
+            <div id="headerLocTitleHolder">
+              <span id="headerSiteTitle"></span>
+              
+              <a href="../community/tools" class="logolink">
+              <span id="headerLocTitle"></span>
+              </a>
+            </div>
+
+          </div>
+        </div>    
+      </div>
+
+      <div style="float:left; border-left:1px solid #ccc;">
+        <style>
+          .topstack {
+            float:left;
+            
+            padding-right: 10px;
+            padding:18px;
+            border-right:1px solid #ccc;
+          }
+          .topsm {
+            font-size: 11px;
+            float: left;
+          }
+          .toplg {
+            clear:both;
+            font-size: 17px;
+            color: #686868;
+          }
+          .arrow_down_sm {
+              width: 0;
+              height: 0;
+              border-left: 4px solid transparent;
+              border-right: 4px solid transparent;
+              border-top: 4px solid #999;
+              margin: 4px;
+              float: left;
+              pointer-events: auto;
+          }
+
+        </style>
+        <!-- Cool top menu option -->
+        <div class="localX" style="display:none">
+          <div class="hideMobile">
+            <div class="topstack">
+              <div class="topsm">Locations</div><div class="arrow_down_sm"></div>
+              <div class="toplg">3 counties in Arizona</div>
+            </div>
+
+            <div class="topstack">
+              <div class="topsm">Goods & Services</div><div class="arrow_down_sm"></div>
+              <div class="toplg">Recycling Industries</div>
+            </div>
+
+            <div class="topstack">
+              <div class="topsm">Project Teams</div><div class="arrow_down_sm"></div>
+              <div class="toplg">React Developers</div>
+            </div>
+          </div>
         </div>
       </div>
+
+      <div id="upIconTray" class="upperIcons noprint navLinks" style="float:right;">
+
+        <div class="hideMobile" style="float:left; padding-top:39px">
+          <div class="dreamstudio" style="display:none">
+            <span class="hideMobile" style="float:left">
+              <a href="../about/" class="navlink-about"><span style="white-space: nowrap">About</span></a> |
+              <a href="../studio/" class="navlink-studio"><span style="white-space: nowrap">Studio</span></a> |
+              <a href="../seasons/" class="navlink-stories"><span style="white-space: nowrap">Stories</span></a> | 
+              <a href="../api/" class="navlink-api"><span style="white-space: nowrap">API</span></a> | 
+              <a href="https://dreamstudio.ai/generate" target="gen"><span style="white-space: nowrap">Generate</span></a>
+            </span>
+          </div>
+        </div>
+
+        <div class="earth" style="float:left; display:none">
+          <div id="showSideTabs" class="showSideTabs iconPadding">
+            <i class="material-icons show-on-load" style="font-size:36px;opacity:0.3;" data="apps">&#xE5D2;</i>
+          </div>
+          <div id="hideMenu" class="closeSideTabs" style="display:none">
+            <i class="material-icons show-on-load" style="font-size:36px;opacity:0.3;" data="apps">&#xE5D2;</i>
+          </div>
+        </div>
+
+      </div>
+
     </div>
-    <!-- End Print Options -->
+    <!-- /HEADER BAR -->
 
-</div>
 
-<!-- /rightTopMenu -->
+
 
 <div id="menuHolder" style="pointer-events: auto; background:#333; display:none">
-
-  <!--
-  <div style="float:right;">
-        <div class="expandToFullscreen" style="border:0px; padding: 10px; cursor: pointer; color:#ccc">
-            <span style="font-size:34px;line-height:34px;padding-right:4px">&#10064;</span>
-        </div>
-        <div class="reduceFromFullscreen" style="display:none; border:0px; padding: 10px; cursor: pointer">
-            <span style="font-size:33px;line-height:34px;padding-right:4px">&#10066;</span>
-        </div>
-    </div>
-  -->
 
   <div id="menuTop">
     <div class="hideMenu"><span class="hideMenuInner" style="color:#aaa">✕</span></div>
@@ -1224,7 +1252,7 @@ Displayed by hashChanged() in map-filters.js
     <a href="../io/charts/"><img src="/community/img/logo/epa-circle.png" style="width:115px;float:left;margin-right:16px;"></a>
 
     <div style="padding-top:5px; overflow:auto" class="hideOnProjectsPage">
-      Transforming environments through collaborative modeling and gamification.
+      Tools for transforming environments through collaborative modeling and gamification.
 
       <!--
       Join us in building Product Lifecycle Tools that&nbsp;increase positive environmental impacts through&nbsp;local innovation. -->
@@ -1770,16 +1798,17 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 </div>
 <!-- list_main /-->
 
-<div id="fixedFooter" class="showMobile">
-  <div>
-    <div class="go_list">Listings</div>
-    <div class="go_map">State Map</div>
-    <div class="go_local" style="display:none">Local Map</div>
-    <div class="go_info" style="display:none">Info</div>
-    <div class="go_search">Search</div>
+<div class="earth w" style="display:none">
+  <div id="fixedFooter" class="showMobile">
+    <div>
+      <div class="go_list">Listings</div>
+      <div class="go_map">Map</div>
+      <div class="go_local" style="display:none">Local Map</div>
+      <div class="go_info" style="display:none">Info</div>
+      <div class="go_search">Search</div>
+    </div>
   </div>
 </div>
-
 
 <!-- End HTML -->
 

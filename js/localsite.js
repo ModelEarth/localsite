@@ -548,41 +548,32 @@ function loadLocalTemplate() {
     elemDiv.style.cssText = "display:none";
     elemDiv.innerHTML = "testing";
     document.body.appendChild(elemDiv);
-    $("#headerbar").prependTo("body"); // Move back up to top.
 
     console.log("Template Loaded: " + bodyFile);
     if (typeof relocatedStateMenu != "undefined") {
       relocatedStateMenu.appendChild(state_select); // For apps hero
       $(".stateFilters").hide();
     }
-    if (param.showstates != "false") {
-      $("#filterClickLocation").show();
-    }
-    $("#mapFilters").prependTo("#fullcolumn");
-    $("#local-header").prependTo("body"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
-    $("#headerbar").prependTo("body"); // Move back up to top.
-    if (param.showheader == "true") {
+    waitForElm('#filterClickLocation').then((elm) => {
+      if (param.showstates != "false") {
+          $("#filterClickLocation").show();
+      }
+      $("#mapFilters").prependTo("#fullcolumn");
+      // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
+      $("#local-header").prependTo("#fullcolumn");
+      $("#headerbar").prependTo("#fullcolumn");
+    });
+    //waitForElm('#local-header').then((elm) => {
+    //  $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
+    //});
 
-      waitForElm('body').then((elm) => {
-        waitForElm('#headerbar').then((elm) => { 
-          $('#headerbar').hide();
-          $("#headerbar").prependTo("body");
-          setTimeout( function() {
-            $("#headerbar").prependTo("body");
-            //showHeaderBar();
-          }, 200 );
-          setTimeout( function() {
-            $("#headerbar").prependTo("body");
-            showHeaderBar();
-          }, 400 );
-          //showHeaderBar();
-        });
-        waitForElm('#local-header').then((elm) => {
-          //$('#headerbar').removeClass("headerbarhide");
-          //$('#local-header').show();
-        });
-      });
-    }
+    waitForElm('#fullcolumn').then((elm) => {
+      $("#headerbar").prependTo("#fullcolumn"); // Move back up to top.
+      //$("#bodyMainHolder").prependTo("#fullcolumn"); // Move back up to top.
+      $("#sideTabs").prependTo("#fullcolumn"); // Move back up to top. 
+      showHeaderBar();
+    });
+
     if (location.host.indexOf('model') >= 0) {
       $(".showSearch").show();
       $(".showSearch").removeClass("local");
@@ -606,9 +597,16 @@ function loadSearchFilterIncludes() {
   }
 }
 function loadLeafletAndMapFilters() {
+  //alert("param.showheader " + param.showheader)
   //if (param.shownav) {
   if (param.showheader != "false") {
     loadScript(theroot + 'js/navigation.js', function(results) {
+      // Puts space above flexmain for sidecolumn to be visible after header  
+      $("body").prepend("<div id='local-header' class='flexheader hideprint' style='min-height:100px; display:none'></div>\r");
+      waitForElm('#local-header').then((elm) => {
+        $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
+      
+      });
       // Might need to add a check here. Occasional:
       // Uncaught ReferenceError: applyNavigation is not defined
 
@@ -620,14 +618,13 @@ function loadLeafletAndMapFilters() {
 
       //});
 
-      setTimeout( function() {
+      //setTimeout( function() {
 
-        console.log("applyNavigation() after 200 ms delay"); // 10 ms returned error on CloudFlare, but fine locally.
+      //  console.log("applyNavigation() after 200 ms delay"); // 10 ms returned error on CloudFlare, but fine locally.
         applyNavigation();
-      }, 200 ); // Bugbug - better to wait for a div to be available. Try inserting from within navigation.js before DOM ready.
+      //}, 200 ); // Bugbug - better to wait for a div to be available. Try inserting from within navigation.js before DOM ready.
     });
   }
-
   loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
     includeCSS3(theroot + 'css/leaflet.css',theroot);
     loadScript(theroot + 'js/leaflet.js', function(results) {
@@ -681,12 +678,18 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           } else if(document.getElementById("bodyFile") == null) {
             $('body').prepend("<div id='bodyFile'></div>");
           }
+
+          $('body').prepend("<div id='showSide' class='showSide' style='topX:100px;left:-28px;position:absolute'><i class='material-icons show-on-load' style='font-size:35px; opacity:0.4; padding-right:3px; border:1px solid #555; border-radius:8px;'>&#xE5D2;</i></div>");
+          waitForElm('#fullcolumn').then((elm) => {
+            $("#showSide").prependTo("#fullcolumn"); 
+          });
+
           if (param.showheader == "true" || param.showsearch == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "map") {
             //if (param.templatepage != "true") { // Prevents dup header on map/index.html - Correction, this is needed. param.templatepage can probably be removed.
-              loadLocalTemplate();
+              //if (param.shownav != "true") { // Test for mentors page, will likely revise
+                loadLocalTemplate();
+              //}
             //}
-            //else {
-            //  $("#headerbar").prependTo("body"); // For map/index.html
           }
         
 
@@ -718,7 +721,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         $(function() {
               $('.lazy').Lazy(); // Lazy load all divs with class .lazy
         });
-      }); // End doc ready
+      });
 
       $(window).on('hashchange', function() { // Avoid window.onhashchange since overridden by map and widget embeds  
         consoleLog("window hashchange");
@@ -748,7 +751,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       //document.write(strVarCss);
       document.head.insertAdjacentHTML("beforeend", strVarCss);
 
-
       $(document).on("click", ".expandToFullscreen, .reduceFromFullscreen", function(event) {
         toggleFullScreen();  
       });
@@ -756,7 +758,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           //loadLeafletAndMapFilters();
         showSearchFilter();
       });
-
+      
       clearInterval(waitForJQuery); // Escape the loop
 
       if (param.showsearch == "true") {
@@ -844,7 +846,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       includeCSS3(theroot + 'css/naics.css',theroot);
       
       // customD3loaded
-      if (param.preloadmap != "false" && (param.showheader == "true" || param.display == "map")) {
+      if (param.preloadmap != "false" && (param.showheader == "true" || param.shownav == "true" || param.display == "map")) {
         loadLeafletAndMapFilters();
       }
 
@@ -907,7 +909,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   
 
   if (param.material_icons != "false") {
-    param.material_icons = "true"; // Could lazy load if showEarthMenu changed to graphic.
+    param.material_icons = "true"; // Could lazy load if showSideTabs changed to graphic.
   }
   if (fullsite || param.material_icons == "true") {
     // This was inside FULL SITE above, but it is needed for menus embedded in external sites.
@@ -1460,7 +1462,7 @@ addEventListener("load", function(){
     $(".hideOnBodyClick").hide();
 
     $("#hideMenu").hide(); // Avoids double clicking.
-    $("#showEarthMenu").show();
+    $("#showSideTabs").show();
 
     //consoleLog('click ' + Date.now())
     var anchor = getParentAnchor(e.target);
@@ -1687,38 +1689,39 @@ function showSearchFilter() {
     console.log("showSearchFilter #filterFieldsHolder offset top: " + filterTop);
     //  || (!$("#headerbar").is(':visible') && filterTop >= 0)
     if ($("#filterFieldsHolder").is(':visible') && (($("#headerbar").is(':visible') && filterTop >= headerHeight) )) { // Might need to allow for coverage by header.
-      console.log("#filterFieldsHolder is visible, hide it.");
+      console.log("Hide #filterFieldsHolder");
       $("#filterFieldsHolder").hide();
       $("#filterFieldsHolder").addClass("filterFieldsHidden");
       //$("#filterbaroffset").hide();
       ////$("#pageLinksHolder").hide();
-      if(location.host.indexOf('localhost') >= 0) {
-        alert("#filterFieldsHolder visible (locahost)"); //BUGBUG - should not be visible here
-      }
     } else {
       // #bodyFile is needed for map/index.html to apply $("#filterFieldsHolder").show()
       // Also prevents search filter from flashing briefly in map/index.html before moving into #bodyFile
-      // 
+        
+      if (document.getElementById("filterFieldContent") == null) { 
+        //alert("load filter.html")
+        let filterFile = "/localsite/map/filter.html";
+        $("#filterFieldsHolder").load(filterFile, function( response, status, xhr ) {
 
-      let filterFile = modelroot + "/localsite/map/filter.html";
-      $("#filterFieldsHolder").load(filterFile, function( response, status, xhr ) {
+        }); // End $("#filters").load
 
-      }); // End $("#filters").load
-
-      loadFilters = true;
+        loadFilters = true;
+      } else { // Already exists, show filters
+        revealFilters();
+      }
     }
 
     if (loadFilters) {
-      if(location.host.indexOf('localhost') >= 0) {
-        alert("loadFilters (localhost)");
-      }
       waitForElm('#bodyFile #filterFieldContent').then((elm) => {
+        revealFilters();
+        /*
         console.log("show #filterFieldsHolder");
         $("#filterFieldsHolder").show();
         $("#filterFieldsHolder").removeClass("filterFieldsHidden");
         //$("#filterbaroffset").show();
         $(".hideWhenPop").show();
         $('html,body').scrollTop(0);
+        */
       });
     }
     return;
@@ -1773,6 +1776,14 @@ function showSearchFilter() {
       // Could be adjusted to reside left of search filters.
       //$(".quickMenu").hide();
   }
+}
+function revealFilters() {
+  //console.log("show #filterFieldsHolder");
+  $("#filterFieldsHolder").show();
+  $("#filterFieldsHolder").removeClass("filterFieldsHidden");
+  //$("#filterbaroffset").show();
+  $(".hideWhenPop").show();
+  $('html,body').scrollTop(0);
 }
 function showGlobalMap(globalMap) { // Used by community/index.html, green-sah
   $("#nullschoolHeader").show();
