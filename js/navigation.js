@@ -75,7 +75,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			
 			param.headerLogo = "<a href='/dreamstudio/''><img src='/dreamstudio/img/logo/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/dreamstudio/img/logo/dreamstudio.png' alt='DreamStudio' style='height:22px; margin-top:9px'></a>";
 			if (location.host.indexOf("dreamstudio") >= 0) {
-				param.headerLogo = param.headerLogo.replace(/\dreamstudio\//g,"\/");
+				param.headerLogo = param.headerLogo.replace(/\/dreamstudio\//g,"\/");
 			}
 			param.headerLogoNoText = "<img src='/dreamstudio/img/logo/favicon.png' style='float:left;width:38px;margin-right:7px'>";
 			showClassInline(".dreamstudio");
@@ -251,7 +251,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 							let colEleRight = document.querySelector('#sidecolumnContent');
 							let colCloneRight = colEleRight.cloneNode(true)
 							colCloneRight.id = "cloneRight";
-							$("#topicsMenu").append(colCloneRight);
+							$("#topicsMenu").prepend(colCloneRight);
 						});
 
 				 		// Move filterbarOffset and filterEmbedHolder immediately after body tag start.
@@ -381,12 +381,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 							event.stopPropagation();
 						});
 						$(document).on("click", ".closeSideTabs", function(event) {
-							$("#sideTabs").hide();
-							$("body").removeClass("bodySideMargin");
-							$('body').removeClass('mobileView');
-							//$("#hideMenu").hide();
-							$("#closeSideTabs").hide();
-				 			$("#showSideTabs").show();
+							closeSideTabs();
 						});
 						$(document).on("click", ".showEarth", function(event) {
 							if ($("#nullschoolHeader").is(':visible')) {
@@ -395,6 +390,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 								$("#hero_holder").show();
 							} else {
 								//$("#globalMapHolder").hide(); // Home page nullschool map.
+								closeSideTabs();
 								$("#hero_holder").hide();
 								// Add a setting to choose map: Temperatures or just wind
 								// Big blue: https://earth.nullschool.net/#current/wind/surface/level/orthographic=-35.06,40.67,511
@@ -557,31 +553,39 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 	} // end function
 	//});
 
+	function closeSideTabs() {
+		$("#sideTabs").hide();
+		$("body").removeClass("bodySideMargin");
+		$('body').removeClass('mobileView');
+		//$("#hideMenu").hide();
+		$("#closeSideTabs").hide();
+		$("#showSideTabs").show();
+	}
 	$(document).ready(function () {
-			$(document).on("click", ".hideMenu", function(event) {
-				$("#menuHolder").show();
-				$("#menuHolder").css('margin-right','-250px');
-				//$("#listingMenu").appendTo($(this).parent().parent());
-				event.stopPropagation();
-			});
-			$(document).on("click", ".hideAdvanced", function(event) {
-				hideAdvanced();
-			});
-			$(document).on("click", ".hideThumbMenu", function(event) {
-				$("#bigThumbPanelHolder").hide();
-				$(".showApps").removeClass("filterClickActive");
-			});
-			$(document).on("click", ".filterBubble", function(event) {
-				console.log('filterBubble click')
-			    event.stopPropagation(); // To keep location filter open when clicking
-			});
+		$(document).on("click", ".hideMenu", function(event) {
+			$("#menuHolder").show();
+			$("#menuHolder").css('margin-right','-250px');
+			//$("#listingMenu").appendTo($(this).parent().parent());
+			event.stopPropagation();
+		});
+		$(document).on("click", ".hideAdvanced", function(event) {
+			hideAdvanced();
+		});
+		$(document).on("click", ".hideThumbMenu", function(event) {
+			$("#bigThumbPanelHolder").hide();
+			$(".showApps").removeClass("filterClickActive");
+		});
+		$(document).on("click", ".filterBubble", function(event) {
+			console.log('filterBubble click')
+		    event.stopPropagation(); // To keep location filter open when clicking
+		});
 	});
 
 	function showClassInline(theclass) {
 
 		//$(theclass).css('display', 'inline');
 
-		// Load when body div becomes available, faster than waiting for all DOM .js files to load.
+		// Load when body head becomes available, faster than waiting for all DOM .js files to load.
         waitForElm('head').then((elm) => {
         	var div = $("<style />", {
             	html: theclass + ' {display: inline !important}'

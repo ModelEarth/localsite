@@ -22,6 +22,7 @@ svg{max-width:none;} /* Fix for embedding material icon map points in Drupal */
 
 @media (max-width: 800px) {
   .hideMobile {display:none;}
+  .hideNarrow {display:none;} /* Not activated when sideTabs displayed */
   .showMobile {display:inline-block !important;}
 }
 @media (max-width: 900px) {
@@ -280,7 +281,7 @@ summary::-webkit-details-marker {
 }
 .contentpadding {
   padding-top: 25px;
-  padding-left: 40px;
+  padding-left: 50px;
   padding-right: 40px;
   padding-bottom: 45px;
 }
@@ -317,7 +318,7 @@ summary::-webkit-details-marker {
     /* margin-left: -20px; */
   }
 }
-@media (max-width: 500px) {
+@media (max-width: 600px) {
   .contentpadding {
     padding-left: 20px;
     padding-right: 20px;
@@ -1000,10 +1001,13 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 
 .headerbarheight {
-  height:100px;
+  height:94px;
 }
 .headeroffset { /* Does not include bar */
-  height:100px;
+  height:94px;
+}
+#local-header {
+  min-height:94px; 
 }
 .filters-margin {
   margin: 0 auto;

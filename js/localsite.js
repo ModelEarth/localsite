@@ -570,7 +570,15 @@ function loadLocalTemplate() {
     waitForElm('#fullcolumn').then((elm) => {
       $("#headerbar").prependTo("#fullcolumn"); // Move back up to top.
       //$("#bodyMainHolder").prependTo("#fullcolumn"); // Move back up to top.
-      $("#sideTabs").prependTo("#fullcolumn"); // Move back up to top. 
+      $("#sideTabs").prependTo("#fullcolumn"); // Move back up to top.
+
+      // Replace paths in div
+      //param.headerLogo = param.headerLogo.replace(/\dreamstudio\//g,"\/");
+      if(location.host.indexOf("dreamstudio") >= 0) {
+        $("#dreamstudio-nav a").each(function() {
+          $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
+        });
+      }
       showHeaderBar();
     });
 
@@ -602,7 +610,7 @@ function loadLeafletAndMapFilters() {
   if (param.showheader != "false") {
     loadScript(theroot + 'js/navigation.js', function(results) {
       // Puts space above flexmain for sidecolumn to be visible after header  
-      $("body").prepend("<div id='local-header' class='flexheader hideprint' style='min-height:100px; display:none'></div>\r");
+      $("body").prepend("<div id='local-header' class='flexheader hideprint' style='display:none'></div>\r");
       waitForElm('#local-header').then((elm) => {
         $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
       

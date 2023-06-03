@@ -487,7 +487,7 @@ body {
     width: 240px;
     font-size: 16px;
     bottom:0;
-    top:100px;
+    top:94px;
     z-index:1; /* allows border highlight to overlap adjacent content area. */
 }
 #sidecolumnLeft {
@@ -634,6 +634,14 @@ body {
 .setOverflow {
     overflow: auto;
     min-width: 120px;
+}
+#sideTabs {
+	width:600px;
+}
+@media (max-width: 1000px) {
+	#sideTabs {
+		width:100%;
+	}
 }
 .rightTopItem {
     padding: 11px 4px 5px 10px;
