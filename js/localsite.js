@@ -573,7 +573,6 @@ function loadLocalTemplate() {
       $("#sideTabs").prependTo("#fullcolumn"); // Move back up to top.
 
       // Replace paths in div
-      //param.headerLogo = param.headerLogo.replace(/\dreamstudio\//g,"\/");
       if(location.host.indexOf("dreamstudio") >= 0) {
         $("#dreamstudio-nav a").each(function() {
           $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));

@@ -237,21 +237,27 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 
 						console.log("Doc is ready, header file loaded, place #cloneLeft into #sidecolumn")
 
-						
 						waitForElm('#sidecolumn').then((elm) => { // #sidecolumn is appended by this navigation.js script, so typically not needed.
 							//$("#cloneLeft").clone().appendTo($("#sidecolumn"));
 							//$("#cloneLeft").show(); // Still hidden, just removing the div that prevents initial exposure.
-						
+							if(location.host.indexOf("dreamstudio") >= 0) {
+						        $("#sidecolumnContent a").each(function() {
+						          $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
+						        });
+						     }
+
 							let colEleLeft = document.querySelector('#sidecolumnContent');
 							let colCloneLeft = colEleLeft.cloneNode(true)
 							colCloneLeft.id = "cloneLeft";
 							$("#cloneLeftTarget").append(colCloneLeft);
-						});
-						waitForElm('#topicsMenu').then((elm) => {
-							let colEleRight = document.querySelector('#sidecolumnContent');
-							let colCloneRight = colEleRight.cloneNode(true)
-							colCloneRight.id = "cloneRight";
-							$("#topicsMenu").prepend(colCloneRight);
+
+							waitForElm('#topicsMenu').then((elm) => {
+								let colEleRight = document.querySelector('#sidecolumnContent');
+								let colCloneRight = colEleRight.cloneNode(true)
+								colCloneRight.id = "cloneRight";
+								$("#topicsMenu").prepend(colCloneRight);
+							});
+
 						});
 
 				 		// Move filterbarOffset and filterEmbedHolder immediately after body tag start.
