@@ -44,6 +44,16 @@ a:link, a:visited {
 	background: #222;
 	border-bottom-color: #222;
 }
+.headerbar a:link, .headerbar a:visited {
+    color:  #ccc;
+}
+.headerbar a:link:hover, .headerbar a:visited:hover {
+    color:  #fff !important;
+}
+.iconPadding:hover {
+    background-color: #000;
+    color: #ccc;
+}
 .filterFields {
     background-color: rgb(55 55 55/95%);
 }
@@ -72,7 +82,9 @@ a:link, a:visited {
 }
 .filterClick, .detailbutton {
     background-color: rgb(55 55 55/95%) !important;
+    background-color: rgb(33 33 33/95%) !important;
     color: #fff !important;
+    border: 0px !important;
 }
 .filterClick:hover, .detailbutton:hover {
     background-color: rgb(77 77 77/95%) !important;
