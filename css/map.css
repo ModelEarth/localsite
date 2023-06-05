@@ -391,9 +391,6 @@
   background-color: #efefef;
 }
 
-b {
-  font-weight: 600;
-}
 .showMobile { /* For delayed css load */
   displayX:none;
 }

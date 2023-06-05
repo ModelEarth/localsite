@@ -1,7 +1,8 @@
 # Getting Started  
 
-[View Community Pages](https://model.earth/apps/)  
-You can use these steps to create a website with free GitHub hosting  
+You can generate images locally using [StableStudio](http://dreamstudio.com/studio/), the open source UX behind the [DreamStudio.ai](https://dreamstudio.ai) frontend.
+
+You can use [ModelEarth Community Pages](https://model.earth/apps/) to create a website with free GitHub hosting.
 
 <!--
 	Not using curretnly, made a physcial copy instead
@@ -18,16 +19,16 @@ You can use these steps to create a website with free GitHub hosting
 
 ### The following can be used to host a custom page within the "apps" repo
 
-1. First, fork the [localsite repo](https://github.com/modelearth/localsite), the [apps repo](https://github.com/modelearth/apps), and the [io repo](https://github.com/modelearth/io).  Turn on [GitHub Pages](#github-pages) for each repo.  
-After a few minutes, you can view your fork at [[your account].github.io/apps](https://modelearth.github.io/apps)  
-2. [Activate a webroot](#webroot) on your local computer for [http://localhost:8887](http://localhost:8887/)
-3. Then [clone the three forked repos](#clone) into the same local webroot folder.
-4. Copy the [base page folder](../../apps/base/) locally, change parameters and deploy your updates.
+1. First, fork the [localsite repo](https://github.com/modelearth/localsite) and the [io repo](https://github.com/modelearth/io), and optionally the [apps repo](https://github.com/modelearth/apps) if you want to customize a page.  Turn on [GitHub Pages](#github-pages) for each repo.  
+After a few minutes, you can view your fork at [[your account].github.io/localsite](https://modelearth.github.io/apps)  
+2. [Activate a local webroot](#webroot) on your local computer for [http://localhost:8887](http://localhost:8887/)
+3. [Clone the forked repos](#clone) into your local webroot folder.
+4. To start customizing,copy the [apps base page folder](../../apps/base/) locally, change parameters and deploy your updates.
 5. [Fetch upstream](#fetch-upstream) changes to your forked repos.
 6. [Point a domain](#domain) at your repos (optional)
+<br>
 
-Here are details for the steps above...<br><br>
-
+Here are details for the steps above...<br>
 
 # Local Webroot Setup
 
@@ -36,14 +37,16 @@ Here are details for the steps above...<br><br>
 
 ## 1. Fork repos and turn on Github Pages 
 
-Clone forks of the parent repos so you can review your changes online before submitting a pull request (PR).  
+1A. Clone forks of the parent repos so you can review your changes online before submitting a pull request (PR).  
 Click the "Fork" button in the upper right of each of the following pages:   
 
 [localsite repo](https://github.com/modelearth/localsite)
 [io repo](https://github.com/modelearth/io)
-[apps repo](https://github.com/modelearth/apps)
+[apps repo](https://github.com/modelearth/apps) (optional)
 
-Activate GitHub Pages for each of your forked repos by going to "Settings > Pages" and choosing "main" (or master) then save.
+Note: You can [use .submodules](submodules/) to deploy multiple repos to a single [Cloudflare site](cloudflare/).  
+
+1B. Activate GitHub Pages for each of your forked repos by going to "Settings > Pages" and choosing "main" (or master) then save.
 
 <div style="border:1px solid #ccc; padding:15px; display:inline-block; margin-bottom:20px">
 <img src="img/github-pages.png">

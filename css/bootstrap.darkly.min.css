@@ -45,10 +45,13 @@ a:link, a:visited {
 	border-bottom-color: #222;
 }
 .headerbar a:link, .headerbar a:visited {
-    color:  #ccc;
+    color: #ccc;
 }
 .headerbar a:link:hover, .headerbar a:visited:hover {
-    color:  #fff !important;
+    color: #fff !important;
+}
+.headerbar .headerIcon {
+    color: #fff !important;
 }
 .iconPadding:hover {
     background-color: #000;

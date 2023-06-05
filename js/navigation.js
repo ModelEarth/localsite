@@ -79,6 +79,9 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			}
 			param.headerLogoNoText = "<img src='/dreamstudio/img/logo/favicon.png' style='float:left;width:38px;margin-right:7px'>";
 			showClassInline(".dreamstudio");
+			if (location.host.indexOf('localhost') >= 0) {
+				showClassInline(".earth");
+			}
 		// 
 		} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 ) {
 			// Show locally for Brave Browser only - insert before:  ) || false

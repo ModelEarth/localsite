@@ -457,10 +457,6 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 
 /* For sidecolumn from header.html */
-body {
-    background-color: rgb(250, 250, 250); /* For side nav -- too light in IS */
-    background-colorX: #595959;
-}
 .sidecolumn-inpage #sidecolumnLeft {
     position: static !important;
     float:left;

@@ -47,7 +47,10 @@ body {
     display: none;
   }
   .mobileView .maintext {
-    padding: 30px;
+    padding: 50px;
+  }
+  .mobileView .fullMobile {
+    width: 100%;
   }
 }
 @media (max-width: 1500px) {
@@ -496,14 +499,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 
 #hero-content {
-  /*
-  position: absolute;
-  top: 60px;
-  left: 60px;
-  right: 60px;
-  */
-  padding: 60px;
-  padding-bottom: 40px;
+  padding: 45px 60px 40px 60px;
 }
 #hero-mini {
   float: right;
@@ -668,7 +664,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     color: #444 !important;
 }
 .navLinks a:hover {
-    color: #555 !important;
+    color: #555;
     text-decoration: none !important;
 }
 
@@ -973,6 +969,12 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   background-color: rgb(239 239 239);
   pointer-events: auto;
 }
+.headerbar a:link, .headerbar a:visited {
+    color: #777;
+}
+.headerbar a:link:hover, .headerbar a:visited:hover {
+    color: #444;
+}
 /* Seems that brave darkmode ignores the use of prefers-color-scheme: dark */
 @media (not (prefers-color-scheme: dark)) {
   .headerbar {
@@ -1188,8 +1190,8 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 .two-wide div img {
   width: 100%;
-  padding-right:12px;
-  padding-bottom:12px;
+  margin-rightX:12px;
+  margin-bottom:24px;
 }
 @media (max-width: 1400px) {
   .two-wide div {
