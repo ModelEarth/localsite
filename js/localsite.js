@@ -1849,6 +1849,142 @@ function waitForElmKickoff(selector, resolve) {
       subtree: true //Set to true if changes must also be observed in descendants.
   });
 }
-//waitForElm('#tabulator-geotable').then((elm) => {
-//    alert('Element is ready: ' + elm.textContent);
-//});
+
+
+function loadMarkdown(pagePath, divID, target, callback) {
+  // WAIT FOR SCRIPT THAT LOADS README.md Files
+  loadScript(theroot + 'js/d3.v5.min.js', function(results) {
+  //loadScript(theroot + 'js/jquery.min.js', function(results) {
+  loadScript(theroot + 'js/showdown.min.js', function(results) {
+
+    // getPageFolder:
+    let pageFolder = pagePath;
+    if (pageFolder.lastIndexOf('?') > 0) { // Incase slash reside in parameters
+      pageFolder = pageFolder.substring(0, pageFolder.lastIndexOf('?'));
+    }
+    // If there is a period after the last slash, remove the filename.
+    if (pageFolder.lastIndexOf('.') > pageFolder.lastIndexOf('/')) {
+      pageFolder = pageFolder.substring(0, pageFolder.lastIndexOf('/')) + "/";
+    }
+    if (pageFolder == "/") {
+      pageFolder = "";
+    }
+
+    if (pageFolder.indexOf('https://raw.githubusercontent.com/wiki') >= 0) {
+      pageFolder = pageFolder.replace("https://raw.githubusercontent.com/wiki/","https://github.com/") + "/wiki/"; 
+    }
+
+    // Get the levels below root
+    //let foldercount = (location.pathname.split('/').length - 1); // - (location.pathname[location.pathname.length - 1] == '/' ? 1 : 0) // Removed because ending with slash or filename does not effect levels. Increased -1 to -2.
+    
+
+    // Might not be used
+    //alert(location.pathname)
+    //let foldercount = (location.pathname.split('/').length - 1);
+    let foldercount = (pagePath.split('/').length - 1);
+    foldercount = foldercount - 2;
+    let climbcount = foldercount;
+    if(location.host.indexOf('localhost') >= 0) {
+      climbcount = foldercount - 0;
+    }
+    let climbpath = "";
+    for (let i = 0; i < climbcount; i++) {
+      climbpath += "../";
+    }
+    if(climbpath == "") {
+      //climbpath == "./";
+    }
+    d3.text(pagePath).then(function(data) {
+      // Path is replaced further down page. Reactivate after adding menu.
+      var pencil = "<div class='markdownEye' style='display:none;position:absolute;font-size:28px;right:0px;text-decoration:none;opacity:.7'><a href='" + pagePath + "' style='color:#555'>…</a></div>";
+      // CUSTOM About YAML metadata converter: https://github.com/showdownjs/showdown/issues/260
+
+      // Also try adding simpleLineBreaks http://demo.showdownjs.com/
+
+      var converter = new showdown.Converter({tables:true, metadata:true, simpleLineBreaks: true}),
+      html = pencil + converter.makeHtml(data);
+
+      var metadata = converter.getMetadata(true); // returns a string with the raw metadata
+      var metadataFormat = converter.getMetadataFormat(); // returns the format of the metadata
+
+      // This returns YAML and JSON at top of README.md page.
+      if (metadata) {
+        //alert(metadata);
+
+        /*
+        // UNDER DEVELOPMENT
+        // Planning to use one of these:
+        // https://github.com/jeremyfa/yaml.js  (See: https://www.npmjs.com/package/yamljs)
+        // https://github.com/nodeca/js-yaml
+
+        obj = jsYaml.load(metadata, { schema: SEXY_SCHEMA });
+
+        result.setOption('mode', 'javascript');
+        result.setValue(inspect(obj, false, 10));
+
+        convertToHtmlTable(obj);
+
+        html = metadata + html;
+        */
+      }
+      //document.getElementById(divID).innerHTML = html; // Overwrites
+
+      // Append rather than overwrite
+      var thediv = document.getElementById(divID);
+      loadIntoDiv(pageFolder,divID,thediv,html,0,callback);
+
+    });
+  });
+  });
+  //});
+}
+function loadIntoDiv(pageFolder,divID,thediv,html,attempts,callback) {
+  if (thediv) {
+    //alert("loadIntoDiv attempts: " + attempts);
+    var newcontent = document.createElement('div');
+    newcontent.innerHTML = html;
+    while (newcontent.firstChild) {
+        thediv.appendChild(newcontent.firstChild);
+    }
+
+    document.getElementById(divID).style.display = "block";
+    document.getElementById(divID).style.position = "relative"; // So upper right eye icon remains within div.
+    document.getElementById(divID).style.overflow = "auto"; // Prevents text from falling below adjacent float.
+
+    //alert("climbpath works for deeper: " + climbpath);
+    //alert("pageFolder shows path: " + pageFolder);
+    //alert(pagePath);
+
+    // To do: might apply to html parameter above rather than DOM.
+    $("#" + divID + " a[href]").each(function() {
+
+      //if (pagePath.indexOf('../') >= 0) { // If .md file is not in the current directory
+      //$("#" + divID + " a[href]").each(function() {
+      if($(this).attr("href").toLowerCase().indexOf("http") < 0){ // Relative links only        
+          //$(this).attr("href", climbpath + $(this).attr('href'));
+          $(this).attr("href", pageFolder + $(this).attr('href'));
+          //console.log("Showdown link update: " + pageFolder + " plus " + $(this).attr('href'));
+      } 
+      else if (!/^http/.test($(this).attr("href"))) { // Also not Relative link
+          console.log("ALERT Adjust: " + $(this).attr('href'));
+          $(this).attr("href", pageFolder + $(this).attr('href'));
+          //console.log("Showdown link update2: " + pageFolder + " plus " + $(this).attr('href'));
+      }
+      else {
+          //console.log("Showdown link update3 none: " + pageFolder + " plus " + $(this).attr('href'));
+      }
+    })
+    if(callback) callback();
+  } else { // Try again
+    attempts = attempts + 1;
+    if (attempts < 100) {
+      setTimeout( function() {
+        thediv = document.getElementById(divID);
+        loadIntoDiv(pageFolder,divID,thediv,html,attempts,callback);
+      }, 100 );
+    } else {
+      console.log("ALERT: " + divID + " not available in page for showdown to insert text after " + attempts + " attempts.");
+    }
+  }
+
+}
