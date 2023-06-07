@@ -8,12 +8,17 @@ Afterward, you can request an update in Cloudflare (but it should just start aut
 Working with submodules
 https://github.blog/2016-02-01-working-with-submodules/
 
-git submodule add https://github.com/<user>/rubber-band rubber-band
-git commit -m "rubber-band submodule"
+git submodule add https://github.com/[user]/[repo] [repo]
+git commit -m "[repo] submodule"
 git submodule update --init --recursive
 
+Lastly, commit within Github Desktop. You'll then see the submodule in the Github website.
 
+Example:
+git submodule add https://github.com/DreamStudioApp/StableStudio StableStudio
+git commit -m "StableStudio submodule"
 git submodule update --init --recursive
+
 
 Or try this for detached HEAD message in Github Desktop:
 git checkout -b io
@@ -43,4 +48,5 @@ https://medium.com/@alexander.sirenko/using-github-access-token-with-submodules-
 	url = https://github.com/modelearth/io
 
 
-Cloudflare > Wokers & Pages > Overview > (Choose your site)
+Cloudflare > Worker Routes > Manage Workers
+Cloudflare > Workers & Pages > Overview > (Choose your site)
