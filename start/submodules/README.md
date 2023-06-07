@@ -12,7 +12,7 @@ git submodule add https://github.com/[user]/[repo] [repo]
 git commit -m "[repo] submodule"
 git submodule update --init --recursive
 
-Lastly, commit within Github Desktop (it will already be checked in). 
+Lastly, push within Github Desktop. (It will already be commited.) 
 You'll then see the submodule in the Github website.
 
 Example:
