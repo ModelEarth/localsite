@@ -1023,6 +1023,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 /* .upperIcons > */
 .iconPadding {
   padding:14px 12px 20px 12px;
+  padding:14px 12px 2px 12px;
   cursor: pointer;
 }
 .iconPadding:hover {
