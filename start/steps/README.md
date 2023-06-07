@@ -2,8 +2,10 @@
 
 You can use [Localsite Story Pages](../) to create websites with free GitHub hosting.
 
+If you get stuck at any point, please DM us on Twitter at [DreamStudioAGI](https://twitter.com/DreamStudioAGI).
+
 <!--
-	Not using curretnly, made a physcial copy instead
+	Not using currently, made a physcial copy instead
 	https://github.com/ModelGeorgia/io/compare/master...modelearth:master
 
 	Removed domain model.georgia.org from GitHub pages.
@@ -17,7 +19,7 @@ You can use [Localsite Story Pages](../) to create websites with free GitHub hos
 
 ### Steps for hosting your story pages
 
-The following steps are elaborated on further down on this page.  
+The following steps are elaborated on after this summary.  
 
 1. Fork the [localsite repo](https://github.com/modelearth/localsite) and turn on [GitHub Pages](#github-pages).  
 After a few minutes, you can view your fork at [[your account].github.io/localsite](https://modelearth.github.io/apps)  

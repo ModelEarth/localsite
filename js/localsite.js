@@ -543,6 +543,10 @@ function loadLocalTemplate() {
   $(bodyFileDiv).load(bodyFile, function( response, status, xhr ) {
     $("#insertedTextSource").remove(); // For map/index.html. Avoids dup header.
 
+    //$('img').each(function() {
+    //  $(this).attr('src', 'https://model.earth' + $(this).attr('src'));
+    //});
+
     let elemDiv = document.createElement('div');
     elemDiv.id = "localsiteDetails";
     elemDiv.style.cssText = "display:none";

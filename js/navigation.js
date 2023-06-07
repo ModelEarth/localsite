@@ -47,23 +47,18 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 	  }
 	}
 
-	// Try inserting a div here before DOM ready to trigger "wait for div" in localsite.js
-
-
-
-	//$(document).ready(function(){
 		
-	 	var modelpath = climbpath;
-	 	if (modelpath == "./") {
-	 		//modelpath = "";
-	 	}
-	 	var modelroot = ""; // For links that start with /
-	 	
-	 	if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('neighborhood.org') < 0) { // When not localhost or other sites that have a fork of io and community.
-	 		// To do: allow "Input-Output Map" link in footer to remain relative.
-	 		modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
-	 		modelroot = "https://model.earth";
-	 	}
+ 	var modelpath = climbpath;
+ 	if (modelpath == "./") {
+ 		//modelpath = "";
+ 	}
+ 	var modelroot = ""; // For links that start with /
+ 	
+ 	if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('neighborhood.org') < 0) { // When not localhost or other sites that have a fork of io and community.
+ 		// To do: allow "Input-Output Map" link in footer to remain relative.
+ 		modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
+ 		modelroot = "https://model.earth";
+ 	}
 
 	function applyNavigation() { // Called by localsite.js so local_app path is available.
 		// To do: fetch the existing background-image.
@@ -71,13 +66,17 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			//showLeftIcon = true;
 			$(".siteTitleShort").text("DreamStudio");
 			param.titleArray = [];
-			//param.headerLogo = "<a href='https://dreamstudio.com'><img src='https://dreamstudio.com/dreamstudio/img/logo/dreamstudio.png' style='height:23px'></a>";
+			//param.headerLogo = "<a href='https://dreamstudio.com'><img src='https://dreamstudio.com/dreamstudio/img/logo/dreamstudio-text.png' style='height:23px'></a>";
 			
-			param.headerLogo = "<a href='/dreamstudio/''><img src='/dreamstudio/img/logo/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/dreamstudio/img/logo/dreamstudio.png' alt='DreamStudio' style='height:22px; margin-top:9px'></a>";
-			if (location.host.indexOf("dreamstudio") >= 0) {
-				param.headerLogo = param.headerLogo.replace(/\/dreamstudio\//g,"\/");
+			let siteRoot = "";
+			if (location.host.indexOf("localhost") >= 0) {
+				siteRoot = "/dreamstudio";
 			}
-			param.headerLogoNoText = "<img src='/dreamstudio/img/logo/favicon.png' style='float:left;width:38px;margin-right:7px'>";
+			param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px'></a>";
+			param.headerLogoNoText = "<img src='/storyboard/img/logo/ds/favicon.png' style='float:left;width:38px;margin-right:7px'>";
+			if (location.host.indexOf("dreamstudio") >= 0) {
+				//param.headerLogo = param.headerLogo.replace(/\/dreamstudio\//g,"\/");
+			}
 			showClassInline(".dreamstudio");
 			if (location.host.indexOf('localhost') >= 0) {
 				//showClassInline(".earth");
@@ -558,9 +557,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			});
 		}
 		// END SIDE NAV WITH HIGHLIGHT ON SCROLL
-
-	} // end function
-	//});
+	} // end applyNavigation function
 
 	function closeSideTabs() {
 		$("#sideTabs").hide();

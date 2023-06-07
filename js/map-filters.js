@@ -102,6 +102,9 @@ $(document).ready(function () {
 
     loadScript(local_app.modelearth_root() + '/localsite/js/d3.v5.min.js', function(results) {
 
+        // Would this be usable? Old, find newer perhaps
+        // https://github.com/FengJun-dev/harmonized-system
+
         // This avoids cross domain CORS error
         d3.text(local_app.community_data_root() + 'global/hs/harmonized-system.txt').then(function(data) {
             let catLines = d3.csvParseRows(data);
