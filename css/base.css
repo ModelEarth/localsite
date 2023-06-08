@@ -1010,6 +1010,11 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   }
 }
 
+#headerIcons {
+  color:#444;
+  float:left;
+  margin-top:14px;
+}
 .headerbarheight {
   height:94px;
 }
@@ -1019,6 +1024,21 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 #local-header {
   min-height:94px; 
 }
+@media (max-width: 600px) {
+  #headerIcons {
+    margin-top:0px;
+  }
+  .headerbarheight {
+    height:64px;
+  }
+  .headeroffset {
+    height:64px;
+  }
+  #local-header {
+    min-height:64px; 
+  }
+}
+
 .filters-margin {
   margin: 0 auto;
   max-width:1000px;
@@ -1032,13 +1052,15 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 /* .upperIcons > */
 .iconPadding {
-  padding:14px 12px 20px 12px;
-  padding:14px 12px 2px 12px;
+  height: 64px;
+  min-width: 58px;
+  text-align: center;
+  padding: 18px 12px 2px 12px;
   cursor: pointer;
 }
 .iconPadding:hover {
-  background-color: #ccc;
-  color: #000;
+  background-color: #000;
+  color: #fff;
 }
 .upperIcons > div:hover {
   cursor: pointer;

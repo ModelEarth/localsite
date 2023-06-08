@@ -163,12 +163,13 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 
     <div class="contentpadding" id="impactTopHolder" style="overflow:auto; padding-bottom:20px;">
 
-        <div style="float:right;">
+        <div style="float:right;" class="fullMobile">
             <div class="impactIcons">
                 <!-- to do: check if indicators match USEEIO 2.0 -->
                 <div class="impactIcon_Air" onclick="goHash({'set':'air','indicators':'GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS'});">Air</div>
                 <div class="impactIcon_Water" onclick="goHash({'set':'water','indicators':'WATR,ACID,EUTR,ETOX'});">Water</div>
                 <div class="impactIcon_Land" onclick="goHash({'set':'land','indicators':'LAND,MNRL,PEST,METL,CRHW,CMSW,FMSW,CCDD'});">Land</div>
+                <div class="showMobile" style="clear:both;margin:0px;padding:0px;border:0px;display:none"></div>
                 <div class="impactIcon_Energy" onclick="goHash({'set':'energy','indicators':'ENRG,NNRG,RNRG'});">Energy</div>
                 <div class="impactIcon_Health" onclick="goHash({'set':'health','indicators':'HTOX,HCAN,HNCN,HTOX,HRSP'});">Health</div>
                 <div class="impactIcon_Prosperity" onclick="goHash({'set':'prosperity','indicators':'VADD,JOBS'});">Prosperity</div>
@@ -190,8 +191,21 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
             <h1 id="pageTitle" class="h1-home" style="margin-top:0px; margin-bottom:10px;"></h1>
             <div class="region_service" style="margin-bottom:20px"></div>
             
+            <style>
+            	@media (max-width: 1200px) {
+            	}
 
-            <select id="indicators" class="filterClickX form-selectX picklist" onchange="goHash({'set':'','indicators':this.value});" style="min-width:400px;margin:10px 0 0 0; font-size:18px; max-width:400px">
+				.mobileView .MuiGrid-grid-md-true {
+				    flex-basis: 100% !important;
+				}
+				.mobileView .MuiGrid-grid-md-5 {
+					max-width: 100% !important;
+					flex-basis: 100% !important;
+				}
+				
+            </style>
+
+            <select id="indicators" class="filterClickX form-selectX picklist" onchange="goHash({'set':'','indicators':this.value});" style="min-width:400px;font-size:18px; max-width:400px">
 
 			<option value="">Specific impact areas...</option>
 
@@ -370,7 +384,7 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
     border: 1px solid #ccc;
     width: 100px;
     padding: 20px;
-    margin-right: 15px;
+    margin: 0 15px 15px 0;
     text-align: center
 }
 #hero-mini .impactIcons div {
@@ -380,6 +394,8 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 	padding-left: 18px;
 	text-align: left;
 	min-width: 140px;
+	width: 100%;
+	margin: 0px;
 }
 #impact-widget-vertical #impactIcons div {
 	margin-bottom: 15px;
