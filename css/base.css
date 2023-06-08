@@ -656,12 +656,14 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   font-size: 13.5px;
 }
 
-.navLinks, .navLinks a {
+.navLinks a {
+    height: 42px;
+    display: block;
+    float: left;
     color: #aaa;
     text-decoration: none !important;
-    /* font-size: 16px !important; */
     margin-right:0px !important;
-    margin-left:8px !important;
+    padding:8px 10px 0 8px;
     font: 400 16px/1.8 "Lato", sans-serif;
     -webkit-font-smoothing: inherit !important;
 }
@@ -671,6 +673,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 .navLinks a:hover {
     color: #555;
+    background-color: #ccc;
     text-decoration: none !important;
 }
 
@@ -1005,9 +1008,6 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   .showSearch {
     display: none;
   }
-  #headerLogo {
-    margin-left: 24px;
-  }
 }
 
 .headerbarheight {
@@ -1025,8 +1025,10 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 
 /* HEADER */
-.upperIcons {
-  margin-right: 18px;
+@media (min-width: 800px) {
+  .upperIcons {
+    margin-right: 18px;
+  }
 }
 /* .upperIcons > */
 .iconPadding {
