@@ -1775,9 +1775,6 @@ function showSearchFilter() {
       $(".hideSearch").show();
       //$(".hideFilters").show(); // X not needed since magnifying glass remains visible now.
       //$("#hideSearch").show();
-      if ($(".settingsPanel").is(':visible')) {
-          hideSettings();
-      }
       if ($("#menuHolder").is(':visible')) {
           $('.hideMetaMenu').trigger("click");
       }

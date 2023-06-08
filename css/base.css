@@ -323,8 +323,8 @@ summary::-webkit-details-marker {
 }
 @media (max-width: 800px) {
   #headerbar .contentpadding {
-    padding-left: 20px;
-    padding-right: 0px;
+    padding-leftX: 20px;
+    padding-rightX: 0px;
   }
 }
 @media (max-width: 600px) {
@@ -663,7 +663,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     color: #aaa;
     text-decoration: none !important;
     margin-right:0px !important;
-    padding:8px 10px 0 8px;
+    padding:8px 15px 0 13px;
     font: 400 16px/1.8 "Lato", sans-serif;
     -webkit-font-smoothing: inherit !important;
 }
@@ -673,7 +673,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 .navLinks a:hover {
     color: #555;
-    background-color: #ccc;
+    background-color: #ddd;
     text-decoration: none !important;
 }
 
@@ -1011,9 +1011,12 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 
 #headerIcons {
-  color:#444;
+  color:#aaa;
   float:left;
   margin-top:14px;
+}
+#headerIcons:hover {
+  background-color: #ddd;
 }
 .headerbarheight {
   height:94px;
@@ -1045,17 +1048,27 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 
 /* HEADER */
-@media (min-width: 800px) {
+
+.upperIcons {
+  margin-right: 18px;
+}
+@media (max-width: 600px) {
   .upperIcons {
-    margin-right: 18px;
+    margin-right: 8px;
   }
 }
+@media (max-width: 260px) {
+  #headerLogoholder {
+    display: none;
+  }
+}
+
 /* .upperIcons > */
 .iconPadding {
   height: 64px;
   min-width: 58px;
   text-align: center;
-  padding: 18px 12px 2px 12px;
+  padding: 16px 12px 2px 12px;
   cursor: pointer;
 }
 .iconPadding:hover {

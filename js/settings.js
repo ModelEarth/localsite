@@ -334,13 +334,6 @@ function getLayerName() {
 
     return getCurrentLayer();
 }
-function hideSettings() {
-    $(".hideSettings").hide();
-    $(".showSettings").show();
-    $(".showSettings").show();
-    $(".showSettingsClick").show();
-    $(".settingsPanel").addClass("column-hidden");
-}
 var loc_hash="";
 function getCurrentLayer() {
     //Sample - #companies:aerospace:runways returns companies
@@ -379,7 +372,6 @@ $(document).on("change", ".sitemode", function(event) {
     }
     sitemode = $(".sitemode").val();
     setSiteMode($(".sitemode").val());
-    hideSettings();
     Cookies.set('sitemode', $(".sitemode").val());
     if ($(".sitemode").val() == "fullnav") {
         $('.showSearchClick').trigger("click");
@@ -413,7 +405,6 @@ function changeSiteLook() {
     layerName = getLayerName();
     consoleLog("changeSiteLook: " + $("#sitelook").val());
     setSiteLook($("#sitelook").val(),layerName);
-    hideSettings();
     //changeLayer(layerName,siteObject,"clearall"); // To load header image
 }
 
@@ -911,7 +902,6 @@ function initEvents() { // Once included file1 is loaded.
         /*
         function hideOtherPopOuts() {
             $('.accountPanelClose').trigger("click");
-            hideSettings();
         }
         */
         //$(document).on("click", ".rightTopMenuInner>div", function(event) {
@@ -933,18 +923,13 @@ function initEvents() { // Once included file1 is loaded.
             //$("#showSettings").hide();
             //$(".showSettings").hide(); // If used, would need to redisplay after changning Style > Header Images
             //$(".showSettingsClick").hide();
-            //$(".hideSettings").show();
             if ($(".settingsPanel").is(':visible')) { 
-                hideSettings();
+
             } else {
                 $(".settingsPanel").show();
                 //$("#rightTopMenu").hide();
             }
             //event.stopPropagation();
-        });
-        $(document).on("click", ".hideSettings", function(event) {
-            //hideSettings();
-            $(".menuExpanded").hide(); // Hide any open
         });
 
         $(document).on("click", ".showPrintOptions, .print_button", function(event) {
@@ -963,7 +948,6 @@ function initEvents() { // Once included file1 is loaded.
             if ($(".moduleJS").width() <= 800) { // Narrow
                 $('.hideApps').trigger("click"); // For mobile
             }
-            hideSettings();
             $(".smartPanel").show(); // Not sure why this is hidden. Wasn't occuring on localhost.
             //$(".showAccount").hide();
             //$(".hideAccount").show(); // hideAccount can be eliminated.
@@ -1543,6 +1527,7 @@ function initEvents() { // Once included file1 is loaded.
         }
         
         $(".rightTopItem").click(function(event) {
+            console.log("rightTopItem click");
             $(".upperRightIcons").hide();
             $(".rightTopMenu").hide();
         });

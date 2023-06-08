@@ -62,7 +62,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 
 	function applyNavigation() { // Called by localsite.js so local_app path is available.
 		// To do: fetch the existing background-image.
-		if (location.host.indexOf('localhost') >= 0 || location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio") {
+		if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio") {
 			//showLeftIcon = true;
 			$(".siteTitleShort").text("DreamStudio");
 			param.titleArray = [];
@@ -82,7 +82,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 				//showClassInline(".earth");
 			}
 		// 
-		} else if (param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 ) {
+		} else if (location.host.indexOf('localhost') >= 0 || param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 ) {
 			// Show locally for Brave Browser only - insert before:  ) || false
 			// && navigator && navigator.brave
 			if (!param.state) {

@@ -50,12 +50,22 @@ a:link, a:visited {
 .headerbar a:link:hover, .headerbar a:visited:hover {
     color: #fff !important;
 }
-.headerbar .headerIcon {
+.headerbar .headerIcons {
     color: #fff !important;
 }
 .iconPadding:hover {
     background-color: #000;
     color: #ccc;
+}
+#headerIcons {
+    color: #ccc;
+}
+#headerIcons:hover {
+    color: #fff;
+    background-color: #555;
+}
+.navLinks a:hover {
+    background-color: #555;
 }
 .filterFields {
     background-color: rgb(55 55 55/95%);

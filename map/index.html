@@ -181,6 +181,15 @@ localsite.js pulls the #insertedText div from this page as the template for head
       
       <div id="goatIcons" style="background-color:#111; color:#ccc; width:100%; height:64px; padding-right:6px; overflow:hidden">
 
+        <div style="float:left">
+          <div class="closeSideTabs iconPadding">
+              <!-- show-on-load -->
+              <i class="material-icons showMobile" style="display: none; font-size:40px;" data="apps">&#xE5E0;</i>
+              <i class="material-icons show-on-load" style="font-size:40px;" data="apps">&#xEAC9;</i>
+          </div>
+
+        </div>
+
         <div style="float:right">
           <div style="float:left">
             <div class="earth georgia" style="display:none">
@@ -197,22 +206,25 @@ localsite.js pulls the #insertedText div from this page as the template for head
           </div>
           <div style="float:left;">
             <div class="showEarth iconPadding">
-              <i class="material-icons show-on-load" style="font-size:34px;opacity:0.7; margin-top:-3px" data="apps">&#xE894;</i>
+              <i class="material-icons show-on-load" style="font-size:34px;opacity:0.7;" data="apps">&#xE894;</i>
             </div>
           </div>
           <div class="hideNarrow" style="float:left;">
               <div class="expandToFullscreen iconPadding" style="border:0px;">
-                  <img src="/localsite/img/icon/fullscreen-lite.png" style="width:22px; opacity:0.3; margin:3px">
+                  <i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D0;</i>
               </div>
               <div class="reduceFromFullscreen iconPadding" style="display:none; border:0px;">
-                  <img src="/localsite/img/icon/minimize-lite.png" style="width:25px; opacity:0.3; margin:3px">
+                  <i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D1;</i>
               </div>
           </div>
+
+          <!--
           <div style="float:left;">
             <div class="closeSideTabs iconPadding">
               <div style="font-size: 28px; line-height: 28px; opacity: 0.8;">✕</div>
             </div>
           </div>
+          -->
 
         </div>
 
@@ -272,6 +284,12 @@ localsite.js pulls the #insertedText div from this page as the template for head
                 </div>
                 -->
 
+                <!-- css/fonts/materialicons/icon2.css needs to be adjusted then renamed to icon.css -->
+                <div class="rightTopItem" action="https://dreamstudio.ai/prompt-guide">
+                    <i class="material-icons menuTopIcon">&#xF5E1;</i>
+                    <span>View</span>
+                </div>
+
                 <div class="showSearch rightTopItem">
                     <i class="material-icons menuTopIcon">&#xE8B6;</i>
                     <span>Search</span>
@@ -315,19 +333,6 @@ localsite.js pulls the #insertedText div from this page as the template for head
                         <span>Log out</span>
                     </div>
                 </div>
-                
-
-                <!--
-                <div id="showSettings" class="showSettings hideEmbed" title="Settings"><i class="material-icons menuTopIcon hideMobile" style="font-size:18pt; padding:13px 5px 5px 5px;">&#xE8B8;</i></div>
-                <div id="hideSettings" style="display:none" title="Hide Settings"><i class="material-icons menuTopIcon menuTopIconHot" style="font-size:18pt; padding:13px 5px 5px 5px;">&#xE8B8;</i></div>
-                -->
-
-                <!-- share -->
-                <!--
-                <div class="rightTopItem shareThis">
-                    <i class="material-icons menuTopIcon" style="padding-top:2px; padding-right:8px;">&#xE80D;</i>
-                </div>
-                -->
 
                 <div class="showSettingsInNavTop" style="float:left">
                 </div>
@@ -346,7 +351,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
         <!-- Settings Panel -->
         <div class="column column-hidden settingsPanel menuExpanded topMenuOffset floater" style="min-width: 400px;">
           <div class="menuExpandedScroll">
-          <div class="hideSettings hideSettingsClick close-X-sm" style="position:absolute;right:0;padding:0 12px 12px 12px;"><i class="material-icons" style="font-size:28px">&#xE5CD;</i></div>
+          <div class="closeSideTabs close-X-sm" style="position:absolute;right:0;padding:0 20px 12px 12px;color:#777"><i class="material-icons" style="font-size:28px">&#xE5CD;</i></div>
 
           <div class="menuTitle">Settings</div>
 
@@ -505,11 +510,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
           <br />
 
-          <div class="user-5" style="display:none">
-            <hr>Staff only - 
-            <a href="/maps/leaflet/providers/preview/" target="basemaps">View Basemaps</a><br>
-            <div class="settingAdminNotes"></div>
-          </div>
+
 
           </div>
         </div>
@@ -569,7 +570,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
     <!-- HEADER BAR -->
     <div id="headerbar" class="headerbar headerbarheight headerbarhide" style="display:none;width:100%;position:fixed;overflow:visible;z-index:1002;pointer-events:auto;">
 
-      <div class="contentpadding" style="padding-top:0px; padding-bottom:0px; float:left; min-width: 200px">
+      <div id="headerLogoholder" class="contentpadding" style="padding-top:0px; padding-bottom:0px; float:left; min-width: 200px">
         <div id="logospace" class="headerbarheight">
           <div id="logoholder">
             
@@ -641,7 +642,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
       <div id="upIconTray" class="upperIcons noprint navLinks" style="float:right;">
 
-        <div id="upIconTrayText" class="hideMobile" style="float:left; padding:33px 10px 0 0">
+        <div id="upIconTrayText" class="hideMobile" style="float:left; padding:26px 10px 0 0">
           <div id="dreamstudio-nav" class="dreamstudio" style="display:none">
             <span class="hideMobile" style="float:left">
               <a href="/dreamstudio/about/" class="navlink-about"><span style="white-space: nowrap; margin-right:6px">About</span></a> 
@@ -655,11 +656,11 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
         <div id="headerIcons">
           <div class="earth dreamstudio" style="display:none">
-            <div id="showSideTabs" class="showSideTabs" style="padding:12px 20px 10px 10px; min-height:64px"><!-- &#xE5D2 -->
-              <i class="material-icons show-on-load" style="font-size:40px;opacity:0.3;" data="apps">&#xE5C3;</i>
+            <div id="showSideTabs" class="showSideTabs" style="padding:12px 0px 10px 10px; margin-right:10px; min-height:64px">
+              <i class="material-icons show-on-load" style="font-size:40px;" data="apps">&#xE5C3;</i>
             </div>
             <div id="hideMenu" class="closeSideTabs" style="display:none">
-              <i class="material-icons show-on-load" style="font-size:40px;opacity:0.3;" data="apps">&#xE5C3;</i>
+              <i class="material-icons show-on-load" style="font-size:40px;" data="apps">&#xE5C3;</i>
             </div>
           </div>
         </div>
@@ -1801,7 +1802,7 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 </div>
 <!-- list_main /-->
 
-<div class="earth w" style="display:none">
+<div class="earthX" style="display:none">
   <div id="fixedFooter" class="showMobile">
     <div>
       <div class="go_list">Listings</div>
