@@ -25,6 +25,9 @@ svg{max-width:none;} /* Fix for embedding material icon map points in Drupal */
   .hideNarrow {display:none;} /* Not activated when sideTabs displayed */
   .showMobile {display:inline-block !important;}
 }
+@media (min-width: 801px) {
+  .showDesktop {display:inline-block !important;}
+}
 @media (max-width: 900px) {
   .hideMobileWide {display:none;}
   .showMobileWide {display:inline-block;}
@@ -676,7 +679,10 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     background-color: #ddd;
     text-decoration: none !important;
 }
-
+.pageLinks a {
+  display: inline;
+  float: none;
+}
 .nav>li>a {
   padding: 8px;
   margin-top: 2px;

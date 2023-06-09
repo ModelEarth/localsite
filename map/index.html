@@ -184,8 +184,12 @@ localsite.js pulls the #insertedText div from this page as the template for head
         <div style="float:left">
           <div class="closeSideTabs iconPadding">
               <!-- show-on-load -->
-              <i class="material-icons showMobile" style="display: none; font-size:40px;" data="apps">&#xE5E0;</i>
-              <i class="material-icons show-on-load" style="font-size:40px;" data="apps">&#xEAC9;</i>
+              <div class="showMobile" style="display: none;">
+                <i class="material-icons show-on-load" style="font-size:40px;" data="apps">&#xE5E0;</i>
+              </div>
+              <div class="showDesktop" style="display: none;">
+                <i class="material-icons show-on-load" style="font-size:40px;" data="apps">&#xEAC9;</i>
+              </div>
           </div>
 
         </div>
@@ -350,7 +354,10 @@ localsite.js pulls the #insertedText div from this page as the template for head
                 </div>
         </div>
 
-        <div class="column" style="flex:2">
+        <div class="column" style="flex:2;">
+
+          <div class="closeSideTabs close-X-sm" style="position:absolute;right:0;padding:18px 32px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:28px">&#xE5CD;</i></div>
+
           <!-- Topics Panel -->
           <div class="topicsPanel menuExpanded topMenuOffset">
               <div class="menuExpandedScroll always-show-scroll">
@@ -363,7 +370,6 @@ localsite.js pulls the #insertedText div from this page as the template for head
           <!-- Settings Panel -->
           <div class="settingsPanel menuExpanded topMenuOffset" style="display:none">
             <div class="menuExpandedScroll">
-            <div class="closeSideTabs close-X-sm" style="position:absolute;right:0;padding:0 20px 12px 12px;color:#777"><i class="material-icons" style="font-size:28px">&#xE5CD;</i></div>
 
             <div class="menuTitle">Settings</div>
 
