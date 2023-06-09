@@ -40,7 +40,7 @@ body {
   line-heightX:0; /* prevents gaps betweet images, but 0 caused text to overlap on start and nav icons. */
 }
 .bodySideMargin {
-  margin-right: 600px;
+  margin-right: 500px;
 }
 @media (max-width: 1800px) {
   .mobileView .hideMobile {
@@ -238,7 +238,7 @@ summary::-webkit-details-marker {
   flex-wrap: wrap;
 }
 .column {
-  /* display: flex; */
+  display: flex;
   flex-direction: column;
   flex-basis: 100%;
   flex: 1;

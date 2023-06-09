@@ -568,6 +568,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 		$("#showSideTabs").show();
 	}
 	$(document).ready(function () {
+		//alert("word")
 		$(document).on("click", ".hideMenu", function(event) {
 			$("#menuHolder").show();
 			$("#menuHolder").css('margin-right','-250px');
@@ -575,6 +576,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			event.stopPropagation();
 		});
 		$(document).on("click", ".hideAdvanced", function(event) {
+			console.log("hideAdvanced")
 			hideAdvanced();
 		});
 		$(document).on("click", ".hideThumbMenu", function(event) {

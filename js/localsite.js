@@ -892,11 +892,11 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       
       //loadScript(theroot + 'js/table-sort.js', function(results) {}); // For county grid column sort
 
-
+      /*
       if (param.display == "everything") {
         //if(param.showbubbles) {
           loadScript(theroot + 'js/d3.v5.min.js', function(results) {
-            loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
+            loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) { // moved to naics.js instead
               // HACK - call twice so rollovers work.
                 //refreshBubbleWidget();
                 //alert("go")
@@ -912,6 +912,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           });
         //}
       } // end everything
+      */
+
     }
   }
 
@@ -945,8 +947,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       link.type = 'text/css';
       link.rel = 'stylesheet';
-      //link.href = 'https://fonts.googleapis.com/icon?family=Material+Icons';
       link.href = theroot + '../localsite/css/fonts/materialicons/icon.css';
+      //link.href = theroot + 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200';
       link.id = getUrlID3(link.href,"");
       
       // TO DO: Need to check if icon.css already in page.

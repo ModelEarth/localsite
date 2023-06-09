@@ -576,9 +576,8 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 
 .menuExpanded {
-    min-width: 400px;
     min-height: 200px;
-    display:none;
+    height: 100%;
     color: #cfcfcf;
     background-color: #555;
     box-sizing: border-box;
@@ -628,11 +627,11 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     padding-top:5px;
 }
 .setOverflow {
-    overflow: auto;
+    float: left;
     min-width: 120px;
 }
 #sideTabs {
-	width:600px;
+	width:500px;
 }
 @media (max-width: 1000px) {
 	#sideTabs {
@@ -659,9 +658,9 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 /* Avoid adding .moduleJS to three-dot menu, else font-family not applied to left menu  */
 .rightTopMenuInner { /* lives outside .moduleJS when full header displayed */
-    min-width: 150px;
+    min-width: 110px;
     font-family: 'Open Sans', 'Helvetica Neue', HelveticaNeue, calibri, arial, sans-serif;
-    max-width: 200px;
+    max-width: 150px;
 }
 .rightTopMenuInner i {
     color: #ddd !important;

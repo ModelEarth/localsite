@@ -231,10 +231,18 @@ localsite.js pulls the #insertedText div from this page as the template for head
       </div>
 
 
+      <style>
+      .rightTopItem {
+        display: none;
+      }
+      .showSections {
+        display: block;
+      }
+      </style>
 
     <div class="row" style="height:100%">
         <div class="column column-hidden" style="float:left;"><div class="rightTopMenuLeft"></div></div>
-        <div class="local column rightTopMenuInner topMenuOffset floater">
+        <div class="column rightTopMenuInner topMenuOffset">
                 <!-- map icon -->
                 <!--
                 <div class="showMap showMapClick rightTopItem" style="display:none; padding-top:14px">
@@ -284,15 +292,16 @@ localsite.js pulls the #insertedText div from this page as the template for head
                 </div>
                 -->
 
-                <!-- css/fonts/materialicons/icon2.css needs to be adjusted then renamed to icon.css -->
                 <div class="rightTopItem" action="https://dreamstudio.ai/prompt-guide">
-                    <i class="material-icons menuTopIcon">&#xF5E1;</i>
-                    <span>View</span>
+                    <i class="material-icons menuTopIcon">&#xE8F4;</i>
+                    <span>Explore</span>
                 </div>
 
-                <div class="showSearch rightTopItem">
-                    <i class="material-icons menuTopIcon">&#xE8B6;</i>
-                    <span>Search</span>
+                <div class="local" style="display:none">
+                  <div class="showSearch rightTopItem">
+                      <i class="material-icons menuTopIcon">&#xE8B6;</i>
+                      <span>Search</span>
+                  </div>
                 </div>
 
                 <div class="showSettings rightTopItem">
@@ -322,245 +331,248 @@ localsite.js pulls the #insertedText div from this page as the template for head
                 </div>
 
                 <!-- person icon -->
+
+                <!--
                 <div class="showAccountTools user-1 rightTopItem" style="display:none">
                     <div class="showAccount user-0">
                         <i class="material-icons menuTopIcon">&#xE7FD;</i>
                         <span>Account</span>
                     </div>
-
-                    <div class="logoutAccount user-1" style="display:none">
-                        <i class="material-icons menuTopIcon">&#xE7FD;</i>
-                        <span>Log out</span>
-                    </div>
                 </div>
+
+                <div class="logoutAccount user-1 rightTopItem" style="display:none">
+                    <i class="material-icons menuTopIcon">&#xE7FD;</i>
+                    <span>Log out</span>
+                </div>
+                -->
 
                 <div class="showSettingsInNavTop" style="float:left">
                 </div>
         </div>
 
+        <div class="column" style="flex:2">
+          <!-- Topics Panel -->
+          <div class="topicsPanel menuExpanded topMenuOffset">
+              <div class="menuExpandedScroll always-show-scroll">
+                <div class="menuTitle" style="display:none">Topics</div>
+                <div id="topicsMenu"><br><br><br><br></div>
+              </div>
+          </div>
+          <!-- /Topics Panel -->
 
-        <!-- Topics Panel -->
-        <div class="column column-hidden topicsPanel menuExpanded topMenuOffset floater" style="min-width: 400px; display:block">
-            <div class="menuExpandedScroll always-show-scroll">
-              <div class="menuTitle" style="display:none">Topics</div>
-              <div id="topicsMenu"><br><br><br><br></div>
-            </div>
-        </div>
-        <!-- /Topics Panel -->
+          <!-- Settings Panel -->
+          <div class="settingsPanel menuExpanded topMenuOffset" style="display:none">
+            <div class="menuExpandedScroll">
+            <div class="closeSideTabs close-X-sm" style="position:absolute;right:0;padding:0 20px 12px 12px;color:#777"><i class="material-icons" style="font-size:28px">&#xE5CD;</i></div>
 
-        <!-- Settings Panel -->
-        <div class="column column-hidden settingsPanel menuExpanded topMenuOffset floater" style="min-width: 400px;">
-          <div class="menuExpandedScroll">
-          <div class="closeSideTabs close-X-sm" style="position:absolute;right:0;padding:0 20px 12px 12px;color:#777"><i class="material-icons" style="font-size:28px">&#xE5CD;</i></div>
+            <div class="menuTitle">Settings</div>
 
-          <div class="menuTitle">Settings</div>
-
-          <div class="hideMobile">
-            <div classX="user-6" style="displayX:none">
-              <div class="sitemodeHolder" style="display:none;">
-                <div class="setLeft">Header</div>
-                    <div class="setOverflow"><div class="setRight">
-                      <select class="sitemode" id="sitemode">
-                        <option value="widget" selected>Section Navigation</option>
-                        <option value="fullnav">Full Navigation</option>
-                        </select>
-                    </div></div>
-                    <div class="setDiv"></div>
+            <div class="hideMobile">
+              <div classX="user-6" style="displayX:none">
+                <div class="sitemodeHolder" style="display:none;">
+                  <div class="setLeft">Header</div>
+                      <div class="setOverflow"><div class="setRight">
+                        <select class="sitemode" id="sitemode">
+                          <option value="widget" selected>Section Navigation</option>
+                          <option value="fullnav">Full Navigation</option>
+                          </select>
+                      </div></div>
+                      <div class="setDiv"></div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-          <div class="setLeft">Style</div>
-            <div class="setOverflow"><div class="setRight">
-                <select id="sitelook">
-                  <option value="default" selected>Default</option>
-                  <option value="light">Light Colors</option>
-                  <option value="dark">Night Vision</option>
-                </select>
-            </div></div>
-            <div class="setDiv"></div>
+            <div class="setLeft">Style</div>
+              <div class="setOverflow"><div class="setRight">
+                  <select id="sitelook">
+                    <option value="default" selected>Default</option>
+                    <option value="light">Light Colors</option>
+                    <option value="dark">Night Vision</option>
+                  </select>
+              </div></div>
+              <div class="setDiv"></div>
 
-            <div class="user-10" style="display:none">
-              <div class="sitesourceHolder" style="display:none">
-              <div class="setLeft">Display</div>
-                <div class="setOverflow"><div class="setRight">
-                    <select class="sitesource">
-                      <option value="overview" selected>Overview</option>
-                      <option value="directory">Directory</option>
-                    </select>
-                </div></div>
-                <div class="setDiv"></div>
-            </div>
-          </div>
-
-            <div style="display:none">
-                <div class="setLeft">Layout</div>
-                <div class="setOverflow"><div class="setRight">
-                  <select id="bts">
-                    <option value="12">Overview, Directory</option>
-                    <option value="21">Directory, Overview</option>
-                    <option value="02">Directory Only</option>
-                        <option value="01">Overview Only</option>
-                    </select>
-                </div></div>
-                <div class="setDiv"></div>
-            </div>
-            
-            <div class="setLeft"><div>Basemap</div></div>
-            <div class="setOverflow">
-              <div id='selector_menu' class="setRight">
-            
-                <select id='basemapSelector' class='layerSelector sitebasemap catchClick'>
-                  <option value='positron_light_nolabels'>Positron</option>
-                  <option value='osm'>Open Street Map</option>
-                  <option value='esri'><!--- Esri -->Satellite Map</option>
-                  <!-- Zoom not appearing -->
-                  <!--<option value='default'>Open Street Map 2</option>-->
-                  <!-- Zoom not appearing -->
-                  <!-- <option value='green'>Green Topo Map</option>-->
-                  <option value='dark'>Dark Background</option>
-                  <option value='firemap'>Fire Map</option>
-                </select>
-            
-            </div>
-          </div>
-          
-
-          <!--
-          <div class="setDiv"></div>
-
-          <div class="setLeft"><div>Zoom To</div></div>
-            <div class="setOverflow">
-              <div class="setRight">
-            
-                <select class='center'>
-                  <option value='mylocation'>My Location</option>
-                  <option value='filter'>Nearby</option>
-                  <option value='state'>State</option>
-                  <option value='country'>Country</option>
-                  <option value='world'>World</option>
-                </select>
-            
-            </div>
-          </div>
-          <div class="setDiv"></div>
-
-          <div style="displayX:none">
-                <div class="setLeft">My Latitude</div>
-                <div class="setOverflow"><div class="setRight">
-                  
-                    <input class="mylat filterClick mobileWide textInput" placeholder="Latitude" type="text" style="width: 120px; margin-top: 0px" />
-
-                </div></div>
-                <div class="setDiv"></div>
-            </div>
-            <div style="displayX:none">
-                <div class="setLeft">My Longitude</div>
-                <div class="setOverflow"><div class="setRight">
-                  
-                    <input class="mylon filterClick mobileWide textInput" placeholder="Longitude" type="text" style="width: 120px; margin-top: 0px" />
-
-                </div></div>
-                <div class="setDiv"></div>
-            </div>
-          -->
-
-            <!-- Multilayer Checkboxes -->
-            <!--
-          <div class="setLeft"><div>Layer Checkboxes</div></div>
-            <div class="setOverflow">
-              <div class="setRight">
-              <div class="hideMultiselect settingsButton">Visible</div>
-                <div class="showMultiselect settingsButton" style="display:none; background:#ddd">Hidden</div>
+              <div class="user-10" style="display:none">
+                <div class="sitesourceHolder" style="display:none">
+                <div class="setLeft">Display</div>
+                  <div class="setOverflow"><div class="setRight">
+                      <select class="sitesource">
+                        <option value="overview" selected>Overview</option>
+                        <option value="directory">Directory</option>
+                      </select>
+                  </div></div>
+                  <div class="setDiv"></div>
               </div>
             </div>
-            <div class="setDiv"></div>
-          -->
 
-            <!--
-            <div class="hideHero layoutTab filterTab buttonUnderCategories" style="margin:15px 10px 0 0;display:none">Hide Hero</div>
-            <div class="showHero layoutTab filterTab buttonUnderCategories" style="margin:15px 10px 0 0;">Show Hero</div>
-
-            <div class="setDiv"></div>
-          -->
-
-          <!--
-          <div><strong>Link</strong></div>
-          <input type="text" value='https://georgiadata.github.io/site/' style='line-height:18pt;display:block;width:100%;font-size:12pt;color:#333;background:#fff;border:1px solid #aaa;'><br>
-          -->
-
-            <!-- Embed Directory -->
-            <!--
-            <div class="setLeft">Embed</div>
-            <div class="setOverflow">
-              <div class="setRight">
+              <div style="display:none">
+                  <div class="setLeft">Layout</div>
+                  <div class="setOverflow"><div class="setRight">
+                    <select id="bts">
+                      <option value="12">Overview, Directory</option>
+                      <option value="21">Directory, Overview</option>
+                      <option value="02">Directory Only</option>
+                          <option value="01">Overview Only</option>
+                      </select>
+                  </div></div>
+                  <div class="setDiv"></div>
+              </div>
               
-                <div class="showEmbedTag settingsButton">View Sample</div>
-
+              <div class="setLeft"><div>Basemap</div></div>
+              <div class="setOverflow">
+                <div id='selector_menu' class="setRight">
+              
+                  <select id='basemapSelector' class='layerSelector sitebasemap catchClick'>
+                    <option value='positron_light_nolabels'>Positron</option>
+                    <option value='osm'>Open Street Map</option>
+                    <option value='esri'><!--- Esri -->Satellite Map</option>
+                    <!-- Zoom not appearing -->
+                    <!--<option value='default'>Open Street Map 2</option>-->
+                    <!-- Zoom not appearing -->
+                    <!-- <option value='green'>Green Topo Map</option>-->
+                    <option value='dark'>Dark Background</option>
+                    <option value='firemap'>Fire Map</option>
+                  </select>
+              
               </div>
             </div>
-            <div class="embedTag" style="display:none">
-              <div style="margin-bottom:4px"><a href="widget.html#aerospace&sitelook=coi">Get HTML</a> - view source</div>
+            
 
+            <!--
+            <div class="setDiv"></div>
 
-              <input type="text" value='<script src="//georgiadata.github.io/site/js/embed.js?site=georgia&v=0.1"></script><div id="map"></div>' 
-              style='display:none;line-height:18pt;width:100%;font-size:12pt;color:#333;background:#fff;border:1px solid #aaa;'>
+            <div class="setLeft"><div>Zoom To</div></div>
+              <div class="setOverflow">
+                <div class="setRight">
+              
+                  <select class='center'>
+                    <option value='mylocation'>My Location</option>
+                    <option value='filter'>Nearby</option>
+                    <option value='state'>State</option>
+                    <option value='country'>Country</option>
+                    <option value='world'>World</option>
+                  </select>
+              
+              </div>
             </div>
+            <div class="setDiv"></div>
+
+            <div style="displayX:none">
+                  <div class="setLeft">My Latitude</div>
+                  <div class="setOverflow"><div class="setRight">
+                    
+                      <input class="mylat filterClick mobileWide textInput" placeholder="Latitude" type="text" style="width: 120px; margin-top: 0px" />
+
+                  </div></div>
+                  <div class="setDiv"></div>
+              </div>
+              <div style="displayX:none">
+                  <div class="setLeft">My Longitude</div>
+                  <div class="setOverflow"><div class="setRight">
+                    
+                      <input class="mylon filterClick mobileWide textInput" placeholder="Longitude" type="text" style="width: 120px; margin-top: 0px" />
+
+                  </div></div>
+                  <div class="setDiv"></div>
+              </div>
             -->
 
-          <br />
+              <!-- Multilayer Checkboxes -->
+              <!--
+            <div class="setLeft"><div>Layer Checkboxes</div></div>
+              <div class="setOverflow">
+                <div class="setRight">
+                <div class="hideMultiselect settingsButton">Visible</div>
+                  <div class="showMultiselect settingsButton" style="display:none; background:#ddd">Hidden</div>
+                </div>
+              </div>
+              <div class="setDiv"></div>
+            -->
 
+              <!--
+              <div class="hideHero layoutTab filterTab buttonUnderCategories" style="margin:15px 10px 0 0;display:none">Hide Hero</div>
+              <div class="showHero layoutTab filterTab buttonUnderCategories" style="margin:15px 10px 0 0;">Show Hero</div>
 
+              <div class="setDiv"></div>
+            -->
 
-          </div>
-        </div>
-        <!-- End Settings Panel -->
+            <!--
+            <div><strong>Link</strong></div>
+            <input type="text" value='https://georgiadata.github.io/site/' style='line-height:18pt;display:block;width:100%;font-size:12pt;color:#333;background:#fff;border:1px solid #aaa;'><br>
+            -->
 
-
-        <!-- Print Options -->
-        <div class="column column-hidden menuExpanded printOptionsHolderWide">
-          <div class="menuExpandedScroll">
-            <div class="printOptionsHolder">
-                <div class="printOptionsText">
-                    <div class="printOptionsPosition"></div>
-
-                    <div class="menuTitle">Print</div>
-
-                    <div style="line-height: 23px">
-                        <div class="printContent" style="display:none"><input type="checkbox" name="printcontent" id="printcontent" value="printcontent"><label for="printcontent">Content</label></div>
-                        <div class="printMap" style="display:none"><input type="checkbox" name="printmap" id="printmap" value="printmap"><label for="printmap">Map</label></div>
-                        <div class="printList" style="display:none"><input type="checkbox" name="printlist" id="printlist" value="printlist" checked><label for="printlist">List</label></div>
-                        
-                        <!-- Hidden until resolving simultneous selection of list and grid. -->
-                        <div class="printGrid" style="display:none"><input type="checkbox" name="printgrid" id="printgrid" value="printgrid"><label for="printgrid">Grid</label></div>
-                    </div>
-
-                    <div style="margin-top:10px"></div>
-
-                    <div style="font-size:16px;margin-bottom:3px"><b>Orientation:</b>
-                        <!--
-                        <input type="checkbox" name="landscape" id="landscape" value="landscape" checked><label for="landscape">Landscape</label>
-                        -->
-                        <input id="landscape" type="radio" name="printOrientation" value="landscape" checked><label for="landscape">Landscape</label> 
-                        <input id="portrait" type="radio" name="printOrientation" value="portrait" ><label for="portrait">Portrait</label>
-                    </div>
-                    <br>
-
-                    <div style="font-size:14px; line-height:17px; padding-top:8px; padding-bottom:12px; clear:both">
-                    To output as a PDF file, choose PDF as your printer<br>after clicking the button below.
-                    </div><br>
-
-                    <div class="printPage btn btn-primary" style="margin-top:12px;margin-left:0px;min-width:80px;text-align:center; clear:both"> Print </div>
+              <!-- Embed Directory -->
+              <!--
+              <div class="setLeft">Embed</div>
+              <div class="setOverflow">
+                <div class="setRight">
                 
-                    
+                  <div class="showEmbedTag settingsButton">View Sample</div>
 
                 </div>
-                    
+              </div>
+              <div class="embedTag" style="display:none">
+                <div style="margin-bottom:4px"><a href="widget.html#aerospace&sitelook=coi">Get HTML</a> - view source</div>
+
+
+                <input type="text" value='<script src="//georgiadata.github.io/site/js/embed.js?site=georgia&v=0.1"></script><div id="map"></div>' 
+                style='display:none;line-height:18pt;width:100%;font-size:12pt;color:#333;background:#fff;border:1px solid #aaa;'>
+              </div>
+              -->
+
+            <br />
+
+
+
             </div>
           </div>
-        </div>
-        <!-- End Print Options -->
+          <!-- End Settings Panel -->
 
+
+          <!-- Print Options -->
+          <div class="printOptionsHolderWide" style="display:none">
+            <div class="menuExpandedScroll">
+              <div class="printOptionsHolder">
+                  <div class="printOptionsText">
+                      <div class="printOptionsPosition"></div>
+
+                      <div class="menuTitle">Print</div>
+
+                      <div style="line-height: 23px">
+                          <div class="printContent" style="display:none"><input type="checkbox" name="printcontent" id="printcontent" value="printcontent"><label for="printcontent">Content</label></div>
+                          <div class="printMap" style="display:none"><input type="checkbox" name="printmap" id="printmap" value="printmap"><label for="printmap">Map</label></div>
+                          <div class="printList" style="display:none"><input type="checkbox" name="printlist" id="printlist" value="printlist" checked><label for="printlist">List</label></div>
+                          
+                          <!-- Hidden until resolving simultneous selection of list and grid. -->
+                          <div class="printGrid" style="display:none"><input type="checkbox" name="printgrid" id="printgrid" value="printgrid"><label for="printgrid">Grid</label></div>
+                      </div>
+
+                      <div style="margin-top:10px"></div>
+
+                      <div style="font-size:16px;margin-bottom:3px"><b>Orientation:</b>
+                          <!--
+                          <input type="checkbox" name="landscape" id="landscape" value="landscape" checked><label for="landscape">Landscape</label>
+                          -->
+                          <input id="landscape" type="radio" name="printOrientation" value="landscape" checked><label for="landscape">Landscape</label> 
+                          <input id="portrait" type="radio" name="printOrientation" value="portrait" ><label for="portrait">Portrait</label>
+                      </div>
+                      <br>
+
+                      <div style="font-size:14px; line-height:17px; padding-top:8px; padding-bottom:12px; clear:both">
+                      To output as a PDF file, choose PDF as your printer<br>after clicking the button below.
+                      </div><br>
+
+                      <div class="printPage btn btn-primary" style="margin-top:12px;margin-left:0px;min-width:80px;text-align:center; clear:both"> Print </div>
+                  
+                      
+
+                  </div>
+                      
+              </div>
+            </div>
+          </div>
+          <!-- End Print Options -->
+        </div>
     </div>
     </div>
     <!-- /RIGHT MENU -->
@@ -657,7 +669,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
         <div id="headerIcons">
           <div class="earth dreamstudio" style="display:none">
             <div id="showSideTabs" class="showSideTabs" style="padding:12px 0px 10px 10px; margin-right:10px; min-height:64px">
-              <i class="material-icons show-on-load" style="font-size:40px;" data="apps">&#xE5C3;</i>
+              <i class="material-icons show-on-load" style="font-size:40px;font-weight:600" data="apps">&#xE5C3;</i>
             </div>
             <div id="hideMenu" class="closeSideTabs" style="display:none">
               <i class="material-icons show-on-load" style="font-size:40px;" data="apps">&#xE5C3;</i>

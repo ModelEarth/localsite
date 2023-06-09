@@ -231,7 +231,11 @@ function refreshNaicsWidget() {
         //alert("call applyIO no naics")
         applyIO("");
         if(initialPageLoad) {
-            displayImpactBubbles(1);
+            loadScript(theroot + '../localsite/js/d3.v5.min.js', function(results) {
+                loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
+                    displayImpactBubbles(1);
+                });
+            });
         }
         initialPageLoad = false;
     }

@@ -701,7 +701,7 @@ function initEvents() { // Once included file1 is loaded.
             }
         }
         if (showLogin) {
-            $(".showAccountTools").show();
+            //$(".showAccountTools").show();
         }
         // https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/
         //addLayer(L.mapbox.tileLayer('mapbox.streets'), 'Base Map', 1);
@@ -841,7 +841,6 @@ function initEvents() { // Once included file1 is loaded.
             if ($(".rightTopMenuInner").is(':visible')) {
                 $(".rightTopMenu").hide();
             } else {        
-                $(".floater").hide();
                 $('.upperRightIcons').show();
                 
                 $(".navTopRight").show();
@@ -1414,12 +1413,6 @@ function initEvents() { // Once included file1 is loaded.
         $(".heroImage, .moduleCenter, .sectionBar, .carouselHolder, .moduleVideo").click(function(event) {
             consoleLog("Clicked: " + event.target.id+", Class: "+$(event.target).attr('class'));
             //alert("Clicked: " + event.target.id+", Class: "+$(event.target).attr('class'));
-            $('.mobileTitle').show();
-            if ($(".floater").is(':visible')) {
-                $(".floater").hide(); // Hide open menus
-                $('.mobileTitle').show(); // No reached, hence the line several above.
-                return;
-            }
             if ($(".layerContent").is(':visible')) {
                 // || $(event.target).attr('class') == "video-thumb"
 

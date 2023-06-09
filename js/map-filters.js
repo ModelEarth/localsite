@@ -96,33 +96,39 @@ $(document).ready(function () {
 		//$(".si-btn").show();
 	}
 	
-	if(location.host.indexOf('localhost') >= 0) {
-		console.log("Loaded Harmonized System (HS) codes - harmonized-system.txt");
-	}
-
+	// The following can be reactivated
+    /*
+    alert(local_app.modelearth_root() + '/localsite/js/d3.v5.min.js'); // Is model.earth used to avoid CORS error? Better to avoid and move harmonized-system.txt in localsite repo.
     loadScript(local_app.modelearth_root() + '/localsite/js/d3.v5.min.js', function(results) {
+
+        // This avoids cross domain CORS error      
+        
+            d3.text(local_app.community_data_root() + 'global/hs/harmonized-system.txt').then(function(data) {
+                if(location.host.indexOf('localhost') >= 0) {
+                    console.log("Loaded Harmonized System (HS) codes - harmonized-system.txt");
+                }
+                let catLines = d3.csvParseRows(data);
+                //alert(catLines.length)
+                for(var i = 0; i < catLines.length; i++) {
+                    catArray.push([catLines[i][0], catLines[i][1]]);
+                }
+
+                //catLines.forEach(function(element) {
+                //  //catArray.push([element.substr(0,4), element.substr(5)]);
+                //  catArray.push([element[0], element.[1]]);
+                //});
+                ////$('#mainCats > div:nth-child(11)').trigger("click"); // Specific category
+
+                productList("01","99","Harmonized System (HS) Product Categories")
+
+            });
+        
 
         // Would this be usable? Old, find newer perhaps
         // https://github.com/FengJun-dev/harmonized-system
-
-        // This avoids cross domain CORS error
-        d3.text(local_app.community_data_root() + 'global/hs/harmonized-system.txt').then(function(data) {
-            let catLines = d3.csvParseRows(data);
-            //alert(catLines.length)
-            for(var i = 0; i < catLines.length; i++) {
-                catArray.push([catLines[i][0], catLines[i][1]]);
-            }
-
-            //catLines.forEach(function(element) {
-            //  //catArray.push([element.substr(0,4), element.substr(5)]);
-            //  catArray.push([element[0], element.[1]]);
-            //});
-            ////$('#mainCats > div:nth-child(11)').trigger("click"); // Specific category
-
-            productList("01","99","Harmonized System (HS) Product Categories")
-
-        });
     });
+    */
+
 
     /*
     // cross domain CORS error
