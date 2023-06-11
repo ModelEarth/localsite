@@ -889,11 +889,10 @@ function initEvents() { // Once included file1 is loaded.
         // $('.editRow').click was here
 
         $('.contactUs').click(function(event) {
-            //window.location = "https://www.georgia.org/about-us/contact-us/";
-            window.open('https://www.georgia.org/about-us/contact-us/','_blank');
+            alert("The Contact Us link is not active.")
             event.stopPropagation();
         });
-        $('.addthis_button').click(function(event) {
+        $('.shareThis').click(function(event) {
             window.location = "https://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4a9818987bca104e";
             event.stopPropagation();
         });
@@ -913,8 +912,11 @@ function initEvents() { // Once included file1 is loaded.
         $(document).on("click", ".showSections", function(event) {
             closeExpandedMenus();
             //$('.menuExpanded').hide();
-            $(".topicsPanel").show();
-            //alert("showSections clicked2")
+            $("#topicsPanel").show();
+        });
+        $(document).on("click", ".showStories", function(event) {
+            closeExpandedMenus();
+            $("#storiesPanel").show();
         });
         $(document).on("click", ".showSettings", function(event) {
             $('.menuExpanded').hide();
@@ -1110,6 +1112,7 @@ function initEvents() { // Once included file1 is loaded.
             $('.listTable').addClass('listTableMaxHeight');
             event.stopPropagation();
         });
+
         $('.printPage').click(function(event) {
 
             var allowTime = 0;
@@ -1521,8 +1524,12 @@ function initEvents() { // Once included file1 is loaded.
         
         $(".rightTopItem").click(function(event) {
             console.log("rightTopItem click");
-            $(".upperRightIcons").hide();
-            $(".rightTopMenu").hide();
+            $(".rightTopItem").removeClass('active');
+            $target = $(event.target);   
+            $target.addClass('active');
+            
+            //$(".upperRightIcons").hide();
+            //$(".rightTopMenu").hide();
         });
         $("#filterPanel").click(function () { // Since clickThrough is blocked to prevent clicking video.
 

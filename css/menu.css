@@ -583,6 +583,13 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     box-sizing: border-box;
     position: relative;
 }
+.menuExpanded h2, .menuExpanded h3, .menuExpanded h4 {
+	color: #ccc;
+}
+.menuExpanded a, .menuExpanded a:visited {
+	color: #acb;
+	text-decoration: none;
+}
 .menuExpandedScroll {
     position:absolute;
     top:0px;
@@ -641,7 +648,9 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .rightTopItem {
     padding: 11px 4px 5px 10px;
 }
-
+.rightTopItem > * {
+	pointer-events: none !important;
+}
 #rightTopMenu {
     pointer-events: auto; /* Prevents click from reching image, and hover from reaching map below */
     box-shadow: 2px 2px 6px #333;
@@ -711,6 +720,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     padding: 5px 3px 8px 2px;
     float:left;
     color: #fff;
+
 }
 .rightTopItem .contactIcon {
     font-size: 30px !important;

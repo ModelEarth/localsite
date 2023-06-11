@@ -103,6 +103,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			
 			changeFavicon("/localsite/img/logo/states/GA-favicon.png");
 
+			showClassInline(".dreamstudio");
 			showClassInline(".georgia");
 			showClassInline(".earth"); // Could remove if Georgia sidenav added.
 			$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
@@ -258,6 +259,15 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 								let colCloneRight = colEleRight.cloneNode(true)
 								colCloneRight.id = "cloneRight";
 								$("#topicsMenu").prepend(colCloneRight);
+
+								if (location.host.indexOf('localhost') >= 0 || location.href.indexOf('dreamstudio')) {
+									let storiesFile = modelroot + "/seasons/episodes.md";
+									if(location.host.indexOf('localhost') >= 0 || location.href.indexOf("/dreamstudio/") >= 0) {
+										storiesFile = modelroot + "/dreamstudio/seasons/episodes.md";
+									}
+									// TO DO - Lazy load elsewhere, and avoid if already loaded
+									loadMarkdown(storiesFile, "storiesDiv", "_parent");
+								}
 							});
 
 						});

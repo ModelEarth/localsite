@@ -236,9 +236,6 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
 
       <style>
-      .rightTopItem {
-        display: none;
-      }
       .showSections {
         display: block;
       }
@@ -256,13 +253,6 @@ localsite.js pulls the #insertedText div from this page as the template for head
                     <i class="material-icons menuTopIcon menuTopIconHot">&#xE55B;</i>
                 </div>
 
-                <div class="hideEmbed">
-                    <div class="showSections rightTopItem" style="padding-top:14px; padding-right:10px">
-                        <i class="material-icons menuTopIcon">&#xE5D2;</i>
-                        <span>Topics</span>
-                    </div>
-                </div>
-
                 -->
                 <div class="hideEmbed">
                     <div class="showSections rightTopItem active" style="padding-top:14px; padding-right:10px">
@@ -271,11 +261,20 @@ localsite.js pulls the #insertedText div from this page as the template for head
                     </div>
                 </div>
 
-                <div class="hideMobile expandToFullscreen" style="display: none;">
+                <div class="hideMobile expandToFullscreen" style="displayX: none;">
                     <div id="expandPanelHolder" class="expandFullScreen rightTopItem">
                         <i id="expandPanel" class="material-icons menuTopIcon enlargeIcon" style="font-size:28pt !important">&#xE5D0;</i>
                         <span>Expand</span>
                     </div>
+                </div>
+
+                <div class="dreamstudio" style="display:none">
+                  <div class="hideEmbed">
+                      <div class="showStories rightTopItem" style="padding-top:14px; padding-right:10px">
+                          <i class="material-icons menuTopIcon">&#xE666;</i>
+                          <span>Stories</span>
+                      </div>
+                  </div>
                 </div>
 
                 <!--
@@ -296,42 +295,53 @@ localsite.js pulls the #insertedText div from this page as the template for head
                 </div>
                 -->
 
-                <div class="rightTopItem" action="https://dreamstudio.ai/prompt-guide">
-                    <i class="material-icons menuTopIcon">&#xE8F4;</i>
-                    <span>Explore</span>
+                <div class="localX" style="display:none">
+                  <div class="rightTopItem" action="https://dreamstudio.ai/prompt-guide">
+                      <i class="material-icons menuTopIcon">&#xE8F4;</i>
+                      <span>Explore</span>
+                  </div>
                 </div>
 
-                <div class="local" style="display:none">
+                <div class="localX" style="display:none">
                   <div class="showSearch rightTopItem">
                       <i class="material-icons menuTopIcon">&#xE8B6;</i>
                       <span>Search</span>
                   </div>
                 </div>
 
-                <div class="showSettings rightTopItem">
-                    <i class="material-icons menuTopIcon">&#xE8B8;</i>
-                    <span>Settings</span>
+                <div class="localX" style="display:none">
+                  <div class="showSettings rightTopItem">
+                      <i class="material-icons menuTopIcon">&#xE8B8;</i>
+                      <span>Settings</span>
+                  </div>
                 </div>
 
-                <!-- mail outline icon -->
+                <!--
                 <div class="contactUs rightTopItem">
                     <i class="material-icons menuTopIcon contactIcon">&#xE0E1;</i>
                     <span>Contact</span>
                 </div>
+                -->
 
-                <div class="addthis_button rightTopItem">
-                    <i class="material-icons menuTopIcon" title="Share">&#xE80D;</i>
-                    <span>Share</span>
+                <div class="localX" style="display:none">
+                  <div class="shareThis rightTopItem">
+                      <i class="material-icons menuTopIcon" title="Share">&#xE80D;</i>
+                      <span>Share</span>
+                  </div>
                 </div>
 
-                <div class="addlisting_button rightTopItem" style="display:none">
-                    <i class="material-icons menuTopIcon" style="font-weight:800;">&#xE145;</i>
-                    <span>Add</span>
+                <div class="localX" style="display:none">
+                  <div class="addlisting_button rightTopItem" style="display:none">
+                      <i class="material-icons menuTopIcon" style="font-weight:800;">&#xE145;</i>
+                      <span>Add</span>
+                  </div>
                 </div>
 
-                <div class="print_button rightTopItem">
-                    <i class="material-icons menuTopIcon">&#xE8AD;</i>
-                    <span>Print</span>
+                <div class="localX" style="display:none">
+                  <div class="print_button rightTopItem">
+                      <i class="material-icons menuTopIcon">&#xE8AD;</i>
+                      <span>Print</span>
+                  </div>
                 </div>
 
                 <!-- person icon -->
@@ -356,16 +366,25 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
         <div class="column" style="flex:2;">
 
-          <div class="closeSideTabs close-X-sm" style="position:absolute;right:0;padding:18px 32px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:28px">&#xE5CD;</i></div>
+          <div class="closeSideTabs close-X-sm" style="position:absolute;right:0;padding:18px 30px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:28px">&#xE5CD;</i></div>
 
           <!-- Topics Panel -->
-          <div class="topicsPanel menuExpanded topMenuOffset">
+          <div id="topicsPanel" class="menuExpanded topMenuOffset">
               <div class="menuExpandedScroll always-show-scroll">
                 <div class="menuTitle" style="display:none">Topics</div>
                 <div id="topicsMenu"><br><br><br><br></div>
               </div>
           </div>
           <!-- /Topics Panel -->
+
+          <!-- Stories Panel -->
+          <div id="storiesPanel" class="menuExpanded topMenuOffset" style="display:none">
+            <div class="menuExpandedScroll always-show-scroll">
+                <a href="https://dreamstudio.com/seasons">Intro</a> | <a href="https://dreamstudio.com/seasons/mentors/">Characters</a><br>
+                <div id="storiesDiv"></div>
+            </div>
+          </div>
+          <!-- /Stories Panel -->
 
           <!-- Settings Panel -->
           <div class="settingsPanel menuExpanded topMenuOffset" style="display:none">
@@ -536,7 +555,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
 
           <!-- Print Options -->
-          <div class="printOptionsHolderWide" style="display:none">
+          <div class="printOptionsHolderWide menuExpanded topMenuOffset" style="display:none">
             <div class="menuExpandedScroll">
               <div class="printOptionsHolder">
                   <div class="printOptionsText">
@@ -559,13 +578,13 @@ localsite.js pulls the #insertedText div from this page as the template for head
                           <!--
                           <input type="checkbox" name="landscape" id="landscape" value="landscape" checked><label for="landscape">Landscape</label>
                           -->
-                          <input id="landscape" type="radio" name="printOrientation" value="landscape" checked><label for="landscape">Landscape</label> 
-                          <input id="portrait" type="radio" name="printOrientation" value="portrait" ><label for="portrait">Portrait</label>
+                          <input id="landscape" type="radio" name="printOrientation" value="landscape"><label for="landscape">Landscape</label> 
+                          <input id="portrait" type="radio" name="printOrientation" value="portrait" checked><label for="portrait">Portrait</label>
                       </div>
                       <br>
 
                       <div style="font-size:14px; line-height:17px; padding-top:8px; padding-bottom:12px; clear:both">
-                      To output as a PDF file, choose PDF as your printer<br>after clicking the button below.
+                      To output as a PDF file, choose PDF as your printer after clicking the button below.
                       </div><br>
 
                       <div class="printPage btn btn-primary" style="margin-top:12px;margin-left:0px;min-width:80px;text-align:center; clear:both"> Print </div>
