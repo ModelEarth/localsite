@@ -264,6 +264,10 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 									let storiesFile = modelroot + "/seasons/episodes.md";
 									if(location.host.indexOf('localhost') >= 0 || location.href.indexOf("/dreamstudio/") >= 0) {
 										storiesFile = modelroot + "/dreamstudio/seasons/episodes.md";
+										if(location.host.indexOf('localhost') < 0) {
+											// Need to adjust if site is not in dreamstudio folder
+											storiesFile = "/seasons/episodes.md";
+										}
 									}
 									// TO DO - Lazy load elsewhere, and avoid if already loaded
 									loadMarkdown(storiesFile, "storiesDiv", "_parent");
