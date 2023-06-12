@@ -264,6 +264,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 									let storiesFile = modelroot + "/seasons/episodes.md";
 									if(location.host.indexOf('localhost') >= 0 || location.href.indexOf("/dreamstudio/") >= 0) {
 										storiesFile = modelroot + "/dreamstudio/seasons/episodes.md";
+										console.log("localhost index: " + location.host.indexOf('localhost'));
 										if(location.host.indexOf('localhost') < 0) {
 											// Need to adjust if site is not in dreamstudio folder
 											storiesFile = "/seasons/episodes.md";

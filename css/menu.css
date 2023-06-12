@@ -655,6 +655,22 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     pointer-events: auto; /* Prevents click from reching image, and hover from reaching map below */
     box-shadow: 2px 2px 6px #333;
     height: 100%;
+    box-shadow: -8px -2px 8px 1px rgba(0, 0, 0, 0.4);
+}
+#rightTopMenu p {
+	margin-bottom: 6px;
+}
+#rightTopMenu h2 {
+	font-size: 22px;
+	padding-top: 0px;
+	margin-top: 0px;
+	border-bottom: 0px;
+	margin-bottom: 10px;
+	line-height: 32px;
+}
+#rightTopMenu h4 {
+	margin-bottom: 0px;
+	font-weight: 400;
 }
 @media (max-width: 800px) {
 	#rightTopMenu {
@@ -675,7 +691,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     color: #ddd !important;
 }
 .rightTopMenuInner {
-    background-color: rgba(33, 33, 33, 0.95);
+    background-color: rgba(33, 33, 33, 1);
 }
 .rightTopMenuInner > .active {
   background-color: #555;
