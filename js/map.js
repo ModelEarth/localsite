@@ -2578,9 +2578,6 @@ $(window).scroll(function() {
         $('.headerOffset').hide();
         $('#logoholderbar').show();
 
-        // Hide right side menu
-        //$("#rightTopMenu").hide();
-
         // BUGBUG - occuring on initial reload when page is a little from top.
         //$('#logoholderside').show();
 

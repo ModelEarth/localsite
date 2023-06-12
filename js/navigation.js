@@ -420,7 +420,6 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 							}
 						});
 						$(document).click(function(event) { // Hide open menus
-							//$('#rightTopMenu').hide();
 							if($("#menuHolder").css('display') !== 'none') {
 				            	$("#menuHolder").hide(); // Since menu motion may freeze when going to another page.
 				            	if (!$(event.target).parents("#menuHolder").length) {

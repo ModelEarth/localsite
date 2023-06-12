@@ -259,12 +259,6 @@ $(document).ready(function () {
        	$(".fieldSelector").hide();
        	event.stopPropagation();
     });
-    // $(document).on("click", ".filterClick", function(event) { // Does not work here, perhaps jquery is not loaded prior to DOM.
-    $(".filterClick").click(function(e) {
-        //alert(".filterClick")
-        console.log("temp close #rightTopMenu - use function instead")
-        $('#rightTopMenu').hide(); // Temp here, call the function that closes open menus instead. Where is it?
-    });
 
     // Odd: $(document).on("click" did not work here, perhaps jquery is not loaded prior to DOM.
     // But why would surrounding $(document).ready work?
@@ -399,7 +393,6 @@ $(document).ready(function () {
     	}
     	$('#keywordFields').hide();
     	$('#topPanel').hide();
-        //$('#rightTopMenu').hide();
 	});
 	
 
