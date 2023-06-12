@@ -261,14 +261,12 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 								$("#topicsMenu").prepend(colCloneRight);
 
 								if (location.host.indexOf('localhost') >= 0 || location.href.indexOf('dreamstudio')) {
-									let storiesFile = modelroot + "/seasons/episodes.md";
-									if(location.host.indexOf('localhost') >= 0 || location.href.indexOf("/dreamstudio/") >= 0) {
-										storiesFile = modelroot + "/dreamstudio/seasons/episodes.md";
-										console.log("localhost index: " + location.host.indexOf('localhost'));
-										if(location.host.indexOf('localhost') < 0) {
-											// Need to adjust if site is not in dreamstudio folder
-											storiesFile = "/seasons/episodes.md";
-										}
+									let storiesFile = "https://dreamstudio.com/seasons/episodes.md";
+									//console.log("location.href index: " + location.href.indexOf("/dreamstudio/"));
+									if(location.host.indexOf('localhost') >= 0) {
+										storiesFile = "/dreamstudio/seasons/episodes.md";
+									} else if (location.href.indexOf("dreamstudio") >= 0) {
+										storiesFile = "/seasons/episodes.md";
 									}
 									// TO DO - Lazy load elsewhere, and avoid if already loaded
 									loadMarkdown(storiesFile, "storiesDiv", "_parent");
