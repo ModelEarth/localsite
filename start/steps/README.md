@@ -1,6 +1,6 @@
-# Story Setup Steps 
+# Page Setup Steps 
 
-You can use [Localsite Story Pages](../) to create websites with free GitHub hosting.
+You can use [Localsite Pages](../) to create websites and stories with free GitHub hosting.
 
 If you get stuck at any point, please DM us on Twitter at [DreamStudioAGI](https://twitter.com/DreamStudioAGI).
 

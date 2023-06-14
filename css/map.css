@@ -10,27 +10,17 @@
     top: 20px;
     left: 20px;
     width: 400px;
-    max-width: 400px;
-    height: 85%;
+    max-height: 85%;
     background-color: #666;
     color: #fff;
     z-index: 1000;
     border-radius: 20px;
+    padding: 30px;
+    background-color: rgb(44, 44, 44);
   }
   #mapList1Header {
-    background-color:#111;
-    padding:10px;
-    border-bottom: 1px solid #777;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-  }
-  #mapList1 {
-    position: absolute;
-    top: 32px;
-    bottom: 0px;
-    width: 100%;
-    padding: 6px;
-    background-color: rgb(44, 44, 44);
+    font-size: 24px;
+    margin-bottom: 12px;
   }
   #mapList1 a:link, #mapList1 a:visited {
     color: #66CF79;
@@ -57,7 +47,7 @@
     border-bottom: 1px solid #777;
   }
   #mapList1 .detail:hover {
-    background-color: #555;
+    background-color: #333;
   }
   #mapList1 .detailLocation {
     font-size:11px;

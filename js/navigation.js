@@ -268,8 +268,11 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 									} else if (location.href.indexOf("dreamstudio") >= 0) {
 										storiesFile = "/seasons/episodes.md";
 									}
-									// TO DO - Lazy load elsewhere, and avoid if already loaded
-									loadMarkdown(storiesFile, "storiesDiv", "_parent");
+									waitForElm('#storiesDiv').then((elm) => {
+										// TO DO - Lazy load elsewhere, and avoid if already loaded
+										loadMarkdown(storiesFile, "storiesDiv", "_parent");
+										console.log("after storiesFile")
+									});
 								}
 							});
 
@@ -540,19 +543,11 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			} else {
 				footerClimbpath = climbpath;
 			}
-
 			$("#local-footer").load(footerFile, function( response, status, xhr ) {
 				console.log("footerFile: " + footerFile);
 				let pageFolder = getPageFolder(footerFile);
-				//alert("footerClimbpath: " + footerClimbpath);
-				//alert("pageFolder: " + pageFolder);
-
-				//var pathToFooter = 
-
 				// Append footerClimbpath to relative paths
 				makeLinksRelative("local-footer", footerClimbpath, pageFolder);
-				//makeLinksRelative("footer",footerClimbpath,footerFilePath); // Not working on second level pages.
-
 			});
 		}
 

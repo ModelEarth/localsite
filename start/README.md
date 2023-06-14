@@ -1,6 +1,6 @@
-# Story Page Starter
+# Page Starter
 
-1. Place your text within a README.md file in each of your story's folders. 
-2. Copy this index.html file to display each README.md file.
+1. Place your text within a README.md file in a local folder inside your webroot. 
+2. To display your README.md file, copy the current page using View Page Source and save as index.html.
 
 <a href="steps/">More setup steps</a>

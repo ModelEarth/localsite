@@ -612,28 +612,31 @@ function loadLeafletAndMapFilters() {
   //if (param.shownav) {
   if (param.showheader != "false") {
     loadScript(theroot + 'js/navigation.js', function(results) {
-      // Puts space above flexmain for sidecolumn to be visible after header  
-      $("body").prepend("<div id='local-header' class='flexheader hideprint' style='display:none'></div>\r");
-      waitForElm('#local-header').then((elm) => {
-        $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
-      
+      waitForElm('body').then((elm) => {
+        console.log("body is now available"); // If missing header persists, remove waitForElm('body') here (line above annd closure)
+        // Puts space above flexmain for sidecolumn to be visible after header
+        $("body").prepend("<div id='local-header' class='flexheader hideprint' style='display:none'></div>\r");
+        waitForElm('#local-header').then((elm) => {
+          $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
+        
+        });
+        // Might need to add a check here. Occasional:
+        // Uncaught ReferenceError: applyNavigation is not defined
+
+        // if #local-header already exists, abort
+
+
+        // To Do: wait for div from navigation.js
+        //waitForElm('body').then((elm) => {
+
+        //});
+
+        //setTimeout( function() {
+
+        //  console.log("applyNavigation() after 200 ms delay"); // 10 ms returned error on CloudFlare, but fine locally.
+          applyNavigation();
+        //}, 200 ); // Bugbug - better to wait for a div to be available. Try inserting from within navigation.js before DOM ready.
       });
-      // Might need to add a check here. Occasional:
-      // Uncaught ReferenceError: applyNavigation is not defined
-
-      // if #local-header already exists, abort
-
-
-      // To Do: wait for div from navigation.js
-      //waitForElm('body').then((elm) => {
-
-      //});
-
-      //setTimeout( function() {
-
-      //  console.log("applyNavigation() after 200 ms delay"); // 10 ms returned error on CloudFlare, but fine locally.
-        applyNavigation();
-      //}, 200 ); // Bugbug - better to wait for a div to be available. Try inserting from within navigation.js before DOM ready.
     });
   }
   loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
@@ -658,70 +661,77 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       //Doc ready was here, now further down
 
-        console.log("Ready DOM Loaded (But not template yet). Using theroot: " + theroot)
+      console.log("Ready DOM Loaded (But not template yet). Using theroot: " + theroot)
 
-        $(document).click(function(event) { // Hide open menus in core
-          $('.hideOnDocClick').hide();
-        });
-        
+      $(document).click(function(event) { // Hide open menus in core
+        $('.hideOnDocClick').hide();
+      });
 
-        // Load when body div becomes available, faster than waiting for all DOM .js files to load.
-        waitForElm('body').then((elm) => {
-         console.log("body becomes available")
-          if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
+      // Load when body div becomes available, faster than waiting for all DOM .js files to load.
+      waitForElm('body').then((elm) => {
+       console.log("body becomes available")
+        if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
+          var div = $("<div />", {
+              html: '<style>.local{display:inline !important}.localonly{display:block !important}</style>'
+            }).appendTo("body");
+        } else {
+          // Inject style rule
             var div = $("<div />", {
-                html: '<style>.local{display:inline !important}.localonly{display:block !important}</style>'
-              }).appendTo("body");
-          } else {
-            // Inject style rule
-              var div = $("<div />", {
-                html: '<style>.local{display:none}.localonly{display:none}</style>'
-              }).appendTo("body");
-          }
+              html: '<style>.local{display:none}.localonly{display:none}</style>'
+            }).appendTo("body");
+        }
 
-          // LOAD HTML TEMPLATE - Holds search filters and maps
-          // View html source: https://model.earth/localsite/map
-          // Consider pulling in HTML before DOM is loaded, then send to page once #bodyFile is available.
+        // LOAD HTML TEMPLATE - Holds search filters and maps
+        // View html source: https://model.earth/localsite/map
+        // Consider pulling in HTML before DOM is loaded, then send to page once #bodyFile is available.
 
-         if (param.insertafter && $("#" + param.insertafter).length) {
-            $("#" + param.insertafter).append("<div id='bodyFile'></div>");
-          //} else if (!$("#bodyFile").length) {
-          } else if(document.getElementById("bodyFile") == null) {
-            $('body').prepend("<div id='bodyFile'></div>");
-          }
+       if (param.insertafter && $("#" + param.insertafter).length) {
+          $("#" + param.insertafter).append("<div id='bodyFile'></div>");
+        //} else if (!$("#bodyFile").length) {
+        } else if(document.getElementById("bodyFile") == null) {
+          $('body').prepend("<div id='bodyFile'></div>");
+        }
 
-          $('body').prepend("<div id='showSide' class='showSide' style='topX:100px;left:-28px;position:absolute'><i class='material-icons show-on-load' style='font-size:35px; opacity:0.4; padding-right:3px; border:1px solid #555; border-radius:8px;'>&#xE5D2;</i></div>");
-          waitForElm('#fullcolumn').then((elm) => {
-            $("#showSide").prependTo("#fullcolumn"); 
-          });
+        $('body').prepend("<div id='showSide' class='showSide' style='topX:100px;left:-28px;position:absolute'><i class='material-icons show-on-load' style='font-size:35px; opacity:0.4; padding-right:3px; border:1px solid #555; border-radius:8px;'>&#xE5D2;</i></div>");
+        waitForElm('#fullcolumn').then((elm) => {
+          $("#showSide").prependTo("#fullcolumn"); 
+        });
 
-          if (param.showheader == "true" || param.showsearch == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "map") {
-            //if (param.templatepage != "true") { // Prevents dup header on map/index.html - Correction, this is needed. param.templatepage can probably be removed.
-              //if (param.shownav != "true") { // Test for mentors page, will likely revise
-                loadLocalTemplate();
-              //}
+        if (param.showheader == "true" || param.showsearch == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "map") {
+          //if (param.templatepage != "true") { // Prevents dup header on map/index.html - Correction, this is needed. param.templatepage can probably be removed.
+            //if (param.shownav != "true") { // Test for mentors page, will likely revise
+              loadLocalTemplate();
             //}
-          }
-        
+          //}
+        }
+      
 
-          // LOAD INFO TEMPLATE - Holds input-output widgets
-          // View html source: https://model.earth/localsite/info/info-template.html
-          if (!$("#infoFile").length) {
-            $('body').append("<div id='infoFile'></div>");
-          }
-          if (param.display == "everything") {
-            let infoFile = theroot + "info/info-template.html #info-template"; // Including #info-template limits to div within page, prevents other includes in page from being loaded.
-            //console.log("Before template Loaded infoFile: " + infoFile);
-            //alert("Before template Loaded: " + bodyFile);
-            $("#infoFile").load(infoFile, function( response, status, xhr ) {
-              console.log("Info Template Loaded: " + infoFile);
-              $("#industryFilters").appendTo("#append_industryFilters");
-            });
-          }
+        // LOAD INFO TEMPLATE - Holds input-output widgets
+        // View html source: https://model.earth/localsite/info/info-template.html
+        if (!$("#infoFile").length) {
+          $('body').append("<div id='infoFile'></div>");
+        }
+        if (param.display == "everything") {
+          let infoFile = theroot + "info/info-template.html #info-template"; // Including #info-template limits to div within page, prevents other includes in page from being loaded.
+          //console.log("Before template Loaded infoFile: " + infoFile);
+          //alert("Before template Loaded: " + bodyFile);
+          $("#infoFile").load(infoFile, function( response, status, xhr ) {
+            console.log("Info Template Loaded: " + infoFile);
+            $("#industryFilters").appendTo("#append_industryFilters");
+          });
+        }
 
-          // Move local-footer to the end of body
+        // Move local-footer to the end of body
+        let foundTemplate = false;
+        // When the template (map/index.html) becomes available
+        waitForElm('#templateLoaded').then((elm) => {
+          foundTemplate = true;
           $("#local-footer").appendTo("body");
-        }); // End body ready
+        });
+        if (foundTemplate == false) { // An initial move to the bottom - occurs when the template is not yet available.
+          $("#local-footer").appendTo("body");
+        }
+      }); // End body ready
 
       $(document).ready(function () {
         /*! jQuery & Zepto Lazy v1.7.6 - http://jquery.eisbehr.de/lazy - MIT&GPL-2.0 license - Copyright 2012-2017 Daniel 'Eisbehr' Kern */

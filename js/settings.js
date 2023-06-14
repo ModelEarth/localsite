@@ -239,7 +239,7 @@ function initElements() {
         }
         if(!$('#expandPanel').is(":visible")) {
             if(inIframe()) { 
-                $(".expandFromWidget").show();
+                $(".expandFromIFrame").show();
             }
         }
         if (params["logo"]) {
@@ -791,14 +791,6 @@ function initEvents() { // Once included file1 is loaded.
         //$('#hideAdvanced').click(function(event) {
             hideFieldSelector();
         });
-
-        $('.expandFromIFrame').click(function(event) {
-            //window.parent.location.href = window.location.href;
-
-            // Open in new tab
-            var win = window.open(window.location.href, '_blank');
-            win.focus();
-        });
          
         $('#keywordsTB').click(function(event) {
             $('.keywordBubble').show();
@@ -917,6 +909,10 @@ function initEvents() { // Once included file1 is loaded.
         $(document).on("click", ".showStories", function(event) {
             closeExpandedMenus();
             $("#storiesPanel").show();
+        });
+        $(document).on("click", ".showListings", function(event) {
+            closeExpandedMenus();
+            $("#listingsPanel").show();
         });
         $(document).on("click", ".showSettings", function(event) {
             $('.menuExpanded').hide();
@@ -1246,13 +1242,13 @@ function initEvents() { // Once included file1 is loaded.
 
         });
 
+        // Not currently in use. To Do: Add an icon to leave an iFrame.
+        $('.expandFromIFrame').click(function(event) {
+            //window.parent.location.href = window.location.href;
 
-        $('.expandFromWidget').click(function(event) {
-            $('.expandFromWidget').hide();
-            // Same as expandFromIFrame()
             // Open in new tab
-            var win = window.open(window.location.href.replace("/widget.html","/../directory/").replace("/widget-local.html","/../directory/"), '_blank');
-            win.focus();       
+            var win = window.open(window.location.href, '_blank');
+            win.focus();
         });
 
         $('.showVideo').click(function(event) {

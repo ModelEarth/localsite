@@ -716,7 +716,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     min-height: 36px;
     float: left;
     font-size: 30px;
-    padding-top: 6px;
+    padding-top: 1px;
 }
 .rightTopItem span {
     color:#fff;

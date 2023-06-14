@@ -603,6 +603,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         }
       } else if (show == "vehicles" || show == "ev") {
         dp.listTitle = "Motor Vehicle and Motor Vehicle Equipment Manufacturing";
+        dp.shortTitle = "EV Parts and Vehicle Manufacturing";
         if (show == "ev") {
           dp.listTitle = "Electric Vehicle Manufacturing";
         }
@@ -1082,7 +1083,11 @@ function showList(dp,map) {
       return (!!a) && (a.constructor === Object);
   };
 
-  if (dp.listTitle) {$(".listTitle").html(dp.listTitle); $(".listTitle").show()};
+  if (dp.listTitle) {
+    $(".listTitle").html(dp.listTitle);
+    $(".listTitle").show();
+    $("#mapList1Header").html(dp.shortTitle ? dp.shortTitle : dp.listTitle);
+  };
   if (dp.listSubtitle) {$(".listSubtitle").html(dp.listSubtitle); $(".listSubtitle").show()};
 
   // Add checkboxes
@@ -2081,7 +2086,7 @@ function showList(dp,map) {
       // Remove name from hash to trigger refresh
       searchFor += " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\",\"cat\",\"subcat\"]); return false;' href='#show=" + param["show"] + "'>Show All</a></span>";
 
-      $("#mapList1").prepend(searchFor);
+      $("#mapList1Text").prepend(searchFor);
       $("#dataList").html(searchFor);
       $("#resultsPanel").show();
       $("#dataList").show();
@@ -4386,6 +4391,11 @@ function zoomFromKm(kilometers_wide) {
 }
 
 // NULLSCHOOL
+$(document).on("click", "#earthClose", function(event) { // ZOOM IN
+  $("#nullschoolHeader").hide();
+  $("#hero_holder").show();
+  event.stopPropagation();
+});
 $(document).on("click", "#earthZoom .leaflet-control-zoom-in", function(event) { // ZOOM IN
   zoomEarth(200);
   event.stopPropagation();
