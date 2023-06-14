@@ -685,7 +685,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .rightTopMenuInner { /* lives outside .moduleJS when full header displayed */
     min-width: 110px;
     font-family: 'Open Sans', 'Helvetica Neue', HelveticaNeue, calibri, arial, sans-serif;
-    max-width: 150px;
+    max-width: 157px;
 }
 .rightTopMenuInner i {
     color: #ddd !important;
@@ -701,7 +701,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     clear: both;
     width: 100%;
     overflow: auto;
-    padding-left: 20px;
+    padding-left: 16px;
     padding-right: 25px;
     cursor: pointer;
 }
@@ -712,7 +712,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     background-color: #555;
 }
 .rightTopItem i {
-    width:40px;
+    width:37.5px;
     min-height: 36px;
     float: left;
     font-size: 30px;
@@ -723,7 +723,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     padding: 5px 3px 8px 2px;
     float:left;
     color: #fff;
-    font-size: 20px;
+    font-size: 19px;
 }
 .rightTopItem .contactIcon {
     font-size: 30px !important;

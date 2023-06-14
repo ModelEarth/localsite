@@ -912,6 +912,10 @@ function initEvents() { // Once included file1 is loaded.
         });
         $(document).on("click", ".showListings", function(event) {
             closeExpandedMenus();
+
+            $("#honeycombPanel").appendTo("#listingsPanel");
+            //$("#listingsPanel").appendTo("#honeycombPanel");
+
             $("#listingsPanel").show();
         });
         $(document).on("click", ".showSettings", function(event) {
