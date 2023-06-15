@@ -1989,7 +1989,7 @@ function thumbClick(show,path) {
 		goHash(hash,"name,loc"); // Remove name and loc (loc is not used yet)
 	}
 }
-function displayBigThumbnails(attempts, activeLayer, layerName) {
+function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 
     // Setting param.state in navigation.js passes to hash here for menu to use theState:
     let hash = getHash();
@@ -2130,7 +2130,7 @@ function displayBigThumbnails(attempts, activeLayer, layerName) {
 	        }
 	    }
         $("#honeycombPanel").prepend("<div class='hideThumbMenu close-X' style='float:right;'>✕</div>");
-	    $(".bigThumbMenu").append("<div class='bigThumbMenuInner'>" + sectionMenu + "</div>");
+	    $(insertInto).append("<div id='bigThumbMenuInner' class='bigThumbMenuInner'>" + sectionMenu + "</div>");
 
         if (theState == "GA") {
 	    // if (hash.state && hash.state.split(",")[0].toUpperCase() == "GA") {
@@ -2141,7 +2141,8 @@ function displayBigThumbnails(attempts, activeLayer, layerName) {
 	    $("#bigThumbPanelHolder").show();
 	    $("#honeyMenuHolder").show(); // Might be able to remove display:none on this
 
-	    $(".thumbModule").append($("#bigThumbPanelHolder")); // For GDX
+        // 
+	    //$(".thumbModule").append($("#bigThumbPanelHolder"));
 	} else if ($("#bigThumbPanelHolder").css("display") == "none") {
 		$("#bigThumbPanelHolder").show();
 	} else {
@@ -2329,7 +2330,8 @@ function initSiteObject(layerName) {
 
           				$("#showAppsText").text("Local Topics");
           				$("#appSelectHolder .showApps").addClass("filterClickActive");
-						showThumbMenu(hash.show);
+                        $("#bigThumbMenuInner").appendTo("#bigThumbMenu");
+						showThumbMenu(hash.show, "#bigThumbMenu");
                         $('html,body').animate({
                         	//- $("#filterFieldsHolder").height()  
                             scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
@@ -2346,7 +2348,7 @@ function initSiteObject(layerName) {
                 	// alert($("#fullcolumn").width()) = null
                 	if ($("body").width() >= 800) {
 
-                		//showThumbMenu(hash.show);
+                		//showThumbMenu(hash.show, "#bigThumbMenu");
                 	}
             	}
                 //return layerObject;
@@ -2358,11 +2360,11 @@ function initSiteObject(layerName) {
 	//}
 } // end initSiteObject
 
-function showThumbMenu(activeLayer) {
+function showThumbMenu(activeLayer, insertInto) {
 	$("#menuHolder").css('margin-right','-250px');
 	$("#bigThumbPanelHolder").show();
 	if (!$(".bigThumbMenuContent").length) {
-		displayBigThumbnails(0, activeLayer, "main");
+		displayBigThumbnails(0, activeLayer, "main", insertInto);
 	}
 	$('.showApps').addClass("active");
 }
@@ -2374,12 +2376,6 @@ function callInitSiteObject(attempt) {
     }
 	if (typeof local_app !== 'undefined') { // wait for local_app
 		initSiteObject("");
-        //console.log("localObject.layers");
-        //console.log(localObject.layers);
-
-		// Not available here since async in initSiteObject()
-		//showThumbMenu(hash.show;
-		//return layerObject.layers; // Not always returning yet
         return;
 	} else if (attempt < 100) {
 		setTimeout( function() {
@@ -2582,7 +2578,7 @@ function hashChanged() {
         console.log("Recenter map " + mapCenter)
 		*/
 
-        //showThumbMenu(hash.show);
+        //showThumbMenu(hash.show, "#bigThumbMenu");
 	}
 	if (hash.state) {
         $(".showforstates").show();

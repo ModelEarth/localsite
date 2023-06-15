@@ -1907,6 +1907,9 @@ function loadMarkdown(pagePath, divID, target, callback) {
     if(climbpath == "") {
       //climbpath == "./";
     }
+    if (typeof customD3loaded === 'undefined') {
+      console.log("ALERT - d3 not available yet. This may occur if showdown.min.js is included in page, but not d3.v5.min.js")
+    }
     d3.text(pagePath).then(function(data) {
       // Path is replaced further down page. Reactivate after adding menu.
       var pencil = "<div class='markdownEye' style='display:none;position:absolute;font-size:28px;right:0px;text-decoration:none;opacity:.7'><a href='" + pagePath + "' style='color:#555'>…</a></div>";

@@ -41,7 +41,6 @@ localsite.js pulls the #insertedText div from this page as the template for head
 </script>
 -->
 
-<script type="text/javascript" src="../js/showdown.min.js" id="/localsite/js/showdown.min.js"></script>
 <script type="text/javascript" src="../js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
 <script type="text/javascript" src="../js/navigation.js" id="/localsite/js/navigation.js"></script>
 <link type="text/css" rel="stylesheet" href="../css/base.css" id="/localsite/css/base.css" />
@@ -368,7 +367,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
       <div class="column" style="flex:2;">
 
-        <div class="closeSideTabs close-X-sm" style="position:absolute;right:0;padding:18px 30px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:32px">&#xE5CD;</i></div>
+        <div class="closeSideTabs close-X-sm" style="position:absolute;right:18px;padding:18px 14px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:32px">&#xE5CD;</i></div>
 
         <!-- Topics Panel -->
         <div id="topicsPanel" class="menuExpanded topMenuOffset">
@@ -701,6 +700,16 @@ localsite.js pulls the #insertedText div from this page as the template for head
           <a href="https://dreamstudio.ai/generate" class="navlink-generate btn-magenta" target="gen"><span style="white-space: nowrap">Generate</span></a>
         </span>
       </div>
+
+      <div class="local" style="display:none">
+        <div class="georgia" style="display:none">
+          <span class="hideMobile" style="float:left">
+            <a href="/docs/" class="navlink-intranet"><span style="white-space: nowrap; margin-right:6px">Intranet</span></a> 
+            <a href="/docs/floorplans/" class="navlink-floorplans"><span style="white-space: nowrap; margin-right:3px">Floorplans</span></a> 
+            <a href="/docs/admin/" class="navlink-floorplans"><span style="white-space: nowrap; margin-right:3px">Admin</span></a> 
+          </span>
+        </div>
+      </div>
     </div>
 
     <div id="headerIcons">
@@ -827,7 +836,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
   <div class="hideApps close-X" style="position:absolute;right:0;top:0;z-index:1">✕</div>
   -->
 
-  <div style="overflow:auto;position:relative">
+  <div id="honeycombPanelHolder" style="overflow:auto;position:relative">
   <a name="sections"></a>
   <div id="honeycombPanel" class="filterFields" style="display: block;">
     
@@ -837,7 +846,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
       </div>
     -->
 
-      <div class="bigThumbMenu" style="margin:0 auto;"></div>
+      <div id="bigThumbMenu" class="bigThumbMenu" style="margin:0 auto;"></div>
 
       <div id="honeyMenuHolder" style="display:none">
         <div id="honeycombMenu"></div>
@@ -1356,6 +1365,8 @@ Displayed by hashChanged() in map-filters.js
 <!-- Try to reactivate both of these display:none and update map.js waitForElm('#bodyFile #' + whichmap -->
 <div class="displayOnload displayMapForLoad" style="display:none;position:relative;overflow:hidden;">
   <div id="mapList1Holder" class="local" style="display:none">
+    <div class="closeParent close-X-sm" style="position:absolute;top:-10px;right:-10px;padding:18px 14px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:32px;pointer-events:auto;">&#xE5CD;</i></div>
+
     <div id="mapList1Header">Locations</div>
     <div id="mapList1Text"></div>
   </div>

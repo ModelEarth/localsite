@@ -103,7 +103,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			
 			changeFavicon("/localsite/img/logo/states/GA-favicon.png");
 
-			showClassInline(".dreamstudio");
+			//showClassInline(".dreamstudio");
 			showClassInline(".georgia");
 			showClassInline(".earth"); // Could remove if Georgia sidenav added.
 			$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
@@ -403,6 +403,11 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 					 		$("#showSideTabs").hide();
 					 		$("#hideMenu").show();
 							event.stopPropagation();
+						});
+						
+						$(document).on('click', '.closeParent', function () {
+							$(this).parent().fadeOut();
+						    event.stopPropagation();
 						});
 						$(document).on("click", ".closeSideTabs", function(event) {
 							closeSideTabs();

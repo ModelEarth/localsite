@@ -912,10 +912,13 @@ function initEvents() { // Once included file1 is loaded.
         });
         $(document).on("click", ".showListings", function(event) {
             closeExpandedMenus();
-
-            $("#honeycombPanel").appendTo("#listingsPanel");
-            //$("#listingsPanel").appendTo("#honeycombPanel");
-
+            if (!$.trim($("#mapList1").html())) { // If the location list is not empty, load the list of types.
+                $("#bigThumbMenuInner").appendTo("#listingsPanel");
+                if (!document.getElementById("#bigThumbMenuInner")) {
+                    let hash = getHash();
+                    showThumbMenu(hash.show, "#listingsPanel");
+                }
+            }
             $("#listingsPanel").show();
         });
         $(document).on("click", ".showSettings", function(event) {
@@ -1398,10 +1401,10 @@ function initEvents() { // Once included file1 is loaded.
                 $(".embedTag").hide();
             }
         });
-        $("#sectionCategories").click(function(event) {
+        $(document).on("click", "#sectionCategories", function(event) {
             event.stopPropagation();
         });
-        $('.filterUL [data-id="counties"]').click(function(event) {
+        $(document).on("click", ".filterUL [data-id='counties']", function(event) {
             $('.showCountiesTab').trigger("click");
         });
 
@@ -1413,7 +1416,7 @@ function initEvents() { // Once included file1 is loaded.
         // HIDE MENUS WHEN CLICKING ELSEWHERE.  WHEN NO MENUS OPEN, HIDE ENTIRE CONTENT AREA.
         //  .moduleCenter prevents map point click, so we turn off event.stopPropagation();
         // BUG .moduleBackground, here causes heroImage to be clicked twice, shrinking newly expanded.
-        $(".heroImage, .moduleCenter, .sectionBar, .carouselHolder, .moduleVideo").click(function(event) {
+        $(document).on("click", ".heroImage, .moduleCenter, .sectionBar, .carouselHolder, .moduleVideo", function(event) {
             consoleLog("Clicked: " + event.target.id+", Class: "+$(event.target).attr('class'));
             //alert("Clicked: " + event.target.id+", Class: "+$(event.target).attr('class'));
             if ($(".layerContent").is(':visible')) {
@@ -1474,12 +1477,12 @@ function initEvents() { // Once included file1 is loaded.
             // Avoid with .moduleCenter click so clicks reach map points.
             //event.stopPropagation();
         });
-        $('.hideAll').click(function(event) {
+        $(document).on("click", ".hideAll", function(event) {
             toggleHeaderView();
             $(".listOptions").hide(); $('.toggleListOptions').removeClass("expand");
             event.stopPropagation();
         });
-        $('.revealImage').click(function(event) {
+        $(document).on("click", ".revealImage", function(event) {
             if ($('.showImages').is(':visible')) {
                 $(".horizontalButtons .layoutTab").removeClass("active");
                 $('.showImages').addClass("active");
@@ -1504,7 +1507,7 @@ function initEvents() { // Once included file1 is loaded.
             });
             event.stopPropagation();
         });
-        $('.reduceHeader').click(function(event) {
+        $(document).on("click", ".reduceHeader", function(event) {
             $(".siteHeaderSpacer").css('height', 0);
             $(".captionPanel").hide();
             $('.reduceHeader').hide();
@@ -1522,14 +1525,11 @@ function initEvents() { // Once included file1 is loaded.
             $(".heroright").show();
         }
         
-        $(".rightTopItem").click(function(event) {
+        $(document).on("click", ".rightTopItem", function(event) {
             console.log("rightTopItem click");
             $(".rightTopItem").removeClass('active');
             $target = $(event.target);   
             $target.addClass('active');
-            
-            //$(".upperRightIcons").hide();
-            //$(".rightTopMenu").hide();
         });
         $("#filterPanel").click(function () { // Since clickThrough is blocked to prevent clicking video.
 

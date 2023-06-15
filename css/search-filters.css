@@ -447,7 +447,6 @@ input.filterClick[type="text"] {
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   }
 }
-
 .bigThumbWidth {
     width: 180px;
     height: 170px;
@@ -461,6 +460,25 @@ input.filterClick[type="text"] {
     .bigThumbWidth {
       widthX: 16.66%;
     }
+}
+/* Narrow Div */
+.bigThumbMenu {
+  display: block;
+}
+.bigThumbMenuInner {
+  grid-template-columns: auto;
+  display: block;
+}
+.bigThumbMenuContent {
+  float: left;
+}
+.bigThumbWidth {
+  widthX: 100%;
+  display: block !important;
+}
+.bigThumbText {
+  padding-top: 5px;
+  font-size: 20px;
 }
 
 #county-table {

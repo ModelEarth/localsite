@@ -79,114 +79,58 @@ function removeFrontMenuFolder(path) {
 
 
 function initMenu(partnerMenu) {
-	//let layerName = partnerMenu.layerName;
-	//let hash = getHash();
-	//if(location.host.indexOf('localhost') >= 0) {
-	    // Greenville:
-	    // https://github.com/codeforgreenville/leaflet-google-sheets-template
-	    // https://data.openupstate.org/map-layers
+    // Greenville:
+    // https://github.com/codeforgreenville/leaflet-google-sheets-template
+    // https://data.openupstate.org/map-layers
 
-	    let layerJson = partnerMenu.layerJson; 
-	    //console.log(layerJson);
+    let layerJson = partnerMenu.layerJson; 
+    //console.log(layerJson);
 
-	    //alert("layerJson: " + layerJson);
-	    $.getJSON(layerJson, function (data) {
-            displaypartnerCheckboxes(partnerMenu, data);
-	    	/*
-	        dp.data = readJsonData(data, dp.numColumns, dp.valueColumn);
-	        processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){
-	          callback(); // Triggers initialHighlight()
-	        });
-	        */
-            //console.log("initMenu() fetched menu for div " + partnerMenu.menuDiv);
-	    });
+    //alert("layerJson: " + layerJson);
+    $.getJSON(layerJson, function (data) {
+        displaypartnerCheckboxes(partnerMenu, data);
+    	/*
+        dp.data = readJsonData(data, dp.numColumns, dp.valueColumn);
+        processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){
+          callback(); // Triggers initialHighlight()
+        });
+        */
+        //console.log("initMenu() fetched menu for div " + partnerMenu.menuDiv);
+    });
 
-		$(document).on("click", partnerMenu.revealButton, function(event) {
+	$(document).on("click", partnerMenu.revealButton, function(event) {
 
-  			console.log(partnerMenu.revealButton + ' click');
+			console.log(partnerMenu.revealButton + ' click');
 
-  			//if ($("#bigThumbPanelHolder").is(':visible')) {
-  			//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) {
-  			if($(partnerMenu.menuDiv).is(':visible')) {
+			//if ($("#bigThumbPanelHolder").is(':visible')) {
+			//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) {
+			if($(partnerMenu.menuDiv).is(':visible')) {
 
-  				$(partnerMenu.menuDiv).hide();
+				$(partnerMenu.menuDiv).hide();
 
-  				
-  				//$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
-  				//$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
-
-  				//$("#appSelectHolder .showAdminNav").removeClass("filterClickActive");
-  				//$("#showAdminNavText").text($("#showAdminNavText").attr("title"));
-  				//$(".hideWhenPop").show();
-  				//// To do: Only up scroll AND SHOW if not visible
-  				//$('html,body').animate({
-				//	scrollTop: 0
-				//});
-
-  				//$("#bigThumbPanelHolder").hide();
-  				//$('.showAdminNav').removeClass("active");
 				
+				//$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
+				//$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
 
-  			} else {
+				//$("#appSelectHolder .showAdminNav").removeClass("filterClickActive");
+				//$("#showAdminNavText").text($("#showAdminNavText").attr("title"));
+				//$(".hideWhenPop").show();
+				//// To do: Only up scroll AND SHOW if not visible
+				//$('html,body').animate({
+			//	scrollTop: 0
+			//});
 
-  				$(partnerMenu.menuDiv).show();
+				//$("#bigThumbPanelHolder").hide();
+				//$('.showAdminNav').removeClass("active");
+			
 
-  				/*
-  				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
-  				$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
+			} else {
 
-  				//$("#showAdminNavText").text("Goods & Services");
-  				//$("#appSelectHolder .showAdminNav").addClass("filterClickActive");
-				//showThumbMenu(hash.show, adminNavObject);
-				displaypartnerCheckboxes(partnerMenu,adminNavObject);
-                $('html,body').animate({
-                	//scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
-                });
-				*/
-  			}
-  			
-		  	event.stopPropagation();
-		});
-
-	    /*
-	    let adminNavObject = (function() {
-	        let json = null;
-	        $.ajax({
-	            'type': 'GET',
-	            'async': true,
-	            'global': false,
-	            'url': layerJson,
-	            'jsonpCallback': 'callback',
-	            'dataType': "jsonp",
-	            'success': function (adminNavObject) {
-	                consoleLog("Menu layers json loaded within initMenu. location.hash: " + location.hash);
-	                
-	                // adminNavObjectFunctions(adminNavObject); // could add to keep simple here
-	                alert("success1")
-	                displaypartnerCheckboxes(partnerMenu,adminNavObject);
-
-	                
-	          		// These should be lazy loaded when clicking menu
-	                //displayBigThumbnails(0, hash.show, "main",adminNavObject);
-	                //displayHexagonMenu("",adminNavObject);
-	                
-	                if (!hash.show && !param.show) { // INITial load
-	                	// alert($("#fullcolumn").width()) = null
-	                	if ($("body").width() >= 800) {
-
-	                		//showThumbMenu(hash.show, adminNavObject);
-	                	}
-	            	}
-	            	//return adminNavObject;
-	            },
-	          error: function (req, status, err) {
-	              consoleLog('Error fetching adminNavObject json!: ', err);
-	          }
-	        });
-	    })(); // end adminNavObject
-	    */
-	    
-	//}
+				$(partnerMenu.menuDiv).show();
+			}
+			
+	  	event.stopPropagation();
+	});
 
   $(document).on("click", partnerMenu.revealButton, function(event) {
   	console.log("showPartnerMenu " + partnerMenu.revealButton);
