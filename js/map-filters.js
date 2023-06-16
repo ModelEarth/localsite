@@ -393,6 +393,9 @@ $(document).ready(function () {
     	}
     	$('#keywordFields').hide();
     	$('#topPanel').hide();
+        //if () {
+
+        //}
 	});
 	
 
@@ -2000,7 +2003,6 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
     if (theState.length > 2) {
         theState = theState.substring(0,2);
     }
-
 	if (!$('.bigThumbUl').length) {
         if (!activeLayer) {
             activeLayer = "industries"; // Since Tab defaults to "Local Topics". Will change to site-wide search later.
@@ -2129,7 +2131,7 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 	            }
 	        }
 	    }
-        $("#honeycombPanel").prepend("<div class='hideThumbMenu close-X' style='float:right;'>✕</div>");
+        $("#honeycombPanel").prepend("<div class='hideThumbMenu close-X' style='position:absolute; right:0px; top:0px;'><i class='material-icons' style='font-size:32px'>&#xE5CD;</i></div>");
 	    $(insertInto).append("<div id='bigThumbMenuInner' class='bigThumbMenuInner'>" + sectionMenu + "</div>");
 
         if (theState == "GA") {
@@ -2138,13 +2140,17 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 	    }
 	    //$("#honeycombMenu").append("<ul class='bigThumbUl'>" + sectionMenu + "</ul>");
 	    $("#iconMenu").append(iconMenu);
-	    $("#bigThumbPanelHolder").show();
+        if (insertInto == "#bigThumbMenu") {
+	       $("#bigThumbPanelHolder").show();
+        }
 	    $("#honeyMenuHolder").show(); // Might be able to remove display:none on this
 
         // 
 	    //$(".thumbModule").append($("#bigThumbPanelHolder"));
 	} else if ($("#bigThumbPanelHolder").css("display") == "none") {
-		$("#bigThumbPanelHolder").show();
+        if (insertInto == "#bigThumbMenu") {
+		  $("#bigThumbPanelHolder").show();
+        }
 	} else {
 		$("#bigThumbPanelHolder").hide();
         $(".showApps").removeClass("filterClickActive");
@@ -2362,11 +2368,17 @@ function initSiteObject(layerName) {
 
 function showThumbMenu(activeLayer, insertInto) {
 	$("#menuHolder").css('margin-right','-250px');
-	$("#bigThumbPanelHolder").show();
+    if (insertInto == "#bigThumbMenu") {
+	   $("#bigThumbPanelHolder").show();
+    }
 	if (!$(".bigThumbMenuContent").length) {
 		displayBigThumbnails(0, activeLayer, "main", insertInto);
 	}
 	$('.showApps').addClass("active");
+    if (insertInto != "#bigThumbMenu") {
+        $("#bigThumbPanelHolder").hide();
+        $(".showApps").removeClass("filterClickActive");
+    }
 }
 function callInitSiteObject(attempt) { 
     //alert("callInitSiteObject")

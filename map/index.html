@@ -186,8 +186,8 @@ localsite.js pulls the #insertedText div from this page as the template for head
             <div class="showMobile" style="display: none;">
               <i class="material-icons show-on-load" style="font-size:40px;" data="apps">&#xE5E0;</i>
             </div>
-            <div class="showDesktop" style="display: none;">
-              <i class="material-icons show-on-load" style="font-size:40px;" data="apps">&#xEAC9;</i>
+            <div class="showDesktop" style="display: none; margin-top:-2px;">
+              <i class="material-icons show-on-load" style="font-size:40px;" data="apps">&#xE5CD;</i>
             </div>
         </div>
 
@@ -196,14 +196,8 @@ localsite.js pulls the #insertedText div from this page as the template for head
       <div style="float:right">
         <div style="float:left">
           <div class="earth georgia" style="display:none">
-          <div class="showSearch iconPadding">
-            <!-- To do: use javascript to retain the current window.location.search value from URL when on a search page. 
-            add -active rollover
-            -->
-            <img src="/localsite/img/icon/search.png" style="width:27px; opacity:0.5">
-            <!--
-            <div style="font-size:18pt;padding:2px 4px 0 2px;">&#128269;</div>
-            -->
+          <div class="showSearch iconPadding">            
+            <i class="material-icons show-on-load" style="font-size:34px;opacity:0.7;" data="apps">&#xE8B6;</i>
           </div>
           </div>
         </div>
@@ -367,7 +361,9 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
       <div class="column" style="flex:2;">
 
+        <!--
         <div class="closeSideTabs close-X-sm" style="position:absolute;right:18px;padding:18px 14px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:32px">&#xE5CD;</i></div>
+        -->
 
         <!-- Topics Panel -->
         <div id="topicsPanel" class="menuExpanded topMenuOffset">
@@ -697,19 +693,17 @@ localsite.js pulls the #insertedText div from this page as the template for head
           <a href="/dreamstudio/studio/" class="navlink-studio"><span style="white-space: nowrap; margin-right:3px">Studio</span></a> 
           <a href="/dreamstudio/seasons/" class="navlink-stories"><span style="white-space: nowrap">Stories</span></a>  
           <a href="/dreamstudio/api/" class="navlink-api"><span style="white-space: nowrap">API</span></a>  
-          <a href="https://dreamstudio.ai/generate" class="navlink-generate btn-magenta" target="gen"><span style="white-space: nowrap">Generate</span></a>
+          <a href="https://dreamstudio.ai/generate" class="navlink-generate" target="gen"><span style="white-space: nowrap">Generate</span></a>
         </span>
       </div>
 
-      <div class="local" style="display:none">
-        <div class="georgia" style="display:none">
-          <span class="hideMobile" style="float:left">
-            <a href="/docs/" class="navlink-intranet"><span style="white-space: nowrap; margin-right:6px">Intranet</span></a> 
-            <a href="/docs/floorplans/" class="navlink-floorplans"><span style="white-space: nowrap; margin-right:3px">Floorplans</span></a> 
-            <a href="/docs/admin/" class="navlink-floorplans"><span style="white-space: nowrap; margin-right:3px">Admin</span></a> 
-          </span>
-        </div>
+      <div class="intranet" style="display:none">
+        <span id="intranet-nav" class="hideMobile" style="float:left">
+          <a href="/docs/" class="navlink-intranet"><span style="white-space: nowrap; margin-right:6px">Intranet</span></a>
+          <a href="/docs/admin/" class="navlink-floorplans"><span style="white-space: nowrap; margin-right:3px">Admin</span></a> 
+        </span>
       </div>
+
     </div>
 
     <div id="headerIcons">
@@ -1364,7 +1358,7 @@ Displayed by hashChanged() in map-filters.js
 
 <!-- Try to reactivate both of these display:none and update map.js waitForElm('#bodyFile #' + whichmap -->
 <div class="displayOnload displayMapForLoad" style="display:none;position:relative;overflow:hidden;">
-  <div id="mapList1Holder" class="local" style="display:none">
+  <div id="mapList1Holder" class="local darkDivText" style="display:none">
     <div class="closeParent close-X-sm" style="position:absolute;top:-10px;right:-10px;padding:18px 14px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:32px;pointer-events:auto;">&#xE5CD;</i></div>
 
     <div id="mapList1Header">Locations</div>
@@ -1676,7 +1670,7 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 
 
 <section class="data-section" id="data" style="overflow:auto">
-<div class="content contentpadding litePanel" style="max-width:2000px;padding:0px 0px 10px 20px;">
+<div class="content contentpadding litePanel" style="max-width:2000px">
 
   <div id="flexwrapper">
     <div id="hublist" style="margin-top:20px; position:relative;">

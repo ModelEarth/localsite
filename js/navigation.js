@@ -82,7 +82,9 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 				//showClassInline(".earth");
 			}
 		// 
-		} else if (location.host.indexOf('localhost') >= 0 || param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 ) {
+		} else if ((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 ) {
+			// The localsite repo is open to use by any state or country.
+			// Georgia Economic Development has been a primary driver of development.
 			// Show locally for Brave Browser only - insert before:  ) || false
 			// && navigator && navigator.brave
 			if (!param.state) {
@@ -100,10 +102,10 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 		 	} else {
 		 		document.title = "Georgia.org";
 		 	}
-			
 			changeFavicon("/localsite/img/logo/states/GA-favicon.png");
-
-			//showClassInline(".dreamstudio");
+			if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("intranet") >= 0) {
+				showClassInline(".intranet");
+			}
 			showClassInline(".georgia");
 			showClassInline(".earth"); // Could remove if Georgia sidenav added.
 			$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
@@ -156,13 +158,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 		}
 
 	 	$("body").wrapInner( "<div id='fullcolumn'></div>"); // Creates space for sidecolumn
-	 	if(document.getElementById("sidecolumn") == null) {
-	 		$("body").prepend( "<div id='sidecolumn' class='hideprint' style='display:none'><div id='sidecolumnLeft'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='sidecolumnLeftScroll'><div id='cloneLeftTarget'></div></div></div></div>\r" );
-	 	} else {
-	 		// TODO - change to fixed when side reaches top of page
-	 		console.log("navigation.js report: sidecolumn already exists")
-	 		$("#sidecolumn").addClass("sidecolumn-inpage");
-	 	}
+	 	
 	 	
 	 	$("body").addClass("flexbody"); // For footer to stick at bottom on short pages
 	 	$("body").wrapInner("<main class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
@@ -173,16 +169,29 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			$("#fullcolumn").prepend("<div id='bodyFile'></div>\r");
 		}
 
+		if(document.getElementById("sidecolumn") == null) {
+	 		$("body").prepend( "<div id='sidecolumn' class='hideprint sidecolumnLeft' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='sidecolumnLeftScroll'><div id='cloneLeftTarget'></div></div></div>\r" );
+	 	} else {
+	 		// TODO - change to fixed when side reaches top of page
+	 		console.log("navigation.js report: sidecolumn already exists")
+	 		$("#sidecolumn").addClass("sidecolumn-inpage");
+	 	}
+
 	 	$(document).on("click", "#showSide", function(event) {
 			//$("#showSide").hide();
 			if ($("#sidecolumn").is(':visible')) {
 				//$("#showSide").css("opacity","1");
 				$("#sidecolumn").hide();
 				$("#showSide").show();
-				//////$("#filterFieldsHolder").addClass("leftOffset");
+				$('body').removeClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
+				if (!$('body').hasClass('bodyRightMargin')) {
+		        	$('body').removeClass('mobileView');
+		    	}
 			} else {
 				$("#fullcolumn #showSide").hide();
 				//////$("#filterFieldsHolder").removeClass("leftOffset");
+				$('body').addClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
+		        $('body').addClass('mobileView');
 				$("#sidecolumn").show();
 			}
 			let headerFixedHeight = $("#headerLarge").height();
@@ -191,7 +200,10 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 	 	$(document).on("click", ".hideSide", function(event) {
 			$("#sidecolumn").hide();
 			$("#showSide").show();
-			//$("#filterFieldsHolder").addClass("leftOffset");
+			$('body').removeClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
+			if (!$('body').hasClass('bodyRightMargin')) {
+	        	$('body').removeClass('mobileView');
+	    	}
 		});
 	 	if (param["showapps"] && param["showapps"] == "false") {
 	 		$(".showApps").hide();
@@ -243,11 +255,16 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 						waitForElm('#sidecolumn').then((elm) => { // #sidecolumn is appended by this navigation.js script, so typically not needed.
 							//$("#cloneLeft").clone().appendTo($("#sidecolumn"));
 							//$("#cloneLeft").show(); // Still hidden, just removing the div that prevents initial exposure.
-							if(location.host.indexOf("dreamstudio") >= 0) {
+							if(location.host.indexOf("intranet") >= 0) {
+						        $("#sidecolumnContent a").each(function() {
+						          $(this).attr('href', $(this).attr('href').replace(/\/docs\//g,"\/"));
+						        });
+						    }
+						    if(location.host.indexOf("dreamstudio") >= 0) {
 						        $("#sidecolumnContent a").each(function() {
 						          $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
 						        });
-						     }
+						    }
 
 							let colEleLeft = document.querySelector('#sidecolumnContent');
 							let colCloneLeft = colEleLeft.cloneNode(true)
@@ -396,9 +413,8 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 						$(document).on("click", ".showSideTabs", function(event) {
 							console.log("Clicked .showSideTabs");
 		          			loadScript('/localsite/js/settings.js', function(results) {}); // For "Settings" popup
-		          			$('body').addClass('bodySideMargin'); // Creates margin on right for sidenav to reside above.
+		          			$('body').addClass('bodyRightMargin'); // Creates margin on right for fixed sidetabs.
 		          			$('body').addClass('mobileView');
-		          			
 		          			$("#sideTabs").show();
 					 		$("#showSideTabs").hide();
 					 		$("#hideMenu").show();
@@ -573,8 +589,10 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 
 	function closeSideTabs() {
 		$("#sideTabs").hide();
-		$("body").removeClass("bodySideMargin");
-		$('body').removeClass('mobileView');
+		$("body").removeClass("bodyRightMargin");
+		if (!$('body').hasClass('bodyLeftMargin')) {
+			$('body').removeClass('mobileView');
+		}
 		//$("#hideMenu").hide();
 		$("#closeSideTabs").hide();
 		$("#showSideTabs").show();

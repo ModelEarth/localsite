@@ -5,6 +5,8 @@
 
 // INIT
 var dataParameters = []; // Probably can be removed, along with instances below.
+var sideTopOffsetEnabled = true;
+var sideTopOffsetEnabledBig = false;
 
 let styleObject = {}; // https://docs.mapbox.com/mapbox-gl-js/style-spec/root/
 styleObject.layers = [];
@@ -2566,7 +2568,9 @@ $(window).scroll(function() {
     $('.headerOffset').hide();
     $('#headerbar').hide();
 
-    $('#sidecolumnLeft').css("top","54px");
+    if (sideTopOffsetEnabled) {
+      $('.sidecolumnLeft').css("top","54px");
+    }
     //$('#showSide').css("top","7px");
 
     if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
@@ -2598,8 +2602,9 @@ $(window).scroll(function() {
           $('#headerbar').hide(); // Not working
           $('#headerbar').addClass("headerbarhide");
         }
-        
-        $('#sidecolumnLeft').css("top","54px");
+        if (sideTopOffsetEnabled) {
+          $('.sidecolumnLeft').css("top","54px");
+        }
         //alert("#headerbar hide")
         //$('#showSide').css("top","7px");
         if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
@@ -2620,10 +2625,12 @@ $(window).scroll(function() {
           $('#local-header').show();
           $('.showMenuSmNav').hide();
         }
-        let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px
-        $('#sidecolumnLeft').css("top",headerFixedHeight + "px");
-        //$('#sidecolumnLeft').css("top","0px");
-        //$('#showSide').css("top","108px");
+        if (sideTopOffsetEnabledBig) {
+          let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px
+          $('.sidecolumnLeft').css("top",headerFixedHeight + "px");
+        } else {
+          $('.sidecolumnLeft').css("top","0px");
+        }
       }
       $('#headerLarge').show();
     } else if ($(window).scrollTop() == 0) { // At top
@@ -2638,10 +2645,12 @@ $(window).scroll(function() {
           $('#local-header').show();
           $('.showMenuSmNav').hide();
         }
-        let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px
-        $('#sidecolumnLeft').css("top",headerFixedHeight + "px");
-        //$('#sidecolumnLeft').css("top","0px");
-        //$('#showSide').css("top","108px");
+        if (sideTopOffsetEnabledBig) {
+          let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px
+          $('.sidecolumnLeft').css("top",headerFixedHeight + "px");
+        } else {
+          $('.sidecolumnLeft').css("top","0px");
+        }
       }
       $('#headerLarge').show();
     }

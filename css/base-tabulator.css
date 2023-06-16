@@ -63,3 +63,6 @@
 .tabulator-header .tabulator-col:nth-of-type(2) .tabulator-col-title {
     text-align: left;
 }
+.tabulator .tabulator-header .tabulator-col {
+    background-color: #eee;
+}

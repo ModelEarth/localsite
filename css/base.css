@@ -42,7 +42,10 @@ body {
   color: #333;
   line-heightX:0; /* prevents gaps betweet images, but 0 caused text to overlap on start and nav icons. */
 }
-.bodySideMargin {
+.bodyLeftMargin {
+  margin-left: 220px;
+}
+.bodyRightMargin {
   margin-right: 500px;
 }
 @media (max-width: 1800px) {
@@ -63,7 +66,7 @@ body {
   }
 }
 
-.flexbody {
+.flexbodyX {
   display: flex; /* for footer */
   flex-direction: column; /* for footer */
 }
@@ -748,6 +751,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 	padding: 9px 12px 2px 10px;
 	height: 37px;
   opacity: .3;
+  z-index: 1001;
 }
 #showSide:hover {
   opacity: .7;
@@ -1019,7 +1023,12 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     border-bottom: 1px solid rgb(238,238,238);
   }
 }
-
+.darkDivText {
+  color: #ccc;
+}
+.darkDivText a:link, .darkDivText a:visited {
+  color: #acb;
+}
 .headerbarhide {
   display: none !important;
 }

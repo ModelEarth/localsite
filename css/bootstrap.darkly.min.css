@@ -106,10 +106,6 @@ a:link, a:visited {
 .hamburger-circle {
   content: url("/localsite/img/icon/hamburger-lite.png");
 }
-#sidecolumn {
-	background-colorX: #292929;
-	background-color: rgba(0, 0, 0, 0);
-}
 .upperIcons > div {
 	border:0px;
 }

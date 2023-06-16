@@ -577,6 +577,11 @@ function loadLocalTemplate() {
       $("#sideTabs").prependTo("#fullcolumn"); // Move back up to top.
 
       // Replace paths in div
+      if(location.host.indexOf("intranet") >= 0) {
+        $("#intranet-nav a").each(function() {
+          $(this).attr('href', $(this).attr('href').replace(/\/docs\//g,"\/"));
+        });
+      }
       if(location.host.indexOf("dreamstudio") >= 0) {
         $("#dreamstudio-nav a").each(function() {
           $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
@@ -692,7 +697,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           $('body').prepend("<div id='bodyFile'></div>");
         }
 
-        $('body').prepend("<div id='showSide' class='showSide' style='topX:100px;left:-28px;position:absolute'><i class='material-icons show-on-load' style='font-size:35px; opacity:0.4; padding-right:3px; border:1px solid #555; border-radius:8px;'>&#xE5D2;</i></div>");
+        $('body').prepend("<div id='showSide' class='showSide' style='top:92px;left:-28px;position:absolute'><i class='material-icons show-on-load' style='font-size:35px; opacity:0.4; padding-right:3px; border:1px solid #555; border-radius:8px;'>&#xE5D2;</i></div>");
         waitForElm('#fullcolumn').then((elm) => {
           $("#showSide").prependTo("#fullcolumn"); 
         });

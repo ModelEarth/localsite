@@ -457,7 +457,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 
 /* For sidecolumn from header.html */
-.sidecolumn-inpage #sidecolumnLeft {
+.sidecolumn-inpage .sidecolumnLeft {
     position: static !important;
     float:left;
     padding: 0px;
@@ -469,41 +469,36 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 
 #sidecolumn {
-    float: left;
-    width: 240px;
-    height: 100%;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 220px;
     padding-right: 0px;
     background-color: rgb(253, 253, 253);
     background-color: rgb(99 99 99/50%);
-    position: relative;
 }
-#sidecolumnLeft {
+.sidecolumnLeft {
     padding: 24px;
     line-height: 28px;
-    width: 240px;
     font-size: 16px;
     bottom:0;
-    top:94px;
     z-index:1; /* allows border highlight to overlap adjacent content area. */
-}
-#sidecolumnLeft {
-	position: fixed;
 }
 #cloneRight {
 	position:inherit;
     line-height: 34px;
     font-size: 18px;
 }
-#sidecolumnLeft b, #cloneRight b {
+.sidecolumnLeft b, #cloneRight b {
     color:#333;
     font-weight:800;
 }
 .sidecolumnLeftScroll {
     position:absolute;
-    top:24px;
+    top:30px;
     bottom:0px;
     right:0px;
-    left:10px;
+    left:0px;
+    padding-left: 10px;
     overflow-y:scroll;
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none;  /* IE and Edge */
@@ -514,22 +509,22 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
   display: none;
 }
 
-#sidecolumnLeft a, #cloneRight a {
+.sidecolumnLeft a, #cloneRight a {
     display:block;
     padding-left: 15px;
     color: #fff;
     text-decoration: none;
 }
-#sidecolumnLeft a:hover, #sidecolumnLeft a.active:hover, #cloneRight a:hover {
+.sidecolumnLeft a:hover, .sidecolumnLeft a.active:hover, #cloneRight a:hover {
 	background-color: #333;
 	color: #fff;
 }
-#sidecolumnLeft b a {
+.sidecolumnLeft b a {
 	color: #333;
 	font-size: 16px;
 	line-height: 1.8em;
 }
-#sidecolumnLeft a.active {
+.sidecolumnLeft a.active {
     border-right: 4px solid #888;
     background-color: rgba(33, 33, 33, 0.06);
     margin-left:-6px;
@@ -544,7 +539,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 @media (max-width: 800px) {
     .content {
-      padding: 30px 22px 30px 40px;
+      padding: 30px 30px 30px 40px;
     }
     #sidecolumn {
       display: none;
@@ -554,7 +549,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     position: static !important;
     position: relative;
 }
-.sidecolumn-inpage > #sidecolumnLeft {
+.sidecolumn-inpage > .sidecolumnLeft {
     position: static;
 }
 /* End For sidecolumn from header.html */

@@ -40,12 +40,12 @@
   padding:20px 0 20px 40px;
 }
 #filterFieldsHolder {
-  /* background-color: rgb(77 77 77/50%); */
+  background-color: #f9f9f9;
   z-index: 9999;
 }
 @media (prefers-color-scheme: dark) {
   #filterFieldsHolder {
-    /* background-color: red; */
+    /* background-color: #333; */
   }
 }
 
@@ -77,7 +77,7 @@
 }
 #filterLocations, #honeycombPanel {
   background-color: #fcfcfc; /* fcfcfc not visible to Brave darkmode, but #eee too dark in light mode */
-  border-bottom: 1px solid #eee;
+  border-bottomX: 1px solid #eee;
 }
 .fieldSelector {
 	display: none;
@@ -107,8 +107,10 @@
     cursor: pointer;
     border-radius: 20px;
     border: 0px;
+    /*
     border-left: 1px solid #e0e0e0;
     border-top: 1px solid #ddd;
+    */
     border-right: 1px solid lightgray;
     border-bottom: 1px solid lightgray;
     padding: 0px 9px 0px 12px;
@@ -136,12 +138,13 @@ input.filterClick[type="text"] {
     padding-right:23px;
 }
 .filterClickActive {
+    border-top: 1px solid #eee;
     border-bottom: 0px solid #fff;
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
-    background-color: #fcfcfc;
     margin-bottom:-12px;
     height: 45px;
+    background-color: #fcfcfc;
 }
 .detailbutton {
     font-family: 'Lato', sans-serif;
@@ -410,7 +413,7 @@ input.filterClick[type="text"] {
     clear: both; /* clear close X */
     display: flex;
     justify-content: center;
-    border-bottom: 1px solid #eee;
+    border-bottomX: 1px solid #eee;
 }
 .bigThumbMenuInner {
   margin-bottom: 20px;
@@ -462,24 +465,30 @@ input.filterClick[type="text"] {
     }
 }
 /* Narrow Div */
-.bigThumbMenu {
-  display: block;
-}
-.bigThumbMenuInner {
-  grid-template-columns: auto;
-  display: block;
-}
-.bigThumbMenuContent {
-  float: left;
-}
-.bigThumbWidth {
-  widthX: 100%;
-  display: block !important;
-}
-.bigThumbText {
-  padding-top: 5px;
-  font-size: 20px;
-}
+
+  .bigThumbMenu {
+    display: block;
+    overflow: auto;
+    padding: 30px;
+    border-bottom: 1px solid #ccc;
+    background-color: #fff; /* honeycombPanel line 78 also sets bg color above icons */
+    background-color: #fcfcfc;
+  }
+  .bigThumbMenuInner {
+    grid-template-columns: auto;
+    display: block;
+  }
+  .bigThumbMenuContent {
+    float: left;
+  }
+  .bigThumbWidth {
+    widthX: 100%;
+    display: block !important;
+  }
+  .bigThumbText {
+    padding-top: 5px;
+    font-size: 20px;
+  }
 
 #county-table {
   padding-right:12px;
