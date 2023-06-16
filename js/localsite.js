@@ -1700,6 +1700,7 @@ function getState(stateCode) {
 function showSearchFilter() {
   let loadFilters = false;
   let headerHeight = $("#headerbar").height(); // Not sure why this is 99 rather than 100
+  closeSideTabs(); // Later search will be pulled into side tab.
   if (!$("#filterFieldsHolder").length) { // Filter doesn't exist yet, initial map/index.html load.
     if (!$("#bodyFile").length) {
       $('body').prepend("<div id='bodyFile'></div>");
@@ -1711,9 +1712,7 @@ function showSearchFilter() {
     $('html,body').scrollTop(0);
     loadFilters = true;
   } else {
-
     let filterTop = $("#filterFieldsHolder").offset().top - window.pageYOffset;
-
     console.log("showSearchFilter #filterFieldsHolder offset top: " + filterTop);
     //  || (!$("#headerbar").is(':visible') && filterTop >= 0)
     if ($("#filterFieldsHolder").is(':visible') && (($("#headerbar").is(':visible') && filterTop >= headerHeight) )) { // Might need to allow for coverage by header.

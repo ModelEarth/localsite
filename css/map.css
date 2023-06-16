@@ -7,8 +7,8 @@
   }
   #mapList1Holder {
     position: absolute;
-    top: 20px;
-    left: 20px;
+    top: 35px;
+    left: 40px;
     width: 335px;
     max-height: 85%;
     background-color: #666;
@@ -21,6 +21,9 @@
   #mapList1Header {
     font-size: 24px;
     margin-bottom: 12px;
+  }
+  #mapList1Text {
+    font-size: 14px;
   }
   #mapList1 a:link, #mapList1 a:visited {
     color: #66CF79;
