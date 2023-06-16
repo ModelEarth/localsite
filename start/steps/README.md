@@ -1,4 +1,4 @@
-# Page Setup Steps 
+# Website Setup Steps 
 
 You can use [Localsite Pages](../) to create websites and stories with free GitHub hosting.
 
@@ -29,15 +29,11 @@ After a few minutes, you can view your fork at [[your account].github.io/localsi
 5. [Fetch upstream](#fetch-upstream) changes to your forked repos.
 6. [Point a domain](#domain) at your repos (optional)
 
-If your site will display environmental impact data, also fork the [io repo](https://github.com/modelearth/io).
-For samples of loction parameters, view and fork the ModelEarth [apps repo](https://model.earth/apps).  
+If your site will be displaying environmental [impact widgets](https://model.earth/io/charts/), also fork the [io repo](https://github.com/modelearth/io).
+For samples of location parameters, view and fork the ModelEarth [apps repo](https://model.earth/apps).  
 
 You can generate images locally using [StableStudio](http://dreamstudio.com/studio/), the open source UX behind the [DreamStudio.ai](https://dreamstudio.ai) frontend.
-
----
 <br>
-
-# Story Setup Details
 
 <section id="github-pages"></section>
 
@@ -45,7 +41,7 @@ You can generate images locally using [StableStudio](http://dreamstudio.com/stud
 
 Optional: Also fork the [io repo](https://github.com/modelearth/io) and [apps repo](https://github.com/modelearth/apps) if your story will include environmental impact data.
 
-Note: You can [use .submodules](../submodules/) to deploy multiple repos to a single [Cloudflare site](../cloudflare/).  
+You can [use Github .submodules](../submodules/) to deploy multiple repos into a single [Cloudflare site](../cloudflare/).  
 
 1B. Activate GitHub Pages for each of your forked repos by going to "Settings > Pages" and choosing "main" (or master) then save.
 

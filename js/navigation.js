@@ -433,6 +433,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 								$("#nullschoolHeader").hide();
 								//$("#globalMapHolder").show();
 								$("#hero_holder").show();
+								closeSideTabs();
 							} else {
 								//$("#globalMapHolder").hide(); // Home page nullschool map.
 								closeSideTabs();

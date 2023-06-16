@@ -518,6 +518,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .sidecolumnLeft a:hover, .sidecolumnLeft a.active:hover, #cloneRight a:hover {
 	background-color: #333;
 	color: #fff;
+	text-decoration: none;
 }
 .sidecolumnLeft b a {
 	color: #333;

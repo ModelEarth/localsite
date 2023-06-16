@@ -1,36 +1,43 @@
 # Github Submodules
 
-Note: You'll switch the branch in GitHub Desktop to get updates to a submodule, then commit your main project so it's using the most recent version of the submodule.
+### Sync multiple repos to one Cloudflare site
 
-Afterward, you can request an update in Cloudflare (but it should just start automatically).
+The following will create a .gitmodules file.
+This allows Cloudflare to sync multiple repos into one website.
 
-
-Working with submodules
-https://github.blog/2016-02-01-working-with-submodules/
+[Working with submodules](https://github.blog/2016-02-01-working-with-submodules/)
 
 git submodule add https://github.com/[user]/[repo] [repo]
 git commit -m "[repo] submodule"
 git submodule update --init --recursive
 
-Lastly, push within Github Desktop. (It will already be commited.) 
+Lastly, push within Github Desktop. (The repo will already be commited.) 
 You'll then see the submodule in the Github website.
 
-Example:
+**Example:**
 git submodule add https://github.com/DreamStudioApp/StableStudio StableStudio
 git commit -m "StableStudio submodule"
 git submodule update --init --recursive
 
+Note: You'll switch the branch in GitHub Desktop to get updates to a submodule, then commit your main project so it's using the most recent version of each submodule.
 
-Or try this for detached HEAD message in Github Desktop:
+Cloudflare will automatically pull in updates when submodule repos are updated.
+Or you can request a pull within Cloudflare here (both go to the same page):  
+
+Cloudflare > Worker Routes > Manage Workers
+Cloudflare > Workers & Pages > Overview > (Choose your site)
+
+
+### Detached HEAD message
+
+Try this for detached HEAD message in Github Desktop:
+
 git checkout -b io
 
-git submodule add https://github.com/modelearth/io io
-git submodule add https://github.com/dreamstudioapp/construction construction
-
+### Use Tokens for Private Repos
 
 Add your token to github.com path (perhaps only necessary if submodule repo is private.)
 https://stackoverflow.com/questions/72786625/deploying-repos-with-submodules-using-cloudflare-pages
-
 
 GitHub > Settings > Developer Setting (bottom of left column)
 
@@ -38,16 +45,17 @@ Using Github access token with submodules
 https://medium.com/@alexander.sirenko/using-github-access-token-with-submodules-5038b6d639e8
 
 
+### Example of .gitmodules file
+
 [submodule "localsite"]
 	path = localsite
 	url = https://github.com/modelearth/localsite
-[submodule "construction"]
-	path = construction
+[submodule "privatestuff"]
+	path = privatestuff
 	url = https://[token]@github.com/[account]/[repo]
 [submodule "io"]
 	path = io
 	url = https://github.com/modelearth/io
 
-
-Cloudflare > Worker Routes > Manage Workers
-Cloudflare > Workers & Pages > Overview > (Choose your site)
+Note that simply adding or editing the .gitmodules file does not work. 
+The add, commit and update steps above will get you set up and syncing smoothly.
