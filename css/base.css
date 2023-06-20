@@ -48,6 +48,14 @@ body {
 .bodyRightMargin {
   margin-right: 500px;
 }
+@media (max-width: 400px) {
+  .bodyLeftMargin {
+    margin-left: 0px;
+  }
+  .bodyRightMargin {
+    margin-right: 0px;
+  }
+}
 @media (max-width: 1800px) {
   .mobileView .hideMobile {
     display: none;

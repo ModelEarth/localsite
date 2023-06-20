@@ -59,7 +59,12 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
  		modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
  		modelroot = "https://model.earth";
  	}
-
+	function closeExpandedMenus(menuClicked) {
+        $(".rightTopMenuInner div").removeClass("active");
+        $(menuClicked).addClass("active");
+        $(".menuExpanded").hide(); // Hide any open
+        //alert("rightTopMenuInner 3");
+    }
 	function applyNavigation() { // Called by localsite.js so local_app path is available.
 		// To do: fetch the existing background-image.
 		if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio") {
@@ -77,6 +82,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			if (location.host.indexOf("dreamstudio") >= 0) {
 				//param.headerLogo = param.headerLogo.replace(/\/dreamstudio\//g,"\/");
 			}
+			changeFavicon("/localsite/img/logo/apps/dreamstudio.png");
 			showClassInline(".dreamstudio");
 			if (location.host.indexOf('localhost') >= 0) {
 				//showClassInline(".earth");
@@ -107,7 +113,9 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 				showClassInline(".intranet");
 			}
 			showClassInline(".georgia");
-			showClassInline(".earth"); // Could remove if Georgia sidenav added.
+			if (location.host.indexOf("intranet") < 0) { // Since intranet site does not include community submodule
+				showClassInline(".earth");
+			}
 			$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
 
 			earthFooter = true;
@@ -157,7 +165,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			console.log("param.footer " + param.footer);
 		}
 
-	 	$("body").wrapInner( "<div id='fullcolumn'></div>"); // Creates space for sidecolumn
+	 	$("body").wrapInner( "<div id='fullcolumn'></div>"); // Creates space for navcolumn
 	 	
 	 	
 	 	$("body").addClass("flexbody"); // For footer to stick at bottom on short pages
@@ -169,19 +177,19 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 			$("#fullcolumn").prepend("<div id='bodyFile'></div>\r");
 		}
 
-		if(document.getElementById("sidecolumn") == null) {
-	 		$("body").prepend( "<div id='sidecolumn' class='hideprint sidecolumnLeft' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='sidecolumnLeftScroll'><div id='cloneLeftTarget'></div></div></div>\r" );
+		if(document.getElementById("navcolumn") == null) {
+	 		$("body").prepend( "<div id='navcolumn' class='hideprint sidecolumnLeft' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='sidecolumnLeftScroll'><div id='cloneLeftTarget'></div></div></div>\r" );
 	 	} else {
 	 		// TODO - change to fixed when side reaches top of page
-	 		console.log("navigation.js report: sidecolumn already exists")
-	 		$("#sidecolumn").addClass("sidecolumn-inpage");
+	 		console.log("navigation.js report: navcolumn already exists")
+	 		$("#navcolumn").addClass("navcolumn-inpage");
 	 	}
 
 	 	$(document).on("click", "#showSide", function(event) {
 			//$("#showSide").hide();
-			if ($("#sidecolumn").is(':visible')) {
+			if ($("#navcolumn").is(':visible')) {
 				//$("#showSide").css("opacity","1");
-				$("#sidecolumn").hide();
+				$("#navcolumn").hide();
 				$("#showSide").show();
 				$('body').removeClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
 				if (!$('body').hasClass('bodyRightMargin')) {
@@ -192,13 +200,13 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 				//////$("#filterFieldsHolder").removeClass("leftOffset");
 				$('body').addClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
 		        $('body').addClass('mobileView');
-				$("#sidecolumn").show();
+				$("#navcolumn").show();
 			}
 			let headerFixedHeight = $("#headerLarge").height();
 			$('#cloneLeft').css("top",headerFixedHeight + "px");
 		});
 	 	$(document).on("click", ".hideSide", function(event) {
-			$("#sidecolumn").hide();
+			$("#navcolumn").hide();
 			$("#showSide").show();
 			$('body').removeClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
 			if (!$('body').hasClass('bodyRightMargin')) {
@@ -250,10 +258,10 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 				// headerFile contains only navigation
 				$("#local-header").load(headerFile, function( response, status, xhr ) {
 
-						console.log("Doc is ready, header file loaded, place #cloneLeft into #sidecolumn")
+						console.log("Doc is ready, header file loaded, place #cloneLeft into #navcolumn")
 
-						waitForElm('#sidecolumn').then((elm) => { // #sidecolumn is appended by this navigation.js script, so typically not needed.
-							//$("#cloneLeft").clone().appendTo($("#sidecolumn"));
+						waitForElm('#navcolumn').then((elm) => { // #navcolumn is appended by this navigation.js script, so typically not needed.
+							//$("#cloneLeft").clone().appendTo($("#navcolumn"));
 							//$("#cloneLeft").show(); // Still hidden, just removing the div that prevents initial exposure.
 							if(location.host.indexOf("intranet") >= 0) {
 						        $("#sidecolumnContent a").each(function() {
@@ -413,6 +421,11 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 						$(document).on("click", ".showSideTabs", function(event) {
 							console.log("Clicked .showSideTabs");
 		          			loadScript('/localsite/js/settings.js', function(results) {}); // For "Settings" popup
+
+		          			if(location.href.indexOf("/seasons") >= 0) {
+		          				closeExpandedMenus(".showStories");
+            					$("#storiesPanel").show();
+		          			}
 		          			$('body').addClass('bodyRightMargin'); // Creates margin on right for fixed sidetabs.
 		          			$('body').addClass('mobileView');
 		          			$("#sideTabs").show();
@@ -576,10 +589,10 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 	 	// SIDE NAV WITH HIGHLIGHT ON SCROLL
 
 	 	// Not currently using nav.html, will likely use later for overrides.  Primary side nav resides in header.
-	 	if (1==2 && param["sidecolumn"]) {
+	 	if (1==2 && param["navcolumn"]) {
 	 		// Wait for header to load?
 
-			let targetColumn = "#sidecolumn";
+			let targetColumn = "#navcolumn";
 			$(targetColumn).load( modelpath + "../localsite/nav.html", function( response, status, xhr ) {
 
 				activateSideColumn();
@@ -665,14 +678,14 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 	}
 	function activateSideColumn() {
 				// Make paths relative to current page
-		 		$("#sidecolumn a[href]").each(function() {
+		 		$("#navcolumn a[href]").each(function() {
 		 			if($(this).attr("href").toLowerCase().indexOf("http") < 0) {
 		 				if($(this).attr("href").indexOf("/") != 0) { // Don't append if starts with /
 		 					$(this).attr("href", climbpath + $(this).attr('href'));
 			      		}
 			  		}
 			    })
-		 		$("#sidecolumn img[src]").each(function() {
+		 		$("#navcolumn img[src]").each(function() {
 		 			if($(this).attr("src").indexOf("/") != 0) { // Don't append if starts with /
 			      		$(this).attr("src", climbpath + $(this).attr('src'));
 			  		}

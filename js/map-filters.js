@@ -393,11 +393,20 @@ $(document).ready(function () {
     	}
     	$('#keywordFields').hide();
     	$('#topPanel').hide();
-        //if () {
-
-        //}
 	});
-	
+    $(document).on("click", "#showSide, #navcolumn", function(event) {
+        event.stopPropagation();
+    });
+	$(document).on("click", "body", function(event) {
+        if ($("#navcolumn").is(":visible") && window.innerWidth < 600) { 
+            $('#navcolumn').hide();
+            $("#showSide").show();
+            $('body').removeClass('bodyLeftMargin');
+            if (!$('body').hasClass('bodyRightMargin')) {
+                $('body').removeClass('mobileView');
+            }
+        }
+    });
 
 	function hideNonListPanels() {
         updateHash({"mapview":""});
@@ -2503,7 +2512,7 @@ function hashChanged() {
 
             //$("#tableSide").hide();
 
-            if ($("#sidecolumn .catList").is(":visible")) {
+            if ($("#navcolumn .catList").is(":visible")) {
                 $("#selected_states").hide();
             }
 

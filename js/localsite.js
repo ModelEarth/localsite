@@ -619,7 +619,7 @@ function loadLeafletAndMapFilters() {
     loadScript(theroot + 'js/navigation.js', function(results) {
       waitForElm('body').then((elm) => {
         console.log("body is now available"); // If missing header persists, remove waitForElm('body') here (line above annd closure)
-        // Puts space above flexmain for sidecolumn to be visible after header
+        // Puts space above flexmain for navcolumn to be visible after header
         $("body").prepend("<div id='local-header' class='flexheader hideprint' style='display:none'></div>\r");
         waitForElm('#local-header').then((elm) => {
           $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)

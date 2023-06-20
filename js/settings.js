@@ -895,23 +895,17 @@ function initEvents() { // Once included file1 is loaded.
         }
         */
         //$(document).on("click", ".rightTopMenuInner>div", function(event) {
-        function closeExpandedMenus() {
-            $(".rightTopMenuInner>div").removeClass("active");
-            $(event.currentTarget).addClass("active");
-            $(".menuExpanded").hide(); // Hide any open
-            //alert("rightTopMenuInner 3");
-        }
         $(document).on("click", ".showSections", function(event) {
-            closeExpandedMenus();
+            closeExpandedMenus(event.currentTarget);
             //$('.menuExpanded').hide();
             $("#topicsPanel").show();
         });
         $(document).on("click", ".showStories", function(event) {
-            closeExpandedMenus();
+            closeExpandedMenus(event.currentTarget);
             $("#storiesPanel").show();
         });
         $(document).on("click", ".showListings", function(event) {
-            closeExpandedMenus();
+            closeExpandedMenus(event.currentTarget);
             if (!$.trim($("#mapList1").html())) { // If the location list is not empty, load the list of types.
                 $("#bigThumbMenuInner").appendTo("#listingsPanel");
                 if (!document.getElementById("#bigThumbMenuInner")) {

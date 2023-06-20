@@ -456,25 +456,24 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     display: block;
 }
 
-/* For sidecolumn from header.html */
-.sidecolumn-inpage .sidecolumnLeft {
+/* For navcolumn from header.html */
+.navcolumn-inpage .sidecolumnLeft {
     position: static !important;
     float:left;
     padding: 0px;
 }
-.sidecolumn-inpage .sidecolumnLeftScroll {
+.navcolumn-inpage .sidecolumnLeftScroll {
     position: relative;
     bottom:auto !important;
     right:0 !important;
 }
 
-#sidecolumn {
+#navcolumn {
     position: fixed;
     top: 0; left: 0; bottom: 0;
     width: 220px;
     padding-right: 0px;
-    background-color: rgb(253, 253, 253);
-    background-color: rgb(99 99 99/50%);
+    background-color: #b1b1b1;
 }
 .sidecolumnLeft {
     padding: 24px;
@@ -542,18 +541,18 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     .content {
       padding: 30px 30px 30px 40px;
     }
-    #sidecolumn {
+    #navcolumn {
       display: none;
     }
 }
-.sidecolumn-inpage {
+.navcolumn-inpage {
     position: static !important;
     position: relative;
 }
-.sidecolumn-inpage > .sidecolumnLeft {
+.navcolumn-inpage > .sidecolumnLeft {
     position: static;
 }
-/* End For sidecolumn from header.html */
+/* End For navcolumn from header.html */
 
 /* Settings Menu */
 .settingsPanel select {
