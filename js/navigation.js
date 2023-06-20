@@ -284,8 +284,8 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 								let colCloneRight = colEleRight.cloneNode(true)
 								colCloneRight.id = "cloneRight";
 								$("#topicsMenu").prepend(colCloneRight);
-
-								if (location.host.indexOf('localhost') >= 0 || location.href.indexOf('dreamstudio')) {
+								
+								if (location.host.indexOf('dreamstudio') >= 0 || location.href.indexOf('dreamstudio') >= 0) {
 									let storiesFile = "https://dreamstudio.com/seasons/episodes.md";
 									//console.log("location.href index: " + location.href.indexOf("/dreamstudio/"));
 									if(location.host.indexOf('localhost') >= 0) {
