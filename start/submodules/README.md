@@ -19,10 +19,16 @@ git submodule add https://github.com/DreamStudioApp/StableStudio StableStudio
 git commit -m "StableStudio submodule"
 git submodule update --init --recursive
 
-Note: You'll switch the branch in GitHub Desktop to get updates to a submodule, then commit your main project so it's using the most recent version of each submodule.
+<!--Note: You'll switch the branch in GitHub Desktop to get updates to a submodule, then commit your main project so it's using the most recent version of each submodule.-->
 
-Cloudflare will automatically pull in updates when submodule repos are updated.
-Or you can request a pull within Cloudflare here (both go to the same page):  
+To bring in changes to a submodule, change (cd) to the folder and do
+
+	git pull
+
+If a conflict occurs, [reset](https://stackoverflow.com/questions/6335681/how-do-i-get-the-latest-version-of-my-code) before pulling.
+
+<!-- Cloudflare will automatically pull in updates when submodule repos are updated.-->
+You can request a pull within Cloudflare here (both go to the same page):  
 
 Cloudflare > Worker Routes > Manage Workers
 Cloudflare > Workers & Pages > Overview > (Choose your site)
