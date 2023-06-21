@@ -107,3 +107,24 @@ Typically, when entering an ip address range, the range should be something like
 
 Reference:
 [Create a list in the dashboard](https://developers.cloudflare.com/fundamentals/global-configurations/lists/create-dashboard/)
+
+
+
+## Create a single-password site
+
+Include the "functions" folder from the following repo to create the secure login: https://dev.to/charca/password-protection-for-cloudflare-pages-8ma
+
+<!--
+No longer seeing this route, double-check then delete thiL
+Add a custom domain in cloudflare Pages by clicking "Create a project" at "Account Home > Pages"
+-->
+
+Workers & Pages > Pages tab > Connect to Git
+
+Connect to your repo, which can be a private repo.
+
+Make note of the generated subdomain where the project will be deployed.  It will be [generated subdomain].pages.dev
+
+Under Environmental variables, add CFP_PASSWORD [your password]
+
+Lastly, add a subdomain under Custom domains within Cloudflare pages. This will automatically create a CNAME record pointed at [generated subdomain].pages.dev after a few minutes.
