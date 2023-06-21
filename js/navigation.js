@@ -88,7 +88,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 				//showClassInline(".earth");
 			}
 		// 
-		} else if ((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || param.startTitle == "Georgia.org" || location.host.indexOf("georgia.org") >= 0 ) {
+		} else if ((location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
 			// The localsite repo is open to use by any state or country.
 			// Georgia Economic Development has been a primary driver of development.
 			// Show locally for Brave Browser only - insert before:  ) || false
