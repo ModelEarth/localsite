@@ -13,6 +13,13 @@ You can transfer an existing domain to Cloudflare for cheaper hosting.
 
 ## Configuration
 
+These are in the walk-through when adding a new site:
+
+Automatic HTTPS Rewrites - On (the default)
+Always Use HTTPS - On  
+- Brotli compression - On (the default)  
+
+
 ### Go to "Speed > Optimization"  
 
 - Auto Minify - Javascript and CSS. Avoid HTML because comments will be removed.  
