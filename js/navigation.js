@@ -109,11 +109,11 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 		 		document.title = "Georgia.org";
 		 	}
 			changeFavicon("/localsite/img/logo/states/GA-favicon.png");
-			if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("intranet") >= 0) {
+			if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("intranet") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
 				showClassInline(".intranet");
 			}
 			showClassInline(".georgia");
-			if (location.host.indexOf("intranet") < 0) { // Since intranet site does not include community submodule
+			if (location.host.indexOf("intranet") < 0 && location.host.indexOf("locations.pages.dev") < 0) { // Since intranet site does not include community submodule
 				showClassInline(".earth");
 			}
 			$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
