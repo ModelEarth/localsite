@@ -17,7 +17,7 @@ If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns]
 	https://github.com/GeorgiaData/localsite/compare/master...modelearth:master
 -->
 
-### Steps for hosting your story pages
+### Steps for hosting your pages
 
 The following steps are elaborated on after this summary.  
 
