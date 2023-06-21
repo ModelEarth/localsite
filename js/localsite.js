@@ -696,8 +696,10 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         } else if(document.getElementById("bodyFile") == null) {
           $('body').prepend("<div id='bodyFile'></div>");
         }
-
-        $('body').prepend("<div id='showSide' class='showSide' style='top:92px;left:-28px;position:absolute'><i class='material-icons show-on-load' style='font-size:35px; opacity:0.7; background:#fcfcfc; padding-right:3px; border:1px solid #555; border-radius:8px;'>&#xE5D2;</i></div>");
+        if(param.showheader == "true") {
+          $('body').prepend("<div id='showSide' class='showSide' style='top:92px;left:-28px;position:absolute'><i class='material-icons show-on-load' style='font-size:35px; opacity:0.7; background:#fcfcfc; padding-right:3px; border:1px solid #555; border-radius:8px;'>&#xE5D2;</i></div>");
+        }
+        
         waitForElm('#fullcolumn').then((elm) => {
           $("#showSide").prependTo("#fullcolumn"); 
         });

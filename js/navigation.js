@@ -67,6 +67,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
     }
 	function applyNavigation() { // Called by localsite.js so local_app path is available.
 		// To do: fetch the existing background-image.
+		console.log("location.host: " + location.host + " " + location.host.indexOf("locations.pages.dev"));
 		if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio") {
 			//showLeftIcon = true;
 			$(".siteTitleShort").text("DreamStudio");
