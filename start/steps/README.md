@@ -2,7 +2,7 @@
 
 You can use [Localsite Pages](../) to create websites and stories with free GitHub hosting.
 
-If you get stuck at any point, please DM us on Twitter at [DreamStudioAGI](https://twitter.com/DreamStudioAGI).
+If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns](https://twitter.com/LorenHeyns).
 
 <!--
 	Not using currently, made a physcial copy instead
