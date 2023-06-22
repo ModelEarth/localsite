@@ -88,13 +88,6 @@ $(document).ready(function () {
 	if (param.state) {
 	    $("#state_select").val(param.state.split(",")[0]);
 	}
-
-	//loadMarkupPage("intro.md", "introDiv", "_parent");
-	if (! ('webkitSpeechRecognition' in window) ) {
-		$(".si-btn").hide();
-	} else {
-		//$(".si-btn").show();
-	}
 	
 	// The following can be reactivated
     /*
@@ -697,9 +690,8 @@ function filterClickLocation(loadGeoTable) {
     }
     //alert("distanceFilterFromTop  " + distanceFilterFromTop);
 	//$('.hideMetaMenuClick').trigger("click"); // Otherwise covers location popup. Problem: hides hideLayers/hideLocationsMenu.
-	//alert("1")
 	if ($("#filterLocations").is(':visible') && (distanceFilterFromTop < 300 || distanceFilterFromTop > 300)) {
-		$(".locationTabText").text($(".locationTabText").attr("title"));
+        $(".locationTabText").text($(".locationTabText").attr("title"));
         $("#showLocations").hide();
 		$("#hideLocations").show();
 		//$(".locationTabText").text("Entire State");
@@ -2927,7 +2919,6 @@ function hashChanged() {
         }
     }
     if (hash.mapview != priorHash.mapview) {
-    	//alert("hash change view")
     	//$(".stateFilters").show();
     	//$("#filterLocations").show();
     	//$("#geomap").show(); // To trigger map filter display below.
@@ -2936,7 +2927,7 @@ function hashChanged() {
     		renderMapShapes("geomap", hash, 1); // County select map
     		loadGeomap = false;
     	} else {
-    		$("#filterLocations").hide();
+            $("#filterLocations").hide();
     	}
     }
     $(".regiontitle").text(local_app.loctitle);

@@ -882,7 +882,8 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   // US East Coast Ocean Currant
   // https://earth.nullschool.net/#current/wind/surface/currents/overlay=wind/orthographic=-73.52,34.52,1101
 
-  loadIframe("mainframe","https://earth.nullschool.net/#current/wind/surface/level/orthographic=" +  dp.longitude + "," + dp.latitude + ",1381");
+  // Was getting called here on display/products/intranet.html
+  //loadIframe("mainframe","https://earth.nullschool.net/#current/wind/surface/level/orthographic=" +  dp.longitude + "," + dp.latitude + ",1381");
 
 }
 function initialHighlight(hash) {
