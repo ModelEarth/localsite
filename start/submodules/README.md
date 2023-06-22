@@ -52,8 +52,9 @@ git checkout -b io
 
 If submodule repo is private, add a token. [details](https://stackoverflow.com/questions/72786625/deploying-repos-with-submodules-using-cloudflare-pages)
 
-Generate a token within a repo at:
-GitHub > Settings > Developer Setting (bottom of left column)
+Generate a token within your Github account at:
+Settings (click your profile image) > Developer Setting (bottom of left column)
+<!-- For display: selected no expiration "repo" Full control of private repositories -->
 
 [Using Github access token with submodules](https://medium.com/@alexander.sirenko/using-github-access-token-with-submodules-5038b6d639e8)
 
