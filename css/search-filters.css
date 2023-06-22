@@ -373,6 +373,9 @@ input.filterClick[type="text"] {
   font-family: 'Roboto Condensed', sans-serif;
   text-decoration: none;
 }
+#listingsPanel .bigThumbText {
+  color: #fff;
+}
 .bigThumb:hover .bigThumbText {
   font-weight: 400;
 }

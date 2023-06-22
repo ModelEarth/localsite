@@ -602,16 +602,7 @@ if(typeof page_scripts == 'undefined') {  // initial navigation.js load
 		// END SIDE NAV WITH HIGHLIGHT ON SCROLL
 	} // end applyNavigation function
 
-	function closeSideTabs() {
-		$("#sideTabs").hide();
-		$("body").removeClass("bodyRightMargin");
-		if (!$('body').hasClass('bodyLeftMargin')) {
-			$('body').removeClass('mobileView');
-		}
-		//$("#hideMenu").hide();
-		$("#closeSideTabs").hide();
-		$("#showSideTabs").show();
-	}
+
 	$(document).ready(function () {
 		//alert("word")
 		$(document).on("click", ".hideMenu", function(event) {

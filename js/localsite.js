@@ -1803,6 +1803,16 @@ function showSearchFilter() {
       //$(".quickMenu").hide();
   }
 }
+function closeSideTabs() {
+  $("#sideTabs").hide();
+  $("body").removeClass("bodyRightMargin");
+  if (!$('body').hasClass('bodyLeftMargin')) {
+    $('body').removeClass('mobileView');
+  }
+  //$("#hideMenu").hide();
+  $("#closeSideTabs").hide();
+  $("#showSideTabs").show();
+}
 function revealFilters() {
   //console.log("show #filterFieldsHolder");
   $("#filterFieldsHolder").show();

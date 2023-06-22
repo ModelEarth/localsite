@@ -8,7 +8,7 @@ var dataParameters = []; // Probably can be removed, along with instances below.
 var sideTopOffsetEnabled = true;
 var sideTopOffsetEnabledBig = false;
 
-let styleObject = {}; // https://docs.mapbox.com/mapbox-gl-js/style-spec/root/
+if(typeof styleObject=='undefined'){ var styleObject={}; } // https://docs.mapbox.com/mapbox-gl-js/style-spec/root/
 styleObject.layers = [];
 
 var layerControl = {}; // Object containing one control for each map on page.
@@ -650,7 +650,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.countyColumn = "county";
         dp.itemsColumn = "Category1";
       } else if (show == "smart") { // param["data"] for legacy: https://www.georgia.org/smart-mobility
-        dp.dataTitle = "Smart and Sustainable";
+        dp.shortTitle = "Smart Data Projects";
         dp.listTitle = "Data Driven Decision Making";
         //dp.listSubtitle = "Smart & Sustainable Movement of Goods & Services";
         dp.industryListTitle = "Mobility Tech";
