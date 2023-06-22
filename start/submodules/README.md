@@ -27,6 +27,14 @@ To bring in changes to a submodule, change (cd) to the folder and do
 
 If a conflict occurs, [reset](https://stackoverflow.com/questions/6335681/how-do-i-get-the-latest-version-of-my-code) before pulling.
 
+	git reset --hard HEAD
+	git clean -xffd
+	git pull
+
+Or you may need to specify the path and branch. Example:
+
+	git pull http://github.com/modelearth/localsite main
+
 <!-- Cloudflare will automatically pull in updates when submodule repos are updated.-->
 You can request a pull within Cloudflare here (both go to the same page):  
 
@@ -42,13 +50,12 @@ git checkout -b io
 
 ### Use Tokens for Private Repos
 
-Add your token to github.com path (perhaps only necessary if submodule repo is private.)
-https://stackoverflow.com/questions/72786625/deploying-repos-with-submodules-using-cloudflare-pages
+If submodule repo is private, add a token. [details](https://stackoverflow.com/questions/72786625/deploying-repos-with-submodules-using-cloudflare-pages)
 
+Generate a token within a repo at:
 GitHub > Settings > Developer Setting (bottom of left column)
 
-Using Github access token with submodules
-https://medium.com/@alexander.sirenko/using-github-access-token-with-submodules-5038b6d639e8
+[Using Github access token with submodules](https://medium.com/@alexander.sirenko/using-github-access-token-with-submodules-5038b6d639e8)
 
 
 ### Example of .gitmodules file
