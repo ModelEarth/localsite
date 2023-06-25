@@ -702,6 +702,39 @@ $(document).on("click", ".showAccount", function(event) {
     //}
     $(".accountPanel").show();
 });
+$('.contactUs').click(function(event) {
+    alert("The Contact Us link is not active.")
+    event.stopPropagation();
+});
+$('.shareThis').click(function(event) {
+    window.location = "https://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4a9818987bca104e";
+    event.stopPropagation();
+});
+
+$(document).on("click", ".showSections", function(event) {
+    closeExpandedMenus(event.currentTarget);
+    //$('.menuExpanded').hide();
+    $("#topicsPanel").show();
+});
+$(document).on("click", ".showStories", function(event) {
+    closeExpandedMenus(event.currentTarget);
+    $("#storiesPanel").show();
+});
+
+
+$(document).on("click", ".showPrintOptions, .print_button", function(event) {
+//$('.showPrintOptions, .print_button').click(function(event) {
+    //alert("show print2")
+    $('.menuExpanded').hide();
+    $('.printOptionsText').show();
+    $('.printOptionsHolderWide').show();
+    event.stopPropagation();
+});
+$('.accountPanelClose').click(function(event) {
+    //$(".hideAccount").hide();
+    //$(".showAccount").show(); // Bug, this caused menu item to appear when closing settings.
+    $(".accountPanel").hide();
+});
 
 $(document).on("click", ".showTheMenu", function(event) { // Seasons
 	console.log("Clicked .showTheMenu");

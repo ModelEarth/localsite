@@ -2077,7 +2077,11 @@ function initSiteObject(layerName) {
           				$('.showApps').removeClass("active"); // Still needed?
 
           			} else {
-          				console.log("call showThumbMenu from navidation.js")
+          				console.log("call showThumbMenu from navidation.js");
+
+                        closeExpandedMenus($(".showSections")); // Close Locations sidetab and open Topics sidetab.
+                        $("#topicsPanel").show();
+
                         if ($("#filterLocations").is(':visible')) {
                             filterClickLocation(); // Toggle county-select closed
                         }
