@@ -64,6 +64,9 @@ a:link, a:visited {
     color: #fff;
     background-color: #555;
 }
+.showSideTabs i {
+    font-weight: 100 !important;
+}
 .navLinks a:hover {
     background-color: #555;
 }

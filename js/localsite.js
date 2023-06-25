@@ -539,66 +539,68 @@ function loadLocalTemplate() {
 
   let bodyFileDiv = "#bodyFile";
   //bodyFileDiv = "body";
+  waitForElm(bodyFileDiv).then((elm) => {
+    $(bodyFileDiv).load(bodyFile, function( response, status, xhr ) {
+      $("#insertedTextSource").remove(); // For map/index.html. Avoids dup header.
 
-  $(bodyFileDiv).load(bodyFile, function( response, status, xhr ) {
-    $("#insertedTextSource").remove(); // For map/index.html. Avoids dup header.
+      //$('img').each(function() {
+      //  $(this).attr('src', 'https://model.earth' + $(this).attr('src'));
+      //});
 
-    //$('img').each(function() {
-    //  $(this).attr('src', 'https://model.earth' + $(this).attr('src'));
-    //});
+      let elemDiv = document.createElement('div');
+      elemDiv.id = "localsiteDetails";
+      elemDiv.style.cssText = "display:none";
+      elemDiv.innerHTML = "testing";
+      document.body.appendChild(elemDiv);
 
-    let elemDiv = document.createElement('div');
-    elemDiv.id = "localsiteDetails";
-    elemDiv.style.cssText = "display:none";
-    elemDiv.innerHTML = "testing";
-    document.body.appendChild(elemDiv);
-
-    console.log("Template Loaded: " + bodyFile);
-    if (typeof relocatedStateMenu != "undefined") {
-      relocatedStateMenu.appendChild(state_select); // For apps hero
-      $(".stateFilters").hide();
-    }
-    waitForElm('#filterClickLocation').then((elm) => {
-      if (param.showstates != "false") {
-          $("#filterClickLocation").show();
+      console.log("Template Loaded: " + bodyFile);
+      if (typeof relocatedStateMenu != "undefined") {
+        relocatedStateMenu.appendChild(state_select); // For apps hero
+        $(".stateFilters").hide();
       }
-      $("#mapFilters").prependTo("#fullcolumn");
-      // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
-      $("#local-header").prependTo("#fullcolumn");
-      $("#headerbar").prependTo("#fullcolumn");
+      waitForElm('#filterClickLocation').then((elm) => {
+        if (param.showstates != "false") {
+            $("#filterClickLocation").show();
+        }
+        $("#mapFilters").prependTo("#fullcolumn");
+        // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
+        $("#local-header").prependTo("#fullcolumn");
+        $("#headerbar").prependTo("#fullcolumn");
+      });
+      //waitForElm('#local-header').then((elm) => {
+      //  $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
+      //});
+
+      waitForElm('#fullcolumn').then((elm) => {
+        $("#headerbar").prependTo("#fullcolumn"); // Move back up to top.
+        //$("#bodyMainHolder").prependTo("#fullcolumn"); // Move back up to top.
+        $("#sideTabs").prependTo("#fullcolumn"); // Move back up to top.
+
+        // Replace paths in div
+        if(location.host.indexOf("intranet") >= 0) {
+          $("#intranet-nav a").each(function() {
+            $(this).attr('href', $(this).attr('href').replace(/\/docs\//g,"\/"));
+          });
+        }
+        if(location.host.indexOf("dreamstudio") >= 0) {
+          $("#dreamstudio-nav a").each(function() {
+            $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
+          });
+        }
+        showHeaderBar();
+      });
+
+      if (location.host.indexOf('model') >= 0) {
+        $(".showSearch").show();
+        $(".showSearch").removeClass("local");
+      }
     });
-    //waitForElm('#local-header').then((elm) => {
-    //  $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
-    //});
-
-    waitForElm('#fullcolumn').then((elm) => {
-      $("#headerbar").prependTo("#fullcolumn"); // Move back up to top.
-      //$("#bodyMainHolder").prependTo("#fullcolumn"); // Move back up to top.
-      $("#sideTabs").prependTo("#fullcolumn"); // Move back up to top.
-
-      // Replace paths in div
-      if(location.host.indexOf("intranet") >= 0) {
-        $("#intranet-nav a").each(function() {
-          $(this).attr('href', $(this).attr('href').replace(/\/docs\//g,"\/"));
-        });
-      }
-      if(location.host.indexOf("dreamstudio") >= 0) {
-        $("#dreamstudio-nav a").each(function() {
-          $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
-        });
-      }
-      showHeaderBar();
-    });
-
-    if (location.host.indexOf('model') >= 0) {
-      $(".showSearch").show();
-      $(".showSearch").removeClass("local");
-    }
   });
 }
 function showHeaderBar() {
   //$('.headerOffset').show(); 
   $('#headerbar').show();
+  $('#headerbar').removeClass("headerbarhide");
   $('#headerbar').removeClass("headerbarhide");
   $('#local-header').show();
   //alert("showHeaderBar")
@@ -615,7 +617,7 @@ function loadSearchFilterIncludes() {
 function loadLeafletAndMapFilters() {
   //alert("param.showheader " + param.showheader)
   //if (param.shownav) {
-  if (param.showheader != "false") {
+  if (param.showheader != "false" || param.showsearch == "true") {
     loadScript(theroot + 'js/navigation.js', function(results) {
       waitForElm('body').then((elm) => {
         console.log("body is now available"); // If missing header persists, remove waitForElm('body') here (line above annd closure)
@@ -677,7 +679,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
        console.log("body becomes available")
         if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
           var div = $("<div />", {
-              html: '<style>.local{display:inline !important}.localonly{display:block !important}</style>'
+              html: '<style>.local{display:inline-block !important}.localonly{display:block !important}</style>'
             }).appendTo("body");
         } else {
           // Inject style rule
@@ -932,6 +934,29 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       */
 
     }
+  } else if (param.showsearch == "true") {
+    loadSearchFilterIncludes();
+
+    // TODO: Switch to just this, which loads map-filters.js for the tab click events.
+    //loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
+
+    // TODO: Then remove these dependencies and lazy load these when switching to the above and tabs are clicked.
+    loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
+      includeCSS3(theroot + 'css/leaflet.css',theroot);
+      loadScript(theroot + 'js/leaflet.js', function(results) {
+        loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Could skip when map does not use material icon colors
+          loadScript(theroot + 'js/map.js', function(results) {
+            // Loads map-filters.js
+            loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
+          });
+        });
+      });
+    });
+  } else if (param.showapps == "true") {
+    loadLocalTemplate();
+    loadSearchFilterIncludes(); // Could load less then all 4 css files.
+    loadScript(theroot + 'js/navigation.js', function(results) {
+    });
   }
 
   //} else { // Show map or list without header

@@ -1796,12 +1796,13 @@ function showList(dp,map) {
             }
           }
 
+          let markerID = dataMatchCount;
           if (outaddress) { // Only listings with locations, for map points. 
             // To do: Adjust so Google link is used when address but no latitude and longitude.
             if (element[dp.latColumn] && element[dp.lonColumn]) {
-              shortout += "<div class='detail' name='" + name.replace(/'/g,'&#39;') + "' latitude='" + element[dp.latColumn] + "' longitude='" + element[dp.lonColumn] + "' color='" + bulletColor + "'>";
+              shortout += "<div class='detail' markerid='" + markerID + "' name='" + name.replace(/'/g,'&#39;') + "' latitude='" + element[dp.latColumn] + "' longitude='" + element[dp.lonColumn] + "' color='" + bulletColor + "'>";
             } else {
-              shortout += "<div class='detail' name='" + name.replace(/'/g,'&#39;') + "' color='" + bulletColor + "'>";
+              shortout += "<div class='detail' markerid='" + markerID + "' name='" + name.replace(/'/g,'&#39;') + "' color='" + bulletColor + "'>";
             }
             shortout += "<div class='detailTitle'>" + name + "</div>";
             if (outaddress) {
@@ -2004,20 +2005,24 @@ function showList(dp,map) {
     $("#detaillist .detail").show(); // Show all
     $("#changeHublistHeight").show();
   }
-    //$("#detaillist > [name='"+ name.replace(/'/g,'&#39;').replace(/& /g,'AND ') +"']").show();
+  //$("#detaillist > [name='"+ name.replace(/'/g,'&#39;').replace(/& /g,'AND ') +"']").show();
 
-  //if(location.host.indexOf('localhost') >= 0) {
-    //$("#mapList1").append(shortout);
-    $("#mapList1").html(shortout);
-  //}
+  $("#mapList1").html(shortout);
+  $("#mapList1Holder").show();
 
-  $('.detail').mouseenter(
-      function() { 
-        // Triggered when rolling over list.
-        // TO DO: make mappoint bigger when rolling over list, but don't zoom until click.
-        popMapPoint(dp, map, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
-      }
-  );
+  $('.detail').mouseenter(function(event){
+
+    // Get the cound of the current div
+    let markerID = event.target.getAttribute("markerid");
+
+    $("#map1 .leaflet-marker-pane svg").removeClass("activeMarker");
+    $("#map1 .leaflet-marker-pane svg:nth-child(" + markerID +")").addClass("activeMarker");
+
+
+      // Triggered when rolling over list.
+      // TO DO: make mappoint bigger when rolling over list, but don't zoom until click.
+      //popMapPoint(dp, map, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
+  });
 
   var imenu = "<div style='display:none'>";
   imenu += "<div id='listingMenu' class='popMenu filterBubble'>";
@@ -2089,7 +2094,7 @@ function showList(dp,map) {
       // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
       // Remove name from hash to trigger refresh
       searchFor += " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\",\"cat\",\"subcat\"]); return false;' href='#show=" + param["show"] + "'>Show All</a></span>";
-
+      searchFor += " <a href='' onclick='return false;' class='showListings'>View List</a>";
       $("#mapList1Text").html(searchFor);
       $("#dataList").html(searchFor);
       $("#resultsPanel").show();
@@ -2233,6 +2238,10 @@ var colorTheCountry = d3.scaleThreshold()
     .range(d3.schemeBlues[9]);
 
 function popMapPoint(dp, map, latitude, longitude, name, color) {
+
+
+  color = "#666"; // Override incoming
+
   // Place large icon on side map and zoom
 
   if (!latitude || !longitude) {
@@ -2246,6 +2255,9 @@ function popMapPoint(dp, map, latitude, longitude, name, color) {
   // Add a single map point
   var iconColor, iconColorRGB, iconName;
   var colorScale = dp.scale;
+
+  // Add this to g and double width
+  // transform: scale(2);
 
   iconColorRGB = hex2rgb(color);
   iconName = dp.iconName;
@@ -3883,8 +3895,10 @@ function addIcons(dp,map,map2) {
   //console.log(colorScale)
 
   let hash = getHash();
+  let uniqueID = 0;
   //console.log("dp.color " + dp.color);
   dp.data.forEach(function(element) {
+    uniqueID++;
     // Add a lowercase instance of each column name
     var key, keys = Object.keys(element);
     var n = keys.length;

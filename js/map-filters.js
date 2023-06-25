@@ -14,9 +14,7 @@
 //}
 
 // localObject.geo will save a list of loaded counties for multiple states
-if(typeof localObject == 'undefined') {
-    var localObject = {};
-}
+if(typeof localObject == 'undefined') { var localObject = {};}
 let us_stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78,}
 
 if(typeof localObject.stateCountiesLoaded == 'undefined') {
@@ -25,9 +23,6 @@ if(typeof localObject.stateCountiesLoaded == 'undefined') {
 }
 if(typeof localObject.geo == 'undefined') {
     localObject.geo = []; // Holds counties. Should this also be {} ?
-}
-if(typeof localObject.layers == 'undefined') {
-    localObject.layers = {}; // Holds layers.
 }
 
 function populateFieldsFromHash() {
@@ -435,8 +430,7 @@ $(document).ready(function () {
 	    event.stopPropagation();
    	});
 
-
-	$("#keywordsTB").click(function() {
+    $(document).on("click", "#keywordsTB", function(event) {
 		if ($("#keywordFields").is(':visible')) {
 			$("#keywordFields").hide();
 		} else {
@@ -446,7 +440,6 @@ $(document).ready(function () {
             }
 		}
 	    event.stopPropagation();
-	
    	});
    	$("#findWhat, #productCodeHolder").click(function() { /* Stop drilldown */
 	    event.stopPropagation();
@@ -676,7 +669,7 @@ function productList(startRange, endRange, text) {
 }
 
 function filterClickLocation(loadGeoTable) {
-	console.log("show location filters");
+	
 
 	$("#searchLocation").focus(); // Not working
 	//document.getElementById("searchLocation").focus(); // Not working
@@ -691,6 +684,7 @@ function filterClickLocation(loadGeoTable) {
     //alert("distanceFilterFromTop  " + distanceFilterFromTop);
 	//$('.hideMetaMenuClick').trigger("click"); // Otherwise covers location popup. Problem: hides hideLayers/hideLocationsMenu.
 	if ($("#filterLocations").is(':visible') && (distanceFilterFromTop < 300 || distanceFilterFromTop > 300)) {
+        console.log("hide #filterLocations");
         $(".locationTabText").text($(".locationTabText").attr("title"));
         $("#showLocations").hide();
 		$("#hideLocations").show();
@@ -716,6 +710,7 @@ function filterClickLocation(loadGeoTable) {
 		let hash = getHash();
         //alert("hash.state " + hash.state);
         //alert("param.state " + param.state);
+        console.log("show #filterLocations");
         if (!hash.state && param.state) {
             hash.state = param.state; // For /apps/base/
             console.log("filterClickLocation updatesHash state " + hash.state);
@@ -785,7 +780,7 @@ function filterClickLocation(loadGeoTable) {
 
 function locationFilterChange(selectedValue,selectedGeo) {
 	let hash = getHash();
-	var useCookies = false; // Would need Cookies from site repo.
+	var useCookies = false; // Would need Cookies from explore repo.
 
     console.log("locationFilterChange: " + selectedValue + " " + selectedGeo);
     //$(".geoListHolder > div").hide();
@@ -1916,259 +1911,8 @@ function removeFrontFolder(path) {
     //return("../.." + path);
     return(path);
 }
-function displayHexagonMenu(layerName, localObject) {
 
-  var currentAccess = 0;
-  consoleLog("Display HEXAGON MENU");
 
-  $("#honeycombMenu").html(""); // Clear prior
-  $("#honeycombPanel").show();
-  var thelayers = localObject.layers;
-  //console.log(thelayers);
-  var sectionMenu = "";
-  var categoryMenu = "";
-  //var iconMenu = "";
-  var layer;
-  for(layer in thelayers) {
-
-        var menuaccess = 10; // no one
-        menuaccess = 0; //Temp
-        try { // For IE error. Might not be necessary.
-            if (typeof(localObject.layers[layer].menuaccess) === "undefined") {
-                menuaccess = 0;
-            } else {
-                menuaccess = localObject.layers[layer].menuaccess;
-            }
-        } catch(e) {
-            consoleLog("displayLayerCheckboxes: no menuaccess");
-        }
-        if (access(currentAccess,menuaccess)) {
-            if (localObject.layers[layer].menulevel == "1") {
-            //var layerTitleAndArrow = (thelayers[layer].navtitle ? thelayers[layer].navtitle : thelayers[layer].title);
-            var layerTitleAndArrow = thelayers[layer].section;
-                var icon = (thelayers[layer].icon ? thelayers[layer].icon : '<i class="material-icons">&#xE880;</i>');
-             if (thelayers[layer].item != "main" && thelayers[layer].section != "Admin" && thelayers[layer].title != "") {
-                // <h1 class='honeyTitle'>" + thelayers[layer].provider + "</h1>
-                sectionMenu += "<li class='hex'><a class='hexIn hash-changer' href='#" + thelayers[layer].item + "'><img src='" + removeFrontFolder(thelayers[layer].image) + "' alt='' /> <p class='honeySubtitle'>" + layerTitleAndArrow + "</p></a></li>";
-                }
-            }
-        }
-  }
-  $("#honeycombMenu").append("<ul id='hexGrid'>" + sectionMenu + "</ul>");
-  $("#bigThumbPanelHolder").show();
-  //$("#iconMenu").append(iconMenu);
-    $("#honeyMenuHolder").show();
-}
-function thumbClick(show,path) {
-    let hash = getHashOnly(); // Not hiddenhash
-	let priorShow = hash.show;
-	hash.show = show;
-	if (!hash.state && param.state) {
-		hash.state = param.state; // At least until states are pulled from geo values.
-	}
-	delete hash.cat;
-	delete hash.naics;
-	delete hash.m; // Birdseye view
-    let pageContainsInfoWidgets = false;
-    if ($("#iogrid").length >= 0 || $(".sector-list").length >= 0) {
-        pageContainsInfoWidgets = true; // Stay on the current page if it contains widgets.
-    }
-    // !pageContainsInfoWidgets && // Prevented bioeconomy from leaving map page.
-	if (path && !window.location.pathname.includes(path)) {
-        // Leave current page
-		var hashString = decodeURIComponent($.param(hash));
-		window.location = "/localsite/" + path + "#" + hashString;
-	} else { // Remain in current page
-		if (show != priorShow) {
-	        delete hiddenhash.show;
-	        delete hiddenhash.naics;
-	        delete param.show;
-	        if (typeof params != 'undefined') {
-	            delete params.show;
-	        }
-	    }
-		$(".bigThumbMenuContent").removeClass("bigThumbActive");
-		$(".bigThumbMenuContent[show='" + show +"']").addClass("bigThumbActive");
-        console.log(hash);
-		goHash(hash,"name,loc"); // Remove name and loc (loc is not used yet)
-	}
-}
-function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
-
-    // Setting param.state in navigation.js passes to hash here for menu to use theState:
-    let hash = getHash();
-    let theState = $("#state_select").find(":selected").val();
-    if (hash.state) {
-        theState = hash.state.split(",")[0].toUpperCase();
-    }
-    if (theState.length > 2) {
-        theState = theState.substring(0,2);
-    }
-	if (!$('.bigThumbUl').length) {
-        if (!activeLayer) {
-            activeLayer = "industries"; // Since Tab defaults to "Local Topics". Will change to site-wide search later.
-        }
-        if (attempts > 100) {
-            alert("EXIT load localObject.layers");
-            return;
-        }
-  		//$("#filterFieldsHolder").hide();
-        if (localObject.layers == undefined) {
-            setTimeout( function() {        
-                displayBigThumbnails(attempts + 1, activeLayer, layerName);
-            }, 100 );
-            return;
-        }
-	    var currentAccess = 0;
-	    $(".bigThumbMenu").html("");
-
-	    //$("#bigThumbPanelHolder").show();
-	    var thelayers = localObject.layers;
-	    var sectionMenu = "";
-	    var categoryMenu = "";
-	    var iconMenu = "";
-	    var bigThumbSection = layerName;
-	    var layer;
-	    for(layer in thelayers) {
-
-	        var menuaccess = 10; // no one
-	        try { // For IE error. Might not be necessary.
-	            if (typeof(localObject.layers[layer].menuaccess) === "undefined") {
-	                menuaccess = 0;
-	            } else {
-	                menuaccess = localObject.layers[layer].menuaccess;
-	            }
-	        } catch(e) {
-	            consoleLog("displayLayerCheckboxes: no menuaccess");
-	        }
-	        
-	        var linkJavascript = "";
-            //alert(layer) // Returns a nummber: 1,2,3 etc
-	        var directlink = getDirectLink(thelayers[layer].livedomain, thelayers[layer].directlink, thelayers[layer].rootfolder, thelayers[layer].item);
-            //alert("directlink " + directlink);
-	        if (bigThumbSection == "main") {
-	            if (thelayers[layer].menulevel == "1") {
-	                if (access(currentAccess,menuaccess)) {
-	                    //if (localObject.layers[layer].section == bigThumbSection && localObject.layers[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
-	                    
-	                        var thumbTitle = ( thelayers[layer].thumbtitle ? thelayers[layer].thumbtitle : (thelayers[layer].section ? thelayers[layer].section : thelayers[layer].primarytitle));
-	                        var thumbTitleSecondary = (thelayers[layer].thumbTitleSecondary ? thelayers[layer].thumbTitleSecondary : '&nbsp;');
-
-	                        var icon = (thelayers[layer].icon ? thelayers[layer].icon : '<i class="material-icons">&#xE880;</i>');
-	                           if (thelayers[layer].item != "main" && thelayers[layer].section != "Admin" && thelayers[layer].title != "") {
-	                                // <h1 class='honeyTitle'>" + thelayers[layer].provider + "</h1>
-	                                //var thumbTitle = thelayers[layer].title;
-	                                var bkgdUrl = thelayers[layer].image;
-	                                if (thelayers[layer].bigthumb) {
-	                                    bkgdUrl = thelayers[layer].bigthumb;
-	                                }
-	                                bkgdUrl = removeFrontFolder(bkgdUrl);
-
-	                                
-	                                if (thelayers[layer].directlink) {
-	                                    //hrefLink = "href='" + removeFrontFolder(thelayers[layer].directlink) + "'";
-	                                }
-	                                if (thelayers[layer].rootfolder && thelayers[layer].rootfolder) {
-	                                	// Change to pass entire hash
-
-	                                	//linkJavascript = 'onclick="window.location = \'/localsite/' + thelayers[layer].rootfolder + '/#show=' + localObject.layers[layer].item + '\';return false;"';
-	                                	linkJavascript = 'onclick="thumbClick(\'' + localObject.layers[layer].item + '\',\'' + thelayers[layer].rootfolder + '\');return false;"';
-	                                //} else if ((directlink.indexOf('/map/') >= 0 && location.pathname.indexOf('/map/') >= 0) || (directlink.indexOf('/info/') >= 0 && location.pathname.indexOf('/info/') >= 0)) {
-	                                } else if ((location.pathname.indexOf('/map/') >= 0) || (location.pathname.indexOf('/info/') >= 0)) {
-	                                	// Stayon page when on map or info
-	                                	//linkJavascript = "onclick='goHash({\"show\":\"" + localObject.layers[layer].item + "\",\"cat\":\"\",\"sectors\":\"\",\"naics\":\"\",\"go\":\"\",\"m\":\"\"}); return false;'"; // Remain in current page.
-	                                	linkJavascript = 'onclick="thumbClick(\'' + localObject.layers[layer].item + '\',\'\');return false;"';
-	                                } else {
-	                                	linkJavascript = "";
-	                                }
-
-	                                // !thelayers[layer].states || (thelayers[layer].states == "GA" && (!param.state || param.state=="GA")  )
-	                                if (menuaccess!=0 || (thelayers[layer].states == "GA")) {
-	                                	// This one is hidden. If a related state, shown with geo-US13
-	                                	let hideforAccessLevel = "";
-	                                	if (menuaccess!=0) { // Also hiddden for access leven
-	                                		hideforAccessLevel = "style='display:none'";
-	                                	}
-	                                	// TODO: lazy load images only when visible by moving img tag into an attribute.
-	                                	// TODO: Add geo-US13 for other states
-	                                    sectionMenu += "<div class='bigThumbMenuContent geo-US13 geo-limited' style='display:none' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' " + hideforAccessLevel + "><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
-	                                
-	                                } else if (menuaccess==0) { // Quick hack until user-0 displays for currentAccess 1. In progress...
-	                                    sectionMenu += "<div class='bigThumbMenuContent' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='displayX:none'><div class='bigThumbHolder'><a ";
-                                        if (directlink) { // This is a fallback and won't contain the hash values.
-                                            sectionMenu += "href='" + directlink + "' ";
-                                        }
-                                        sectionMenu += linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
-	                                }
-	                            }
-	                    //}
-	                }
-	            }
-	        } else {
-	            if (access(currentAccess,menuaccess)) {
-	                if (localObject.layers[layer].section == bigThumbSection && localObject.layers[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
-	                    var thumbTitle = (thelayers[layer].navtitle ? thelayers[layer].navtitle : thelayers[layer].title);
-	                    var thumbTitleSecondary = (thelayers[layer].thumbTitleSecondary ? thelayers[layer].thumbTitleSecondary : '&nbsp;');
-
-	                    var icon = (thelayers[layer].icon ? thelayers[layer].icon : '<i class="material-icons">&#xE880;</i>');
-	                    if (!localObject.layers[layer].bigThumbSection) { // Omit the section parent
-	                       if (thelayers[layer].item != "main" && thelayers[layer].section != "Admin" && thelayers[layer].title != "") {
-	                            // <h1 class='honeyTitle'>" + thelayers[layer].provider + "</h1>
-	                            //var thumbTitle = thelayers[layer].title;
-	                            var bkgdUrl = thelayers[layer].image;
-	                            if (thelayers[layer].bigthumb) {
-	                                bkgdUrl = thelayers[layer].bigthumb;
-	                            }
-	                            bkgdUrl = removeFrontFolder(bkgdUrl);
-
-	                            //var hrefLink = "";
-	                            if (thelayers[layer].directlink) {
-	                                //hrefLink = "href='" + removeFrontFolder(thelayers[layer].directlink) + "'";
-	                            }
-	                            sectionMenu += "<div class='bigThumbMenuContent' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='display:none'><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	    }
-        $("#honeycombPanel").prepend("<div class='hideThumbMenu close-X' style='position:absolute; right:0px; top:0px;'><i class='material-icons' style='font-size:32px'>&#xE5CD;</i></div>");
-	    $(insertInto).append("<div id='bigThumbMenuInner' class='bigThumbMenuInner'>" + sectionMenu + "</div>");
-
-        if (theState == "GA") {
-	    // if (hash.state && hash.state.split(",")[0].toUpperCase() == "GA") {
-	    	$(".geo-US13").show();
-	    }
-	    //$("#honeycombMenu").append("<ul class='bigThumbUl'>" + sectionMenu + "</ul>");
-	    $("#iconMenu").append(iconMenu);
-        if (insertInto == "#bigThumbMenu") {
-	       $("#bigThumbPanelHolder").show();
-        }
-	    $("#honeyMenuHolder").show(); // Might be able to remove display:none on this
-
-        // 
-	    //$(".thumbModule").append($("#bigThumbPanelHolder"));
-	} else if ($("#bigThumbPanelHolder").css("display") == "none") {
-        if (insertInto == "#bigThumbMenu") {
-		  $("#bigThumbPanelHolder").show();
-        }
-	} else {
-		$("#bigThumbPanelHolder").hide();
-        $(".showApps").removeClass("filterClickActive");
-	}
-
-	$('.bigThumbHolder').click(function(event) {
-        $("#bigThumbPanelHolder").hide(); // Could remain open when small version above map added. 
-        $(".showApps").removeClass("filterClickActive");        
-    });
-    if (activeLayer) {
-    	$(".bigThumbMenuContent[show='" + activeLayer +"']").addClass("bigThumbActive");
-    	let activeTitle = $(".bigThumbMenuContent[show='" + activeLayer +"'] .bigThumbText").text();
-    	if (activeTitle) { // Keep prior if activeLayer is not among app list.
-    		$("#showAppsText").attr("title",activeTitle);
-    	}
-    }
-}
 function getDirectLink(livedomain,directlink,rootfolder,hashStr) {
     let hash = getHash();
     if (directlink) {
@@ -2255,7 +1999,11 @@ function localJsonpCallback(json) {
   }
 }
 function initSiteObject(layerName) {
-	let hash = getHash();
+
+    //console.log("initSiteObject is deactivated. Using thumb menu load instead.")
+    //return;
+
+    let hash = getHash();
 	//if(location.host.indexOf('localhost') >= 0) {
 	    // Greenville:
 	    // https://github.com/codeforgreenville/leaflet-google-sheets-template
@@ -2277,7 +2025,8 @@ function initSiteObject(layerName) {
             //return localObject.layers;
         }
 	    let layerObject = (function() {
-
+            //alert("initSiteObject layerObject " + layerName);
+    
             if(!localObject.layers) {
                 console.log("Error: no localObject.layers");
             }
@@ -2328,7 +2077,7 @@ function initSiteObject(layerName) {
           				$('.showApps').removeClass("active"); // Still needed?
 
           			} else {
-          				console.log("call showThumbMenu")
+          				console.log("call showThumbMenu from navidation.js")
                         if ($("#filterLocations").is(':visible')) {
                             filterClickLocation(); // Toggle county-select closed
                         }
@@ -2367,20 +2116,6 @@ function initSiteObject(layerName) {
 	//}
 } // end initSiteObject
 
-function showThumbMenu(activeLayer, insertInto) {
-	$("#menuHolder").css('margin-right','-250px');
-    if (insertInto == "#bigThumbMenu") {
-	   $("#bigThumbPanelHolder").show();
-    }
-	if (!$(".bigThumbMenuContent").length) {
-		displayBigThumbnails(0, activeLayer, "main", insertInto);
-	}
-	$('.showApps').addClass("active");
-    if (insertInto != "#bigThumbMenu") {
-        $("#bigThumbPanelHolder").hide();
-        $(".showApps").removeClass("filterClickActive");
-    }
-}
 function callInitSiteObject(attempt) { 
     //alert("callInitSiteObject")
     if (localObject.layers.length >= 0) {

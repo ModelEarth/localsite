@@ -9,12 +9,35 @@
 <!--
 See https://model.earth/localsite for param settings
 -->
+<style>
+/* .leaflet-marker-pane svg:nth-child(-n + 10) { */
+.activeMarker {
+	borderX: 2px solid blue;
+	width: 48px !important;
+    height: 64px !important;
+    margin-top: -60px !important;
+    margin-left: -24px !important;
+    z-index: 1000 !important;
+    opacity: 1 !important;
+}
+.activeMarker g { /* icon above circle */
+	opacity: 1 !important;
+	transform: scale(1.5) !important;
+}
+.activeMarker circle {
+	opacity: 1 !important;
+	transform: scale(1.5) !important;
+}
+.activeMarker path { /* pointer behind circle */
+	opacity: 1 !important;
+	display: block !important;
+	transform: scale(1.5) !important;
+	stroke-width: 2px;
+}
+</style>
 
 </head>
 
 <body style="background-color: rgb(250, 250, 250);">
-	<!--
-	<link rel="stylesheet" href="/localsite/css/fonts/materialicons/icon.css" id="/localsite/css/fonts/materialicons/icon.css" />
-	-->
 </body>
 </html>

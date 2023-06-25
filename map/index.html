@@ -234,9 +234,9 @@ localsite.js pulls the #insertedText div from this page as the template for head
     }
     </style>
 
-  <div class="row" style="height:100%">
-      <div class="column column-hidden" style="float:left;"><div class="rightTopMenuLeft"></div></div>
-      <div class="column rightTopMenuInner topMenuOffset">
+  <div class="flex-row" style="height:100%">
+      <div class="flex-column" style="float:left;display:none"><div class="rightTopMenuLeft"></div></div>
+      <div class="flex-column rightTopMenuInner topMenuOffset">
               <!-- map icon -->
               <!--
               <div class="showMap showMapClick rightTopItem" style="display:none; padding-top:14px">
@@ -304,7 +304,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
                 </div>
               </div>
 
-              <div class="localX" style="display:none">
+              <div class="local" style="display:none">
                 <div class="showSettings rightTopItem">
                     <i class="material-icons menuTopIcon">&#xE8B8;</i>
                     <span>Settings</span>
@@ -339,27 +339,27 @@ localsite.js pulls the #insertedText div from this page as the template for head
                 </div>
               </div>
 
-              <!-- person icon -->
-
-              <!--
-              <div class="showAccountTools user-1 rightTopItem" style="display:none">
+              <div class="local" style="display:none">
+              <div class="showAccountTools rightTopItem" style="displayX:none">
                   <div class="showAccount user-0">
                       <i class="material-icons menuTopIcon">&#xE7FD;</i>
                       <span>Account</span>
                   </div>
               </div>
+              </div>
 
+              <div class="local" style="display:none">
               <div class="logoutAccount user-1 rightTopItem" style="display:none">
                   <i class="material-icons menuTopIcon">&#xE7FD;</i>
                   <span>Log out</span>
               </div>
-              -->
+              </div>
 
               <div class="showSettingsInNavTop" style="float:left">
               </div>
       </div>
 
-      <div class="column" style="flex:2;">
+      <div class="flex-column" style="flex:2;">
 
         <!--
         <div class="closeSideTabs close-X-sm" style="position:absolute;right:18px;padding:18px 14px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:32px">&#xE5CD;</i></div>
@@ -385,10 +385,9 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
         <!-- Listings Panel -->
         <div id="listingsPanel" class="menuExpanded topMenuOffset" style="display:none; font-size: 18.5px;">
-          <div class="menuExpandedScroll always-show-scroll" style="padding:30px">
+          <div id="listingsPanelScroll" class="menuExpandedScroll always-show-scroll" style="padding:0px 0px 60px 0px">
               <div id="listingsDiv"></div>
               <div id="mapList1"></div>
-              <br><br><br>
           </div>
         </div>
         <!-- /Listings Panel -->
@@ -612,7 +611,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 <!-- /SIDETABS -->
 
 <!-- HEADER BAR -->
-<div id="headerbar" class="headerbar headerbarheight headerbarhide" style="display:none;width:100%;position:fixed;overflow:visible;z-index:1002;pointer-events:auto;">
+<div id="headerbar" class="headerbar headerbarheight headerbarhide" style="display:none;position:fixed;overflow:visible;z-index:1002;pointer-events:auto;">
 
   <div id="headerLogoholder" class="contentpadding" style="padding-top:0px; padding-bottom:0px; float:left; min-width: 200px">
     <div id="logospace" class="headerbarheight">
@@ -828,8 +827,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
 
 <!-- APP MENU -->
-<!-- From map-filters.js displayBigThumbnails function -->
-<!-- Currently map-filters.js limits loading to localhost -->
+<!-- From navigation.js displayBigThumbnails function -->
 <div class="search-filters-css" style="display:none">
 <div id="bigThumbPanelHolder" style="display:none;position: relative;">
 
@@ -866,7 +864,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
 <!-- LOCATION SEARCH -->
 <!-- For inactive portions - copy scripts from explore/js/embed.js -->
-<div id="filterLocations" class="fieldSelector filterBubbleHolder">
+<div id="filterLocations" class="fieldSelector filterBubbleHolder" style="display:none">
 
     
       <!-- Stores location options. Not displayed. -->
@@ -1289,7 +1287,7 @@ Displayed by hashChanged() in map-filters.js
     background: rgba(33,33,33,0.5);
     color: #ddd;
     border-radius: 30px;
-    max-width: 550px;
+    max-width: 580px;
   }
   .linkondark {
     color: #fff !important;
@@ -1313,7 +1311,7 @@ Displayed by hashChanged() in map-filters.js
     -->
 
     <div style="padding-top:5px; overflow:auto" class="hideOnProjectsPage">
-      Tools for exploring and transforming environments through collaborative modeling and real-time engagement.
+      Tools for exploring, documenting and transforming environments through collaborative modeling and real-time engagement.
 
       <!--
       Join us in building Product Lifecycle Tools that&nbsp;increase positive environmental impacts through&nbsp;local innovation. -->
@@ -1365,7 +1363,7 @@ Displayed by hashChanged() in map-filters.js
 
 <!-- Try to reactivate both of these display:none and update map.js waitForElm('#bodyFile #' + whichmap -->
 <div class="displayOnload displayMapForLoad" style="display:none;position:relative;overflow:hidden;">
-  <div id="mapList1Holder" class="darkDivText hideMobile">
+  <div id="mapList1Holder" style="display:none" class="darkDivText hideMobile">
     <div class="closeParent close-X-sm" style="position:absolute;top:-10px;right:-10px;padding:18px 14px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:32px;pointer-events:auto;">&#xE5CD;</i></div>
 
     <div id="mapList1Header">Locations</div>

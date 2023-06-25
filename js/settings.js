@@ -1,4 +1,7 @@
 console.log("HERE settings.js loaded.")
+
+// For login and any cookie settings.
+
 /*******************************************/
 
 /*!
@@ -166,7 +169,7 @@ function embedded() {
     }
 }
 
-initEvents(); //explore/js/embed.js
+initEvents(); // Also in explore/js/embed.js
 
 $(document).ready(function () {
     initElements();
@@ -506,7 +509,6 @@ function loadUserAccess(userAccess) {
     currentAccess = userAccess;
     // For group access version, see /core/item/scripts/util.js
     $('.user-0').show(); // Shows for all. Allows div to be hidden until access is fetched.
-    //alert("userAccess " + userAccess);
     if (userAccess >= 1) {
         $('.user-0').hide(); // show elements for anonymous users
         
@@ -621,24 +623,7 @@ function setSiteMode(sitemode) {
         $(".sectionBar").show();
         //$("#navTopFromTop").addClass("headerHeightShort");
         $("#navTopFromTop").hide(); // Since full header is not displayed from menu/js
-        // To Do: Omit for layer main.
-        //if (params["embed"] == "1") { // REACTIVATE MAYBE
-            
-            // To do: eliminate the content, or move.
-            $("#smartPanel1").hide();
-            //$(".layerTitleAndArrow").hide();
-            
-            // Display filters on one line
-            
-            /* TO DO - Reactivate and Revise */
-            if (embedded()) {
-                /*
-                $(".horizontalFilters").append($(".customFilters"));
-                $(".horizontalFilters").append($(".searchElements"));
-                $(".horizontalFilters").append($(".searchField"));
-                */
-            }
-        //}
+
         $('.showSearchClick').show();
         if (embedded()) {
             if (inIframe()) {
@@ -681,7 +666,7 @@ function setSiteMode(sitemode) {
         //$('#siteHeader').css("height",$('.sectionBarBkgd').height() + $('.navTop').height());
     }
 }
-function initEvents() { // Once included file1 is loaded.
+function initEvents() {
     $(document).ready(function () {
         if(typeof Cookies!='undefined'){
             Cookies.remove('access_token'); // temp
@@ -690,6 +675,7 @@ function initEvents() { // Once included file1 is loaded.
             Cookies.remove('mode'); // temp
             if (Cookies.get('at_a')) {
                 if (location.host.indexOf('localhost') >= 0) {
+                    console.log("local: Cookies.get('at_a') is 8");
                     loadUserAccess(8); // Local access for dev links.
                 } else {
                     loadUserAccess(5);
@@ -699,9 +685,6 @@ function initEvents() { // Once included file1 is loaded.
             } else {
                 loadUserAccess(0);
             }
-        }
-        if (showLogin) {
-            //$(".showAccountTools").show();
         }
         // https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/
         //addLayer(L.mapbox.tileLayer('mapbox.streets'), 'Base Map', 1);
@@ -768,8 +751,11 @@ function initEvents() { // Once included file1 is loaded.
 
         // EVENT HANDLERS - BUTTON CLICKS
 
-        $('#keywordsTB').click(function(event) {
-            //$("#filterClickLocation .filterBubbleHolder").hide();
+        $(document).on("click", "#keywordsTB", function(event) {
+            if (location.host.indexOf('localhost') >= 0) {
+                //alert("local: keywordsTB click")
+            }
+            /*
             $("#showAdvanced").hide();
             $("#hideAdvanced").show();
             if (!$(".fieldSelector").is(':visible')) {
@@ -777,10 +763,11 @@ function initEvents() { // Once included file1 is loaded.
             } else {
                 $(".fieldSelector").hide();
             }
+            $('.keywordBubble').show();
+            event.stopPropagation(); // Prevent advanced from closing
+            */
         });
-        $('#keywordsTB').keypress(function() {
-            $(".fieldSelector").hide(); // Hide when typing
-        });
+
         function hideFieldSelector() {
             $("#hideAdvanced").hide();
             $("#showAdvanced").show();
@@ -788,17 +775,11 @@ function initEvents() { // Once included file1 is loaded.
             $('#keywordsTB').focus();
         }
         $(document).on("click","#hideAdvanced", function(event) {
-        //$('#hideAdvanced').click(function(event) {
             hideFieldSelector();
         });
          
-        $('#keywordsTB').click(function(event) {
-            $('.keywordBubble').show();
-            event.stopPropagation(); // Prevent advanced from closing
-        });
-        if (location.host.indexOf('localhost') >= 0) {
-            $('.sitesourceHolder').show();
-        }
+        // Older stuff...
+
         if (embedded()) {
             $('.rightTopIconsRows').removeClass('rightTopIconsAbsolute');
             $(".threeDotNavClick").addClass("topButton");
@@ -904,31 +885,7 @@ function initEvents() { // Once included file1 is loaded.
             closeExpandedMenus(event.currentTarget);
             $("#storiesPanel").show();
         });
-        $(document).on("click", ".showListings", function(event) {
-            closeExpandedMenus(event.currentTarget);
-            if (!$.trim($("#mapList1").html())) { // If the location list is not empty, load the list of types.
-                $("#bigThumbMenuInner").appendTo("#listingsPanel");
-                if (!document.getElementById("#bigThumbMenuInner")) {
-                    let hash = getHash();
-                    showThumbMenu(hash.show, "#listingsPanel");
-                }
-            }
-            $("#listingsPanel").show();
-        });
-        $(document).on("click", ".showSettings", function(event) {
-            $('.menuExpanded').hide();
-            //hideOtherPopOuts();
-            //$("#showSettings").hide();
-            //$(".showSettings").hide(); // If used, would need to redisplay after changning Style > Header Images
-            //$(".showSettingsClick").hide();
-            if ($(".settingsPanel").is(':visible')) { 
 
-            } else {
-                $(".settingsPanel").show();
-                //$("#rightTopMenu").hide();
-            }
-            //event.stopPropagation();
-        });
 
         $(document).on("click", ".showPrintOptions, .print_button", function(event) {
         //$('.showPrintOptions, .print_button').click(function(event) {
@@ -937,20 +894,6 @@ function initEvents() { // Once included file1 is loaded.
             $('.printOptionsText').show();
             $('.printOptionsHolderWide').show();
             event.stopPropagation();
-        });
-
-        $('.logoutAccount').click(function(event) {
-            $('.accountSignout').trigger("click");
-        });
-        $('.showAccount').click(function(event) {
-            if ($(".moduleJS").width() <= 800) { // Narrow
-                $('.hideApps').trigger("click"); // For mobile
-            }
-            $(".smartPanel").show(); // Not sure why this is hidden. Wasn't occuring on localhost.
-            //$(".showAccount").hide();
-            //$(".hideAccount").show(); // hideAccount can be eliminated.
-
-            $(".accountPanel").show();
         });
         $('.accountPanelClose').click(function(event) {
             //$(".hideAccount").hide();
@@ -1536,3 +1479,69 @@ function initEvents() { // Once included file1 is loaded.
         });
     });
 }
+
+
+$('.accountSignout').click(function(event) {
+    alert('.accountSignout clicked')
+    // from explore embed.js
+    var currentLayer = getCurrentLayer();
+    var goLayer = getGo(siteObject.items,currentLayer);
+    var gologout = "";
+    if (currentLayer == "intranet") {
+        // BUGBUGBUG
+        //gologout = "/site/"; // Get off the Intranet page. Will proably change to stay on current page.
+        //gologout = "/";
+        gologout = removeFrontFolder("/explore/");
+    }
+    if (goLayer && goLayer.gologout) {
+        gologout = removeFrontFolder(goLayer.gologout);
+    }
+    Cookies.remove('at_a');
+    loadUserAccess(0);
+
+    if (Cookies.get('at_f')) {
+        var firebaseScriptCount = 0;
+        //loadScript("https://www.gstatic.com/firebasejs/3.7.1/firebase.js", firebaseScriptCount++);
+
+        // Also update GDX and GDX Contractors page
+        loadScript("https://www.gstatic.com/firebasejs/3.9.0/firebase.js", firebaseScriptCount++);
+
+        loadScript(root + "auth/firebase/js/app.js", firebaseScriptCount++);
+        onFirebaseScriptComplete(1);
+        function onFirebaseScriptComplete(attempts) {
+            if (firebaseScriptCount >= 2) {
+                //displayCountySelect(); return;
+                setTimeout(function() {
+                    // firebase.js needs id matching url to prevent dup loading and reach the following.
+                    logoffFirebase(1);
+                    Cookies.remove('at_f');
+                    //alert(window.location.pathname.toLowerCase().indexOf(gologout.toLowerCase()));
+
+                    // Avoid redirecting if the user is already on the page.
+                    if (gologout.length && window.location.pathname.toLowerCase().indexOf(gologout.toLowerCase()) == -1) {
+                        window.location = gologout;
+                    } else {
+                        $('.refreshMap').trigger("click"); // Reload the page
+                    }
+                }, 2000); // Allows time for app.js to call initializeFirebase. This can be moved into app.js and modified.
+                return;
+            }
+            if (attempts <= 100) {
+                setTimeout(function() {
+                    onFirebaseScriptComplete(attempts+1); //Try again
+                }, 100);
+            } else {
+                consoleLog("Unable to logoff after " + attempts + " attempts.");
+            }
+        }
+        // Alternative - redirect to logout page - flashes logon fields.
+        //Cookies.set('gologout',gologout);
+        //window.location = "auth/firebase/?action=signout";
+    } else if (gologout.length) {
+        window.location = gologout;
+    }
+    if (showLogin) {
+        $(".showAccountTools").show();
+    }
+    event.stopPropagation();
+});

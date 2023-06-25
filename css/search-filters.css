@@ -356,7 +356,7 @@ input.filterClick[type="text"] {
   font-family: 'Roboto Condensed', sans-serif;
   text-decoration: none;
 }
-#listingsPanel .bigThumbText {
+#listingsPanelScroll .bigThumbText {
   color: #fff;
 }
 .bigThumb:hover .bigThumbText {
@@ -475,7 +475,6 @@ input.filterClick[type="text"] {
   }
   .bigThumbText {
     padding-top: 5px;
-    font-size: 20px;
   }
 
 #county-table {
