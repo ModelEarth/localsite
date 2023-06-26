@@ -679,7 +679,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
        console.log("body becomes available")
         if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
           var div = $("<div />", {
-              html: '<style>.local{display:inline-block !important}.localonly{display:block !important}</style>'
+              html: '<style>.local{display:inline-block !important}.local-block{display:block !important}.localonly{display:block !important}</style>'
             }).appendTo("body");
         } else {
           // Inject style rule
