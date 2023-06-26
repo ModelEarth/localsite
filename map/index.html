@@ -811,7 +811,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 </style>
 <div id="mapFilters" class="hideWhenPop" style="">
 
-  <div id="filterFieldsHolder" class="filterFieldsHidden contentfull noprint" style="display:none; margin:0 auto; padding-top:0px; width:100%">
+  <div id="filterFieldsHolder" class="filterFieldsHidden contentfull noprint" style="display:none; padding-top:0px; width:100%">
 
 
 
@@ -985,7 +985,6 @@ localsite.js pulls the #insertedText div from this page as the template for head
                   <option value='Coastal Georgia' lat='32.0809' lon='-81.0912'  geo='US13127,US13039,US13191,US13179,US13029,US13051'>Coastal Georgia</option>
                   <option value='Southeast Coastal' lat='31.1891' lon='-81.4979' geo='US13001,US13005,US13127,US13161,US13229,US13305'>Southeast Coastal</option>
                 </select>
-                <br><br>
 
               </div>
             </div>
@@ -1139,19 +1138,19 @@ localsite.js pulls the #insertedText div from this page as the template for head
         <div style="clear:both; margin-bottom:12px"></div>
 
         <div id="geoPicker">
-          <div style="float:left">
+          <div id="geomapHolder">
             <!-- Must be displayed initiallly so tiles are visible -->
               <div id="geomap">
               </div>
           </div>
 
-          <div style="overflow:auto; padding-right:25px; border:0px solid #ccc; position:relative" class="geoListHolder height100">
+          <div id="geoListHolder" style="padding-right:25px; border:0px solid #ccc; position:relative">
 
               <div class="listHolder">
                 <!--Cities -->
               </div>
 
-              <div style="position:absolute; bottom:0; left:0px; right:20px; padding:2px 2px 2px 16px; z-index:2">
+              <div class="listHolderFooter">
 
                   <div style="float:right; padding:0px 0px 0px 12px; margin-top:5px; margin-bottom:5px;">
                     <div class="detailbutton hideAdvanced greenbutton" style="padding:10px 18px 10px 18px;">DONE</div>
@@ -1165,7 +1164,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 
                 </div>
 
-              <div class="geoListCounties" style="overflow:scroll; margin-bottom:70px">
+              <div class="geoListCounties" style="overflow:scroll; margin-bottom:45px">
                 <!-- Activate or remove
                 <div style="float:right;margin:12px 0px 0 12px">
                   <input id="showValues" type="checkbox" checked> Show values

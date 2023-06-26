@@ -2582,7 +2582,7 @@ $(window).scroll(function() {
     $('#headerbar').hide();
 
     if (sideTopOffsetEnabled) {
-      $('.sidecolumnLeft').css("top","54px");
+      //$('.sidecolumnLeft').css("top","54px");
     }
     //$('#showSide').css("top","7px");
 
@@ -2616,7 +2616,7 @@ $(window).scroll(function() {
           $('#headerbar').addClass("headerbarhide");
         }
         if (sideTopOffsetEnabled) {
-          $('.sidecolumnLeft').css("top","54px");
+          //$('.sidecolumnLeft').css("top","54px");
         }
         //alert("#headerbar hide")
         //$('#showSide').css("top","7px");
@@ -2640,9 +2640,9 @@ $(window).scroll(function() {
         }
         if (sideTopOffsetEnabledBig) {
           let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px
-          $('.sidecolumnLeft').css("top",headerFixedHeight + "px");
+          //$('.sidecolumnLeft').css("top",headerFixedHeight + "px");
         } else {
-          $('.sidecolumnLeft').css("top","0px");
+          //$('.sidecolumnLeft').css("top","0px");
         }
       }
       $('#headerLarge').show();
@@ -2660,9 +2660,9 @@ $(window).scroll(function() {
         }
         if (sideTopOffsetEnabledBig) {
           let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px
-          $('.sidecolumnLeft').css("top",headerFixedHeight + "px");
+          //$('.sidecolumnLeft').css("top",headerFixedHeight + "px");
         } else {
-          $('.sidecolumnLeft').css("top","0px");
+          //$('.sidecolumnLeft').css("top","0px");
         }
       }
       $('#headerLarge').show();
@@ -2978,13 +2978,12 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
       url = local_app.modelearth_root() + "/community-forecasting/map/zip/topo/zips_us_topo.json";
     }
     topoObjName = "topoob.objects.data";
-    $("#geomap").width("700px");
+    //$("#geomap").width("700px");
   }  else if (hash.mapview == "country" && stateAbbr.length != 2) { // USA
     layerName = "States";
     url = local_app.modelearth_root() + "/localsite/map/topo/states-10m.json";
     topoObjName = "topoob.objects.states";
-    $("#geomap").width("700px");
-    //$(".geoListHolder").hide();
+    //$("#geomap").width("700px");
   } else if (stateAbbr && stateAbbr.length <= 2) { // COUNTIES
     layerName = stateAbbr + " Counties";
     let stateNameLowercase = getStateNameFromID(stateAbbr).toLowerCase();
@@ -2995,9 +2994,7 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
       countyTopoTerm = "_parish_20m";
     }
 
-    //$("#geomap").width("440px");
-    $("#geomap").width("700px");
-    //$(".geoListHolder").show();
+    //$("#geomap").width("700px");
     url = local_app.modelearth_root() + "/topojson/countries/us-states/" + stateAbbr + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
     topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + countyTopoTerm;
 

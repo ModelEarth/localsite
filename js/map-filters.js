@@ -783,7 +783,7 @@ function locationFilterChange(selectedValue,selectedGeo) {
 	var useCookies = false; // Would need Cookies from explore repo.
 
     console.log("locationFilterChange: " + selectedValue + " " + selectedGeo);
-    //$(".geoListHolder > div").hide();
+    //$("#geoListHolder > div").hide();
     $(".geoListCounties").show();
 
     //showSearchFilter(); // Display filters

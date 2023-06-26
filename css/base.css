@@ -67,9 +67,78 @@ body {
   }
 }
 @media (max-width: 1500px) {
+  .mobileView .hideMobileSooner {
+    display: none;
+  }
   .mobileView .containerLayout {
       margin-left: 0px;
       width: 100%;
+  }
+}
+.rightside, .floatright {
+  float:right;
+  max-width:400px;
+  margin-left:40px;
+  margin-bottom:30px;
+  /* font-size: 18px; */
+}
+@media (max-width: 1120px) {
+  .rightside {
+    max-width:auto;
+    margin-left:0px;
+    margin-bottom:30px;
+    float:none;
+  }
+}
+.roundedCorners {
+  border-radius: 20px;
+}
+.floatLeft {
+  float:left;
+  margin-right:40px;
+}
+.floatRight {
+  float:right;
+  margin-left:40px;
+}
+@media (max-width: 800px) {
+  .floatLeft {
+    float:none !important;
+    width:100% !important;
+    margin-right:0px;
+    margin-bottom:40px;
+  }
+  .floatRight {
+    float:none !important;
+    width:100% !important;
+    margin-left:0px;
+    margin-bottom:40px;
+  }
+}
+
+@media (max-width: 800px) {
+  .floatright {
+    max-width:auto;
+    margin-left:0px;
+    margin-bottom:30px;
+    float:none;
+  }
+  .fullMobile {
+    float:none;
+    width:100% !important;
+    max-width:100% !important;
+    margin-left:0px !important;
+  }
+}
+@media (max-width: 1800px) {
+  /* only hide if 2 classes on body */
+  .bodyLeftMargin.bodyRightMargin .hideMobileSooner {
+    display: none;
+  }
+  .bodyLeftMargin.bodyRightMargin .floatright, .bodyLeftMargin.bodyRightMargin .floatRight {
+    float: none;
+    margin-left: 0px;
+    margin-bottom: 20px;
   }
 }
 
@@ -421,61 +490,7 @@ summary::-webkit-details-marker {
     padding-left: 20px; padding-right: 20px;
     line-height: 1.4em;
 }
-.rightside, .floatright {
-  float:right;
-  max-width:400px;
-  margin-left:40px;
-  margin-bottom:30px;
-  /* font-size: 18px; */
-}
-@media (max-width: 1120px) {
-  .rightside {
-    max-width:auto;
-    margin-left:0px;
-    margin-bottom:30px;
-    float:none;
-  }
-}
-.roundedCorners {
-  border-radius: 20px;
-}
-.floatLeft {
-  float:left;
-  margin-right:40px;
-}
-.floatRight {
-  float:right;
-  margin-left:40px;
-}
-@media (max-width: 800px) {
-  .floatLeft {
-    float:none !important;
-    width:100% !important;
-    margin-right:0px;
-    margin-bottom:40px;
-  }
-  .floatRight {
-    float:none !important;
-    width:100% !important;
-    margin-left:0px;
-    margin-bottom:40px;
-  }
-}
 
-@media (max-width: 800px) {
-  .floatright {
-    max-width:auto;
-    margin-left:0px;
-    margin-bottom:30px;
-    float:none;
-  }
-  .fullMobile {
-    float:none;
-    width:100% !important;
-    max-width:100% !important;
-    margin-left:0px !important;
-  }
-}
 .litePanel {
     background-color: #eee; /* also set .litePanelFadeOut 238 */
     overflow:auto;
@@ -923,6 +938,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   margin-right: 15px;
   padding: 0 5px 0 10px;
   padding-top: 4px; /* Firefox */
+  margin-bottom: 10px;
 }
 
 
@@ -1016,7 +1032,23 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   top: 0px;
   pointer-events: auto;
 }
-.bodyLeftMargin .headerbar {
+.filterFieldsHolderFixed {
+  background-color: rgb(239 239 239);
+}
+.filterFieldsHolderFixed .filterClickActive {
+  border-radius: 20px;
+  border: 0px;
+  border-right: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
+  padding: 0px 9px 0px 12px;
+  min-height: 34px !important;
+  vertical-align: baseline;
+  background-color: #fff;
+  color: #686868;
+  text-shadow: none;
+  height: auto;
+}
+.bodyLeftMargin .headerbar, .bodyLeftMargin .filterFieldsHolderFixed {
   left: 220px;
 }
 .headerbar a:link, .headerbar a:visited {
