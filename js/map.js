@@ -2184,7 +2184,7 @@ function renderCatList(catList) {
                 }
                 console.log("catTitle:" + catTitle);
               }
-              catNavSide += "<div style='background:" + catList[key].color + ";' class='legendDot'></div><div title='" + key + "'>" + catTitle;
+              catNavSide += "<div title='" + key + "'><div style='background:" + catList[key].color + ";' class='legendDot'></div>" + catTitle;
               if (catList[key].count) {
                 // The number of occurances of the category
                 if (param.show == "solidwaste" || param.show == "wastewater") {
@@ -2202,7 +2202,7 @@ function renderCatList(catList) {
 
         // Was #tableSide
         $("#listLeft").html(""); // Clear
-        $("#listLeft").append("<div style='margin-left:10px'><b>CATEGORIES</b></div><div class='catList' style='white-space:nowrap; margin:15px; margin-left:10px;'>" + catNavSide + "</div>");
+        $("#listLeft").append("<div style='margin-left:10px'><b>CATEGORIES</b></div><div class='catList'>" + catNavSide + "<br></div>");
         showSide();
         //alert("did it 3")
       }

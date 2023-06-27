@@ -473,7 +473,6 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     top: 0; left: 0; bottom: 0;
     width: 220px;
     padding-right: 0px;
-    background-color: #a1a1a1;
 }
 .sidecolumnLeft {
     padding: 24px;
@@ -498,7 +497,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	border:1px solid #ccc;
 	margin-top:6px;
 	margin-left:1px;
-	margin-right:5px;
+	margin-right:7px;
 	float:left;
 }
 .sidecolumnLeftScroll {
@@ -518,16 +517,16 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
   display: none;
 }
 
-.sidecolumnLeft a, #cloneRight a {
+.catList div, .sidecolumnLeft a, #cloneRight a {
     display:block;
     padding-left: 15px;
-    color: #fff;
     text-decoration: none;
 }
-.sidecolumnLeft a:hover, .sidecolumnLeft a.active:hover, #cloneRight a:hover {
+.catList div:hover, .sidecolumnLeft a:hover, .sidecolumnLeft a.active:hover, #cloneRight a:hover {
 	background-color: #333;
 	color: #fff;
 	text-decoration: none;
+	cursor: pointer;
 }
 .sidecolumnLeft b a {
 	color: #333;
@@ -540,6 +539,13 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     margin-left:-6px;
     padding-left:20px;
 }
+.liteDiv {
+	border-right: solid 1px #e9e9e9;
+}
+.liteDiv a {
+	color: #333;
+}
+
 #fullcolumn {
     overflow: auto;
     position: relative;
