@@ -31,7 +31,7 @@ These additonal parameters can be used to change the header logo:
 [/localsite/map/index.html](../map/index.html)
 
 2. USEEIO widget HTML layout resides in:
-[/localsite/info/info-template.html](../info/info-template.html)
+[/localsite/info/template-charts.html](../info/template-charts.html)
 
 3. Navigation is loaded by js/navigation.js, which loads:
 [/localsite/header.html](../header.html) (includes left and right navigation)

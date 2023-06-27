@@ -473,7 +473,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     top: 0; left: 0; bottom: 0;
     width: 220px;
     padding-right: 0px;
-    background-color: #b1b1b1;
+    background-color: #a1a1a1;
 }
 .sidecolumnLeft {
     padding: 24px;
@@ -487,9 +487,19 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     line-height: 34px;
     font-size: 18px;
 }
-.sidecolumnLeft b, #cloneRight b {
+#listLeft b, .sidecolumnLeft b, #cloneRight b {
     color:#333;
     font-weight:800;
+}
+#listLeft .legendDot {
+	padding:0px;
+	width:13px;
+	height:13px;
+	border:1px solid #ccc;
+	margin-top:6px;
+	margin-left:1px;
+	margin-right:5px;
+	float:left;
 }
 .sidecolumnLeftScroll {
     position:absolute;

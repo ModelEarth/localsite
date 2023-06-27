@@ -1,0 +1,1720 @@
+<div id="insertedText">
+
+<!-- Start HTML -->
+
+<style type="text/css">
+  .show-on-load {display: none;}
+  /* STYLE OVERRIDES FOR DRUPAL */
+  #legendHolder {min-width: 270px;}
+  .component--custom_markup > .content {max-width:100%}
+  .component--main_content, .component--single_column_content {padding:0px}
+  svg {max-width:none;}
+  .visually-hidden {display: none !important;}
+</style>
+
+<div id="templateLoaded"></div>
+
+<!-- SIDETABS -->
+<div id="sideTabs" style="position:fixed; z-index:10000; top:0px; bottom:0px; right: 0px; display:none">
+  <!-- RIGHT MENU -->
+
+  <!-- Menu and Secondary Menus -->
+  <!--
+  <div id="hideTopPanel" class="close-X" style="position:absolute;right:5px;top:8px;padding-right:10px; z-index:99999">✕</div>
+  -->
+
+  <!-- event.stopPropagation() here breaks top icon clicks -->
+  <div id="rightTopMenu" onclickX="event.stopPropagation()" class="hideOnBodyClickXX">
+    
+    <div id="goatIcons" style="background-color:#111; color:#ccc; width:100%; height:64px; padding-right:6px; overflow:hidden">
+
+      <div style="float:left">
+        <div class="closeSideTabs iconPadding">
+            <!-- show-on-load -->
+            <div class="showMobile" style="display: none;">
+              <i class="material-icons show-on-load" style="font-size:40px;" data="apps">&#xE5E0;</i>
+            </div>
+            <div class="showDesktop" style="display: none;">
+              <i class="material-icons show-on-load" style="font-size:34px;" data="apps">&#xE5CD;</i>
+            </div>
+        </div>
+
+      </div>
+
+      <div style="float:right">
+        <div style="float:left">
+          <div class="earth georgia" style="display:none">
+          <div class="showSearch iconPadding">            
+            <i class="material-icons show-on-load" style="font-size:34px;opacity:0.7;" data="apps">&#xE8B6;</i>
+          </div>
+          </div>
+        </div>
+        <div style="float:left;">
+          <div class="showEarth iconPadding">
+            <i class="material-icons show-on-load" style="font-size:34px;opacity:0.7;" data="apps">&#xE894;</i>
+          </div>
+        </div>
+        <div class="hideNarrow" style="float:left;">
+            <div class="closeSideTabs expandToFullscreen iconPadding" style="border:0px;">
+                <i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D0;</i>
+            </div>
+            <div class="closeSideTabs reduceFromFullscreen iconPadding" style="display:none; border:0px;">
+                <i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D1;</i>
+            </div>
+        </div>
+
+        <!--
+        <div style="float:left;">
+          <div class="closeSideTabs iconPadding">
+            <div style="font-size: 28px; line-height: 28px; opacity: 0.8;">✕</div>
+          </div>
+        </div>
+        -->
+
+      </div>
+
+    </div>
+
+
+    <style>
+    .showSections {
+      display: block;
+    }
+    </style>
+
+  <div class="flex-row" style="height:100%">
+      <div class="flex-column" style="float:left;display:none"><div class="rightTopMenuLeft"></div></div>
+      <div class="flex-column rightTopMenuInner topMenuOffset">
+              <!-- map icon -->
+              <!--
+              <div class="showMap showMapClick rightTopItem" style="display:none; padding-top:14px">
+                  <i class="material-icons menuTopIcon">&#xE55B;</i>
+              </div>
+              <div class="hideMap rightTopItem" style="display:none; float:left">
+                  <i class="material-icons menuTopIcon menuTopIconHot">&#xE55B;</i>
+              </div>
+
+              -->
+              <div class="hideEmbed">
+                  <div class="showSections rightTopItem active" style="padding-top:14px; padding-right:10px">
+                      <i class="material-icons menuTopIcon">&#xE5C3;</i>
+                      <span>Topics</span>
+                  </div>
+              </div>
+
+              <div class="dreamstudio" style="display:none">
+                <div class="hideEmbed">
+                    <div class="showStories rightTopItem" style="padding-top:14px; padding-right:10px">
+                        <i class="material-icons menuTopIcon">&#xE666;</i>
+                        <span>Stories</span>
+                    </div>
+                </div>
+              </div>
+
+              <div class="listingsHolder local earth intranet georgia" style="display:none">
+                <div class="hideEmbed">
+                    <div class="showListings rightTopItem" style="padding-top:14px; padding-right:10px">
+                        <i class="material-icons menuTopIcon">&#xE241;</i>
+                        <span>Locations</span>
+                    </div>
+                </div>
+              </div>
+
+              <!--
+              <div class="showFilters showFiltersClick rightTopItem" style="padding-top:14px; padding-right:10px">
+                  <i class="material-icons menuTopIcon">&#xE8B6;</i>
+                  <span>People</span>
+              </div>
+
+              <div class="hideMobileX">
+                  <div class="showFilters showFiltersClick rightTopItem" style="padding-top:14px; padding-right:10px">
+                      <i class="material-icons menuTopIcon">&#xE8B6;</i>
+                      <span>Search</span>
+                  </div>
+                  <div class="hideFilters hideFiltersClick rightTopItem" style="display:none; padding-top:14px; padding-right:10px">
+                      <i class="material-icons menuTopIcon">&#xE8B6;</i>
+                      <span>Hide</span>
+                  </div>
+              </div>
+              -->
+
+              <div class="localX" style="display:none">
+                <div class="rightTopItem" action="https://dreamstudio.ai/prompt-guide">
+                    <i class="material-icons menuTopIcon">&#xE8F4;</i>
+                    <span>Explore</span>
+                </div>
+              </div>
+
+              <div class="localX" style="display:none">
+                <div class="showSearch rightTopItem">
+                    <i class="material-icons menuTopIcon">&#xE8B6;</i>
+                    <span>Search</span>
+                </div>
+              </div>
+
+              <div class="local" style="display:none">
+                <div class="showSettings rightTopItem">
+                    <i class="material-icons menuTopIcon">&#xE8B8;</i>
+                    <span>Settings</span>
+                </div>
+              </div>
+
+              <!--
+              <div class="contactUs rightTopItem">
+                  <i class="material-icons menuTopIcon contactIcon">&#xE0E1;</i>
+                  <span>Contact</span>
+              </div>
+              -->
+
+              <div class="localX" style="display:none">
+                <div class="shareThis rightTopItem">
+                    <i class="material-icons menuTopIcon" title="Share">&#xE80D;</i>
+                    <span>Share</span>
+                </div>
+              </div>
+
+              <div class="localX" style="display:none">
+                <div class="addlisting_button rightTopItem" style="display:none">
+                    <i class="material-icons menuTopIcon" style="font-weight:800;">&#xE145;</i>
+                    <span>Add</span>
+                </div>
+              </div>
+
+              <div class="localX" style="display:none">
+                <div class="print_button rightTopItem">
+                    <i class="material-icons menuTopIcon">&#xE8AD;</i>
+                    <span>Print</span>
+                </div>
+              </div>
+
+              <div class="local" style="display:none">
+              <div class="showAccountTools rightTopItem" style="displayX:none">
+                  <div class="showAccount user-0">
+                      <i class="material-icons menuTopIcon">&#xE7FD;</i>
+                      <span>Account</span>
+                  </div>
+              </div>
+              </div>
+
+              <div class="local" style="display:none">
+              <div class="logoutAccount user-1 rightTopItem" style="display:none">
+                  <i class="material-icons menuTopIcon">&#xE7FD;</i>
+                  <span>Log out</span>
+              </div>
+              </div>
+
+              <div class="showSettingsInNavTop" style="float:left">
+              </div>
+      </div>
+
+      <div class="flex-column" style="flex:2;">
+
+        <!--
+        <div class="closeSideTabs close-X-sm" style="position:absolute;right:18px;padding:18px 14px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:32px">&#xE5CD;</i></div>
+        -->
+
+        <!-- Topics Panel -->
+        <div id="topicsPanel" class="menuExpanded topMenuOffset">
+            <div class="menuExpandedScroll always-show-scroll">
+              <div class="menuTitle" style="display:none">Topics</div>
+              <div id="topicsMenu"></div>
+            </div>
+        </div>
+        <!-- /Topics Panel -->
+
+        <!-- Stories Panel -->
+        <div id="storiesPanel" class="menuExpanded topMenuOffset" style="display:none; font-size: 18.5px;">
+          <div class="menuExpandedScroll always-show-scroll">
+              <a href="https://dreamstudio.com/seasons">Intro</a> | <a href="https://dreamstudio.com/seasons/mentors/">Characters</a><br>
+              <div id="storiesDiv"></div>
+          </div>
+        </div>
+        <!-- /Stories Panel -->
+
+        <!-- Listings Panel -->
+        <div id="listingsPanel" class="menuExpanded topMenuOffset" style="display:none; font-size: 18.5px;">
+          <div id="listingsPanelScroll" class="menuExpandedScroll always-show-scroll" style="padding:0px 0px 60px 0px">
+              <div id="listingsDiv"></div>
+              <div id="mapList1"></div>
+          </div>
+        </div>
+        <!-- /Listings Panel -->
+
+        <!-- Settings Panel -->
+        <div class="settingsPanel menuExpanded topMenuOffset" style="display:none">
+          <div class="menuExpandedScroll">
+
+          <div class="menuTitle">Settings</div>
+
+          <div class="hideMobile">
+            <div classX="user-6" style="displayX:none">
+              <div class="sitemodeHolder" style="display:none;">
+                <div class="setLeft">Header</div>
+                    <div class="setOverflow"><div class="setRight">
+                      <select class="sitemode" id="sitemode">
+                        <option value="widget" selected>Section Navigation</option>
+                        <option value="fullnav">Full Navigation</option>
+                        </select>
+                    </div></div>
+                    <div class="setDiv"></div>
+                </div>
+              </div>
+            </div>
+
+          <div class="setLeft">Style</div>
+            <div class="setOverflow"><div class="setRight">
+                <select id="sitelook">
+                  <option value="default" selected>Default</option>
+                  <option value="light">Light Colors</option>
+                  <option value="dark">Night Vision</option>
+                </select>
+            </div></div>
+            <div class="setDiv"></div>
+
+            <div class="user-10" style="display:none">
+              <div class="sitesourceHolder" style="display:none">
+              <div class="setLeft">Display</div>
+                <div class="setOverflow"><div class="setRight">
+                    <select class="sitesource">
+                      <option value="overview" selected>Overview</option>
+                      <option value="directory">Directory</option>
+                    </select>
+                </div></div>
+                <div class="setDiv"></div>
+            </div>
+          </div>
+
+            <div style="display:none">
+                <div class="setLeft">Layout</div>
+                <div class="setOverflow"><div class="setRight">
+                  <select id="bts">
+                    <option value="12">Overview, Directory</option>
+                    <option value="21">Directory, Overview</option>
+                    <option value="02">Directory Only</option>
+                        <option value="01">Overview Only</option>
+                    </select>
+                </div></div>
+                <div class="setDiv"></div>
+            </div>
+            
+            <div class="setLeft"><div>Basemap</div></div>
+            <div class="setOverflow">
+              <div id='selector_menu' class="setRight">
+            
+                <select id='basemapSelector' class='layerSelector sitebasemap catchClick'>
+                  <option value='positron_light_nolabels'>Positron</option>
+                  <option value='osm'>Open Street Map</option>
+                  <option value='esri'><!--- Esri -->Satellite Map</option>
+                  <!-- Zoom not appearing -->
+                  <!--<option value='default'>Open Street Map 2</option>-->
+                  <!-- Zoom not appearing -->
+                  <!-- <option value='green'>Green Topo Map</option>-->
+                  <option value='dark'>Dark Background</option>
+                  <option value='firemap'>Fire Map</option>
+                </select>
+            
+            </div>
+          </div>
+          
+
+          <!--
+          <div class="setDiv"></div>
+
+          <div class="setLeft"><div>Zoom To</div></div>
+            <div class="setOverflow">
+              <div class="setRight">
+            
+                <select class='center'>
+                  <option value='mylocation'>My Location</option>
+                  <option value='filter'>Nearby</option>
+                  <option value='state'>State</option>
+                  <option value='country'>Country</option>
+                  <option value='world'>World</option>
+                </select>
+            
+            </div>
+          </div>
+          <div class="setDiv"></div>
+
+          <div style="displayX:none">
+                <div class="setLeft">My Latitude</div>
+                <div class="setOverflow"><div class="setRight">
+                  
+                    <input class="mylat filterClick mobileWide textInput" placeholder="Latitude" type="text" style="width: 120px; margin-top: 0px" />
+
+                </div></div>
+                <div class="setDiv"></div>
+            </div>
+            <div style="displayX:none">
+                <div class="setLeft">My Longitude</div>
+                <div class="setOverflow"><div class="setRight">
+                  
+                    <input class="mylon filterClick mobileWide textInput" placeholder="Longitude" type="text" style="width: 120px; margin-top: 0px" />
+
+                </div></div>
+                <div class="setDiv"></div>
+            </div>
+          -->
+
+            <!-- Multilayer Checkboxes -->
+            <!--
+          <div class="setLeft"><div>Layer Checkboxes</div></div>
+            <div class="setOverflow">
+              <div class="setRight">
+              <div class="hideMultiselect settingsButton">Visible</div>
+                <div class="showMultiselect settingsButton" style="display:none; background:#ddd">Hidden</div>
+              </div>
+            </div>
+            <div class="setDiv"></div>
+          -->
+
+            <!--
+            <div class="hideHero layoutTab filterTab buttonUnderCategories" style="margin:15px 10px 0 0;display:none">Hide Hero</div>
+            <div class="showHero layoutTab filterTab buttonUnderCategories" style="margin:15px 10px 0 0;">Show Hero</div>
+
+            <div class="setDiv"></div>
+          -->
+
+          <!--
+          <div><strong>Link</strong></div>
+          <input type="text" value='https://georgiadata.github.io/site/' style='line-height:18pt;display:block;width:100%;font-size:12pt;color:#333;background:#fff;border:1px solid #aaa;'><br>
+          -->
+
+            <!-- Embed Directory -->
+            <!--
+            <div class="setLeft">Embed</div>
+            <div class="setOverflow">
+              <div class="setRight">
+              
+                <div class="showEmbedTag settingsButton">View Sample</div>
+
+              </div>
+            </div>
+            <div class="embedTag" style="display:none">
+              <div style="margin-bottom:4px"><a href="widget.html#aerospace&sitelook=coi">Get HTML</a> - view source</div>
+
+
+              <input type="text" value='<script src="//georgiadata.github.io/site/js/embed.js?site=georgia&v=0.1"></script><div id="map"></div>' 
+              style='display:none;line-height:18pt;width:100%;font-size:12pt;color:#333;background:#fff;border:1px solid #aaa;'>
+            </div>
+            -->
+
+          <br />
+
+
+
+          </div>
+        </div>
+        <!-- End Settings Panel -->
+
+
+        <!-- Print Options -->
+        <div class="printOptionsHolderWide menuExpanded topMenuOffset" style="display:none">
+          <div class="menuExpandedScroll">
+            <div class="printOptionsHolder">
+                <div class="printOptionsText">
+                    <div class="printOptionsPosition"></div>
+
+                    <div class="menuTitle">Print</div>
+
+                    <div style="line-height: 23px">
+                        <div class="printContent" style="display:none"><input type="checkbox" name="printcontent" id="printcontent" value="printcontent"><label for="printcontent">Content</label></div>
+                        <div class="printMap" style="display:none"><input type="checkbox" name="printmap" id="printmap" value="printmap"><label for="printmap">Map</label></div>
+                        <div class="printList" style="display:none"><input type="checkbox" name="printlist" id="printlist" value="printlist" checked><label for="printlist">List</label></div>
+                        
+                        <!-- Hidden until resolving simultneous selection of list and grid. -->
+                        <div class="printGrid" style="display:none"><input type="checkbox" name="printgrid" id="printgrid" value="printgrid"><label for="printgrid">Grid</label></div>
+                    </div>
+
+                    <div style="margin-top:10px"></div>
+
+                    <div style="font-size:16px;margin-bottom:3px"><b>Orientation:</b>
+                        <!--
+                        <input type="checkbox" name="landscape" id="landscape" value="landscape" checked><label for="landscape">Landscape</label>
+                        -->
+                        <input id="landscape" type="radio" name="printOrientation" value="landscape"><label for="landscape">Landscape</label> 
+                        <input id="portrait" type="radio" name="printOrientation" value="portrait" checked><label for="portrait">Portrait</label>
+                    </div>
+                    <br>
+
+                    <div style="font-size:14px; line-height:17px; padding-top:8px; padding-bottom:12px; clear:both">
+                    To output as a PDF file, choose PDF as your printer after clicking the button below.
+                    </div><br>
+
+                    <div class="printPage btn btn-primary" style="margin-top:12px;margin-left:0px;min-width:80px;text-align:center; clear:both"> Print </div>
+                
+                    
+
+                </div>
+                    
+            </div>
+          </div>
+        </div>
+        <!-- End Print Options -->
+      </div>
+  </div>
+  </div>
+  <!-- /RIGHT MENU -->
+</div>
+<!-- /SIDETABS -->
+
+<!-- HEADER BAR -->
+<div id="headerbar" class="headerbar headerbarheight headerbarhide" style="display:none;position:fixed;overflow:visible;z-index:1002;pointer-events:auto;">
+
+  <div id="headerLogoholder" class="contentpadding" style="padding-top:0px; padding-bottom:0px; float:left; min-width: 200px">
+    <div id="logospace" class="headerbarheight">
+      <div id="logoholder">
+        
+        <div id="headerLogo">
+        </div>
+        
+        <div id="headerLocTitleHolder">
+          <span id="headerSiteTitle"></span>
+          
+          <a href="../community/tools" class="logolink">
+          <span id="headerLocTitle"></span>
+          </a>
+        </div>
+
+      </div>
+    </div>    
+  </div>
+
+  <div style="float:left; border-left:1px solid #ccc;">
+    <style>
+      .topstack {
+        float:left;
+        
+        padding-right: 10px;
+        padding:18px;
+        border-right:1px solid #ccc;
+      }
+      .topsm {
+        font-size: 11px;
+        float: left;
+      }
+      .toplg {
+        clear:both;
+        font-size: 17px;
+        color: #686868;
+      }
+      .arrow_down_sm {
+          width: 0;
+          height: 0;
+          border-left: 4px solid transparent;
+          border-right: 4px solid transparent;
+          border-top: 4px solid #999;
+          margin: 4px;
+          float: left;
+          pointer-events: auto;
+      }
+
+    </style>
+    <!-- Cool top menu option -->
+    <div class="localX" style="display:none">
+      <div class="hideMobile">
+        <div class="topstack">
+          <div class="topsm">Locations</div><div class="arrow_down_sm"></div>
+          <div class="toplg">3 counties in Arizona</div>
+        </div>
+
+        <div class="topstack">
+          <div class="topsm">Goods & Services</div><div class="arrow_down_sm"></div>
+          <div class="toplg">Recycling Industries</div>
+        </div>
+
+        <div class="topstack">
+          <div class="topsm">Project Teams</div><div class="arrow_down_sm"></div>
+          <div class="toplg">React Developers</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="upIconTray" class="upperIcons noprint navLinks" style="float:right;">
+
+    <div id="upIconTrayText" class="hideMobile" style="float:left; padding:26px 10px 0 0">
+      <div id="dreamstudio-nav" class="dreamstudio" style="display:none">
+        <span class="hideMobile" style="float:left">
+          <a href="/dreamstudio/about/" class="navlink-about"><span style="white-space: nowrap; margin-right:6px">About</span></a> 
+          <a href="/dreamstudio/studio/" class="navlink-studio"><span style="white-space: nowrap; margin-right:3px">Studio</span></a> 
+          <a href="/dreamstudio/seasons/" class="navlink-stories"><span style="white-space: nowrap">Stories</span></a>  
+          <a href="/dreamstudio/api/" class="navlink-api"><span style="white-space: nowrap">API</span></a>  
+          <a href="https://dreamstudio.ai/generate" class="navlink-generate" target="gen"><span style="white-space: nowrap">Generate</span></a>
+        </span>
+      </div>
+
+      <div class="intranet" style="display:none">
+        <span id="intranet-nav" class="hideMobile" style="float:left">
+          <a href="/localsite/info/#state=GA" class="navlink-intranet"><span style="white-space: nowrap; margin-right:6px">Industries</span></a>
+          <a href="/display/products/intranet.html" class="navlink-exporters"><span style="white-space: nowrap; margin-right:3px">Exporters</span></a> 
+        </span>
+      </div>
+
+      <div class="intranet" style="display:none">
+        <span id="intranet-nav" class="hideMobile" style="float:left">
+          <a href="/docs/" class="navlink-intranet"><span style="white-space: nowrap; margin-right:6px">Intranet</span></a>
+          <a href="/docs/admin/" class="navlink-floorplans"><span style="white-space: nowrap; margin-right:3px">Admin</span></a> 
+        </span>
+      </div>
+
+    </div>
+
+    <div id="headerIcons">
+      <div class="earth dreamstudio intranet" style="display:none">
+        <div id="showSideTabs" class="showSideTabs" style="padding:12px 0px 10px 10px; margin-right:10px; min-height:64px">
+          <i class="material-icons show-on-load" style="font-size:40px;font-weight:600" data="apps">&#xE5C3;</i>
+        </div>
+        <div id="hideMenu" class="closeSideTabs" style="display:none">
+          <i class="material-icons show-on-load" style="font-size:32px;" data="apps">&#xE5C3;</i>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+<!-- /HEADER BAR -->
+
+
+<div id="menuHolder" style="pointer-events: auto; background:#333; display:none">
+
+  <div id="menuTop">
+    <div class="hideMenu"><span class="hideMenuInner" style="color:#aaa">✕</span></div>
+  </div>
+  <div style="clearX:both"></div>
+  
+  <div id="menuNav">
+
+    <!-- Right Links -->
+        <div style="display: none;" class="localX hideMobile">
+          
+          <!-- move to naics section
+          <div class="local downloadbutton showDownload pagebutton" href="#" style="float:left; display:none">
+            
+            <div style="float:left">
+              <i class="material-icons" style="font-size:15pt;padding-top:8px">&#xE2C4;</i>
+            </div>
+            
+            <div class="downloadtext" style="margin:10px 5px 0 3px;white-space: nowrap; float:left"> 
+            Download
+            </div>
+          </div>
+          -->
+          
+        <!--
+        <div class="local addlisting pagebutton greenbutton" href="#" style="float:left; display:none">
+          
+          <div class="hideMobile" style="margin:10px 5px 0 3px;white-space: nowrap; float:left"> 
+          Add Listing
+          </div>
+          <div class="showMobile" style="display:none;"><i class="material-icons" style="font-size:19pt;padding-top:4px">&#xE145;</i></div>
+
+        </div>
+        <div class="local partnertools pagebutton" href="#" style="float:left; display:none">
+          <div style="margin:10px 5px 0 3px;white-space: nowrap; float:left"> 
+          Partner Tools
+          </div>
+        </div>
+        -->
+
+        <div class="showInfo showInfoButton1 pagebutton" style="float: left; padding: 3px 3px 3px 4px; color:#fff; display:none;"><i class="material-icons" style="font-size:28px;">&#xE88F;</i>
+        </div>
+
+      </div>
+      <!-- /Right Links -->
+
+
+
+    
+  </div>
+</div>
+<!-- End Menu and Secondary Menus -->
+
+
+<!--
+<div id="headeroffset" style="height:100px;"></div>
+-->
+<!-- /RIGHT MENU -->
+
+
+<!-- FILTERS -->
+<div class="search-filters-css" style="display:none">
+<!-- headerLarge was here -->
+
+
+</div>
+<!-- /FILTERS -->
+
+
+<div style="clear:both"></div>
+
+
+
+<!-- SEARCH FILTERS -->
+<style>
+  .showSearch {
+    display: inline-block;
+  }
+</style>
+<div id="mapFilters" class="hideWhenPop" style="">
+
+  <div id="filterFieldsHolder" class="filterFieldsHidden contentfull noprint" style="display:none; padding-top:0px; width:100%">
+  </div><!-- /filterFieldsHolder -->
+
+</div>
+
+  <div id="hitRefreshNote" class="contentpadding" style="display: none; clear:both; padding-top:8px; padding-bottom:8px; font-size:14px; margin-bottom:8px;">&nbsp;&nbsp;Please hit reload (cmd-R) to refresh the input-output chart below since you've changed the state.
+  </div>
+
+  <div style="clear:both"></div>
+<!-- /SEARCH FILTERS -->
+
+
+<!-- APP MENU -->
+<!-- From navigation.js displayBigThumbnails function -->
+<div class="search-filters-css" style="display:none">
+<div id="bigThumbPanelHolder" style="display:none;position: relative;">
+
+  <!--
+  <div class="hideApps close-X" style="position:absolute;right:0;top:0;z-index:1">✕</div>
+  -->
+
+  <div id="honeycombPanelHolder" style="overflow:auto;position:relative">
+  <a name="sections"></a>
+  <div id="honeycombPanel" class="filterFields" style="display: block;">
+    
+    <!--
+    <div style="float:left;display:flex;justify-content:left;">
+      
+      </div>
+    -->
+
+      <div id="bigThumbMenu" class="bigThumbMenu" style="margin:0 auto;"></div>
+
+      <div id="honeyMenuHolder" style="display:none">
+        <div id="honeycombMenu"></div>
+      </div>
+
+  </div>
+  </div>
+</div>
+</div>
+<div style="clear:both"></div>
+<!-- /APP MENU -->
+
+
+
+
+
+<!-- LOCATION SEARCH -->
+<!-- For inactive portions - copy scripts from explore/js/embed.js -->
+<div id="filterLocations" class="fieldSelector filterBubbleHolder" style="display:none">
+
+    
+      <!-- Stores location options. Not displayed. -->
+      <select style="display:none;" name="locationDD" id="locationDD">
+        <option value="all" style="display:none">All</option>
+          <option value="state" selected="selected">Entire State1</option>
+          <option value="nearby">Nearby</option>
+          <option value="latlon">Lat/Lon</option>
+          <option value="city">Search by City</option>
+          <option value="zip">Search by Zip</option>
+          <option value="counties">Search by County</option>
+      </select>
+  
+      <!--
+      Bug: These appear when in embed-map.js
+
+      <div class="uparrow uparrow-grey" style="left: 34px;">
+      </div>
+
+      <div class="uparrow uparrow-white" style="left: 34px;">
+      </div>
+      -->
+    
+      <div id="locationFilterHolder">
+            
+            <div class="hideAdvanced close-X" style="float:right; margin-top:-20px">&#10005;
+            </div>
+
+            <div class="stateFilters input-output" style="float:left; display:none" class="mock-up earth">
+
+              <select id="country_select" style="float:left">
+                <option value="earth">Earth</option>
+                <!--
+                <option value="countries">Countries</option>
+                -->
+                <option value="country">United States</option>
+                <option value="state" selected>State</option><!-- was counties -->
+              </select>
+
+              <b><!--States--></b>
+              <div id="state_select_holder" class="earth" style="display:none;float:left">
+                <select id="state_select" name="state">
+                 <option value="">States and Territories...</option>
+<!-- Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
+<option value="AL" stateid="1" lat="32.7396" lon="-86.8435" km="131174">Alabama</option>
+<option value="AK" stateid="2" lat="63.3474" lon="-152.8397" km="1478927">Alaska</option>
+<option value="AS" stateid="60" lat="-14.2672" lon="-170.6683" km="198"  style="display:none">American Samoa</option>
+<option value="AZ" stateid="4" lat="34.2039" lon="-111.6064" km="294360">Arizona</option>
+<option value="AR" stateid="5" lat="34.8955" lon="-92.4446" km="134777">Arkansas</option>
+<option value="CA" stateid="6" lat="37.1552" lon="-119.5434" km="403660">California</option>
+<option value="CO" stateid="8" lat="38.9938" lon="-105.5083" km="268420">Colorado</option>
+<option value="MP" stateid="69" lat="14.9368" lon="145.601" km="472" style="display:none">Commonwealth of the Northern Mariana Islands</option>
+<option value="CT" stateid="9" lat="41.5799" lon="-72.7467" km="12542">Connecticut</option>
+<option value="DE" stateid="10" lat="38.9986" lon="-75.4416" km="5047">Delaware</option>
+<option value="DC" stateid="11" lat="38.9042" lon="-77.0165" km="158" style="display:none">District of Columbia</option>
+<option value="FL" stateid="12" lat="28.4574" lon="-82.4091" km="138947">Florida</option>
+<option value="GA" stateid="13" lat="32.6296" lon="-83.4235" km="149485">Georgia</option>
+<option value="GU" stateid="66" lat="13.4417" lon="144.7719" km="544" style="display:none">Guam</option>
+<option value="HI" stateid="15" lat="19.5978" lon="-155.5024" km="16634">Hawaii</option>
+<option value="ID" stateid="16" lat="44.3484" lon="-114.5589" km="214050">Idaho</option>
+<option value="IL" stateid="17" lat="40.1029" lon="-89.1526" km="143780">Illinois</option>
+<option value="IN" stateid="18" lat="39.9013" lon="-86.2919" km="92790">Indiana</option>
+<option value="IA" stateid="19" lat="42.07" lon="-93.4933" km="144660">Iowa</option>
+<option value="KS" stateid="20" lat="38.4985" lon="-98.3834" km="211753">Kansas</option>
+<option value="KY" stateid="21" lat="37.5337" lon="-85.293" km="102282">Kentucky</option>
+<option value="LA" stateid="22" lat="30.8634" lon="-91.7987" km="111899">Louisiana</option>
+<option value="ME" stateid="23" lat="45.4093" lon="-68.6666" km="79888">Maine</option>
+<option value="MD" stateid="24" lat="38.9467" lon="-76.6745" km="25152">Maryland</option>
+<option value="MA" stateid="25" lat="42.1565" lon="-71.4896" km="20204">Massachusetts</option>
+<option value="MI" stateid="26" lat="44.8442" lon="-85.6605" km="146609">Michigan</option>
+<option value="MN" stateid="27" lat="46.316" lon="-94.1996" km="206230">Minnesota</option>
+<option value="MS" stateid="28" lat="32.6865" lon="-89.6561" km="121537">Mississippi</option>
+<option value="MO" stateid="29" lat="38.3507" lon="-92.4568" km="178050">Missouri</option>
+<option value="MT" stateid="30" lat="47.0512" lon="-109.6348" km="376967">Montana</option>
+<option value="NE" stateid="31" lat="41.5433" lon="-99.8119" km="198954">Nebraska</option>
+<option value="NV" stateid="32" lat="39.3311" lon="-116.6151" km="284537">Nevada</option>
+<option value="NH" stateid="33" lat="43.6727" lon="-71.5843" km="23189">New Hampshire</option>
+<option value="NJ" stateid="34" lat="40.1073" lon="-74.6652" km="19049">New Jersey</option>
+<option value="NM" stateid="35" lat="34.4347" lon="-106.1316" km="314197">New Mexico</option>
+<option value="NY" stateid="36" lat="42.9134" lon="-75.5963" km="122050">New York</option>
+<option value="NC" stateid="37" lat="35.5397" lon="-79.1309" km="125926">North Carolina</option>
+<option value="ND" stateid="38" lat="47.4422" lon="-100.4608" km="178696">North Dakota</option>
+<option value="OH" stateid="39" lat="40.4149" lon="-82.712" km="105824">Ohio</option>
+<option value="OK" stateid="40" lat="35.5901" lon="-97.4868" km="177663">Oklahoma</option>
+<option value="OR" stateid="41" lat="43.9717" lon="-120.623" km="248608">Oregon</option>
+<option value="PA" stateid="42" lat="40.9046" lon="-77.8275" km="115880">Pennsylvania</option>
+<option value="PR" stateid="72" lat="18.2176" lon="-66.4108" km="8869" style="display:none">Puerto Rico</option>
+<option value="RI" stateid="44" lat="41.5974" lon="-71.5273" km="2678">Rhode Island</option>
+<option value="SC" stateid="45" lat="33.8742" lon="-80.8543" km="77865">South Carolina</option>
+<option value="SD" stateid="46" lat="44.4468" lon="-100.2382" km="196346">South Dakota</option>
+<option value="TN" stateid="47" lat="35.8608" lon="-86.35" km="106806">Tennessee</option>
+<option value="TX" stateid="48" lat="31.4347" lon="-99.2818" km="676668">Texas</option>
+<option value="VI" stateid="78" lat="18.3267" lon="-64.9713" km="348" style="display:none">United States Virgin Islands</option>
+<option value="UT" stateid="49" lat="39.335" lon="-111.6563" km="213355">Utah</option>
+<option value="VT" stateid="50" lat="44.0686" lon="-72.6692" km="23874">Vermont</option>
+<option value="VA" stateid="51" lat="37.5223" lon="-78.6682" km="102258">Virginia</option>
+<option value="WA" stateid="53" lat="47.4073" lon="-120.5758" km="172118">Washington</option>
+<option value="WV" stateid="54" lat="38.6473" lon="-80.6183" km="62266">West Virginia</option>
+<option value="WI" stateid="55" lat="44.6309" lon="-89.7094" km="140293">Wisconsin</option>
+<option value="WY" stateid="56" lat="42.9897" lon="-107.5444" km="251459">Wyoming</option>
+
+               </select>
+               </div>
+               <br>
+            </div>
+
+            <div class="stateFilters" style="display:none">
+              <div class="regionFilter input-output" style="float:left; display:none">
+
+                <!--
+                <b>Region</b><br>
+                -->
+                <select id="region_select">
+                  <option value=''>Region...</option>
+                  <option value='Metro Atlanta' lat='33.8498' lon='-84.4383' geo='US13121,US13097,US13067,US13,US13057,US13113,US13063,US13089,US13135,US13151,US13247'>Metro Atlanta</option>
+                  <option value='West Central Georgia' lat='33.0362' lon='-85.0322' geo='US13045,US13077,US13143,US13145,US13149,US13199,US13223,US13233,US13263,US13285,US01111,US01017'>West Central Georgia</option>
+                  <option value='Central Georgia' lat='32.3771' lon='-82.5924' geo='US13023,US13043,US13091,US13109,US13167,US13175,US13209,US13267,US13271,US13279,US13283,US13309,US13315,US13107,US13235'>Central Georgia</option>
+                  <option value='Coastal Georgia' lat='32.0809' lon='-81.0912'  geo='US13127,US13039,US13191,US13179,US13029,US13051'>Coastal Georgia</option>
+                  <option value='Southeast Coastal' lat='31.1891' lon='-81.4979' geo='US13001,US13005,US13127,US13161,US13229,US13305'>Southeast Coastal</option>
+                </select>
+
+              </div>
+            </div>
+
+        <!-- GOOGLE ADDRESS AUTOCOMPLETE -->
+        <!-- USES "Google Autocomplete" javascript in map-filters.js 
+        Currently flacky.  Works after returning to page, sometimes.          
+        -->
+        <style>
+
+        </style>
+        <div id="app">
+
+          <div id="local_auto_complete" class="localX" style="display:none">
+            <div class="place_details input-output" style="float:left;margin-bottom:15px">
+              <a style="float:right" href="/localsite/map/auto">?</a>
+              <b style="margin-top:0px">Address</b> <br>
+            
+              <input 
+                class="filterClick"
+                id="searchloc"
+                style="max-width:300px; float:left; display: block; width: 60vw; font-size: 1rem; font-weight: 400; line-height: 2rem;"
+                placeholder="Address, city, state, county or zip"
+                onfocus="value = ''" 
+                type="text" />
+              <br><br>
+            
+              <div class="localX" style="display:none">
+              <h3 class>Latitude: &nbsp; {{ lat }}</h3>
+              <h3>Longitude: &nbsp; {{ lng }}</h3>
+              <h3>Address: &nbsp; {{ address }}</h3>
+              <h3>State: &nbsp; {{ state }}</h3>
+              <h3>Phone: &nbsp; {{ phone }}</h3>
+              <h3>Website: &nbsp; {{ website }}</h3>
+              </div>
+
+              
+            </div>
+
+            <!--
+            <input id="searchX" autocomplete="off" style="width:100%;max-width:400px;padding-right:27px;margin-bottom:10px" class="filterClick mobileWide textInput si-input" type="text" value="" 
+            placeholder="Address Lookup"
+            onkeyupX="return SearchEnter(event);" />
+            -->
+          </div>
+
+        </div>
+
+        
+        <!-- /GOOGLE ADDRESS AUTOCOMPLETE -->
+
+
+
+
+        <!-- Secondary Location Filters -->
+          <div style="float:left;display:none" class="currentCities">
+
+            <div class="filterField">
+                <div class="filterLabel">
+                  <div class="filterLabelMap">
+                    Cities
+                  </div>
+                </div>
+
+                <div class="cityText"></div>
+
+            </div>
+
+          </div>
+
+          <div style="float:left;display:none" class="currentCounties">
+
+            <div class="filterField">
+                <div class="filterLabel"><div class="filterLabelMap">
+                </div></div>
+
+                <div class="filterClick" style="position:relative; overflow:auto;">
+                  County Holder
+                </div>
+            </div>
+
+          </div>
+
+          <div id="coordFields" style="display:none;float:left;min-height:40px;">
+              <div style="float:left; margin-right: 6px">
+                <div class="filterLabelX"><div class="filterLabelMap">Latitude
+                </div></div>
+                <input id="lat" class="filterClick mobileWide textInput" placeholder="Latitude" type="text" style="width: 120px; margin-top: 0px" />
+              </div>
+              <div style="float:left; margin-right: 6px">
+                <div class="filterLabelX"><div class="filterLabelMap">Longitude
+                </div></div>
+                  <input id="lon" class="filterClick mobileWide textInput" placeholder="Longitude" type="text" style="width: 120px; margin-top: 0px" />
+              </div>
+          </div>
+
+           <div id="zipFields" style="display:none; float:left">
+          
+              <div style="float:left; margin-right:6px; min-height:50px">
+                <div class="filterLabelX"><div class="filterLabelMap">Zip</div></div>
+                  <input id="zip" class="filterClick mobileWide textInput" type="text" placeholder="Enter Zip" style="width: 132px; margin-top: 0px" title="Enter zip code" />
+              </div>
+
+              <div id="distanceInZip" style="float: left;"></div>
+              
+              <div class="confirmationButtons" style="display:none;float:left; margin-top: 5px">
+                  <a id="doneZip" class="button orangeButton" href="#">apply</a>
+                  
+              </div>
+              
+          </div>
+
+          <div id="currentButtons" style="float:left;">
+              <div id="doneLatLng" href="#"></div>
+          </div>
+
+          <div id="distanceInNear" style="float: left;">
+            
+          </div>
+
+          <div id="distanceField" class="filterField" style="display:none; float:left; min-height:50px">
+          
+            <div class="filterLabelX">
+              <div class="filterLabelMap">Distance</div></div>
+
+              <select class="distance triggerSearch filterClick">
+                  <option value="">Distance...</option>
+                  <option value="1">1 Mile</option>
+                  <option value="2">2 Miles</option>
+                  <option value="3">3 Miles</option>
+                  <option value="5">5 Miles</option>
+                  <option value="10">10 Miles</option>
+                  <option value="15">15 Miles</option>
+                  <option value="20">20 Miles</option>
+                  <option value="25">25 Miles</option>
+                  <option value="30" selected="selected">30 Miles</option>
+                  <option value="40">40 Miles</option>
+                  <option value="50">50 Miles</option>
+                  <option value="60">60 Miles</option>
+                  <option value="75">75 Miles</option>
+                  <option value="100">100 Miles</option>
+                  <option value="150">150 Miles</option>
+                  <option value="200">200 Miles</option>
+                  <option value="300">300 Miles</option>
+                  <option value="400">400 Miles</option>
+                  <option value="500">500 Miles</option>
+              </select>
+          </div>
+        <!-- /Secondary Location Filters -->
+
+        <div style="clear:both; margin-bottom:12px"></div>
+
+        <div id="geoPicker">
+          <div id="geomapHolder">
+            <!-- Must be displayed initiallly so tiles are visible -->
+              <div id="geomap">
+              </div>
+          </div>
+
+          <div id="geoListHolder" style="padding-right:25px; border:0px solid #ccc; position:relative">
+
+              <div class="listHolder">
+                <!--Cities -->
+              </div>
+
+              <div class="listHolderFooter">
+
+                  <div style="float:right; padding:0px 0px 0px 12px; margin-top:5px; margin-bottom:5px;">
+                    <div class="detailbutton hideAdvanced greenbutton" style="padding:10px 18px 10px 18px;">DONE</div>
+                  </div>
+
+                  <div style="displayX:table; width:100%">
+                    <div style="float:left; min-height:30px; padding:14px 10px 8px 4px;">
+                      Select checkboxes above or click the map.
+                    </div>
+                  </div>
+
+                </div>
+
+              <div class="geoListCounties" style="overflow:scroll; margin-bottom:45px">
+                <!-- Activate or remove
+                <div style="float:right;margin:12px 0px 0 12px">
+                  <input id="showValues" type="checkbox" checked> Show values
+                </div>
+                -->
+                
+                <style>
+                  #show_county_colors {
+                    positionX: absolute;
+                    right:50px;
+                    bottom:50px;
+                    background-color: #fff;
+                    border-radius: 18px;
+                    font-size: 14px;
+                    padding: 10px 20px;
+                    cursor: pointer;
+                    z-index:2000;
+                  }
+                  #show_county_colors:hover {
+                    background-color: #999;
+                    color:#fff;
+                  }
+                </style>
+
+                <!-- Tabulator: Latest version -->
+                
+                <div id="tabulator-statetable"></div>
+                <div id="tabulator-geotable"></div>
+                <div style="margin-top:8px; font-size: 12px">
+                  Dataset displayed by <a href="../../../localsite/info/data/" target="_blank">Tabulator</a><br><br>
+                </div>
+
+                <div style="width:100%" class="output_table rotateHeader">
+                </div>
+
+                <div class="localonly" style="display:none">
+                  <div id="show_county_colors">Test another chlorpleth</div>
+                </div>
+
+              </div>
+          </div>
+        </div>
+
+      </div>
+
+            
+</div>
+<!-- /LOCATION SEARCH -->
+
+
+
+
+<!-- 
+Displayed by hashChanged() in map-filters.js
+-->
+<div class="content contentpadding" style="background-color:rgb(246, 246, 246); max-width:1500px; padding-top:0; padding-bottom:0">
+  <iframe id="introframe" style="display:none" width="100%" height="900px" src="" frameborder="0" ></iframe>
+</div>
+
+
+
+<div id="pageLinksHolder" class="content contentpadding" style="display:none; padding-top:0; padding-bottom:0">
+  <br>
+    
+    <div style="float:right; padding: 12px 0px 10px 0" class="noprint hideMobile">
+      <a href="https://model.earth/io/charts/">About&nbsp;Widgets</a>
+    </div>
+     <div id="pageLinksInsert" style="displayX:none; float:left; font-size: 15px; padding: 12px 30px 10px 0">
+          <a onClick="go({}); return false;"  href="./">Overview</a> | 
+          <a onClick="goHash({'go':'bioeconomy','show':''}); return false;" href="./#go=bioeconomy">Bioeconomy</a> | 
+          <span class="local" style="display:none">
+          <a onClick="go({'go':'','show':'farmfresh'}); return false;" href="./#show=farmfresh">Fresh Produce</a> | 
+          </span>
+          <a onClick="goHash({'go':'manufacturing','show':''}); return false;" href="./#go=manufacturing">Manufacturing</a> | 
+          <a onClick="goHash({'go':'parts','show':''}); return false;" href="./#go=parts">Parts Manufacturing</a> 
+          <span class="local" style="display:none"> | 
+          <a onClick="goHash({'go':'','show':'suppliers'}); return false;" href="./#show=suppliers">PPE Suppliers</a> | 
+          </span>
+          <a style="display:none" onClick="goHash({'geomap':'true'}); return false;" href="./#geomap=US13">County&nbsp;Map</a>
+          <br>
+      </div>
+</div>
+
+<div style="clear:both"></div>
+
+
+<!-- NULLSCHOOL -->
+<style>
+  /*
+  #mainarea iframe {
+      background: #efefef;
+  }
+
+  #mainarea iframe {
+      background: #efefef;
+      border: 1px solid #ddd;
+  }
+  */
+  iframe {
+      display: block;
+      border: none;
+      /* min-height: 94vh; */
+      width: 100%;
+  }
+  iframe {
+      display: block;
+      backgroundX: #000;
+      border: none;
+      min-height: 65vh;
+      width: 100%;
+  }
+  #mainbucket {
+    position: absolute;
+    right: 80px;
+    bottom: 20px;
+    padding: 20px;
+    font-size: 18px;
+    line-height: 28px;
+    background: rgba(33,33,33,0.5);
+    color: #ddd;
+    border-radius: 30px;
+    max-width: 580px;
+  }
+  .linkondark {
+    color: #fff !important;
+    text-decoration: underline;
+  }
+</style>
+
+<div id="nullschoolHeader" style="position:relative; display:none">
+
+  <div id="earthZoom" style="position: absolute; z-index:100; right:20px; bottom:20px">
+    <div id="earthClose" style="padding-left:20px">CLOSE</div>
+    <div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in">+</a><a class="leaflet-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out">−</a></div>
+  </div>
+
+  <div class="hideMobile">
+  <div class="earth georgia" style="display:none">
+  <div id="mainbucket" style="display:none">
+
+    <!--
+    <a href="../io/charts/"><img src="/community/img/logo/epa-circle.png" style="width:115px;float:left;margin-right:16px;"></a>
+    -->
+
+    <div style="padding-top:5px; overflow:auto" class="hideOnProjectsPage">
+      Tools for exploring, documenting and transforming environments through collaborative modeling and real-time engagement.
+
+      <!--
+      Join us in building Product Lifecycle Tools that&nbsp;increase positive environmental impacts through&nbsp;local innovation. -->
+      <br>
+      
+      <a href="/community/projects/" class="btn btn-primary" style="margin-top:10px;">Coding Projects</a>
+
+      <!--
+        <a href="/localsite/info/" class="linkondark">Explore&nbsp;Impacts</a>
+      -->
+
+    </div>
+    <div style="display:none" class="projectsPage">
+      Build your school projects and dissertations using USEEIO environmentally-extended data.
+
+      <a href="/io/learn/" class="btn btn-warning" style="margin-top:10px;">For Research Projects</a>
+    </div>
+    <!--
+    <a href="projects/">Current Projects</a> and <a href="/localsite/info/">Data Visualizations</a><br>
+    -->
+
+  </div>
+  </div>
+  </div>
+
+  <!-- https://earth.nullschool.net/#current/wind/surface/level/orthographic=-67.66,31.71,913 -->
+  <!-- Cool if we need solid continental for overlaying topjson:
+  https://earth.nullschool.net/#2018/10/10/0000Z/ocean/surface/currents/overlay=significant_wave_height/orthographic=-72.95,33.34,1269/loc=-82.457,27.951
+
+ https://earth.nullschool.net/#current/wind/surface/currents/overlay=wind/orthographic=-73.52,34.52,1101
+  -->
+
+  <div id="globalMapHolder" style="background:#444;"></div>
+  <div id="mapText" style="padding-left:20px"></div>
+
+</div>
+<!-- /NULLSCHOOL -->
+
+
+<div id="showIframeCover" onclick="this.style.display='none';$('#iframeCover').show();" style="display:none; position:fixed; z-index:10; left:18px; margin-top:12px" class="btn btn-white">Reactivate Scrolling</div>
+<!-- ../img/hero/hexagon-pattern.png  -->
+
+
+<!-- a work in progress -->
+<div id="log_display" style="display:none" class="localonlyX"><span style='float:left; font-size:10px'>LOG</span><br><textarea id="logText">MyTest</textarea></div>
+
+
+
+
+<!-- Try to reactivate both of these display:none and update map.js waitForElm('#bodyFile #' + whichmap -->
+<div class="displayOnload displayMapForLoad" style="display:none;position:relative;overflow:hidden;">
+  <div id="mapList1Holder" style="display:none" class="darkDivText hideMobile">
+    <div class="closeParent close-X-sm" style="position:absolute;top:-10px;right:-10px;padding:18px 14px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:32px;pointer-events:auto;">&#xE5CD;</i></div>
+
+    <div id="mapList1Header">Locations</div>
+    <div id="mapList1Text"></div>
+  </div>
+
+  <div id="map1" class="displayMapForLoad" style="display:none; width:100%"><img src='/localsite/img/icon/loading.gif' style='margin:100px 200px 100px 200px; width:120px'></div>
+
+  <!-- not in use -->
+  <div id="legendHolder" style="display:none">
+    <div id="allLegends"></div>
+  </div>
+  
+</div>
+
+<div style="clear:both"></div>
+
+
+
+<div id="iframeCover" onclick="this.style.display='none';$('#showIframeCover').show();" style="display:none; background-image: url('https://www.georgia.org/themes/custom/mmg8_cog/dist/images/honeycomb.png'); position: absolute; z-index: 10; width:100%; height:800px"></div>
+
+<iframe id="mapframe" style="display:none; width:100%;height:800px;"></iframe>
+
+<div id="tableSide" class="hideMobile">
+
+<div id='sidecolumnX' class='hideprint, local, earth' style="displayX: none">
+
+
+<style>
+  #selected_states {
+    border-right: 1px solid #ccc;
+    min-width: 150px;
+    display: none;
+    margin-left: 20px;
+  }
+  #selected_states input {
+    display: none;
+    float:left;
+  }
+  #selected_states label {
+    display: block;
+    padding: 6px 10px 4px 10px;
+  }
+  #selected_states label:hover {
+    background-color: #ccc;
+    color: #333;
+  }
+</style>
+<div style="display:none" class="local">
+<!-- 
+Checkbox list.  The select list above is used by naics.js
+Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
+<div id="selected_states">
+<input type="checkbox" class="selected_state" name="local-states" id="AL" stateid="1" lat="32.7396" lon="-86.8435" km="131174">
+<label for="AL" class="">Alabama</label>
+<input type="checkbox" class="selected_state" name="local-states" id="AK" stateid="2" lat="63.3474" lon="-152.8397" km="1478927">
+<label for="AK" class="">Alaska</label>
+<input type="checkbox" class="selected_state" name="local-states" id="AS" stateid="60" lat="-14.2672" lon="-170.6683" km="198" style="display:none">
+<label for="AS" class="" style="display:none">American Samoa</label>
+<input type="checkbox" class="selected_state" name="local-states" id="AZ" stateid="4" lat="34.2039" lon="-111.6064" km="294360">
+<label for="AZ" class="">Arizona</label>
+<input type="checkbox" class="selected_state" name="local-states" id="AR" stateid="5" lat="34.8955" lon="-92.4446" km="134777">
+<label for="AR" class="">Arkansas</label>
+<input type="checkbox" class="selected_state" name="local-states" id="CA" stateid="6" lat="37.1552" lon="-119.5434" km="403660">
+<label for="CA" class="">California</label>
+<input type="checkbox" class="selected_state" name="local-states" id="CO" stateid="8" lat="38.9938" lon="-105.5083" km="268420">
+<label for="CO" class="">Colorado</label>
+<input type="checkbox" class="selected_state" name="local-states" id="MP" stateid="69" lat="14.9368" lon="145.601" km="472" style="display:none">
+<label for="MP" class="" style="display:none">Commonwealth of the Northern Mariana Islands</label>
+<input type="checkbox" class="selected_state" name="local-states" id="CT" stateid="9" lat="41.5799" lon="-72.7467" km="12542">
+<label for="CT" class="">Connecticut</label>
+<input type="checkbox" class="selected_state" name="local-states" id="DE" stateid="10" lat="38.9986" lon="-75.4416" km="5047">
+<label for="DE" class="">Delaware</label>
+<input type="checkbox" class="selected_state" name="local-states" id="DC" stateid="11" lat="38.9042" lon="-77.0165" km="158" style="display:none">
+<label for="DC" class="" style="display:none">District of Columbia</label>
+<input type="checkbox" class="selected_state" name="local-states" id="FL" stateid="12" lat="28.4574" lon="-82.4091" km="138947">
+<label for="FL" class="">Florida</label>
+<input type="checkbox" class="selected_state" name="local-states" id="GA" stateid="13" lat="32.6296" lon="-83.4235" km="149485">
+<label for="GA" class="">Georgia</label>
+<input type="checkbox" class="selected_state" name="local-states" id="GU" stateid="66" lat="13.4417" lon="144.7719" km="544" style="display:none">
+<label for="GU" class="" style="display:none">Guam</label>
+<input type="checkbox" class="selected_state" name="local-states" id="HI" stateid="15" lat="19.5978" lon="-155.5024" km="16634">
+<label for="HI" class="">Hawaii</label>
+<input type="checkbox" class="selected_state" name="local-states" id="ID" stateid="16" lat="44.3484" lon="-114.5589" km="214050">
+<label for="ID" class="">Idaho</label>
+<input type="checkbox" class="selected_state" name="local-states" id="IL" stateid="17" lat="40.1029" lon="-89.1526" km="143780">
+<label for="IL" class="">Illinois</label>
+<input type="checkbox" class="selected_state" name="local-states" id="IN" stateid="18" lat="39.9013" lon="-86.2919" km="92790">
+<label for="IN" class="">Indiana</label>
+<input type="checkbox" class="selected_state" name="local-states" id="IA" stateid="19" lat="42.07" lon="-93.4933" km="144660">
+<label for="IA" class="">Iowa</label>
+<input type="checkbox" class="selected_state" name="local-states" id="KS" stateid="20" lat="38.4985" lon="-98.3834" km="211753">
+<label for="KS" class="">Kansas</label>
+<input type="checkbox" class="selected_state" name="local-states" id="KY" stateid="21" lat="37.5337" lon="-85.293" km="102282">
+<label for="KY" class="">Kentucky</label>
+<input type="checkbox" class="selected_state" name="local-states" id="LA" stateid="22" lat="30.8634" lon="-91.7987" km="111899">
+<label for="LA" class="">Louisiana</label>
+<input type="checkbox" class="selected_state" name="local-states" id="ME" stateid="23" lat="45.4093" lon="-68.6666" km="79888">
+<label for="ME" class="">Maine</label>
+<input type="checkbox" class="selected_state" name="local-states" id="MD" stateid="24" lat="38.9467" lon="-76.6745" km="25152">
+<label for="MD" class="">Maryland</label>
+<input type="checkbox" class="selected_state" name="local-states" id="MA" stateid="25" lat="42.1565" lon="-71.4896" km="20204">
+<label for="MA" class="">Massachusetts</label>
+<input type="checkbox" class="selected_state" name="local-states" id="MI" stateid="26" lat="44.8442" lon="-85.6605" km="146609">
+<label for="MI" class="">Michigan</label>
+<input type="checkbox" class="selected_state" name="local-states" id="MN" stateid="27" lat="46.316" lon="-94.1996" km="206230">
+<label for="MN" class="">Minnesota</label>
+<input type="checkbox" class="selected_state" name="local-states" id="MS" stateid="28" lat="32.6865" lon="-89.6561" km="121537">
+<label for="MS" class="">Mississippi</label>
+<input type="checkbox" class="selected_state" name="local-states" id="MO" stateid="29" lat="38.3507" lon="-92.4568" km="178050">
+<label for="MO" class="">Missouri</label>
+<input type="checkbox" class="selected_state" name="local-states" id="MT" stateid="30" lat="47.0512" lon="-109.6348" km="376967">
+<label for="MT" class="">Montana</label>
+<input type="checkbox" class="selected_state" name="local-states" id="NE" stateid="31" lat="41.5433" lon="-99.8119" km="198954">
+<label for="NE" class="">Nebraska</label>
+<input type="checkbox" class="selected_state" name="local-states" id="NV" stateid="32" lat="39.3311" lon="-116.6151" km="284537">
+<label for="NV" class="">Nevada</label>
+<input type="checkbox" class="selected_state" name="local-states" id="NH" stateid="33" lat="43.6727" lon="-71.5843" km="23189">
+<label for="NH" class="">New Hampshire</label>
+<input type="checkbox" class="selected_state" name="local-states" id="NJ" stateid="34" lat="40.1073" lon="-74.6652" km="19049">
+<label for="NJ" class="">New Jersey</label>
+<input type="checkbox" class="selected_state" name="local-states" id="NM" stateid="35" lat="34.4347" lon="-106.1316" km="314197">
+<label for="NM" class="">New Mexico</label>
+<input type="checkbox" class="selected_state" name="local-states" id="NY" stateid="36" lat="42.9134" lon="-75.5963" km="122050">
+<label for="NY" class="">New York</label>
+<input type="checkbox" class="selected_state" name="local-states" id="NC" stateid="37" lat="35.5397" lon="-79.1309" km="125926">
+<label for="NC" class="">North Carolina</label>
+<input type="checkbox" class="selected_state" name="local-states" id="ND" stateid="38" lat="47.4422" lon="-100.4608" km="178696">
+<label for="ND" class="">North Dakota</label>
+<input type="checkbox" class="selected_state" name="local-states" id="OH" stateid="39" lat="40.4149" lon="-82.712" km="105824">
+<label for="OH" class="">Ohio</label>
+<input type="checkbox" class="selected_state" name="local-states" id="OK" stateid="40" lat="35.5901" lon="-97.4868" km="177663">
+<label for="OK" class="">Oklahoma</label>
+<input type="checkbox" class="selected_state" name="local-states" id="OR" stateid="41" lat="43.9717" lon="-120.623" km="248608">
+<label for="OR" class="">Oregon</label>
+<input type="checkbox" class="selected_state" name="local-states" id="PA" stateid="42" lat="40.9046" lon="-77.8275" km="115880">
+<label for="PA" class="">Pennsylvania</label>
+<input type="checkbox" class="selected_state" name="local-states" id="PR" stateid="72" lat="18.2176" lon="-66.4108" km="8869" style="display:none">
+<label for="PR" class="" style="display:none">Puerto Rico</label>
+<input type="checkbox" class="selected_state" name="local-states" id="RI" stateid="44" lat="41.5974" lon="-71.5273" km="2678">
+<label for="RI" class="">Rhode Island</label>
+<input type="checkbox" class="selected_state" name="local-states" id="SC" stateid="45" lat="33.8742" lon="-80.8543" km="77865">
+<label for="SC" class="">South Carolina</label>
+<input type="checkbox" class="selected_state" name="local-states" id="SD" stateid="46" lat="44.4468" lon="-100.2382" km="196346">
+<label for="SD" class="">South Dakota</label>
+<input type="checkbox" class="selected_state" name="local-states" id="TN" stateid="47" lat="35.8608" lon="-86.35" km="106806">
+<label for="TN" class="">Tennessee</label>
+<input type="checkbox" class="selected_state" name="local-states" id="TX" stateid="48" lat="31.4347" lon="-99.2818" km="676668">
+<label for="TX" class="">Texas</label>
+<input type="checkbox" class="selected_state" name="local-states" id="VI" stateid="78" lat="18.3267" lon="-64.9713" km="348" style="display:none">
+<label for="VI" class="" style="display:none">United States Virgin Islands</label>
+<input type="checkbox" class="selected_state" name="local-states" id="UT" stateid="49" lat="39.335" lon="-111.6563" km="213355">
+<label for="UT" class="">Utah</label>
+<input type="checkbox" class="selected_state" name="local-states" id="VT" stateid="50" lat="44.0686" lon="-72.6692" km="23874">
+<label for="VT" class="">Vermont</label>
+<input type="checkbox" class="selected_state" name="local-states" id="VA" stateid="51" lat="37.5223" lon="-78.6682" km="102258">
+<label for="VA" class="">Virginia</label>
+<input type="checkbox" class="selected_state" name="local-states" id="WA" stateid="53" lat="47.4073" lon="-120.5758" km="172118">
+<label for="WA" class="">Washington</label>
+<input type="checkbox" class="selected_state" name="local-states" id="WV" stateid="54" lat="38.6473" lon="-80.6183" km="62266">
+<label for="WV" class="">West Virginia</label>
+<input type="checkbox" class="selected_state" name="local-states" id="WI" stateid="55" lat="44.6309" lon="-89.7094" km="140293">
+<label for="WI" class="">Wisconsin</label>
+<input type="checkbox" class="selected_state" name="local-states" id="WY" stateid="56" lat="42.9897" lon="-107.5444" km="251459">
+<label for="WY" class="">Wyoming</label>
+</div>
+</div>
+
+  </div><!-- /sidecolumnX -->
+
+  <!-- INDUSTRIES -->
+  <div class="mock-up" style="display:none; padding-top:20px; padding-bottom:80px">
+
+
+    <div class="sideWidget eWidget">
+      <div class="widgetbar" style="font-size: 24px;font-weight:200;padding:10px;min-height:34px">LOCAL GOODS & SERVICES</div>
+      <div class="topboxes" style="min-heightX: 120px">
+
+        <!--
+        <div style="font-size:18px">Set your goals</div>
+        <br>
+        -->
+
+        <b>Adjust Industry Levels</b>
+        to reflect technology initiatives 
+        that generate new revenue streams, create jobs and 
+        increase your community's positive outcomes.
+
+        <!--
+          Create new mixes of local goods and services.
+        -->
+      </div>
+    </div>
+
+    <!--
+    <div class="sideWidget eWidget">
+      <div class="widgetbar" style="padding-left:5px">
+        <a href="../start/dataset/"><img src="/localsite/info/img/backarrow.gif" style="width:11.5px;float:left;margin:1px 7px 0 0"></a>
+        AGRICULTURE, FORESTRY, FISHING AND HUNTING
+      </div>
+      
+      <div class="topboxes">
+        <div style="position: relative">
+            <img src="/localsite/info/img/sectors.gif" style="width:100%;max-width:400px;margin-right:80px" />
+            <div style="position: absolute; right:0; top:8px; background: rgb(250,250,250); padding-left:6px">
+              <img src="/localsite/info/img/plus-minus.gif" class="plus-minus"><br>
+              <img src="/localsite/info/img/plus-minus.gif" class="plus-minus"><br>
+              <img src="/localsite/info/img/plus-minus.gif" class="plus-minus"><br>
+              <img src="/localsite/info/img/plus-minus.gif" class="plus-minus"><br>
+              <img src="/localsite/info/img/plus-minus.gif" class="plus-minus"><br>
+              <img src="/localsite/info/img/plus-minus.gif" class="plus-minus"><br>
+              <img src="/localsite/info/img/plus-minus.gif" class="plus-minus"><br>
+              <img src="/localsite/info/img/plus-minus.gif" class="plus-minus"><br>
+              <img src="/localsite/info/img/plus-minus.gif" class="plus-minus"><br>
+              <img src="/localsite/info/img/plus-minus.gif" class="plus-minus"><br>
+              <img src="/localsite/info/img/plus-minus.gif" class="plus-minus"><br>
+              <img src="/localsite/info/img/plus-minus.gif" class="plus-minus"><br>
+              <img src="/localsite/info/img/plus-minus.gif" class="plus-minus">
+            </div>
+        </div>
+
+        <div style="font-size: 12px; background:#eee; border-bottom:1px solid #ddd; display:inline; padding:0 4px 0 4px">
+          <a href="../start/dataset/">Main categories</a> | 
+          <a href="../start/dataset/">Show all 382 sectors</a>
+
+          <span style="float:right; color:#777">Balanced &nbsp;</span>
+
+        </div>
+
+      </div>
+    </div>
+    -->
+    
+  </div>
+  <!-- /INDUSTRIES -->
+
+  <div style="display:none;margin:20px 10px 20px 17px; min-width:195px; line-height: 1.5em;" class="layerclass ppe suppliers">
+    <div class="catList" id="industryCatList">
+      <div class="all_categories">All Categories</div>
+      <div title="Air Purifying Machines">Air Purifying Machines</div>
+      <div title="Face Shields">Face Shields</div>
+      <div title="Gloves">Gloves</div>
+      <div title="Hair Covers">Hair Covers</div>
+      <div title="Hand Sanitizer">Hand Sanitizer</div>
+      <div title="Hospital Beds">Hospital Beds</div>
+      <div title="Masks">Masks</div>
+      <div title="Negative Pressure Machines">Negative Pressure Machines</div>
+      <div title="No-Touch Thermometers">No-Touch Thermometers</div>
+      <div title="Protective Barriers">Protective Barriers</div>
+      <div title="Regular Thermometers">Regular Thermometers</div>
+      <div title="Safety Goggles">Safety Goggles</div>
+      <div title="Sanitation Units">Sanitation Units</div>
+      <div title="Sanitizing Spray">Sanitizing Spray</div>
+      <div title="Sanitizing Wipes">Sanitizing Wipes</div>
+      <div title="Shoe Covers">Shoe Covers</div>
+      <div title="Surgical Gowns">Surgical Gowns</div>
+      <div title="Surgical Masks">Surgical Masks</div>
+      <div title="Tyvek Suits">Tyvek Suits</div>
+      <div title="Ventilators">Ventilators</div>
+      <div title="Warehouse" class="suppliers_pre" style="display:none">Warehouse</div>
+    </div>
+  </div>
+
+  <div style="display:none;margin:20px 10px 20px 17px; min-width:195px; line-height: 1.5em;" class="layerclass vax">
+    <div class="catList" id="industryCatList">
+      <div>All Categories</div>
+      <div>Health Department</div>
+      <div>Hospital</div>
+      <div>Retailer/Grocery</div>
+      <div>Mobile Clinic</div>
+      <div>Other Pharmacy</div>
+    </div>
+  </div>
+
+  <div style="display:none;margin:20px 10px 20px 17px; min-width:195px; line-height: 1.5em;" class="layerclass opendata">
+    <div class="catList" id="industryCatList">
+      <div>All Categories</div>
+      <div>Accessibility</div>
+      <div>Data Portals</div>
+      <div>Education</div>
+      <div>Environment</div>
+      <div>Emergency Services</div>
+      <div>Employment</div>
+      <div>Geographic Boundaries</div>
+      <div>Geography</div>
+      <div>Government</div>
+      <div>Health & Wellness</div>
+      <div>Homelessness</div>
+      <div>Housing</div>
+      <div>Infrastructure</div>
+      <div>Justice System</div>
+      <div>Natural Resources</div>
+      <div>Poverty</div>
+      <div>Preservation</div>
+      <div>Smart Cities</div>
+      <div>Tax</div>
+      <div>Transportation</div>
+      <div>Veterans</div>
+      <div>Voting & Elections</div>
+      <div>Zoning</div>
+      <div>Not Classified</div>
+    </div>
+  </div>
+
+</div><!-- /tableSide -->
+
+<div id="list_main" style="display:none; overflow:auto;">
+
+
+
+<section class="data-section" id="data" style="overflow:auto">
+<div class="content contentpadding litePanel" style="max-width:2000px">
+
+  <div id="flexwrapper">
+    <div id="hublist" style="margin-top:20px; position:relative;">
+
+      <div id="hublist-padding">
+        
+        <h1 class="listTitle" style="margin-bottom:12px">Loading...</h1>
+        <h2 class="listSubtitle" style="display:none"></h2>
+
+        <div style="display:none" class="layerclass farmfresh">
+          
+
+          <div id="legendLingsHolder" style="margin-bottom: 20px">
+            <div class="legendLink">
+              <div class="legendLinkRect" style="background:#1f78b4;"></div>
+              <div style="margin-right:16px;float:left">FARMERS MARKETS</div>
+            </div>
+            <!--
+            <div class="legendLink">
+              <div class="legendLinkRect" style="background:#b2df8a;"></div>
+              <div style="margin-right:16px;float:left">DISTRIBUTORS</div>
+            </div>
+            -->
+            <div class="legendLink">
+              <div class="legendLinkRect" style="background:#a6cee3;"></div>
+              <div style="margin-right:16px;float:left">ON FARM SALES</div>
+            </div>
+            <div style="clear:both"></div>
+          </div>
+
+          <div id="suppliers_noiframe" style="display:none">
+
+           
+            <!--
+            Georgia businesses are responding to the call for manufacturing and  
+            distribution of critical supplies via the state's <a href="https://www.georgia.org/covid19response">COVID-19 Response Form</a>. 
+            -->
+
+            <span style="display:none" class="suppliers_pre_message">
+            <a href="https://www.georgia.org/covid19suppliersmap" target="covid19suppliersmap">Learn more</a> about our supplier list and map.
+            </span>
+            <!--
+            To make a listing correction or update, please 
+            <a href="https://www.georgia.org/covid19response" style="white-space: nowrap;">submit a new entry</a> 
+            or use the "feedback" button above. <a href="https://www.georgia.org/covid19suppliers">View PDF and learm more</a>.
+            -->
+
+            <span style="display:none" class="suppliers_pre_message">
+            Some of the locations are randomized by a couple miles since they were posted prior to our public listing registration.
+            <br><br>
+            </span>
+            
+          </div>
+        </div>
+
+
+          <sectionX id="directory" class="mock-up" style="display:none;">
+            
+              <!--
+              <h2 style="margin-top:0px">Mock-up</h2>
+              Farm fresh data is provided as a sample dataset pulled from the USDA website. 
+              If you need info related to a GEMA supplier, please contact the Georgia Center of Innovation.
+              <br><br>
+              -->
+
+              <div id="resultsHeader">
+              </div>
+              
+
+              <!-- For D3 Embedded CSV Sheet -->
+              <div style="overflow:hidden;position:relative">
+                <div id="dataGrid">
+                  <div class="eTable" id="d3div"></div>
+                </div>
+              </div>
+              <style>
+                  .eTable table {
+                      border-collapse: collapse;
+                      border: 2px black solid;
+                      font: 12px sans-serif;
+                      min-height: 10px;
+                  }
+                  .eTable td {
+                      border: 1px black solid;
+                      padding: 5px;
+                      white-space: nowrap;
+                  }
+                  .eTable {
+                    margin-bottom:30px;
+                    overflow: auto;
+                  }
+                  .eTable > table > tr:first-child {
+                    background-color: #eee;
+                  }
+              </style>
+              <!-- End D3 Embedded CSV Sheet -->
+
+          </sectionX>
+
+
+          <div id="dataList"></div>
+          <div id="detaillist"></div>
+          <div id="narrowlist" style="display:none"></div>
+
+          <div id="dataListTop" class='exporter products' style="display:none;overflow:auto;margin-bottom:8px">
+
+            <div style='float:left'>
+              Select up to 10 companies when requesting contact info.
+            </div>
+
+            <div id="rightButtons" style="float:right;">
+              <div id="showMap" class="detailbutton" style="display:none; float:left;margin-right:10px">Map</div>
+              <div id="toggleList" class="detailbutton localonly" style="display:none;float:left;margin-right:10px">Toggle</div>
+                <div id="requestInfo" class='orangeButton detailbutton lowerButton' style="float:left;">Request Contact Info</div>
+            </div>
+
+          </div>
+
+          
+
+      </div>
+
+
+      
+
+
+    </div><!-- /hublist -->
+
+<div class="litePanelFadeOut">
+            <div id="changeHublistHeight" style="cursor:pointer;float:left;display:none">
+              <div class="btn btn-success">Show All</div>
+            </div>
+            
+            <div class='viewAllLink' style='display:none;float:left'><a class='btn btn-white' onclick='goHash({},["name","loc","cat","subcat"]); return false;' href='#show=" + param["show"] + "'>View All</a></div>
+            
+          </div>
+
+
+    <a name="gomap"></a>
+    <div id="mapHolder">
+      <div id="mapHolderInner">
+        <div id="sidemapCard" class="mapHolderCard card">
+          <div id="sidemapbar" class="widgetbar">
+            <div id="sidemapName" style="position:absolute; left:0; padding:4px 4px 4px 10px">
+            </div>
+            <div id="hideSideMap" class="close-X" style="position:absolute;right:0px;padding-top:4px;padding-right:12px;font-size:16px;color:#aaa">&#10005;</div>
+          </div>
+
+          <div style="clear:both">  
+            <div id="map2"></div>
+          </div>
+
+          <div id="sidemapMessage" class="suppliers_pre_message" style="display:none">
+            <b>Randomized</b> - Map locations are approximate since initial supplier data was 
+            primarily for hospitals and <span style="white-space: nowrap">emergency workers.</span> 
+            If you are the original poster of this listing, send us feedback using the button above if you'd 
+            like your company contact info listed publically.
+          </div>
+
+        </div>
+
+        <div id="disclaimerText" class="layerclass ppe suppliers" style="display:none;margin-right:20px;font-size: 12px;">
+          <b>Disclaimer:</b>  The Georgia Department of Economic Development (GDEcD) is collecting information from Georgia companies that indicate they are producing essential medical supplies in response to the COVID-19 pandemic. GDEcD is sharing these companies’ information with Georgia’s units of local government and other potential in-state buyers of these essential medical supplies merely as a courtesy. The following product information and addresses were submitted by private companies to GDEcD, and this list does not constitute an endorsement of any particular company or product by the State or by GDEcD.  GDEcD does not make any representations or warranties as to the accuracy of this information, or as to the quality or quantity of the products offered by these companies. Buyers use this information at their own risk.  Buyers are encouraged to contact the companies directly, for product specifications, delivery options, and other information required for executing a purchase.  Buyers are cautioned to make their own determinations regarding supplier responsibility, including but not limited to assessing whether the supplier has appropriate financial, organization and operational capacity, appropriate legal authority to do business in Georgia, a satisfactory record of integrity, and an acceptable performance record on past contracts.<br><br>
+        </div>
+
+        
+
+      </div>
+
+      <!-- Below Map -->
+
+      
+
+
+    </div>
+  
+  </div><!-- flexwrapper -->
+</div>  
+
+</section>
+</div>
+<!-- list_main /-->
+
+<div class="earthX" style="display:none">
+  <div id="fixedFooter" class="showMobile">
+    <div>
+      <div class="go_list">Listings</div>
+      <div class="go_map">Map</div>
+      <div class="go_local" style="display:none">Local Map</div>
+      <div class="go_info" style="display:none">Info</div>
+      <div class="go_search">Search</div>
+    </div>
+  </div>
+</div>
+
+<!-- End HTML -->
+
+</div><!-- End insertedText -->

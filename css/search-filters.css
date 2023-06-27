@@ -52,7 +52,7 @@
   background-color: rgb(239 239 239);
   border-bottom: #aaa;
   padding-right: 24px;
-  z-index: 99999;
+  z-index: 900;
 }
 /* brave still sees this since it's darkmode ignores the use of prefers-color-scheme: dark */
 @media (not (prefers-color-scheme: dark)) {
@@ -242,7 +242,7 @@ input.filterClick[type="text"] {
 }
 #geomap {
   width:700px;
-  height:510px; /* Optimal for gstate zoom */
+  height:520px; /* Optimal for gstate zoom */
   border:1px solid blue;
   position: relative;
 }
@@ -274,7 +274,10 @@ input.filterClick[type="text"] {
 
 .mobileView #geomapHolder, .mobileView #geomap {
   width: 100%;
-  margin-right: 30px;
+}
+.mobileView #geomapHolder {
+  padding-right: 30px;
+  padding-bottom: 20px;
 }
 .mobileView #geoListHolder, .mobileView .listHolderFooter {
   padding-left: 0px;

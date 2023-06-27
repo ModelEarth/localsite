@@ -3,7 +3,7 @@ We use Cloudflare's free Content Delivery Network (CDN) to reduce traffic hittin
 
 After deploying, the following can be pasted into Cloudflare to do a custom purge.
 
-https://model.earth/localsite/info/info-template.html
+https://model.earth/localsite/info/template-charts.html
 https://model.earth/localsite/js/localsite.js
 https://model.earth/localsite/js/map-embed.js
 https://model.earth/localsite/js/map-filters.js

@@ -214,7 +214,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   if (theState != "") {
     let kilometers_wide = $("#state_select").find(":selected").attr("km");
     //zoom = 1/kilometers_wide * 1800000;
-    zoom = zoomFromKm(kilometers_wide);
+    zoom = zoomFromKm(kilometers_wide,theState);
     dp.latitude = $("#state_select").find(":selected").attr("lat");
     dp.longitude = $("#state_select").find(":selected").attr("lon");
   }
@@ -1200,7 +1200,9 @@ function showList(dp,map) {
 
   if (selected_col.length == 0 && keyword && keyword != allItemsPhrase && products_array.length == 0) {
     $("#keywordFields").show();
-    alert("Please check at least one column to search.")
+    if (location.host.indexOf('localhost') >= 0) {
+      alert("LOCAL: Please check at least one column to search.");
+    }
   }
   var data_sorted = []; // An array of objects
   var data_out = [];
@@ -2093,10 +2095,10 @@ function showList(dp,map) {
       }
       // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
       // Remove name from hash to trigger refresh
-      searchFor += " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\",\"cat\",\"subcat\"]); return false;' href='#show=" + param["show"] + "'>Show All</a></span>";
-      searchFor += " <a href='' onclick='return false;' class='showListings'>View List</a>";
-      $("#mapList1Text").html(searchFor);
-      $("#dataList").html(searchFor);
+      let viewListLink = " <a href='' onclick='return false;' class='showListings'>View List</a>";
+      let showAllLink = " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\",\"cat\",\"subcat\"]); return false;' href='#show=" + param["show"] + "'>Show All</a></span>";
+      $("#mapList1Text").html(searchFor + viewListLink);
+      $("#dataList").html(searchFor + showAllLink);
       $("#resultsPanel").show();
       $("#dataList").show();
 
@@ -2182,7 +2184,7 @@ function renderCatList(catList) {
                 }
                 console.log("catTitle:" + catTitle);
               }
-              catNavSide += "<div style='background:" + catList[key].color + ";padding:0px;width:13px;height:13px;border:1px solid #ccc;margin-top:12px;margin-left:12px;margin-right:5px;float:left'></div><div title='" + key + "' style='min-height:38px'>" + catTitle;
+              catNavSide += "<div style='background:" + catList[key].color + ";' class='legendDot'></div><div title='" + key + "'>" + catTitle;
               if (catList[key].count) {
                 // The number of occurances of the category
                 if (param.show == "solidwaste" || param.show == "wastewater") {
@@ -2197,8 +2199,11 @@ function renderCatList(catList) {
           }
         });
         //console.log(catNavSide)
-        $("#tableSide").html(""); // Clear
-        $("#tableSide").append("<div class='catList' style='white-space:nowrap; margin:15px; margin-left:10px;'>" + catNavSide + "</div>");
+
+        // Was #tableSide
+        $("#listLeft").html(""); // Clear
+        $("#listLeft").append("<div style='margin-left:10px'><b>CATEGORIES</b></div><div class='catList' style='white-space:nowrap; margin:15px; margin-left:10px;'>" + catNavSide + "</div>");
+        showSide();
         //alert("did it 3")
       }
     }
@@ -2872,7 +2877,6 @@ function renderMapShapes(whichmap, hash, attempts) {
 
 function renderMapShapeAfterPromise(whichmap, hash, attempts) {
 
-
   // Same as https://unpkg.com/topojson-client@3
 
   //alert(whichmap + " " + local_app.modelearth_root() + '/localsite/js/topojson-client.min.js');
@@ -3128,7 +3132,7 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
       lon = "-96"
     } else if ($("#state_select").find(":selected").attr("lat")) {
       let kilometers_wide = $("#state_select").find(":selected").attr("km");
-      zoom = zoomFromKm(kilometers_wide);
+      zoom = zoomFromKm(kilometers_wide,theState);
       lat = $("#state_select").find(":selected").attr("lat");
       lon = $("#state_select").find(":selected").attr("lon");
     }
@@ -3547,7 +3551,6 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
           if (props) {
             $(".info.leaflet-control").show();
           } else {
-            //alert("no props")
             $(".info.leaflet-control").hide();
           }
           // National
@@ -4398,7 +4401,7 @@ L.Control.Layers.include({
   }
 });
 
-function zoomFromKm(kilometers_wide) {
+function zoomFromKm(kilometers_wide, theState) {
   //alert(kilometers_wide) // undefined for the 1st of 3.
   let zoom = 5;
   if (!kilometers_wide) return zoom;
@@ -4408,6 +4411,15 @@ function zoomFromKm(kilometers_wide) {
     zoom = 5
   } else if (kilometers_wide > 105000) { // Hawaii and Idaho
     zoom = 6
+  }
+  if (theState == "AL" || theState == "GA" || theState == "CO" || theState == "IA") { // Zoom closer for some states
+    zoom = zoom + 1;
+  }
+  if (theState == "HI" || theState == "IN") {
+    zoom = zoom + 2;
+  }
+  if (theState == "DE") {
+    zoom = zoom + 3;
   }
   return zoom;
 }

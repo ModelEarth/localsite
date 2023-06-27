@@ -392,7 +392,7 @@ function displayIndustryListOld(localObject) {
 
 
 DUP
-        <!-- Also reside in info/info-template.html -->
+        <!-- Also reside in info/template-charts.html -->
         <div id="detail_selection">
             <div id="show_industry_settings" style="float:right;cursor:pointer" onclick="$('.industry_filter_settings').toggle();">
                 <span class="material-icons" style="font-size:24px;color:#777">

@@ -148,12 +148,11 @@ body {
 	padding: 7px 8px 7px 8px;
 }
 .catList > div {
-	padding: 7px 12px 7px 18px;
-	border: solid 1px #fff;
+	color: #fff;
 	border-radius: 6px;
 }
 .catList > div:hover {
-	background: #f3f3f3;
+	background: #333;
 	cursor: pointer;
 }
 #catListClone .catList {
@@ -209,7 +208,7 @@ body {
 }
 .catListSelected {
 	border: solid 1px #aaa !important;
-	background-color: #fff;
+	background-color: #333;
     border-left: solid 5px #aaf !important;
 } 
 #resultsPanel {

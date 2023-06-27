@@ -13,7 +13,7 @@
     max-height: 85%;
     background-color: #666;
     color: #fff;
-    z-index: 1000;
+    z-index: 700;
     border-radius: 20px;
     padding: 30px;
     background-color: rgba(33,33,33,0.8) !important;
@@ -578,4 +578,28 @@ label { /* override Drupal */
 #tableSide {
   float:left;
   displayX:none;
+}
+
+.activeMarker {
+  borderX: 2px solid blue;
+  width: 48px !important;
+    height: 64px !important;
+    margin-top: -60px !important;
+    margin-left: -24px !important;
+    z-index: 1000 !important;
+    opacity: 1 !important;
+}
+.activeMarker g { /* icon above circle */
+  opacity: 1 !important;
+  transform: scale(1.5) !important;
+}
+.activeMarker circle {
+  opacity: 1 !important;
+  transform: scale(1.5) !important;
+}
+.activeMarker path { /* pointer behind circle */
+  opacity: 1 !important;
+  display: block !important;
+  transform: scale(1.5) !important;
+  stroke-width: 2px;
 }

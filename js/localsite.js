@@ -534,14 +534,15 @@ function consoleLog(text,value) {
 }
 
 function loadLocalTemplate() {
-  let bodyFile = theroot + "map/index.html #insertedText";
+  //let bodyFile = theroot + "info/template-main.html #insertedText";
+  let bodyFile = theroot + "info/template-main.html";
   //alert("Before template Loaded: " + bodyFile);
 
   let bodyFileDiv = "#bodyFile";
   //bodyFileDiv = "body";
   waitForElm(bodyFileDiv).then((elm) => {
     $(bodyFileDiv).load(bodyFile, function( response, status, xhr ) {
-      $("#insertedTextSource").remove(); // For map/index.html. Avoids dup header.
+      //$("#insertedTextSource").remove(); // For map/index.html. Avoids dup header.
 
       //$('img').each(function() {
       //  $(this).attr('src', 'https://model.earth' + $(this).attr('src'));
@@ -716,12 +717,12 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       
 
         // LOAD INFO TEMPLATE - Holds input-output widgets
-        // View html source: https://model.earth/localsite/info/info-template.html
+        // View html source: https://model.earth/localsite/info/template-charts.html
         if (!$("#infoFile").length) {
           $('body').append("<div id='infoFile'></div>");
         }
         if (param.display == "everything") {
-          let infoFile = theroot + "info/info-template.html #info-template"; // Including #info-template limits to div within page, prevents other includes in page from being loaded.
+          let infoFile = theroot + "info/template-charts.html #template-charts"; // Including #template-charts limits to div within page, prevents other includes in page from being loaded.
           //console.log("Before template Loaded infoFile: " + infoFile);
           //alert("Before template Loaded: " + bodyFile);
           $("#infoFile").load(infoFile, function( response, status, xhr ) {

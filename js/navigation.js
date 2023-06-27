@@ -149,6 +149,9 @@ function showSideTabs() {
 		$("#storiesPanel").show();
 	} else {
 		// check #topicsMenu
+		if (location.host.indexOf('localhost') >= 0) {
+	      //alert("LOCAL: ");
+	    }
 	}
 	$('body').addClass('bodyRightMargin'); // Creates margin on right for fixed sidetabs.
 	$('body').addClass('mobileView');
@@ -161,6 +164,13 @@ function closeExpandedMenus(menuClicked) {
     $(menuClicked).addClass("active");
     $(".menuExpanded").hide(); // Hide any open
     //alert("rightTopMenuInner 3");
+}
+function showSide() {
+	$("#mapList1Holder").show();
+	$("#fullcolumn #showSide").hide();
+	$('body').addClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
+	$('body').addClass('mobileView');
+	$("#navcolumn").show();
 }
 function applyNavigation() { // Called by localsite.js so local_app path is available.
 	// To do: fetch the existing background-image.
@@ -276,7 +286,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	}
 
 	if(document.getElementById("navcolumn") == null) {
- 		$("body").prepend( "<div id='navcolumn' class='hideprint sidecolumnLeft' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='sidecolumnLeftScroll'><div id='cloneLeftTarget'></div></div></div>\r" );
+ 		$("body").prepend( "<div id='navcolumn' class='hideprint sidecolumnLeft' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='sidecolumnLeftScroll'><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>\r" );
  	} else {
  		// TODO - change to fixed when side reaches top of page
  		console.log("navigation.js report: navcolumn already exists")
@@ -294,11 +304,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	        	$('body').removeClass('mobileView');
 	    	}
 		} else {
-			$("#fullcolumn #showSide").hide();
-			//////$("#filterFieldsHolder").removeClass("leftOffset");
-			$('body').addClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
-	        $('body').addClass('mobileView');
-			$("#navcolumn").show();
+			showSide();
 		}
 		let headerFixedHeight = $("#headerLarge").height();
 		$('#cloneLeft').css("top",headerFixedHeight + "px");
@@ -336,7 +342,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		$(".headerOffset").show();
 
  		// LOAD HEADER.HTML
-	 	//if (earthFooter) {
+ 		//if (earthFooter) {
 	 		let headerFile = modelroot + "/localsite/header.html";
 	 		if (slash_count <= 4) { // Folder is the root of site
 	 			// Currently avoid since "https://model.earth/" is prepended to climbpath above.
@@ -355,7 +361,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 
 			// headerFile contains only navigation
 			$("#local-header").load(headerFile, function( response, status, xhr ) {
-
+				waitForElm('#sidecolumnContent').then((elm) => { // Resides in header.html
 					console.log("Doc is ready, header file loaded, place #cloneLeft into #navcolumn")
 
 					waitForElm('#navcolumn').then((elm) => { // #navcolumn is appended by this navigation.js script, so typically not needed.
@@ -377,12 +383,13 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 						colCloneLeft.id = "cloneLeft";
 						$("#cloneLeftTarget").append(colCloneLeft);
 
-						waitForElm('#topicsMenu').then((elm) => {
+						waitForElm('#topicsMenu').then((elm) => { // From info/template-main.html
 							let colEleRight = document.querySelector('#sidecolumnContent');
 							let colCloneRight = colEleRight.cloneNode(true)
 							colCloneRight.id = "cloneRight";
-							$("#topicsMenu").prepend(colCloneRight);
-							
+
+          					$("#topicsMenu").prepend(colCloneRight);
+
 							if (location.host.indexOf('dreamstudio') >= 0 || location.href.indexOf('dreamstudio') >= 0) {
 								let storiesFile = "https://dreamstudio.com/seasons/episodes.md";
 								//console.log("location.href index: " + location.href.indexOf("/dreamstudio/"));
@@ -436,129 +443,130 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 			 		  	if($(this).attr("href").indexOf("/") != 0) { // Don't append if starts with /
 			 		  		//alert($(this).attr('href'))
 				      		$(this).attr("href", modelpath + $(this).attr('href'));
-			        }
-			  	  }
-			    })
-			    $("#local-header img[src]").each(function() {
-		 		  	if($(this).attr("src").toLowerCase().indexOf("http") < 0) {
-		 		  		if($(this).attr("src").indexOf("/") == 0) { // Starts with slash
-		 		  			$(this).attr("src", modelroot + $(this).attr('src'));
-		 		  		} else {
-			      		$(this).attr("src", modelpath + $(this).attr('src'));
-			      	}
-			  	  }
-			    })
+				        }
+				  	  }
+				    });
+				    $("#local-header img[src]").each(function() {
+			 		  	if($(this).attr("src").toLowerCase().indexOf("http") < 0) {
+			 		  		if($(this).attr("src").indexOf("/") == 0) { // Starts with slash
+			 		  			$(this).attr("src", modelroot + $(this).attr('src'));
+			 		  		} else {
+				      		$(this).attr("src", modelpath + $(this).attr('src'));
+				      	}
+				  	  }
+				    });
 
-			 	if(location.host.indexOf('neighborhood') >= 0) {
-			 		// Since deactivated above due to conflict with header logo in app.
-			 		$('.neighborhood').css('display', 'block');
-			 	}
-			 	if (param.titleArray && !param.headerLogo) {
-			 		if (param.titleArray[1] == undefined) {
-			 			$('#headerSiteTitle').html("");
-			 		} else {
-				 		//let titleValue = "<span style='float:left'><a href='" + climbpath + "' style='text-decoration:none'>";
-				 		let titleValue = "<span style='float:left'><a href='/' style='text-decoration:none'>";
-				 		
-				 		titleValue += "<span style='color: #777;'>" + param.titleArray[0] + "</span>";
-				 		for (var i = 1; i < param.titleArray.length; i++) {
-				 			titleValue += "<span id='titleTwo' style='color:#bbb;margin-left:1px'>" + param.titleArray[i] + "</span>";
-				 		}
-				 		titleValue += "</a></span>";
-				 		$('#headerSiteTitle').html(titleValue);
-				 		let theState = $("#state_select").find(":selected").text();
-				 		if (theState) {
-				 			//$(".locationTabText").text(theState);
-				 		}
+				 	if(location.host.indexOf('neighborhood') >= 0) {
+				 		// Since deactivated above due to conflict with header logo in app.
+				 		$('.neighborhood').css('display', 'block');
 				 	}
-			 	}
+				 	if (param.titleArray && !param.headerLogo) {
+				 		if (param.titleArray[1] == undefined) {
+				 			$('#headerSiteTitle').html("");
+				 		} else {
+					 		//let titleValue = "<span style='float:left'><a href='" + climbpath + "' style='text-decoration:none'>";
+					 		let titleValue = "<span style='float:left'><a href='/' style='text-decoration:none'>";
+					 		
+					 		titleValue += "<span style='color: #777;'>" + param.titleArray[0] + "</span>";
+					 		for (var i = 1; i < param.titleArray.length; i++) {
+					 			titleValue += "<span id='titleTwo' style='color:#bbb;margin-left:1px'>" + param.titleArray[i] + "</span>";
+					 		}
+					 		titleValue += "</a></span>";
+					 		$('#headerSiteTitle').html(titleValue);
+					 		let theState = $("#state_select").find(":selected").text();
+					 		if (theState) {
+					 			//$(".locationTabText").text(theState);
+					 		}
+					 	}
+				 	}
 
-			 	if (param.favicon) {
-			 		changeFavicon(param.favicon);
-			 	}
+				 	if (param.favicon) {
+				 		changeFavicon(param.favicon);
+				 	}
 
-				// WAS LIMITED TO HEADER
-				//$(document).ready(function() { // Needed for info/index.html page. Fast, but could probably use a timeout delay instead since we are already within the header.html load.
-				
-				// Equivalent to checking for #headerbar, but using #localsiteDetails since template pages already have a #headerbar.
-				waitForElm('#localsiteDetails').then((elm) => {
-					//console.log("climbpath value: " + climbpath);
-
-					waitForElm('#localsiteDetails').then((elm) => {
-					 	if (!param.headerLogo && param.headerLogoSmall) {
-					 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall + "</a>");
-					 	} else if (param.headerLogo) {
-					 		//alert("Display param.headerLogo")
-					 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
-					 	} else if (param.favicon) {
-					 		let imageUrl = climbpath + ".." + param.favicon;
-						 	$('#headerLogo').css('background-image', 'url(' + imageUrl + ')');
-							$('#headerLogo').css('background-repeat', 'no-repeat');
-						}
-					});
-
-					// Resides in map/filter.html
-					waitForElm('#logoholderbar').then((elm) => { // Note, #logoholderbar becomes available after #localsiteDetails
-						if (param.headerLogoSmall) {
-							$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall+ "</a>");
-						} else if (param.headerLogoNoText) {
-							$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoNoText + "</a>");
-						} else if (param.headerLogo) {
-							$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
-						}
-					});
-
+					// WAS LIMITED TO HEADER
+					//$(document).ready(function() { // Needed for info/index.html page. Fast, but could probably use a timeout delay instead since we are already within the header.html load.
 					
-					// END WAS LIMITED TO HEADER
-					$(".headerOffset").show();
-					//$("#local-header").append( "<div id='filterbaroffset' style='display:none;height:56px; pointer-events:none; display:none'></div>"); // Might stop using now that search filters are in main.
-					if ($("#filterFieldsHolder").length) {
-						//$("#filterbaroffset").css('display','block');
-					}
+					// Equivalent to checking for #headerbar, but using #localsiteDetails since template pages already have a #headerbar.
+					waitForElm('#localsiteDetails').then((elm) => {
+						//console.log("climbpath value: " + climbpath);
 
-					// Slight delay
-					setTimeout( function() {
+						waitForElm('#localsiteDetails').then((elm) => {
+						 	if (!param.headerLogo && param.headerLogoSmall) {
+						 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall + "</a>");
+						 	} else if (param.headerLogo) {
+						 		//alert("Display param.headerLogo")
+						 		$('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
+						 	} else if (param.favicon) {
+						 		let imageUrl = climbpath + ".." + param.favicon;
+							 	$('#headerLogo').css('background-image', 'url(' + imageUrl + ')');
+								$('#headerLogo').css('background-repeat', 'no-repeat');
+							}
+						});
+
+						// Resides in map/filter.html
+						waitForElm('#logoholderbar').then((elm) => { // Note, #logoholderbar becomes available after #localsiteDetails
+							if (param.headerLogoSmall) {
+								$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall+ "</a>");
+							} else if (param.headerLogoNoText) {
+								$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoNoText + "</a>");
+							} else if (param.headerLogo) {
+								$('#logoholderbar').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
+							}
+						});
+
+						
+						// END WAS LIMITED TO HEADER
+						$(".headerOffset").show();
+						//$("#local-header").append( "<div id='filterbaroffset' style='display:none;height:56px; pointer-events:none; display:none'></div>"); // Might stop using now that search filters are in main.
 						if ($("#filterFieldsHolder").length) {
-							$("#filterbaroffset").css('display','block');
+							//$("#filterbaroffset").css('display','block');
 						}
-					}, 200);
-					setTimeout( function() {
-						if ($("#filterFieldsHolder").length) {
-							$("#filterbaroffset").css('display','block');
+
+						// Slight delay
+						setTimeout( function() {
+							if ($("#filterFieldsHolder").length) {
+								$("#filterbaroffset").css('display','block');
+							}
+						}, 200);
+						setTimeout( function() {
+							if ($("#filterFieldsHolder").length) {
+								$("#filterbaroffset").css('display','block');
+							}
+						}, 1000);
+
+						activateSideColumn();
+
+						if (location.host.indexOf('localhost') >= 0 && earthFooter) {
+							showLeftIcon = true;
 						}
-					}, 1000);
+						if (showLeftIcon) {
+							// Move to header
 
-					activateSideColumn();
 
-					if (location.host.indexOf('localhost') >= 0 && earthFooter) {
-						showLeftIcon = true;
+								// /localsite/img/icon/sidemenu.png  // width:15px;height:14px
+				 					//<div class="showSideTabs" style="displayX:none; float:left;font-size:24px; color:#999;">
+				 		}
+
+				 		// Only apply if id="/icon?family=Material+Icons" is already in DOM.
+				 		// Running here incase header has not loaded yet when the same runs in localsite.js.
+				 		if (document.getElementById("/icon?family=Material+Icons")) {
+				 			$(".show-on-load").removeClass("show-on-load");
+				 		}
+				 		//$("#headerbar").show();
+				 		//$("#headerbar").css("display:block");
+				 		//alert("okay2")
+				 	});
+
+
+					if (param["showheader"] && param["showheader"] == "false") {
+						// Don't show header
+						$("#headerbar").addClass("headerbarhide");
+					} else {
+						//alert("#headerbar show")
+						//$("#headerbar").show();
 					}
-					if (showLeftIcon) {
-						// Move to header
-
-
-							// /localsite/img/icon/sidemenu.png  // width:15px;height:14px
-			 					//<div class="showSideTabs" style="displayX:none; float:left;font-size:24px; color:#999;">
-			 		}
-
-			 		// Only apply if id="/icon?family=Material+Icons" is already in DOM.
-			 		// Running here incase header has not loaded yet when the same runs in localsite.js.
-			 		if (document.getElementById("/icon?family=Material+Icons")) {
-			 			$(".show-on-load").removeClass("show-on-load");
-			 		}
-			 		//$("#headerbar").show();
-			 		//$("#headerbar").css("display:block");
-			 		//alert("okay2")
-			 	});
-
-
-				if (param["showheader"] && param["showheader"] == "false") {
-					// Don't show header
-					$("#headerbar").addClass("headerbarhide");
-				} else {
-					//alert("#headerbar show")
-					//$("#headerbar").show();
-				}
+				});
 			}); // End $("#header").load
 		//}
 	}
@@ -667,7 +675,7 @@ $(document).ready(function () {
 });
 
 $(document).on("click", ".showListings", function(event) {
-    closeExpandedMenus(event.currentTarget);
+	closeExpandedMenus(event.currentTarget);
     if (!$.trim($("#mapList1").html())) { // If the location list is not empty, load the list of types.
         $("#bigThumbMenuInner").appendTo("#listingsPanelScroll");
         if (!document.getElementById("#bigThumbMenuInner")) {
@@ -677,6 +685,7 @@ $(document).on("click", ".showListings", function(event) {
     }
     $(".showListings").addClass("active");
     $("#listingsPanel").show();
+    showSideTabs();
     event.stopPropagation();
 });
 $(document).on("click", ".showSettings", function(event) {
@@ -1043,10 +1052,10 @@ function activateSideColumn() {
 
 				// Get the section using the names of hash tags (since id's start with #). Example: #intro, #objectives
 				if ($(this).attr("href").includes('#')) {
-					var sectionID = '#' + $(this).attr("href").split('#')[1].split('&')[0]; // Assumes first hash param does not use an equals sign.
-				
-					//console.log('Get hash: ' + sectionID);
-
+					var sectionID = '#' + $(this).attr("href").split('#')[1].split('&')[0]; 
+					if (sectionID.indexOf("=") >= 0) { // Sometimes the show (section) value may be passed without an equals sign.
+						sectionID = sectionID.split('=')[0];
+					}
 				    var item = $(sectionID); //   .replace(/\//g, "").replace(/../g, "")    Use of replaces fixes error due to slash in path.
 				    if (item.length) {
 				    	return item;

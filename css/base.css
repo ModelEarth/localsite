@@ -35,6 +35,7 @@ html,body { /* both are needed for map height in iframe */
   height: 100%;
 }
 body {
+  background-color: rgb(250, 250, 250);
   margin: 0px;
   -webkit-font-smoothing: antialiased;
   font-family: 'Nunito Sans', Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
