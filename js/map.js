@@ -1084,13 +1084,17 @@ function showList(dp,map) {
 
   isObject = function(a) {
       return (!!a) && (a.constructor === Object);
-  };
+  }
 
   if (dp.listTitle) {
     $(".listTitle").html(dp.listTitle);
     $(".listTitle").show();
+    $("#navcolumnHeader").show();
+    $("#navcolumnHeader").html(dp.shortTitle ? dp.shortTitle : dp.listTitle);
     $("#mapList1Header").html(dp.shortTitle ? dp.shortTitle : dp.listTitle);
-  };
+  } else {
+    $("#navcolumnHeader").hide();
+  }
   if (dp.listSubtitle) {$(".listSubtitle").html(dp.listSubtitle); $(".listSubtitle").show()};
 
   // Add checkboxes
@@ -2126,7 +2130,7 @@ function renderCatList(catList) {
   // Using param since hash.show is not available when passed in on localsite.js embed link.
   if (param.show != "ppe" && param.show != "suppliers") { // PPE cats are still hardcoded in localsite/map/index.html. "suppliers" is used in site embed
       if (catList && Object.keys(catList).length > 0) {
-        let catNavSide = "<div class='all_categories'>All Categories</div>";
+        let catNavSide = "<div class='all_categories'><div class='legendDot'></div> All Categories</div>";
 
         //console.log("Object.keys(catList)");
         //console.log(Object.keys(catList));
@@ -2202,7 +2206,8 @@ function renderCatList(catList) {
 
         // Was #tableSide
         $("#listLeft").html(""); // Clear
-        $("#listLeft").append("<div style='margin-left:10px'><b>CATEGORIES</b></div><div class='catList'>" + catNavSide + "<br></div>");
+        // <div style='margin-left:10px'><b>CATEGORIES</b></div>
+        $("#listLeft").append("<div class='catList'>" + catNavSide + "<br></div>");
         showSide();
         //alert("did it 3")
       }

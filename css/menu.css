@@ -486,6 +486,13 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     line-height: 34px;
     font-size: 18px;
 }
+#navcolumnHeader {
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-bottom:  20px;
+	font-weight: bold;
+	font-size: 24px;
+}
 #listLeft b, .sidecolumnLeft b, #cloneRight b {
     color:#333;
     font-weight:800;
