@@ -48,6 +48,11 @@ body {
 .bodyLeftMargin {
   margin-left: 220px;
 }
+@media (max-width: 500px) {
+  .bodyLeftMargin {
+    margin-left: 0px;
+  }
+}
 .bodyRightMargin {
   margin-right: 500px;
 }

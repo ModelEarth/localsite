@@ -166,7 +166,6 @@ function closeExpandedMenus(menuClicked) {
     //alert("rightTopMenuInner 3");
 }
 function showSide() {
-	$("#mapList1Holder").show();
 	$("#fullcolumn #showSide").hide();
 	$('body').addClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
 	$('body').addClass('mobileView');

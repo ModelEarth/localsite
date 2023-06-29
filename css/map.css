@@ -18,6 +18,13 @@
     padding: 30px;
     background-color: rgba(33,33,33,0.8) !important;
   }
+  @media (max-width: 1200px) {
+    #mapList1Holder {
+      position: initial;
+      width: 100%;
+      border-radius: 0px;
+    }
+  }
   #mapList1Header {
     font-size: 24px;
     margin-bottom: 12px;

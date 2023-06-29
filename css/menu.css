@@ -481,6 +481,11 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .navcolumnLower {
 	top:94px;
 }
+@media (max-width: 600px) {
+	.navcolumnLower {
+		top:64px;
+	}
+}
 .sideIcons {
   top:0px;
   z-index:10000;
@@ -493,11 +498,16 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	cursor: pointer;
 	padding: 9px 12px 2px 10px;
 	height: 37px;
-  opacity: .3;
-  z-index: 1001;
+ 	opacity: .3;
+ 	z-index: 1001;
 }
 #showSide:hover {
   opacity: .7;
+}
+@media (max-width: 1100px) {
+	#showSide {
+		margin-left: -23px;
+	}
 }
 .sidecolumnLeft {
     padding: 24px;

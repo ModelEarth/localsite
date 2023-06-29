@@ -2209,7 +2209,7 @@ function renderCatList(catList) {
         // <div style='margin-left:10px'><b>CATEGORIES</b></div>
         $("#listLeft").append("<div class='catList'>" + catNavSide + "<br></div>");
         let fullcolumnWidth = $('#fullcolumn').width();
-        if (fullcolumnWidth >= 600) {
+        if (fullcolumnWidth > 500) {
           showSide();
         }
         //alert("did it 3")
