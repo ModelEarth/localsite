@@ -470,9 +470,34 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 
 #navcolumn {
     position: fixed;
-    top: 0; left: 0; bottom: 0;
     width: 220px;
     padding-right: 0px;
+}
+.navcolumn {
+	top:0;
+	left:0;
+	bottom:0;
+}
+.navcolumnLower {
+	top:94px;
+}
+.sideIcons {
+  top:0px;
+  z-index:10000;
+}
+.sideIconsLower {
+  top:92px;
+}
+#showSide {
+	pointer-events: auto;
+	cursor: pointer;
+	padding: 9px 12px 2px 10px;
+	height: 37px;
+  opacity: .3;
+  z-index: 1001;
+}
+#showSide:hover {
+  opacity: .7;
 }
 .sidecolumnLeft {
     padding: 24px;
@@ -486,12 +511,14 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     line-height: 34px;
     font-size: 18px;
 }
-#navcolumnHeader {
+#navcolumnTitle {
 	margin-left: 10px;
 	margin-right: 10px;
-	margin-bottom:  20px;
-	font-weight: bold;
-	font-size: 24px;
+	margin-bottom: 11px;
+	font-weight: 800;
+	font-size: 16px;
+	text-transform: uppercase;
+    line-height: 1.2em;
 }
 #listLeft b, .sidecolumnLeft b, #cloneRight b {
     color:#333;
@@ -509,19 +536,22 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 .sidecolumnLeftScroll {
     position:absolute;
-    top:30px;
+    top:0px; /* was 30px */
     bottom:0px;
     right:0px;
     left:0px;
-    padding-left: 10px;
     overflow-y:scroll;
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
     padding-bottom: 500px; /* Allows for footer */
+    padding-top: 30px;
 }
 .sidecolumnLeftScroll::-webkit-scrollbar {
   display: none;
+}
+.sidecolumnLeftScrollLower {
+	padding-top: 70px;
 }
 
 .catList div, .sidecolumnLeft a, #cloneRight a {
@@ -552,7 +582,19 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .liteDiv a {
 	color: #333;
 }
-
+.greyDiv { /* Mix of light and dark text */
+	color: #fff;
+	background-color: #b1b1b1;
+}
+.greyDiv a, .greyDiv a:visited {
+	color: #fff;
+}
+.greyDiv b, .greyDiv .maincat, .greyDiv b a, .greyDiv b a:visited {
+	color: #333;
+}
+.greyDiv b a:hover, .greyDiv b a:visited:hover {
+	color: #fff;
+}
 #fullcolumn {
     overflow: auto;
     position: relative;
@@ -574,6 +616,14 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 .navcolumn-inpage > .sidecolumnLeft {
     position: static;
+}
+.navcolumnBar {
+	width: 100%;
+	overflow: auto;
+	background-color: #aaa;
+	position: absolute;
+	top: 0;
+	display: none;
 }
 /* End For navcolumn from header.html */
 

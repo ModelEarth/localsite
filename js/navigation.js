@@ -286,7 +286,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	}
 
 	if(document.getElementById("navcolumn") == null) {
- 		$("body").prepend( "<div id='navcolumn' class='hideprint sidecolumnLeft liteDiv' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='sidecolumnLeftScroll'><div id='navcolumnHeader'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>\r" );
+ 		$("body").prepend( "<div id='navcolumn' class='navcolumn navcolumnLower greyDiv hideprint sidecolumnLeft liteDiv' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>\r" );
  	} else {
  		// TODO - change to fixed when side reaches top of page
  		console.log("navigation.js report: navcolumn already exists")

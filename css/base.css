@@ -42,6 +42,9 @@ body {
   color: #333;
   line-heightX:0; /* prevents gaps betweet images, but 0 caused text to overlap on start and nav icons. */
 }
+.bodyIconMargin {
+  margin-left: 64px;
+}
 .bodyLeftMargin {
   margin-left: 220px;
 }
@@ -770,22 +773,11 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   width:100%;
   */
 }
-#showSide {
-	pointer-events: auto;
-	cursor: pointer;
-	padding: 9px 12px 2px 10px;
-	height: 37px;
-  opacity: .3;
-  z-index: 1001;
-}
-#showSide:hover {
-  opacity: .7;
-}
 .close-X-sm {
   cursor:pointer;
   padding:5px 9px 12px 12px;
   font-size:18px;
-  color:#444;
+  color:#ddd;
   /* If code appear instead of x, check if some other font is being applied. Try activating this line to fix (copied from an x that worked).
   font-family: 'Nunito Sans', Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
   */
@@ -1056,7 +1048,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   height: auto;
 }
 .bodyLeftMargin .headerbar, .bodyLeftMargin .filterFieldsHolderFixed {
-  left: 220px;
+  /* left: 220px; */
 }
 .headerbar a:link, .headerbar a:visited {
     color: #777;
