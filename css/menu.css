@@ -567,10 +567,13 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	padding-top: 70px;
 }
 
-.catList div, .sidecolumnLeft a, #cloneRight a {
+.sidecolumnLeft a, #cloneRight a {
     display:block;
     padding-left: 15px;
     text-decoration: none;
+}
+.sidecolumnLeft a {
+	padding-left: 25px;
 }
 .catList div:hover, .sidecolumnLeft a:hover, .sidecolumnLeft a.active:hover, #cloneRight a:hover {
 	background-color: #333;
