@@ -481,17 +481,20 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .navcolumnLower {
 	top:94px;
 }
-@media (max-width: 600px) {
-	.navcolumnLower {
-		top:64px;
-	}
-}
 .sideIcons {
   top:0px;
   z-index:10000;
 }
 .sideIconsLower {
   top:92px;
+}
+@media (max-width: 600px) {
+	.navcolumnLower {
+		top:64px;
+	}
+	.sideIconsLower {
+	 	top:62px;
+	}
 }
 #showSide {
 	pointer-events: auto;

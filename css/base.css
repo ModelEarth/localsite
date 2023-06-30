@@ -492,7 +492,9 @@ summary::-webkit-details-marker {
   .pageColumnOverflow {
     width:100%;
   }
-
+  .pageColumnInside {
+    margin-right: 0px;
+  }
 }
 .contentArea {
     margin: 0px; padding: 0px; 

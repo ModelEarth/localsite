@@ -70,6 +70,18 @@
 .filterFieldsHolderFixed .hamburger-circle {
   content: url("/localsite/img/icon/hamburger-lite.png");
 }
+#filterFieldsMain {
+    min-height:54px;
+    padding:2px 0 0px 60px;
+}
+@media (max-width: 1100px) {
+  #filterFieldsMain {
+      padding-left: 40px;
+  } 
+}
+.bodyLeftMargin #filterFieldsMain {
+    padding-left: 10px;
+}
 #filterLocations, #honeycombPanel {
   background-color: #fcfcfc; /* fcfcfc not visible to Brave darkmode, but #eee too dark in light mode */
   border-bottomX: 1px solid #eee;
