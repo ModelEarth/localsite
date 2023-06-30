@@ -21,17 +21,14 @@
 
 <style>
 .slideText {
-  displayX: none;
   position:absolute;
-  bottomX:-30px;
   color: #fff;
-  background-color: rgba(33,33,33,0.8)
+  font-size: 18px;
+  background-color: rgba(33,33,33,0.6)
 }
 
 .swiper-slide .swiper-lazy { /* could also use: .swiper-slide img */
-    opacity:0.9;
-    widthX: 100%;
-    max-widthX: 2000px;
+    opacity: 0.9;
     min-width: 100%;
     min-height: 100%;
     object-fit: cover;
@@ -41,6 +38,14 @@
     min-width: inherit;
     min-height: inherit;
     object-fit: none;
+}
+
+.swiper-button-play, .swiper-button-pause {
+  background-position: right 0px bottom 10px !important;
+}
+.swiper-button-next {
+  height: auto !important;
+  bottom: 85px !important;
 }
 </style>
 
@@ -71,31 +76,42 @@ text-align:left; overflow:scroll;
     <div class="swiper-wrapper">
       
       <!-- Slide 1 -->
-      <div class="swiper-slide" data-hash="plant">
-        <img class="swiper-lazy" data-src="/localsite/img/hero/plant.png" style="opacity:0.9;">
+      <!-- /localsite/img/hero/future-teepee.png -->
+      <div class="swiper-slide" data-hash="explore">
+        <img class="swiper-lazy" data-src="/localsite/img/hero/daisy.png">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="slideText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
-          Optional Text 1
+        <div class="slideText content contentpadding" style="padding-bottom:22px">
+          Slider.js is cool.
         </div>
       </div>
 
       <!-- Slide 2 -->
-      <div class="swiper-slide" data-hash="2to1-ratio">
-        <img class="swiper-lazy" data-src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
+      <div class="swiper-slide" data-hash="plant">
+        <img class="swiper-lazy" data-src="/localsite/img/hero/plant.png" style="opacity:0.9;">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="slideText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
-          Optional Text 2
+        <div class="slideText content contentpadding" style="position:absolute; bottom:-30px">
+          Text at bottom
         </div>
       </div>
 
       <!-- Slide 3 -->
+      <div class="swiper-slide" data-hash="2to1-ratio">
+        <img class="swiper-lazy" data-src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
+        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <div class="slideText content contentpadding" style="position:absolute; bottom:-30px; left: 0px">
+          Text in corner
+        </div>
+      </div>
+
+      <!-- Slide 4 -->
       <div class="swiper-slide" data-hash="sun">
         <!-- Example of smaller: solar-rect-sm.png -->
         <!--img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/solar-rect.png" style="width:100%;max-width:2000px;"-->
         <img class="swiper-lazy" data-src="/localsite/img/hero/solar-rect.png">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white" style="position: relative; border: 10px solid red;"></div>
-        <div class="slideText content contentpadding" style="displayX:none;position:absolute; bottom:-30px">
-         Optional Text 3
+        <div class="slideText content contentpadding" style="padding-bottom:22px">
+         Centered Text<br>
+         On a tall cropped image
         </div>
       </div>
 
@@ -112,15 +128,7 @@ text-align:left; overflow:scroll;
         </div>
       </div>
 
-      <!-- Slide 5 -->
-      <!-- /localsite/img/hero/future-teepee.png -->
-      <div class="swiper-slide" data-hash="explore">
-        <img class="swiper-lazy" data-src="/localsite/img/hero/daisy.png">
-        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="slideText content contentpadding" style="padding-bottom:22px">
-          Centered Text
-        </div>
-      </div>
+      
 
       
     </div>
