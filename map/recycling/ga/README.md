@@ -5,9 +5,12 @@
 <a href="https://georgiarecycles.org" target="_parent"><img src="img/grc-logo-320.png" style="width: 100%; max-width: 350px !important;" title="GRC" alt="Georgia Recycling Coalition"></a><br><br>
 Our Commercial and Manufacturer Recycler list is maintained by the Georgia Recycling Coalition (GRC) in partnership with the <a href="https://www.georgia.org/center-of-innovation" target="_parent">Georgia Center of Innovation</a>.
 <br><br>
+
+<b>Volunteers welcome!</b> &nbsp;We need your help keeping our recycling <a href="https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit#gid=1924677788">Google Sheet</a> current. Add comments to rows or <a href="/localsite/info/input/">Contact&nbsp;Us</a> for editor access if you have more than a few&nbsp;updates.<br><br>
+
 </div>
 
-# Georgia Center of Innovation
+# Georgia Recycling
 
 <!--
 RecycleSearch.com doesn't work in iFrame. Returns New York.
@@ -17,13 +20,16 @@ Also lacks CHARM.  Far from comprehensive.
 <a href="https://recyclesearch.com" target="_parent">Recycling Centers - RecycleSearch.com</a>
 -->
 
-**Maps for Hydrogen Initiative and Methane Capture**
-<a href="/localsite/map/#show=wastewater&state=GA" target="_parent">Georgia Wastewater Facilities Map (865)</a>  
-<a href="/localsite/map/#show=landfills&state=GA" target="_parent">Georgia Landfill Map (98)</a>   
-<a href="/localsite/map/#show=solidwaste&state=GA&cat=Operating" target="_parent">Solid Waste Map (2055)</a>  
+ 
 
 **Business to Business (B2B) Recycling**
-<a href="/localsite/map/#show=recyclers&state=GA" target="_parent">Commercial Recyclers and Recovered Materials Manufacturers Map (421)</a>
+<a href="/localsite/map/#show=recyclers&state=GA" target="_parent">Commercial Recyclers and Recovered Materials Manufacturers (421)</a>
+
+**Wastewater, Landfills, Solid Waste**
+Maps for Hydrogen Initiative and Methane Capture
+<a href="/localsite/map/#show=wastewater&state=GA" target="_parent">Georgia Wastewater Facilities Map (865)</a>  
+<a href="/localsite/map/#show=landfills&state=GA" target="_parent">Georgia Landfill Map (98)</a>   
+<a href="/localsite/map/#show=solidwaste&state=GA&cat=Operating" target="_parent">Solid Waste Map (2055)</a> 
 
 **Consumer Recycling Services**
 <a href="https://www.google.com/search?q=Recycling+near+me" target="_parent">Consumer Recycling Centers - Google</a>
