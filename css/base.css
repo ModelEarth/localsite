@@ -79,10 +79,6 @@ body {
   .mobileView .hideMobileSooner {
     display: none;
   }
-  .mobileView .containerLayout {
-      margin-left: 0px;
-      width: 100%;
-  }
 }
 .rightside, .floatright {
   float:right;
@@ -378,7 +374,7 @@ summary::-webkit-details-marker {
 }
 .contentpadding {
   padding-top: 25px;
-  padding-left: 50px;
+  padding-left: 64px; /* was 50 */
   padding-right: 40px;
   padding-bottom: 45px;
 }
@@ -880,7 +876,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 @media(max-width:800px) {
   .bgimg {
-    width: 200%; /* taller on mobile */
+    widthX: 200%; /* taller on mobile */
   }
 }
 /* Turn off parallax scrolling for tablets and phones */

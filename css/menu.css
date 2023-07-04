@@ -468,12 +468,10 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     right:0 !important;
 }
 
-#navcolumn {
+.navcolumn {
     position: fixed;
     width: 220px;
     padding-right: 0px;
-}
-.navcolumn {
 	top:0;
 	left:0;
 	bottom:0;
@@ -524,8 +522,11 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     line-height: 34px;
     font-size: 18px;
 }
+#navcolumn .navcolumnIndent {
+	margin-left: 25px;
+}
 #navcolumnTitle {
-	margin-left: 10px;
+	padding-left: 25px;
 	margin-right: 10px;
 	margin-bottom: 11px;
 	font-weight: 800;
@@ -569,11 +570,8 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 
 .sidecolumnLeft a, #cloneRight a {
     display:block;
-    padding-left: 15px;
+    padding-left: 25px;
     text-decoration: none;
-}
-.sidecolumnLeft a {
-	padding-left: 25px;
 }
 .catList div:hover, .sidecolumnLeft a:hover, .sidecolumnLeft a.active:hover, #cloneRight a:hover {
 	background-color: #333;
@@ -581,10 +579,14 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	text-decoration: none;
 	cursor: pointer;
 }
+.catList > div {
+	padding-left: 25px;
+}
 .sidecolumnLeft b a {
 	color: #333;
 	font-size: 16px;
 	line-height: 1.8em;
+	padding-left: 25px;
 }
 .sidecolumnLeft a.active {
     border-right: 4px solid #888;
@@ -609,6 +611,21 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	color: #333;
 }
 .greyDiv b a:hover, .greyDiv b a:visited:hover {
+	color: #fff;
+}
+.navcolumnClear {
+	background-color: initial;
+	border: 0px;
+	font-size: 18px;
+	width: 100%;
+	max-width: 300px;
+}
+@media (max-width: 800px) {
+	.navcolumnClear {
+		background-color: #aaa;
+	}
+}
+.navcolumnClear b a, .navcolumnClear b a:visited {
 	color: #fff;
 }
 #fullcolumn {

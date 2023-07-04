@@ -166,9 +166,15 @@ function closeExpandedMenus(menuClicked) {
     //alert("rightTopMenuInner 3");
 }
 function showSide() {
-	$("#fullcolumn #showSide").hide();
-	$('body').addClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
-	$('body').addClass('mobileView');
+	if(document.getElementById("containerLayout") != null) {
+		$('#navcolumn').addClass("navcolumnClear");
+		$('body').addClass('bodyLeftMarginNone');
+	} else {
+		$("#fullcolumn #showSide").hide();
+		$('body').addClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
+		$('body').addClass('mobileView');
+	}
+	$("#sideIcons").hide();
 	$("#navcolumn").show();
 }
 function applyNavigation() { // Called by localsite.js so local_app path is available.
@@ -311,6 +317,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
  	$(document).on("click", ".hideSide", function(event) {
 		$("#navcolumn").hide();
 		$("#showSide").show();
+		$("#sideIcons").show();
 		$('body').removeClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
 		if (!$('body').hasClass('bodyRightMargin')) {
         	$('body').removeClass('mobileView');

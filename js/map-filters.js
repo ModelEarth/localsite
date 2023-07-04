@@ -386,10 +386,12 @@ $(document).ready(function () {
         event.stopPropagation();
     });
 	$(document).on("click", "body", function(event) {
-        if ($("#navcolumn").is(":visible") && window.innerWidth < 600) { 
+        if ($("#navcolumn").is(":visible") && window.innerWidth < 1200) { 
             $('#navcolumn').hide();
             $("#showSide").show();
+            $("#sideIcons").show();
             $('body').removeClass('bodyLeftMargin');
+            $('body').removeClass('bodyLeftMarginNone'); // For DS side over hero
             if (!$('body').hasClass('bodyRightMargin')) {
                 $('body').removeClass('mobileView');
             }
