@@ -1916,15 +1916,14 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
   loadScript(theroot + 'js/showdown.min.js', function(results) {
 
   if (typeof customD3loaded !== 'undefined' && typeof showdownLoaded !== 'undefined') { // Ready
-  } else if (attempts <= 10) { // Wait and try again
+  } else if (attempts < 300) { // Wait and try again
     setTimeout( function() {
       //consoleLog("try loadMarkdown again")
       loadMarkdown(pagePath, divID, target, attempts+1, callback); // Do we need , callback here?
     }, 30 );
     return;
   } else {
-    alert("loadMarkdown failed after " + attempts)
-    consoleLog("ERROR: loadMarkdown exceeded 10 attempts.");
+    consoleLog("ERROR: loadMarkdown exceeded " + attempts + " attempts.");
     if (typeof customD3loaded === 'undefined') {
       consoleLog("REASON customD3loaded undefined");
     }

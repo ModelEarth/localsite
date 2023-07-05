@@ -35,14 +35,14 @@ body {
   left: 80px;
   top: 90px;
 }
-.swiper-slide .lazy { /* could also use: .swiper-slide img */
+.swiper-slide .imgcrop { /* could also use: .swiper-slide img */
     opacity: 0.9;
     min-width: 100%;
     min-height: 100%;
     object-fit: cover;
 }
-/* Add an icon and script to add class .fullimage to swiper-slide to override object-fit above. */
-.swiper-slide.fullimage .lazy {
+/* Add an icon and script to add class .fullimage to swiper-slide to override .imgcrop above. */
+.swiper-slide.fullimage {
     min-width: inherit;
     min-height: inherit;
     object-fit: none;
@@ -69,11 +69,13 @@ text-align:left; overflow:scroll;
 -->
 
 <link rel="stylesheet" href="/localsite/css/swiper/swiper-bundle.min.css" />
+
+<link rel='stylesheet' href='/localsite/css/swiper/plyr.css'>
 <!-- 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
 -->
-<link rel='stylesheet' href='/localsite/css/swiper/plyr.css'>
 <link rel='stylesheet' href='/localsite/css/swiper/swiper.css'>
+
 <script src='/localsite/js/polyfill.min.js?features=es6,Array.prototype.includes,CustomEvent,Object.entries,Object.values,URL'></script>
 <script src='/localsite/js/plyr.min.js'></script>
 
@@ -86,8 +88,10 @@ text-align:left; overflow:scroll;
       <!-- Slide 1 -->
       <!-- /localsite/img/hero/future-teepee.png -->
       <div class="swiper-slide" data-hash="explore">
-        <img class="lazy" data-src="/localsite/img/hero/daisy.png">
-        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <img class="imgcrop" src="/localsite/img/hero/daisy.png">
+        <!-- Oddly the loader icon appears when clicking back to the first slide 
+          (when intended pause occurs), so we omit loading icon here. -->
+        <!--<div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>-->
         <div class="slideText">
           Welcome
         </div>
@@ -95,7 +99,8 @@ text-align:left; overflow:scroll;
 
       <!-- Slide 2 -->
       <div class="swiper-slide" data-hash="plant">
-        <img class="lazy" data-src="/localsite/img/hero/plant.png" style="opacity:0.9;">
+        <!-- Also leave off lazy on the second to avoid loading icon. -->
+        <img class="imgcrop" src="/localsite/img/hero/plant.png" style="opacity:0.9;">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
         <div class="slideText" style="position:absolute; bottom:-20px">
           Text at bottom
@@ -103,8 +108,8 @@ text-align:left; overflow:scroll;
       </div>
 
       <!-- Slide 3 -->
-      <div class="swiper-slide" data-hash="2to1-ratio">
-        <img class="lazy" data-src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
+      <div class="swiper-slide" fetchpriority="low" data-hash="2to1-ratio">
+        <img class="imgcrop" loading="lazy" src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
         <div class="slideText" style="position:absolute; bottom:-20px; left: 0px">
           Text in corner
@@ -112,10 +117,10 @@ text-align:left; overflow:scroll;
       </div>
 
       <!-- Slide 4 -->
-      <div class="swiper-slide" data-hash="sun">
+      <div class="swiper-slide" fetchpriority="low" data-hash="sun">
         <!-- Example of smaller: solar-rect-sm.png -->
         <!--img class="swiper-lazy swiper-blur" src="/localsite/img/hero/solar-rect.png" style="width:100%;max-width:2000px;"-->
-        <img class="lazy" data-src="/localsite/img/hero/solar-rect.png">
+        <img class="imgcrop" loading="lazy" src="/localsite/img/hero/solar-rect.png">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white" style="position: relative; border: 10px solid red;"></div>
         <div class="slideText">
          Centered Text<br>
@@ -124,9 +129,9 @@ text-align:left; overflow:scroll;
       </div>
 
       <!-- Slide 5: A Walkable Street -->
-      <div class="swiper-slide" data-hash="communities">
+      <div class="swiper-slide" fetchpriority="low" data-hash="communities">
         <!--img class="swiper-lazy swiper-blur" src="/localsite/img/hero/sustainable-communities.jpg" style="width:100%;max-width:2000px;"-->
-        <img class="lazy" data-src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px">
+        <img class="imgcrop" loading="lazy" src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
         <div class="slideText slideTextLeft"><!-- also a css class called .box in css/swiper/swiper.css -->
 
@@ -181,6 +186,11 @@ text-align:left; overflow:scroll;
 // Init multiple slider on a single page
 // https://stackoverflow.com/questions/32118999/how-can-i-have-multiple-swiper-slideshows-on-a-single-page
 // Function that builds the swiper 
+/*
+        lazy: {
+          loadPrevNext: true,
+        },
+*/
 const buildSwiperSlider = sliderElm => {
     const sliderIdentifier = sliderElm.id;
     const homeSwiper = new Swiper(`#${sliderElm.id}`, {
@@ -190,9 +200,7 @@ const buildSwiperSlider = sliderElm => {
         speed: 1400, /* transition */
 
         slidesPerView: 'auto',
-        lazy: {
-          loadPrevNext: true,
-        },
+        lazy: true,
         navigation: {
             nextEl: '.swiper-button-next-' + sliderIdentifier,
             prevEl: '.swiper-button-prev-' + sliderIdentifier
@@ -290,6 +298,35 @@ allSliders.forEach(slider => buildSwiperSlider(slider));
 $(".swiper-button-play").show();
 //$(".swiper-button-play").css('opacity', '0.8');
 
+
+
+let initIDX = 0;
+if(window.location.hash){
+    let lmnt = document.querySelector('[data-hash="'+window.location.hash.substring(1)+'"]'),
+    i = 0;
+
+    while((lmnt = lmnt.previousSibling) != null) if(lmnt.nodeType == 1) ++i;
+
+    initIDX = i;
+}
+
+var vis = document.getElementById('vis'),
+    swiperOpts = {
+        loop: true,
+        slidesPerView: 1,
+        initialSlide: initIDX,
+        on:{
+            slideChangeTransitionEnd: function(){
+                history.replaceState(null, null,
+                    window.location.pathname + '#' + this.slides[this.activeIndex].dataset.hash);
+            }
+        }
+    },
+    swiper = new Swiper(vis, swiperOpts);
+
+
+
+    
 </script>
 <!-- /Initialize Swiper -->
 
@@ -360,6 +397,8 @@ $(".swiper-button-play").show();
     loadMarkdown("start/features.md", "featuresDiv", "_parent");
     loadMarkdown("start/params.md", "paramsDiv", "_parent");
 </script>
+
+<img loading="lazy" fetchpriority="low" src="/localsite/img/hero/stars.jpg" style="width:100%">
 
 <div id="footer"></div>
 
