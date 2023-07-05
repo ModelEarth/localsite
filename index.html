@@ -7,10 +7,12 @@
 <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 
 <title>LocalSite - Player</title>
-<link type="text/css" rel="stylesheet" href="/localsite/css/base.css" id="/localsite/css/base.css" />
-<script type="text/javascript" src="/localsite/js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
+<style>
+body {
+  margin: 0;
+}
+</style>
 <script type="text/javascript" src="/localsite/js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
-<script type="text/javascript" src="/localsite/js/showdown.min.js" id="/localsite/js/showdown.min.js"></script>
 <script type="text/javascript" src="/localsite/js/localsite.js?showheader=true&showsearch=false&showfilters=false"></script>
 
 </head>
@@ -33,14 +35,14 @@
   left: 80px;
   top: 90px;
 }
-.swiper-slide .swiper-lazy { /* could also use: .swiper-slide img */
+.swiper-slide .lazy { /* could also use: .swiper-slide img */
     opacity: 0.9;
     min-width: 100%;
     min-height: 100%;
     object-fit: cover;
 }
 /* Add an icon and script to add class .fullimage to swiper-slide to override object-fit above. */
-.swiper-slide.fullimage .swiper-lazy {
+.swiper-slide.fullimage .lazy {
     min-width: inherit;
     min-height: inherit;
     object-fit: none;
@@ -66,10 +68,10 @@ Set the height:100% on div within swiper-slide
 text-align:left; overflow:scroll; 
 -->
 
-<!-- update
 <link rel="stylesheet" href="/localsite/css/swiper/swiper-bundle.min.css" />
--->
+<!-- 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
+-->
 <link rel='stylesheet' href='/localsite/css/swiper/plyr.css'>
 <link rel='stylesheet' href='/localsite/css/swiper/swiper.css'>
 <script src='/localsite/js/polyfill.min.js?features=es6,Array.prototype.includes,CustomEvent,Object.entries,Object.values,URL'></script>
@@ -84,7 +86,7 @@ text-align:left; overflow:scroll;
       <!-- Slide 1 -->
       <!-- /localsite/img/hero/future-teepee.png -->
       <div class="swiper-slide" data-hash="explore">
-        <img class="swiper-lazy" src="/localsite/img/hero/daisy.png">
+        <img class="lazy" data-src="/localsite/img/hero/daisy.png">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
         <div class="slideText">
           Welcome
@@ -93,7 +95,7 @@ text-align:left; overflow:scroll;
 
       <!-- Slide 2 -->
       <div class="swiper-slide" data-hash="plant">
-        <img class="swiper-lazy" src="/localsite/img/hero/plant.png" style="opacity:0.9;">
+        <img class="lazy" data-src="/localsite/img/hero/plant.png" style="opacity:0.9;">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
         <div class="slideText" style="position:absolute; bottom:-20px">
           Text at bottom
@@ -102,7 +104,7 @@ text-align:left; overflow:scroll;
 
       <!-- Slide 3 -->
       <div class="swiper-slide" data-hash="2to1-ratio">
-        <img class="swiper-lazy" src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
+        <img class="lazy" data-src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
         <div class="slideText" style="position:absolute; bottom:-20px; left: 0px">
           Text in corner
@@ -113,7 +115,7 @@ text-align:left; overflow:scroll;
       <div class="swiper-slide" data-hash="sun">
         <!-- Example of smaller: solar-rect-sm.png -->
         <!--img class="swiper-lazy swiper-blur" src="/localsite/img/hero/solar-rect.png" style="width:100%;max-width:2000px;"-->
-        <img class="swiper-lazy" src="/localsite/img/hero/solar-rect.png">
+        <img class="lazy" data-src="/localsite/img/hero/solar-rect.png">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white" style="position: relative; border: 10px solid red;"></div>
         <div class="slideText">
          Centered Text<br>
@@ -122,9 +124,9 @@ text-align:left; overflow:scroll;
       </div>
 
       <!-- Slide 5: A Walkable Street -->
-      <div class="swiper-slide" data-hash="communities" style="positionX: relative;">
+      <div class="swiper-slide" data-hash="communities">
         <!--img class="swiper-lazy swiper-blur" src="/localsite/img/hero/sustainable-communities.jpg" style="width:100%;max-width:2000px;"-->
-        <img class="swiper-lazy" src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px">
+        <img class="lazy" data-src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
         <div class="slideText slideTextLeft"><!-- also a css class called .box in css/swiper/swiper.css -->
 
@@ -203,12 +205,15 @@ const buildSwiperSlider = sliderElm => {
         effect: 'fade',
         mousewheelX: true, // Avoiding because also invokes verticle scroll on desktop.
         releaseOnEdgesX: true,
+
         /* change hash value (and load based on hash) -- problem: overwrites other hash values */
-        
+        /* also causes favicon to reload */
+
+        /*
         hashNavigation: {
           watchState: true,
         },
-        
+        */
 
         keyboard: {
           enabled: true,
