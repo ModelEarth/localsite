@@ -1906,11 +1906,35 @@ function waitForElmKickoff(selector, resolve) {
 }
 
 
-function loadMarkdown(pagePath, divID, target, callback) {
+function loadMarkdown(pagePath, divID, target, attempts, callback) {
+  if (typeof attempts === 'undefined') {
+    attempts = 1;
+  }
   // WAIT FOR SCRIPT THAT LOADS README.md Files
   loadScript(theroot + 'js/d3.v5.min.js', function(results) {
   //loadScript(theroot + 'js/jquery.min.js', function(results) {
   loadScript(theroot + 'js/showdown.min.js', function(results) {
+
+  if (typeof customD3loaded !== 'undefined' && typeof showdownLoaded !== 'undefined') { // Ready
+  } else if (attempts <= 10) { // Wait and try again
+    setTimeout( function() {
+      //consoleLog("try loadMarkdown again")
+      loadMarkdown(pagePath, divID, target, attempts+1, callback); // Do we need , callback here?
+    }, 30 );
+    return;
+  } else {
+    alert("loadMarkdown failed after " + attempts)
+    consoleLog("ERROR: loadMarkdown exceeded 10 attempts.");
+    if (typeof customD3loaded === 'undefined') {
+      consoleLog("REASON customD3loaded undefined");
+    }
+    if (typeof showdownLoaded === 'undefined') {
+      consoleLog("REASON showdownLoaded undefined");
+    }
+    return;
+  }
+
+  //waitForElm(customD3loaded).then((elm) => {
 
     // getPageFolder:
     let pageFolder = pagePath;
@@ -1932,10 +1956,10 @@ function loadMarkdown(pagePath, divID, target, callback) {
     // Get the levels below root
     //let foldercount = (location.pathname.split('/').length - 1); // - (location.pathname[location.pathname.length - 1] == '/' ? 1 : 0) // Removed because ending with slash or filename does not effect levels. Increased -1 to -2.
     
-
     // Might not be used
     //alert(location.pathname)
-    //let foldercount = (location.pathname.split('/').length - 1);
+    ////let foldercount = (location.pathname.split('/').length - 1);
+    /*
     let foldercount = (pagePath.split('/').length - 1);
     foldercount = foldercount - 2;
     let climbcount = foldercount;
@@ -1949,12 +1973,14 @@ function loadMarkdown(pagePath, divID, target, callback) {
     if(climbpath == "") {
       //climbpath == "./";
     }
-    if (typeof customD3loaded === 'undefined') {
-      console.log("ALERT - d3 not available yet. This may occur if showdown.min.js is included in page, but not d3.v5.min.js")
-    }
+    */
     d3.text(pagePath).then(function(data) {
       // Path is replaced further down page. Reactivate after adding menu.
-      var pencil = "<div class='markdownEye' style='display:none;position:absolute;font-size:28px;right:0px;text-decoration:none;opacity:.7'><a href='" + pagePath + "' style='color:#555'>…</a></div>";
+      let pencil = "<div class='markdownEye' style='position:absolute;font-size:28px;right:0px;top:-25px;text-decoration:none;opacity:.7'><a href='" + pagePath + "' style='color:#555'>…</a></div>";
+      if(location.host.indexOf('localhost') < 0) {
+        pencil = "";
+      }
+
       // CUSTOM About YAML metadata converter: https://github.com/showdownjs/showdown/issues/260
 
       // Also try adding simpleLineBreaks http://demo.showdownjs.com/

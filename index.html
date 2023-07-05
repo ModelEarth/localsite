@@ -26,8 +26,13 @@
   font-size: 18px;
   background-color: rgba(33,33,33,0.6);
   border-radius: 30px;
+  padding: 30px 40px 30px 40px;
 }
-
+.slideTextLeft {
+  text-align: left;
+  left: 80px;
+  top: 90px;
+}
 .swiper-slide .swiper-lazy { /* could also use: .swiper-slide img */
     opacity: 0.9;
     min-width: 100%;
@@ -72,34 +77,34 @@ text-align:left; overflow:scroll;
 
   <!-- data-id="sample1" -->
   <!-- overflow:hidden here caused slides to be hidden -->
-  <div class="swiper-container" style="overflowX:hidden; background: #000; background-color: #000;" id="sample1">
+  <div class="swiper-container" style="overflow:hidden; background: #000; background-color: #000;" id="sample1">
 
     <div class="swiper-wrapper">
       
       <!-- Slide 1 -->
       <!-- /localsite/img/hero/future-teepee.png -->
       <div class="swiper-slide" data-hash="explore">
-        <img class="swiper-lazy" data-src="/localsite/img/hero/daisy.png">
+        <img class="swiper-lazy" src="/localsite/img/hero/daisy.png">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="slideText content contentpadding" style="padding-bottom:22px">
-          Slider.js is cool.
+        <div class="slideText">
+          Welcome
         </div>
       </div>
 
       <!-- Slide 2 -->
       <div class="swiper-slide" data-hash="plant">
-        <img class="swiper-lazy" data-src="/localsite/img/hero/plant.png" style="opacity:0.9;">
+        <img class="swiper-lazy" src="/localsite/img/hero/plant.png" style="opacity:0.9;">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="slideText content contentpadding" style="position:absolute; bottom:-30px">
+        <div class="slideText" style="position:absolute; bottom:-20px">
           Text at bottom
         </div>
       </div>
 
       <!-- Slide 3 -->
       <div class="swiper-slide" data-hash="2to1-ratio">
-        <img class="swiper-lazy" data-src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
+        <img class="swiper-lazy" src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="slideText content contentpadding" style="position:absolute; bottom:-30px; left: 0px">
+        <div class="slideText" style="position:absolute; bottom:-20px; left: 0px">
           Text in corner
         </div>
       </div>
@@ -107,21 +112,21 @@ text-align:left; overflow:scroll;
       <!-- Slide 4 -->
       <div class="swiper-slide" data-hash="sun">
         <!-- Example of smaller: solar-rect-sm.png -->
-        <!--img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/solar-rect.png" style="width:100%;max-width:2000px;"-->
-        <img class="swiper-lazy" data-src="/localsite/img/hero/solar-rect.png">
+        <!--img class="swiper-lazy swiper-blur" src="/localsite/img/hero/solar-rect.png" style="width:100%;max-width:2000px;"-->
+        <img class="swiper-lazy" src="/localsite/img/hero/solar-rect.png">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white" style="position: relative; border: 10px solid red;"></div>
-        <div class="slideText content contentpadding" style="padding-bottom:22px">
+        <div class="slideText">
          Centered Text<br>
          On a tall cropped image
         </div>
       </div>
 
-      <!-- Slide 4: A Walkable Street -->
+      <!-- Slide 5: A Walkable Street -->
       <div class="swiper-slide" data-hash="communities" style="positionX: relative;">
-        <!--img class="swiper-lazy swiper-blur" data-src="/localsite/img/hero/sustainable-communities.jpg" style="width:100%;max-width:2000px;"-->
-        <img class="swiper-lazy" data-src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px">
+        <!--img class="swiper-lazy swiper-blur" src="/localsite/img/hero/sustainable-communities.jpg" style="width:100%;max-width:2000px;"-->
+        <img class="swiper-lazy" src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="box" style="border-radius:30px; padding:30px; min-width:150px">
+        <div class="slideText slideTextLeft"><!-- also a css class called .box in css/swiper/swiper.css -->
 
           <div class="title">Title</div>
           <!-- data-swiper-parallax="-200" -->
@@ -134,7 +139,9 @@ text-align:left; overflow:scroll;
 
       
     </div>
-
+    <!--
+    Not using noSwipingClass. Didn't work yet for limiting verticle scroll when mousewheel:true. Remove noSwipingClass.
+    -->
   
     <!-- Swiper Nav -->
     <div class="swiper-button-prev swiper-button-prev-sample1 swiper-no-swiping noSwipingClass">
@@ -166,6 +173,7 @@ text-align:left; overflow:scroll;
   <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
 -->
 
+
 <!-- Initialize Swiper -->
 <script>
 // Init multiple slider on a single page
@@ -178,6 +186,7 @@ const buildSwiperSlider = sliderElm => {
         spaceBetween: 0,
         loop: true,
         speed: 1400, /* transition */
+
         slidesPerView: 'auto',
         lazy: {
           loadPrevNext: true,
@@ -191,15 +200,15 @@ const buildSwiperSlider = sliderElm => {
             clickable: true,
         },
         
-        effectX: 'fade',
-        mousewheelX: true,
-        
+        effect: 'fade',
+        mousewheelX: true, // Avoiding because also invokes verticle scroll on desktop.
+        releaseOnEdgesX: true,
         /* change hash value (and load based on hash) -- problem: overwrites other hash values */
-        /*
+        
         hashNavigation: {
           watchState: true,
         },
-        */
+        
 
         keyboard: {
           enabled: true,
