@@ -68,6 +68,7 @@ https://yourdomain.com/#go=$2
 ### CloudFlare Firewall
 Create a firewall rule to block IP's that attempt to hack a website. Websites check for hack attempts and send an email to admins with information such as the url, IP address, and url history. Since CloudFlare uses a proxy address, the IP address reported by the email is the CloudFlare proxy IP. CloudFlare includes the following header values which can be used to display non-proxied addresses: cf-connecting-ip, cf-connecting-ipv6, and x-forwarded-for. The code that checks for hack attempts checks for these header values and includes them in the email. Use the non-proxied IP addresses to create a firewall rule to block those IPs in CloudFlare. These same non-proxied IPs should be added to the Windows Firewall.
 
+1. Perform a [Whois lookup](https://www.whois.com/whois/) for the IP address that you want to block to see what country the IP address is assigned to. In most cases, the IP address will be outside of the U.S. If it is inside the U.S., use your best judgement to determine whether to block the IP address or not, such as the amount of hack attempts from the IP address. Ensure that the IP address is not associated with CloudFlare (in case you accidently copied the CloudFlare proxied address from the hack attempt email notification). 
 1. Login to the CloudFlare dashboard, then select the account and website. A firewall rule will need to be added to each website running on CloudFlare
 1. Select Security > WAF > Firewall rules.
 1. Select Create a firewall rule.
@@ -97,7 +98,7 @@ Create or access the list when creating the firewall rule (see above) or use the
 1. To Add or Remove IPs to an existing list:
     1. Click on the Edit link for the list.
     1. Click the Add Items button or select one or more IPs to delete and select the Remove button.
-    1. Enter a single IP address or an address range (in CIDR format - see below) and an optional description. Addresses can also be added [using a CSV file](https://developers.cloudflare.com/fundamentals/global-configurations/lists/create-dashboard/#add-items-using-a-csv-file). Refer to the [IP CSV format](https://developers.cloudflare.com/fundamentals/global-configurations/lists/ip-lists/) for more information. A CSV file may be easier to use rather than entering IP addresses manually. 
+    1. Enter a single IP address or an address range (in CIDR format - see below) and an optional description. Addresses can also be added [using a CSV file](https://developers.cloudflare.com/fundamentals/global-configurations/lists/create-dashboard/#add-items-using-a-csv-file). Refer to the [IP CSV format](https://developers.cloudflare.com/fundamentals/global-configurations/lists/ip-lists/) for more information. A CSV file may be easier to use rather than entering IP addresses manually and a single csv file can be used to update each account's blocked IP list easily. 
     1. Enter additional IP addresses as needed.
     1. When all the IP addresses have been entered, click the Add to list button to save the IP addresses to the list.
 
