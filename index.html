@@ -80,8 +80,8 @@ text-align:left; overflow:scroll;
 <script src='/localsite/js/plyr.min.js'></script>
 
   <!-- data-id="sample1" -->
-  <!-- overflow:hidden here caused slides to be hidden -->
-  <div class="swiper-container" style="overflow:hidden; background: #000; background-color: #000;" id="sample1">
+  <!-- background: #000; background-color: #000; -->
+  <div class="swiper-container" style="overflow:hidden;" id="sample1">
 
     <div class="swiper-wrapper">
       
@@ -197,7 +197,7 @@ const buildSwiperSlider = sliderElm => {
         slidesPerView: 1,
         spaceBetween: 0,
         loop: true,
-        speed: 1400, /* transition */
+        speed: 800, /* transition 1400 */
 
         slidesPerView: 'auto',
         lazy: true,
@@ -326,7 +326,7 @@ var vis = document.getElementById('vis'),
 
 
 
-    
+
 </script>
 <!-- /Initialize Swiper -->
 
