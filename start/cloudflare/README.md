@@ -103,7 +103,7 @@ Create or access the list when creating the firewall rule (see above) or use the
     1. When all the IP addresses have been entered, click the Add to list button to save the IP addresses to the list.
 
 #### Specifying an IP address range using CIDR format
-Typically, when entering an ip address range, the range should be something like: 111.222.333.0 - 111.222.333.255. Depending on the hack attempt you may need to widen the range to something like 111.222.333.0 - 111.222.336.255. Cloudflare requires IP address ranges to be entered in CIDR format. If you are not familiar with the CIDR format, search the internet for "ip address range in cidr notation". As an example, the [IPv4 Address to CIDR Notation](https://www.meridianoutpost.com/resources/etools/network/convert-ip-to-CIDR.php) page can be used to convert from/to IP addresses to CIDR format.
+Typically, when entering an ip address range, the range should be something like: 111.222.333.0 - 111.222.333.255. Depending on the hack attempt you may need to widen the range to something like 111.222.333.0 - 111.222.336.255. Cloudflare requires IP address ranges to be entered in CIDR format. If you are not familiar with the CIDR format, search the internet for "ip address range in cidr notation". As an example, the [IPv4 Address to CIDR Notation](https://www.ipaddressguide.com/cidr) page can be used to convert from IP addresses to CIDR format and vice-versa.
 
 
 Reference:
