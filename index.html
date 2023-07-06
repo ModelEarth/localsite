@@ -23,16 +23,16 @@ body {
 
 <style>
 .slideTextBox {
-    text-align: left;
-    position: absolute;
-    left: 80px;
-    top: 90px;
-    background-color: rgba(250,250,256,.85);
-    padding: 30px 20px 12px 30px;
-    overflow: scroll;
-    border-radius: 20px;
-    max-height: 74%;
-    max-width: 350px;
+  text-align: left;
+  position: absolute;
+  left: 80px;
+  top: 90px;
+  background-color: rgba(250,250,256,.85);
+  padding: 30px 20px 12px 30px;
+  overflow: scroll;
+  border-radius: 20px;
+  max-height: 74%;
+  max-width: 350px;
 }
 .slideText {
   position:absolute;
@@ -73,7 +73,9 @@ body {
   width:100%;
   height:100%;
 }
-
+.swiper-slide-container iframe {
+  object-fit: cover;
+}
 /* Move play button lower right */
 /*
 .swiper-button-play, .swiper-button-pause {
@@ -84,7 +86,10 @@ body {
   bottom: 85px !important;
 }
 */
-
+.plyr {
+  height: 100%;
+  margin-top: -4px;
+}
 </style>
 
 <!--
