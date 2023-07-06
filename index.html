@@ -22,6 +22,18 @@ body {
 <!-- Swiper and Plyr -->
 
 <style>
+.slideTextBox {
+    text-align: left;
+    position: absolute;
+    left: 80px;
+    top: 90px;
+    background-color: rgba(250,250,256,.85);
+    padding: 30px 20px 12px 30px;
+    overflow: scroll;
+    border-radius: 20px;
+    max-height: 74%;
+    max-width: 350px;
+}
 .slideText {
   position:absolute;
   color: #fff;
@@ -34,6 +46,14 @@ body {
   text-align: left;
   left: 80px;
   top: 90px;
+}
+.slideTextRight {
+  text-align: left;
+  border-radius: 0px;
+  border-top-left-radius: 30px;
+  right: 0px;
+  bottom: 0px;
+  z-index: 99999;
 }
 .swiper-slide .imgcrop { /* could also use: .swiper-slide img */
     opacity: 0.9;
@@ -48,6 +68,14 @@ body {
     object-fit: none;
 }
 
+.swiper-slide-container {
+  margin: 0px auto;
+  width:100%;
+  height:100%;
+}
+
+/* Move play button lower right */
+/*
 .swiper-button-play, .swiper-button-pause {
   background-position: right 0px bottom 10px !important;
 }
@@ -55,12 +83,12 @@ body {
   height: auto !important;
   bottom: 85px !important;
 }
+*/
+
 </style>
 
 <!--
-Coolness: Responds to keyboard arrows and swipes.
-
-To do: can swiper-lazy be replaced with existing lazy?
+Swiper responds to keyboard arrows and swipes on mobile.
 
 Notes:
 Width:100% currently has to be included on the a href tag to prevent margins if image width is exceeded.
@@ -92,7 +120,7 @@ text-align:left; overflow:scroll;
         <!-- Oddly the loader icon appears when clicking back to the first slide 
           (when intended pause occurs), so we omit loading icon here. -->
         <!--<div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>-->
-        <div class="slideText">
+        <div class="slideText" style="top:48%">
           Welcome
         </div>
       </div>
@@ -102,17 +130,17 @@ text-align:left; overflow:scroll;
         <!-- Also leave off lazy on the second to avoid loading icon. -->
         <img class="imgcrop" src="/localsite/img/hero/plant.png" style="opacity:0.9;">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="slideText" style="position:absolute; bottom:-20px">
-          Text at bottom
+        <div class="slideText" style="position:absolute; bottom:-20px; right: 0px; z-index:999999999">
+          Text in corner 1
         </div>
       </div>
 
       <!-- Slide 3 -->
-      <div class="swiper-slide" fetchpriority="low" data-hash="2to1-ratio">
+      <div class="swiper-slide" fetchpriority="low" data-hash="2to1-ratio" style="position: relative;">
         <img class="imgcrop" loading="lazy" src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="slideText" style="position:absolute; bottom:-20px; left: 0px">
-          Text in corner
+        <div class="slideText" style="position:absolute; bottom:-20px; right: 0px; z-index:999999999">
+          Text in corner 2
         </div>
       </div>
 
@@ -122,9 +150,8 @@ text-align:left; overflow:scroll;
         <!--img class="swiper-lazy swiper-blur" src="/localsite/img/hero/solar-rect.png" style="width:100%;max-width:2000px;"-->
         <img class="imgcrop" loading="lazy" src="/localsite/img/hero/solar-rect.png">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white" style="position: relative; border: 10px solid red;"></div>
-        <div class="slideText">
-         Centered Text<br>
-         On a tall cropped image
+        <div class="slideText slideTextRight">
+         Tall cropped image
         </div>
       </div>
 
@@ -142,21 +169,53 @@ text-align:left; overflow:scroll;
         </div>
       </div>
 
-      
+      <!-- Slide 6: Video -->
+      <div class="swiper-slide" data-hash="tilford-yard">
+        <div class="swiper-slide-container">
+          <div id="player1" data-plyr-provider="youtube" data-plyr-embed-id="oV2_YtrqgyQ"></div>
+        </div>
+        <script>
+            player = new Plyr('#player1', {autopause:'true',hideControls:'true'});
 
+            player.on('ended', function(event) {
+                player.restart(); // To avoid seeimg menu of other videos.
+                // player.play(); // infinite loop
+            });
+
+            /*
+            // Probably swith to array of players
+            players[0].on('ended', function(event) {
+                players[0].restart();
+                // players[0].play(); // infinite loop
+            });
+            */
+            window.player = player;
+        </script>
+        <div class="slideTextBox">
+          <div class="title">Tilford Yard</div>
+          <div class="subtitle" data-swiper-parallax="-200"></div>
+          <div class="text" data-swiper-parallax="-100">
+            <p>Located northwest of Atlanta, Tilford Yard has been transformed in recent years as residential has expanded along the Beltline trail.<br><br>
+            </p>
+          </div>
+        </div>
+      </div>
       
     </div>
     <!--
     Not using noSwipingClass. Didn't work yet for limiting verticle scroll when mousewheel:true. Remove noSwipingClass.
     -->
   
+
+
     <!-- Swiper Nav -->
     <div class="swiper-button-prev swiper-button-prev-sample1 swiper-no-swiping noSwipingClass">
       <!--<div class="swiper-button-white"></div>-->
     </div>
+    <!--
     <div class="swiper-button-play swiper-button-play-sample1"></div>
-    <!-- e034 -->
     <div class="swiper-button-pause swiper-button-pause-sample1"></div>
+    -->
 
     <div class="swiper-button-next swiper-button-next-sample1 swiper-no-swiping noSwipingClass">
       <!--<div class="swiper-button-white"></div>-->
@@ -166,7 +225,16 @@ text-align:left; overflow:scroll;
   </div>
 
   <!-- Swiper Pagination -->
-  <div class="swiper-pagination swiper-pagination-sample1" style="margin-top:15px;"></div>
+  <div style="clear:both"></div>
+  <div style="width:94%"><!-- bug -->
+    <div style="position:relative;float:right;">
+      <div class="swiper-button-play swiper-button-play-lower swiper-button-play-sample1" style="display:none"></div>
+      <div class="swiper-button-pause swiper-button-pause-lower swiper-button-pause-sample1" style="display:none"></div>
+    </div>
+    <div style="overflow: auto;">
+      <div class="swiper-pagination swiper-pagination-sample1" style="margin-top:15px;"></div>
+    </div>
+  </div>
   <!-- /Swiper Pagination -->
 
   <!--
@@ -217,11 +285,11 @@ const buildSwiperSlider = sliderElm => {
         /* change hash value (and load based on hash) -- problem: overwrites other hash values */
         /* also causes favicon to reload */
 
-        /*
+        
         hashNavigation: {
           watchState: true,
         },
-        */
+        
 
         keyboard: {
           enabled: true,
@@ -232,6 +300,13 @@ const buildSwiperSlider = sliderElm => {
         history: {
           keepQuery: true
         },
+
+        // Could see if any of these are supported by Slider 10.0
+        watchSlidesProgress: true, // enable the 'proress' property on each slide
+        virtualTranslate: true, // makes the slider not move automatically, you'll have to do the translate animation
+        watchSlidesVisibility: true, // slides that in viewport will have additional visible class
+        effect: "myCustomTransition", // optional - set the name of your animation. You can later check if your animation is actually applied and abort animation if not.
+
         */
     });
 
@@ -353,7 +428,7 @@ var vis = document.getElementById('vis'),
     Also parallax:
     https://codesandbox.io/s/empty-feather-sqgrj?file=/src/App.js
   -->
-  Localsite uses <a href="https://swiperjs.com/">SwiperJS</a> with Leaflet Maps and the MapBox <a href="https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/">Layers JSON Format</a> to manage multiple map layers in our map.js styleObject.  
+  Localsite uses <a href="https://swiperjs.com/">SwiperJS</a> with Leaflet Maps and the MapBox <a href="https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/">Layers JSON Format</a> to manage map layers in the map.js styleObject.  
 
   <section id="parameters">
     <div id="paramsDiv" style="clear:both"></div>

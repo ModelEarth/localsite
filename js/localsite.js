@@ -429,10 +429,12 @@ function get_localsite_root3() { // Also in two other places
             return (theroot);
 }
 
-// Called from header.html files
-function toggleFullScreen() {
+function toggleFullScreen(alsoToggleHeader) {
   if (document.fullscreenElement) { // Already fullscreen
     consoleLog("Already fullscreenElement");
+    if (alsoToggleHeader) {
+      hideHeaderBar();
+    }
     if (document.exitFullscreen) {
       consoleLog("Attempt to exit fullscreen")
       document.exitFullscreen();
@@ -454,8 +456,15 @@ function toggleFullScreen() {
     } else if (document.documentElement.webkitRequestFullScreen) {  
       document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);  
     }
-    $('.expandToFullscreen').hide();
-    $('.reduceFromFullscreen').show(); 
+    
+    if (alsoToggleHeader) {
+      hideHeaderBar();
+      $('.expandSlider').hide();
+      $('.reduceSlider').show();
+    } else {
+      $('.expandToFullscreen').hide();
+      $('.reduceFromFullscreen').show();
+    }
   } else {
     
     $('.moduleBackground').css({'z-index':'-1'}); // Allows video to overlap.
@@ -467,8 +476,14 @@ function toggleFullScreen() {
     } else if (document.webkitCancelFullScreen) {  
       document.webkitCancelFullScreen();  
     }
-    $('.reduceFromFullscreen').hide();
-    $('.expandToFullscreen').show();
+    if (alsoToggleHeader) {
+      showHeaderBar();
+      $('.reduceSlider').hide();
+      $('.expandSlider').show();
+    } else {
+      $('.reduceFromFullscreen').hide();
+      $('.expandToFullscreen').show();
+    }
   }
 }
 
@@ -598,6 +613,13 @@ function loadLocalTemplate() {
     });
   });
 }
+function hideHeaderBar() {
+  //$('#headerbar').addClass("headerbarhide");
+  //alert("hideHeaderBar")
+  $('#local-header').hide();
+  $('#headerbar').hide();
+  $('.bothSideIcons').removeClass('sideIconsLower');
+}
 function showHeaderBar() {
   //$('.headerOffset').show(); 
   $('#headerbar').show();
@@ -699,8 +721,11 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         } else if(document.getElementById("bodyFile") == null) {
           $('body').prepend("<div id='bodyFile'></div>");
         }
+
+        $('body').prepend("<div id='rightIcons' class='rightIcons bothSideIcons sideIconsLower'><div class='closeSideTabs expandSlider iconPadding' style='border:0px;'><i class='material-icons menuTopIcon' style='font-size:42px;opacity:0.7;margin-top:-4px'>&#xE5D0;</i></div><div class='closeSideTabs reduceSlider iconPadding' style='display:none; border:0px;'><i class='material-icons menuTopIcon' style='font-size:42px;opacity:0.7;margin-top:-4px'>&#xE5D1;</i></div></div>");
+
         if(param.showheader == "true") {
-          $('body').prepend("<div id='sideIcons' class='sideIcons sideIconsLower' style='position:fixed;left:0;width:32px'><div id='showSide' class='showSide' style='left:-28px;'><i class='material-icons show-on-load' style='font-size:35px; opacity:0.7; background:#fcfcfc; padding-left:2px; padding-right:2px; border:1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
+          $('body').prepend("<div id='sideIcons' class='bothSideIcons sideIconsLower' style='position:fixed;left:0;width:32px'><div id='showSide' class='showSide' style='left:-28px;'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
         }
         
         waitForElm('#fullcolumn').then((elm) => {
@@ -782,8 +807,11 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       //document.write(strVarCss);
       document.head.insertAdjacentHTML("beforeend", strVarCss);
 
+      $(document).on("click", ".expandSlider, .reduceSlider", function(event) {
+        toggleFullScreen(true);
+      });
       $(document).on("click", ".expandToFullscreen, .reduceFromFullscreen", function(event) {
-        toggleFullScreen();  
+        toggleFullScreen(false);
       });
       $(document).on("click", ".showSearch", function(event) {
           //loadLeafletAndMapFilters();
