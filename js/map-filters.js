@@ -28,15 +28,17 @@ if(typeof localObject.geo == 'undefined') {
 function populateFieldsFromHash() {
     let hash = getHash();
 	$("#keywordsTB").val(hash.q);
-
-	$('.catList > div').removeClass('catListSelected');
-	if (hash.cat) {
-		var catString = hash.cat.replace(/_/g, ' ');
-		$("#catSearch").val(catString);
-	    $('.catList > div').filter(function(){
-	        return $(this).text() === catString
-	    }).addClass('catListSelected');
-	}
+    waitForElm('#mainCatList').then((elm) => {
+        //alert("populateFieldsFromHash " + hash.cat);
+    	$('.catList > div').removeClass('catListSelected');
+    	if (hash.cat) {
+    		var catString = hash.cat.replace(/_/g, ' ');
+            $("#catSearch").val(catString);
+    	    $('.catList > div').filter(function(){
+    	        return $(this).text() === catString
+    	    }).addClass('catListSelected');
+    	}
+    });
 	/*
 	// This occurs in showList when checkboxes are added.
 	if (param["search"]) {
@@ -133,7 +135,7 @@ $(document).ready(function () {
 	}, 'text');
     */
 
-	populateFieldsFromHash();
+	//populateFieldsFromHash();
 	$("#productCodes").css('width','200px');
 
 	$('#catListHolderShow').click(function () {

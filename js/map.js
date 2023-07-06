@@ -1994,7 +1994,7 @@ function showList(dp,map) {
 
   if (hash.show != showprevious || $("#tableSide > .catList").text().length == 0) { // Prevents selected category from being overwritten.
     //alert("a catList " + catList)
-    renderCatList(catList);
+    renderCatList(catList,hash.cat);
   }
   if (hash.name && $("#detaillist > [name='"+ hash.name.replace(/_/g,' ').replace(/ AND /g,' & ') +"']").length) {
     let listingName = hash.name.replace(/_/g,' ').replace(/ AND /g,' & ');
@@ -2062,11 +2062,13 @@ function showList(dp,map) {
       }
       if ($("#catSearch").val() && hash.cat) {
         searchFor += "<b style='font-size:1.2em'>" + $("#catSearch").val() + "</b>";
+      } else if (hash.cat) {
+        searchFor += "<b style='font-size:1.2em'>" + hash.cat + "</b>";
       }
       if (hash.subcat) {
         searchFor += "<b style='font-size:1.2em'>: " + hash.subcat + "</b>";
       }
-      if (hash.cat) {
+      if ($("#catSearch").val() || hash.cat || hash.subcat) {
         searchFor += " - ";
       }
       if (countDisplay == validRowCount) {
@@ -2124,7 +2126,7 @@ function showList(dp,map) {
   dp.data = data_out;
   return dp;
 }
-function renderCatList(catList) {
+function renderCatList(catList,cat) {
   console.log("the catList");
   console.log(catList);
   // Using param since hash.show is not available when passed in on localsite.js embed link.
@@ -2204,10 +2206,11 @@ function renderCatList(catList) {
         });
         //console.log(catNavSide)
 
-        // Was #tableSide
+        // Cat list gets rerendered even if the show value has not changed. Might be possible to avoid rerendering.
         $("#listLeft").html(""); // Clear
         // <div style='margin-left:10px'><b>CATEGORIES</b></div>
-        $("#listLeft").append("<div class='catList'>" + catNavSide + "<br></div>");
+        $("#listLeft").append("<div id='mainCatList' class='catList'>" + catNavSide + "<br></div>");
+        //alert(cat)
         let fullcolumnWidth = $('#fullcolumn').width();
         if (fullcolumnWidth > 500) {
           showSide();
@@ -4842,7 +4845,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
 
                       localObject.layerCategories[dp.show] = catList;
 
-                      renderCatList(catList);
+                      renderCatList(catList,hash.cat);
                     });
                   }
 
