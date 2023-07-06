@@ -15,15 +15,21 @@ Our Commercial and Manufacturer Recycler list is maintained by the Georgia Recyc
 <!--
 RecycleSearch.com doesn't work in iFrame. Returns New York.
 Also lacks CHARM.  Far from comprehensive.
--->
-<!--
+
 <a href="https://recyclesearch.com" target="_parent">Recycling Centers - RecycleSearch.com</a>
+
+
+Note: The main side categories are not in the B2B form.
+Instead, the sub-categories from the form are displayed under each main catergory.
 -->
-
- 
-
 **Business to Business (B2B) Recycling**
 <a href="/localsite/map/#show=recyclers&state=GA" target="_parent">Commercial Recyclers and Recovered Materials Manufacturers (421)</a>
+<a href="https://www.epa.gov/circulareconomy/recycling-infrastructure-and-market-opportunities-map">EPA Recycling Infrastructure and Market Opportunities Map</a>
+<a href="https://epa.maps.arcgis.com/home/item.html?id=b738c9f0ece146a59e0fb22446189f52">U.S. EPA Recycling Infrastructure Dataset</a> - Wood, Plastic, Electronics, Glass, etc.
+<!--
+CSV files from site above placed in https://github.com/georgiamap/recycling/georgia/epa
+-->
+
 
 **Wastewater, Landfills, Solid Waste**
 Maps for Hydrogen Initiative and Methane Capture
