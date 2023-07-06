@@ -538,7 +538,12 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   */ /* thicker, darker */
   font-weight: 600;
 }
-
+.darkDivText {
+  color: #ccc;
+}
+.darkDivText a:link, .darkDivText a:visited {
+  color: #acb;
+}
 #hero-content {
   padding: 45px 60px 40px 60px;
 }
@@ -610,7 +615,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     margin-bottom:8px;
 }
 .btn:link, .btn:visited, .contentpadding .btn:link, .contentpadding .btn:visited {
-  color: #fff;
+  color: #fff !important; /* Quick hack, allows .darkDivText a:visited to be overwritten in #mapList1Holder map box */
   text-decoration: none;
 }
 #hero-rect .btn:link, #hero-rect .btn:visited {
@@ -1066,12 +1071,6 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     border-bottom: 1px solid rgb(238,238,238/95%); /* #eee */
     border-bottom: 1px solid rgb(238,238,238);
   }
-}
-.darkDivText {
-  color: #ccc;
-}
-.darkDivText a:link, .darkDivText a:visited {
-  color: #acb;
 }
 .headerbarhide {
   display: none !important;

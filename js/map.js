@@ -421,7 +421,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.markerType = "google";
         // https://map.georgia.org/recycling/
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "<a href='https://map.georgia.org/recycling/'>Add Recycler Listings</a> or post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a>.&nbsp; View&nbsp;<a href='../map/recycling/ga/'>Recycling&nbsp;Datasets</a>.";
+        dp.listInfo = "<a href='../map/recycling/ga/'>View Recycling Datasets</a> - You can add <a href='https://map.georgia.org/recycling/'>B2B&nbsp;Recycler Listings</a> or post comments to submit additions to the <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> that drives our map.";
         dp.search = {"In Main Category": "Category", "In Materials Accepted": "Materials Accepted", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
       
       } else if (show == "wastewater") {
@@ -2099,7 +2099,7 @@ function showList(dp,map) {
       }
       // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
       // Remove name from hash to trigger refresh
-      let viewListLink = " <a href='' onclick='return false;' class='showListings'>View List</a>";
+      let viewListLink = "<br><br><a href='' onclick='return false;' class='showListings btn btn-success'>View List</a>";
       let showAllLink = " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\",\"cat\",\"subcat\"]); return false;' href='#show=" + param["show"] + "'>Show All</a></span>";
       $("#mapList1Text").html(searchFor + viewListLink);
       $("#dataList").html(searchFor + showAllLink);
@@ -4734,21 +4734,22 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
             // Placing map.whenReady or map.on('load') here did not resolve
             map.setView(mapCenter,dp.zoom);
             */
-            map.on('click', function() {
-              if (location.host.indexOf('localhost') >= 0) {
-                //alert('Toggle scrollwheel zoom')
-              }
-              if (this.scrollWheelZoom.enabled()) {
-                this.scrollWheelZoom.disable();
-              }
-              else {
-                this.scrollWheelZoom.enable();
-              }
-            })
           } else {
             console.log("dp.zoom " + dp.zoom);
             map.setView(mapCenter,dp.zoom);
           }
+          map.on('click', function() {
+            if (location.host.indexOf('localhost') >= 0) {
+              //alert('Toggle scrollwheel zoom')
+            }
+            if (this.scrollWheelZoom.enabled()) {
+              this.scrollWheelZoom.disable();
+            }
+            else {
+              this.scrollWheelZoom.enable();
+            }
+          })
+          
 
         // Runagain moved here
         //if (location.host.indexOf('localhost') >= 0) {

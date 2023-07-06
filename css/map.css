@@ -15,7 +15,7 @@
     color: #fff;
     z-index: 700;
     border-radius: 20px;
-    padding: 30px;
+    padding: 30px 26px 12px 30px;
     background-color: rgba(33,33,33,0.8) !important;
   }
   @media (max-width: 1200px) {
