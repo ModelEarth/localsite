@@ -5,7 +5,7 @@
     height: 85vh;
     width: 100%;
   }
-  #mapList1Holder {
+  .sidelistHolder {
     position: absolute;
     top: 35px;
     left: 64px;
@@ -19,39 +19,38 @@
     background-color: rgba(33,33,33,0.8) !important;
   }
   @media (max-width: 1200px) {
-    #mapList1Holder {
+    .sidelistHolder {
       position: initial;
       width: 100%;
       border-radius: 0px;
     }
   }
-  #mapList1Header {
+  .sidelistHeader {
     font-size: 24px;
     margin-bottom: 12px;
   }
-  #mapList1Text {
+  .sidelistText {
     font-size: 14px;
   }
-  #mapList1 a:link, #mapList1 a:visited {
+  .sidelist a:link, .sidelist a:visited {
     color: #66CF79;
     text-decoration: none;
   }
-  #mapList1 a:link:hover, #mapList1 a:visited:hover {
+  .sidelist a:link:hover, .sidelist a:visited:hover {
     text-decoration: underline;
   }
-  #mapList1 .detailTitle {
+  .sidelist .detailTitle {
     font-weight: 800;
     overflow: auto;
     font-size: 16px;
     margin-top: -4px;
     padding-bottom: 8px;
   }
-  #mapList1 .detailLinks {
+  .sidelist .detailLinks {
     display: none;
   }
-  #mapList1 .detail {
+  .sidelist .detail {
     line-height: .8em;
-    background-color: #666;
     border-radius: 30px;
     padding: 15px 10px 8px 22px;
     margin-bottom: 2px;
@@ -59,10 +58,19 @@
     border-bottom: 1px solid #777;
     margin: 4px;
   }
-  #mapList1 .detail:hover {
+  .sidelist .detailTitle {
+    line-height: 1.1em;
+  }
+  .sidelist .detail:hover {
+    background-color: #eee;
+  }
+  .sidelistDark .detail {
+    background-color: #666;
+  }
+  .sidelistDark .detail:hover {
     background-color: #333;
   }
-  #mapList1 .detailLocation {
+  .sidelist .detailLocation {
     font-size:14px;
   }
 
@@ -204,6 +212,9 @@
     position: relative;
     float:right;
   }
+  .detail {
+    cursor: pointer
+  }
   #detaillist .detail {
     position: relative;
     padding: 12px 8px 12px 12px;
@@ -223,6 +234,10 @@
   }
   #detaillist .detailActive:hover {
     background-color: rgb(250, 250, 250);
+  }
+  #listcolumnList .detailActiveHold {
+    background-color: #333;
+    color: #eee;
   }
   #detaillist .detailCurrent {
     paddingX: 0px;
@@ -441,10 +456,34 @@ label { /* override Drupal */
   margin-top:3px;
   float:left;
 }
+#listcolumn {
+  display: flex; /* displays flex-items (children) inline */
+  flex-direction: column; /* stacks them vertically */
+  heightX: 100%; /* Forced bottom off screen */
+}
+.listHeader {
+  padding: 10px;
+  background-color: #bbb;
+}
 .listTitle {
   font-size: 32px;
   margin:0px;
   border-bottom:0px
+}
+#listmain {
+  flex: 1; /* takes the remaining height of the "#listcolumn" div */
+
+  overflow-y:scroll;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+#listinfo {
+  flex-shrink: 0;
+  padding: 20px;
+  min-heightX: 250px; /* Bug, how to fit content? */
+  background-color: #333;
+  color: #fff;
 }
 @media (max-width: 800px) {
   .legendLink {

@@ -393,6 +393,7 @@ $(document).ready(function () {
             $("#showSide").show();
             $("#sideIcons").show();
             $('body').removeClass('bodyLeftMargin');
+            $('body').removeClass('bodyLeftMarginFull');
             $('body').removeClass('bodyLeftMarginNone'); // For DS side over hero
             if (!$('body').hasClass('bodyRightMargin')) {
                 $('body').removeClass('mobileView');

@@ -26,7 +26,7 @@
   <!-- event.stopPropagation() here breaks top icon clicks -->
   <div id="rightTopMenu" onclickX="event.stopPropagation()" class="hideOnBodyClickXX">
     
-    <div id="goatIcons" style="background-color:#111; color:#ccc; width:100%; height:64px; padding-right:6px; overflow:hidden">
+    <div id="goatIcons" class="darkDivText" style="background-color:#111; color:#ccc; width:100%; height:64px; padding-right:6px; overflow:hidden">
 
       <div style="float:left">
         <div class="closeSideTabs iconPadding">
@@ -234,7 +234,7 @@
         <div id="listingsPanel" class="menuExpanded topMenuOffset" style="display:none; font-size: 18.5px;">
           <div id="listingsPanelScroll" class="menuExpandedScroll always-show-scroll" style="padding:0px 0px 60px 0px">
               <div id="listingsDiv"></div>
-              <div id="mapList1"></div>
+              <div id="mapList1" class="sidelist sidelistDark"></div>
           </div>
         </div>
         <!-- /Listings Panel -->
@@ -1198,13 +1198,9 @@ Displayed by hashChanged() in map-filters.js
 <!-- ../img/hero/hexagon-pattern.png  -->
 
 
-<!-- a work in progress -->
-<div id="log_display" style="display:none" class="localonlyX"><span style='float:left; font-size:10px'>LOG</span><br><textarea id="logText">MyTest</textarea></div>
+<div id="log_display" style="display:none" class="localonlyX"><span style='float:left; font-size:10px'>LOG</span><br><textarea id="logText">LogText</textarea></div>
 
 
-
-
-<!-- Try to reactivate both of these display:none and update map.js waitForElm('#bodyFile #' + whichmap -->
 <div class="displayOnload displayMapForLoad" style="display:none;position:relative;overflow:hidden;">
 
   <div id="map1" class="displayMapForLoad" style="display:none; width:100%"><img src='/localsite/img/icon/loading.gif' loading='lazy' style='margin:100px 200px 100px 200px; width:120px'></div>
@@ -1519,15 +1515,13 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 
 
 <section class="data-section" id="data" style="overflow:auto">
-<div class="content contentpadding litePanel" style="max-width:2000px">
+<div class="content contentpadding litePanel" style="max-width:2000px; padding-bottom:0px">
 
   <div id="flexwrapper">
     <div id="hublist" style="margin-top:20px; position:relative;">
 
       <div id="hublist-padding">
         
-        <h1 class="listTitle" style="margin-bottom:12px">Loading...</h1>
-        <h2 class="listSubtitle" style="display:none"></h2>
 
         <div style="display:none" class="layerclass farmfresh">
           

@@ -462,7 +462,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       } else if (show == "landfills") {
         dp.listTitle = "Georgia Landfills (2017)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "View <a href='/localsite/map/#show=solidwaste&state=GA'>2023 Solid Waste</a>. Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.<br>Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='../map/recycling/ga/'>Wastewater and Recycling&nbsp;Datasets</a>.";
+        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.<br>Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='../map/recycling/ga/'>Wastewater and Recycling&nbsp;Datasets</a>.";
 
         // From Landfills tab (temporary until Solid Waste ready)
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=2088666243&single=true&output=csv";
@@ -487,7 +487,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       } else if (show == "solidwaste") {
         dp.listTitle = "Georgia Solid Waste (2023)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.<br>Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='../map/recycling/ga/'>Wastewater / Landfill / Recycling&nbsp;Datasets</a>.";
+        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates. Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='../map/recycling/ga/'>More&nbsp;Recycling&nbsp;Datasets</a>.";
       
         // From Solid Waste tab
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=809637033&single=true&output=csv";
@@ -628,7 +628,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         //dp.dataset = "https://model.earth/georgia-data/automotive/automotive.csv";
         dp.datastates = "GA";
         // Dark green map points indicate electric vehicle parts manufacturing.<br>
-        dp.listInfo = "From 2020 to 2022 Georgia added more than 20 EV-related projects. <a href='https://www.georgiatrend.com/2022/07/29/electric-revolution/'>Learn&nbsp;more</a><br>Dark Green: Electric Vehicle (EV) Industry<br>Lite Green: Potential EV Parts Manufacturer<br>Dark Blue: Internal Combustion Engine (ICE)<br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates. <a href='/localsite/info/input/'>Contact Us</a> to help maintain the sheet directly.<br>Learn about <a href='../../community/projects/mobility/'>data&nbsp;sources</a>.";
+        dp.listInfo = "From 2020 to 2022 Georgia added more than 20 EV-related projects. <a href='https://www.georgiatrend.com/2022/07/29/electric-revolution/'>Learn&nbsp;more</a><br>Dark Green: Electric Vehicle (EV) Industry<br>Lite Green: Potential EV Parts Manufacturer<br>Dark Blue: Internal Combustion Engine (ICE)<br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates. <a href='/localsite/info/input/'>Contact Us</a> to help maintain the sheet directly. Learn about <a href='../../community/projects/mobility/'>data&nbsp;sources</a>.";
         dp.valueColumn = "ev industry";
         dp.valueColumnLabel = "EV Industry";
         dp.markerType = "google";
@@ -1091,7 +1091,7 @@ function showList(dp,map) {
     $(".listTitle").show();
     $("#navcolumnTitle").show();
     $("#navcolumnTitle").html(dp.shortTitle ? dp.shortTitle : dp.listTitle);
-    $("#mapList1Header").html(dp.shortTitle ? dp.shortTitle : dp.listTitle);
+    $(".sidelistHeader").html(dp.shortTitle ? dp.shortTitle : dp.listTitle);
   } else {
     $("#navcolumnTitle").hide();
   }
@@ -1969,12 +1969,9 @@ function showList(dp,map) {
     }
   });
 
-  //if (count >= 1) {
-    $("#detaillist").append(output);
-    $("#detaillist").append("<div style='height:60px'></div>"); // For space behind absolute buttons at bottom.
-  //} else {
-  //  console.log("NO OUTPUT")
-  //}
+  // Temp, to reduce size of DOM
+  $("#detaillist").append(output);
+  $("#detaillist").append("<div style='height:60px'></div>"); // For space behind absolute buttons at bottom.
 
   /*
   if (localObject.layerCategories[dp.show].length >= 0) {
@@ -2013,21 +2010,30 @@ function showList(dp,map) {
   }
   //$("#detaillist > [name='"+ name.replace(/'/g,'&#39;').replace(/& /g,'AND ') +"']").show();
 
-  $("#mapList1").html(shortout);
-  $("#mapList1Holder").show();
+  //$(".sidelist").html(shortout);
+  $("#listcolumnList").html(shortout);
+
+  // Show the side columns
+  $("#showSide").hide();
+  $("#navcolumn").show();
+  $("#listcolumn").show();
+  $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
+
+
+  $(".sidelistHolder").show();
 
   $('.detail').mouseenter(function(event){
 
     // Get the cound of the current div
     let markerID = event.target.getAttribute("markerid");
 
-    $("#map1 .leaflet-marker-pane svg").removeClass("activeMarker");
-    $("#map1 .leaflet-marker-pane svg:nth-child(" + markerID +")").addClass("activeMarker");
-
-
-      // Triggered when rolling over list.
-      // TO DO: make mappoint bigger when rolling over list, but don't zoom until click.
-      //popMapPoint(dp, map, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
+    //console.log("markerid " + markerID); // Not sure why nulls occur when moving over several rapidly.
+    if (markerID !== null) {
+      $("#map1 .leaflet-marker-pane svg").removeClass("activeMarker");
+      $("#map1 .leaflet-marker-pane svg:nth-child(" + markerID +")").addClass("activeMarker");
+    }
+    // This older script can be used to change the mappoint color, but the color is not removed.
+    // popMapPoint(dp, map, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
   });
 
   var imenu = "<div style='display:none'>";
@@ -2051,25 +2057,30 @@ function showList(dp,map) {
   //$("#sidemapbar").prepend(locmenu);
 
   let searchFor = "";
+  let listInfo = "";
   if (dp.listInfo) {
-    searchFor += dp.listInfo;
-    searchFor += "<hr styleX='margin-bottom:16px'>";
+    listInfo += dp.listInfo;
+    $(".listinfo").html(listInfo);
   }
 
   if (dataMatchCount > 0) {
       if (searchFor) {
         //searchFor += "<br>"
       }
+
+      let listTitle = "";
       if ($("#catSearch").val() && hash.cat) {
-        searchFor += "<b style='font-size:1.2em'>" + $("#catSearch").val() + "</b>";
+        listTitle += $("#catSearch").val();
       } else if (hash.cat) {
-        searchFor += "<b style='font-size:1.2em'>" + hash.cat + "</b>";
+        listTitle += hash.cat;
       }
       if (hash.subcat) {
-        searchFor += "<b style='font-size:1.2em'>: " + hash.subcat + "</b>";
+        listTitle += hash.subcat;
       }
+      $(".listTitle").html(listTitle);
+
       if ($("#catSearch").val() || hash.cat || hash.subcat) {
-        searchFor += " - ";
+        //searchFor += " - ";
       }
       if (countDisplay == validRowCount) {
         if (countDisplay == 1) {
@@ -2099,12 +2110,15 @@ function showList(dp,map) {
           //line below was here
         }
       }
+      $(".listSpecs").html(searchFor);
+
       // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
       // Remove name from hash to trigger refresh
       let viewListLink = "<br><br><a href='' onclick='return false;' class='showListings btn btn-success'>View List</a>";
       let showAllLink = " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\",\"cat\",\"subcat\"]); return false;' href='#show=" + param["show"] + "'>Show All</a></span>";
-      $("#mapList1Text").html(searchFor + viewListLink);
-      $("#dataList").html(searchFor + showAllLink);
+      //$(".sidelistText").html(searchFor + viewListLink);
+
+      $("#dataList").html(showAllLink);
       $("#resultsPanel").show();
       $("#dataList").show();
 
@@ -2255,7 +2269,6 @@ var colorTheCountry = d3.scaleThreshold()
 
 function popMapPoint(dp, map, latitude, longitude, name, color) {
 
-
   color = "#666"; // Override incoming
 
   // Place large icon on side map and zoom
@@ -2264,7 +2277,7 @@ function popMapPoint(dp, map, latitude, longitude, name, color) {
     console.log("No latitude or longitude for " + name)
     return;
   }
-  console.log("popMapPoint for: " + name);
+  console.log("popMapPoint on " + map + " for: " + name);
 
   // TODO: Remove prior red highlighted markers
 
@@ -2588,16 +2601,15 @@ var mapFixed = false;
 var previousScrollTop = $(window).scrollTop();
 $(window).scroll(function() {
   if (revealHeader == false) {
-    $("#headerLarge").addClass("headerLargeHide"); $('.bothSideIcons').removeClass('sideIconsLower');$("#navcolumn").removeClass("navcolumnLower"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
+    $("#headerLarge").addClass("headerLargeHide"); $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
     $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
     if (param.showheader != "false") {
       $('.showMenuSmNav').show(); 
     }
     $('#filterFieldsHolder').hide();
     $('.headerOffset').hide();
-    $('.bothSideIcons').removeClass('sideIconsLower');$("#navcolumn").removeClass("navcolumnLower");
+    $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower");
     $('#headerbar').hide();
-
     if (sideTopOffsetEnabled) {
       //$('.sidecolumnLeft').css("top","54px");
     }
@@ -2614,7 +2626,12 @@ $(window).scroll(function() {
         // Switch to smaller header
 
         $("#headerLarge").addClass("headerLargeHide");
-        $('.bothSideIcons').removeClass('sideIconsLower');$("#navcolumn").removeClass("navcolumnLower");
+        $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower");
+        //alert("headerbar hide");
+        if (!$("#filterFieldsHolder").is(':visible')) { // Move to top if no small top bar
+          $(".pagecolumn").addClass("pagecolumnToTop");
+        }
+
         $('.headerbar').hide();
         $('.headerOffset').hide();
         $('#logoholderbar').show();
@@ -2630,7 +2647,7 @@ $(window).scroll(function() {
             $('.showMenuSmNav').show(); 
           }
           $('.headerOffset').hide();
-          $('.bothSideIcons').removeClass('sideIconsLower');$("#navcolumn").removeClass("navcolumnLower");
+          $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower");
           $('#headerbar').hide(); // Not working
           $('#headerbar').addClass("headerbarhide");
         }
@@ -2646,13 +2663,14 @@ $(window).scroll(function() {
     }
   } else { // Scrolling Down
     if ($(window).scrollTop() < (previousScrollTop - 20)) { // Reveal #headerLarge if scrolling down fast
-      $("#headerLarge").removeClass("headerLargeHide"); $('.bothSideIcons').addClass('sideIconsLower');$("#navcolumn").addClass("navcolumnLower"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
+      $("#headerLarge").removeClass("headerLargeHide"); $('.bothSideIcons').addClass('sideIconsLower');
+      $(".pagecolumn").addClass("pagecolumnLower");$(".pagecolumn").removeClass("pagecolumnToTop");$('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
       //$('#filterFieldsHolder').show();
       $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
       if ($("#headerbar").length) {
         if (param.showheader != "false") {
           $('.headerOffset').show();
-          $('.bothSideIcons').addClass('sideIconsLower');$("#navcolumn").addClass("navcolumnLower");
+          $('.bothSideIcons').addClass('sideIconsLower');$(".pagecolumn").addClass("pagecolumnLower");$(".pagecolumn").removeClass("pagecolumnToTop");
           $('#headerbar').show();
           $('#headerbar').removeClass("headerbarhide");
           $('#local-header').show();
@@ -2673,7 +2691,7 @@ $(window).scroll(function() {
       if ($("#headerbar").length) {
         if (param.showheader != "false") {
           $('.headerOffset').show();
-          $('.bothSideIcons').addClass('sideIconsLower');$("#navcolumn").addClass("navcolumnLower");
+          $('.bothSideIcons').addClass('sideIconsLower');$(".pagecolumn").addClass("pagecolumnLower");$(".pagecolumn").removeClass("pagecolumnToTop");
           $('#headerbar').show();
           $('#headerbar').removeClass("headerbarhide");
           $('#local-header').show();
@@ -4197,36 +4215,39 @@ function addIcons(dp,map,map2) {
     $(".l-icon-material").show();
   });
 
-  $('.detail').click(function() { // Provides close-up with map2
+  $(document).on("click", ".detail", function(event) { // Provides close-up using map2
       $("#sidemapCard").show(); // map2 - show first to maximize time tiles have to see full size of map div.
-
-      // Reduce the size of all circles - to do: when zoom is going in 
-      /* No effect
-      dp.group2.eachLayer(function (marker) { // This hits every point individually. A CSS change might be less script processing intensive
-        //console.log('zoom ' + map.getZoom());
-        if (marker.setRadius) {
-          console.log("marker.setRadius" + markerRadiusSmall(1,map2));
-          marker.setRadius(markerRadiusSmall(1,map2));
-        }
-      });
-      */
-      
-
-      //$('.detail').css("border","none");
-      //$('.detail').css("background-color","inherit");
-      //$('.detail').css("padding","12px 0 12px 4px");
-      $('.detail').removeClass("detailActive");
-
-      // BUGBUG - Click is sent twice for top list, apparently because bottom list is already rendered when it loads.
+      $('.detail').removeClass("detailActiveHold"); // Remove prior
       console.log("List detail click");
       let locname = $(this).attr("name").replace(/ & /g," AND ").replace(/ /g,"_");
-      updateHash({"name":locname});
+
+      // Reactivate and remove goHash and return below.
+      //updateHash({"name":locname});
+
+      let hash = getHash(); // Probably remove too.
+      // Quick fix - this probably reloads too much (it's the same on map popup "View Details" button.)
+      goHash({"show":hash.show,"name":locname});
+      event.stopPropagation();
+      console.log("TO DO - check reaching here on initial load");
+      // Why is this reached when loading this page (without a click): http://localhost:8887/localsite/map/#show=recyclers&state=GA&name=Applegate_Insulation_Systems_of_Georgia
+      
+      // Avoid returning because further script updates the detail's side map.
+      //return;
+      // BUGBUG - This is reached 3+ times!!
+      console.log("continuing in .detail click");
+
+
+      // TODO: Also display item detail below map - Works for goHash on map popup "View Details" button.
+      // goHash({"show":"recyclers","name":"Georgia_Mountain_Grinding"}); return false;
+
+
       $('#sidemapName').text($(this).attr("name"));
 
       //$(this).css("border","1px solid #ccc");
       //$(this).css("background-color","rgb(250, 250, 250)");
       //$(this).css("padding","15px");
       $(this).addClass("detailActive");
+      $(this).addClass("detailActiveHold");
       if ($(".detailActive").height() < 250) {
         $("#changeHublistHeight").hide();
       }
@@ -4235,21 +4256,17 @@ function addIcons(dp,map,map2) {
       if (listingsVisible == 1 || hash.cat) {
         $(".viewAllLink").show();
       }
-
       if ($(this).attr("latitude") && $(this).attr("longitude")) {
         popMapPoint(dp, map2, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
         zoomMapPoint(dp, map2, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
       } else {
-        $("#sidemapCard").hide();
+        $("#sidemapCard").hide(); // Contains just the map
       }
-      // Might reactivate scrolling to map2
-      /*
+      // Scroll to area with map2
       window.scrollTo({
         top: $("#sidemapCard").offset().top - 140,
         left: 0
       });
-      */
-
       $(".go_local").show();
   });
   $('.showItemMenu').click(function () {

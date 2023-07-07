@@ -430,21 +430,28 @@ function get_localsite_root3() { // Also in two other places
 }
 
 function toggleFullScreen(alsoToggleHeader) {
-  if (document.fullscreenElement) { // Already fullscreen
+  if (document.fullscreenElement && !alsoToggleHeader) { // Already fullscreen and not small header
     consoleLog("Already fullscreenElement");
     if (alsoToggleHeader) {
       hideHeaderBar();
     }
     if (document.exitFullscreen) {
-      consoleLog("Attempt to exit fullscreen")
+      consoleLog("Exit fullscreen")
       document.exitFullscreen();
-      $('.reduceFromFullscreen').hide();
-      $('.expandToFullscreen').show();
+      if (alsoToggleHeader) {
+        showHeaderBar();
+        $('.reduceSlider').hide();
+        $('.expandSlider').show();
+      } else {
+        $('.reduceFromFullscreen').hide();
+        $('.expandToFullscreen').show();
+      }
       return;
     }
   }
   if ((document.fullScreenElement && document.fullScreenElement !== null) ||    
    (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+    // EXPAND
     // Only if video is not visible. Otherwise become black.
     $('.moduleBackground').css({'z-index':'0'});   
     $('.expandFullScreen span').text("Shrink");
@@ -457,8 +464,10 @@ function toggleFullScreen(alsoToggleHeader) {
       document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);  
     }
     
-    if (alsoToggleHeader) {
+    if (alsoToggleHeader) { // Use only small header
       hideHeaderBar();
+      $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
+      $(".pagecolumn").removeClass("pagecolumnLower");
       $('.expandSlider').hide();
       $('.reduceSlider').show();
     } else {
@@ -466,7 +475,6 @@ function toggleFullScreen(alsoToggleHeader) {
       $('.reduceFromFullscreen').show();
     }
   } else {
-    
     $('.moduleBackground').css({'z-index':'-1'}); // Allows video to overlap.
     $('.expandFullScreen span').text("Expand");
     if (document.cancelFullScreen) {  
@@ -476,8 +484,11 @@ function toggleFullScreen(alsoToggleHeader) {
     } else if (document.webkitCancelFullScreen) {  
       document.webkitCancelFullScreen();  
     }
-    if (alsoToggleHeader) {
+    if (alsoToggleHeader) { // Restore taller header bar
       showHeaderBar();
+      $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
+      $(".pagecolumn").addClass("pagecolumnLower");
+      $(".pagecolumn").removeClass("pagecolumnToTop");
       $('.reduceSlider').hide();
       $('.expandSlider').show();
     } else {
@@ -615,7 +626,6 @@ function loadLocalTemplate() {
 }
 function hideHeaderBar() {
   //$('#headerbar').addClass("headerbarhide");
-  //alert("hideHeaderBar")
   $('#local-header').hide();
   $('#headerbar').hide();
   $('.bothSideIcons').removeClass('sideIconsLower');
@@ -721,8 +731,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         } else if(document.getElementById("bodyFile") == null) {
           $('body').prepend("<div id='bodyFile'></div>");
         }
-
-        $('body').prepend("<div id='rightIcons' class='rightIcons bothSideIcons sideIconsLower'><div class='closeSideTabs expandSlider iconPadding' style='border:0px;'><i class='material-icons menuTopIcon' style='font-size:42px;opacity:0.7;margin-top:-4px'>&#xE5D0;</i></div><div class='closeSideTabs reduceSlider iconPadding' style='display:none; border:0px;'><i class='material-icons menuTopIcon' style='font-size:42px;opacity:0.7;margin-top:-4px'>&#xE5D1;</i></div></div>");
 
         if(param.showheader == "true") {
           $('body').prepend("<div id='sideIcons' class='bothSideIcons sideIconsLower' style='position:fixed;left:0;width:32px'><div id='showSide' class='showSide' style='left:-28px;'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");

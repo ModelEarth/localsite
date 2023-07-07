@@ -171,7 +171,11 @@ function showSide() {
 		$('body').addClass('bodyLeftMarginNone');
 	} else {
 		$("#fullcolumn #showSide").hide();
-		$('body').addClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
+		$('body').addClass('bodyLeftMargin'); // Creates margin on left for fixed sidetabs.
+		if($('#listcolumnList').html().length) {
+			$("#listcolumn").show();
+			$('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
+		}
 		$('body').addClass('mobileView');
 	}
 	$("#sideIcons").hide();
@@ -291,7 +295,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	}
 
 	if(document.getElementById("navcolumn") == null) {
- 		$("body").prepend( "<div id='navcolumn' class='navcolumn navcolumnLower greyDiv hideprint sidecolumnLeft liteDiv' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>\r" );
+ 		$("body").prepend( "<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv hideprint sidecolumnLeft liteDiv' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div><div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLower' style='display:none'><div class='listHeader'><h1 class='listTitle'></h1><h2 class='listSubtitle' style='display:none'></h2><div class='listSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listinfo' class='listinfo'></div></div>\r" );
  	} else {
  		// TODO - change to fixed when side reaches top of page
  		console.log("navigation.js report: navcolumn already exists")
@@ -304,7 +308,8 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 			//$("#showSide").css("opacity","1");
 			$("#navcolumn").hide();
 			$("#showSide").show();
-			$('body').removeClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
+			$('body').removeClass('bodyLeftMargin');
+			$('body').removeClass('bodyLeftMarginFull');
 			if (!$('body').hasClass('bodyRightMargin')) {
 	        	$('body').removeClass('mobileView');
 	    	}
@@ -316,9 +321,11 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	});
  	$(document).on("click", ".hideSide", function(event) {
 		$("#navcolumn").hide();
+		$("#listcolumn").hide(); // Later we'll retain this location list when closing side navcolumn.
 		$("#showSide").show();
 		$("#sideIcons").show();
-		$('body').removeClass('bodyLeftMargin'); // Creates margin on right for fixed sidetabs.
+		$('body').removeClass('bodyLeftMargin');
+		$('body').removeClass('bodyLeftMarginFull');
 		if (!$('body').hasClass('bodyRightMargin')) {
         	$('body').removeClass('mobileView');
     	}
@@ -682,7 +689,7 @@ $(document).ready(function () {
 
 $(document).on("click", ".showListings", function(event) {
 	closeExpandedMenus(event.currentTarget);
-    if (!$.trim($("#mapList1").html())) { // If the location list is not empty, load the list of types.
+    if (!$.trim($(".sidelist").html())) { // If the location list is not empty, load the list of types.
         $("#bigThumbMenuInner").appendTo("#listingsPanelScroll");
         if (!document.getElementById("#bigThumbMenuInner")) {
             let hash = getHash();

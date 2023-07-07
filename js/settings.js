@@ -1020,8 +1020,8 @@ function initEvents() {
             var allowTime = 0;
             if ($('#printmap').is(':checked')) {
                 $('#map').css('max-height','580px'); // Prevents bottom of map appearing on next page.
-                $('.moduleJS .listHeader').css('position','relative'); // Fixes bug because .listHeaderOffset is not holding space.
-                $('.moduleJS .listHeaderOffset').hide();
+                //$('.moduleJS .listHeader').css('position','relative'); // Fixes bug because .listHeaderOffset is not holding space.
+                //$('.moduleJS .listHeaderOffset').hide();
                 // Todo: store existing position and restore below.
 
                 $('.overviewMapButton').trigger("click");

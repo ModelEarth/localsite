@@ -476,18 +476,31 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	left:0;
 	bottom:0;
 }
-.navcolumnLower {
+.listcolumn {
+    position: fixed;
+    width:380px;
+    padding-right:0px;
+	top:0;
+	left:220px;
+	bottom:0;
+	background-color: #ddd;
+}
+.pagecolumn {
+	top:54px;
+}
+.pagecolumnLower {
 	top:94px;
 }
+.pagecolumnToTop {
+	top:0px;
+}
 .rightIcons {
-	position: fixed;
-	top: 10px;
-	right: 15px;
-	z-index: 999999;
-	color: #fff;
-	padding-bottom: 20px;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	z-index: 999;
 	font-size: 44px;
-	text-shadow: 1px 1px 4px #000;
+	text-shadow: 1px 1px 4px #fff;
 }
 .bothSideIcons {
   top:0px;
@@ -497,7 +510,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
   top:92px;
 }
 @media (max-width: 600px) {
-	.navcolumnLower {
+	.pagecolumnLower {
 		top:64px;
 	}
 	.sideIconsLower {
