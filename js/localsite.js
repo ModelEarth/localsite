@@ -733,7 +733,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         }
 
         if(param.showheader == "true") {
-          $('body').prepend("<div id='sideIcons' class='bothSideIcons sideIconsLower' style='position:fixed;left:0;width:32px'><div id='showSide' class='showSide' style='left:-28px;'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
+          $('body').prepend("<div id='sideIcons' class='bothSideIcons sideIconsLower' style='position:fixed;left:0;width:32px'><div id='showSide' class='showSide' style='left:-28px;'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border:1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
         }
         
         waitForElm('#fullcolumn').then((elm) => {

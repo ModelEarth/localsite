@@ -67,7 +67,7 @@ body {
     margin-right: 0px;
   }
 }
-@media (max-width: 1250px) {
+@media (max-width: 1450px) { /* 1250px */
   .mobileView .hideMobile {
     display: none;
   }
@@ -76,6 +76,11 @@ body {
   }
   .mobileView .fullMobile {
     width: 100%;
+  }
+  .mobileView .floatright {
+    width: 100%;
+    margin-left: 0px;
+    float: none;
   }
 }
 @media (max-width: 1500px) {
