@@ -485,6 +485,11 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	bottom:0;
 	background-color: #ddd;
 }
+#bodyFileHolder .listcolumn { /* Display next to map */
+	position: relative;
+	float: left;
+	top:auto; left:auto; bottom:auto;
+}
 .pagecolumn {
 	top:54px;
 }

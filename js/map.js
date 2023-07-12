@@ -2017,8 +2017,9 @@ function showList(dp,map) {
   $("#showSide").hide();
   $("#navcolumn").show();
   $("#listcolumn").show();
-  $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
-
+  if(document.getElementById("bodyFileHolder") == null) {
+    $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
+  }
 
   $(".sidelistHolder").show();
 
