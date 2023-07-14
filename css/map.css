@@ -4,6 +4,7 @@
     height: 600px;
     height: 85vh;
     width: 100%;
+    position: relative;
   }
   .sidelistHolder {
     position: absolute;

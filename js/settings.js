@@ -1026,8 +1026,8 @@ function initEvents() {
 
                 $('.overviewMapButton').trigger("click");
                 $('.moveListBelow').trigger("click");
-                $('.afterMap').removeClass('hidePrint');
-                $('.panelMinHeightHolder').removeClass('hidePrint'); // Show map
+                $('.afterMap').removeClass('noprint');
+                $('.panelMinHeightHolder').removeClass('noprint'); // Show map
                 $('.listPanelInner').removeClass('listPanelInnerBorderRight');
                 allowTime += 500;
                 if ($('#landscape').is(':checked') && $('#printcontent').is(':checked')) {
@@ -1037,7 +1037,7 @@ function initEvents() {
                 }
             } else {
                 if (!$('#printcontent').is(':checked')) {
-                    $('.panelMinHeightHolder').addClass('hidePrint'); // Hide filters and map
+                    $('.panelMinHeightHolder').addClass('noprint'); // Hide filters and map
                 }
             }
             if ($('#printlist').is(':checked')) {
@@ -1046,23 +1046,23 @@ function initEvents() {
 
                 allowTime += 500;
 
-                $('.afterMap').removeClass('hidePrint'); // Show list if previously hidden.
+                $('.afterMap').removeClass('noprint'); // Show list if previously hidden.
             
                 $('.listPanelInner').removeClass('listPanelInnerBorderRight');
             } else {
                 $('.moveListBelow').trigger("click");
-                $('.afterMap').addClass('hidePrint'); // Hide list
+                $('.afterMap').addClass('noprint'); // Hide list
             }
             if ($('#printcontent').is(':checked')) {
                 if ($(".moduleContent").html().length > 0) {
-                    $('.moduleContent').removeClass('hidePrint');
+                    $('.moduleContent').removeClass('noprint');
                     $(".moduleContent").show();
                     if ($('#printmap').is(':checked')) {
                         allowTime += 1000; // Add extra time for map points to load.
                     }
                 }
             } else {
-                $('.moduleContent').addClass('hidePrint'); // Hide content
+                $('.moduleContent').addClass('noprint'); // Hide content
             }
             if ($('#printgrid').is(':checked')) {
                 //$(".moduleContent").hide();
@@ -1085,7 +1085,7 @@ function initEvents() {
                 window.print();
             }
 
-            $('.moduleContent').removeClass('hidePrint');
+            $('.moduleContent').removeClass('noprint');
         });
 
         function printOrientation(size) {

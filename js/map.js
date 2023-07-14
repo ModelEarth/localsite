@@ -157,7 +157,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
     //if (location.host.indexOf('localhost') >= 0) {
       dp.valueColumn = "type";
       dp.valueColumnLabel = "Type";
-      dp.dataset = "https://model.earth/community-data/us/state/" + theState + "/" + theState + "-farmfresh.csv";
+      dp.dataset = "https://model.earth/community-data/us/state/" + theState + "/" + theState.toLowerCase() + "-farmfresh.csv";
     //} else {
     //  // Older data
     //  dp.valueColumn = "Prepared";
@@ -3399,8 +3399,9 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
       // layerControl wasn't yet available in loading sequence.
       // Could require localsite/js/map.js load first, but top maps might not always be loaded.
       // Or only declare layerControl object if not yet declared.
-      alert("map.length " + map.length);
-      if (map) {
+      //alert("map.length " + map.length);
+      if (map.length) { // was just map until {} added
+        //alert("map " + map);
           if (layerControl[whichmap] == undefined) { //NEW MAP
             //TESTING
             //alert("NEW MAP " + whichmap)
@@ -3608,8 +3609,18 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
 function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callback) {
   console.log("processOutput");
 
-  if (typeof map === 'undefined') {
-    console.log("processOutput: map undefined");
+  if (typeof map === 'undefined' || !map.length) {
+    // Still shows map despite this.  Might have seen 1 of 12 times it did not.
+    console.log("processOutput: map undefined or unpopulated.");
+
+    // Infinite loop
+    setTimeout( function() {
+      //delay and retry
+      //Not working
+      //processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
+    }, 500 ); // Allow ample time to load.
+
+    //return;
   }
   
 
@@ -3629,9 +3640,6 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
   dp.group2 = L.layerGroup();
 
   
-
-
-
 
    // Prevents dups of layer from appearing
    // Each dup shows a data subset when filter is being applied.
@@ -4589,6 +4597,18 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
   let map = {};
   let map2 = {};
   console.log("TO DO - place prior dataset in object within processOutput() to avoid reloading")
+
+  let stateAllowed = true;
+  if (dp.datastates && hash.state) {
+    if (dp.datastates.split(",").indexOf(hash.state.split(",")[0].toUpperCase()) == -1) {
+      stateAllowed = false;
+      console.log("State1 of " + hash.state + " has no map point data based on dp.datastates indicated.");
+      $("#list_main").hide();
+      $("#map1").hide();
+      return;
+    }
+  }
+
   if (dp.dataset && stateAllowed && (dp.dataset.toLowerCase().includes(".json") || dp.datatype === "json")) { // To Do: only check that it ends with .json
     if (dp.headerAuth) {
       //dp.headerAuth = $.parseJSON(dp.headerAuth); // TO DO: Add object below
@@ -5115,16 +5135,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
                         });
                       }
 
-                      let stateAllowed = true;
-                      if (dp.datastates && hash.state) {
-                        if (dp.datastates.split(",").indexOf(hash.state.split(",")[0].toUpperCase()) == -1) {
-                          stateAllowed = false;
-                          //alert("State1 of " + hash.state + " has no map point data based on dp.datastates indicated.");
-                          $("#list_main").hide();
-                          $("#map1").hide();
-                          return;
-                        }
-                      }
+
 
                       // ProcessOutput was here
 

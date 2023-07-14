@@ -312,7 +312,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		$('body').removeClass('bodyLeftMarginFull');
 	}
 	if(document.getElementById("navcolumn") == null) {
- 		$("body").prepend("<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv hideprint sidecolumnLeft liteDiv' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement);
+ 		$("body").prepend("<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv noprint sidecolumnLeft liteDiv' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement);
  	} else {
  		// TODO - change to fixed when side reaches top of page
  		console.log("navigation.js report: navcolumn already exists")
@@ -1273,8 +1273,6 @@ function getPageFolder(pagePath) {
 $(document).on("click", "#filterClickLocation", function(event) {
 
 	console.log("Call filterClickLocation()");
-	alert("#filterClickLocation")
-
 
 //$("#filterClickLocation").click(function(e) { // This does not work on localhost
     //let hash = getHash();

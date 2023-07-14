@@ -308,9 +308,10 @@ summary::-webkit-details-marker {
 @media print 
 {
   .noprint {display: none; }
-  /*
-  body{margin-top:30px; color: #000; }
-  */
+  .pagebreak {
+      clear: both;
+      page-break-after: always;
+  }
 }
 @media screen {.printonly {display: none; }}
 

@@ -1195,9 +1195,8 @@ Displayed by hashChanged() in map-filters.js
 <!-- /NULLSCHOOL -->
 
 
-<div id="showIframeCover" onclick="this.style.display='none';$('#iframeCover').show();" style="display:none; position:fixed; z-index:10; left:18px; margin-top:12px" class="btn btn-white">Reactivate Scrolling</div>
-<!-- ../img/hero/hexagon-pattern.png  -->
 
+<!-- ../img/hero/hexagon-pattern.png  -->
 
 <div id="log_display" style="display:none" class="localonlyX"><span style='float:left; font-size:10px'>LOG</span><br><textarea id="logText">LogText</textarea></div>
 
@@ -1226,11 +1225,13 @@ Displayed by hashChanged() in map-filters.js
 
 <div id="iframeCover" onclick="this.style.display='none';$('#showIframeCover').show();" style="display:none; background-image: url('https://www.georgia.org/themes/custom/mmg8_cog/dist/images/honeycomb.png'); position: absolute; z-index: 10; width:100%; height:800px"></div>
 
+<div id="showIframeCover" onclick="this.style.display='none';$('#iframeCover').show();" style="display:none; position:fixed; z-index:10; left:18px; margin-top:12px;z-index:99999;" class="btn btn-white">Reactivate Scrolling</div>
+
 <iframe id="mapframe" style="display:none; width:100%;height:800px;"></iframe>
 
 <div id="tableSide" class="hideMobile">
 
-<div id='sidecolumnX' class='hideprint, local, earth' style="displayX: none">
+<div id='sidecolumnX' class='noprint, local, earth' style="displayX: none">
 
 
 <style>

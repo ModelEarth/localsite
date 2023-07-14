@@ -662,8 +662,6 @@ function productList(startRange, endRange, text) {
 }
 
 function filterClickLocation(loadGeoTable) {
-	
-    alert("filterClickLocation()");
 	$("#searchLocation").focus(); // Not working
 	//document.getElementById("searchLocation").focus(); // Not working
 	//$("#filterFieldsHolder").hide();

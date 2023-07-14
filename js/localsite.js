@@ -656,7 +656,7 @@ function loadLeafletAndMapFilters() {
       waitForElm('body').then((elm) => {
         console.log("body is now available"); // If missing header persists, remove waitForElm('body') here (line above annd closure)
         // Puts space above flexmain for navcolumn to be visible after header
-        $("body").prepend("<div id='local-header' class='flexheader hideprint' style='display:none'></div>\r");
+        $("body").prepend("<div id='local-header' class='flexheader noprint' style='display:none'></div>\r");
         waitForElm('#local-header').then((elm) => {
           $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
         
@@ -744,7 +744,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         }
 
         if(param.showheader == "true") {
-          $('body').prepend("<div id='sideIcons' class='bothSideIcons sideIconsLower' style='position:fixed;left:0;width:32px'><div id='showSide' class='showSide' style='left:-28px;'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border:1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
+          $('body').prepend("<div id='sideIcons' class='noprint bothSideIcons sideIconsLower' style='position:fixed;left:0;width:32px'><div id='showSide' class='showSide' style='left:-28px;'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border:1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
         }
         
         waitForElm('#fullcolumn').then((elm) => {
