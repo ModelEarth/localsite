@@ -37,6 +37,16 @@ html, body, #fullcolumn,
 a:link, a:visited {
   color: #acb;
 }
+.greyDiv {
+    color: #fff;
+    background-color: #666 !important;
+}
+.greyDiv b, .greyDiv .maincat, .greyDiv b a, .greyDiv b a:visited {
+    color: #ccc !important;
+}
+.liteDiv {
+    border-right: #333 1px solid !important;
+}
 #headerbar {
     border-bottom: 0px solid #999 !important;
 }

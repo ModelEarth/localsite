@@ -275,6 +275,7 @@ function updateHash(addToHash, addToExisting, removeFromHash) { // Avoids trigge
     }
     hash = mix(addToHash,hash); // Gives priority to addToHash
 
+    consoleLog("updateHash2 cat: " + hash.cat)
     if (removeFromHash) {
       if (typeof removeFromHash == "string") {
         removeFromHash = removeFromHash.split(",");
@@ -679,18 +680,28 @@ function loadLeafletAndMapFilters() {
       });
     });
   }
-  loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
-    includeCSS3(theroot + 'css/leaflet.css',theroot);
-    loadScript(theroot + 'js/leaflet.js', function(results) {
-      loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Could skip when map does not use material icon colors
-        loadScript(theroot + 'js/map.js', function(results) {
-          // Loads map-filters.js
-          loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
-        });
-      });
+  // Everything uses map.js to fetch if the dataset (from show value) has a map.
+  // When we fetch .json before map.js, remove everything here if it does not need map.js
+  if (param.display == "map" || param.display == "everything") {
+    loadScript(theroot + 'js/map.js', function(results) { // Load list before map
+
     });
 
-  });
+    /*
+    loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
+      includeCSS3(theroot + 'css/leaflet.css',theroot);
+      loadScript(theroot + 'js/leaflet.js', function(results) {
+        loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Could skip when map does not use material icon colors
+          loadScript(theroot + 'js/map.js', function(results) {
+            // Loads map-filters.js (moved to map.js)
+            //loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
+          });
+        });
+      });
+
+    });
+    */
+  }
 }
 // WAIT FOR JQuery
 loadScript(theroot + 'js/jquery.min.js', function(results) {
@@ -927,8 +938,10 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             });
           } else {
             loadScript(theroot + 'js/d3.v5.min.js', function(results) {
-              loadScript(theroot + 'js/naics.js', function(results) {
-                console.log("everything");
+              waitForVariable('customD3loaded', function() {
+                loadScript(theroot + 'js/naics.js', function(results) {
+                  console.log("everything");
+                });
               });
             });
           }
@@ -974,9 +987,14 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   } else if (param.showsearch == "true") {
     loadSearchFilterIncludes();
 
-    // TODO: Switch to just this, which loads map-filters.js for the tab click events.
+    // DONE, but not tested: Switched to just this, which loads map-filters.js for the tab click events.
+    console.log("loadScript called from localst.js")
+    loadScript(theroot + 'js/map.js', function(results) { // Load list before map
+    });
+    // This is already in the above
     //loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
 
+    /*
     // TODO: Then remove these dependencies and lazy load these when switching to the above and tabs are clicked.
     loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
       includeCSS3(theroot + 'css/leaflet.css',theroot);
@@ -989,6 +1007,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         });
       });
     });
+    */
   } else if (param.showapps == "true") {
     loadLocalTemplate();
     loadSearchFilterIncludes(); // Could load less then all 4 css files.
@@ -1013,7 +1032,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       })
 
       // Loading font
-      var link = document.createElement('link'),
+      let link = document.createElement('link'),
           head = document.getElementsByTagName('head')[0];
 
       link.addEventListener('load', function() {
@@ -1026,15 +1045,17 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       link.type = 'text/css';
       link.rel = 'stylesheet';
-      link.href = theroot + '../localsite/css/fonts/materialicons/icon.css';
-      //link.href = theroot + 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200';
+      link.href = theroot + 'css/fonts/materialicons/icon.css';
+      // Haven't tested if this external URL works with multiple load prevention.
+      //link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200';
       link.id = getUrlID3(link.href,"");
       
-      // TO DO: Need to check if icon.css already in page.
-      head.appendChild(link);
-      $(document).ready(function () {
-        //body.appendChild(link); // Doesn't get appended
-      });
+      if (!document.getElementById(link.id)) { // Prevents multiple loads.
+        head.appendChild(link);
+        $(document).ready(function () {
+          //body.appendChild(link); // Doesn't get appended
+        });
+      }
     }();
   }
 
@@ -1198,7 +1219,7 @@ function loadMapFiltersJS(theroot, count) {
     //alert("localsite_map " + localsite_map)
     //loadScript(theroot + 'https://cdn.jsdelivr.net/npm/vue', function(results) { // Need to check if function loaded
       loadScript(theroot + 'js/map-filters.js', function(results) {});
-
+      //alert("loadMapFiltersJS says D3 is ready for map-filters.js");
       if (document.getElementById("/icon?family=Material+Icons")) {
           $(".show-on-load").removeClass("show-on-load");
       }
@@ -1908,6 +1929,16 @@ function loadIframe(iframeName, url) {
       return false;
   }
   return true;
+}
+
+function waitForVariable(variable, callback) {
+  var interval = setInterval(function() {
+    if (window[variable]) {
+      clearInterval(interval);
+      callback();
+    }
+    console.log('waitForVariable ' + variable);
+  }, 40);
 }
 
 // TO DO: Optimize by checking just the nodes in the mutations

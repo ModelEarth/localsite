@@ -104,10 +104,10 @@
 	min-width: 200px;
 }
 .sideMenuColumn {
-		z-index: 1;
-        width: 200px;
-		min-width: 160px;
-		background: rgb(238, 238, 238);
+	z-index: 1;
+    width: 200px;
+	min-width: 160px;
+	background: rgb(238, 238, 238);
 }
 @media (min-width: 1401px) {
 	.layerSectionTitle {
@@ -711,6 +711,8 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     background-color: #555;
     box-sizing: border-box;
     position: relative;
+    line-heightX: 0.9em;
+    font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif; /* avoiding 'Nunito Sans' for menu */
 }
 .menuExpanded h2, .menuExpanded h3, .menuExpanded h4 {
 	color: #ccc;

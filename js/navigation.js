@@ -1,6 +1,6 @@
 // Site specific settings
 // Maintained in localsite/js/navigation.js
-
+//alert("navigation.js");
 if(typeof page_scripts == 'undefined') {  // Wraps script below to insure navigation.js is only loaded once.
 if(typeof localObject == 'undefined') { var localObject = {};}
 if(typeof localObject.layers == 'undefined') {
@@ -179,6 +179,15 @@ function showSide() {
 			}
 		}
 		$('body').addClass('mobileView');
+
+		// Recenters
+		// Test is we need this with mobile.
+		if (document.querySelector('#map1')._leaflet_map) {
+			document.querySelector('#map1')._leaflet_map.invalidateSize(); // Refresh map tiles.
+		}
+		if (document.querySelector('#map2')._leaflet_map) {
+			document.querySelector('#map2')._leaflet_map.invalidateSize(); // Refresh map tiles.
+		}
 	}
 	$("#sideIcons").hide();
 	$("#navcolumn").show();
@@ -296,7 +305,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		$("#fullcolumn").prepend("<div id='bodyFile'></div>\r");
 	}
 
-	let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><h2 class='listSubtitle' style='display:none'></h2><div class='listSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listinfo' class='listinfo'></div></div>\r";
+	let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='listSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listinfo' class='listinfo'></div></div>\r";
 	if(document.getElementById("bodyFileHolder") != null) {
 		$("#bodyFileHolder").prepend(listColumnElement);
 		listColumnElement = "";
@@ -337,6 +346,13 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		if (!$('body').hasClass('bodyRightMargin')) {
         	$('body').removeClass('mobileView');
     	}
+    	// Might not need this with mobile
+		if (document.querySelector('#map1')._leaflet_map) {
+			document.querySelector('#map1')._leaflet_map.invalidateSize(); // Refresh map tiles.
+		}
+		if (document.querySelector('#map2')._leaflet_map) {
+			document.querySelector('#map2')._leaflet_map.invalidateSize(); // Refresh map tiles.
+		}
 	});
  	if (param["showapps"] && param["showapps"] == "false") {
  		$(".showApps").hide();
@@ -1249,3 +1265,89 @@ function getPageFolder(pagePath) {
 	console.log("ALERT: navigation.js is being loaded twice.")
 
 } // End typeof page_scripts which checks if file is loaded twice.
+
+
+
+// Odd: $(document).on("click" did not work here, perhaps jquery is not loaded prior to DOM.
+// But why would surrounding $(document).ready work?
+$(document).on("click", "#filterClickLocation", function(event) {
+
+	console.log("Call filterClickLocation()");
+	alert("#filterClickLocation")
+
+
+//$("#filterClickLocation").click(function(e) { // This does not work on localhost
+    //let hash = getHash();
+	//if (!hash.mapview) {
+	//	// These will trigger call to filterClickLocation() and map display.
+	//	if (hash.state) {
+    //		goHash({'mapview':'state'});
+    //	} else {
+    //		goHash({'mapview':'country'});
+    //	}
+	//} else {
+
+		loadScript(theroot + 'js/map.js', function(results) { // Load list before map
+    
+			//loadMapFiltersJS(theroot,1);
+
+			loadScript(theroot + 'js/map-filters.js', function(results) {
+				
+				filterClickLocation();
+
+			});
+		});
+        
+	//}
+    //event.stopPropagation();
+});
+
+
+$(document).on("click", ".showApps, .hideApps", function(event) {
+	loadScript(theroot + 'js/map-filters.js', function(results) {
+
+		let hash = getHash();
+		console.log('.showApps click');
+
+	    if ($("#bigThumbPanelHolder").is(':visible')) {
+			//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) { // Prevented tab click from closing app menu
+				$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
+				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
+
+				$("#appSelectHolder .showApps").removeClass("filterClickActive");
+				$("#showAppsText").text($("#showAppsText").attr("title"));
+				$(".hideWhenPop").show();
+	        // To do: Only up scroll AND SHOW if not visible
+	        // Bug bug this closed filters
+				$('html,body').animate({
+				scrollTop: 0
+			});
+	        
+				$("#bigThumbPanelHolder").hide();
+	        $(".showApps").removeClass("filterClickActive");
+				$('.showApps').removeClass("active"); // Still needed?
+
+			} else {
+				console.log("call showThumbMenu from navidation.js");
+
+	        closeExpandedMenus($(".showSections")); // Close Locations sidetab and open Topics sidetab.
+	        $("#topicsPanel").show();
+
+	        if ($("#filterLocations").is(':visible')) {
+	            filterClickLocation(); // Toggle county-select closed
+	        }
+				$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
+				$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
+
+				$("#showAppsText").text("Local Topics");
+				$("#appSelectHolder .showApps").addClass("filterClickActive");
+	        $("#bigThumbMenuInner").appendTo("#bigThumbMenu");
+			showThumbMenu(hash.show, "#bigThumbMenu");
+	        $('html,body').animate({
+	        	//- $("#filterFieldsHolder").height()  
+	            scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
+	        });
+		}
+	});
+  	event.stopPropagation();
+});

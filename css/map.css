@@ -44,13 +44,12 @@
     overflow: auto;
     font-size: 16px;
     margin-top: -4px;
-    padding-bottom: 8px;
+    padding-bottom: 4px;
   }
   .sidelist .detailLinks {
     display: none;
   }
   .sidelist .detail {
-    line-height: .8em;
     border-radius: 30px;
     padding: 15px 10px 8px 22px;
     margin-bottom: 2px;
@@ -107,8 +106,8 @@
     width:38px !important;
     height:38px !important;
     font-size: 26px !important;
-    color: #fff;
-    background-color: #555;
+    color: #fff !important;
+    background-color: #555 !important;
     border: 0px !important;
     border-radius: 6px !important;
   }
