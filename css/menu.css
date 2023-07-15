@@ -509,6 +509,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	z-index: 999;
 	font-size: 44px;
 	text-shadow: 1px 1px 4px #fff;
+	padding-right: 16px;
 }
 .bothSideIcons {
   top:0px;

@@ -51,7 +51,6 @@
   left: 0px;
   background-color: rgb(239 239 239);
   border-bottom: #aaa;
-  padding-right: 24px;
   z-index: 10000;
 }
 /* brave still sees this since it's darkmode ignores the use of prefers-color-scheme: dark */

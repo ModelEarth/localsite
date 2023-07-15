@@ -57,6 +57,7 @@
     position: relative;
     border-bottom: 1px solid #777;
     margin: 4px;
+    background-color: #ddd;
   }
   .sidelist .detailTitle {
     line-height: 1.1em;
@@ -461,7 +462,8 @@ label { /* override Drupal */
 #listcolumn {
   display: flex; /* displays flex-items (children) inline */
   flex-direction: column; /* stacks them vertically */
-  heightX: 100%; /* Forced bottom off screen */
+  box-shadow: 4px 2px 8px 1px rgba(0, 0, 0, 0.4);
+  z-index: 999;
 }
 .listHeader {
   padding: 10px;
@@ -482,8 +484,8 @@ label { /* override Drupal */
 }
 #listInfo {
   flex-shrink: 0;
-  padding: 12px 20px 14px 26px;
-  background-color: #bbb;
+  padding: 12px 20px 12px 26px;
+  background-color: #d3d3d3;
   color: #fff;
   width: 100%;
 }
@@ -499,6 +501,7 @@ label { /* override Drupal */
   padding: 20px;
   background-color: #dcdcdc;
   width: 100%;
+  max-width: 100%;
 }
 .outcomesbox span {
   float:right;

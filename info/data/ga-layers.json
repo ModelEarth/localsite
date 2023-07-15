@@ -139,9 +139,6 @@ callback(
 		"siteHeaderHeight": "170px",
 		"headericoncolor": "#999",
 		"icon": "<i class='fa fa-recycle'></i>",
-		"mainiframeX": "/localsite/map/recycling/ga/",
-		"directlinkX": "/localsite/map/#show=recycling",
-		"directlinkX": "/localsite/map/recycling/ga/",
 		"footerlogos": "",
 		"caption": "",
 		"states": "GA"

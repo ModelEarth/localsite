@@ -468,6 +468,7 @@ function toggleFullScreen(alsoToggleHeader) {
     if (alsoToggleHeader) { // Use only small header
       hideHeaderBar();
       $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
+      $("body").addClass("filterFieldsBodyTop");
       $(".pagecolumn").removeClass("pagecolumnLower");
       $('.expandSlider').hide();
       $('.reduceSlider').show();
@@ -488,6 +489,7 @@ function toggleFullScreen(alsoToggleHeader) {
     if (alsoToggleHeader) { // Restore taller header bar
       showHeaderBar();
       $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
+      $("body").removeClass("filterFieldsBodyTop");
       $(".pagecolumn").addClass("pagecolumnLower");
       $(".pagecolumn").removeClass("pagecolumnToTop");
       $('.reduceSlider').hide();

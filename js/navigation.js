@@ -165,6 +165,8 @@ function closeExpandedMenus(menuClicked) {
     //alert("rightTopMenuInner 3");
 }
 function showSide() {
+	$("#sideIcons").hide();
+	$("#navcolumn").show();
 	if(document.getElementById("containerLayout") != null) {
 		$('#navcolumn').addClass("navcolumnClear");
 		$('body').addClass('bodyLeftMarginNone');
@@ -175,7 +177,12 @@ function showSide() {
 			$("#listcolumn").show();
 			$('#listcolumn').removeClass('listcolumnOnly');
 			if(document.getElementById("bodyFileHolder") == null) {
-				$('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
+				if ($("#navcolumn").is(":visible")) {
+					$('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
+				} else {
+					$('#listcolumn').addClass('listcolumnOnly');
+					$('body').addClass('bodyLeftMarginList');
+				}
 			}
 		}
 		$('body').addClass('mobileView');
@@ -189,8 +196,6 @@ function showSide() {
 			document.querySelector('#map2')._leaflet_map.invalidateSize(); // Refresh map tiles.
 		}
 	}
-	$("#sideIcons").hide();
-	$("#navcolumn").show();
 }
 function applyNavigation() { // Called by localsite.js so local_app path is available.
 	// To do: fetch the existing background-image.
@@ -343,7 +348,11 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	function hideSide(which) {
 		if (which != "list") {
 			$("#navcolumn").hide();
-			$('#listcolumn').addClass('listcolumnOnly');
+			$('body').removeClass('bodyLeftMarginFull');
+			if ($("#listcolumn").is(':visible')) {
+				$('#listcolumn').addClass('listcolumnOnly');
+				$('body').addClass('bodyLeftMarginList');
+			}
 		} else {
 			$("#listcolumn").hide();
 		}
@@ -981,7 +990,8 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 		            }
 		        }
 		    }
-	        $("#honeycombPanel").prepend("<div class='hideThumbMenu close-X' style='position:absolute; right:0px; top:0px;'><i class='material-icons' style='font-size:32px'>&#xE5CD;</i></div>");
+		    // Hidden to reduce clutter
+	        $("#honeycombPanel").prepend("<div class='hideThumbMenu close-X' style='display:none; position:absolute; right:0px; top:0px;'><i class='material-icons' style='font-size:32px'>&#xE5CD;</i></div>");
 		    $(insertInto).append("<div id='bigThumbMenuInner' class='bigThumbMenuInner'>" + sectionMenu + "</div>");
 
 	        if (theState == "GA") {

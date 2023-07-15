@@ -1089,7 +1089,9 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 .filterFieldsHolderFixed #showSideTabsInBar {
   display: block !important;
 }
-
+.filterFieldsBodyTop {
+  margin-top: 34px
+}
 .bodyLeftMargin .headerbar, .bodyLeftMargin .filterFieldsHolderFixed {
   /* left: 220px; */
 }

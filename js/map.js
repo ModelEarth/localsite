@@ -339,7 +339,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         //alert("wastewater4")
         dp.listTitle = "Georgia Wastewater Facilities (2023)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.mapInfo = "View&nbsp;<a href='../map/recycling/ga/'>Solid Waste and Recycling&nbsp;Datasets</a>.";
+        dp.mapInfo = "View&nbsp;<a href='/recycling/georgia/'>Solid Waste and Recycling&nbsp;Datasets</a>.";
         // Wastewater tab. Path including gid from sheet's Share > Publish [choose tab]
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=2016874057&single=true&output=csv";
         
@@ -373,7 +373,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       } else if (show == "landfills") {
         dp.listTitle = "Georgia Landfills (2017)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.<br>Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='../map/recycling/ga/'>Wastewater and Recycling&nbsp;Datasets</a>.";
+        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.<br>Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='/recycling/georgia/'>Wastewater and Recycling&nbsp;Datasets</a>.";
 
         // From Landfills tab (temporary until Solid Waste ready)
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=2088666243&single=true&output=csv";
@@ -398,7 +398,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       } else if (show == "solidwaste") {
         dp.listTitle = "Georgia Solid Waste (2023)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates. Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='../map/recycling/ga/'>More&nbsp;Recycling&nbsp;Datasets</a>.";
+        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates. Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='/recycling/georgia/'>More&nbsp;Recycling&nbsp;Datasets</a>.";
       
         // From Solid Waste tab
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=809637033&single=true&output=csv";
@@ -508,7 +508,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
           //dp.nameColumn = "organizationname";
           //dp.titleColumn = "organizationname";
 
-          dp.mapInfo = "<span>View <a href='../map/recycling/ga/'>Recycling Datasets</a>.</span><br>Submit updates by posting comments in our 5 <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing'>Google Sheet Tabs</a>.";
+          dp.mapInfo = "<span>View <a href='/recycling/georgia/'>Recycling Datasets</a>.</span><br>Submit updates by posting comments in our 5 <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing'>Google Sheet Tabs</a>.";
           
           //dp.latColumn = "latitude";
           //dp.lonColumn = "longitude";
@@ -1997,11 +1997,15 @@ function showList(dp,map) {
 
   // Show the side columns
   $("#showSide").hide();
-  $("#navcolumn").show();
   $("#listcolumn").show();
   $('body').addClass('bodyLeftMarginList');
   if(document.getElementById("bodyFileHolder") == null) {
-    $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
+    if ($("#navcolumn").is(":visible") && $("#listcolumn").is(":visible")) {
+      $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
+    } else if ($("#listcolumn").is(":visible")) {
+      $('#listcolumn').addClass('listcolumnOnly');
+      $('body').addClass('bodyLeftMarginList');
+    }
   }
 
   $(".sidelistHolder").show();
@@ -2598,6 +2602,7 @@ $(window).scroll(function() {
   if (revealHeader == false) {
     $("#headerLarge").addClass("headerLargeHide"); $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
     $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
+    $("body").addClass("filterFieldsBodyTop");
     if (param.showheader != "false") {
       $('.showMenuSmNav').show(); 
     }
@@ -2636,6 +2641,7 @@ $(window).scroll(function() {
 
         if (!$("#filterFieldsHolder").hasClass("filterFieldsHidden")) {
           $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
+          $("body").addClass("filterFieldsBodyTop");
 
           //if (param.showheader != "false") {
           if (param.showfilters == "true") {
@@ -2662,6 +2668,7 @@ $(window).scroll(function() {
       $(".pagecolumn").addClass("pagecolumnLower");$(".pagecolumn").removeClass("pagecolumnToTop");$('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
       //$('#filterFieldsHolder').show();
       $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
+      $("body").removeClass("filterFieldsBodyTop");
       if ($("#headerbar").length) {
         if (param.showheader != "false") {
           $('.headerOffset').show();
@@ -2683,6 +2690,7 @@ $(window).scroll(function() {
       $("#headerLarge").removeClass("headerLargeHide"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
       // We avoid hiding #filterFieldsHolder here since we retain it if already open.
       $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
+      $("body").removeClass("filterFieldsBodyTop");
       if ($("#headerbar").length) {
         if (param.showheader != "false") {
           $('.headerOffset').show();
@@ -4716,11 +4724,6 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { 
     
       //alert("loadFromSheet within map.js")
-
-      if(document.getElementById("bodyFileHolder") == null) {
-        // Allows map to be centered based on side column using portion of width
-        //$('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
-      }
 
       // Loads map-filters.js
       loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
