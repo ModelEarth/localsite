@@ -157,7 +157,23 @@ body {
     margin-bottom: 20px;
   }
 }
-
+@media (max-width: 1400px) {
+  #flexwrapper {
+    display: block;
+  }
+  #hublist {
+    width: 100%;
+    padding-right: 0px;
+  }
+  .bodyLeftMarginFull #mapHolder {
+    float: left;
+    width: 100%;
+  }
+  .bodyLeftMarginFull #mapHolderInner {
+    position: relative;
+    width: 100%;
+  }
+}
 .flexbodyX {
   display: flex; /* for footer */
   flex-direction: column; /* for footer */
@@ -390,18 +406,14 @@ summary::-webkit-details-marker {
   padding-right: 40px;
   padding-bottom: 45px;
 }
-.contentpadding a {
+.content a {
   text-decoration: none;
 }
-.contentpadding a:link {
+.content a:link {
   color: #0366d6;
 }
-.contentpadding a:visited {
+.content a:visited {
   color: #0366d6;
-}
-.contentpaddingMinX {
-  padding-left: 30px;
-  padding-right: 30px;
 }
 .bodyLeftMargin .contentpadding {
   padding-left: 30px;

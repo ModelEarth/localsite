@@ -181,7 +181,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
     dp.addlisting = "https://www.ams.usda.gov/services/local-regional/food-directories-update";
     // community/farmfresh/ 
-    dp.listInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community/farmfresh/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
+    dp.mapInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community/farmfresh/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
   } else if (show == "buses") {
     dp.listTitle = "Bus Locations";
     dp.dataset = "https://api.marta.io/buses";
@@ -196,7 +196,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
     dp.longitude = -84.38;
     dp.zoom = 12;
     dp.refreshminutes = "1";
-    dp.listInfo = "View train station arrival times at <a href='https://marta.io/'>MARTA.io</a><br>API enhancements by Code for Atlanta member jakswa. <a href='https://github.com/jakswa/marta_ui'>GitHub</a>"
+    dp.mapInfo = "View train station arrival times at <a href='https://marta.io/'>MARTA.io</a><br>API enhancements by Code for Atlanta member jakswa. <a href='https://github.com/jakswa/marta_ui'>GitHub</a>"
 
     // , "In Address": "address", "In County Name": "county", "In Website URL": "website"
     dp.search = {"In Route Number": "ROUTE", "In Vehicle Number": "VEHICLE"}; // Or lowercase?
@@ -218,7 +218,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.editLink = "https://docs.google.com/spreadsheets/d/1yt_saLpiBNPR1g_r2mn9-U5DozqLoVJHVwfR-4f0HTU/edit?usp=sharing";
         dp.googleDocID = "1yt_saLpiBNPR1g_r2mn9-U5DozqLoVJHVwfR-4f0HTU";
         dp.sheetName = "Companies";
-        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1yt_saLpiBNPR1g_r2mn9-U5DozqLoVJHVwfR-4f0HTU/edit?usp=sharing'>Google Sheet</a> to submit map updates.<br>View Georgia's <a href='https://www.solarpowerworldonline.com/2020-top-georgia-contractors/'>top solar contractors by KW installed</a>.";
+        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1yt_saLpiBNPR1g_r2mn9-U5DozqLoVJHVwfR-4f0HTU/edit?usp=sharing'>Google Sheet</a> to submit map updates.<br>View Georgia's <a href='https://www.solarpowerworldonline.com/2020-top-georgia-contractors/'>top solar contractors by KW installed</a>.";
         dp.valueColumn = "firm type";
         dp.valueColumnLabel = "Firm Type";
         dp.markerType = "google";
@@ -227,7 +227,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.listTitle = "Coding Brigades";
         dp.dataset = "https://neighborhood.org/brigade-information/organizations.json";
         dp.datatype = "json";
-        dp.listInfo = "<a href='https://neighborhood.org/brigade-information/'>Source</a> - <a href='https://projects.brigade.network/'>Brigade Project List</a> and <a href='https://neighborhood.org/brigade-project-index/get-indexed/'>About Project Index</a> ";
+        dp.mapInfo = "<a href='https://neighborhood.org/brigade-information/'>Source</a> - <a href='https://projects.brigade.network/'>Brigade Project List</a> and <a href='https://neighborhood.org/brigade-project-index/get-indexed/'>About Project Index</a> ";
         dp.markerType = "google"; // BUGBUG doesn't seem to work with county boundary background (showShapeMap)
         // , "In Address": "address", "In County Name": "county", "In Website URL": "website"
         dp.search = {"In Location Name": "name"};
@@ -236,7 +236,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.zoom = 4;
   } else if (show == "openepd") {
         dp.listTitle = "Environmental Product Declarations";
-        dp.listInfo = "EPD directory data from <a href='https://BuildingTransparency.org' target='_blank'>Building Transparency</a>";
+        dp.mapInfo = "EPD directory data from <a href='https://BuildingTransparency.org' target='_blank'>Building Transparency</a>";
         dp.datatype = "json";
         // Limited to 20 reduces time to 4 seconds, verse 8 seconds for 250.  251 returns 250.
         dp.dataset = "https://buildingtransparency.org/api/materials?page_number=1&page_size=251&soft_search_terms=true&category=b03dba1dca5b49acb1a5aa4daab546b4&jurisdiction=[jurisdiction]&epd__date_validity_ends__gt=2021-08-24";
@@ -268,7 +268,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
         // https://map.georgia.org/recycling/
         dp.editLink = "";
-        dp.listInfo = "<a href='https://map.georgia.org/display/products/'>View active version</a>";
+        dp.mapInfo = "<a href='https://map.georgia.org/display/products/'>View active version</a>";
         dp.search = {"In Company Name": "Account Name", "In Industries": "Industries Trade"};
 
   } else if (theState == "GA") {
@@ -282,7 +282,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.itemsColumn = "Category1"; // For side nav search
         dp.valueColumn = "Category1";
         dp.valueColumnLabel = "Type";
-        dp.listInfo = "<a href='https://docs.google.com/spreadsheets/d/1bvD9meJgMqLywdoiGwe3f93sw1IVI_ZRjWSuCLSebZo/edit?usp=sharing'>Update Google Sheet</a>.";
+        dp.mapInfo = "<a href='https://docs.google.com/spreadsheets/d/1bvD9meJgMqLywdoiGwe3f93sw1IVI_ZRjWSuCLSebZo/edit?usp=sharing'>Update Google Sheet</a>.";
         dp.search = {"In Dataset Name": "name", "In Type": "Category1", "In Website URL": "website"};
               
       } else if (show == "360") {
@@ -331,14 +331,15 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.markerType = "google";
         // https://map.georgia.org/recycling/
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "<a href='../map/recycling/ga/'>View Recycling Datasets</a> - You can add <a href='https://map.georgia.org/recycling/'>B2B&nbsp;Recycler Listings</a> or post comments to submit additions to our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a>.";
+        dp.listInfo = "<a href='https://map.georgia.org/recycling/georgia/'>View Recycling Datasets</a>";
+        dp.mapInfo = "Add <a href='https://map.georgia.org/recycling/'>B2B&nbsp;Recycler Listings</a> or post comments to submit additions to our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a>.";
         dp.search = {"In Main Category": "Category", "In Materials Accepted": "Materials Accepted", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
       
       } else if (show == "wastewater") {
         //alert("wastewater4")
         dp.listTitle = "Georgia Wastewater Facilities (2023)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "View&nbsp;<a href='../map/recycling/ga/'>Solid Waste and Recycling&nbsp;Datasets</a>.";
+        dp.mapInfo = "View&nbsp;<a href='../map/recycling/ga/'>Solid Waste and Recycling&nbsp;Datasets</a>.";
         // Wastewater tab. Path including gid from sheet's Share > Publish [choose tab]
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=2016874057&single=true&output=csv";
         
@@ -372,7 +373,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       } else if (show == "landfills") {
         dp.listTitle = "Georgia Landfills (2017)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.<br>Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='../map/recycling/ga/'>Wastewater and Recycling&nbsp;Datasets</a>.";
+        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.<br>Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='../map/recycling/ga/'>Wastewater and Recycling&nbsp;Datasets</a>.";
 
         // From Landfills tab (temporary until Solid Waste ready)
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=2088666243&single=true&output=csv";
@@ -397,7 +398,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       } else if (show == "solidwaste") {
         dp.listTitle = "Georgia Solid Waste (2023)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates. Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='../map/recycling/ga/'>More&nbsp;Recycling&nbsp;Datasets</a>.";
+        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates. Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='../map/recycling/ga/'>More&nbsp;Recycling&nbsp;Datasets</a>.";
       
         // From Solid Waste tab
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=809637033&single=true&output=csv";
@@ -439,7 +440,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       } else if (show == "aerospace") {
         dp.listTitle = "Georgia Aerospace Directory";
         dp.dataTitle = "Aerospace Directory";
-        dp.listInfo = "The Aerospace Directory is a free listing service provided by the Center of Innovation for Aerospace for any aerospace-related company or organization in Georgia. <a href='https://www.cognitoforms.com/GDECD1/GeorgiaDirectory' target='_blank'>Add and Update Listings</a>";
+        dp.mapInfo = "The Aerospace Directory is a free listing service provided by the Center of Innovation for Aerospace for any aerospace-related company or organization in Georgia. <a href='https://www.cognitoforms.com/GDECD1/GeorgiaDirectory' target='_blank'>Add and Update Listings</a>";
         // Participating in this directory gives a company/organization visibility to national, regional, and state partners who are looking for local suppliers or potential suppliers for new economic development prospects. 
 
         dp.nameColumn = "organization name";
@@ -507,7 +508,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
           //dp.nameColumn = "organizationname";
           //dp.titleColumn = "organizationname";
 
-          dp.listInfo = "<span>View <a href='../map/recycling/ga/'>Recycling Datasets</a>.</span><br>Submit updates by posting comments in our 5 <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing'>Google Sheet Tabs</a>.";
+          dp.mapInfo = "<span>View <a href='../map/recycling/ga/'>Recycling Datasets</a>.</span><br>Submit updates by posting comments in our 5 <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing'>Google Sheet Tabs</a>.";
           
           //dp.latColumn = "latitude";
           //dp.lonColumn = "longitude";
@@ -539,7 +540,8 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         //dp.dataset = "https://model.earth/georgia-data/automotive/automotive.csv";
         dp.datastates = "GA";
         // Dark green map points indicate electric vehicle parts manufacturing.<br>
-        dp.listInfo = "From 2020 to 2022 Georgia added more than 20 EV-related projects. <a href='https://www.georgiatrend.com/2022/07/29/electric-revolution/'>Learn&nbsp;more</a><br>Dark Green: Electric Vehicle (EV) Industry<br>Lite Green: Potential EV Parts Manufacturer<br>Dark Blue: Internal Combustion Engine (ICE)<br>Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates. <a href='/localsite/info/input/'>Contact Us</a> to help maintain the sheet directly. Learn about <a href='../../community/projects/mobility/'>data&nbsp;sources</a>.";
+        dp.mapInfo = "From 2020 to 2022 Georgia added more than 20 EV-related projects. <a href='https://www.georgiatrend.com/2022/07/29/electric-revolution/'>Learn&nbsp;more</a><br>Dark Green: Electric Vehicle (EV) Industry<br>Lite Green: Potential EV Parts Manufacturer<br>Dark Blue: Internal Combustion Engine (ICE)";
+        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates. <a href='/localsite/info/input/'>Contact Us</a> to help edit the sheet. Learn about <a href='../../community/projects/mobility/'>data&nbsp;sources</a>.";
         dp.valueColumn = "ev industry";
         dp.valueColumnLabel = "EV Industry";
         dp.markerType = "google";
@@ -552,7 +554,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.editLink = "https://docs.google.com/spreadsheets/d/1_wvZXUWFnpbgSAZGuIb1j2ni8p9Gqj3Qsvd8gV95i90/edit?ts=60233cb5#gid=698462553";
         dp.googleDocID = "1_wvZXUWFnpbgSAZGuIb1j2ni8p9Gqj3Qsvd8gV95i90";
         dp.sheetName = "Current Availability";
-        dp.listInfo = "<br><br><a href='https://docs.google.com/spreadsheets/d/1_wvZXUWFnpbgSAZGuIb1j2ni8p9Gqj3Qsvd8gV95i90/edit?ts=60233cb5#gid=698462553'>Help update Google Sheet data by posting comments</a>.<br><br><a href='https://myvaccinegeorgia.com/'>Preregister with myvaccinegeorgia.com</a> and join the <a href='https://vaxstandby.com/'>VAX Standby</a> list to receive a message when extra doses are available. Also receive text messages on availability from <a href='https://twitter.com/DiscoDroidAI'>Disco Droid</a> or check their <a href='https://twitter.com/DiscoDroidAI'>Tweets</a>.<br><br><a href='https://www.vaccinatega.com/vaccination-sites/providers-in-georgia'>Check provider status</a> at <a href='https://VaccinateGA.com'>VaccinateGA.com</a> and <a href='neighborhood/'>assist with data and coding</a>.";
+        dp.mapInfo = "<br><br><a href='https://docs.google.com/spreadsheets/d/1_wvZXUWFnpbgSAZGuIb1j2ni8p9Gqj3Qsvd8gV95i90/edit?ts=60233cb5#gid=698462553'>Help update Google Sheet data by posting comments</a>.<br><br><a href='https://myvaccinegeorgia.com/'>Preregister with myvaccinegeorgia.com</a> and join the <a href='https://vaxstandby.com/'>VAX Standby</a> list to receive a message when extra doses are available. Also receive text messages on availability from <a href='https://twitter.com/DiscoDroidAI'>Disco Droid</a> or check their <a href='https://twitter.com/DiscoDroidAI'>Tweets</a>.<br><br><a href='https://www.vaccinatega.com/vaccination-sites/providers-in-georgia'>Check provider status</a> at <a href='https://VaccinateGA.com'>VaccinateGA.com</a> and <a href='neighborhood/'>assist with data and coding</a>.";
         // <a href='neighborhood/vaccines/'>view availability and contribute updates</a>
         dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
         // "In Description": "description", "In City Name": "city", "In Zip Code" : "zip"
@@ -569,7 +571,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         console.log("map.js loading " + local_app.custom_data_root() + "communities/map-georgia-smart.csv");
 
         dp.dataset =  local_app.custom_data_root() + "communities/map-georgia-smart.csv";
-        dp.listInfo = "Includes <a href='https://smartcities.gatech.edu/georgia-smart' target='_blank'>Georgia Smart</a> Community Projects. <a href='https://github.com/GeorgiaData/georgia-data/blob/master/communities/map-georgia-smart.csv'>Submit changes</a>";
+        dp.mapInfo = "Includes <a href='https://smartcities.gatech.edu/georgia-smart' target='_blank'>Georgia Smart</a> Community Projects. <a href='https://github.com/GeorgiaData/georgia-data/blob/master/communities/map-georgia-smart.csv'>Submit changes</a>";
         dp.search = {"In Title": "title", "In Description": "description", "In Website URL": "website", "In Address": "address", "In City Name": "city", "In Zip Code" : "zip"};
         dp.markerType = "google";
         //dp.showShapeMap = true; // Shows county borders
@@ -584,7 +586,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
         dp.listTitle = "Logistics";
 
-        dp.listInfo = "Select a category to filter your results.";
+        dp.mapInfo = "Select a category to filter your results.";
         //dp.dataset = "https://georgiadata.github.io/display/data/logistics/coi_with_cognito.csv";
         dp.dataset = "../../display/data/logistics/coi_with_cognito.csv";
 
@@ -616,7 +618,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         //dp.editLink = "";
         //dp.googleDocID = "1bqMTVgaMpHIFQBNdiyMe3ZeMMr_lp9qTgzjdouRJTKI"; // Producing 404's
         dp.sheetName = "GA Suppliers List";
-        dp.listInfo = "Select a category to the left to filter results. View&nbsp;<a href='https://map.georgia.org/display/products/suppliers/us_ga_suppliers_ppe_2021_08_09.csv' target='_parent'>PDF&nbsp;version</a>&nbsp;of&nbsp;the&nbsp;complete&nbsp;list.";
+        dp.mapInfo = "Select a category to the left to filter results. View&nbsp;<a href='https://map.georgia.org/display/products/suppliers/us_ga_suppliers_ppe_2021_08_09.csv' target='_parent'>PDF&nbsp;version</a>&nbsp;of&nbsp;the&nbsp;complete&nbsp;list.";
         dp.dataset = "https://map.georgia.org/display/products/suppliers/us_ga_suppliers_ppe_2021_08_09.csv";
 
         //dp.dataTitle = "Manufacturers and Distributors";
@@ -634,7 +636,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.listTitle = "Georgia COVID-19 Response";
         dp.listTitle = "Georgia Suppliers of&nbsp;Critical Items <span style='white-space:nowrap'>to Fight COVID-19</span>"; // For iFrame site
         // https://www.georgia.org/sites/default/files/2021-01 
-        dp.listInfo = "Select a category to the left to filter results. View&nbsp;<a href='https://map.georgia.org/display/products/suppliers-pdf/ga_suppliers_list_2021-03-10.pdf' target='_parent'>PDF&nbsp;version</a>&nbsp;of&nbsp;the&nbsp;complete&nbsp;list.";
+        dp.mapInfo = "Select a category to the left to filter results. View&nbsp;<a href='https://map.georgia.org/display/products/suppliers-pdf/ga_suppliers_list_2021-03-10.pdf' target='_parent'>PDF&nbsp;version</a>&nbsp;of&nbsp;the&nbsp;complete&nbsp;list.";
         dp.dataset = "https://map.georgia.org/display/products/suppliers/us_ga_suppliers_ppe_2021_02_24.csv";
         //dp.dataset = "/display/products/suppliers/us_ga_suppliers_ppe_2020_06_17.csv";
 
@@ -684,7 +686,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.dataset = "/community/farmfresh/usa/georgia/fulton_county_restaurants.csv"; // Just use 50
         dp.dataTitle = "Restaurant Scores";
         dp.titleColumn = "restaurant";
-        dp.listInfo = "Fulton County";
+        dp.mapInfo = "Fulton County";
       } else if (show == "pickup") {
         // Atlanta Pickup
         dp.latitude = 33.76;
@@ -693,7 +695,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
         // CURBSIDE PICKUP
         dp.listTitle = "Restaurants with Curbside Pickup";
-        dp.listInfo = "Data provided by coastapp.com. <a href='https://coastapp.com/takeoutcovid/atl/' target='_blank'>Make Updates</a>";
+        dp.mapInfo = "Data provided by coastapp.com. <a href='https://coastapp.com/takeoutcovid/atl/' target='_blank'>Make Updates</a>";
         dp.dataset = "/community/places/usa/ga/restaurants/atlanta-coastapp.csv";
         dp.dataTitle = "Curbside Pickup";
         // 
@@ -1017,6 +1019,8 @@ function showList(dp,map) {
     $("#navcolumnTitle").hide();
   }
   if (dp.listSubtitle) {$(".listSubtitle").html(dp.listSubtitle); $(".listSubtitle").show()};
+  $("#listInfo").hide();
+  $("#mapInfo").hide();
 
   // Add checkboxes
   console.log("dp.search ")
@@ -1960,6 +1964,7 @@ function showList(dp,map) {
         spreadsheetLink = " <a href='" + dp.editLink + "'>Google Sheet</a>";
       }
     }
+    alert("Volunteer")
     $("#dataList").append("<b>Volunteer Project</b><br>" + subcatObject["null"].count + " " + hash.cat.toLowerCase() + " listings need a subcategory.<br><a href='/localsite/info/input/'>Contact us</a> to help update the " + spreadsheetLink + ".<br>");
     //  Volunteer
     $("#dataList").append("<br>");
@@ -2036,12 +2041,14 @@ function showList(dp,map) {
   //$("#sidemapbar").prepend(locmenu);
 
   let searchFor = "";
-  let listInfo = "";
-  if (dp.listInfo) {
-    listInfo += dp.listInfo;
-    $(".listinfo").html(listInfo);
+  if (dp.mapInfo) {
+    $(".mapInfo").html(dp.mapInfo);
+    $("#mapInfo").show();
   }
-
+  if (dp.listInfo) {
+    $(".listInfo").html(dp.listInfo);
+    $("#listInfo").show();
+  }
 
   let listTitle = dp.listTitle;
   if ($("#catSearch").val() && hash.cat) {
@@ -2103,7 +2110,7 @@ function showList(dp,map) {
   let showAllLink = " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\",\"cat\",\"subcat\"]); return false;' href='#show=" + param["show"] + "'>Show All</a></span>";
   //$(".sidelistText").html(searchFor + viewListLink);
 
-  $("#dataList").append(showAllLink);
+  //$("#dataList").append(showAllLink); // Maybe move elsewhere, not needed with View All button lower down.
   $("#resultsPanel").show();
   $("#dataList").show();
 

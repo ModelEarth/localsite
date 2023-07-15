@@ -480,12 +480,12 @@ label { /* override Drupal */
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
-#listinfo {
+#listInfo {
   flex-shrink: 0;
-  padding: 20px;
-  min-heightX: 250px; /* Bug, how to fit content? */
-  background-color: #333;
+  padding: 12px 20px 14px 26px;
+  background-color: #bbb;
   color: #fff;
+  width: 100%;
 }
 @media (max-width: 800px) {
   .legendLink {
@@ -494,6 +494,11 @@ label { /* override Drupal */
   .listTitle {
     font-size: 26px;
   }
+}
+#mapInfo {
+  padding: 20px;
+  background-color: #dcdcdc;
+  width: 100%;
 }
 .outcomesbox span {
   float:right;

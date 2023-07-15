@@ -305,7 +305,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		$("#fullcolumn").prepend("<div id='bodyFile'></div>\r");
 	}
 
-	let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSideList close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='listSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listinfo' class='listinfo'></div></div>\r";
+	let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSideList close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='listSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listInfo' class='listInfo content'></div></div>\r";
 	if(document.getElementById("bodyFileHolder") != null) {
 		$("#bodyFileHolder").prepend(listColumnElement);
 		listColumnElement = "";
