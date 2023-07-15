@@ -455,10 +455,10 @@ input.filterClick[type="text"] {
     border-bottomX: 1px solid #eee;
 }
 .bigThumbMenuInner {
-  margin-bottom: 20px;
   display: grid;
   overflow: auto;
   padding: 20px;
+  padding-bottom: 10px;
 }
 
 @media (min-width: 350px) {
