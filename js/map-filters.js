@@ -1985,9 +1985,11 @@ function localJsonpCallback(json) {
     alert(json.Message);
   }
 }
-function initSiteObject(layerName) {
+function loadLocalObjectLayers(layerName, callback) { // layerName is not currently used
+    //alert("loadLocalObjectLayers " + layerName);
+    // Do we need to load this function on init, for state hash for layers requiring a state.
 
-    //console.log("initSiteObject is deactivated. Using thumb menu load instead.")
+    //console.log("loadLocalObjectLayers is deactivated. Using thumb menu load instead.")
     //return;
 
     let hash = getHash();
@@ -2008,11 +2010,11 @@ function initSiteObject(layerName) {
 	    //console.log(layerJson);
 
         if (localObject.layers.length >= 0) {
-            return;
-            //return localObject.layers;
+            callback();
+            //return;
         }
 	    let layerObject = (function() {
-            //alert("initSiteObject layerObject " + layerName);
+            //alert("loadLocalObjectLayers layerObject " + layerName);
     
             if(!localObject.layers) {
                 console.log("Error: no localObject.layers");
@@ -2033,7 +2035,7 @@ function initSiteObject(layerName) {
                     //});
                 });
 
-                console.log("The localObject");
+                console.log("The localObject 2");
                 console.log(localObject);
 
                 //console.log("The localObject.layers");
@@ -2058,6 +2060,7 @@ function initSiteObject(layerName) {
                 		//showThumbMenu(hash.show, "#bigThumbMenu");
                 	}
             	}
+                callback();
                 //return layerObject;
 	            
 	        });
@@ -2065,27 +2068,28 @@ function initSiteObject(layerName) {
 	    
 	    
 	//}
-} // end initSiteObject
+} // end loadLocalObjectLayers
 
-function callInitSiteObject(attempt) { 
-    //alert("callInitSiteObject")
-    if (localObject.layers.length >= 0) {
-        //alert("done return")
+/*
+function callInitSiteObject(attempt) {
+    alert("callInitSiteObject")
+    if (typeof localObject.layers != 'undefined' && localObject.layers.length >= 0) {
+        alert("localObject.layers already loaded " + localObject.layers.length)
         return;
     }
-	if (typeof local_app !== 'undefined') { // wait for local_app
-		initSiteObject("");
+	if (typeof local_app !== 'undefined') {
+		loadLocalObjectLayers("");
         return;
-	} else if (attempt < 100) {
+	} else if (attempt < 100) { // wait for local_app
 		setTimeout( function() {
    			console.log("callInitSiteObject again")
 			callInitSiteObject(attempt+1);
    		}, 100 );
 	} else {
-		console.log("ERROR: Too many search-filters local_app attempts.");
+		console.log("ERROR: Too many search-filters local_app attempts. " + attempt);
 	}
 }
-
+*/
 
 // INIT
 if(typeof priorHash == 'undefined') {
@@ -2119,7 +2123,7 @@ if(typeof hiddenhash == 'undefined') {
 
 // Load localObject.layers for later use when showApps clicked
 // Also adds state hash for layers requiring a state.
-callInitSiteObject(1);
+//callInitSiteObject(1); // replaced by 
 
 
 function hashChanged() {

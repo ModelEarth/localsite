@@ -5,7 +5,18 @@
 <title>Community Map</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+
+<script type="text/javascript" src="../js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
 <script type="text/javascript" src="../js/localsite.js?display=map&showheader=true&showfooter=false&showsearch=true"></script>
+<script type="text/javascript" src="../js/navigation.js" id="/localsite/js/navigation.js"></script>
+
+<script>
+let hash = getHash();
+if (!hash.show) {
+	showApps("#bigThumbMenu");
+}
+</script>
+
 </head>
 <body>
 </body>
