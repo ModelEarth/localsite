@@ -80,7 +80,7 @@
       padding-left: 40px;
   } 
 }
-.bodyLeftMargin #filterFieldsMain {
+.bodyLeftMargin #filterFieldsMain, .bodyLeftMarginList #filterFieldsMain  {
     padding-left: 10px;
 }
 #filterLocations, #honeycombPanel {

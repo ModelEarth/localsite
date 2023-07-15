@@ -48,6 +48,9 @@ body {
 .bodyLeftMargin {
   margin-left: 220px;
 }
+.bodyLeftMarginList {
+  margin-left: 380px;
+}
 .bodyLeftMarginFull {
   margin-left: 600px;
 }
@@ -396,7 +399,14 @@ summary::-webkit-details-marker {
 .contentpadding a:visited {
   color: #0366d6;
 }
-
+.contentpaddingMinX {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.bodyLeftMargin .contentpadding {
+  padding-left: 30px;
+  padding-right: 30px;
+}
 .contentwide {
   max-width: 1400px;
   padding-left: 10px;
@@ -1064,6 +1074,10 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   text-shadow: none;
   height: auto;
 }
+.filterFieldsHolderFixed #showSideTabsInBar {
+  display: block !important;
+}
+
 .bodyLeftMargin .headerbar, .bodyLeftMargin .filterFieldsHolderFixed {
   /* left: 220px; */
 }
@@ -1156,7 +1170,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   height: 64px;
   min-width: 58px;
   text-align: center;
-  padding: 5px 26px 2px 12px;
+  /* padding: 5px 26px 2px 12px; */
   cursor: pointer;
   color: #888;
 }

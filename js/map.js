@@ -533,7 +533,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.nameColumn = "name";
         dp.latColumn = "latitude";
         dp.lonColumn = "longitude";
-
+        dp.catColumn = "EV Industry";
         dp.showWhenStatus = "null"
         // Temp, prior to change from Google API 2 to 3
         //dp.dataset = "https://model.earth/georgia-data/automotive/automotive.csv";
@@ -1416,12 +1416,12 @@ function showList(dp,map) {
           foundMatch++; // Subcat found in Subcategory.
         }
       } else if (hash.cat) {
-        if (elementRaw[dp.catColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
+        if (elementRaw[dp.catColumn] && elementRaw[dp.catColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
           foundMatch++; // Cat found in Category
           catFound++;
         }
         // Also check for the cat in the subcat column.
-        else if (elementRaw[dp.subcatColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
+        else if (elementRaw[dp.subcatColumn] && elementRaw[dp.subcatColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
           foundMatch++; // Cat found in Category
           catFound++;
         }
@@ -1692,12 +1692,6 @@ function showList(dp,map) {
 
           if (element.items) {
             output += "<b>Items:</b> " + element.items + "<br>";
-          }
-          if (dp.valueColumn && !dp.color) {
-            // Temp
-            if(location.host.indexOf('localhost') >= 0) {
-              output += "No main category (localhost)<br>";
-            }
           }
           var outaddress = "";
           if (element[dp.addressColumn]) { 
@@ -2000,6 +1994,7 @@ function showList(dp,map) {
   $("#showSide").hide();
   $("#navcolumn").show();
   $("#listcolumn").show();
+  $('body').addClass('bodyLeftMarginList');
   if(document.getElementById("bodyFileHolder") == null) {
     $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
   }
@@ -2140,7 +2135,7 @@ function renderCatList(catList,cat) {
   // Using param since hash.show is not available when passed in on localsite.js embed link.
   if (param.show != "ppe" && param.show != "suppliers") { // PPE cats are still hardcoded in localsite/map/index.html. "suppliers" is used in site embed
       if (catList && Object.keys(catList).length > 0) {
-        let catNavSide = "<div class='all_categories'><div class='legendDot'></div> All Categories</div>";
+        let catNavSide = "<div class='all_categories'><div class='legendDot'></div>All Categories</div>";
 
         //console.log("Object.keys(catList)");
         //console.log(Object.keys(catList));
@@ -2712,6 +2707,7 @@ function lockSidemap() {
     if (mapFixed==true) { // Only unstick when crossing thresehold to minimize interaction with DOM.
       //console.log('bottom Visible');
       $('#mapHolderInner').removeClass('mapHolderFixed');
+      $("#mapHolderInner").css("max-width","none");
       $('#mapHolderInner').addClass('mapHolderBottom');
       // Needs to be at bottom of dev
       mapFixed = false;
@@ -2721,7 +2717,7 @@ function lockSidemap() {
       let mapHolderInner = $('#mapHolderInner').width();
       //alert(mapHolderInner)
       $('#mapHolderInner').addClass('mapHolderFixed');
-      $("#mapHolderInner").css("width",mapHolderInner);
+      $("#mapHolderInner").css("max-width",mapHolderInner);
       $('#mapHolderInner').removeClass('mapHolderBottom');
       //alert("fixed position")
       mapFixed = true;

@@ -201,14 +201,12 @@
   #hublist {
     overflow: auto; /* allows Expand button to remain at bottom */
     width:56%;
+    scrollbar
   }
   #mapHolder {
-    padding: 20px;
+    padding-left: 20px;
     width: 44%;
     z-index: 10; /* to exceed right column in external site */
-    /* Show box for testing scroll */
-    /* border: 1px solid #ccc; */
-
     position: relative;
     float:right;
   }
@@ -290,8 +288,10 @@
     z-index: 1;
     top: 95px;
     bottom: auto;
-    widthX: 480px; /* Reset in dual-map.js */
+    width: 100%;
   }
+
+  /*
   @media (min-width: 1400px) {
     .mapHolderFixed {
       min-width: 600px;
@@ -307,6 +307,8 @@
       width: 380px;
     }
   }
+  */
+
   #sidemapbar {
     position: relative;
     color: #555;
@@ -466,7 +468,7 @@ label { /* override Drupal */
   background-color: #bbb;
 }
 .listTitle {
-  font-size: 32px;
+  font-size: 23px;
   margin:0px;
   border-bottom:0px
 }

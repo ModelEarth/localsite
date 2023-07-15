@@ -485,6 +485,9 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	bottom:0;
 	background-color: #ddd;
 }
+.listcolumnOnly {
+	left:0px;
+}
 #bodyFileHolder .listcolumn { /* Display next to map */
 	position: relative;
 	float: left;
@@ -537,6 +540,9 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	#showSide {
 		margin-left: -23px;
 	}
+}
+#filterFieldsMain #showSide {
+	float: left;
 }
 .sidecolumnLeft {
     padding: 24px;
