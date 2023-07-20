@@ -733,7 +733,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   color: #333 !important;
 }
 .btn-white:visited, .contentpadding .btn-white:visited {
-  color: #333;
+  color: #333 !important;
 }
 .btn-white:hover, .btn-white:link:hover, .contentpadding .btn-white:link:hover, .btn-white:visited:hover, .contentpadding .btn-white:visited:hover {
     background-color: #a6c36e;
