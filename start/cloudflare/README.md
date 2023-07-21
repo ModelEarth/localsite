@@ -69,14 +69,16 @@ https://yourdomain.com/#go=$2
 Create a firewall rule to block IP's that attempt to hack a website. Websites check for hack attempts and send an email to admins with information such as the url, IP address, and url history. Since CloudFlare uses a proxy address, the IP address reported by the email is the CloudFlare proxy IP. CloudFlare includes the following header values which can be used to display non-proxied addresses: cf-connecting-ip, cf-connecting-ipv6, and x-forwarded-for. The code that checks for hack attempts checks for these header values and includes them in the email. Use the non-proxied IP addresses to create a firewall rule to block those IPs in CloudFlare. These same non-proxied IPs should be added to the Windows Firewall.
 
 1. Perform a [Whois lookup](https://www.whois.com/whois/) for the IP address that you want to block to see what country the IP address is assigned to. In most cases, the IP address will be outside of the U.S. If it is inside the U.S., use your best judgement to determine whether to block the IP address or not, such as the amount of hack attempts from the IP address. Ensure that the IP address is not associated with CloudFlare (in case you accidently copied the CloudFlare proxied address from the hack attempt email notification). 
-1. Login to the CloudFlare dashboard, then select the account and website. A firewall rule will need to be added to each website running on CloudFlare
-1. Select Security > WAF > Firewall rules.
-1. Select Create a firewall rule.
+1. Login to the CloudFlare dashboard.
+1. Create an IP block list first (See the Manage IP Lists section below).
+1. Select the account and website. A firewall rule will need to be added to each website running on CloudFlare
+1. Select Security > WAF.
+1. Select Create rule.
 1. Enter the following values:
     1. Rule Name: Blocked IP Addresses
     1. Field: IP Source Address
     1. Operator: is in list
-    1. Value: blocked\_ip\_list (Created via the Manage Lists link - See below)
+    1. Value: blocked\_ip\_list (Should be selected by default if already created or create via the Manage Lists link - See Manage IP Lists section below)
     1. Choose action: Block
     1. Click Deploy to save and activate the firewall rule.
 
@@ -85,7 +87,7 @@ References:
 [Create, edit, and delete firewall rules](https://developers.cloudflare.com/firewall/cf-dashboard/create-edit-delete-rules/)
 
 ### Manage IP Lists
-The free version of CloudFlare allows 1 list to be created per account. This list can then be used in each firewall rule to block IP addresses trying to hack the websites. This allows you to enter an IP address or IP address range in one place rather than entering it for each website. A list will need to be created and maintained for each account in CloudFlare where you want to block IP addresses.
+The free version of CloudFlare allows 1 list to be created per account. This list can then be used in each firewall rule to block IP addresses trying to hack the websites. This allows you to enter an IP address or IP address range in one place rather than entering it manually for each website. A list will need to be created and maintained for each account in CloudFlare where you want to block IP addresses.
 
 Create or access the list when creating the firewall rule (see above) or use the following steps to add an IP address to an existing list:
 1. Log in to your Cloudflare account and select your account.
