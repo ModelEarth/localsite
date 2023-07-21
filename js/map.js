@@ -869,6 +869,8 @@ $(document).on("click", ".detail", function(event) { // Provides close-up using 
       $(".viewAllLink").show();
     }
     if ($(this).attr("latitude") && $(this).attr("longitude")) {
+      centerMapPoint(map1, $(this).attr("latitude"), $(this).attr("longitude")); // Top map
+      // Lower map
       popMapPoint(dp, map2, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
       zoomMapPoint(dp, map2, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
     } else {
@@ -2397,6 +2399,12 @@ function popMapPoint(dp, map, latitude, longitude, name, color) {
           }).addTo(dp.group);
   }
   */
+}
+function centerMapPoint(map, latitude, longitude) {
+  let center = [latitude,longitude];
+  //let zoom = map.getZoom();
+  // Need to adjust centering by how much of map is visible.
+  map.setView(center);
 }
 function zoomMapPoint(dp, map, latitude, longitude, name, color) {
   // Place large icon on side map and zoom
