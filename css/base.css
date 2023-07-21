@@ -24,6 +24,10 @@ svg{max-width:none;} /* Fix for embedding material icon map points in Drupal */
   .hideNarrow {display:none;} /* Not activated when sideTabs displayed */
   .showMobile {display:inline-block !important;}
 }
+@media (max-width: 1800px) {
+  .bodyLeftMarginFull .hideMobileFull, .bodyLeftMarginList .hideMobileFull, .bodyMargin .hideMobileFull, .bodyRightMargin .hideMobileFull {display:none;}
+  .bodyLeftMarginFull .showMobileFull, .bodyLeftMarginList .showMobileFull, .bodyMargin .showMobileFull, .bodyRightMargin .showMobileFull {display:inline-block !important;}
+}
 @media (min-width: 801px) {
   .showDesktop {display:inline-block !important;}
 }
@@ -156,6 +160,9 @@ body {
     margin-left: 0px;
     margin-bottom: 20px;
   }
+  .bodyLeftMarginFull .fullNarrow, .bodyLeftMarginList .fullNarrow, .bodyRightMargin .fullNarrow {
+    width: 100%;
+  }
 }
 @media (max-width: 1400px) {
   #flexwrapper {
@@ -170,6 +177,23 @@ body {
     width: 100%;
   }
   .bodyLeftMarginFull #mapHolderInner {
+    position: relative;
+    width: 100%;
+  }
+}
+@media (max-width: 2200px) {
+  #flexwrapper {
+    /*display: block;*/
+  }
+  #hublistX {
+    width: 100%;
+    padding-right: 0px;
+  }
+  .bodyLeftMarginFull.bodyRightMargin #mapHolder {
+    float: left;
+    width: 100%;
+  }
+  .bodyLeftMarginFull.bodyRightMargin #mapHolderInner {
     position: relative;
     width: 100%;
   }
@@ -535,10 +559,11 @@ summary::-webkit-details-marker {
 }
 .litePanelFadeOut {
   margin-top:10px;
+  margin-bottom:10px;
   position:absolute;
   bottom:0;
   left:0;
-  right:0;
+  /* right:0; This may cover map zoom. Swicth to flex rows instead to put at bottom of #hublist */
   z-index:999;
   background-color:rgba(238, 238, 238, 0.7);
   background: linear-gradient(to bottom, rgba(238,238,238,0) 0%,rgba(238,238,238,1) 100%);
@@ -725,7 +750,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     border-color: #f15a7f;
 }
 .btn-white {
-    color: #333;
+    color: #333 !important;
     background-color: #fff;
     border-color: #ccc;
 }
