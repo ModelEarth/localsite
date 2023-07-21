@@ -1,4 +1,4 @@
-console.log("HERE settings.js loaded.")
+console.log("settings.js loaded.")
 
 // For login and any cookie settings.
 

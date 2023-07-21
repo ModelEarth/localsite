@@ -51,8 +51,8 @@
     display: none;
   }
   .sidelist .detail {
-    border-radius: 30px;
-    padding: 15px 10px 8px 22px;
+    border-radius: 10px;
+    padding: 12px 10px 8px 15px;
     margin-bottom: 2px;
     position: relative;
     border-bottom: 1px solid #777;
@@ -60,7 +60,7 @@
     background-color: #ddd;
   }
   .sidelist .detailTitle {
-    line-height: 1.1em;
+    line-height: 1.28em;
   }
   .sidelist .detail:hover {
     background-color: #eee;
@@ -74,7 +74,6 @@
   .sidelist .detailLocation {
     font-size:14px;
   }
-
   .always-show-scroll {
     overflow-y: scroll;
     overflow-x: hidden;
@@ -200,9 +199,8 @@
     position: relative;
   }
   #hublist {
-    overflow: auto; /* allows Expand button to remain at bottom */
+    overflow: auto; /* For scroll. Allows Expand button to remain at bottom */
     width:56%;
-    scrollbar
   }
   #mapHolder {
     padding-left: 20px;
@@ -233,6 +231,12 @@
   }
   #detaillist .detailActive:hover {
     background-color: rgb(250, 250, 250);
+  }
+  .detailBullet {
+    width:12px;
+    height:12px;
+    margin-right:6px;
+    float:left;
   }
   #listcolumnList .detailActiveHold {
     background-color: #333;
@@ -281,7 +285,7 @@
 
   .mapHolderBottom {
     position: absolute;
-    bottom: 0px;
+    bottom: 11px;
     width: 100%;
   }
   .mapHolderFixed {
@@ -378,6 +382,8 @@
 }
 #map2 {
   height: 500px;
+  width: 100%;
+  margin-bottom: 20px;
   border-bottom-left-radius: 18px;
   border-bottom-right-radius: 18px;
 }
@@ -391,7 +397,6 @@
 }
 #hublist {
   padding-right: 20px;
-  margin-bottom: 15px;
 }
 #hublist, #tableSide {
   max-height: 750px;
@@ -470,7 +475,7 @@ label { /* override Drupal */
   background-color: #bbb;
 }
 .listTitle {
-  font-size: 23px;
+  font-size: 20px;
   margin:0px;
   border-bottom:0px
 }
@@ -485,8 +490,8 @@ label { /* override Drupal */
 #listInfo {
   flex-shrink: 0;
   padding: 12px 20px 12px 26px;
-  background-color: #d3d3d3;
-  color: #fff;
+  background-color: #c3c3c3;
+  line-height: 1.3em;
   width: 100%;
 }
 @media (max-width: 800px) {

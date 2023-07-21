@@ -13,6 +13,7 @@
 //let hash = loadParams(location.search,location.hash);
 //hash = mix(param,hash); // Add include file's param values.
 
+let initialNaicsLoad = true;
 let hash = getHash(); // Includes hiddenhash
 if (typeof dataObject == 'undefined') {
     var dataObject = {};
@@ -123,7 +124,7 @@ document.addEventListener('hashChangeEvent', function (elem) {
  }, false);
 
 function refreshNaicsWidget() {
-    //alert("refreshNaicsWidget hiddenhash.naics: " + hiddenhash.naics)
+    console.log("refreshNaicsWidget hiddenhash.naics: " + hiddenhash.naics);
     hash = getHash(); // Includes hiddenhash
     if (hash.show == "undefined") { // To eventually remove
         delete hash.show; // Fix URL bug from indicator select hamburger menu
@@ -136,6 +137,10 @@ function refreshNaicsWidget() {
 
 
     //alert("refreshNaicsWidget " + typeof hash.naics + " " + typeof priorHash_naicspage.naics)
+    if (hash.name && hash.name != priorHash_naicspage.name) {
+        console.log("Exit refreshNaicsWidget - not for name change");
+        return;
+    }
     if (hash.show != priorHash_naicspage.show) { // GET NAICS BASED ON THEME (recycing, bioeconomy, etc.)
         // Initial load
         //alert("hash.show " + hash.show)
@@ -665,21 +670,24 @@ function renderIndustryChart(dataObject,values,hash) {
     const filteredKeys = ['show','geo','regiontitle','catsort','catsize','catmethod','catpage','catcount','census_scope','naics','state','hs']; // hs not yet implemented for Harmonized System codes.
     hash = filteredKeys.reduce((obj, key) => ({ ...obj, [key]: hash[key] }), {});
 
-    console.log("hash reduced within naics.js:")
+    console.log("hash reduced within naics.js")
     console.log(hash)
     // Check which naics hash have channged
     let whichHaveChanged = [];
     for (const key in hash) {
       //if (watchingHash.includes(${key})) {
+      console.log("hash[key] " + key + " " + hash[key] + " " + priorHash_naicspage[key])
       if (hash[key] != priorHash_naicspage[key]) {
         whichHaveChanged.push(key)
       }
     }
-    console.log("whichHaveChanged: " + whichHaveChanged);
-    if (whichHaveChanged.length == 0) {
-        console.log("Cancel naics.js, no hash have changed")
+    console.log("whichHaveChanged: ");
+    console.log(whichHaveChanged);
+    if (whichHaveChanged.length == 0 && initialNaicsLoad == false) {
+        console.log("Cancel naics.js, no hash values have changed.");
         return; // None have changed
     }
+    initialNaicsLoad = false; // So further non-related hash changes are ignored by return above.
 
     subsetKeys = ['emp_reported','emp_est1','emp_est3', 'payann_reported','payann_est1','payann_est3', 'estab', 'NAICS2012_TTL','GEO_TTL','state','COUNTY','relevant_naics','estimate_est1','estimate_est3']
     subsetKeys_state = ['emp_agg', 'payann_agg', 'estab_agg', 'NAICS2012_TTL','GEO_TTL','state','COUNTY','relevant_naics']

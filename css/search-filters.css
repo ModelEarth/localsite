@@ -37,8 +37,9 @@
 #locationFilterHolder {
   box-shadow: 0px 0px 5px 1px #ddd;
   overflow:auto;
-  padding:20px 0 20px 40px;
+  padding: 10px 0 20px 65px;
 }
+
 @media (prefers-color-scheme: dark) {
   #filterFieldsHolder {
     /* background-color: #333; */
@@ -76,8 +77,11 @@
 }
 @media (max-width: 1100px) {
   #filterFieldsMain {
-      padding-left: 40px;
-  } 
+    padding-left: 40px;
+  }
+  #locationFilterHolder {
+    padding-left: 40px;
+  }
 }
 .bodyLeftMargin #filterFieldsMain, .bodyLeftMarginList #filterFieldsMain  {
     padding-left: 10px;

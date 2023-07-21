@@ -159,6 +159,13 @@
                 </div>
               </div>
 
+              <div class="local" style="display:none">
+                <div class="showDesktop rightTopItem">
+                    <i class="material-icons menuTopIcon">&#xE1B1;</i>
+                    <span>Desktop</span>
+                </div>
+              </div>
+
               <!--
               <div class="contactUs rightTopItem">
                   <i class="material-icons menuTopIcon contactIcon">&#xE0E1;</i>
@@ -189,7 +196,7 @@
 
               <div class="local" style="display:none">
               <div class="showAccountTools rightTopItem" style="displayX:none">
-                  <div class="showAccount user-0">
+                  <div class="showAccount user-1">
                       <i class="material-icons menuTopIcon">&#xE7FD;</i>
                       <span>Account</span>
                   </div>
@@ -407,6 +414,14 @@
         </div>
         <!-- End Settings Panel -->
 
+        <!-- Desktop Panel -->
+        <div id="desktopPanel" class="menuExpanded topMenuOffset" style="display:none; font-size: 18.5px;">
+          <div class="menuExpandedScroll always-show-scroll">
+              <div id="desktopDiv"><h1>Desktop</h1></div>
+              <br><br><br>
+          </div>
+        </div>
+        <!-- /Stories Panel -->
 
         <!-- Print Options -->
         <div class="printOptionsHolderWide menuExpanded topMenuOffset" style="display:none">
@@ -733,12 +748,13 @@
       </div>
       -->
     
-      <div id="locationFilterHolder">
+      <div id="locationFilterHolder" style="position: relative;">
             
-            <div class="hideAdvanced close-X" style="float:right; margin-top:-20px">&#10005;
-            </div>
+        <div class="hideAdvanced close-X" style="position:absolute;top:0;right:0">&#10005;
+        </div>
 
-            <div class="stateFilters input-output" style="float:left; display:none" class="mock-up earth">
+        <div style="padding-right:40px">
+        <div class="stateFilters input-output" style="float:left;display:none" class="mock-up earth">
 
               <select id="country_select" style="float:left">
                 <option value="earth">Earth</option>
@@ -751,7 +767,7 @@
 
               <b><!--States--></b>
               <div id="state_select_holder" class="earth" style="display:none;float:left">
-                <select id="state_select" name="state">
+                <select id="state_select" name="state" style="max-width:300px;">
                  <option value="">States and Territories...</option>
 <!-- Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 <option value="AL" stateid="1" lat="32.7396" lon="-86.8435" km="131174">Alabama</option>
@@ -833,14 +849,12 @@
 
               </div>
             </div>
+      </div>
 
         <!-- GOOGLE ADDRESS AUTOCOMPLETE -->
         <!-- USES "Google Autocomplete" javascript in map-filters.js 
         Currently flacky.  Works after returning to page, sometimes.          
         -->
-        <style>
-
-        </style>
         <div id="app">
 
           <div id="local_auto_complete" class="localX" style="display:none">
@@ -1640,20 +1654,16 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 
       </div>
 
-
-      
-
-
     </div><!-- /hublist -->
 
-<div class="litePanelFadeOut">
-            <div id="changeHublistHeight" style="cursor:pointer;float:left;display:none">
-              <div class="btn btn-success">Show All</div>
-            </div>
-            
-            <div class='viewAllLink' style='display:none;float:left'><a class='btn btn-white' onclick='goHash({},["name","loc","cat","subcat"]); return false;' href='#show=" + param["show"] + "'>View All</a></div>
-            
-          </div>
+    <div class="litePanelFadeOut">
+      <div id="changeHublistHeight" style="cursor:pointer;float:left;display:none">
+        <div class="btn btn-success">Show All</div>
+      </div>
+      
+      <div class='viewAllLink' style='display:none;float:left'><a class='btn btn-white' onclick='goHash({},["name","loc","cat","subcat"]); return false;' href='#show=" + param["show"] + "'>View All</a></div>
+    </div>
+
 
 
     <a name="gomap"></a>

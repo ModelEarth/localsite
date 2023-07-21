@@ -324,12 +324,12 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
  		$("#navcolumn").addClass("navcolumn-inpage");
  	}
 
- 	$(document).on("click", "#showSide", function(event) {
+ 	$(document).on("click", ".showSide", function(event) {
 		if ($("#navcolumn").is(':hidden')) {
 			showSide();
 		} else {
 			$("#navcolumn").hide();
-			$("#showSide").show();
+			$("#showSide").show();$("#showSideInBar").hide();
 			$('body').removeClass('bodyLeftMargin');
 			$('body').removeClass('bodyLeftMarginFull');
 			if (!$('body').hasClass('bodyRightMargin')) {
@@ -352,16 +352,16 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 			if ($("#listcolumn").is(':visible')) {
 				$('#listcolumn').addClass('listcolumnOnly');
 				$('body').addClass('bodyLeftMarginList');
+
 			}
 		} else {
 			$("#listcolumn").hide();
 		}
 		if ($("#navcolumn").is(':hidden') && $("#listcolumn").is(':hidden')) {
-			$("#showSide").show();
+			$("#showSide").show();$("#showSideInBar").hide();
 			$("#sideIcons").show();
 		} else if ($("#navcolumn").is(':hidden') && $("#listcolumn").is(':visible')) {
-			$("#showSide").prependTo("#filterFieldsMain");
-			$("#showSide").show();
+			$("#showSideInBar").show();
 		}
 		if ($("#navcolumn").is(':hidden')) {
 			$('body').removeClass('bodyLeftMargin');
@@ -404,7 +404,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	// TO DO: Add support for custom headerpath
 
  	} else {
- 		
+
  		$(".headerOffset").show();
 		$("#headeroffset").show();
 		$(".headerOffset").show();
@@ -458,7 +458,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 
           					$("#topicsMenu").prepend(colCloneRight);
 
-							if (location.host.indexOf('dreamstudio') >= 0 || location.href.indexOf('dreamstudio') >= 0) {
+							if (location.href.indexOf('desktop') >= 0 || location.host.indexOf('dreamstudio') >= 0 || location.href.indexOf('dreamstudio') >= 0) {
 								let storiesFile = "https://dreamstudio.com/seasons/episodes.md";
 								//console.log("location.href index: " + location.href.indexOf("/dreamstudio/"));
 								if(location.host.indexOf('localhost') >= 0) {
@@ -787,7 +787,10 @@ $(document).on("click", ".showStories", function(event) {
     closeExpandedMenus(event.currentTarget);
     $("#storiesPanel").show();
 });
-
+$(document).on("click", ".showDesktop", function(event) {
+    closeExpandedMenus(event.currentTarget);
+    $("#desktopPanel").show();
+});
 
 $(document).on("click", ".showPrintOptions, .print_button", function(event) {
 //$('.showPrintOptions, .print_button').click(function(event) {
@@ -865,170 +868,171 @@ function showThumbMenu(activeLayer, insertInto) {
 }
 function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 
-	loadLocalObjectLayers(activeLayer, function() {
+	loadScript(theroot + 'js/map-filters.js', function(results) {
+		loadLocalObjectLayers(activeLayer, function() {
 
-		// Setting param.state in navigation.js passes to hash here for menu to use theState:
-	    let hash = getHash();
-	    let theState = $("#state_select").find(":selected").val();
-	    if (hash.state) {
-	        theState = hash.state.split(",")[0].toUpperCase();
-	    }
-	    if (theState.length > 2) {
-	        theState = theState.substring(0,2);
-	    }
-		if ($('#bigThumbMenu').length <= 1) {
-			console.log("Initial load of #bigThumbMenu");
-		    var currentAccess = 0;
-		    $(".bigThumbMenu").html("");
-
-		    //$("#bigThumbPanelHolder").show();
-		    var thelayers = localObject.layers;
-		    var sectionMenu = "";
-		    var categoryMenu = "";
-		    var iconMenu = "";
-		    var bigThumbSection = layerName;
-		    var layer;
-		    for(layer in thelayers) {
-		        var menuaccess = 10; // no one
-		        try { // For IE error. Might not be necessary.
-		            if (typeof(localObject.layers[layer].menuaccess) === "undefined") {
-		                menuaccess = 0;
-		            } else {
-		                menuaccess = localObject.layers[layer].menuaccess;
-		            }
-		        } catch(e) {
-		            consoleLog("displayLayerCheckboxes: no menuaccess");
-		        }
-		        
-		        var linkJavascript = "";
-	            //alert(layer) // Returns a nummber: 1,2,3 etc
-		        var directlink = getDirectLink(thelayers[layer].livedomain, thelayers[layer].directlink, thelayers[layer].rootfolder, thelayers[layer].item);
-	            //alert("directlink " + directlink);
-		        if (bigThumbSection == "main") {
-		            if (thelayers[layer].menulevel == "1") {
-		                if (access(currentAccess,menuaccess)) {
-		                    //if (localObject.layers[layer].section == bigThumbSection && localObject.layers[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
-		                    
-		                        var thumbTitle = ( thelayers[layer].thumbtitle ? thelayers[layer].thumbtitle : (thelayers[layer].section ? thelayers[layer].section : thelayers[layer].primarytitle));
-		                        var thumbTitleSecondary = (thelayers[layer].thumbTitleSecondary ? thelayers[layer].thumbTitleSecondary : '&nbsp;');
-
-		                        var icon = (thelayers[layer].icon ? thelayers[layer].icon : '<i class="material-icons">&#xE880;</i>');
-		                           if (thelayers[layer].item != "main" && thelayers[layer].section != "Admin" && thelayers[layer].title != "") {
-		                                // <h1 class='honeyTitle'>" + thelayers[layer].provider + "</h1>
-		                                //var thumbTitle = thelayers[layer].title;
-		                                var bkgdUrl = thelayers[layer].image;
-		                                if (thelayers[layer].bigthumb) {
-		                                    bkgdUrl = thelayers[layer].bigthumb;
-		                                }
-		                                bkgdUrl = removeFrontFolder(bkgdUrl);
-
-		                                
-		                                if (thelayers[layer].directlink) {
-		                                    //hrefLink = "href='" + removeFrontFolder(thelayers[layer].directlink) + "'";
-		                                }
-		                                if (thelayers[layer].rootfolder && thelayers[layer].rootfolder) {
-		                                	// Change to pass entire hash
-
-		                                	//linkJavascript = 'onclick="window.location = \'/localsite/' + thelayers[layer].rootfolder + '/#show=' + localObject.layers[layer].item + '\';return false;"';
-		                                	linkJavascript = 'onclick="thumbClick(\'' + localObject.layers[layer].item + '\',\'' + thelayers[layer].rootfolder + '\');return false;"';
-		                                //} else if ((directlink.indexOf('/map/') >= 0 && location.pathname.indexOf('/map/') >= 0) || (directlink.indexOf('/info/') >= 0 && location.pathname.indexOf('/info/') >= 0)) {
-		                                } else if ((location.pathname.indexOf('/map/') >= 0) || (location.pathname.indexOf('/info/') >= 0)) {
-		                                	// Stayon page when on map or info
-		                                	//linkJavascript = "onclick='goHash({\"show\":\"" + localObject.layers[layer].item + "\",\"cat\":\"\",\"sectors\":\"\",\"naics\":\"\",\"go\":\"\",\"m\":\"\"}); return false;'"; // Remain in current page.
-		                                	linkJavascript = 'onclick="thumbClick(\'' + localObject.layers[layer].item + '\',\'\');return false;"';
-		                                } else {
-		                                	linkJavascript = "";
-		                                }
-
-		                                // !thelayers[layer].states || (thelayers[layer].states == "GA" && (!param.state || param.state=="GA")  )
-		                                if (menuaccess!=0 || (thelayers[layer].states == "GA")) {
-		                                	// This one is hidden. If a related state, shown with geo-US13
-		                                	let hideforAccessLevel = "";
-		                                	if (menuaccess!=0) { // Also hiddden for access leven
-		                                		hideforAccessLevel = "style='display:none'";
-		                                	}
-		                                	// TODO: lazy load images only when visible by moving img tag into an attribute.
-		                                	// TODO: Add geo-US13 for other states
-		                                    sectionMenu += "<div class='bigThumbMenuContent geo-US13 geo-limited' style='display:none' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' " + hideforAccessLevel + "><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
-		                                
-		                                } else if (menuaccess==0) { // Quick hack until user-0 displays for currentAccess 1. In progress...
-		                                    sectionMenu += "<div class='bigThumbMenuContent' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='displayX:none'><div class='bigThumbHolder'><a ";
-	                                        if (directlink) { // This is a fallback and won't contain the hash values.
-	                                            sectionMenu += "href='" + directlink + "' ";
-	                                        }
-	                                        sectionMenu += linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
-		                                }
-		                            }
-		                    //}
-		                }
-		            }
-		        } else {
-		            if (access(currentAccess,menuaccess)) {
-		                if (localObject.layers[layer].section == bigThumbSection && localObject.layers[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
-		                    var thumbTitle = (thelayers[layer].navtitle ? thelayers[layer].navtitle : thelayers[layer].title);
-		                    var thumbTitleSecondary = (thelayers[layer].thumbTitleSecondary ? thelayers[layer].thumbTitleSecondary : '&nbsp;');
-
-		                    var icon = (thelayers[layer].icon ? thelayers[layer].icon : '<i class="material-icons">&#xE880;</i>');
-		                    if (!localObject.layers[layer].bigThumbSection) { // Omit the section parent
-		                       if (thelayers[layer].item != "main" && thelayers[layer].section != "Admin" && thelayers[layer].title != "") {
-		                            // <h1 class='honeyTitle'>" + thelayers[layer].provider + "</h1>
-		                            //var thumbTitle = thelayers[layer].title;
-		                            var bkgdUrl = thelayers[layer].image;
-		                            if (thelayers[layer].bigthumb) {
-		                                bkgdUrl = thelayers[layer].bigthumb;
-		                            }
-		                            bkgdUrl = removeFrontFolder(bkgdUrl);
-
-		                            //var hrefLink = "";
-		                            if (thelayers[layer].directlink) {
-		                                //hrefLink = "href='" + removeFrontFolder(thelayers[layer].directlink) + "'";
-		                            }
-		                            sectionMenu += "<div class='bigThumbMenuContent' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='display:none'><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
-		                        }
-		                    }
-		                }
-		            }
-		        }
+			// Setting param.state in navigation.js passes to hash here for menu to use theState:
+		    let hash = getHash();
+		    let theState = $("#state_select").find(":selected").val();
+		    if (hash.state) {
+		        theState = hash.state.split(",")[0].toUpperCase();
 		    }
-		    // Hidden to reduce clutter
-	        $("#honeycombPanel").prepend("<div class='hideThumbMenu close-X' style='display:none; position:absolute; right:0px; top:0px;'><i class='material-icons' style='font-size:32px'>&#xE5CD;</i></div>");
-		    $(insertInto).append("<div id='bigThumbMenuInner' class='bigThumbMenuInner'>" + sectionMenu + "</div>");
-
-	        if (theState == "GA") {
-		    // if (hash.state && hash.state.split(",")[0].toUpperCase() == "GA") {
-		    	$(".geo-US13").show();
+		    if (theState.length > 2) {
+		        theState = theState.substring(0,2);
 		    }
-		    //$("#honeycombMenu").append("<ul class='bigThumbUl'>" + sectionMenu + "</ul>");
-		    $("#iconMenu").append(iconMenu);
-	        if (insertInto == "#bigThumbMenu") {
-		       $("#bigThumbPanelHolder").show();
-	        }
-		    $("#honeyMenuHolder").show(); // Might be able to remove display:none on this
+			if ($('#bigThumbMenu').length <= 1) {
+				console.log("Initial load of #bigThumbMenu");
+			    var currentAccess = 0;
+			    $(".bigThumbMenu").html("");
 
-	        // 
-		    //$(".thumbModule").append($("#bigThumbPanelHolder"));
-		} else if ($("#bigThumbPanelHolder").css("display") == "none") {
-	        if (insertInto == "#bigThumbMenu") {
-			  $("#bigThumbPanelHolder").show();
-	        }
-		} else {
-			$("#bigThumbPanelHolder").hide();
-	        $(".showApps").removeClass("filterClickActive");
-		}
+			    //$("#bigThumbPanelHolder").show();
+			    var thelayers = localObject.layers;
+			    var sectionMenu = "";
+			    var categoryMenu = "";
+			    var iconMenu = "";
+			    var bigThumbSection = layerName;
+			    var layer;
+			    for(layer in thelayers) {
+			        var menuaccess = 10; // no one
+			        try { // For IE error. Might not be necessary.
+			            if (typeof(localObject.layers[layer].menuaccess) === "undefined") {
+			                menuaccess = 0;
+			            } else {
+			                menuaccess = localObject.layers[layer].menuaccess;
+			            }
+			        } catch(e) {
+			            consoleLog("displayLayerCheckboxes: no menuaccess");
+			        }
+			        
+			        var linkJavascript = "";
+		            //alert(layer) // Returns a nummber: 1,2,3 etc
+			        var directlink = getDirectLink(thelayers[layer].livedomain, thelayers[layer].directlink, thelayers[layer].rootfolder, thelayers[layer].item);
+		            //alert("directlink " + directlink);
+			        if (bigThumbSection == "main") {
+			            if (thelayers[layer].menulevel == "1") {
+			                if (access(currentAccess,menuaccess)) {
+			                    //if (localObject.layers[layer].section == bigThumbSection && localObject.layers[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
+			                    
+			                        var thumbTitle = ( thelayers[layer].thumbtitle ? thelayers[layer].thumbtitle : (thelayers[layer].section ? thelayers[layer].section : thelayers[layer].primarytitle));
+			                        var thumbTitleSecondary = (thelayers[layer].thumbTitleSecondary ? thelayers[layer].thumbTitleSecondary : '&nbsp;');
 
-		$('.bigThumbHolder').click(function(event) {
-	        $("#bigThumbPanelHolder").hide(); // Could remain open when small version above map added. 
-	        $(".showApps").removeClass("filterClickActive");        
-	    });
-	    if (activeLayer) {
-	    	$(".bigThumbMenuContent[show='" + activeLayer +"']").addClass("bigThumbActive");
-	    	let activeTitle = $(".bigThumbMenuContent[show='" + activeLayer +"'] .bigThumbText").text();
-	    	if (activeTitle) { // Keep prior if activeLayer is not among app list.
-	    		$("#showAppsText").attr("title",activeTitle);
-	    	}
-	    }
+			                        var icon = (thelayers[layer].icon ? thelayers[layer].icon : '<i class="material-icons">&#xE880;</i>');
+			                           if (thelayers[layer].item != "main" && thelayers[layer].section != "Admin" && thelayers[layer].title != "") {
+			                                // <h1 class='honeyTitle'>" + thelayers[layer].provider + "</h1>
+			                                //var thumbTitle = thelayers[layer].title;
+			                                var bkgdUrl = thelayers[layer].image;
+			                                if (thelayers[layer].bigthumb) {
+			                                    bkgdUrl = thelayers[layer].bigthumb;
+			                                }
+			                                bkgdUrl = removeFrontFolder(bkgdUrl);
+
+			                                
+			                                if (thelayers[layer].directlink) {
+			                                    //hrefLink = "href='" + removeFrontFolder(thelayers[layer].directlink) + "'";
+			                                }
+			                                if (thelayers[layer].rootfolder && thelayers[layer].rootfolder) {
+			                                	// Change to pass entire hash
+
+			                                	//linkJavascript = 'onclick="window.location = \'/localsite/' + thelayers[layer].rootfolder + '/#show=' + localObject.layers[layer].item + '\';return false;"';
+			                                	linkJavascript = 'onclick="thumbClick(\'' + localObject.layers[layer].item + '\',\'' + thelayers[layer].rootfolder + '\');return false;"';
+			                                //} else if ((directlink.indexOf('/map/') >= 0 && location.pathname.indexOf('/map/') >= 0) || (directlink.indexOf('/info/') >= 0 && location.pathname.indexOf('/info/') >= 0)) {
+			                                } else if ((location.pathname.indexOf('/map/') >= 0) || (location.pathname.indexOf('/info/') >= 0)) {
+			                                	// Stayon page when on map or info
+			                                	//linkJavascript = "onclick='goHash({\"show\":\"" + localObject.layers[layer].item + "\",\"cat\":\"\",\"sectors\":\"\",\"naics\":\"\",\"go\":\"\",\"m\":\"\"}); return false;'"; // Remain in current page.
+			                                	linkJavascript = 'onclick="thumbClick(\'' + localObject.layers[layer].item + '\',\'\');return false;"';
+			                                } else {
+			                                	linkJavascript = "";
+			                                }
+
+			                                // !thelayers[layer].states || (thelayers[layer].states == "GA" && (!param.state || param.state=="GA")  )
+			                                if (menuaccess!=0 || (thelayers[layer].states == "GA")) {
+			                                	// This one is hidden. If a related state, shown with geo-US13
+			                                	let hideforAccessLevel = "";
+			                                	if (menuaccess!=0) { // Also hiddden for access leven
+			                                		hideforAccessLevel = "style='display:none'";
+			                                	}
+			                                	// TODO: lazy load images only when visible by moving img tag into an attribute.
+			                                	// TODO: Add geo-US13 for other states
+			                                    sectionMenu += "<div class='bigThumbMenuContent geo-US13 geo-limited' style='display:none' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' " + hideforAccessLevel + "><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
+			                                
+			                                } else if (menuaccess==0) { // Quick hack until user-0 displays for currentAccess 1. In progress...
+			                                    sectionMenu += "<div class='bigThumbMenuContent' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='displayX:none'><div class='bigThumbHolder'><a ";
+		                                        if (directlink) { // This is a fallback and won't contain the hash values.
+		                                            sectionMenu += "href='" + directlink + "' ";
+		                                        }
+		                                        sectionMenu += linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
+			                                }
+			                            }
+			                    //}
+			                }
+			            }
+			        } else {
+			            if (access(currentAccess,menuaccess)) {
+			                if (localObject.layers[layer].section == bigThumbSection && localObject.layers[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
+			                    var thumbTitle = (thelayers[layer].navtitle ? thelayers[layer].navtitle : thelayers[layer].title);
+			                    var thumbTitleSecondary = (thelayers[layer].thumbTitleSecondary ? thelayers[layer].thumbTitleSecondary : '&nbsp;');
+
+			                    var icon = (thelayers[layer].icon ? thelayers[layer].icon : '<i class="material-icons">&#xE880;</i>');
+			                    if (!localObject.layers[layer].bigThumbSection) { // Omit the section parent
+			                       if (thelayers[layer].item != "main" && thelayers[layer].section != "Admin" && thelayers[layer].title != "") {
+			                            // <h1 class='honeyTitle'>" + thelayers[layer].provider + "</h1>
+			                            //var thumbTitle = thelayers[layer].title;
+			                            var bkgdUrl = thelayers[layer].image;
+			                            if (thelayers[layer].bigthumb) {
+			                                bkgdUrl = thelayers[layer].bigthumb;
+			                            }
+			                            bkgdUrl = removeFrontFolder(bkgdUrl);
+
+			                            //var hrefLink = "";
+			                            if (thelayers[layer].directlink) {
+			                                //hrefLink = "href='" + removeFrontFolder(thelayers[layer].directlink) + "'";
+			                            }
+			                            sectionMenu += "<div class='bigThumbMenuContent' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='display:none'><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
+			                        }
+			                    }
+			                }
+			            }
+			        }
+			    }
+			    // Hidden to reduce clutter
+		        $("#honeycombPanel").prepend("<div class='hideThumbMenu close-X' style='display:none; position:absolute; right:0px; top:0px;'><i class='material-icons' style='font-size:32px'>&#xE5CD;</i></div>");
+			    $(insertInto).append("<div id='bigThumbMenuInner' class='bigThumbMenuInner'>" + sectionMenu + "</div>");
+
+		        if (theState == "GA") {
+			    // if (hash.state && hash.state.split(",")[0].toUpperCase() == "GA") {
+			    	$(".geo-US13").show();
+			    }
+			    //$("#honeycombMenu").append("<ul class='bigThumbUl'>" + sectionMenu + "</ul>");
+			    $("#iconMenu").append(iconMenu);
+		        if (insertInto == "#bigThumbMenu") {
+			       $("#bigThumbPanelHolder").show();
+		        }
+			    $("#honeyMenuHolder").show(); // Might be able to remove display:none on this
+
+		        // 
+			    //$(".thumbModule").append($("#bigThumbPanelHolder"));
+			} else if ($("#bigThumbPanelHolder").css("display") == "none") {
+		        if (insertInto == "#bigThumbMenu") {
+				  $("#bigThumbPanelHolder").show();
+		        }
+			} else {
+				$("#bigThumbPanelHolder").hide();
+		        $(".showApps").removeClass("filterClickActive");
+			}
+
+			$('.bigThumbHolder').click(function(event) {
+		        $("#bigThumbPanelHolder").hide(); // Could remain open when small version above map added. 
+		        $(".showApps").removeClass("filterClickActive");        
+		    });
+		    if (activeLayer) {
+		    	$(".bigThumbMenuContent[show='" + activeLayer +"']").addClass("bigThumbActive");
+		    	let activeTitle = $(".bigThumbMenuContent[show='" + activeLayer +"'] .bigThumbText").text();
+		    	if (activeTitle) { // Keep prior if activeLayer is not among app list.
+		    		$("#showAppsText").attr("title",activeTitle);
+		    	}
+		    }
+		});
 	});
-
 }
 
 function showClassInline(theclass) {
@@ -1075,171 +1079,179 @@ function hideAdvanced() {
   $(".locationTabText").text($(".locationTabText").attr("title"));
 }
 function activateSideColumn() {
-			// Make paths relative to current page
-	 		$("#navcolumn a[href]").each(function() {
-	 			if($(this).attr("href").toLowerCase().indexOf("http") < 0) {
-	 				if($(this).attr("href").indexOf("/") != 0) { // Don't append if starts with /
-	 					$(this).attr("href", climbpath + $(this).attr('href'));
-		      		}
-		  		}
-		    })
-	 		$("#navcolumn img[src]").each(function() {
-	 			if($(this).attr("src").indexOf("/") != 0) { // Don't append if starts with /
-		      		$(this).attr("src", climbpath + $(this).attr('src'));
-		  		}
-		    })
-			
-			// Clone after path change
-	 		$("#headerLogo").clone().appendTo("#logoholderside");
+	// Make paths relative to current page
+		$("#navcolumn a[href]").each(function() {
+			if($(this).attr("href").toLowerCase().indexOf("http") < 0) {
+				if($(this).attr("href").indexOf("/") != 0) { // Don't append if starts with /
+					$(this).attr("href", climbpath + $(this).attr('href'));
+      		}
+  		}
+    })
+		$("#navcolumn img[src]").each(function() {
+			if($(this).attr("src").indexOf("/") != 0) { // Don't append if starts with /
+      		$(this).attr("src", climbpath + $(this).attr('src'));
+  		}
+    })
+	
+	// Clone after path change
+		$("#headerLogo").clone().appendTo("#logoholderside");
 
-	 		// ALL SIDE COLUMN ITEMS
-	 		var topMenu = $("#cloneLeft");
-	 		//console.log("topMenu:");
-	 		//console.log(topMenu);
-			var menuItems = topMenu.find("a");
-			var scrollItems = menuItems.map(function(){ // Only include "a" tag elements that have an href.
+		// ALL SIDE COLUMN ITEMS
+		var topMenu = $("#cloneLeft");
+		//console.log("topMenu:");
+		//console.log(topMenu);
+	var menuItems = topMenu.find("a");
+	var scrollItems = menuItems.map(function(){ // Only include "a" tag elements that have an href.
 
-				// Get the section using the names of hash tags (since id's start with #). Example: #intro, #objectives
-				if ($(this).attr("href").includes('#')) {
-					var sectionID = '#' + $(this).attr("href").split('#')[1].split('&')[0]; 
-					if (sectionID.indexOf("=") >= 0) { // Sometimes the show (section) value may be passed without an equals sign.
-						sectionID = sectionID.split('=')[0];
-					}
-				    var item = $(sectionID); //   .replace(/\//g, "").replace(/../g, "")    Use of replaces fixes error due to slash in path.
-				    if (item.length) {
-				    	return item;
-				    }
-				}
-			});
-			var bottomSection = "partners";
-
-	 		// BIND CLICK HANDLER TO MENU ITEMS
-			menuItems.click(function(e){
-			  var href = $(this).attr("href");
-			  /*
-			  console.log('Clicked ' + href);
-			  var offsetTop = href === "#" ? 0 : $(href).offset().top-topMenuHeight+1;
-			  */
-			  if (href.includes("#intro")) { 
-
-			  	// If current page contains a section called intro
-			  	if($('#intro').length > 0) {
-				  	//alert("intro click")
-				    $('html,body').scrollTop(0);
-
-				    // BUGBUG - still need to set URL since this is needed to override default position:
-				    e.preventDefault();
-				}
-			  }
-			});
-
-			/*
-			// Alternative to flaky $(this).scrollTop()+topMenuHeight; // this is the window
-			function getScrollTop(){
-			    if(typeof pageYOffset != 'undefined'){
-			        //most browsers except IE before #9
-			        return pageYOffset;
-			    }
-			    else{
-			        var B= document.body; //IE 'quirks'
-			        var D= document.documentElement; //IE with doctype
-			        D= (D.clientHeight)? D: B;
-			        return D.scrollTop;
-			    }
+		// Get the section using the names of hash tags (since id's start with #). Example: #intro, #objectives
+		if ($(this).attr("href").includes('#')) {
+			var sectionID = '#' + $(this).attr("href").split('#')[1].split('&')[0]; 
+			if (sectionID.indexOf("=") >= 0) { // Sometimes the show (section) value may be passed without an equals sign.
+				sectionID = sectionID.split('=')[0];
 			}
-			*/
+		    var item = $(sectionID); //   .replace(/\//g, "").replace(/../g, "")    Use of replaces fixes error due to slash in path.
+		    if (item.length) {
+		    	return item;
+		    }
+		}
+	});
+	var bottomSection = "partners";
 
-			// HIGHLIGHT SIDE NAVIGATION ON SCROLL
-			function currentSideID() {
-				var scrollTop = window.pageYOffset || (document.documentElement.clientHeight ? document.documentElement.scrollTop : document.body.scrollTop) || 0;
-				var topMenuHeight = 150;
-				// Get container scroll position
-				var fromTop = scrollTop+topMenuHeight; // this is the window
-				//console.log('fromTop ' + fromTop);
-				// Get id of current scroll item
-				var cur = scrollItems.map(function(){
-					// scrollItems is the sections fron nav.html, but just return the current one.
-			   		//console.log('offset().top ' + $(this).offset().top)
-			     	if ($(this).offset().top < fromTop) {
-			     		//console.log('offset().top < fromTop ' + $(this).offset().top + ' < ' + fromTop);
-			     		return this;
-			       	}
-				});
-				if (cur.length == 0 && $("#allsections").length) {
-					// At top, above top of intro section
-					// To Do: Get the top most section
-					// allsections
-					return $("#allsections section:first").attr("id"); // "intro" when on tools page,
-				}
-				// Get the id of the last item fetched from scrollItems
-				cur = cur[cur.length-1];
-				var id = cur && cur.length ? cur[0].id : "";
-				//console.log('currentSideID id: ' + id);
-				return id;
-			}
-			var lastID;
-			
-			$(window).scroll(function() {
-				var id = currentSideID();
-				//console.log("id: " + id + " lastID: " + lastID);
-			   if($('#' + bottomSection).length > 0 && $(window).scrollTop() + $(window).height() == $(document).height()) { // If bottomSection exists and at bottom
-			      //console.log('at bottom');
-			      menuItems.removeClass("active");
-			      menuItems.filter("[href*='#"+bottomSection+"']").addClass("active");
-			      lastID = bottomSection;
-			   } else if (id && lastID !== id) { // Highlight side navigation
-			      //console.log("CURRENT ID: " + id);
-			      lastID = id;
-			      menuItems.removeClass("active");
-			      if (currentSection && currentSection.length) {
-			      	if (id.length == 0) {
-			      		// Page without sections
-			      	} else if (id == "intro") {
-			      		// To do: Change to highlight the uppermost section.
-			      		menuItems.filter("[href='..\/tools\/#']").addClass("active");
-			      	} else {
-			      		//alert("id " + id)
-			      		menuItems.filter("[href*='#"+id+"']").addClass("active"); // *= means contains
-			      		menuItems.filter("[hashid='" + id + "']").addClass("active");
-			      	}
-			  	  }
-			      /*
-			      menuItems
-			         .parent().removeClass("active")
-			         .end().filter("[href*='#"+id+"']").parent().addClass("active");
-			       */
-			   } else {
-			   		//console.log("Scrolling, no action");
-			   }
-			   
-			  if (id == "intro") {
-			  	console.log("headerbar show");
-			    $('.headerbar').show();
+		// BIND CLICK HANDLER TO MENU ITEMS
+	menuItems.click(function(e){
+	  var href = $(this).attr("href");
+	  /*
+	  console.log('Clicked ' + href);
+	  var offsetTop = href === "#" ? 0 : $(href).offset().top-topMenuHeight+1;
+	  */
+	  if (href.includes("#intro")) { 
 
-			    // For when entering from a #intro link from another page.
-			    // Would be better to disable browser jump to #intro elsewhere.
-			    //$('html,body').scrollTop(0); 
-			  }
-			});
+	  	// If current page contains a section called intro
+	  	if($('#intro').length > 0) {
+		  	//alert("intro click")
+		    $('html,body').scrollTop(0);
 
-			// Initial page load
-			var currentSection = currentSideID();
-			//alert("currentSection " + currentSection)
-			if (currentSection && currentSection.length) {
-				if (currentSection == "intro") {
-			      	// To do: Change to highlight the uppermost section.
-			      	menuItems.filter("[href='..\/tools\/#']").addClass("active");
-			      	lastID = "intro";
-			    } else {
-			    	menuItems.filter("[href*='#"+currentSection+"']").addClass("active");
-			    	menuItems.filter("[hashid='" + currentSection + "']").addClass("active");
-			    	// To do: If not found, try using folder name from link when no #
-			    	//menuItems.filter("[href*='interns/']").addClass("active");
-				}
-			}
+		    // BUGBUG - still need to set URL since this is needed to override default position:
+		    e.preventDefault();
+		}
+	  }
+	});
+
+	/*
+	// Alternative to flaky $(this).scrollTop()+topMenuHeight; // this is the window
+	function getScrollTop(){
+	    if(typeof pageYOffset != 'undefined'){
+	        //most browsers except IE before #9
+	        return pageYOffset;
+	    }
+	    else{
+	        var B= document.body; //IE 'quirks'
+	        var D= document.documentElement; //IE with doctype
+	        D= (D.clientHeight)? D: B;
+	        return D.scrollTop;
+	    }
+	}
+	*/
+
+	// HIGHLIGHT SIDE NAVIGATION ON SCROLL
+	function currentSideID() {
+		var scrollTop = window.pageYOffset || (document.documentElement.clientHeight ? document.documentElement.scrollTop : document.body.scrollTop) || 0;
+		var topMenuHeight = 150;
+		// Get container scroll position
+		var fromTop = scrollTop+topMenuHeight; // this is the window
+		//console.log('fromTop ' + fromTop);
+		// Get id of current scroll item
+		var cur = scrollItems.map(function(){
+			// scrollItems is the sections fron nav.html, but just return the current one.
+	   		//console.log('offset().top ' + $(this).offset().top)
+	     	if ($(this).offset().top < fromTop) {
+	     		//console.log('offset().top < fromTop ' + $(this).offset().top + ' < ' + fromTop);
+	     		return this;
+	       	}
+		});
+		if (cur.length == 0 && $("#allsections").length) {
+			// At top, above top of intro section
+			// To Do: Get the top most section
+			// allsections
+			return $("#allsections section:first").attr("id"); // "intro" when on tools page,
+		}
+		// Get the id of the last item fetched from scrollItems
+		cur = cur[cur.length-1];
+		var id = cur && cur.length ? cur[0].id : "";
+		//console.log('currentSideID id: ' + id);
+		return id;
+	}
+	var lastID;
+	
+	$(window).scroll(function() {
+		var id = currentSideID();
+		//console.log("id: " + id + " lastID: " + lastID);
+	   if($('#' + bottomSection).length > 0 && $(window).scrollTop() + $(window).height() == $(document).height()) { // If bottomSection exists and at bottom
+	      //console.log('at bottom');
+	      menuItems.removeClass("active");
+	      menuItems.filter("[href*='#"+bottomSection+"']").addClass("active");
+	      lastID = bottomSection;
+	   } else if (id && lastID !== id) { // Highlight side navigation
+	      //console.log("CURRENT ID: " + id);
+	      lastID = id;
+	      menuItems.removeClass("active");
+	      if (currentSection && currentSection.length) {
+	      	if (id.length == 0) {
+	      		// Page without sections
+	      	} else if (id == "intro") {
+	      		// To do: Change to highlight the uppermost section.
+	      		menuItems.filter("[href='..\/tools\/#']").addClass("active");
+	      	} else {
+	      		//alert("id " + id)
+	      		menuItems.filter("[href*='#"+id+"']").addClass("active"); // *= means contains
+	      		menuItems.filter("[hashid='" + id + "']").addClass("active");
+	      	}
+	  	  }
+	      /*
+	      menuItems
+	         .parent().removeClass("active")
+	         .end().filter("[href*='#"+id+"']").parent().addClass("active");
+	       */
+	   } else {
+	   		//console.log("Scrolling, no action");
+	   }
+	   
+	  if (id == "intro") {
+	  	console.log("headerbar show");
+	    $('.headerbar').show();
+
+	    // For when entering from a #intro link from another page.
+	    // Would be better to disable browser jump to #intro elsewhere.
+	    //$('html,body').scrollTop(0); 
+	  }
+	});
+
+	// Initial page load
+	var currentSection = currentSideID();
+	//alert("currentSection " + currentSection)
+	if (currentSection && currentSection.length) {
+		if (currentSection == "intro") {
+	      	// To do: Change to highlight the uppermost section.
+	      	menuItems.filter("[href='..\/tools\/#']").addClass("active");
+	      	lastID = "intro";
+	    } else {
+	    	menuItems.filter("[href*='#"+currentSection+"']").addClass("active");
+	    	menuItems.filter("[hashid='" + currentSection + "']").addClass("active");
+	    	// To do: If not found, try using folder name from link when no #
+	    	//menuItems.filter("[href*='interns/']").addClass("active");
+		}
+	}
 }
 
-
+// INIT
+if (param.mapview == "state") {
+	loadScript(theroot + 'js/map.js', function(results) {
+		loadScript(theroot + 'js/map-filters.js', function(results) {
+			//renderMapShapes("geomap", param, 0); // Resides in map-filters.js
+			openMapLocationFilter();
+		});
+	});
+}
 function makeLinksRelative(divID,climbpath,pageFolder) {
 	  $("#" + divID + " a[href]").each(function() {
 

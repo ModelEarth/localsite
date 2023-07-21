@@ -78,7 +78,6 @@ function populateFieldsFromHash() {
 //$(".filterUL li").removeClass("selected");
 //$(".filterUL li").find("[data-id='counties']").addClass("selected"); // Not working
 
-//renderMapShapes("geomap", param); // Resides in map-filters.js
 
 $(".showSearch").css("display","inline-block");
 $(".showSearch").removeClass("local");
@@ -378,7 +377,7 @@ $(document).ready(function () {
 	$(document).on("click", "body", function(event) {
         if ($("#navcolumn").is(":visible") && window.innerWidth < 1200) { 
             $('#navcolumn').hide();
-            $("#showSide").show();
+            $("#showSide").show();$("#showSideInBar").hide();
             $("#sideIcons").show();
             $('body').removeClass('bodyLeftMargin');
             $('body').removeClass('bodyLeftMarginFull');
@@ -403,7 +402,9 @@ $(document).ready(function () {
         let searchQuery = $('#keywordsTB').val();
         let search = $('.selected_col:checked').map(function() {return this.id;}).get().join(',');
         // To do: set search to empty array if all search boxes are checked.
-        updateHash({"q":searchQuery,"search":search});
+
+        // Might be good to change this to goHash, and remove call to loadMap1() below from map-filters.js
+        updateHash({"q":searchQuery,"search":search}); // Avoids triggering hash change event.
         if(!hash.show) {
             window.location = "/localsite/info/" + location.hash;
             return;
@@ -416,8 +417,6 @@ $(document).ready(function () {
 			$('#catListHolderShow').show();
 			$('#catListHolderShow').text('Product Categories');
 		}
-		
-		
 		
 		loadMap1("map-filters.js");
 	    event.stopPropagation();
@@ -493,16 +492,8 @@ $(document).ready(function () {
         //history.pushState("", document.title, window.location.pathname);
         //loadHtmlTable(true); // New list
 
-        
-
         let hash = getHash();
         goHash(hash); // Now trigger the hash change
-
-
-        //renderMapShapes("geomap", hash, 1); // County select map
-
-        //loadMap1("map-filters.js 2"); // BUGBUG - this hid map on /map page, perhaps dataset is not available during clear.
-        //event.stopPropagation();
         return false; // Deactivates a href
     }
    	$("#clearButton").click(function() {
@@ -560,27 +551,6 @@ $(document).ready(function () {
 		  '_blank' // open in a new tab.
 		);
    	});
-
-
-	
-	// From Export Directory - Remove this function below
-	//loadHtmlTable(true);
-	/*
-	document.addEventListener('hashChangeEvent', function (elem) {
-	//$(window).on('hashchange', function() { // Refresh param values when user changes the URL after #.
-		//clearFields();
-		param = loadParams(location.search,location.hash); // Refresh with new hash values
-		console.log("map-filters.js detects hashChangeEvent (second place). param: ")
-		console.log(param)
-		populateFieldsFromHash();
-		productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
-	//});
-	}, false);
-	*/
-	if (param.view) { // Show location filter shape map on initial load
-		//filterClickLocation();
-	}
-
 });
 
 function productList(startRange, endRange, text) {
@@ -698,67 +668,7 @@ function filterClickLocation(loadGeoTable) {
             updateHash({"mapview":""});
         }
 	} else { // OPEN MAP FILTER
-		let hash = getHash();
-        //alert("hash.state " + hash.state);
-        //alert("param.state " + param.state);
-        console.log("show #filterLocations");
-        if (!hash.state && param.state) {
-            hash.state = param.state; // For /apps/base/
-            console.log("filterClickLocation updatesHash state " + hash.state);
-            updateHash({"state":hash.state});
-        }
-        if (!hash.mapview) {
-			let currentStates = [];
-			if(hash.geo && !hash.state) {
-				let geos = hash.geo.split(",");
-				for(var i = 0 ; i < geos.length ; i++) {
-					currentStates.push(getKeyByValue(us_stateIDs, Number(geos[i].replace("US","").substring(0,2))));
-				}
-			}
-			if (currentStates.length > 0) { // Multiple states, use first one.
-				goHash({"mapview":"state","state":currentStates[0]});
-			} else {
-				goHash({"mapview":"state"});
-			}
-		}
-		$("#geoPicker").show();
-		$("#filterLocations").show();
-		$(".locationTabText").text("Locations");
-		$("#topPanel").hide();
-        $("#showLocations").show();
-		$("#hideLocations").hide();
-
-        $("#hero_holder").hide();
-        if (typeof state_select_holder != "undefined") {
-            state_select_holder.appendChild(state_select); // For apps hero
-        }
-        locationFilterChange("counties");
-
-		if (hash.geo) {
-			let clearall = false;
-	        if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
-	        	clearall = true;
-	        }
-	        if (hash.mapview != "country") {
-	        	if (loadGeoTable != false) { // Prevents loading twice on init
-	        		//alert("updateSelectedTableRows 1")
-					updateSelectedTableRows(hash.geo, clearall, 0);
-				}
-			}
-		}
-		$("#filterClickLocation").addClass("filterClickActive");
-		
-		//renderMapShapes("geomap", hash, 1);// Called once map div is visible for tiles.
-        if ($("#filterLocations").length) {
-            $('html,body').animate({
-                scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
-            });
-        } else {
-            console.log("ALERT #filterLocations not available yet.")
-        }
-        if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
-            $("#header.nav-up").show();
-        }
+		openMapLocationFilter()
 	}
 	$("#keywordFields").hide();
 	
@@ -768,7 +678,69 @@ function filterClickLocation(loadGeoTable) {
     // TO DO: Display cities, etc. somehow without clicking submenu.
     // 
 }
+function openMapLocationFilter() {
+    let hash = getHash();
+    //alert("hash.state " + hash.state);
+    //alert("param.state " + param.state);
+    console.log("show #filterLocations");
+    if (!hash.state && param.state) {
+        hash.state = param.state; // For /apps/base/
+        console.log("filterClickLocation updatesHash state " + hash.state);
+        updateHash({"state":hash.state});
+    }
+    if (!hash.mapview) {
+        let currentStates = [];
+        if(hash.geo && !hash.state) {
+            let geos = hash.geo.split(",");
+            for(var i = 0 ; i < geos.length ; i++) {
+                currentStates.push(getKeyByValue(us_stateIDs, Number(geos[i].replace("US","").substring(0,2))));
+            }
+        }
+        if (currentStates.length > 0) { // Multiple states, use first one.
+            goHash({"mapview":"state","state":currentStates[0]});
+        } else {
+            goHash({"mapview":"state"});
+        }
+    }
+    $("#geoPicker").show();
+    $("#filterLocations").show();
+    $(".locationTabText").text("Locations");
+    $("#topPanel").hide();
+    $("#showLocations").show();
+    $("#hideLocations").hide();
 
+    $("#hero_holder").hide();
+    if (typeof state_select_holder != "undefined") {
+        state_select_holder.appendChild(state_select); // For apps hero
+    }
+    locationFilterChange("counties");
+
+    if (hash.geo) {
+        let clearall = false;
+        if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
+            clearall = true;
+        }
+        if (hash.mapview != "country") {
+            if (loadGeoTable != false) { // Prevents loading twice on init
+                //alert("updateSelectedTableRows 1")
+                updateSelectedTableRows(hash.geo, clearall, 0);
+            }
+        }
+    }
+    $("#filterClickLocation").addClass("filterClickActive");
+    
+    //renderMapShapes("geomap", hash, 1);// Called once map div is visible for tiles.
+    if ($("#filterLocations").length) {
+        $('html,body').animate({
+            scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
+        });
+    } else {
+        console.log("ALERT #filterLocations not available yet.")
+    }
+    if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
+        $("#header.nav-up").show();
+    }
+}
 function locationFilterChange(selectedValue,selectedGeo) {
 	let hash = getHash();
 	var useCookies = false; // Would need Cookies from explore repo.
@@ -1027,8 +999,8 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
         				//console.log("geoCountyTable");
         				//console.log(geoCountyTable);
                     }
-                    console.log("myData");
-                    console.log(myData);
+                    consoleLog(myData.length + " counties loaded.");
+                    //console.log(myData);
     				showTabulatorList(element, 0);
 
     			});
@@ -1144,11 +1116,11 @@ function loadObjectData(element, attempts) {
 var statetable = {};
 var geotable = {};
 function showTabulatorList(element, attempts) {
-    //alert("showTabulatorList " + element + " attempts: " + attempts);
+    consoleLog("showTabulatorList. Length: " + Object.keys(element).length + ". Attempt: " + attempts);
 	let hash = getHash();
 	if (typeof Tabulator !== 'undefined') {
         
-		console.log("showTabulatorList " + attempts)
+		//console.log("showTabulatorList " + attempts)
 		// Try this with 5.0. Currently prevents row click from checking box.
 		// selectable:true,
 
@@ -1159,16 +1131,14 @@ function showTabulatorList(element, attempts) {
             if (val["jurisdiction"]) { // 3 in the state json file don't have a jurisdiction value.
                 dataForTabulator.push(val);
             }
-            //localObject[element.scope].push(val)
-            //rowcount++;
-            console.log("1 " + element.scope);
           } else { // countries
             dataForTabulator.push(val);
-            console.log("2 " + element.scope);
+            
           }
+          //console.log("Scope in Tabulator " + element.scope);
         });
 
-        console.log("dataForTabulator")
+        //console.log("dataForTabulator")
         //console.log(dataForTabulator)
 
 		// For fixed header, also allows only visible rows to be loaded. See "Row Display Test" below.
@@ -1285,11 +1255,9 @@ function showTabulatorList(element, attempts) {
 
             //document.addEventListener("#tabulator-geotable", function(event) { // Wait for #tabulator-geotable div availability.
 
-            console.log("load county list");
-
             waitForElm('#tabulator-geotable').then((elm) => {
 
-                console.log("#tabulator-geotable available");
+                //console.log("#tabulator-geotable available. State: " + hash.state);
 
                 $("#tabulator-statetable").hide();
                 $("#tabulator-geotable").show();
@@ -1399,6 +1367,7 @@ function showTabulatorList(element, attempts) {
         			    }
         		    },
         		});
+                consoleLog("Tabulator list displayed. State: " + hash.state);
             }); // End wait for element #tabulator-geotable
         }
 		//geotable.selectRow(geotable.getRows().filter(row => row.getData().name == 'Fulton County, GA'));
@@ -1635,31 +1604,9 @@ function displayRow(rowArray) {
 	$("#dataList").append( "<div><div><div style='float:right'>Add</div>" + rowArray[0] + "</div><div><b class='exporter'>Export Categories: </b><span class='exporter'> " + rowArray[2] + "</span></div><div>" + rowArray[3] + "</div><div>" + rowArray[4] + "</div><div><b>Product HS Codes: </b>" + rowArray[5] + "</div></div>");
 	//<div>" + rowArray[6] + "</div><div>" + rowArray[7] + "</div>
 }
+
 var dataSet = [];
-function loadHtmlTable(applyFilter) {
-	//d3.text("exporters/export.csv", function(data) {
-	d3.text("https://georgiadata.github.io/display/products/exporters/export.csv").then(function(data) {
-      //dataSet = d3.csv.parseRows(data);
-      dataSet = d3.csvParseRows(data);
-      var listHeader = [];
-      console.log("loadHtmlTable - dataSet row count: " + dataSet.length);
-      
-      for(var i = 0; i < dataSet.length; i++) {
-      	/*
-      	if (i == 0) { // Header row
-      		// Possible https://www.papaparse.com/demo - Keys data by field name rather than an array.
-      		for(var j = 0; j < dataSet.length; j++) {
-				console.log(dataSet[i][j]) // Header values
-				listHeader.push(dataSet[i][j])
-			}
-      	}
-      	*/
-      	       	
-      }
-      //displayResults();
-      //displayGrid(applyFilter);
-    }); 	
-}
+
 function displayListX() {
 	console.log("displayList");
 	var matchCount = 0;
@@ -1704,10 +1651,10 @@ function displayGrid(applyFilter) {
 function SearchProductCodes(event1) {
 	console.log("SearchProductCodes")
 	var kCode = String.fromCharCode(event1.keyCode);
-	//alert($("#productCodes").val())
+	alert("Not currently active. " + $("#productCodes").val())
 	
 	//if ($("#productCodes").val().length==0) {
-		loadHtmlTable(true);
+		//loadHtmlTable(true);
 	//} else {
 		//if (kCode == "\n" || kCode == "\r") {
 			//alert("SearchProductCodes")
@@ -1796,10 +1743,13 @@ $(document).ready(function () {
     var catString = catTitle.replace(/ /g, '_').replace(/&/g, '%26');
     $("#bigThumbPanelHolder").hide();
     $(".showApps").removeClass("filterClickActive");
-    console.log("catList triggers update. cat: " + catString);
-    clearListDisplay();
     if (catString == "All_Categories") {
+        hash.cat = "";
         catString = "";
+    } else {
+        console.log("catList triggers update. cat: " + catString);
+        // Too soon here
+        //clearListDisplay();
     }
     goHash({"cat":catString,"subcat":"","name":""}); // Let the hash change trigger updates
     event.stopPropagation();
@@ -2011,7 +1961,7 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
 
         if (localObject.layers.length >= 0) {
             callback();
-            //return;
+            return;
         }
 	    let layerObject = (function() {
             //alert("loadLocalObjectLayers layerObject " + layerName);
@@ -2061,6 +2011,7 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
                 	}
             	}
                 callback();
+                return;
                 //return layerObject;
 	            
 	        });
@@ -2325,7 +2276,7 @@ function hashChanged() {
         $("#country_select").val(hash.mapview);
     }
 
-	if (hash.state != priorHash.state) {
+	if (hash.mapview && hash.state != priorHash.state) {
 		loadGeomap = true;
 		if(location.host.indexOf('model.georgia') >= 0) {
 			if (hash.state != "" && hash.state.split(",")[0].toUpperCase() != "GA") { // If viewing other state, use model.earth
@@ -2613,9 +2564,7 @@ function hashChanged() {
     	//$("#filterLocations").show();
     	//$("#geomap").show(); // To trigger map filter display below.
     	if (hash.mapview) {
-    		//alert("render1")
-    		renderMapShapes("geomap", hash, 1); // County select map
-    		loadGeomap = false;
+    		loadGeomap = true;
     	} else {
             $("#filterLocations").hide();
     	}
@@ -2625,7 +2574,7 @@ function hashChanged() {
 	priorHash = getHash();
 	if (loadGeomap) {
 		if($("#geomap").is(':visible')){
-			//alert("render")
+			console.log("call renderMapShapes from map-filter.js hashChanged()");
 			renderMapShapes("geomap", hash, 1); // County select map
 		}
 	}

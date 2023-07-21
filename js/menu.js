@@ -79,9 +79,12 @@ function removeFrontMenuFolder(path) {
 
 
 function initMenu(partnerMenu) {
-    // Greenville:
+
+    // Used by Open Footprint navigation
+
+    // Greenville - Pull data from a public Google Sheet and create a Leaflet Map and shareable GeoJSON
     // https://github.com/codeforgreenville/leaflet-google-sheets-template
-    // https://data.openupstate.org/map-layers
+    // Samples: https://data.openupstate.org/map-layers
 
     let layerJson = partnerMenu.layerJson; 
     //console.log(layerJson);
