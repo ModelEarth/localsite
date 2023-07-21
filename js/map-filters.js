@@ -34,7 +34,7 @@ function populateFieldsFromHash() {
     let hash = getHash();
 	$("#keywordsTB").val(hash.q);
     waitForElm('#mainCatList').then((elm) => {
-        //alert("populateFieldsFromHash " + hash.cat);
+        consoleLog("#mainCatList ready for use with cat: " + hash.cat);
     	$('.catList > div').removeClass('catListSelected');
     	if (hash.cat) {
     		var catString = hash.cat.replace(/_/g, ' ');

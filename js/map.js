@@ -264,7 +264,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.catColumn = "Industries Trade";
         dp.mapable = "false";
         //dp.subcatColumn = "Materials Accepted";
-        //dp.itemsColumn = "Materials Accepted"; // Needs to remain capitalized. Equivalent to PPE items column, checkboxes
+        //dp.itemsColumn = "Materials Accepted"; // Needs to remain capitalized.
 
         // https://map.georgia.org/recycling/
         dp.editLink = "";
@@ -325,7 +325,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.valueColumnLabel = "Category";
         dp.catColumn = "Category";
         dp.subcatColumn = "Materials Accepted";
-        dp.itemsColumn = "Materials Accepted"; // Needs to remain capitalized. Equivalent to PPE items column, checkboxes
+        dp.itemsColumn = "Materials Accepted"; // Needs to remain capitalized.
         dp.color = "#E31C79"; // When no category
 
         dp.markerType = "google";
@@ -363,7 +363,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         ////dp.showKeys = "description"; // How would this be used?
 
         //dp.subcatColumn = "siccode";
-        dp.itemsColumn = "SIC_CODE_LIST"; // Needs to remain capitalized. Equivalent to PPE items column, checkboxes
+        dp.itemsColumn = "SIC_CODE_LIST"; // Needs to remain capitalized.
         
 
         dp.markerType = "google";
@@ -608,28 +608,6 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.showLegend = false;
 
         dp.listLocation = false;
-        dp.addLink = "https://www.georgia.org/covid19response"; // Not yet used
-
-      } else if (show == "suppliers" || show == "ppe") {
-
-        // https://docs.google.com/spreadsheets/d/1bqMTVgaMpHIFQBNdiyMe3ZeMMr_lp9qTgzjdouRJTKI/edit?usp=sharing
-        dp.listTitle = "Georgia COVID-19 Response"; // Appears at top of list
-        //dp.listTitle = "Georgia PPE Suppliers"; // How do we set the layer title for checkbox?
-        //dp.editLink = "";
-        //dp.googleDocID = "1bqMTVgaMpHIFQBNdiyMe3ZeMMr_lp9qTgzjdouRJTKI"; // Producing 404's
-        dp.sheetName = "GA Suppliers List";
-        dp.mapInfo = "Select a category to the left to filter results. View&nbsp;<a href='https://map.georgia.org/display/products/suppliers/us_ga_suppliers_ppe_2021_08_09.csv' target='_parent'>PDF&nbsp;version</a>&nbsp;of&nbsp;the&nbsp;complete&nbsp;list.";
-        dp.dataset = "https://map.georgia.org/display/products/suppliers/us_ga_suppliers_ppe_2021_08_09.csv";
-
-        //dp.dataTitle = "Manufacturers and Distributors";
-        dp.dataTitle = "PPE Suppliers"; // Appears in thumb menu.
-        dp.itemsColumn = "items";
-        dp.valueColumn = "type";
-        dp.valueColumnLabel = "Type";
-        dp.color = "#ff9819"; // orange - Since there is no type column. An item column is filtered. To do: Pull types from a tab and relate to the first type in each column.
-        dp.markerType = "google";
-        dp.search = {"In Company Name": "company", "In Items": "items", "In Website URL": "website", "In City Name": "city", "In Zip Code" : "zip"};
-        dp.nameColumn = "company";
 
       } else if (show == "suppliersX" || show == "ppeX") { // "http://" + param["domain"]
 
@@ -3894,13 +3872,15 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       'OpenStreetMap' : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
       }),
-      'Rail' : L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
-          minZoom: 2, maxZoom: 19, tileSize: 256, attribution: '<a href="https://www.openrailwaymap.org/">OpenRailwayMap</a>'
-      }),
+      
     }
   }
   // TODO - Adjust to allow for map1 also
-  let overlays = {};
+  let overlays = {
+    'Rail' : L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
+          minZoom: 2, maxZoom: 19, tileSize: 256, attribution: '<a href="https://www.openrailwaymap.org/">OpenRailwayMap</a>'
+      }),
+  };
   //overlays[dataTitle] = dp.group2; Added a dup checkbox
 
 
