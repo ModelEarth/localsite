@@ -533,7 +533,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
  	opacity: .3;
  	z-index: 1001;
 }
-.showSide {
+.showSide, .showList {
 	cursor: pointer;
 }
 .showSide:hover {

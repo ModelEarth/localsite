@@ -167,12 +167,19 @@ function closeExpandedMenus(menuClicked) {
 function showSide() {
 	$("#sideIcons").hide();
 	$("#navcolumn").show();
+	//alert("#navcolumn show");
+	if ($("#listcolumn").is(":visible")) {
+		$('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed side columns.
+		$('#listcolumn').removeClass('listcolumnOnly');
+	}
+	$("#showSideInBar").hide();
 	if(document.getElementById("containerLayout") != null) {
 		$('#navcolumn').addClass("navcolumnClear");
 		$('body').addClass('bodyLeftMarginNone');
 	} else {
 		$("#fullcolumn #showSide").hide();
 		$('body').addClass('bodyLeftMargin'); // Margin on left for fixed nav column.
+		/*
 		if($('#listcolumnList').html().length) { // Showing both nav and list columns
 			$("#listcolumn").show();
 			$('#listcolumn').removeClass('listcolumnOnly');
@@ -185,6 +192,7 @@ function showSide() {
 				}
 			}
 		}
+		*/
 		$('body').addClass('mobileView');
 
 		// Recenters
@@ -352,10 +360,10 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 			if ($("#listcolumn").is(':visible')) {
 				$('#listcolumn').addClass('listcolumnOnly');
 				$('body').addClass('bodyLeftMarginList');
-
 			}
 		} else {
 			$("#listcolumn").hide();
+			$("#showListInBar").show();
 		}
 		if ($("#navcolumn").is(':hidden') && $("#listcolumn").is(':hidden')) {
 			$("#showSide").show();$("#showSideInBar").hide();
@@ -708,7 +716,6 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	}
 	// END SIDE NAV WITH HIGHLIGHT ON SCROLL
 } // end applyNavigation function
-
 
 $(document).ready(function () {
 	//alert("word")
