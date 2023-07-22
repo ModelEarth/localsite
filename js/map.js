@@ -154,6 +154,8 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   if (show == "farmfresh" && theState) {
     dp.listTitle = "USDA Farm Produce";
     //if (location.host.indexOf('localhost') >= 0) {
+      dp.categories = "farm,market"; // TO DO: Activate so column parsing for cats is avoided
+      dp.categoriesTitles = "Direct from Farm, Farmers Markets"; 
       dp.valueColumn = "type";
       dp.valueColumnLabel = "Type";
       dp.dataset = "https://model.earth/community-data/us/state/" + theState + "/" + theState.toLowerCase() + "-farmfresh.csv";
@@ -174,10 +176,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
     dp.titleColumn = "name";
     dp.searchFields = "name";
     dp.addressColumn = "street";
-    //dp.latColumn = "latitude";
-    //dp.lonColumn = "longitude";
     dp.stateColumn = "state";
-
     dp.addlisting = "https://www.ams.usda.gov/services/local-regional/food-directories-update";
     // community/farmfresh/ 
     dp.mapInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community/farmfresh/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
@@ -233,6 +232,8 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.search = {"In Location Name": "name"};
         dp.valueColumn = "type";
         dp.valueColumnLabel = "Type";
+        dp.latitude = 34.82;
+        dp.longitude = -98.57;
         dp.zoom = 4;
   } else if (show == "openepd") {
         dp.listTitle = "Environmental Product Declarations";
@@ -608,38 +609,6 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.showLegend = false;
 
         dp.listLocation = false;
-
-      } else if (show == "suppliersX" || show == "ppeX") { // "http://" + param["domain"]
-
-        dp.listTitle = "Georgia COVID-19 Response";
-        dp.listTitle = "Georgia Suppliers of&nbsp;Critical Items <span style='white-space:nowrap'>to Fight COVID-19</span>"; // For iFrame site
-        // https://www.georgia.org/sites/default/files/2021-01 
-        dp.mapInfo = "Select a category to the left to filter results. View&nbsp;<a href='https://map.georgia.org/display/products/suppliers-pdf/ga_suppliers_list_2021-03-10.pdf' target='_parent'>PDF&nbsp;version</a>&nbsp;of&nbsp;the&nbsp;complete&nbsp;list.";
-        dp.dataset = "https://map.georgia.org/display/products/suppliers/us_ga_suppliers_ppe_2021_02_24.csv";
-        //dp.dataset = "/display/products/suppliers/us_ga_suppliers_ppe_2020_06_17.csv";
-
-        dp.dataTitle = "Manufacturers and Distributors";
-        dp.itemsColumn = "items";
-        dp.valueColumn = "type";
-        dp.valueColumnLabel = "Type";
-        dp.color = "#ff9819"; // orange
-        dp.markerType = "google";
-        //dp.keywords = "items";
-        // "In Business Type": "type", "In State Name": "state", "In Postal Code" : "zip"
-        dp.search = {"In Items": "items", "In Website URL": "website", "In City Name": "city", "In Zip Code" : "zip"};
-        dp.nameColumn = "title";
-        dp.latColumn = "lat_rand";
-        dp.lonColumn = "lon_rand";
-
-        if (param["initial"] != "response") {
-          dp.nameColumn = "company";
-          dp.latColumn = "latitude";
-          dp.lonColumn = "longitude";
-          dp.showLegend = false;
-        }
-
-        dp.listLocation = false;
-        dp.addLink = "https://www.georgia.org/covid19response"; // Not yet used
 
       } else if (show == "restaurants") {
         // Fulton County 5631 restaurants
@@ -1271,9 +1240,8 @@ function showList(dp,map) {
     } else 
     */
 
-    // count "filtered" populated for active rows only
+    // Layer's categories are from a unique tab in a Google sheet
     if (localObject.layerCategories[dp.show] && localObject.layerCategories[dp.show].length >= 0) {
-
       if (elementRaw[dp.catColumn] && elementRaw[dp.catColumn] == hash.cat) {
         if (dp.subcatColumn && elementRaw[dp.subcatColumn].length <= 0) {
           subcatObject["null"].count = subcatObject["null"].count + 1;
@@ -1287,7 +1255,7 @@ function showList(dp,map) {
           $.each(localObject.layerCategories[dp.show], function(index,value) {
             console.log("value.SubCategory: " + value.SubCategory);
             //console.log(subcatObject[value.SubCategory]);
-            if (elementRaw[dp.subcatColumn] && subcatObject[value.SubCategory] == elementRaw[dp.subcatColumn]) {
+            if (elementRaw[dp.subcatColumn] && elementRaw[dp.subcatColumn] == subcatObject[value.SubCategory]) {
               
               subcatObject[value.SubCategory].count = subcatObject[value.SubCategory].count + 1;
               //subcatObject[value.SubCategory].count = 12345;
@@ -1299,7 +1267,7 @@ function showList(dp,map) {
       }
     }
 
-    // Filter by object containing a set of keys and their possible values
+    // Filter by an object containing a set of keys and their possible values
     if (dp.filters) {
       filterMatchFound = false;
       $.each(dp.filters, function(index,value) {
@@ -1352,6 +1320,7 @@ function showList(dp,map) {
       //console.log("products_array.length " + products_array.length);
       //console.log("productcode_array.length " + productcode_array.length);
 
+      consoleLog('Begin foundMatch');
       if (products_array.length > 0) { // A list from #catSearch field, typically just one
         for(var p = 0; p < products_array.length; p++) {
           if (products_array[p].length > 0) {
@@ -1376,7 +1345,6 @@ function showList(dp,map) {
         //productMatchFound = 1; // Matches all products
       }
 
-      //console.log('Begin foundMatch');
       if (dataObject.geos && elementRaw[dp.countyColumn]) { // Use name of county pre-loaded into dataObject.
         //console.log('Use name of county pre-loaded');
         for(var g = 0; g < dataObject.geos.length; g++) {
@@ -1470,17 +1438,24 @@ function showList(dp,map) {
           foundMatch++; // Subcat found in Subcategory.
         }
       } else if (hash.cat) {
-        console.log("Look for cat " + hash.cat);
-        if (elementRaw[dp.catColumn] && elementRaw[dp.catColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
-          foundMatch++; // Cat found in Category
+        //console.log("Look for cat: " + hash.cat + ". In column: " + dp.catColumn.toLowerCase());
+        if (elementRaw[dp.valueColumn] && elementRaw[dp.valueColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
+          foundMatch++; // Cat found in Category valueColumn, which may contain multiple cats
           catFound++;
-          console.log("catFound 1");
+          console.log("catFound in valueColumn");
         }
-        // Also check for the cat in the subcat column.
-        else if (elementRaw[dp.subcatColumn] && elementRaw[dp.subcatColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
-          foundMatch++; // Cat found in Category
-          catFound++;
-          console.log("catFound 2")
+        if (!foundMatch) {
+          if (elementRaw[dp.catColumn] && elementRaw[dp.catColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
+            foundMatch++; // Cat found in Category
+            catFound++;
+            console.log("catFound in catColumn");
+          }
+          // Also check for the cat in the subcat column.
+          else if (elementRaw[dp.subcatColumn] && elementRaw[dp.subcatColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
+            foundMatch++; // Cat found in Category
+            catFound++;
+            console.log("catFound in subcatColumn")
+          }
         }
       } else {
         // PPE arrives here even with cat
@@ -2205,96 +2180,97 @@ function showListBodyMargin() {
 function renderCatList(catList,cat) {
   console.log("the catList");
   console.log(catList);
-  // Using param since hash.show is not available when passed in on localsite.js embed link.
-  if (param.show != "ppe" && param.show != "suppliers") { // PPE cats are still hardcoded in localsite/map/index.html. "suppliers" is used in site embed
-      if (catList && Object.keys(catList).length > 0) {
-        let catNavSide = "<div class='all_categories'><div class='legendDot'></div>All Categories</div>";
+  let show = hash.show;
+  if (!hash.show) {
+    // hash.show might not be available when passed in on localsite.js embed link.
+    // If that's so, maybe set hash.show in localsite.js to include param.show from embed link.
+    show = param.show;
+  }
+  if (catList && Object.keys(catList).length > 0) {
+    let catNavSide = "<div class='all_categories'><div class='legendDot'></div>All Categories</div>";
 
-        //console.log("Object.keys(catList)");
-        //console.log(Object.keys(catList));
+    //console.log("Object.keys(catList)");
+    //console.log(Object.keys(catList));
+    console.log("localObject.layerCategories[show]");
+    console.log(localObject.layerCategories[show]);
 
-        console.log("localObject.layerCategories[param.show]");
-        console.log(localObject.layerCategories[param.show]);
+    //BUGBUG - catList already contains CatTitle at this point
+    // SO THE FOLLOWING LOOP MAY NOT BE NECESSARY if we fetch from catList instead. Test with wastewater.
 
-        //BUGBUG - catList already contains CatTitle at this point
-        // SO THE FOLLOWING LOOP MAY NOT BE NECESSARY if we fetch from catList instead. Test with wastewater.
-
-        // Loop through possible categories from SIC tab and append the titles to our catList object
-        //alert("Cats " + localObject.layerCategories[param.show].length);
-        if (param.show == "wastewater" || param.show == "aerospace") {
-          // This would cause recyclers subcategory to appear in left legend
-          for (var i = 0; i < localObject.layerCategories[param.show].length; i++) {
-              let arrayEntry = localObject.layerCategories[param.show][i];
-              let name = "";
-              if (arrayEntry) {
-                let catKey = Object.values(arrayEntry)[0];
-                name = Object.keys(arrayEntry)[1]; // HACK, need to specify CatTitle instead of 1. Note that 0 returns the single digit SIC from SIC tab.
-                // Until fixed, color is now #______ occurs for some
-                //console.log(catKey + " - " + name + " is now " + arrayEntry[name]);
-                if(catList[catKey]) {
-                  catList[catKey].catTitle = arrayEntry[name];
-                } else {
-                  // Multiple keys split by commas
-                  console.log("catKey " + + " Does not exist in listings for category: " + arrayEntry[name]);
-                  //catList[catKey].catTitle = "OKAY"
-                }
-              }
-          }
-        }
-
-        let maxCatTitleChars = 0;
-        Object.keys(catList).forEach(key => {
-          // The key is pulled from the first key-value pair in the row's object.
-          if (key != "") {
-            let catTitle = key; // Number index, starting from 0.
-            // For wastewater, the value is the SIC number from the listing rows. Sometimes the SIC value is comma separated.
-
-            // The count is the number of rows found in that category.
-            if (catList[key].count) { // Hides when none. BUGBUG - need to figure out why wastewater include 1002 none.
-              //console.log(catList[key].count + " Parse localObject.layerCategories[\"" + param.show + "\"] for " + key);
-
-              if (localObject.layerCategories[param.show] && localObject.layerCategories[param.show][key]) {
-                // For wastewater, use titles from SIC tab.
-                if (catList[key].catTitle) {
-                  catTitle = catList[key].catTitle;
-                } else {
-                  catTitle = key; // Some are current Multiple SIC for wastewater, where no match was found due to comma list
-                }
-                //console.log("catTitle:" + catTitle);
-                if (catTitle.length > maxCatTitleChars) {
-                  maxCatTitleChars = catTitle.length;
-                }
-              }
-              catNavSide += "<div title='" + key + "'><div style='background:" + catList[key].color + ";' class='legendDot'></div><div style='overflow:hidden'>" + catTitle;
-              if (catList[key].count) {
-                // The number of occurances of the category
-                if (param.show == "solidwaste" || param.show == "wastewater") {
-                  // Show the count
-                  catNavSide += "<span>&nbsp;(" + catList[key].count + ")</span>";
-                } else {
-                  catNavSide += "<span class='local'>&nbsp;(" + catList[key].count + ")</span>";
-                }
-              }
-              catNavSide += "</div></div>"
+    // Loop through possible categories from SIC tab and append the titles to our catList object
+    //alert("Cats " + localObject.layerCategories[show].length);
+    if (show == "wastewater" || show == "aerospace") {
+      // This would cause recyclers subcategory to appear in left legend
+      for (var i = 0; i < localObject.layerCategories[show].length; i++) {
+          let arrayEntry = localObject.layerCategories[show][i];
+          let name = "";
+          if (arrayEntry) {
+            let catKey = Object.values(arrayEntry)[0];
+            name = Object.keys(arrayEntry)[1]; // HACK, need to specify CatTitle instead of 1. Note that 0 returns the single digit SIC from SIC tab.
+            // Until fixed, color is now #______ occurs for some
+            //console.log(catKey + " - " + name + " is now " + arrayEntry[name]);
+            if(catList[catKey]) {
+              catList[catKey].catTitle = arrayEntry[name];
+            } else {
+              // Multiple keys split by commas
+              console.log("catKey " + + " Does not exist in listings for category: " + arrayEntry[name]);
+              //catList[catKey].catTitle = "OKAY"
             }
           }
-        });
-        //console.log(catNavSide)
-
-        // Cat list gets rerendered even if the show value has not changed. Might be possible to avoid rerendering.
-        $("#listLeft").html(""); // Clear
-        // <div style='margin-left:10px'><b>CATEGORIES</b></div>
-        $("#listLeft").append("<div id='mainCatList' class='catList'>" + catNavSide + "<br></div>");
-        if (maxCatTitleChars <= 32) {
-          $("#mainCatList").addClass("catListAddMargin");
-        }
-        let fullcolumnWidth = $('#fullcolumn').width();
-        if (fullcolumnWidth > 500) {
-          showSide();
-        }
-        //alert("did it 3")
       }
     }
+
+    let maxCatTitleChars = 0;
+    Object.keys(catList).forEach(key => {
+      // The key is pulled from the first key-value pair in the row's object.
+      if (key != "") {
+        let catTitle = key; // Number index, starting from 0.
+        // For wastewater, the value is the SIC number from the listing rows. Sometimes the SIC value is comma separated.
+
+        // The count is the number of rows found in that category.
+        if (catList[key].count) { // Hides when none. BUGBUG - need to figure out why wastewater include 1002 none.
+          //console.log(catList[key].count + " Parse localObject.layerCategories[\"" + show + "\"] for " + key);
+
+          if (localObject.layerCategories[show] && localObject.layerCategories[show][key]) {
+            // For wastewater, use titles from SIC tab.
+            if (catList[key].catTitle) {
+              catTitle = catList[key].catTitle;
+            } else {
+              catTitle = key; // Some are current Multiple SIC for wastewater, where no match was found due to comma list
+            }
+            //console.log("catTitle:" + catTitle);
+            if (catTitle.length > maxCatTitleChars) {
+              maxCatTitleChars = catTitle.length;
+            }
+          }
+          catNavSide += "<div title='" + key + "'><div style='background:" + catList[key].color + ";' class='legendDot'></div><div style='overflow:hidden'>" + catTitle;
+          if (catList[key].count) {
+            // The number of occurances of the category
+            if (show == "solidwaste" || show == "wastewater") {
+              // Show the count
+              catNavSide += "<span>&nbsp;(" + catList[key].count + ")</span>";
+            } else {
+              catNavSide += "<span class='local'>&nbsp;(" + catList[key].count + ")</span>";
+            }
+          }
+          catNavSide += "</div></div>"
+        }
+      }
+    });
+    //console.log(catNavSide)
+
+    // Cat list gets rerendered even if the show value has not changed. Might be possible to avoid rerendering.
+    $("#listLeft").html(""); // Clear
+    // <div style='margin-left:10px'><b>CATEGORIES</b></div>
+    $("#listLeft").append("<div id='mainCatList' class='catList'>" + catNavSide + "<br></div>");
+    if (maxCatTitleChars <= 32) {
+      $("#mainCatList").addClass("catListAddMargin");
+    }
+    let fullcolumnWidth = $('#fullcolumn').width();
+    if (fullcolumnWidth > 500) {
+      showSide();
+    }
+  }
 }
 function capitalizeFirstLetter(str, locale=navigator.language) {
   if (!str) return "";
@@ -4081,15 +4057,17 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
         dp.group = L.layerGroup();
         //dp.group2 = L.layerGroup();
 
-        let zoomLevel = 7;
+        let zoomLevel1 = 7;
+        if (dp.zoom) zoomLevel1 = dp.zoom;
+        let zoomLevel2 = 7;
 
-        renderMap(dp,map1,"map1","bodyFile",null,zoomLevel,"google");
+        renderMap(dp,map1,"map1","bodyFile",null,zoomLevel1,"google");
 
         waitForElm('#bodyFile #map2').then((elm) => {
           $("#sidemapCard").show();
           $("#list_main").show();
           $("#tableSide").show();
-          renderMap(dp,map2,"map2","bodyFile",null,zoomLevel,"");
+          renderMap(dp,map2,"map2","bodyFile",null,zoomLevel2,"");
         });
 
     });
@@ -4211,7 +4189,7 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
     if (dp.colorColumn) {
       iconColor = colorScale(element[dp.colorColumn]);
     } else if (dp.valueColumn) {
-      // If the valueColumn = type, the item column my be filtered. For PPE the item contains multiple types.
+      // If the valueColumn = type, the item column may be filtered. For PPE the item contains multiple types.
 
       //console.log("dp.valueColumn: " + dp.valueColumn);
       //console.log("dp.valueColumn value: " + element[dp.valueColumn]);
