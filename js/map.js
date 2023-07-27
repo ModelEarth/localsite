@@ -109,11 +109,11 @@ function clearListDisplay() {
 let dp = {}; // So available on .detail click for popMapPoint() and zoomMapPoint().
 function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe still index.html, map-embed.js
   // Calls loadFromSheet
-  let hash = getHash(); // Includes hiddenhash
+  let hash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement. Includes hiddenhash
     if (!show && param["show"]) {
     show = param["show"];
   }
-  consoleLog('loadMap1 calledBy ' + calledBy + '. Show: ' + show + '. Cat: ' + hash.cat);
+  consoleLog('loadMap1 start. CalledBy ' + calledBy + '. Show: ' + show + '. Cat: ' + hash.cat);
 
   dp = {}; // Clear prior
   if (dp_incoming) { // Parameters set in page or layer json
@@ -697,7 +697,6 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.valueColumn = "ENERGY STAR";
       }
   }
-  console.log("loadMap1 dp.zoom " + dp.zoom);
 
   if(dp.dataset) {
     if (hash.state) {
@@ -751,7 +750,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   //loadIframe("mainframe","https://earth.nullschool.net/#current/wind/surface/level/orthographic=" +  dp.longitude + "," + dp.latitude + ",1381");
 
 
-  console.log("End loadMap1 " + hash.cat);
+  console.log("End loadMap1. Cat: " + hash.cat);
 
 } // loadMap1
 

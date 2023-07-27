@@ -232,13 +232,19 @@ function refreshNaicsWidget() {
         $("#industryListHolder").hide();
         $("#industryDetail").hide();
     }
-    if (loadNAICS==false && (initialPageLoad || hash.show != priorHash_naicspage.show)) {
+    console.log("naics1 " + loadNAICS + " " + hash.show + " " + priorHash_naicspage.show);
+    if ((initialPageLoad || hash.show != priorHash_naicspage.show)) {
         //alert("call applyIO no naics")
-        applyIO("");
+        if (loadNAICS == false) { // Not sure if loadNAICS==false needed, or if applyIO is ever used here.
+            applyIO("");
+        }
         if(initialPageLoad) {
             loadScript(theroot + '../localsite/js/d3.v5.min.js', function(results) {
                 loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
-                    displayImpactBubbles(1);
+
+                    //displayImpactBubbles(1); // Red bubbles appear when toggling.
+                    //refreshBubbleWidget(); // No effect
+
                 });
             });
         }
@@ -685,10 +691,14 @@ function renderIndustryChart(dataObject,values,hash) {
     }
     console.log("whichHaveChanged: ");
     console.log(whichHaveChanged);
-    if (whichHaveChanged.length == 0 && initialNaicsLoad == false) {
-        console.log("Cancel naics.js, no hash values have changed.");
-        return; // None have changed
-    }
+
+    console.log(hash.show + " priorHash_naicspage " + priorHash_naicspage.show)
+    // BUG - this return prevented change to show from reloading
+    //if (whichHaveChanged.length == 0 && initialNaicsLoad == false) {
+    //    console.log("Cancel naics.js, no hash values have changed.");
+    //    return; // None have changed
+    //}
+
     initialNaicsLoad = false; // So further non-related hash changes are ignored by return above.
 
     subsetKeys = ['emp_reported','emp_est1','emp_est3', 'payann_reported','payann_est1','payann_est3', 'estab', 'NAICS2012_TTL','GEO_TTL','state','COUNTY','relevant_naics','estimate_est1','estimate_est3']
@@ -1454,7 +1464,21 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                         //alert("#industries show");
                         //$("#industries").show();
 
-                        })
+
+                        // Quick hack - need better way to wait for naics
+                        loadScript(theroot + '../localsite/js/d3.v5.min.js', function(results) {
+                            loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
+                                //displayImpactBubbles(1); // Red bubbles appear when toggling.
+                                //refreshBubbleWidget(); // No effect
+                                setTimeout( function() {
+                                      toggleBubbleHighlights();
+                                      toggleBubbleHighlights();
+                                }, 2000);
+                            });
+                        });
+                             
+
+                    })
                 })
                 d3.csv(local_app.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {
                     //document.getElementById("industryheader").text = ""; // Clear initial.
