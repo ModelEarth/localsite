@@ -163,7 +163,8 @@ function refreshNaicsWidget() {
         $("#industryListHolder").hide();
         $("#industryDetail").hide();
     }
-    priorHash_naicspage = getHash();
+    //priorHash_naicspage = getHash();
+    priorHash_naicspage = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
 }
 
 function displayIndustryList(localObject) {

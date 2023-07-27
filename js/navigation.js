@@ -115,6 +115,8 @@ function thumbClick(show,path) {
 	}
 	delete hash.cat;
 	delete hash.naics;
+	delete hash.name;
+	delete hash.details;
 	delete hash.m; // Birdseye view
     let pageContainsInfoWidgets = false;
     if ($("#iogrid").length >= 0 || $(".sector-list").length >= 0) {
@@ -1251,14 +1253,15 @@ function activateSideColumn() {
 }
 
 // INIT
+
 if (param.mapview == "state") {
 	loadScript(theroot + 'js/map.js', function(results) {
 		loadScript(theroot + 'js/map-filters.js', function(results) {
-			//renderMapShapes("geomap", param, 0); // Resides in map-filters.js
-			openMapLocationFilter();
+			// mapview=state triggers display of location filter in map-filters.js. No additional script needed here.
 		});
 	});
 }
+
 function makeLinksRelative(divID,climbpath,pageFolder) {
 	  $("#" + divID + " a[href]").each(function() {
 
@@ -1297,37 +1300,34 @@ function getPageFolder(pagePath) {
 
 } // End typeof page_scripts which checks if file is loaded twice.
 
-
-
-// Odd: $(document).on("click" did not work here, perhaps jquery is not loaded prior to DOM.
-// But why would surrounding $(document).ready work?
 $(document).on("click", "#filterClickLocation", function(event) {
+	console.log("#filterClickLocation click");
+    let hash = getHash();
+	if (!hash.mapview) {
+		// Hash change triggers call to filterClickLocation() and map display.
+		if (hash.state) {
+    		goHash({'mapview':'state'});
+    	} else {
+    		goHash({'mapview':'country'});
+    	}
+	} else {
+		closeLocationFilter();
 
-	console.log("Call filterClickLocation()");
+		//alert("To do: Close tab");
 
-	//$("#filterClickLocation").click(function(e) { // This does not work on localhost
-    //let hash = getHash();
-	//if (!hash.mapview) {
-	//	// These will trigger call to filterClickLocation() and map display.
-	//	if (hash.state) {
-    //		goHash({'mapview':'state'});
-    //	} else {
-    //		goHash({'mapview':'country'});
-    //	}
-	//} else {
-
+		/*
 		loadScript(theroot + 'js/map.js', function(results) { // Load list before map
     
 			//loadMapFiltersJS(theroot,1);
 
 			loadScript(theroot + 'js/map-filters.js', function(results) {
 				
-				filterClickLocation();
+				filterClickLocation(); // Resides in map-filters.js
 
 			});
 		});
-        
-	//}
+        */
+	}
     //event.stopPropagation();
 });
 

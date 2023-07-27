@@ -3,6 +3,10 @@
 // 2. ITEM LOCATIONS ON LARGE MAP
 // 3. LOCATION DETAILS ON SIDE MAP
 
+// RenderMap calls addIcons
+
+// To Do: Rename, use or remove dataParameters
+
 // INIT
 var dataParameters = []; // Probably can be removed, along with instances below.
 var sideTopOffsetEnabled = true;
@@ -11,7 +15,7 @@ var sideTopOffsetEnabledBig = false;
 if(typeof styleObject=='undefined'){ var styleObject={}; } // https://docs.mapbox.com/mapbox-gl-js/style-spec/root/
 styleObject.layers = [];
 
-var layerControl = {}; // Object containing one control for each map on page.
+var layerControls = {}; // Object containing one control for each map on page.
 if(typeof hash === 'undefined') {
   // Need to figure out where already declared.
   // Avoid putting var in front, else "Identifier 'hash' has already been declared" error occurs here: http://localhost:8887/localsite/map/
@@ -154,8 +158,10 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   if (show == "farmfresh" && theState) {
     dp.listTitle = "USDA Farm Produce";
     //if (location.host.indexOf('localhost') >= 0) {
-      dp.categories = "farm,market"; // TO DO: Activate so column parsing for cats is avoided
-      dp.categoriesTitles = "Direct from Farm, Farmers Markets"; 
+      //dp.categories = "farm = Direct from Farm, market = Farmers Markets";
+      dp.categories = {"farm": {"title":"Direct from Farm","color":"#b2df8a"}, "market": {"title":"Farmers Markets","color":"#33a02c"}};
+      // Green colors above
+      // #b2df8a, #33a02c 
       dp.valueColumn = "type";
       dp.valueColumnLabel = "Type";
       dp.dataset = "https://model.earth/community-data/us/state/" + theState + "/" + theState.toLowerCase() + "-farmfresh.csv";
@@ -625,7 +631,6 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
         dp.valueColumnLabel = "Health safety score";
         dp.valueColumn = "score";
-        dp.scale = "scaleThreshold";
 
         dp.latColumn = "latitude";
         dp.lonColumn = "longitude";
@@ -690,7 +695,6 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.lonColumn = "lon";
         dp.valueColumnLabel = "ENERGY STAR";
         dp.valueColumn = "ENERGY STAR";
-        dp.scale = "scaleThreshold"; // No effect?
       }
   }
   console.log("loadMap1 dp.zoom " + dp.zoom);
@@ -705,7 +709,8 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   // Load the map using settings above
 
   // INIT - geo fetches the county for filtering.
-  hash = getHash();
+  //hash = getHash();
+  hash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
   if (hash.geo) {
     loadGeos(hash.geo,0,function(results) {
       loadFromSheet('map1','map2', dp, basemaps1, basemaps2, 1, function(results) {
@@ -957,7 +962,7 @@ function loadGeos(geo, attempts, callback) {
         console.log("geoArray")
         console.log(geoArray)
         dataObject.geos = geoArray;
-        callback();
+        //callback(); // TypeError: callback is not a function
         return;
       });
     }
@@ -995,11 +1000,11 @@ let subcatObject = {};
 let subcatArray = [];
 let subcatList = "";
 
+
 function showList(dp,map) {
   console.log("showList");
   console.log("Call showList for " + dp.dataTitle + " list");
   var iconColor, iconColorRGB;
-  var colorScale = dp.scale;
   let count = 0
   let countDisplay = 0;
   let validRowCount = 0;
@@ -1148,7 +1153,7 @@ function showList(dp,map) {
   }
   var data_sorted = []; // An array of objects
   var data_out = [];
-  let catList = {}; // An array of objects, one for each unique category
+  let catList = {}; // An object of objects, one for each unique category
 
   //console.log("layerCategories test");
   //console.log(localObject.layerCategories[hash.show])
@@ -1187,7 +1192,7 @@ function showList(dp,map) {
   console.log(dp.data)
 
   //alert("what1")
-    
+
   let output = "";
   let output_details = "";
   let avoidRepeating = ["description","address","website","phone","email","email address","county","admin note","your name","organization name","cognito_id"];
@@ -1199,7 +1204,53 @@ function showList(dp,map) {
       }
     }
   }
-  if (dp.valueColumn) { // Avoids showing "Category" twice
+  if (dp.categories) {
+    // dp.scale is already set here.
+    console.log("dp.categories " + dp.categories)
+
+    if (!dp.scale) {
+      //alert("dp.scale2 " + dp.scale)
+      dp.scale = getScale(dp.data, dp.scaleType, dp.valueColumn);
+    }
+
+    //if (catList.length <= 0) {
+    if (dp.categories) {
+      catList = dp.categories;
+      localObject.layerCategories[hash.show] = dp.categories;
+      /*
+      catList = dp.categories.split(",").reduce(function(obj, str, index) {
+        let strParts = str.split("="); // Split and get rid of extra spaces at ends
+        if (strParts[0] && strParts[1]) { // Make sure the key & value are not undefined
+          //let 
+          let catKey = strParts[1].trim();
+          let iconColor = "#777"; // Grey - for side category list
+          if (dp.color) {
+            iconColor = dp.color;
+          } else {
+            iconColor = dp.scale(catKey);
+          }
+          let thisCatsObject = {"title": catKey, "count":.5, "color": iconColor}; //HACK - include count to display in side.
+          
+          // add something like this above instead (not a funtion error):   .replace(/\s+/g, '')
+          obj[strParts[0].replace(/\s+/g, '')] = thisCatsObject; // Get rid of extra spaces at beginning of value strings
+
+          //catList[catKey].color = iconColor;
+
+        } else if (strParts[0]) { // Use cat key as title
+          // Not needed since key is used as title by default. But we could capitalize.
+          //let thisCatsObject = {"title", strParts[0].trim()};
+          //obj[strParts[0].replace(/\s+/g, '')] = thisCatsObject;
+        }
+        return obj;
+      }, {});
+      */
+
+      console.log("catList");
+      console.log(catList);
+    }
+  }
+
+  if (dp.valueColumn) { // Avoids showing "Category" twice since catergory is already in default details.
     avoidRepeating.push(dp.valueColumn);
   }
   dp.data.forEach(function(elementRaw) {
@@ -1545,41 +1596,40 @@ function showList(dp,map) {
       }
     }
 
-
-
     //iconColorRGB = hex2rgb(iconColor);
     //console.log("element state2 " + element.state + " iconColor: " + iconColor)
 
-    // INCREMENT THE CATEGORY COUNT for the value in the row's valueColumn
-    //console.log("element[dp.valueColumn] " + element[dp.valueColumn]);
+    // Occurs for every row
     if (dp.valueColumn && element[dp.valueColumn]) {
+      // BUILD LIST OF CATEGORIES FROM COLUMN VALUES
+      // Supports rows with multiple cats in a cell.  Set dp.categories instead when multiple values in cells, or to give each category a title.
+      // INCREMENT THE CATEGORY COUNT for the value in the row's valueColumn
+      //console.log("element[dp.valueColumn] " + element[dp.valueColumn]);
+
       // Split row's category's on commas.
       let rowsCatArray = element[dp.valueColumn].split(",");
       for(var i = 0 ; i < rowsCatArray.length ; i++) {
         // Reactivate and test aerospace
         //$("#" + rowsCatArray[i]).prop('checked', true);
-        let oneCat = rowsCatArray[i].trim(); // From element[dp.valueColumn]
-        if(!catList[oneCat]) {
-          catList[oneCat] = {};
-          catList[oneCat].count = 1;
+        let catKey = rowsCatArray[i].trim(); // From element[dp.valueColumn] - Uses first value for icon color
+        if(!catList[catKey]) {
+          catList[catKey] = {};
+          catList[catKey].count = 1;
         } else {
-          catList[oneCat].count++;
+          catList[catKey].count++;
         }
-        ////var colorScale = dp.scale; // A function that returns colors based on the categories in the Values column
-        
-        // TO REACTIVATE
-        iconColor = colorScale(oneCat);
+        iconColor = dp.scale(catKey);
+
         if (!iconColor && dp.color) { 
           iconColor = dp.color;
         } else if (!iconColor && !dp.color) { 
           iconColor = "#777"; // Grey - for side category list
         }
-        catList[oneCat].color = iconColor;
+        catList[catKey].color = iconColor;
       }
     }
     // BUGBUG - Is it valid to search above before making key lowercase? Should elementRaw key be made lowercase?
 
-    //if (foundMatch > 0 && productMatchFound > 0) {
     if (foundMatch > 0 || productMatchFound > 0) {
       //console.log("Increment dataMatchCount. foundMatch " + foundMatch);
       dataMatchCount++;
@@ -1653,9 +1703,6 @@ function showList(dp,map) {
       if (showListing) {
         countDisplay++;
         // DETAILS LIST
-        // colorScale(element[dp.valueColumn])
-        //console.log("iconColor test here: " + iconColor)
-        //console.log("color test here: " + colorScale(elementRaw[dp.valueColumn]))
 
         if (dp.latColumn && dp.latColumn.includes(".")) { // ToDo - add support for third level
           element[dp.latColumn] = element[dp.latColumn.split(".")[0]][dp.latColumn.split(".")[1]];
@@ -1670,7 +1717,7 @@ function showList(dp,map) {
         // TO REACTIVATE
         
         if (dp.valueColumn && element[dp.valueColumn]) {
-          let bulletColorFromColorScale = colorScale(element[dp.valueColumn]);
+          let bulletColorFromColorScale = dp.scale(element[dp.valueColumn]);
           if (bulletColorFromColorScale != undefined) {
             bulletColor = bulletColorFromColorScale;
           }
@@ -1987,7 +2034,7 @@ function showList(dp,map) {
     console.log("Total " + dp.dataTitle + " " + countDisplay + " of " + count);
 
     if (hash.show != showprevious || $("#tableSide > .catList").text().length == 0) { // Prevents selected category from being overwritten.
-      //alert("a catList " + catList)
+      //alert("a catList " + catList);
       renderCatList(catList,hash.cat);
     }
     if (hash.name && $("#detaillist > [name=\""+ hash.name.replace(/_/g,' ').replace(/ AND /g,' & ') + "\"]").length) {
@@ -2210,11 +2257,10 @@ function renderCatList(catList,cat) {
             // Until fixed, color is now #______ occurs for some
             //console.log(catKey + " - " + name + " is now " + arrayEntry[name]);
             if(catList[catKey]) {
-              catList[catKey].catTitle = arrayEntry[name];
+              catList[catKey].title = arrayEntry[name];
             } else {
               // Multiple keys split by commas
               console.log("catKey " + + " Does not exist in listings for category: " + arrayEntry[name]);
-              //catList[catKey].catTitle = "OKAY"
             }
           }
       }
@@ -2228,15 +2274,16 @@ function renderCatList(catList,cat) {
         // For wastewater, the value is the SIC number from the listing rows. Sometimes the SIC value is comma separated.
 
         // The count is the number of rows found in that category.
-        if (catList[key].count) { // Hides when none. BUGBUG - need to figure out why wastewater include 1002 none.
+        // Count won't be available here if cats defined in dp.categories.
+        if (dp.categories || catList[key].count) { // Hides when none. BUGBUG - need to figure out why wastewater include 1002 none.
           //console.log(catList[key].count + " Parse localObject.layerCategories[\"" + show + "\"] for " + key);
 
           if (localObject.layerCategories[show] && localObject.layerCategories[show][key]) {
             // For wastewater, use titles from SIC tab.
-            if (catList[key].catTitle) {
-              catTitle = catList[key].catTitle;
+            if (catList[key].title) { // From dp.categories object
+              catTitle = catList[key].title;
             } else {
-              catTitle = key; // Some are current Multiple SIC for wastewater, where no match was found due to comma list
+              //catTitle = key; // Some are current Multiple SIC for wastewater, where no match was found due to comma list
             }
             //console.log("catTitle:" + catTitle);
             if (catTitle.length > maxCatTitleChars) {
@@ -2244,12 +2291,12 @@ function renderCatList(catList,cat) {
             }
           }
           catNavSide += "<div title='" + key + "'><div style='background:" + catList[key].color + ";' class='legendDot'></div><div style='overflow:hidden'>" + catTitle;
-          if (catList[key].count) {
+          if (catList[key].count || dp.categories) {
             // The number of occurances of the category
             if (show == "solidwaste" || show == "wastewater") {
               // Show the count
               catNavSide += "<span>&nbsp;(" + catList[key].count + ")</span>";
-            } else {
+            } else if (catList[key].count) {
               catNavSide += "<span class='local'>&nbsp;(" + catList[key].count + ")</span>";
             }
           }
@@ -2323,7 +2370,6 @@ function popMapPoint(dp, map, latitude, longitude, name, color) {
 
   // Add a single map point
   var iconColor, iconColorRGB, iconName;
-  var colorScale = dp.scale;
 
   // Add this to g and double width
   // transform: scale(2);
@@ -2402,7 +2448,7 @@ function zoomMapPoint(dp, map, latitude, longitude, name, color) {
 
   // Add a single map point - RED, uses a star Google Material Icon
   var iconColor, iconColorRGB, iconName;
-  var colorScale = dp.scale;
+  //var colorScale = dp.scale;
 
   iconColorRGB = hex2rgb(color);
   iconName = dp.iconName;
@@ -2458,8 +2504,10 @@ function zoomMapPoint(dp, map, latitude, longitude, name, color) {
 
 // Scales: http://d3indepth.com/scales/
 function getScale(data, scaleType, valueCol) {
+  console.log("getScale scaleType: " + scaleType + " for data valueCol: " + valueCol + " with data.length: " + data.length)
+  //console.log(data);
   var scale;
-  if (scaleType === "scaleThreshold") {
+  if (scaleType === "scaleThreshold") { // Not Usable, cream too light, 
     var min = d3.min(data, function(d) { return d[valueCol]; });
     var max = d3.max(data, function(d) { return d[valueCol]; });
     var d = (max-min)/7;
@@ -2485,7 +2533,10 @@ function getScale(data, scaleType, valueCol) {
       scale = d3.scaleOrdinal()
       .domain(data.map(function(d) { return d[valueCol]; }))
       .range(d3.schemePaired);
+      console.log("d3.schemePaired");
+      console.log(d3.schemePaired);
   }
+  //console.log(scale.range);
   return scale;
 }
 
@@ -2955,731 +3006,9 @@ function getStateNameFromID(stateID) {
 
 var geojsonLayer; // Hold the prior letter. We can use an array or object instead.
 var overlays = {};
-var overlays1 = {};
-var overlays2 = {};
-function renderMapShapes(whichmap, hash, attempts) {
-  console.log("renderMapShapes state: " + hash.state + " attempts: " + attempts);
+//var overlays1 = {};
+//var overlays2 = {};
 
-  loadScript(local_app.modelearth_root() + '/localsite/js/topojson-client.min.js', function(results) {
-    
-    renderMapShapeAfterPromise(whichmap, hash, attempts);
-
-  });
-}
-
-function renderMapShapeAfterPromise(whichmap, hash, attempts) {
-
- console.log("renderMapShapeAfterPromise " + whichmap)
- includeCSS3(theroot + 'css/leaflet.css',theroot);
-  loadScript(theroot + 'js/leaflet.js', function(results) {
-    //alert("pre L")
-    waitForVariable('L', function() {
-      //alert("Got L")
-
-   
-    // Same as https://unpkg.com/topojson-client@3
-
-    //alert(whichmap + " " + local_app.modelearth_root() + '/localsite/js/topojson-client.min.js');
-    // Oddly, this is still reached when 404 returned by call to topojson-client.min.js above.
-
-    //alert(local_app.modelearth_root() + '/localsite/js/topojson-client.min.js')
-    
-    /*
-    if (typeof topojson != "undefined") {
-      console.log("renderMapShapes - topojson-client.min.js loaded for #" + whichmap + " after " + attempts + " attempts.");
-    } else {
-      if (attempts <= 100) {
-        setTimeout(function(){
-          renderMapShapes(whichmap, hash, attempts+1);
-        }, 100);
-      } else {
-        console.log("Failed to load topojson from topojson-client.min.js for #" + whichmap + " after 100 attempts.")
-      }
-      return;
-    }
-    */
-
-    let stateAbbr = "";
-    if (hash.state) {
-      stateAbbr = hash.state.split(",")[0].toUpperCase();
-    }
-    // In addition, the state could also be derived from the geo values.
-
-    var stateCount = typeof hash.state !== "undefined" ? hash.state.split(",").length : 0;
-    if (stateCount > 1 && hash.mapview != "country") {
-      hash.state.split(",").forEach(function(state) {
-        hashclone = $.extend(true, {}, hash); // Clone/copy object without entanglement
-        hashclone.state = state.toUpperCase(); // One state at a time
-        //alert(whichmap + " renderMapShapes attempt " + attempts + "  " + hashclone.state);
-        
-        // Loop through each state
-        renderMapShapeAfterPromise(whichmap, hashclone, 0); // Using clone since hash could be modified mid-loop by another widget,
-      });
-      return;
-    }
-
-    if (stateAbbr == "GA") { // TO DO: Add regions for all states
-      $(".regionFilter").show();
-    } else {
-      $(".regionFilter").hide();
-    }
-    $("#state_select").val(stateAbbr); // Used for lat lon fetch
-
-
-    waitForElm('#' + whichmap).then((elm) => {
-
-    $("#geoPicker").show();
-    $('#' + whichmap).show();
-    if (!$("#" + whichmap).is(":visible")) {
-      console.log("Error: whichmap not visible " + whichmap);
-      return; // Prevents incomplete tiles
-    }
-
-    var req = new XMLHttpRequest();
-    //const whichGeoRegion = hash.geomap;
-
-    // Topo data source
-    //https://github.com/deldersveld/topojson/tree/master/countries/us-states
-
-    updateGeoFilter(hash.geo); // Checks and unchecks geo (counties) when backing up.
-
-    // BUGBUG - Shouldn't need to fetch counties.json every time.
-
-
-
-    // TOPO Files: https://github.com/modelearth/topojson/countries/us-states/AL-01-alabama-counties.json";
-    // US: 
-    
-    let stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78};
-    let state2char = ('0'+stateIDs[stateAbbr]).slice(-2);
-    //let stateNameLowercase = $("#state_select option:selected").text().toLowerCase();
-
-    let map;
-    // MAPS FROM TOPOJSON
-
-    //alert($("#state_select option:selected").attr("stateid"));
-    //alert($("#state_select option:selected").val()); // works
-
-    // $("#state_select").find(":selected").text();
-
-    //if(location.host.indexOf('localhost') >= 0) {
-    //if (param.geo == "US01" || param.state == "AL") { // Bug, change to get state from string, also below.
-    // https://github.com/modelearth/topojson/blob/master/countries/us-states/AL-01-alabama-counties.json
-
-    //var url = local_app.custom_data_root() + '/counties/GA-13-georgia-counties.json';
-    
-    var lat = 32.69;
-    var lon = -20; // -83.2;
-    let zoom = 2;
-    let theState = $("#state_select").find(":selected").val();
-
-    var url;
-    let topoObjName = "";
-    var layerName = "Map Layer";
-    if (hash.mapview == "earth") {
-      //hideAdvanced();
-      showGlobalMap("https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
-    } 
-
-    if (hash.mapview == "zip") {
-      layerName = "Zipcodes";
-      if (stateAbbr) {
-        url = local_app.modelearth_root() + "/community-forecasting/map/zcta/states/" + getState(stateAbbr) + ".topo.json";
-      } else {
-        url = local_app.modelearth_root() + "/community-forecasting/map/zip/topo/zips_us_topo.json";
-      }
-      topoObjName = "topoob.objects.data";
-    }  else if (hash.mapview == "country" && stateAbbr.length != 2) { // USA
-      layerName = "States";
-      url = local_app.modelearth_root() + "/localsite/map/topo/states-10m.json";
-      topoObjName = "topoob.objects.states";
-    } else if (stateAbbr && stateAbbr.length <= 2) { // COUNTIES
-      layerName = stateAbbr + " Counties";
-      let stateNameLowercase = getStateNameFromID(stateAbbr).toLowerCase();
-      let countyFileTerm = "-counties.json";
-      let countyTopoTerm = "_county_20m";
-      if (stateNameLowercase == "louisiana") {
-        countyFileTerm = "-parishes.json";
-        countyTopoTerm = "_parish_20m";
-      }
-      url = local_app.modelearth_root() + "/topojson/countries/us-states/" + stateAbbr + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
-      topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + countyTopoTerm;
-
-      //url = local_app.modelearth_root() + "/topojson/countries/us-states/GA-13-georgia-counties.json";
-      // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
-    } else { // ALL COUNTRIES
-    //} else if (hash.mapview == "earth") {
-
-
-      url = local_app.modelearth_root() + "/topojson/world-countries-sans-antarctica.json";
-      topoObjName = "topoob.objects.countries1";
-    }
-
-    req.open('GET', url, true);
-    req.onreadystatechange = handler;
-    req.send();
-
-    var topoob = {};
-    var topodata = {};
-    var neighbors = {};
-    function handler(){
-
-    if(req.readyState === XMLHttpRequest.DONE) {
-
-      //map.invalidateSize();
-      //map.addLayer(OpenStreetMap_BlackAndWhite)
-
-     
-      // try and catch json parsing of the responseText
-      //try {
-            topoob = JSON.parse(req.responseText)
-
-            // Originated in community/map/leaflet/zips-sm.html
-            // zips_us_topo.json
-            // {"type":"Topology","objects":{"data":{"type":"GeometryCollection","geometries":[{"type":"Polygon
-
-            // {"type":"Topology","transform":{"scale":[0.00176728378633945,0.0012459509163533049],"translate":
-
-            //"arcs":[[38,39,40,41,42]],"type":"Polygon","properties":{"STATEFP":"13","COUNTYFP":"003","COUNTYNS":"00345784","AFFGEOID":"0500000US13003","GEOID":"13003","NAME":"Atkinson","LSAD":"06","ALAND":879043416,"AWATER":13294218}}
-
-
-            // Since this line returns error, subsquent assignment to "neighbors" can be removed, or update with Community Forecasting boundaries.
-            //console.log(topojson)
-
-
-
-            // Was used by applyStyle
-            ////neighbors = topojson.neighbors(topoob.objects.data.geometries);
-                  // comented out May 29, 2021 due to "topojson is not defined" error.
-            //neighbors = topojson.neighbors(topoob.arcs); // .properties
-
-            // ADD geometries  see https://observablehq.com/@d3/choropleth
-            //topodata = topojson.feature(topoob, topoob.objects.data)
-
-            //topodata = topojson.feature(topoob, topoob.transform)
-
-            // 
-            
-            //if (param.geo == "US01" || param.state == "AL") {
-              // Example: topoob.objects.cb_2015_alabama_county_20m
-              
-              topodata = topojson.feature(topoob, eval(topoObjName));
-
-              console.log(topodata)
-          //} else {
-          //  topodata = topojson.feature(topoob, topoob.objects.cb_2015_georgia_county_20m)
-          //}
-
-            // ADD 
-            // For region colors
-            //mergeInDetailData(topodata, dp.data); // See start/maps/counties/counties.html
-
-
-
-            // IS THIS BEING USED?
-            //topodata.features = topodata.features.map(function(fm,i){
-            /*
-            topodata.features = topodata.features.map(function(fm,i){
-                var ret = fm;
-                //console.log("fm: " + fm.COUNTYFP);
-                console.log("fm: " + fm.properties.countyfp);
-                ret.indie = i;
-                return ret
-              });
-            */
-
-            //dp.data.forEach(function(datarow) { // For each county row from the region lookup table
-              
-              // All these work:
-              //console.log("name:: " + datarow.name);
-              //console.log("county_num:: " + datarow.county_num);
-              //console.log("economic_region:: " + datarow.economic_region);
-
-            //})
-
-            //console.log('topodata: ', topodata)
-
-            //geojsonLayer.clearLayers(); // Clear prior
-            //        layerControl[whichmap].clearLayers();
-
-            
-
-            //console.log('neigh', neighbors)
-         //}
-        //catch(e){
-        //  geojson = {};
-        //   console.log(e)
-        //}
-
-
-        //console.log(topodata)
-
-
-
-
-      //// USA
-      //var lat = 38.3;
-      //var lon = -96.5;
-      //var zoom = 5;
-
-      // Georgia 32.1656° N, 82.9001° W
-      
-
-      if (hash.mapview == "earth" && theState == "") {
-        zoom = 2
-        lat = "25"
-        lon = "0"
-      } else if (hash.mapview == "country" && theState == "") {
-        zoom = 4
-        lat = "39.5"
-        lon = "-96"
-      } else if ($("#state_select").find(":selected").attr("lat")) {
-        let kilometers_wide = $("#state_select").find(":selected").attr("km");
-        zoom = zoomFromKm(kilometers_wide,theState);
-        lat = $("#state_select").find(":selected").attr("lat");
-        lon = $("#state_select").find(":selected").attr("lon");
-      }
-      var mapCenter = [lat,lon];
-
-      var mbAttr = '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="https://www.openstreetmap.org/">OpenStreetMap</a> | ' +
-          '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-          'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-          mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZWUyZGV2IiwiYSI6ImNqaWdsMXJvdTE4azIzcXFscTB1Nmcwcm4ifQ.hECfwyQtM7RtkBtydKpc5g';
-
-      var grayscale = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
-          satellite = L.tileLayer(mbUrl, {id: 'mapbox.satellite',   attribution: mbAttr}),
-          streets = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr});
-
-      var OpenStreetMap_BlackAndWhite = L.tileLayer('//{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-          maxZoom: 18,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      });
-
-      let dataParameters = {}; // Temp
-
-
-
-      //let map;
-      if (document.querySelector('#' + whichmap)) {
-        //alert("Recall existing map: " + whichmap);
-        map = document.querySelector('#' + whichmap)._leaflet_map; // Recall existing map
-      }
-      var container = L.DomUtil.get(map);
-      //if (container == null || map == undefined || map == null) { // Does not work
-
-        // Don't add, breaks /info
-        // && $('#' + whichmap).html()
-      //if ($('#' + whichmap) && $('#' + whichmap).html().length == 0) { // Note: Avoid putting loading icon within map div.
-          //alert("set " + whichmap)
-
-     //var container = L.DomUtil.get(map);
-     //alert(container)
-     if (container == null) { // Initialize map
-        //alert("container null")
-        // Line above does not work, so we remove map:
-
-        var basemaps1 = {
-      'Satellite' : L.tileLayer(mbUrl, {maxZoom: 25, id: 'mapbox.satellite', attribution: mbAttr}),
-      // OpenStreetMap
-      'Street Map' : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-      }),
-      // OpenStreetMap_BlackAndWhite:
-      'Grey' : L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-          maxZoom: 18, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-      }),
-    }
-
-
-        container = L.DomUtil.get(whichmap);
-        if(container != null) {
-          container._leaflet_id = null; // Prevents error: Map container is already initialized.
-        }
-
-        // Try commenting this out
-        /*
-        try { // Traps the first to avoid error when changing from US to state, or adding state.
-          //map.off();
-          map.remove(); // removes the previous map element using Leaflet's library (instead of jquery's).
-
-
-        } catch(e) {
-
-        }        
-        */
-        if(!map) {
-          map = L.map(whichmap, {
-            center: new L.LatLng(lat,lon),
-            scrollWheelZoom: false,
-            zoom: zoom,
-            dragging: !L.Browser.mobile, 
-            tap: !L.Browser.mobile
-          });
-
-          //L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-          //    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          //}).addTo(map);
-        }
-        
-          // Add 
-        overlays[layerName] = L.geoJson(topodata, {style:styleShape, onEachFeature: onEachFeature}).addTo(map); // Called within addTo(map)
-    
-        layerControl[whichmap] = L.control.layers(basemaps1, overlays).addTo(map); // Push multple layers
-        basemaps1["Grey"].addTo(map);
-
-
-    //} else if (geojsonLayer) { // INDICATES TOPO WAS ALREADY LOADED
-    } else if (map.hasLayer(overlays[layerName])) {
-
-      // TESTING
-      //alert("HAS LAYER " + layerName)
-
-        // Add 
-      //geojsonLayer = L.geoJson(topodata, {style:styleShape, onEachFeature: onEachFeature}).addTo(map); // Called within addTo(map)
-    
-      //map.removeLayer(overlays[layerName]);
-
-      // layerControl[whichmap]
-      map.removeLayer(overlays[layerName]); // Removed overlay but not checkbox. (Temp reduction of doubling)
-
-      //map.removeOverlay(overlays[layerName]);
-
-      //layerControl[whichmap].addOverlay(overlays[layerName], layerName); // Sorta works - use to add a duplicate check box
-      
-      //layerControl[whichmap].removeOverlay(layerName);
-      //layerControl[whichmap].removeOverlay(overlays[layerName], layerName);
-
-      overlays[layerName] = L.geoJson(topodata, {
-            style: styleShape, 
-            onEachFeature: onEachFeature
-      }).addTo(map);
-
-      /*
-      var geojsonLayer = L.geoJson(topodata, {
-            style: styleShape, 
-            onEachFeature: onEachFeature
-      }).addTo(map);
-      overlays[layerName] = geojsonLayer;
-      */
-
-
-      //console.log("DISABLE REMOVE - Remove the prior topo layer")
-      //alert("Remove prior, has geojsonLayer")
-
-
-      /*
-      // Prevent drawing on top of 
-      
-        // Causes error in /map : leaflet.js:5 Uncaught TypeError: Cannot read property '_removePath' of undefined
-        //if(map.hasLayer(geojsonLayer)) {
-        
-          alert("HAS PRIOR LAYER, REMOVE")
-          //alert("Need to check if already exists: " + layerName);
-          // Need to use name of prior layer.
-          //map.removeLayer(geojsonLayer); // Prevents overlapping by removing the prior topo layer
-          ////map.geojsonLayer.clearLayers();
-
-          //alert(overlays[layerName])
-          overlays[layerName].remove(); // Prevent thick overlapping colors
-          //overlays[layerName].clearLayers();
-          map.removeLayer(overlays[layerName]);
-        
-        //map.geojsonLayer.clearLayers(); // Clear prior
-        */
-
-        map.setView(mapCenter,zoom);
-
-        // setView(lng, lat, zoom = zoom_level)
-      
-
-        
-    } else { // Add the new state
-
-      overlays[layerName] = L.geoJson(topodata, {
-            style: styleShape, 
-            onEachFeature: onEachFeature
-      }).addTo(map);
-
-      map.setView(mapCenter,zoom);
-    }
-    
-    console.log("zoom " + zoom);
-    console.log(mapCenter);
-
-
-    /* From other map, probably not Leaflet
-    var layersToRemove = [];
-    map.getLayers().forEach(function (layer) {
-        if (layer.get('name') != undefined && layer.get('name') === layerName) {
-            layersToRemove.push(layer);
-        }
-    });
-    var len = layersToRemove.length;
-    for(var i = 0; i < len; i++) {
-        map.removeLayer(layersToRemove[i]);
-        alert("remove layer: " + layersToRemove[i])
-    }
-    */
-
-
-
-
-
-    if (map) {
-    } else {
-      console.log("WARNING - map not available from _leaflet_map")
-    }
-
-    var baseLayers = {
-      "Open Street Map": OpenStreetMap_BlackAndWhite,
-      "Grayscale Mapbox": grayscale,
-      "Streets Mapbox": streets,
-      "Satellite Mapbox": satellite
-    };
-    
-      //dataParameters.forEach(function(ele) {
-        //overlays[ele.name] = ele.group; // Allows for use of dp.name with removeLayer and addLayer
-        //console.log("Layer added: " + ele.name);
-      //})
-
-      //if(layerControl[whichmap] === false) { // First time, add new layer
-        // Add the layers control to the map
-      //  layerControl_CountyMap = L.control.layers(baseLayers, overlays).addTo(map);
-      //}
-
-      if (typeof layerControl != "undefined") {
-        //alert("OKAY: layerControl is available to CountyMap.")
-
-        // layerControl object is declared in map.js. Contains element for each map.
-        if (layerControl[whichmap] != undefined) {
-          if (overlays[stateAbbr + " Counties"]) {
-            // Reached on county click, but shapes are not removed.
-            //console.log("overlays: ");
-            //console.log(overlays);
-            
-            //resetHighlight(layerControl[whichmap].);
-            // No effect
-            //layerControl[whichmap].removeLayer(overlays["Counties"]);
-
-            //geojsonLayer.remove();
-
-            // Might work a little
-
-            //alert("Remove the prior topo layer")
-            //map.removeLayer(geojsonLayer); // Remove the prior topo layer
-          }
-        }
-
-        // layerControl wasn't yet available in loading sequence.
-        // Could require localsite/js/map.js load first, but top maps might not always be loaded.
-        // Or only declare layerControl object if not yet declared.
-        //alert("map.length " + map.length);
-        if (map.length) { // was just map until {} added
-          //alert("map " + map);
-            if (layerControl[whichmap] == undefined) { //NEW MAP
-              //TESTING
-              //alert("NEW MAP " + whichmap)
-
-              //overlays = {
-              //  [layerName]: geojsonLayer
-              //};
-              //overlays[layerName] = geojsonLayer;
-
-
-              //layerControl[whichmap] = L.control.layers(basemaps1, overlays).addTo(map); // Push multple layers
-              //basemaps1["Grey"].addTo(map);
-
-
-
-              // layerControl[whichmap]
-          
-              /*
-              // create the master layer group
-              var masterLayerGroup = L.layerGroup().addTo(map);
-
-              // create layer groups
-              var aLayerGroup = L.layerGroup([
-                // create a bunch of layers
-              ]);
-
-              masterLayerGroup.addLayer(aLayerGroup);
-              */
-
-            //} else if (!overlays[layerName]) {
-            } else if (!map.hasLayer(overlays[layerName])) { // LAYER NOT ADDED YET
-
-              // Error: Cannot read property 'on' of undefined
-              //layerControl[whichmap].addOverlay(layerGroup, dp.dataTitle); // Appends to existing layers
-              //alert("Existing " + whichmap + " has no overlay for: " + layerName)
-
-              
-
-              //if(map.hasLayer(geojsonLayer)) {
-                //alert("HAS LAYER")
-                //map.removeLayer(geojsonLayer); // Remove the prior topo layer - BUGBUG this hid the new layer.
-                ////map.geojsonLayer.clearLayers();
-              //}
-
-              //overlays[layerName] = geojsonLayer; // Add element to existing overlays object.
-
-              //overlays[layerName] = stateAbbr + " Counties";
-
-              // Add dup
-              //layerControl[whichmap].addOverlay(geojsonLayer, stateAbbr + " Counties");
-
-
-              //layerControl[whichmap].addLayer(stateAbbr + " Counties");
-              //layerControl[whichmap].addOverlay(geojsonLayer, overlays);
-
-              //layerControl[whichmap].addOverlay(basemaps1, overlays); // Appends to existing layers
-              //layerControl[whichmap] = L.control.layers(basemaps1, overlays).addTo(map); 
-            } else {
-              //alert("DELETE ALL OF THIS PART layer already exists2: " + layerName);
-              //overlays[layerName].remove(); // Also above
-              
-              //map.removeLayer(overlays[layerName]);
-              //layerControl[whichmap].removeOverlay(overlays[layerName]);
-
-              console.log("getOverlays");
-              console.log(layerControl[whichmap].getOverlays());
-              if (location.host.indexOf('localhost') >= 0) {
-                let layerString = "";
-                Object.keys(layerControl[whichmap].getOverlays()).forEach(key => {
-                  layerString += key;
-                  if (layerControl[whichmap].getOverlays()[key]) {
-                    layerString += " - selected";
-                  }
-                  layerString += "<br>";
-                });
-
-                // Show map layers, to use later
-                //$("#layerStringDiv").remove();
-                //$("#locationFilterHolder").prepend("<div id='layerStringDiv' style='width:220px'>" + layerString + "<hr></div>");
-              
-              }
-            }
-        }
-
-        if(layerControl === false) {
-          //layerControl = L.control.layers(baseLayers, overlays).addTo(map);
-        }
-      } // end layerControl
-
-      // To add additional layers:
-      //layerControl.addOverlay(layerGroup, dp.name); // Appends to existing layers
-
-
-        /* Rollover effect */
-        function highlightFeature(e){
-          var layer = e.target;
-          layer.setStyle({
-            weight: 3,
-            color: '#665',
-            dashArray: '',
-            fillOpacity: .7})
-            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-              layer.bringToFront();
-            }
-          // Send text to side box
-          info.update(layer.feature.properties);
-        }
-   
-        function resetHighlight(e){
-          overlays[layerName].resetStyle(e.target);
-          info.update();
-        }
-
-        // CLICK SHAPE ON MAP
-        function mapFeatureClick(e) {
-          param = loadParams(location.search,location.hash); // param is declared in localsite.js
-          var layer = e.target;
-          //map.fitBounds(e.target.getBounds()); // Zoom to boundary area clicked
-          if (layer.feature.properties.COUNTYFP) {
-            var fips = "US" + layer.feature.properties.STATEFP + layer.feature.properties.COUNTYFP;
-            
-            //var fipsString = fips;
-            if (param.geo && param.geo.split(",").includes(fips)) {
-              // Remove clicked fips from array, then convert back to string
-              param.geo = jQuery.grep(param.geo.split(","), function(value) {return value != fips;}).toString();
-              //fipsString = param.geo;
-            } else if (param.geo && param.geo.split(",").length > 0) {
-              param.geo = param.geo + "," + fips;
-            } else {
-              param.geo = fips;
-            }
-            goHash({'geo':param.geo,'regiontitle':''});
-          } else if (layer.feature.properties.name) { // Full state name
-              let hash = getHash();
-              let theStateID = getIDfromStateName(layer.feature.properties.name);
-              //alert("theStateID " + theStateID)
-              if (hash.state) {
-                if (hash.state.includes(theStateID)) {
-                  hash.state = jQuery.grep(hash.state.split(",")[0].toUpperCase(), function(value) {
-                    return value != theStateID;
-                  }).toString();
-                } else {
-                  hash.state = theStateID + "," + hash.state;
-                }
-              } else {
-                hash.state = theStateID;
-              }
-              // ,'geo':'','regiontitle':''
-              console.log("COULD BE ISSUE WITH MULTISTATE: goHash " + hash.state);
-              goHash({'state':hash.state});
-          }
-        }
-        // ROLLOVER SHAPE ON MAP
-        function onEachFeature(feature, layer){
-          layer.on({
-                mouseover: highlightFeature,
-                mouseout: resetHighlight, 
-                click: mapFeatureClick
-          })
-        }
-
-        var info = L.control();
-
-        info.onAdd = function(map) {
-          //alert("attempt")
-          if ($(".info.leaflet-control").length) {
-            $(".info.leaflet-control").remove(); // Prevent adding multiple times
-          }
-          this._div = L.DomUtil.create('div', 'info');
-          this.update();
-          return this._div;
-        }
-
-        info.update = function(props){
-            if (props) {
-              $(".info.leaflet-control").show();
-            } else {
-              $(".info.leaflet-control").hide();
-            }
-            // National
-            //this._div.innerHTML = "<h4>Zip code</h4>" + (props ? props.zip + '</br>' + props.name + ' ' + props.state + '</br>' : "Hover over map")
-            
-            if (props && props.COUNTYFP) {
-              this._div.innerHTML = "" 
-              + (props ? "<b>" + props.NAME + " County</b><br>" : "Hover over map") 
-              + (props ? "FIPS 13" + props.COUNTYFP : "")
-            } else { // US
-              this._div.innerHTML = "" 
-              + (props ? "<b>" + props.name + "</b><br>" : "Hover over map")
-            }
-
-            // To fix if using state - id is not defined
-            // Also, other state files may need to have primary node renamed to "data"
-            //this._div.innerHTML = "<h4>Zip code</h4>" + (1==1 ? id + '</br>' : "Hover over map")
-        }
-        if (map) {
-          info.addTo(map);
-        }
-      }
-    }
-  }); // waitforElm # whichmap
-  });
-  });
-}
 
 //Tyring, might be necessary to be outside loadFromSheet for .detail click. Test it inside.
 let map1 = {};
@@ -3902,12 +3231,15 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
         dragging: !L.Browser.mobile, 
         tap: !L.Browser.mobile
       });
-      layerControl[whichmap] = L.control.layers(basemaps, overlays).addTo(map); // Init layer checkboxes (add checkbox later)
+      layerControls[whichmap] = L.control.layers(basemaps, overlays).addTo(map); // Init layer checkboxes (add checkbox later)
       if (whichmap == "map2") {
         basemaps["OpenStreetMap"].addTo(map);
       } else {
         basemaps["Grayscale"].addTo(map); // Set the initial baselayer.
       }
+
+      console.log("layerControls[whichmap]");
+      console.log(layerControls[whichmap]);
     //}
   }
 
@@ -3925,19 +3257,21 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
 
 
   // ADD BACKGROUND BASEMAP
-  if (layerControl[whichmap] == undefined) {
-    alert("layerControl undefined")
-    layerControl[whichmap] = L.control.layers(basemaps, overlays).addTo(map); // Init layer checkboxes
+  /*
+  if (layerControls[whichmap] == undefined) {
+    alert("layerControls undefined")
+    layerControls[whichmap] = L.control.layers(basemaps, overlays).addTo(map); // Init layer checkboxes
     basemaps["Grayscale"].addTo(map); // Set the initial baselayer.  OpenStreetMap
   } else {
     // Move up
-    //layerControl[whichmap].addOverlay(layerGroup, dataTitle); // Add layer checkbox
+    //layerControls[whichmap].addOverlay(layerGroup, dataTitle); // Add layer checkbox
   }
+  */
 
   // ADD BACKGROUND BASEMAP to Side Map
-  if (layerControl[whichmap] == undefined) {
+  if (layerControls[whichmap] == undefined) {
     /* REACTIVATE THIS, BUT USE ONE FUNCTION FOR BOTH map1 and map2
-    layerControl[whichmap2] = L.control.layers(basemaps2, overlays2).addTo(map2); // Init layer checkboxes
+    layerControls[whichmap2] = L.control.layers(basemaps2, overlays2).addTo(map2); // Init layer checkboxes
     if (location.host.indexOf('localhost') >= 0) {
       // OpenStreetMap tiles stopped working on localhost in March of 2022. Using Grayscale locally for small map instead.
       // "Access denied. See https://operations.osmfoundation.org/policies/tiles/"
@@ -3949,24 +3283,32 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
     */
   } else {
 
-    // TODO: Assign to a different object name. No need to place in one-way dp object.
     let layerGroup = L.layerGroup(); // Was dp.group2
 
-    layerControl[whichmap].addOverlay(layerGroup, dataTitle); // Add layer checkbox
-    overlays[dataTitle] = layerGroup;
+    // BUGBUG - this is ALWAYS undefined
+    if (typeof overlays[dataTitle] == "undefined") { // If overlay is not added yet
+      //alert("addOverlay " + typeof overlays[dataTitle])
+      layerControls[whichmap].addOverlay(layerGroup, dataTitle); // Add layer checkbox
+      overlays[dataTitle] = layerGroup;
 
-    if (dp.showLayer != false) {
+      if (dp.showLayer != false) {
+        addIcons(dp,map,layerGroup,zoom,markerType);
+        if (overlays) { // Avoids: Cannot read properties of undefined (reading '[The Layer Title]')
+          // These do not effect the display of layer checkboxes
+          map.addLayer(overlays[dataTitle]);
 
-      addIcons(dp,map,layerGroup,zoom,markerType);
-      if (overlays) { // Avoids: Cannot read properties of undefined (reading '[The Layer Title]')
-        // These do not effect the display of layer checkboxes
-        map.addLayer(overlays[dataTitle]);
-
-        /* REACTIVATE THIS, BUT USE ONE FUNCTION FOR BOTH map1 and map2
-        map2.addLayer(overlays2[dataTitle]); // Add small circle icons
-        */
+          /* REACTIVATE THIS, BUT USE ONE FUNCTION FOR BOTH map1 and map2
+          map2.addLayer(overlays2[dataTitle]); // Add small circle icons
+          */
+        }
       }
+
+    } else {
+      // Do we need to check the layer here?
+
     }
+
+
 
   }
 
@@ -3988,10 +3330,10 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
   }
 
   if (whichmap=="map1") {
-      map1 = map;
-    } else {
-      map2 = map;
-    } 
+    map1 = map;
+  } else {
+    map2 = map;
+  } 
 
   }); // waitForElm
 }
@@ -4007,8 +3349,8 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
   if (!dp.dataTitle) {dataTitle = dp.listTitle;}
 
   // getScale uses D3. Loading from .json does not require D3, but Google and .CSV have already loaded it.
-  loadScript(theroot + 'js/d3.v5.min.js', function(results) { // NOT HELPING for colorscale, REMOVE AND REACTIVATE THE FOLLOWINS
-    waitForVariable('customD3loaded', function() { // NOT HELPING for colorscale,
+  //loadScript(theroot + 'js/d3.v5.min.js', function(results) { // NOT HELPING for colorscale, REMOVE AND REACTIVATE THE FOLLOWING
+  //  waitForVariable('customD3loaded', function() { // NOT HELPING for colorscale,
 
 
       dp.iconName = 'star';
@@ -4028,8 +3370,8 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
         dp = showList(dp,map); // Reduces list based on filters
       }
 
-    }); 
-  }); 
+  //  }); 
+  //}); 
 
   /*
   includeCSS3(theroot + 'css/leaflet.css',theroot);
@@ -4166,9 +3508,6 @@ function hex2rgb(hex) {
 function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced use of dp.group and dp.group2
   var circle;
   var iconColor, iconColorRGB, iconName;
-  var colorScale = dp.scale; // A function that returns colors based on the categories in the Values column
-  //console.log("colorScale:")
-  //console.log(colorScale)
 
   let hash = getHash();
   let uniqueID = 0;
@@ -4187,15 +3526,18 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
     }
 
     if (dp.colorColumn) {
-      iconColor = colorScale(element[dp.colorColumn]);
+      iconColor = dp.scale(element[dp.colorColumn]);
     } else if (dp.valueColumn) {
       // If the valueColumn = type, the item column may be filtered. For PPE the item contains multiple types.
 
-      //console.log("dp.valueColumn: " + dp.valueColumn);
-      //console.log("dp.valueColumn value: " + element[dp.valueColumn]);
-      //console.log("dp.valueColumn value Type: " + element["Type"]);
-      //console.log("dp.valueColumn value Category: " + element["Category"]);
-      iconColor = colorScale(element[dp.valueColumn]);
+      console.log("dp.valueColumn: " + dp.valueColumn);
+      console.log("dp.valueColumn value: " + element[dp.valueColumn]);
+      console.log("dp.valueColumn value Type: " + element["type"]); // Had to be lowercase for farmfresh
+      console.log("dp.valueColumn value Category: " + element["Category"]);
+      
+      // A function that returns colors based on the categories in the Values column
+      iconColor = dp.scale(element[dp.valueColumn]);
+
     } else if (dp.color) {
       iconColor = dp.color;
     } else {
@@ -4211,6 +3553,8 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
       dp.lonColumn = "longitude";
     }
 
+    console.log("iconColor: " + iconColor);
+    console.log("---");
     iconColorRGB = hex2rgb(iconColor);
     iconName = dp.iconName;
     if (typeof L === 'undefined') {
@@ -4255,8 +3599,8 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
       circle = L.marker([element[dp.latColumn], element[dp.lonColumn]], {icon: busIcon}).addTo(layerGroup); // Works, but not in Drupal site.
     } else {
       circle = L.circle([element[dp.latColumn], element[dp.lonColumn]], {
-          color: colorScale(element[dp.valueColumn]),
-          fillColor: colorScale(element[dp.valueColumn]),
+          color: dp.scale(element[dp.valueColumn]),
+          fillColor: dp.scale(element[dp.valueColumn]),
           fillOpacity: 1,
           radius: radius // was 50.  Aiming for 1 to 10
       }).addTo(layerGroup);

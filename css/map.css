@@ -493,6 +493,7 @@ label { /* override Drupal */
   background-color: #c3c3c3;
   line-height: 1.3em;
   width: 100%;
+  font-size: 15px;
 }
 @media (max-width: 800px) {
   .legendLink {

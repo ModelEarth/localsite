@@ -131,6 +131,7 @@
     color: #686868;
     text-shadow: none;
     float: left;
+    z-index: 1;
 }
 input.filterClick[type="text"] { 
     outline: none; /* prevents jagged edge when clicking to use search field. */

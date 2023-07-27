@@ -245,7 +245,9 @@ function refreshNaicsWidget() {
         initialPageLoad = false;
     }
 
-    priorHash_naicspage = getHash();
+    //priorHash_naicspage = getHash();
+    priorHash_naicspage = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
+
     //alert("afterr " + priorHash_naicspage.naics);
     // priorHash_naicspage = mix(getHash(),hash); // So we include changes above.
 }

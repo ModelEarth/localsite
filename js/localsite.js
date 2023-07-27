@@ -312,7 +312,7 @@ function updateHash(addToHash, addToExisting, removeFromHash) { // Avoids trigge
 }
 function goHash(addToHash,removeFromHash) {
   consoleLog("goHash ")
-  consoleLog(addToHash)
+  console.log(addToHash)
   updateHash(addToHash,true,removeFromHash); // true = Include all of existing hash
   triggerHashChangeEvent();
 }
@@ -692,27 +692,11 @@ function loadLeafletAndMapFilters() {
       });
     });
   }
-  // Everything uses map.js to fetch if the dataset (from show value) has a map.
-  // When we fetch .json before map.js, remove everything here if it does not need map.js
-  if (param.display == "map" || param.display == "everything") {
-    loadScript(theroot + 'js/map.js', function(results) { // Load list before map
+  if ((param.display == "map" || param.display == "everything") && param.show) {
+    // Later we could omit map.js from info page unless dp.dataset or googleDocID.
+    loadScript(theroot + 'js/map.js', function(results) {
 
     });
-
-    /*
-    loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
-      includeCSS3(theroot + 'css/leaflet.css',theroot);
-      loadScript(theroot + 'js/leaflet.js', function(results) {
-        loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Could skip when map does not use material icon colors
-          loadScript(theroot + 'js/map.js', function(results) {
-            // Loads map-filters.js (moved to map.js)
-            //loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
-          });
-        });
-      });
-
-    });
-    */
   }
 }
 // WAIT FOR JQuery
@@ -1064,9 +1048,12 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       
       if (!document.getElementById(link.id)) { // Prevents multiple loads.
         head.appendChild(link);
+        consoleLog("head.appendChild link for font");
         $(document).ready(function () {
-          //body.appendChild(link); // Doesn't get appended
+          //body.appendChild(link); // Doesn't get appended. Error: body is not defined
         });
+      } else {
+        consoleLog("link.id " + link.id);
       }
     }();
   }
