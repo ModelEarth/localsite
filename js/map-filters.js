@@ -730,10 +730,10 @@ function openMapLocationFilter() {
             clearall = true;
         }
         if (hash.mapview != "country") {
-            if (loadGeoTable != false) { // Prevents loading twice on init
+            //if (loadGeoTable != false) { // Prevents loading twice on init
                 //alert("updateSelectedTableRows 1")
                 updateSelectedTableRows(hash.geo, clearall, 0);
-            }
+            //}
         }
     }
     $("#filterClickLocation").addClass("filterClickActive");
