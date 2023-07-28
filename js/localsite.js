@@ -71,12 +71,9 @@ var local_app = local_app || (function(module){
             }
             
             if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-              // Omit known hosts of "localsite" repo here.
-
-              //theroot = "https://model.earth/localsite/";
               theroot = hostnameAndPort + "/localsite/";
-              consoleLog("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src));
-              consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
+              //consoleLog("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src));
+              //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
             }
             if (location.host.indexOf('localhost') >= 0) {
               // For testing embedding without locathost repo in site theroot. Rename your localsite folder.
@@ -423,15 +420,10 @@ function get_localsite_root3() { // Also in two other places
               //theroot = "https://map.georgia.org/localsite/";
               theroot = hostnameAndPort + "/localsite/";
             }
-            
             if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-              // Omit known hosts of "localsite" repo here.
-
-              // This is called on http://localhost/. Is it called when embedding on other domains?
-              //theroot = "https://model.earth/localsite/";
               theroot = hostnameAndPort + "/localsite/";
-              console.log("theroot: " + theroot);
-              consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
+              //console.log("theroot: " + theroot);
+              //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
             }
             if (location.host.indexOf('localhost') >= 0) {
               // Enable to test embedding without locathost repo in site theroot. Rename your localsite folder.

@@ -321,6 +321,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.dataTitle = "B2B Recyclers";
         dp.adminNote = "maps.g";
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
+        
         // Materials Tab
         dp.googleCategories = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=381237740&single=true&output=csv";
         dp.nameColumn = "organization name";
@@ -416,6 +417,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.search = {"In Name": "Facility Name","In Address": "Address", "Status": "Operating Status"};
 
         //dp.showWhenStatus = "Operating"
+        dp.catColumn = "Operating Status";
         dp.valueColumn = "operating status";
         dp.valueColumnLabel = "Operating Status";
 
@@ -1370,7 +1372,7 @@ function showList(dp,map) {
       //console.log("products_array.length " + products_array.length);
       //console.log("productcode_array.length " + productcode_array.length);
 
-      consoleLog('Begin foundMatch');
+      //consoleLog('Begin foundMatch');
       if (products_array.length > 0) { // A list from #catSearch field, typically just one
         for(var p = 0; p < products_array.length; p++) {
           if (products_array[p].length > 0) {
@@ -1488,7 +1490,7 @@ function showList(dp,map) {
           foundMatch++; // Subcat found in Subcategory.
         }
       } else if (hash.cat) {
-        //console.log("Look for cat: " + hash.cat + ". In column: " + dp.catColumn.toLowerCase());
+        console.log("Look for cat " + hash.cat + " in catColumn: " + dp.catColumn);
         if (elementRaw[dp.valueColumn] && elementRaw[dp.valueColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
           foundMatch++; // Cat found in Category valueColumn, which may contain multiple cats
           catFound++;
@@ -1553,7 +1555,7 @@ function showList(dp,map) {
 
     // If no subcat in URL, use all of the category's subcats to find matches.
     if (!hash.subcat && foundMatch == 0 && productMatchFound == 0 && catFound == 0) {
-      if (subcatArray.length > 0) {
+      if (subcatArray && subcatArray.length > 0) {
         let subcatColumn = "SubCategory";
         if (dp.subcatColumn) {
           subcatColumn = dp.subcatColumn;
@@ -1778,23 +1780,25 @@ function showList(dp,map) {
           } else if (element.address || element.city || element.state || element.zip) {
             if (element.address) {
               outaddress += element.address + "<br>";
-            } else {
-              if (element.city) {
-                outaddress += element.city;
-              }
-              if (element.state || element.zip) {
-                outaddress += ", ";
-              }
-              if (element.state) {
-                outaddress += element.state + " ";
-              }
-              if (element.zip) {
-                outaddress += element.zip;
-              }
-              if (element.city || element.state || element.zip) {
-                outaddress += "<br>";
-              }
             }
+
+            // Assumes that if sheet also has these columns, they are not in the address row. (Farmfresh)
+            if (element.city) {
+              outaddress += element.city;
+            }
+            if (element.state || element.zip) {
+              outaddress += ", ";
+            }
+            if (element.state) {
+              outaddress += element.state + " ";
+            }
+            if (element.zip) {
+              outaddress += element.zip;
+            }
+            if (element.city || element.state || element.zip) {
+              outaddress += "<br>";
+            }
+            
           }
           if (outaddress) {
             output += "<b>Location:</b> " + outaddress;
@@ -2211,8 +2215,8 @@ $(document).on("click", ".showList", function(event) {
   $(".showList").hide();
 });
 function showListBodyMargin() {
-  $('body').addClass('bodyLeftMarginList');
   if(document.getElementById("bodyFileHolder") == null) {
+    $('body').addClass('bodyLeftMarginList');
     if ($("#navcolumn").is(":visible") && $("#listcolumn").is(":visible")) {
       $('#listcolumn').removeClass('listcolumnOnly');
       $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
@@ -3005,14 +3009,14 @@ function getStateNameFromID(stateID) {
 
 var geojsonLayer; // Hold the prior letter. We can use an array or object instead.
 var overlays = {};
-//var overlays1 = {};
-//var overlays2 = {};
+var overlays1 = {};
+var overlays2 = {};
 
 
 //Tyring, might be necessary to be outside loadFromSheet for .detail click. Test it inside.
 let map1 = {};
 let map2 = {};
-
+let priorLayer;
 function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback) {
 
   // Pre-load Asynhronously the first time.
@@ -3030,10 +3034,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     console.log("loadFromSheet attempts exceed 40.");
     return;
   }
-  //alert("loadFromSheet calls processOutput");
 
-  //let map = {};
-  //let map2 = {};
   console.log("TO DO - place prior dataset in object within processOutput() to avoid reloading")
 
   let stateAllowed = true;
@@ -3157,13 +3158,14 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
   if (parentDiv) {
     mapDiv = "#" + parentDiv + " #" + whichmap;
   }
+  let hash = $.extend(true, {}, getHash());
   let dataTitle = dp.dataTitle;
   if (hash.subcat) {
     dataTitle = hash.subcat;
   } else if (hash.cat) {
     dataTitle = hash.cat;
   }
-  if (!dp.dataTitle) {dataTitle = dp.listTitle;}
+  if (!dataTitle) {dataTitle = dp.listTitle;}
   let mapCenter = [32.16,-82.9]; // A center is needed, or error will occur when first using flyTo.
   if (dp.latitude && dp.longitude) {
       mapCenter = [dp.latitude,dp.longitude];
@@ -3188,11 +3190,7 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
     }
   }
   // TODO - Adjust to allow for map1 also
-  let overlays = {
-    'Rail' : L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
-          minZoom: 2, maxZoom: 19, tileSize: 256, attribution: '<a href="https://www.openrailwaymap.org/">OpenRailwayMap</a>'
-      }),
-  };
+
   //overlays[dataTitle] = dp.group2; Added a dup checkbox
 
 
@@ -3201,8 +3199,10 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
     
     if (whichmap=="map1") {
       map = map1;
+      overlays = overlays1;
     } else {
       map = map2;
+      overlays = overlays2;
     } 
 
     consoleLog(mapDiv + " div found. Length: " + $(mapDiv).text().trim().length);
@@ -3213,6 +3213,11 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
 
   } else {
     consoleLog("Initiate map " + mapDiv + " ");
+    overlays = { // This is universally available for both map1 and map2.
+      'Rail' : L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
+            minZoom: 2, maxZoom: 19, tileSize: 256, attribution: '<a href="https://www.openrailwaymap.org/">OpenRailwayMap</a>'
+        }),
+    };
     //var containerExists = L.DomUtil.get(map); // NOT NEEDED
 
     // https://help.openstreetmap.org/questions/12935/error-map-container-is-already-initialized
@@ -3267,6 +3272,8 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
   }
   */
 
+  let layerGroup = L.layerGroup(); // Was dp.group2
+
   // ADD BACKGROUND BASEMAP to Side Map
   if (layerControls[whichmap] == undefined) {
     /* REACTIVATE THIS, BUT USE ONE FUNCTION FOR BOTH map1 and map2
@@ -3282,32 +3289,44 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
     */
   } else {
 
-    let layerGroup = L.layerGroup(); // Was dp.group2
+    if (priorLayer && overlays[priorLayer]) {
+      //alert("found overlay " + whichmap)
+      // This removed checkbox entirely from second map, but mappoints were still there.
+      //layerControls[whichmap].removeLayer(overlays["Georgia Solid Waste (2023)"])
 
-    // BUGBUG - this is ALWAYS undefined
-    if (typeof overlays[dataTitle] == "undefined") { // If overlay is not added yet
-      //alert("addOverlay " + typeof overlays[dataTitle])
-      layerControls[whichmap].addOverlay(layerGroup, dataTitle); // Add layer checkbox
-      overlays[dataTitle] = layerGroup;
+      // Partially works! - Unchecked on second map.
+      //map.removeLayer(overlays[priorLayer]); // Remove overlay but not checkbox. 
+
+      // Only map1 is getting updated.
+      map1.removeLayer(overlays1[priorLayer]);
+      map2.removeLayer(overlays2[priorLayer]);
+    }
+    //alert("addOverlay " + typeof overlays[dataTitle])
+    layerControls[whichmap].addOverlay(layerGroup, dataTitle); // Add layer checkbox - works
+    //map.addOverlay(layerGroup, dataTitle);
+
+    // BUGBUG - Need to prevent adding duplicate checkbox
+    //if (!overlays[dataTitle]) { // Prevent reloading map points
+      // WHAT'S HAPPENING
+      // Assuming this gets pointed at just the second map.
+      // Then the above removeLayer only works with (unchecks) the second map.
+      //console.log("layerGroup");
+      //console.log(layerGroup); // Object contains HTML, including leaflet-popup-text.
+      overlays[dataTitle] = layerGroup; // Available to both map1 and map2
+
+      
+
 
       if (dp.showLayer != false) {
-        addIcons(dp,map,layerGroup,zoom,markerType);
+        
+          addIcons(dp,map,layerGroup,zoom,markerType);
+        
         if (overlays) { // Avoids: Cannot read properties of undefined (reading '[The Layer Title]')
-          // These do not effect the display of layer checkboxes
+          // Checks the box, which displays the layer. (Basically boxes and icons are ready at this point.)
           map.addLayer(overlays[dataTitle]);
-
-          /* REACTIVATE THIS, BUT USE ONE FUNCTION FOR BOTH map1 and map2
-          map2.addLayer(overlays2[dataTitle]); // Add small circle icons
-          */
         }
       }
-
-    } else {
-      // Do we need to check the layer here?
-
-    }
-
-
+    //}
 
   }
 
@@ -3330,10 +3349,13 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
 
   if (whichmap=="map1") {
     map1 = map;
+    overlays1[dataTitle] = layerGroup; // Seems hacky, but the layerGroup points at specific map.  Otherwise map2 (the most recent) would be the only one pointed to.
   } else {
     map2 = map;
+    overlays2[dataTitle] = layerGroup;
+    priorLayer = dataTitle; // Only change after map2
   } 
-
+  
   }); // waitForElm
 }
 
@@ -3381,7 +3403,6 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
     });
   });
   */
-
 
   let showMap = true; 
     if (showMap) { // Async loading of map while showList proceeds
@@ -3529,10 +3550,10 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
     } else if (dp.valueColumn) {
       // If the valueColumn = type, the item column may be filtered. For PPE the item contains multiple types.
 
-      console.log("dp.valueColumn: " + dp.valueColumn);
-      console.log("dp.valueColumn value: " + element[dp.valueColumn]);
-      console.log("dp.valueColumn value Type: " + element["type"]); // Had to be lowercase for farmfresh
-      console.log("dp.valueColumn value Category: " + element["Category"]);
+      //console.log("dp.valueColumn: " + dp.valueColumn);
+      //console.log("dp.valueColumn value valueColumn: " + element[dp.valueColumn]);
+      //console.log("dp.valueColumn value 'Type' column: " + element["type"]); // Had to be lowercase for farmfresh
+      //console.log("dp.valueColumn value Category: " + element["Category"]);
       
       // A function that returns colors based on the categories in the Values column
       iconColor = dp.scale(element[dp.valueColumn]);
@@ -3552,8 +3573,8 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
       dp.lonColumn = "longitude";
     }
 
-    console.log("iconColor: " + iconColor);
-    console.log("---");
+    //console.log("iconColor: " + iconColor);
+    //console.log("---");
     iconColorRGB = hex2rgb(iconColor);
     iconName = dp.iconName;
     if (typeof L === 'undefined') {

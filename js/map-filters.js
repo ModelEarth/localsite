@@ -1107,8 +1107,8 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
 
       // layerControls[whichmap]
       if (overlays[layerName]) {
-        // REACTIVATE THIS -THURSDAY
-        //map.removeLayer(overlays[layerName]); // Remove overlay but not checkbox. (Temp reduction of doubling)
+        // REACTIVATE THIS -THURSDAY, JULY 27
+        map.removeLayer(overlays[layerName]); // Remove overlay but not checkbox. (Temp reduction of doubling)
       }
       //map.removeOverlay(overlays[layerName]);
 

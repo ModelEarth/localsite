@@ -170,9 +170,11 @@ function showSide() {
 	$("#sideIcons").hide();
 	$("#navcolumn").show();
 	//alert("#navcolumn show");
-	if ($("#listcolumn").is(":visible")) {
-		$('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed side columns.
-		$('#listcolumn').removeClass('listcolumnOnly');
+	if(document.getElementById("bodyFileHolder") == null) {
+		if ($("#listcolumn").is(":visible")) {
+			$('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed side columns.
+			$('#listcolumn').removeClass('listcolumnOnly');
+		}
 	}
 	$("#showSideInBar").hide();
 	if(document.getElementById("containerLayout") != null) {
@@ -181,23 +183,10 @@ function showSide() {
 	} else {
 		$("#fullcolumn #showSide").hide();
 		$('body').addClass('bodyLeftMargin'); // Margin on left for fixed nav column.
-		/*
-		if($('#listcolumnList').html().length) { // Showing both nav and list columns
-			$("#listcolumn").show();
-			$('#listcolumn').removeClass('listcolumnOnly');
-			if(document.getElementById("bodyFileHolder") == null) {
-				if ($("#navcolumn").is(":visible")) {
-					$('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
-				} else {
-					$('#listcolumn').addClass('listcolumnOnly');
-					$('body').addClass('bodyLeftMarginList');
-				}
-			}
-		}
-		*/
 		$('body').addClass('mobileView');
 
-		// Recenters
+		// Refreshs to load map tiles. Worked at one point.
+		// Maybe vars map1 and map2 need to be called directly? They are now declaired universally.
 		// Test is we need this with mobile.
 		if (document.querySelector('#map1')._leaflet_map) {
 			document.querySelector('#map1')._leaflet_map.invalidateSize(); // Refresh map tiles.
@@ -359,9 +348,11 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		if (which != "list") {
 			$("#navcolumn").hide();
 			$('body').removeClass('bodyLeftMarginFull');
-			if ($("#listcolumn").is(':visible')) {
-				$('#listcolumn').addClass('listcolumnOnly');
-				$('body').addClass('bodyLeftMarginList');
+			if(document.getElementById("bodyFileHolder") == null) {
+				if ($("#listcolumn").is(':visible')) {
+					$('#listcolumn').addClass('listcolumnOnly');
+					$('body').addClass('bodyLeftMarginList');
+				}
 			}
 		} else {
 			$("#listcolumn").hide();
@@ -376,9 +367,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		if ($("#navcolumn").is(':hidden')) {
 			$('body').removeClass('bodyLeftMargin');
 		}
-		if ($("#listcolumn").is(':visible')) {
-			//$('body').addClass('bodyLeftMarginList');
-		} else {
+		if ($("#listcolumn").is(':hidden')) {
 			$('body').removeClass('bodyLeftMarginList');
 		}
 		if ($("#navcolumn").is(':hidden') || $("#listcolumn").is(':hidden')) {
