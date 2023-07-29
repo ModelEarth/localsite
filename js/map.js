@@ -624,9 +624,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.dataTitle = "Restaurant Ratings";
         dp.dataset = "/community/tools/map.csv";
         dp.latitude = 32.9;
-        dp.longitude = -83.4;
-
-        //dp.showLayer = false;
+        dp.longitude = -83.4; 
         dp.name = "Fulton County Restaurants";
         dp.titleColumn = "restaurant";
         dp.nameColumn = "restaurant";
@@ -3301,32 +3299,29 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       map1.removeLayer(overlays1[priorLayer]);
       map2.removeLayer(overlays2[priorLayer]);
     }
-    //alert("addOverlay " + typeof overlays[dataTitle])
-    layerControls[whichmap].addOverlay(layerGroup, dataTitle); // Add layer checkbox - works
+    //alert("addOverlay - typeof overlays[dataTitle] " + typeof overlays[dataTitle])
+
+    if (typeof overlays[dataTitle] != "object") { // Prevent adding duplicate checkbox
+      
+    }
     //map.addOverlay(layerGroup, dataTitle);
 
-    // BUGBUG - Need to prevent adding duplicate checkbox
-    //if (!overlays[dataTitle]) { // Prevent reloading map points
+    
       // WHAT'S HAPPENING
       // Assuming this gets pointed at just the second map.
       // Then the above removeLayer only works with (unchecks) the second map.
       //console.log("layerGroup");
       //console.log(layerGroup); // Object contains HTML, including leaflet-popup-text.
-      overlays[dataTitle] = layerGroup; // Available to both map1 and map2
-
       
-
-
-      if (dp.showLayer != false) {
-        
-          addIcons(dp,map,layerGroup,zoom,markerType);
-        
-        if (overlays) { // Avoids: Cannot read properties of undefined (reading '[The Layer Title]')
-          // Checks the box, which displays the layer. (Basically boxes and icons are ready at this point.)
-          map.addLayer(overlays[dataTitle]);
-        }
+      if (typeof overlays[dataTitle] != "object") { // Prevent adding duplicate checkbox
+        layerControls[whichmap].addOverlay(layerGroup, dataTitle); // Add layer checkbox - works
+        addIcons(dp,map,layerGroup,zoom,markerType);
+        overlays[dataTitle] = layerGroup; // Available to both map1 and map2
       }
-    //}
+      if (overlays) {
+        // Checks the box, which displays the layer. (Basically boxes and icons are ready at this point.)
+        map.addLayer(overlays[dataTitle]);
+      }
 
   }
 
@@ -3385,11 +3380,8 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
       clearListDisplay();
 
       // RENDER THE LIST - from dp.data
-      if (dp.showLayer != false) {
-        $("#widgetTitle").text(dataTitle);
-        
-        dp = showList(dp,map); // Reduces list based on filters
-      }
+      $("#widgetTitle").text(dataTitle);  
+      dp = showList(dp,map); // Reduces list based on filters
 
   //  }); 
   //}); 

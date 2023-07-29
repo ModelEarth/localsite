@@ -84,7 +84,7 @@
   }
 }
 .bodyLeftMargin #filterFieldsMain, .bodyLeftMarginList #filterFieldsMain  {
-    padding-left: 10px;
+    padding-left: 15px;
 }
 #filterLocations, #honeycombPanel {
   background-color: #fcfcfc; /* fcfcfc not visible to Brave darkmode, but #eee too dark in light mode */
