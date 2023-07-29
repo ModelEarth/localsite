@@ -25,10 +25,11 @@ These additonal parameters can be used to change the header logo:
     param.headerLogoSmall = "<img src='/apps/img/logo/favicon.png' style='width:44px; margin-top:-5px'>";
     param.favicon = "/apps/img/logo/favicon.png"
 
+<!--
 ## HTML loaded by localsite.js
 
-1. Location (state, county) map filters resides in:
-[/localsite/map/index.html](../map/index.html)
+1. Map filters resides in:
+[/localsite/info/template-main.html](../map/index.html)
 
 2. USEEIO widget HTML layout resides in:
 [/localsite/info/template-charts.html](../info/template-charts.html)
@@ -36,8 +37,4 @@ These additonal parameters can be used to change the header logo:
 3. Navigation is loaded by js/navigation.js, which loads:
 [/localsite/header.html](../header.html) (includes left and right navigation)
 [/localsite/footer.html](../footer.html)
-
-<!--
-Not in use:
-param.startTitle = "Your Community"
 -->

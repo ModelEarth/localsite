@@ -1,6 +1,6 @@
 ## Integration between Websites
 
-<a href="https://github.com/modelearth/localsite/" target="_parent">The Localsite Framework</a> is designed to allow easier integration between multiple Github repos by using hash values to share settings.  
+<a href="https://github.com/modelearth/localsite/" target="_parent">The Localsite Framework</a> is designed to allow easier integration between Github submodule repos by using hash values to share settings.  
 
 **hashChangeEvent** - triggers independent widgets when the URL hash is changed both programmatically and by the user.    
 

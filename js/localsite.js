@@ -1001,6 +1001,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     loadSearchFilterIncludes(); // Could load less then all 4 css files.
     loadScript(theroot + 'js/navigation.js', function(results) {
     });
+  } else {
+    includeCSS3(theroot + 'css/base.css',theroot);
   }
 
   //} else { // Show map or list without header
