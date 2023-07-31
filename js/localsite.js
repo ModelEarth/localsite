@@ -565,14 +565,10 @@ function consoleLog(text,value) {
 }
 
 function loadLocalTemplate() {
-  //let bodyFile = theroot + "info/template-main.html #insertedText";
-  let bodyFile = theroot + "info/template-main.html";
-  //alert("Before template Loaded: " + bodyFile);
-
-  let bodyFileDiv = "#bodyFile";
-  //bodyFileDiv = "body";
-  waitForElm(bodyFileDiv).then((elm) => {
-    $(bodyFileDiv).load(bodyFile, function( response, status, xhr ) {
+  let datascapeFile = theroot + "info/template-main.html";
+  let datascapeFileDiv = "#datascape";
+  waitForElm(datascapeFileDiv).then((elm) => {
+    $(datascapeFileDiv).load(datascapeFile, function( response, status, xhr ) {
       //$("#insertedTextSource").remove(); // For map/index.html. Avoids dup header.
 
       //$('img').each(function() {
@@ -585,7 +581,7 @@ function loadLocalTemplate() {
       elemDiv.innerHTML = "testing";
       document.body.appendChild(elemDiv);
 
-      console.log("Template Loaded: " + bodyFile);
+      console.log("Template Loaded: " + datascapeFile);
       if (typeof relocatedStateMenu != "undefined") {
         relocatedStateMenu.appendChild(state_select); // For apps hero
         $(".stateFilters").hide();
@@ -722,13 +718,12 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
         // LOAD HTML TEMPLATE - Holds search filters and maps
         // View html source: https://model.earth/localsite/map
-        // Consider pulling in HTML before DOM is loaded, then send to page once #bodyFile is available.
+        // Consider pulling in HTML before DOM is loaded, then send to page once #datascape is available.
 
        if (param.insertafter && $("#" + param.insertafter).length) {
-          $("#" + param.insertafter).append("<div id='bodyFile'></div>");
-        //} else if (!$("#bodyFile").length) {
-        } else if(document.getElementById("bodyFile") == null) {
-          $('body').prepend("<div id='bodyFile'></div>");
+          $("#" + param.insertafter).append("<div id='datascape'></div>");
+        } else if(document.getElementById("datascape") == null) {
+          $('body').prepend("<div id='datascape'></div>");
         }
 
         if(param.showheader == "true") {
@@ -756,7 +751,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         if (param.display == "everything") {
           let infoFile = theroot + "info/template-charts.html #template-charts"; // Including #template-charts limits to div within page, prevents other includes in page from being loaded.
           //console.log("Before template Loaded infoFile: " + infoFile);
-          //alert("Before template Loaded: " + bodyFile);
           $("#infoFile").load(infoFile, function( response, status, xhr ) {
             console.log("Info Template Loaded: " + infoFile);
             $("#industryFilters").appendTo("#append_industryFilters");
@@ -1062,9 +1056,111 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       console.log('%cALERT: JQUERY NOT YET AVAILABLE! JQuery probably needs to be added to calling page.', 'color: red; background: yellow; font-size: 14px');    
     }
   }
-      
-}, 10); // End block, could move to end of jQuery loadScript.
+  
 
+  // NULLSCHOOL
+  $(document).on("click", "#earthClose", function(event) { // ZOOM IN
+    $("#nullschoolHeader").hide();
+    $("#hero_holder").show();
+    event.stopPropagation();
+  });
+  $(document).on("click", "#earthZoom .leaflet-control-zoom-in", function(event) { // ZOOM IN
+    zoomEarth(200);
+    event.stopPropagation();
+  });
+  $(document).on("click", "#earthZoom .leaflet-control-zoom-out", function(event) { // ZOOM IN
+    zoomEarth(-200);
+    event.stopPropagation();
+  });
+  function zoomEarth(zoomAmount) {
+    if (!localObject.earth) {
+      let earthSrc = document.getElementById("mainframe").src; // Only returns the initial cross-domain uri.
+      localObject.earth = getEarthObject(earthSrc.split('#')[1]);
+    }
+    // Add 100 to orthographic map zoom
+    let orthographic = localObject.earth.orthographic.split(",");
+    localObject.earth.orthographic = orthographic[0] + "," + orthographic[1] + "," + (+orthographic[2] + zoomAmount);
+    
+    /*
+    let theMonth = 6;
+    let theDay = 1;
+    let theHour = 0;
+
+    let monthStr = String(theMonth).padStart(2, '0');
+    let dayStr = String(theDay).padStart(2, '0');
+    let hourStr = String(theHour).padStart(2, '0');
+    $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " " + theHour + ":00 GMT (7 PM EST)");
+    */
+
+    let earthUrl = "https://earth.nullschool.net/#";
+    if (localObject.earth.date) {
+      earthUrl += localObject.earth.date + "/" + localObject.earth.time + "/";
+    } else {
+      earthUrl += "current/";
+    }
+    earthUrl += localObject.earth.mode + "/overlay=" + localObject.earth.overlay + "/orthographic=" + localObject.earth.orthographic;
+    loadIframe("mainframe", earthUrl);
+    //loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/" + hourStr + "00Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
+  }
+  function getEarthObject(url) {
+    console.log("map.js getEarthObject " + url);
+    if (url == undefined) {
+      console.log("BUG - getEarthObject url undefined");
+      return;
+    }
+    let urlPart = url.split('/');
+    let params = {};
+    if (urlPart.length > 6) { // URL contains date and time
+      params.date = urlPart[0] + "/" + urlPart[1] + "/" + urlPart[2];
+      params.time = urlPart[3];
+      params.mode = urlPart[4] + "/" + urlPart[5] + "/" + urlPart[6];
+    } else {
+      params.mode = urlPart[1] + "/" + urlPart[2] + "/" + urlPart[3];
+    }
+    for (let i = 4; i < urlPart.length; i++) {
+        if(!urlPart[i])
+            continue;
+        if (i==0 && urlPart[i].indexOf("=") == -1) {
+          params[""] = urlPart[i];  // Allows for initial # params without =.
+          continue;
+        }
+        let hashPair = urlPart[i].split('=');
+        params[decodeURIComponent(hashPair[0]).toLowerCase()] = decodeURIComponent(hashPair[1]);
+     }
+     return params;
+  }
+  function delay(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
+  }
+  async function loopMap() {
+    await delay(200);
+    let theMonth = 6;
+    let theDay = 1;
+    let theHour = 0;
+    while (theDay <= 20) {
+      let monthStr = String(theMonth).padStart(2, '0');
+      let dayStr = String(theDay).padStart(2, '0');
+      let hourStr = String(theHour).padStart(2, '0');
+      $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " " + theHour + ":00 GMT (7 PM EST)");
+
+      loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/" + hourStr + "00Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
+      await delay(1000);
+
+      $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " 12:00 GMT (7 AM EST)");
+      loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/1200Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
+      await delay(1000);
+
+      theDay += 1;
+      //theHour += 2;   
+    }
+  }
+  $(document).ready(function () {
+    // Run animation - add a button for this
+    //loopMap();
+  });
+  // END NULLSCHOOL
+
+}, 10); // End block, could move to end of jQuery loadScript.
 
 }); // End JQuery loadScript
 
@@ -1780,8 +1876,8 @@ function showSearchFilter() {
   let headerHeight = $("#headerbar").height(); // Not sure why this is 99 rather than 100
   closeSideTabs(); // Later search will be pulled into side tab.
   if (!$("#filterFieldsHolder").length) { // Filter doesn't exist yet, initial map/index.html load.
-    if (!$("#bodyFile").length) {
-      $('body').prepend("<div id='bodyFile'></div>");
+    if (!$("#datascape").length) {
+      $('body').prepend("<div id='datascape'></div>");
     }
     //loadLocalTemplate(); // Loaded a second time on community page
     loadSearchFilterIncludes();
@@ -1800,8 +1896,8 @@ function showSearchFilter() {
       //$("#filterbaroffset").hide();
       ////$("#pageLinksHolder").hide();
     } else {
-      // #bodyFile is needed for map/index.html to apply $("#filterFieldsHolder").show()
-      // Also prevents search filter from flashing briefly in map/index.html before moving into #bodyFile
+      // #datascape is needed for map/index.html to apply $("#filterFieldsHolder").show()
+      // Also prevents search filter from flashing briefly in map/index.html before moving into #datascape
         
       if (document.getElementById("filterFieldContent") == null) { 
         //alert("load filter.html")
@@ -1817,7 +1913,7 @@ function showSearchFilter() {
     }
 
     if (loadFilters) {
-      waitForElm('#bodyFile #filterFieldContent').then((elm) => {
+      waitForElm('#datascape #filterFieldContent').then((elm) => {
         revealFilters();
         /*
         console.log("show #filterFieldsHolder");
@@ -2134,4 +2230,5 @@ function loadIntoDiv(pageFolder,divID,thediv,html,attempts,callback) {
     }
   }
 }
+
 consoleLog("end localsite");

@@ -10,14 +10,14 @@ The&nbsp;[localsite&nbsp;repo](https://github.com/modelearth/localsite/) provide
 ## Embed Datascapes
 
 1\. Choose a layer to show initially. Example:
-[show=farmfresh](map/#show=farmfresh) - Currently hardcoded in map.js
+[show=farmfresh](map/#show=farmfresh) - Currently hardcoded in map.js.
 
 2\. Optionally include a #datascape div to position in page.
 
 3\. Optionally set the following to true or false. 
 These are applied by localsite.js:  
 
-showheader - Top bar including custom logo
-showsearch - Display search bar with filters
+showheader - Top bar including logo.
+showsearch - Display search bar with filters.
 
 

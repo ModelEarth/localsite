@@ -170,7 +170,7 @@ function showSide() {
 	$("#sideIcons").hide();
 	$("#navcolumn").show();
 	//alert("#navcolumn show");
-	if(document.getElementById("bodyFileHolder") == null) {
+	if(document.getElementById("datascape") == null && document.getElementById("datascape1") == null) {
 		if ($("#listcolumn").is(":visible")) {
 			$('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed side columns.
 			$('#listcolumn').removeClass('listcolumnOnly');
@@ -305,13 +305,14 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
  	// min-height allows header to serve as #filterbaroffset when header.html not loaded
  	// pointer-events:none; // Avoid because sub-divs inherite and settings dropdowns are then not clickable.
 
-	if(document.getElementById("bodyFile") == null) {
-		$("#fullcolumn").prepend("<div id='bodyFile'></div>\r");
+	if(document.getElementById("datascape") == null) {
+		$("#fullcolumn").prepend("<div id='datascape' class='datascape'></div>\r");
 	}
 
 	let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSideList close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='listSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listInfo' class='listInfo content'></div></div>\r";
-	if(document.getElementById("bodyFileHolder") != null) {
-		$("#bodyFileHolder").prepend(listColumnElement);
+	if(document.getElementById("datascape") != null || document.getElementById("datascape1") != null) {
+		$("#datascape").addClass("datascape");
+		$("#datascape").prepend(listColumnElement);
 		listColumnElement = "";
 		$('body').removeClass('bodyLeftMarginFull');
 	}
@@ -348,7 +349,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		if (which != "list") {
 			$("#navcolumn").hide();
 			$('body').removeClass('bodyLeftMarginFull');
-			if(document.getElementById("bodyFileHolder") == null) {
+			if(document.getElementById("datascape") == null && document.getElementById("datascape1") == null) {
 				if ($("#listcolumn").is(':visible')) {
 					$('#listcolumn').addClass('listcolumnOnly');
 					$('body').addClass('bodyLeftMarginList');
@@ -358,19 +359,19 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 			$("#listcolumn").hide();
 			$("#showListInBar").show();
 		}
-		if ($("#navcolumn").is(':hidden') && $("#listcolumn").is(':hidden')) {
+		if (!$("#navcolumn").is(':visible') && !$("#listcolumn").is(':visible')) {
 			$("#showSide").show();$("#showSideInBar").hide();
 			$("#sideIcons").show();
-		} else if ($("#navcolumn").is(':hidden') && $("#listcolumn").is(':visible')) {
+		} else if (!$("#navcolumn").is(':visible') && $("#listcolumn").is(':visible')) {
 			$("#showSideInBar").show();
 		}
-		if ($("#navcolumn").is(':hidden')) {
+		if (!$("#navcolumn").is(':visible')) {
 			$('body').removeClass('bodyLeftMargin');
 		}
-		if ($("#listcolumn").is(':hidden')) {
+		if (!$("#listcolumn").is(':visible')) {
 			$('body').removeClass('bodyLeftMarginList');
 		}
-		if ($("#navcolumn").is(':hidden') || $("#listcolumn").is(':hidden')) {
+		if (!$("#navcolumn").is(':visible') || !$("#listcolumn").is(':visible')) {
 			$('body').removeClass('bodyLeftMarginFull');
 		}
 		if (!$('body').hasClass('bodyRightMargin')) {
@@ -831,14 +832,15 @@ $(document).on("click", ".showEarth", function(event) {
 		$("#hero_holder").show();
 		closeSideTabs();
 	} else {
+		includeCSS3('/localsite/css/leaflet.css',''); // For zoom icons
 		//$("#globalMapHolder").hide(); // Home page nullschool map.
 		closeSideTabs();
 		$("#hero_holder").hide();
 		// Add a setting to choose map: Temperatures or just wind
 		// Big blue: https://earth.nullschool.net/#current/wind/surface/level/orthographic=-35.06,40.67,511
 		showGlobalMap("https://earth.nullschool.net/#current/wind/surface/level/overlay=temp/orthographic=-72.24,46.06,511"); //   /loc=-81.021,33.630
-		event.stopPropagation();
 	}
+	event.stopPropagation();
 });
 $(document).click(function(event) { // Hide open menus
 	if($("#menuHolder").css('display') !== 'none') {

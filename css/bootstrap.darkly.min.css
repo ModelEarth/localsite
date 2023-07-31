@@ -44,6 +44,9 @@ a:link, a:visited {
 .greyDiv b, .greyDiv .maincat, .greyDiv b a, .greyDiv b a:visited {
     color: #ccc !important;
 }
+.greyDiv .close-X-sm:hover {
+    color: #fff;
+}
 .liteDiv {
     border-right: #333 1px solid !important;
 }

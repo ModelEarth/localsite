@@ -2213,7 +2213,7 @@ $(document).on("click", ".showList", function(event) {
   $(".showList").hide();
 });
 function showListBodyMargin() {
-  if(document.getElementById("bodyFileHolder") == null) {
+  if(document.getElementById("datascape") == null && document.getElementById("datascape1") == null) {
     $('body').addClass('bodyLeftMarginList');
     if ($("#navcolumn").is(":visible") && $("#listcolumn").is(":visible")) {
       $('#listcolumn').removeClass('listcolumnOnly');
@@ -3415,13 +3415,13 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
         if (dp.zoom) zoomLevel1 = dp.zoom;
         let zoomLevel2 = 7;
 
-        renderMap(dp,map1,"map1","bodyFile",null,zoomLevel1,"google");
+        renderMap(dp,map1,"map1","datascape",null,zoomLevel1,"google");
 
-        waitForElm('#bodyFile #map2').then((elm) => {
+        waitForElm('#datascape #map2').then((elm) => {
           $("#sidemapCard").show();
           $("#list_main").show();
           $("#tableSide").show();
-          renderMap(dp,map2,"map2","bodyFile",null,zoomLevel2,"");
+          renderMap(dp,map2,"map2","datascape",null,zoomLevel2,"");
         });
 
     });
@@ -3936,109 +3936,6 @@ function zoomFromKm(kilometers_wide, theState) {
   }
   return zoom;
 }
-
-// NULLSCHOOL
-$(document).on("click", "#earthClose", function(event) { // ZOOM IN
-  $("#nullschoolHeader").hide();
-  $("#hero_holder").show();
-  event.stopPropagation();
-});
-$(document).on("click", "#earthZoom .leaflet-control-zoom-in", function(event) { // ZOOM IN
-  zoomEarth(200);
-  event.stopPropagation();
-});
-$(document).on("click", "#earthZoom .leaflet-control-zoom-out", function(event) { // ZOOM IN
-  zoomEarth(-200);
-  event.stopPropagation();
-});
-function zoomEarth(zoomAmount) {
-  if (!localObject.earth) {
-    let earthSrc = document.getElementById("mainframe").src; // Only returns the initial cross-domain uri.
-    localObject.earth = getEarthObject(earthSrc.split('#')[1]);
-  }
-  // Add 100 to orthographic map zoom
-  let orthographic = localObject.earth.orthographic.split(",");
-  localObject.earth.orthographic = orthographic[0] + "," + orthographic[1] + "," + (+orthographic[2] + zoomAmount);
-  
-  /*
-  let theMonth = 6;
-  let theDay = 1;
-  let theHour = 0;
-
-  let monthStr = String(theMonth).padStart(2, '0');
-  let dayStr = String(theDay).padStart(2, '0');
-  let hourStr = String(theHour).padStart(2, '0');
-  $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " " + theHour + ":00 GMT (7 PM EST)");
-  */
-
-  let earthUrl = "https://earth.nullschool.net/#";
-  if (localObject.earth.date) {
-    earthUrl += localObject.earth.date + "/" + localObject.earth.time + "/";
-  } else {
-    earthUrl += "current/";
-  }
-  earthUrl += localObject.earth.mode + "/overlay=" + localObject.earth.overlay + "/orthographic=" + localObject.earth.orthographic;
-  loadIframe("mainframe", earthUrl);
-  //loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/" + hourStr + "00Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
-}
-function getEarthObject(url) {
-  console.log("map.js getEarthObject " + url);
-  if (url == undefined) {
-    console.log("BUG - getEarthObject url undefined");
-    return;
-  }
-  let urlPart = url.split('/');
-  let params = {};
-  if (urlPart.length > 6) { // URL contains date and time
-    params.date = urlPart[0] + "/" + urlPart[1] + "/" + urlPart[2];
-    params.time = urlPart[3];
-    params.mode = urlPart[4] + "/" + urlPart[5] + "/" + urlPart[6];
-  } else {
-    params.mode = urlPart[1] + "/" + urlPart[2] + "/" + urlPart[3];
-  }
-  for (let i = 4; i < urlPart.length; i++) {
-      if(!urlPart[i])
-          continue;
-      if (i==0 && urlPart[i].indexOf("=") == -1) {
-        params[""] = urlPart[i];  // Allows for initial # params without =.
-        continue;
-      }
-      let hashPair = urlPart[i].split('=');
-      params[decodeURIComponent(hashPair[0]).toLowerCase()] = decodeURIComponent(hashPair[1]);
-   }
-   return params;
-}
-function delay(time) {
-  return new Promise(resolve => setTimeout(resolve, time));
-}
-async function loopMap() {
-  await delay(200);
-  let theMonth = 6;
-  let theDay = 1;
-  let theHour = 0;
-  while (theDay <= 20) {
-    let monthStr = String(theMonth).padStart(2, '0');
-    let dayStr = String(theDay).padStart(2, '0');
-    let hourStr = String(theHour).padStart(2, '0');
-    $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " " + theHour + ":00 GMT (7 PM EST)");
-
-    loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/" + hourStr + "00Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
-    await delay(1000);
-
-    $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " 12:00 GMT (7 AM EST)");
-    loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/1200Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
-    await delay(1000);
-
-    theDay += 1;
-    //theHour += 2;   
-  }
-}
-$(document).ready(function () {
-  // Run animation - add a button for this
-  //loopMap();
-});
-// END NULLSCHOOL
-
 
 
 // DELETE in 2023 - Not in use
