@@ -2480,9 +2480,23 @@ $(document).ready(function () {
       	document.querySelector('#geomap')._leaflet_map.invalidateSize(); // Force Leaflet map to reload
 	  } else {
 	  	console.log("document.querySelector('#geomap')._leaflet_map not found");
+
+        // To try as alternative. Not yet tested.
+        /*
+        if (map1) {
+            map1.invalidateSize(); // Refresh map tiles.
+        }
+        if (map2) {
+            map2.invalidateSize(); // Refresh map tiles.
+        }
+        */
+
 	  }
       document.querySelector('#map1')._leaflet_map.invalidateSize(); 
       document.querySelector('#map2')._leaflet_map.invalidateSize(); 
+
+
+
   });
   $('.hashTest').click(function(event) {
   	alert("hash test");

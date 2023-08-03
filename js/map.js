@@ -551,7 +551,8 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         //dp.dataset = "https://model.earth/georgia-data/automotive/automotive.csv";
         dp.datastates = "GA";
         // Dark green map points indicate electric vehicle parts manufacturing.<br>
-        dp.mapInfo = "From 2020 to 2022 Georgia added more than 20 EV-related projects. <a href='https://www.georgiatrend.com/2022/07/29/electric-revolution/'>Learn&nbsp;more</a><br>Dark Green: Electric Vehicle (EV) Industry<br>Lite Green: Potential EV Parts Manufacturer<br>Dark Blue: Internal Combustion Engine (ICE)";
+        dp.mapInfo = "From 2020 to 2022 Georgia added more than 20 EV-related projects. <a href='https://www.georgiatrend.com/2022/07/29/electric-revolution/'>Learn&nbsp;more</a>";
+        // <br>Dark Green: Electric Vehicle (EV) Industry<br>Lite Green: Potential EV Parts Manufacturer<br>Dark Blue: Internal Combustion Engine (ICE)
         dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing' target='vehicles_data'>Google Sheet</a> to submit updates. <a href='/localsite/info/input/'>Contact Us</a> to become an editor. Learn about <a href='../../community/projects/mobility/'>data&nbsp;sources</a>.";
         dp.valueColumn = "ev industry";
         dp.valueColumnLabel = "EV Industry";
@@ -3337,20 +3338,20 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
   //console.log("dataParameters:");
   //console.log(dataParameters);
 
-
-
-  // Didn't help to refresh
-  if (document.querySelector(mapDiv)._leaflet_map) {
-    document.querySelector(mapDiv)._leaflet_map.invalidateSize(); // Refresh map tiles.
-  }
+  // Didn't help to refresh, placed below instead
+  //if (document.querySelector(mapDiv)._leaflet_map) {
+  //  document.querySelector(mapDiv)._leaflet_map.invalidateSize(); // Refresh map tiles.
+  //}
 
   if (whichmap=="map1") {
     map1 = map;
     overlays1[dataTitle] = layerGroup; // Seems hacky, but the layerGroup points at specific map.  Otherwise map2 (the most recent) would be the only one pointed to.
+    map1.invalidateSize(); // Refresh map tiles.
   } else {
     map2 = map;
     overlays2[dataTitle] = layerGroup;
     priorLayer = dataTitle; // Only change after map2
+    map2.invalidateSize(); // Refresh map tiles.
   } 
   
   }); // waitForElm

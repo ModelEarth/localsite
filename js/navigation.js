@@ -312,6 +312,8 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSideList close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='listSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listInfo' class='listInfo content'></div></div>\r";
 	if(document.getElementById("datascape") != null || document.getElementById("datascape1") != null) {
 		$("#datascape").addClass("datascape");
+		$("#datascape").addClass("datascapeEmbed");
+		$("#fullcolumn > #datascape").removeClass("datascapeEmbed");  // When #datascape is NOT embedded.
 		$('body').removeClass('bodyLeftMarginFull');
 		// Wait for template to be loaded so it doesn't overwrite listcolumn in #datascape.
 		//waitForElm('#insertedText').then((elm) => {

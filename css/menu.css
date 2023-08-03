@@ -491,9 +491,11 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .datascape {
 	display: flex;
 	flex-direction: row;
+	width: 100%;
+	/*
 	max-height: 1000px;
 	overflow: hidden;
-	width: 100%;
+	*/
 }
 .datascape .listcolumn { /* Display next to map */
 	position: relative;
