@@ -815,7 +815,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         toggleFullScreen(false);
       });
       $(document).on("click", ".showSearch", function(event) {
-          //loadLeafletAndMapFilters();
         showSearchFilter();
       });
       
@@ -907,7 +906,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       
       // customD3loaded
       if (param.preloadmap != "false" && (param.showheader == "true" || param.shownav == "true" || param.display == "map")) {
-        loadLeafletAndMapFilters();
+        loadScript(theroot + 'js/navigation.js', function(results) {
+          loadLeafletAndMapFilters();
+        });
       }
 
       //includeCSS3(theroot + 'css/bootstrap.darkly.min.css',theroot);
@@ -1419,7 +1420,7 @@ function extractHostnameAndPort(url) {
     }
     //find & remove "?" and parameters
     hostname = hostname.split('?')[0];
-    console.log("extractHostnameAndPort hostname: " + hostname);
+    //console.log("extractHostnameAndPort hostname: " + hostname);
     return hostname;
 }
 
@@ -1881,8 +1882,10 @@ function showSearchFilter() {
     }
     //loadLocalTemplate(); // Loaded a second time on community page
     loadSearchFilterIncludes();
-    console.log('%cloadLeafletAndMapFilters called by showSearchFilter(). Might cause dup', 'color: red; background: yellow; font-size: 14px');
-    loadLeafletAndMapFilters();
+    loadScript(theroot + 'js/navigation.js', function(results) {
+      console.log('%cloadLeafletAndMapFilters called by showSearchFilter(). Might cause dup', 'color: red; background: yellow; font-size: 14px');
+      loadLeafletAndMapFilters();
+    });
     $('html,body').scrollTop(0);
     loadFilters = true;
   } else {
@@ -1911,6 +1914,12 @@ function showSearchFilter() {
         revealFilters();
       }
     }
+
+    let expandIcon = '<div class="hideNarrow" style="position:absolute;z-index:10000">' +
+            '<div class="closeSideTabs expandToFullscreen iconPadding" style="border:0px;"><i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D0;</i></div>' +
+            '<div class="closeSideTabs reduceFromFullscreen iconPadding" style="display:none; border:0px;"><i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D1;</i></div>' +
+        '</div>';
+    //$('#datascape').prepend(expandIcon);
 
     if (loadFilters) {
       waitForElm('#datascape #filterFieldContent').then((elm) => {

@@ -145,7 +145,7 @@
 	{
 		"menulevel": "1",
 		"item": "farmfresh",
-		"rootfolder": "info",
+		"rootfolder": "map",
 		"title": "Farm Fresh",
 		"tabtitle": "Farm Fresh",
 		"mobiletitle": "Farm Fresh",
@@ -159,7 +159,7 @@
 		"sectionTitle": "leftNav",
 		"topnavaccess": "10",
 		"menuaccess": "0",
-		"directlink": "/localsite/info/#show=farmfresh",
+		"directlink": "/localsite/map/#show=farmfresh",
 		"caption": ""
 	},
 	{

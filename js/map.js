@@ -1564,12 +1564,12 @@ function showList(dp,map) {
           for (let subcat of subcatArray) {
               if (elementRaw[subcatColumn]) {
                 subcat = subcat.toLowerCase();
-                console.log("Row subcategories: " + elementRaw[subcatColumn] + " - Looking for: " + subcat);
+                //console.log("Row subcategories: " + elementRaw[subcatColumn] + " - Looking for: " + subcat);
                 // Do a split and trim instead
                 let rowSubcats = elementRaw[subcatColumn].split(',');
                 rowSubcats = rowSubcats.map(element => {return element.trim().toLowerCase();}); // Trim and lowercase all array values
                 if (rowSubcats.includes(subcat)) {
-                  console.log("found cat's subcat '" + subcat + "' in Subcategory column content: " + elementRaw[subcatColumn]);
+                  //console.log("found cat's subcat '" + subcat + "' in Subcategory column content: " + elementRaw[subcatColumn]);
                   foundMatch++;
                 }
               }

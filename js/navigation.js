@@ -315,6 +315,8 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		$("#datascape").prepend(listColumnElement);
 		listColumnElement = "";
 		$('body').removeClass('bodyLeftMarginFull');
+	} else {
+		console.log("#datascape not available")
 	}
 	if(document.getElementById("navcolumn") == null) {
  		$("body").prepend("<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv noprint sidecolumnLeft liteDiv' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement);
@@ -877,7 +879,7 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 		    if (hash.state) {
 		        theState = hash.state.split(",")[0].toUpperCase();
 		    }
-		    if (theState.length > 2) {
+		    if (theState && theState.length > 2) {
 		        theState = theState.substring(0,2);
 		    }
 			if ($('#bigThumbMenu').length <= 1) {
@@ -1368,10 +1370,12 @@ function showApps(menuDiv) {
 			$("#appSelectHolder .showApps").addClass("filterClickActive");
 	        $("#bigThumbMenuInner").appendTo(menuDiv);
 			showThumbMenu(hash.show, menuDiv);
-	        $('html,body').animate({
-	        	//- $("#filterFieldsHolder").height()  
-	            scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
-	        });
+			waitForElm('#bigThumbPanelHolder').then((elm) => { 
+		        $('html,body').animate({
+		        	//- $("#filterFieldsHolder").height()  
+		            scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
+		        });
+		    });
 		}
 	});
 }
