@@ -543,6 +543,8 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.nameColumn = "name";
         dp.latColumn = "latitude";
         dp.lonColumn = "longitude";
+        dp.categories = {"Yes": {"title":"EV or Batteries","color":""}, "No": {"title":"ICE Specific","color":""}};
+        // , "null": {"title":"Either","color":""}
         dp.catColumn = "EV Industry";
         dp.showWhenStatus = "null"
         // Temp, prior to change from Google API 2 to 3
@@ -550,7 +552,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.datastates = "GA";
         // Dark green map points indicate electric vehicle parts manufacturing.<br>
         dp.mapInfo = "From 2020 to 2022 Georgia added more than 20 EV-related projects. <a href='https://www.georgiatrend.com/2022/07/29/electric-revolution/'>Learn&nbsp;more</a><br>Dark Green: Electric Vehicle (EV) Industry<br>Lite Green: Potential EV Parts Manufacturer<br>Dark Blue: Internal Combustion Engine (ICE)";
-        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing'>Google Sheet</a> to submit updates. <a href='/localsite/info/input/'>Contact Us</a> to become an editor. Learn about <a href='../../community/projects/mobility/'>data&nbsp;sources</a>.";
+        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing' target='vehicles_data'>Google Sheet</a> to submit updates. <a href='/localsite/info/input/'>Contact Us</a> to become an editor. Learn about <a href='../../community/projects/mobility/'>data&nbsp;sources</a>.";
         dp.valueColumn = "ev industry";
         dp.valueColumnLabel = "EV Industry";
         dp.markerType = "google";
@@ -2063,7 +2065,7 @@ function showList(dp,map) {
     $("#listcolumnList").html(shortout);
 
     // Show the side columns
-    $("#showSide").hide();
+    $("#showNavColumn").hide();
     $("#listcolumn").show();
     showListBodyMargin();
 
@@ -2205,15 +2207,15 @@ function showList(dp,map) {
 $(document).on("click", ".showList", function(event) {
   $("#listcolumn").show();
   if ($("#navcolumn").is(":hidden")) {
-    // Display showSide in bar
-    $("#showSide").hide();
+    // Display showNavColumn in bar
+    $("#showNavColumn").hide();
     $("#showSideInBar").show();
   }
   showListBodyMargin();
   $(".showList").hide();
 });
 function showListBodyMargin() {
-  if(document.getElementById("datascape") == null && document.getElementById("datascape1") == null) {
+  if ($("#fullcolumn > .datascape").is(":visible")) { // When NOT embedded
     $('body').addClass('bodyLeftMarginList');
     if ($("#navcolumn").is(":visible") && $("#listcolumn").is(":visible")) {
       $('#listcolumn').removeClass('listcolumnOnly');
@@ -2316,7 +2318,7 @@ function renderCatList(catList,cat) {
     }
     let fullcolumnWidth = $('#fullcolumn').width();
     if (fullcolumnWidth > 500) {
-      showSide();
+      showNavColumn();
     }
   }
 }
@@ -2717,7 +2719,7 @@ $(window).scroll(function() {
     if (sideTopOffsetEnabled) {
       //$('.sidecolumnLeft').css("top","54px");
     }
-    //$('#showSide').css("top","7px");
+    //$('#showNavColumn').css("top","7px");
 
     if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
       $('#headerLarge').hide();
@@ -2760,7 +2762,7 @@ $(window).scroll(function() {
           //$('.sidecolumnLeft').css("top","54px");
         }
         //alert("#headerbar hide")
-        //$('#showSide').css("top","7px");
+        //$('#showNavColumn').css("top","7px");
         if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
           $('#headerLarge').hide();
         }

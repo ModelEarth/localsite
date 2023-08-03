@@ -493,6 +493,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	flex-direction: row;
 	max-height: 1000px;
 	overflow: hidden;
+	width: 100%;
 }
 .datascape .listcolumn { /* Display next to map */
 	position: relative;
@@ -532,25 +533,26 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	 	top:62px;
 	}
 }
-#showSide {
+#showNavColumn {
 	pointer-events: auto;
 	padding: 9px 12px 2px 10px;
 	height: 37px;
  	opacity: .3;
+ 	cursor: pointer;
  	z-index: 1001;
 }
-.showSide, .showList {
+.showList {
 	cursor: pointer;
 }
-.showSide:hover {
+.showNavColumn:hover, .showList:hover {
  	opacity: .7;
 }
 @media (max-width: 1100px) {
-	#showSide {
+	#showNavColumn {
 		margin-left: -23px;
 	}
 }
-#filterFieldsMain #showSide {
+#filterFieldsMain #showNavColumn {
 	float: left;
 }
 .sidecolumnLeft {

@@ -372,13 +372,13 @@ $(document).ready(function () {
     	$('#keywordFields').hide();
     	$('#topPanel').hide();
 	});
-    $(document).on("click", "#showSide, #navcolumn", function(event) {
+    $(document).on("click", "#showNavColumn, #navcolumn", function(event) {
         event.stopPropagation();
     });
 	$(document).on("click", "body", function(event) {
         if ($("#navcolumn").is(":visible") && window.innerWidth < 1200) { 
             $('#navcolumn').hide();
-            $("#showSide").show();$("#showSideInBar").hide();
+            $("#showNavColumn").show();$("#showSideInBar").hide();
             $("#sideIcons").show();
             $('body').removeClass('bodyLeftMargin');
             $('body').removeClass('bodyLeftMarginFull');

@@ -166,11 +166,11 @@ function closeExpandedMenus(menuClicked) {
     $(".menuExpanded").hide(); // Hide any open
     //alert("rightTopMenuInner 3");
 }
-function showSide() {
+function showNavColumn() {
+	console.log("showNavColumn");
 	$("#sideIcons").hide();
 	$("#navcolumn").show();
-	//alert("#navcolumn show");
-	if(document.getElementById("datascape") == null && document.getElementById("datascape1") == null) {
+	if ($("#fullcolumn > .datascape").is(":visible")) { // When NOT embedded.
 		if ($("#listcolumn").is(":visible")) {
 			$('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed side columns.
 			$('#listcolumn').removeClass('listcolumnOnly');
@@ -181,7 +181,7 @@ function showSide() {
 		$('#navcolumn').addClass("navcolumnClear");
 		$('body').addClass('bodyLeftMarginNone');
 	} else {
-		$("#fullcolumn #showSide").hide();
+		$("#fullcolumn #showNavColumn").hide();
 		$('body').addClass('bodyLeftMargin'); // Margin on left for fixed nav column.
 		$('body').addClass('mobileView');
 
@@ -312,26 +312,37 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSideList close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='listSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listInfo' class='listInfo content'></div></div>\r";
 	if(document.getElementById("datascape") != null || document.getElementById("datascape1") != null) {
 		$("#datascape").addClass("datascape");
-		$("#datascape").prepend(listColumnElement);
-		listColumnElement = "";
 		$('body').removeClass('bodyLeftMarginFull');
+		// Wait for template to be loaded so it doesn't overwrite listcolumn in #datascape.
+		//waitForElm('#insertedText').then((elm) => {
+		waitForElm('#fullcolumn > .datascape').then((elm) => { // When #datascape is NOT embedded.
+			// Place list in left margin for whole page use.
+			$("#datascape").prepend(listColumnElement);
+			listColumnElement = "";
+			$('body').addClass('bodyLeftMarginFull');
+		});
+		
 	} else {
 		console.log("#datascape not available")
 	}
 	if(document.getElementById("navcolumn") == null) {
- 		$("body").prepend("<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv noprint sidecolumnLeft liteDiv' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement);
+		let prependTo = "#datascape";
+		if ($("#fullcolumn > .datascape").is(":visible")) { // 
+			prependTo = "body";
+		}
+ 		$(prependTo).prepend("<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv noprint sidecolumnLeft liteDiv' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement);
  	} else {
  		// TODO - change to fixed when side reaches top of page
  		console.log("navigation.js report: navcolumn already exists")
  		$("#navcolumn").addClass("navcolumn-inpage");
  	}
 
- 	$(document).on("click", ".showSide", function(event) {
+ 	$(document).on("click", ".showNavColumn", function(event) {
 		if ($("#navcolumn").is(':hidden')) {
-			showSide();
+			showNavColumn();
 		} else {
 			$("#navcolumn").hide();
-			$("#showSide").show();$("#showSideInBar").hide();
+			$("#showNavColumn").show();$("#showSideInBar").hide();
 			$('body').removeClass('bodyLeftMargin');
 			$('body').removeClass('bodyLeftMarginFull');
 			if (!$('body').hasClass('bodyRightMargin')) {
@@ -348,12 +359,14 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
  		hideSide("");
 	});
 	function hideSide(which) {
+		console.log("hideSide " + which);
 		if (which != "list") {
 			$("#navcolumn").hide();
 			$('body').removeClass('bodyLeftMarginFull');
-			if(document.getElementById("datascape") == null && document.getElementById("datascape1") == null) {
+			if ($("#fullcolumn > .datascape").is(":visible")) { // When NOT embedded
 				if ($("#listcolumn").is(':visible')) {
 					$('#listcolumn').addClass('listcolumnOnly');
+					console.log("addClass bodyLeftMarginList");
 					$('body').addClass('bodyLeftMarginList');
 				}
 			}
@@ -362,7 +375,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 			$("#showListInBar").show();
 		}
 		if (!$("#navcolumn").is(':visible') && !$("#listcolumn").is(':visible')) {
-			$("#showSide").show();$("#showSideInBar").hide();
+			$("#showNavColumn").show();$("#showSideInBar").hide();
 			$("#sideIcons").show();
 		} else if (!$("#navcolumn").is(':visible') && $("#listcolumn").is(':visible')) {
 			$("#showSideInBar").show();
@@ -380,11 +393,22 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         	$('body').removeClass('mobileView');
     	}
     	// Might not need this with mobile
+
+    	// Stopped working after reconfuring to load map1 and map2 with same function.
+    	/*
 		if (document.querySelector('#map1')._leaflet_map) {
 			document.querySelector('#map1')._leaflet_map.invalidateSize(); // Refresh map tiles.
 		}
 		if (document.querySelector('#map2')._leaflet_map) {
 			document.querySelector('#map2')._leaflet_map.invalidateSize(); // Refresh map tiles.
+		}
+		*/
+		// Works instead
+		if (map1) {
+			map1.invalidateSize(); // Refresh map tiles.
+		}
+		if (map2) {
+			map2.invalidateSize(); // Refresh map tiles.
 		}
 	}
  	if (param["showapps"] && param["showapps"] == "false") {
