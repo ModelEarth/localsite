@@ -321,7 +321,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 			// Place list in left margin for whole page use.
 			$("#datascape").prepend(listColumnElement);
 			listColumnElement = "";
-			$('body').addClass('bodyLeftMarginFull');
+			//$('body').addClass('bodyLeftMarginFull'); // Avoid here. Places gap on /community
 		});
 		
 	} else {
