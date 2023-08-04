@@ -285,23 +285,9 @@ $(document).ready(function () {
 	$('#searchloc').click(function () {
     	event.stopPropagation();
     });
-	
     $(document).on("change", "#country_select", function(event) {
         //alert("this.value " + this.value);
-
         goHash({'mapview':this.value,'state':''});
-
-        /*
-        if (this.value) {
-            //$('#state_select').val("");
-            //$("#region_select").val("");
-            goHash({'state':'','geo':'','name':'','regiontitle':'','mapview':this.value}); // Triggers map changes
-        } else { // US selected
-            goHash({'mapview':'country','state':''});
-            //clearHash("state")
-            //$("#industryListHolder").hide();
-        }
-        */
     });
  	$(document).on("change", "#state_select", function(event) {
  		if (this.value) {
@@ -652,14 +638,11 @@ function filterClickLocation(loadGeoTable) {
 		openMapLocationFilter()
 	}
 	$("#keywordFields").hide();
-	
-	
-	//$("#filterClickCategory .filterBubbleHolder").hide();
-	
-    // TO DO: Display cities, etc. somehow without clicking submenu.
-    // 
 }
-function closeLocationFilter() {
+function closeLocationFilter() { 
+    updateHash({"mapview":""}); // Remove from URL
+    delete(hash.mapview); // BUGBUG, clears but still in filterClickLocation click
+    //alert("hash.mapview: " + hash.mapview)
     console.log("closeLocationFilter()");
     $(".locationTabText").text($(".locationTabText").attr("title"));
     $("#showLocations").hide();
@@ -685,7 +668,6 @@ function closeLocationFilter() {
         
     }
     */
-    goHash({},"mapview"); // Remove from URL
 }
 function openMapLocationFilter() {
     let hash = getHash();
@@ -736,6 +718,7 @@ function openMapLocationFilter() {
             //}
         }
     }
+    //alert("add filterClickActive")
     $("#filterClickLocation").addClass("filterClickActive");
     //loadScript(theroot + 'js/map.js', function(results) { // Load list before map
         renderMapShapes("geomap", hash, 1);// Called once map div is visible for tiles.
@@ -758,6 +741,8 @@ function renderMapShapes(whichmap, hash, attempts) {
   });
 }
 
+//var geojsonLayer; // Hold the prior letter. We can use an array or object instead.
+var geoOverlays = {};
 function renderMapShapeAfterPromise(whichmap, hash, attempts) {
 
  console.log("renderMapShapeAfterPromise " + whichmap)
@@ -1088,36 +1073,31 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
         }
         
         // Add 
-        overlays[layerName] = L.geoJson(topodata, {style:styleShape, onEachFeature: onEachFeature}).addTo(map); // Called within addTo(map)
+        geoOverlays[layerName] = L.geoJson(topodata, {style:styleShape, onEachFeature: onEachFeature}).addTo(map); // Called within addTo(map)
     
-        layerControls[whichmap] = L.control.layers(basemaps1, overlays).addTo(map); // Push multple layers
+        layerControls[whichmap] = L.control.layers(basemaps1, geoOverlays).addTo(map); // Push multple layers
         basemaps1["Grey"].addTo(map);
 
 
     //} else if (geojsonLayer) { // INDICATES TOPO WAS ALREADY LOADED
-    } else if (map.hasLayer(overlays[layerName])) {
-
-      // TESTING
-      //alert("HAS LAYER " + layerName)
+    } else if (map.hasLayer(geoOverlays[layerName])) {
 
         // Add 
       //geojsonLayer = L.geoJson(topodata, {style:styleShape, onEachFeature: onEachFeature}).addTo(map); // Called within addTo(map)
     
-      //map.removeLayer(overlays[layerName]);
+      //map.removeLayer(geoOverlays[layerName]);
 
-      // layerControls[whichmap]
-      if (overlays[layerName]) {
-        // REACTIVATE THIS -THURSDAY, JULY 27
-        map.removeLayer(overlays[layerName]); // Remove overlay but not checkbox. (Temp reduction of doubling)
+      if (geoOverlays[layerName]) {
+        map.removeLayer(geoOverlays[layerName]); // Remove overlay but not checkbox.
       }
-      //map.removeOverlay(overlays[layerName]);
+      //map.removeOverlay(geoOverlays[layerName]);
 
-      //layerControls[whichmap].addOverlay(overlays[layerName], layerName); // Sorta works - use to add a duplicate check box
+      //layerControls[whichmap].addOverlay(geoOverlays[layerName], layerName); // Sorta works - use to add a duplicate check box
       
       //layerControls[whichmap].removeOverlay(layerName);
-      //layerControls[whichmap].removeOverlay(overlays[layerName], layerName);
+      //layerControls[whichmap].removeOverlay(geoOverlays[layerName], layerName);
 
-      overlays[layerName] = L.geoJson(topodata, {
+      geoOverlays[layerName] = L.geoJson(topodata, {
             style: styleShape, 
             onEachFeature: onEachFeature
       }).addTo(map);
@@ -1127,7 +1107,7 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
             style: styleShape, 
             onEachFeature: onEachFeature
       }).addTo(map);
-      overlays[layerName] = geojsonLayer;
+      geoOverlays[layerName] = geojsonLayer;
       */
 
 
@@ -1147,10 +1127,10 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
           //map.removeLayer(geojsonLayer); // Prevents overlapping by removing the prior topo layer
           ////map.geojsonLayer.clearLayers();
 
-          //alert(overlays[layerName])
-          overlays[layerName].remove(); // Prevent thick overlapping colors
-          //overlays[layerName].clearLayers();
-          map.removeLayer(overlays[layerName]);
+          //alert(geoOverlays[layerName])
+          geoOverlays[layerName].remove(); // Prevent thick overlapping colors
+          //geoOverlays[layerName].clearLayers();
+          map.removeLayer(geoOverlays[layerName]);
         
         //map.geojsonLayer.clearLayers(); // Clear prior
         */
@@ -1163,7 +1143,7 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
         
     } else { // Add the new state
 
-      overlays[layerName] = L.geoJson(topodata, {
+      geoOverlays[layerName] = L.geoJson(topodata, {
             style: styleShape, 
             onEachFeature: onEachFeature
       }).addTo(map);
@@ -1206,13 +1186,13 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
     };
     
       //dataParameters.forEach(function(ele) {
-        //overlays[ele.name] = ele.group; // Allows for use of dp.name with removeLayer and addLayer
+        //geoOverlays[ele.name] = ele.group; // Allows for use of dp.name with removeLayer and addLayer
         //console.log("Layer added: " + ele.name);
       //})
 
       //if(layerControls[whichmap] === false) { // First time, add new layer
         // Add the layers control to the map
-      //  layerControl_CountyMap = L.control.layers(baseLayers, overlays).addTo(map);
+      //  layerControl_CountyMap = L.control.layers(baseLayers, geoOverlays).addTo(map);
       //}
 
       if (typeof layerControls != "undefined") {
@@ -1220,14 +1200,14 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
 
         // layerControls object is declared in map.js. Contains element for each map.
         if (layerControls[whichmap] != undefined) {
-          if (overlays[stateAbbr + " Counties"]) {
+          if (geoOverlays[stateAbbr + " Counties"]) {
             // Reached on county click, but shapes are not removed.
-            //console.log("overlays: ");
-            //console.log(overlays);
+            //console.log("geoOverlays: ");
+            //console.log(geoOverlays);
             
             //resetHighlight(layerControls[whichmap].);
             // No effect
-            //layerControls[whichmap].removeLayer(overlays["Counties"]);
+            //layerControls[whichmap].removeLayer(geoOverlays["Counties"]);
 
             //geojsonLayer.remove();
 
@@ -1248,13 +1228,13 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
               //TESTING
               //alert("NEW MAP " + whichmap)
 
-              //overlays = {
+              //geoOverlays = {
               //  [layerName]: geojsonLayer
               //};
-              //overlays[layerName] = geojsonLayer;
+              //geoOverlays[layerName] = geojsonLayer;
 
 
-              //layerControls[whichmap] = L.control.layers(basemaps1, overlays).addTo(map); // Push multple layers
+              //layerControls[whichmap] = L.control.layers(basemaps1, geoOverlays).addTo(map); // Push multple layers
               //basemaps1["Grey"].addTo(map);
 
 
@@ -1273,8 +1253,8 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
               masterLayerGroup.addLayer(aLayerGroup);
               */
 
-            //} else if (!overlays[layerName]) {
-            } else if (!map.hasLayer(overlays[layerName])) { // LAYER NOT ADDED YET
+            //} else if (!geoOverlays[layerName]) {
+            } else if (!map.hasLayer(geoOverlays[layerName])) { // LAYER NOT ADDED YET
 
               alert("hasLayer false - LAYER NOT ADDED YET");
               // Error: Cannot read property 'on' of undefined
@@ -1289,34 +1269,34 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
                 ////map.geojsonLayer.clearLayers();
               //}
 
-              //overlays[layerName] = geojsonLayer; // Add element to existing overlays object.
+              //geoOverlays[layerName] = geojsonLayer; // Add element to existing geoOverlays object.
 
-              //overlays[layerName] = stateAbbr + " Counties";
+              //geoOverlays[layerName] = stateAbbr + " Counties";
 
               // Add dup
               //layerControls[whichmap].addOverlay(geojsonLayer, stateAbbr + " Counties");
 
 
               //layerControls[whichmap].addLayer(stateAbbr + " Counties");
-              //layerControls[whichmap].addOverlay(geojsonLayer, overlays);
+              //layerControls[whichmap].addOverlay(geojsonLayer, geoOverlays);
 
-              //layerControls[whichmap].addOverlay(basemaps1, overlays); // Appends to existing layers
-              //layerControls[whichmap] = L.control.layers(basemaps1, overlays).addTo(map); 
+              //layerControls[whichmap].addOverlay(basemaps1, geoOverlays); // Appends to existing layers
+              //layerControls[whichmap] = L.control.layers(basemaps1, geoOverlays).addTo(map); 
             } else {
               //alert("DELETE ALL OF THIS PART layer already exists2: " + layerName);
-              //overlays[layerName].remove(); // Also above
+              //geoOverlays[layerName].remove(); // Also above
               
-              //map.removeLayer(overlays[layerName]);
-              //layerControls[whichmap].removeOverlay(overlays[layerName]);
+              //map.removeLayer(geoOverlays[layerName]);
+              //layerControls[whichmap].removeOverlay(geoOverlays[layerName]);
 
-              console.log("getOverlays");
-              console.log(layerControls[whichmap].getOverlays());
+              console.log("getgeoOverlays");
+              console.log(layerControls[whichmap].getgeoOverlays());
               if (location.host.indexOf('localhost') >= 0) {
                 alert("Local only layerString");
                 let layerString = "";
-                Object.keys(layerControls[whichmap].getOverlays()).forEach(key => {
+                Object.keys(layerControls[whichmap].getgeoOverlays()).forEach(key => {
                   layerString += key;
-                  if (layerControls[whichmap].getOverlays()[key]) {
+                  if (layerControls[whichmap].getgeoOverlays()[key]) {
                     layerString += " - selected";
                   }
                   layerString += "<br>";
@@ -1351,8 +1331,13 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
         }
    
         function resetHighlight(e){
-          overlays[layerName].resetStyle(e.target);
-          info.update();
+            if (geoOverlays[layerName]) {
+              console.log("Found layerName: " + layerName);
+              geoOverlays[layerName].resetStyle(e.target);
+              info.update();
+            } else {
+                console.log("Found NO layerName: " + layerName);
+            }
         }
 
         // CLICK SHAPE ON MAP
@@ -2793,6 +2778,7 @@ function hashChanged() {
 	let hash = getHash(); // Includes changes to hiddenhash
     console.log("hashChanged() map-filters.js");
     //alert("Start priorHash.mapview is " + priorHash.mapview);
+    //alert("hash.mapview incoming is " + hash.mapview);
 
 	if (hash.show == "undefined") { // To eventually remove
 		delete hash.show; // Fix URL bug from indicator select hamburger menu
@@ -2988,9 +2974,10 @@ function hashChanged() {
     console.log("hash.mapview: " + hash.mapview + " priorHash.mapview: " + priorHash.mapview);
     if (hash.mapview && hash.mapview != priorHash.mapview) {
         $("#country_select").val(hash.mapview);
-        filterClickLocation();
+        openMapLocationFilter()
     } else if (priorHash.mapview && !hash.mapview) {
-        //alert("close tab");
+        $("#country_select").val("");
+        closeLocationFilter();
     }
 
 	if (hash.mapview && hash.state != priorHash.state) {
@@ -3293,6 +3280,7 @@ function hashChanged() {
     $(".regiontitle").text(local_app.loctitle);
     $(".service_title").text(local_app.loctitle + " - " + local_app.showtitle);
 	//priorHash = getHash();
+    //alert("hash.mapview " + hash.mapview);
     priorHash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
     //alert("Done, set priorHash.mapview to " + priorHash.mapview)
 
@@ -3318,7 +3306,7 @@ $(document).ready(function () {
 		//$("#state_select option[value='NV']").prop('selected', true);
 	}
 	if (hash.mapview) { // Country map
-		filterClickLocation(false);
+		//filterClickLocation(false);
 	}
 	hashChanged();
 	/*

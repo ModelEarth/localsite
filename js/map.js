@@ -801,7 +801,7 @@ function initialHighlight(hash) {
 $(document).on("click", "#show_county_colors", function(event) {
   let hash = getHash();
   let layerName = hash.state.split(",")[0].toUpperCase() + " Counties";
-  overlays[layerName].eachLayer(function (layer) {  
+  geoOverlays[layerName].eachLayer(function (layer) {  
     //if(layer.feature.properties.COUNTYFP == '121') { // Fulton County
       layer.setStyle({fillColor :'blue', fillOpacity:.5 }) 
       // Or call a function:
@@ -2264,7 +2264,7 @@ function renderCatList(catList,cat) {
               catList[catKey].title = arrayEntry[name];
             } else {
               // Multiple keys split by commas
-              console.log("catKey " + + " Does not exist in listings for category: " + arrayEntry[name]);
+              //console.log("catKey " + catKey + " Does not exist in listings for category: " + arrayEntry[name]);
             }
           }
       }
@@ -3008,11 +3008,9 @@ function getStateNameFromID(stateID) {
 
 // DISPLAY geomap - first of three maps
 
-var geojsonLayer; // Hold the prior letter. We can use an array or object instead.
 var overlays = {};
 var overlays1 = {};
 var overlays2 = {};
-
 
 //Tyring, might be necessary to be outside loadFromSheet for .detail click. Test it inside.
 let map1 = {};

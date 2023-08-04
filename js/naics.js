@@ -1192,7 +1192,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                         for (i = 0; i < naicsRowCount; i++) { // Naics from data
                             rightCol="";
                             midCol="";
-                            console.log("NAICS ROW " + i);
+                            //console.log("NAICS ROW " + i);
                             // Update these:
                                 let latitude = "";
                                 let longitude = "";

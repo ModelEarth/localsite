@@ -1092,7 +1092,6 @@ function showClassInline(theclass) {
 	}, 30000);
 	*/
 }
-
 function hideAdvanced() {
 	// We might want to omit this line to retain mapview=earth
 	updateHash({"mapview":""});
@@ -1320,32 +1319,22 @@ function getPageFolder(pagePath) {
 } // End typeof page_scripts which checks if file is loaded twice.
 
 $(document).on("click", "#filterClickLocation", function(event) {
-	console.log("#filterClickLocation click");
+	
     let hash = getHash();
-	if (!hash.mapview) {
+    console.log("#filterClickLocation click hash.state: " + hash.state);
+    console.log("#filterClickLocation click hash.mapview: " + hash.mapview);
+    //console.log("#filterClickLocation click param.mapview: " + param.mapview);
+    if (!hash.mapview) {
+	//if (!param.mapview) {
 		// Hash change triggers call to filterClickLocation() and map display.
 		if (hash.state) {
+			console.log("#filterClickLocation click go state");
     		goHash({'mapview':'state'});
     	} else {
     		goHash({'mapview':'country'});
     	}
 	} else {
 		closeLocationFilter();
-
-		//alert("To do: Close tab");
-
-		/*
-		loadScript(theroot + 'js/map.js', function(results) { // Load list before map
-    
-			//loadMapFiltersJS(theroot,1);
-
-			loadScript(theroot + 'js/map-filters.js', function(results) {
-				
-				filterClickLocation(); // Resides in map-filters.js
-
-			});
-		});
-        */
 	}
     //event.stopPropagation();
 });
