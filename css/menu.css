@@ -488,7 +488,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .listcolumnOnly {
 	left:0px;
 }
-.datascape {
+.datascapeX { /* caused gap for docs */
 	display: flex;
 	flex-direction: row;
 	width: 100%;
@@ -548,6 +548,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 .showNavColumn:hover, .showList:hover {
  	opacity: .7;
+ 	cursor: pointer;
 }
 @media (max-width: 1100px) {
 	#showNavColumn {

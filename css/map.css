@@ -103,7 +103,7 @@
      border:none;
      margin-left:30px;
   }
-  .leaflet-touch .leaflet-bar a, #earthZoom .leaflet-bar a {
+  .leaflet-touch .leaflet-bar a, .earthZoom .leaflet-bar a {
     width:38px !important;
     height:38px !important;
     font-size: 26px !important;

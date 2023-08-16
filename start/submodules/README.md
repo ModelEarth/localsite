@@ -15,7 +15,7 @@ Lastly, push within Github Desktop. (The repo will already be commited.)
 You'll then see the submodule in the Github website.
 
 **Example:**
-git submodule add https://github.com/DreamStudioApp/StableStudio StableStudio
+git submodule add https://github.com/DreamStudioCode/StableStudio StableStudio
 git commit -m "StableStudio submodule"
 git submodule update --init --recursive
 

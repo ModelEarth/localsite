@@ -13,9 +13,11 @@ var sideTopOffsetEnabled = true;
 var sideTopOffsetEnabledBig = false;
 
 if(typeof styleObject=='undefined'){ var styleObject={}; } // https://docs.mapbox.com/mapbox-gl-js/style-spec/root/
+console.log("map.js styleObject.layers");
 styleObject.layers = [];
 
-var layerControls = {}; // Object containing one control for each map on page.
+if(typeof layerControls=='undefined'){ var layerControls = {}; }// Object containing one control for each map on page.
+
 if(typeof hash === 'undefined') {
   // Need to figure out where already declared.
   // Avoid putting var in front, else "Identifier 'hash' has already been declared" error occurs here: http://localhost:8887/localsite/map/
@@ -133,7 +135,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   if (theState != "") {
     let kilometers_wide = $("#state_select").find(":selected").attr("km");
     //zoom = 1/kilometers_wide * 1800000;
-    zoom = zoomFromKm(kilometers_wide,theState);
+    zoom = zoomFromKm2(kilometers_wide,theState);
     dp.latitude = $("#state_select").find(":selected").attr("lat");
     dp.longitude = $("#state_select").find(":selected").attr("lon");
   }
@@ -1164,7 +1166,7 @@ function showList(dp,map) {
   }
 
   
-
+  // INACTIVE
   if (1==2) {
     // ADD DISTANCE
     dp.data.forEach(function(element) {
@@ -2067,6 +2069,7 @@ function showList(dp,map) {
 
     // Show the side columns
     $("#showNavColumn").hide();
+    $("#showSideInBar").show();
     $("#listcolumn").show();
     showListBodyMargin();
 
@@ -2876,31 +2879,6 @@ $(window).resize(function() {
   $("#filterbaroffset").height($("#filterFieldsHolder").height() + "px");
 });
 
-// To do: try moving back to map=filters.js
-function updateGeoFilter(geo) {
-  $(".geo").prop('checked', false);
-  if (geo && geo.length > 0) {
-
-    //locationFilterChange("counties");
-    let sectors = geo.split(",");
-      for(var i = 0 ; i < sectors.length ; i++) {
-        $("#" + sectors[i]).prop('checked', true);
-      }
-
-  }
-  console.log('ALERT: Change to support multiple states as GEO. Current geo: ' + geo)
-  if (geo && geo.length > 4) // Then county or multiple states - Bug
-  {
-      $(".state-view").hide();
-      $(".county-view").show();
-      //$(".industry_filter_settings").show(); // temp
-  } else {
-      $(".county-view").hide();
-      $(".state-view").show();
-      //$(".industry_filter_settings").hide(); // temp
-  }
-}
-
 //////////////////
 // CHOROPLETH MAP
 
@@ -2927,84 +2905,6 @@ function styleShape(feature) {
     
 }
 */
-
-function styleShape(feature) { // Called FOR EACH topojson row
-
-  let hash = getHash(); // To do: pass in as parameter
-  //console.log("feature: ", feature)
-
-  var fillColor = 'rgb(51, 136, 255)'; // 
-  // For hover '#665';
-  
-  // REGION COLORS: See community/start/map/counties.html for colored region sample.
-
-  /*
-    dp.data.forEach(function(datarow) { // For each county row from the region lookup table
-      if (datarow.county_num == feature.properties.COUNTYFP) {
-        fillColor = color(datarow.io_region);
-      }
-    })
-  */
-  let stateID = getIDfromStateName(feature.properties.name);
-  let fillOpacity = .05;
-  if (hash.geo && hash.geo.includes("US" + feature.properties.STATEFP + feature.properties.COUNTYFP)) {
-      fillColor = 'purple';
-      fillOpacity = .2;
-  } else if (hash.mapview == "country" && hash.state && hash.state.includes(stateID)) {
-      fillColor = 'red';
-      fillOpacity = .2;
-  } else if (hash.mapview == "countries") {
-      let theValue = 2;
-      //console.log("country: " + (feature.properties.name));
-      if (localObject.countries && localObject.countries[feature.id]) {
-        //alert("Country 2020 " + localObject.countries[feature.id]["2020"]);
-        theValue = localObject.countries[feature.id]["2020"];
-      }
-      // TO DO - Adjust for 2e-7
-      theValue = theValue/10000000;
-      fillColor = colorTheCountry(theValue);
-      //console.log("fillColor: " + fillColor + "; theValue: " + theValue + " " + feature.properties.name);
-      fillOpacity = .5;
-  } else if ((hash.mapview == "country" || (hash.mapview == "state" && !hash.state)) && typeof localObject.state != 'undefined') {
-      let theValue = 2;
-       if (localObject.state[getState(stateID)] && localObject.state[getState(stateID)].CO2_per_capita != "No data") {
-        //console.log("state: " + stateID + " " + getState(stateID));
-        //console.log("state: " + stateID + " " + localObject.state[getState(stateID)].CO2_per_capita);
-        theValue = localObject.state[getState(stateID)].CO2_per_capita;
-      }
-      theValue = theValue/4; // Ranges from 0 to 26
-      fillColor = colorTheStateCarbon(theValue);
-      //console.log("fillColor: " + fillColor + "; theValue: " + theValue + " " + feature.properties.name);
-      fillOpacity = .5;
-  } return {
-      weight: 1,
-      opacity: .4,
-      color: fillColor, // '#ccc', // 'white'
-      //dashArray: '3',
-      fillOpacity: fillOpacity,
-      fillColor: fillColor
-  };
-}
-
-function getIDfromStateName(stateName) {
-  let theStateID;
-  $("#state_select option").map(function(index) {
-    if ($("#state_select option").get(index).text == stateName) {
-      theStateID = $("#state_select option").get(index).value.toString();
-    }
-  });
-  return(theStateID);
-}
-function getStateNameFromID(stateID) {
-  if (typeof stateID == "undefined" || stateID.length < 2) { return; }
-  let stateName = ""; // Avoids error when made lowercase
-  $("#state_select option").map(function(index) {
-    if ($("#state_select option").get(index).value == stateID) {
-      stateName = $("#state_select option").get(index).text;
-    }
-  });
-  return(stateName);
-}
 
 // DISPLAY geomap - first of three maps
 
@@ -3106,7 +3006,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
   } else if (dp.googleCSV) {
     loadScript(theroot + 'js/d3.v5.min.js', function(results) {
     waitForVariable('customD3loaded', function() {
-    consoleLog("Google data requested");
+    consoleLog("Google data requested " + dp.googleCSV);
     d3.csv(dp.googleCSV).then(function(data) { // One element containing all rows from spreadsheet
       consoleLog("Google data loaded");
       // LOAD GOOGLE SHEET
@@ -3872,29 +3772,34 @@ function hashChangedMap() {
   } else if (hash.state && hash.state !== priorHashMap.state) {
     // Why are new map points not appearing
 
-    let dp = {};
-    // Copied from map-filters.js
-    if($("#state_select").find(":selected").val()) {
-      let theState = $("#state_select").find(":selected").val();
-        if (theState != "") {
-          let kilometers_wide = $("#state_select").find(":selected").attr("km");
-          //zoom = 1/kilometers_wide * 1800000;
-  
-          if (theState == "HI") { // Hawaii
-              zoom = 6
-          } else if (kilometers_wide > 1000000) { // Alaska
-              zoom = 4
-          } else {
-              zoom = 7; // For Georgia map
-          }
-          dp.latitude = $("#state_select").find(":selected").attr("lat");
-          dp.longitude = $("#state_select").find(":selected").attr("lon");
-        }
-    } else {
-      console.log("ERROR #state_select not available in hashChangedMap()");
-    }    
-
-    loadMap1("hashChanged() in map.js new state(s) " + hash.state, hash.show, dp);
+    loadScript(theroot + 'js/map-filters.js', function(results) { // map.js depends on map-filters.js
+      waitForElm('#state_select').then((elm) => {
+        let dp = {};
+        // Copied from map-filters.js
+        $("#state_select").val(hash.state.split(",")[0].toUpperCase());
+        if($("#state_select").find(":selected").val()) {
+          let theState = $("#state_select").find(":selected").val();
+            if (theState != "") {
+              let kilometers_wide = $("#state_select").find(":selected").attr("km");
+              //zoom = 1/kilometers_wide * 1800000;
+      
+              if (theState == "HI") { // Hawaii
+                  zoom = 6
+              } else if (kilometers_wide > 1000000) { // Alaska
+                  zoom = 4
+              } else {
+                  zoom = 7; // For Georgia map
+              }
+              dp.latitude = $("#state_select").find(":selected").attr("lat");
+              dp.longitude = $("#state_select").find(":selected").attr("lon");
+              //alert("dp.longitude  " + dp.longitude)
+            }
+        } else {
+          console.log("ERROR #state_select not available in hashChangedMap()2");
+        }    
+        loadMap1("hashChanged() in map.js new state(s) " + hash.state, hash.show, dp);
+      });
+    });
 
   } else if (hash.cat !== priorHashMap.cat) {
 
@@ -3915,7 +3820,7 @@ $(document).ready(function () {
   hashChangedMap();
 });
 
-function zoomFromKm(kilometers_wide, theState) {
+function zoomFromKm2(kilometers_wide, theState) {
   //alert(kilometers_wide) // undefined for the 1st of 3.
   let zoom = 5;
   if (!kilometers_wide) return zoom;
