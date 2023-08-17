@@ -2358,21 +2358,6 @@ function linkify(inputText) { // https://stackoverflow.com/questions/37684/how-t
 
   return replacedText;
 }
-
-// For stateImpact colors
-var colorTheStateCarbon = "#fcc"; // pink
-var colorTheCountry = "#ccf" // lite blue
-loadScript(theroot + 'js/d3.v5.min.js', function(results) { // Allows lists to be displayed before maps
-  // TODO: Apply the colors after list loaded
-  /*
-  colorTheStateCarbon = d3.scaleThreshold()
-      .domain(d3.range(2, 10))
-      .range(d3.schemeBlues[9]);
-  colorTheCountry = d3.scaleThreshold()
-      .domain(d3.range(2, 1000000))
-      .range(d3.schemeBlues[9]);
-  */
-});
 function popMapPoint(dp, map, latitude, longitude, name, color) {
   // Place large icon on side map and zoom
   color = "#666"; // Override incoming

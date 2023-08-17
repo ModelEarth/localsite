@@ -3297,6 +3297,21 @@ $(document).ready(function () {
     //$("#local-header").append( "<div id='filterbaroffset' style='height:56px; pointer-events:none'></div>");
 });
 
+// For stateImpact colors
+var colorTheStateCarbon = "#fcc"; // pink
+var colorTheCountry = "#ccf" // lite blue
+//loadScript(theroot + 'js/d3.v5.min.js', function(results) { // Allows lists to be displayed before maps
+  // TODO: Apply the colors after list loaded
+  /*
+  colorTheStateCarbon = d3.scaleThreshold()
+      .domain(d3.range(2, 10))
+      .range(d3.schemeBlues[9]);
+  colorTheCountry = d3.scaleThreshold()
+      .domain(d3.range(2, 1000000))
+      .range(d3.schemeBlues[9]);
+  */
+//});
+
 function styleShape(feature) { // Called FOR EACH topojson row
 
   let hash = getHash(); // To do: pass in as parameter
