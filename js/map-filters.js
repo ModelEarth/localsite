@@ -2,6 +2,9 @@
 // hashChanged() responds to hash changes
 // Intended to work WITHOUT map.js
 
+// EXPANDABLE MAP IN TOP SEARCH FILTERS:
+// renderMapShapes
+
 // For autocomplete - Vue could be removed - Source: https://cdn.jsdelivr.net/npm/vue
 /*!
  * Vue.js v2.6.12

@@ -1,7 +1,7 @@
-// DISPLAYS THREE LEAFLET MAPS
-// 1. EXPANDABLE MAP IN TOP SEARCH FILTERS
-// 2. ITEM LOCATIONS ON LARGE MAP
-// 3. LOCATION DETAILS ON SIDE MAP
+// DISPLAYS TWO LEAFLET MAPS
+// 1. ITEM LOCATIONS ON LARGE MAP
+// 2. LOCATION DETAILS ON SIDE MAP
+// Top geomap is displayed by map-filters.js
 
 // RenderMap calls addIcons
 
@@ -128,17 +128,25 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
   // Could display a very small loading indicator
 
-  let theState = $("#state_select").find(":selected").val();
-  if (!theState && param["state"]) {
+  let theState;
+  if (param["state"]) {
     theState = param["state"].toUpperCase();
   }
-  if (theState != "") {
-    let kilometers_wide = $("#state_select").find(":selected").attr("km");
-    //zoom = 1/kilometers_wide * 1800000;
-    zoom = zoomFromKm2(kilometers_wide,theState);
-    dp.latitude = $("#state_select").find(":selected").attr("lat");
-    dp.longitude = $("#state_select").find(":selected").attr("lon");
-  }
+  waitForElm('#state_select').then((elm) => {
+
+    if (theState != "") {
+      //  = $("#state_select").find(":selected").val()
+      let kilometers_wide = $("#state_select").find(":selected").attr("km");
+      //zoom = 1/kilometers_wide * 1800000;
+      zoom = zoomFromKm2(kilometers_wide,theState);
+      dp.latitude = $("#state_select").find(":selected").attr("lat");
+      dp.longitude = $("#state_select").find(":selected").attr("lon");
+      //alert("dp.longitude " + dp.longitude)
+
+      // The above loads async. 
+      // May need to check if map1 and map2 are already loaded if not always recentering.
+    }
+  });
 
   dp.listLocation = false; // Hides Waze direction link in list, remains in popup.
 
