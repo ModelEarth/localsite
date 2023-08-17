@@ -121,11 +121,6 @@
     border:#bbb 2px solid !important;
     line-height: 32px !important;
   }
-  /* no effect
-  .leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover {
-    border:#555 1px solid !important;
-  }
-  */
   .leaflet-top > .info {
     background-color: rgba(33, 33, 33, 0.5);
     color: #fff;
@@ -152,27 +147,24 @@
     overflow: visible;
     
   }
-
-  .leaflet-control-container > div:first-child.leaflet-left {
+  .leaflet-control-container > div:first-child.leaflet-left { /* zoom control position */
     left: auto;
     right: 20px;
   }
-  .leaflet-control-container > div:first-child.leaflet-top {
+  .leaflet-control-container > div:first-child.leaflet-top { /* zoom control position */
     top: auto;
-    bottom: 40px;
+    bottom: 20px;
     z-index: auto;
   }
   /* Layers */
+  /*
   .leaflet-control-container > div:nth-child(2).leaflet-right {
-    /* right: 10px; */
-    /* left: auto; */
     left: 10px;
   }
   .leaflet-control-container > div:nth-child(2).leaflet-top {
-    /* top: 10px; */
-    /* bottom: auto; */
     bottom: 20px;
   }
+  */
   .leaflet-control-container > div:nth-child(4) {
     display: none;
   }

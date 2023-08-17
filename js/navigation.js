@@ -974,10 +974,9 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 			                                bkgdUrl = removeFrontFolder(bkgdUrl);
 
 			                                
-			                                if (thelayers[layer].directlink) {
+			                                if (thelayers[layer].directlink) { // Omit thumbClick javascript
 			                                    //hrefLink = "href='" + removeFrontFolder(thelayers[layer].directlink) + "'";
-			                                }
-			                                if (thelayers[layer].rootfolder && thelayers[layer].rootfolder) {
+			                                } else if (thelayers[layer].rootfolder && thelayers[layer].rootfolder) {
 			                                	// Change to pass entire hash
 
 			                                	//linkJavascript = 'onclick="window.location = \'/localsite/' + thelayers[layer].rootfolder + '/#show=' + localObject.layers[layer].item + '\';return false;"';
@@ -1385,11 +1384,7 @@ function showApps(menuDiv) {
 			$('html,body').animate({
 				scrollTop: 0
 			});
-        
-			$("#bigThumbPanelHolder").hide();
-        	$(".showApps").removeClass("filterClickActive");
-			$('.showApps').removeClass("active"); // Still needed?
-
+        	closeAppsMenu();
 		} else {
 			console.log("call showThumbMenu from navidation.js");
 
@@ -1397,15 +1392,18 @@ function showApps(menuDiv) {
 	        $("#topicsPanel").show();
 
 	        if ($("#filterLocations").is(':visible')) {
-	            filterClickLocation(); // Toggle county-select closed
+	            filterClickLocation(); // Toggle county-select closedhttp://localhost:8887/localsite/map/#show=recyclers&state=GA
 	        }
 			$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
 			$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
 
 			$("#showAppsText").text("Local Topics");
-			$("#appSelectHolder .showApps").addClass("filterClickActive");
+			waitForElm('#appSelectHolder').then((elm) => {
+				$("#appSelectHolder .showApps").addClass("filterClickActive");
+			});
 	        $("#bigThumbMenuInner").appendTo(menuDiv);
 			showThumbMenu(hash.show, menuDiv);
+			//$('.showApps').addClass("filterClickActive");
 			waitForElm('#bigThumbPanelHolder').then((elm) => { 
 		        $('html,body').animate({
 		        	//- $("#filterFieldsHolder").height()  
@@ -1414,6 +1412,11 @@ function showApps(menuDiv) {
 		    });
 		}
 	});
+}
+function closeAppsMenu() {
+	$("#bigThumbPanelHolder").hide();
+    $(".showApps").removeClass("filterClickActive");
+	//$('.showApps').removeClass("active"); // Still needed?
 }
 function filterClickLocation(loadGeoTable) {
     console.log("filterClickLocation() " + loadGeoTable);

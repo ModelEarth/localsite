@@ -1,6 +1,6 @@
 /* Localsite Filters */
 // hashChanged() responds to hash changes
-// Intended to work WITHOUT map.js
+// Work WITHOUT map.js. Loads map.js if hash.show gets populated.
 
 // EXPANDABLE MAP IN TOP SEARCH FILTERS:
 // renderMapShapes
@@ -963,7 +963,7 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
             // Add 
             geoOverlays[layerName] = L.geoJson(topodata, {style:styleShape, onEachFeature: onEachFeature}).addTo(map); // Called within addTo(map)
         
-            layerControls[whichmap] = L.control.layers(basemaps1, geoOverlays).addTo(map); // Push multple layers
+            layerControls[whichmap] = L.control.layers(basemaps1, geoOverlays, {position: 'bottomleft'}).addTo(map); // Push multple layers
             basemaps1["Grey"].addTo(map);
 
 
@@ -1297,6 +1297,7 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
                 // National
                 //this._div.innerHTML = "<h4>Zip code</h4>" + (props ? props.zip + '</br>' + props.name + ' ' + props.state + '</br>' : "Hover over map")
                 
+                // CSS resides in map.css at .leaflet-top > .info
                 if (props && props.COUNTYFP) {
                   this._div.innerHTML = "" 
                   + (props ? "<b>" + props.NAME + " County</b><br>" : "Hover over map") 
@@ -2768,6 +2769,11 @@ function hashChanged() {
     }
 
 	if (hash.show != priorHash.show) {
+        closeLocationFilter();
+        closeAppsMenu();
+        loadScript(theroot + 'js/map.js', function(results) {
+        });
+
 		//if (hash.show == priorHash.show) {
 		//	hash.show = ""; // Clear the suppliers display
 		//}

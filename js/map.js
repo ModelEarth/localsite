@@ -3142,7 +3142,7 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
         dragging: !L.Browser.mobile, 
         tap: !L.Browser.mobile
       });
-      layerControls[whichmap] = L.control.layers(basemaps, overlays).addTo(map); // Init layer checkboxes (add checkbox later)
+      layerControls[whichmap] = L.control.layers(basemaps, overlays, {position: 'bottomleft'}).addTo(map); // Init layer checkboxes (add checkbox later)
       if (whichmap == "map2") {
         basemaps["OpenStreetMap"].addTo(map);
       } else {
