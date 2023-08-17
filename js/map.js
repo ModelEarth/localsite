@@ -410,8 +410,8 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
     
         dp.markerType = "google";
         dp.color = "#393";
-        dp.latColumn = "Latitude";
-        dp.lonColumn = "Longitude";
+        dp.latColumn = "latitude"; // Only works when lowercase, despite Google Sheet column being uppercase
+        dp.lonColumn = "longitude";
 
       } else if (show == "solidwaste") {
         dp.listTitle = "Georgia Solid Waste (2023)";
@@ -854,6 +854,7 @@ $(document).on("click", ".detail", function(event) { // Provides close-up using 
     if (listingsVisible == 1 || hash.cat) {
       $(".viewAllLink").show();
     }
+    console.log("Zoom to map point " + $(this).attr("latitude"));
     if ($(this).attr("latitude") && $(this).attr("longitude")) {
       centerMapPoint(map1, $(this).attr("latitude"), $(this).attr("longitude")); // Top map
       // Lower map

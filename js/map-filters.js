@@ -390,8 +390,9 @@ $(document).ready(function () {
     		$('#mapButton').show();
     	}
     }
-    $("#goSearch").click(function(event) {
+    $(document).on("click", "#goSearch", function(event) {
         let searchQuery = $('#keywordsTB').val();
+        console.log("goSearch for " + searchQuery);
         let search = $('.selected_col:checked').map(function() {return this.id;}).get().join(',');
         // To do: set search to empty array if all search boxes are checked.
 
@@ -2728,9 +2729,11 @@ if(typeof hiddenhash == 'undefined') {
 
 function hashChanged() {
 	let loadGeomap = false;
+    //alert("param.mapview " + param.mapview);
 	let hash = getHash(); // Includes changes to hiddenhash
+    //let hash = $.extend(true, {}, getHash()); 
+
     console.log("hashChanged() map-filters.js");
-    //alert("Start priorHash.mapview is " + priorHash.mapview);
     //alert("hash.mapview incoming is " + hash.mapview);
 
 	if (hash.show == "undefined") { // To eventually remove

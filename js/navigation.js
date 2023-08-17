@@ -1139,7 +1139,10 @@ function activateSideColumn() {
     })
 	
 	// Clone after path change
-		$("#headerLogo").clone().appendTo("#logoholderside");
+		
+		// Might need to reactivate, but should we give a different ID?
+		// Double use of ID seems to prevent display here: http://localhost:8887/recycling/
+		//$("#headerLogo").clone().appendTo("#logoholderside");
 
 		// ALL SIDE COLUMN ITEMS
 		var topMenu = $("#cloneLeft");
@@ -1333,13 +1336,12 @@ function getPageFolder(pagePath) {
 		alert("ALERT: navigation.js is being loaded twice.");
 	}
 	console.log("ALERT: navigation.js is being loaded twice.")
-
 } // End typeof page_scripts which checks if file is loaded twice.
 
 $(document).on("click", "#filterClickLocation", function(event) {
-	
     let hash = getHash();
-    console.log("#filterClickLocation click hash.state: " + hash.state);
+    //let hash = $.extend(true, {}, getHash());
+    //console.log("#filterClickLocation click hash.state: " + hash.state);
     console.log("#filterClickLocation click hash.mapview: " + hash.mapview);
     //console.log("#filterClickLocation click param.mapview: " + param.mapview);
     if (!hash.mapview) {
@@ -1354,9 +1356,11 @@ $(document).on("click", "#filterClickLocation", function(event) {
 	    	}
     	});
 	} else {
-		closeLocationFilter();
+		// Triggers closeLocationFilter(); while setting priorHash.mapview.
+		//goHash({"mapview":""}); // Remove from URL using gohash so priorhash is also reset
+		goHash({},["mapview"]); //TODO - Alter so the above works instead.
 	}
-    //event.stopPropagation();
+    event.stopPropagation();
 });
 
 
@@ -1385,14 +1389,17 @@ function showApps(menuDiv) {
 				scrollTop: 0
 			});
         	closeAppsMenu();
-		} else {
+		} else { // Show Apps, Close Locations
 			console.log("call showThumbMenu from navidation.js");
 
 	        closeExpandedMenus($(".showSections")); // Close Locations sidetab and open Topics sidetab.
 	        $("#topicsPanel").show();
 
 	        if ($("#filterLocations").is(':visible')) {
-	            filterClickLocation(); // Toggle county-select closedhttp://localhost:8887/localsite/map/#show=recyclers&state=GA
+	        	//goHash({"mapview":""});
+	        	goHash({},["mapview"]); //TODO - Alter so the above works instead.
+
+	            //filterClickLocation(); // Toggle county-select closedhttp://localhost:8887/localsite/map/#show=recyclers&state=GA
 	        }
 			$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
 			$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
@@ -1444,6 +1451,7 @@ function openMapLocationFilter() {
     //alert("hash.state " + hash.state);
     //alert("openMapLocationFilter param.state " + param.state);
     console.log("openMapLocationFilter()");
+    closeAppsMenu();
     loadScript(theroot + 'js/map-filters.js', function(results) {
     	if (!hash.state && param.state) {
 	        hash.state = param.state; // For /apps/base/
@@ -1506,9 +1514,8 @@ function openMapLocationFilter() {
 	    }
 	});
 }
-function closeLocationFilter() { 
-    updateHash({"mapview":""}); // Remove from URL
-    delete(hash.mapview); // BUGBUG, clears but still in filterClickLocation click
+function closeLocationFilter() {
+    //delete(hash.mapview); // BUGBUG, clears but still in filterClickLocation click
     //alert("hash.mapview: " + hash.mapview)
     console.log("closeLocationFilter()");
     $(".locationTabText").text($(".locationTabText").attr("title"));

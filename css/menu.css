@@ -502,6 +502,14 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	float: left;
 	top:auto; left:auto; bottom:auto;
 }
+.datascapeEmbed {
+	display: flex;
+	flex-direction: row;
+	max-height: 1200px;
+}
+#insertedText {
+	flex: 1;
+}
 .pagecolumn {
 	top:54px;
 }

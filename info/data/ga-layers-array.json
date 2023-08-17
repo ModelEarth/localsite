@@ -151,7 +151,7 @@
 		"section": "Waste, Water, Energy",
 		"sectionicon": "<i class='fa fa-recycle'></i>",
 		"provider": "Recycling",
-		"image": "/localsite/img/show/recycle.jpg",
+		"image": "/localsite/img/show/wastewater.jpg",
 		"siteHeaderHeight": "170px",
 		"headericoncolor": "#999",
 		"icon": "<i class='material-icons'>&#xE87A;</i>",

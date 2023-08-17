@@ -457,8 +457,8 @@ label { /* override Drupal */
   float:left;
 }
 #listcolumn {
-  display: flex; /* displays flex-items (children) inline */
-  flex-direction: column; /* stacks them vertically */
+  display: flex; /* For column footer #listInfo. Displays flex-items (children) inline */
+  flex-direction: column; /* Stacks children vertically: listHeader, listmain, listInfo */
   box-shadow: 4px 2px 8px 1px rgba(0, 0, 0, 0.4);
   z-index: 999;
   min-width: 250px;

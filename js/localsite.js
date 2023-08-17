@@ -565,11 +565,10 @@ function consoleLog(text,value) {
 }
 
 function loadLocalTemplate() {
-  console.log("THETEST loadLocalTemplate()");
+  console.log("loadLocalTemplate()");
   let datascapeFile = theroot + "info/template-main.html";
   let datascapeFileDiv = "#datascape";
   waitForElm(datascapeFileDiv).then((elm) => {
-    console.log("THETEST " + datascapeFileDiv);
     $(datascapeFileDiv).load(datascapeFile, function( response, status, xhr ) {
       //$("#insertedTextSource").remove(); // For map/index.html. Avoids dup header.
 
@@ -664,7 +663,7 @@ function loadLeafletAndMapFilters() {
         $("body").prepend("<div id='local-header' class='flexheader noprint' style='display:none'></div>\r");
         waitForElm('#local-header').then((elm) => {
           $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
-        
+          $("#local-header").show();
         
         // Might need to add a check here. Occasional:
         // Uncaught ReferenceError: applyNavigation is not defined
@@ -907,9 +906,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       includeCSS3(theroot + 'css/naics.css',theroot);
       
       // customD3loaded
-      if (param.preloadmap != "false" && (param.showheader == "true" || param.shownav == "true" || param.display == "map")) {
+      if (param.preloadmap != "false" && (param.showheader == "true" || param.shownav == "true" || param.display == "map" || param.display == "everything")) {
         loadScript(theroot + 'js/navigation.js', function(results) {
-          //if (param.shownav == "true" || param.display == "map") {
+          //if (param.shownav == "true" || param.display == "map" || param.display == "everything") {
             loadLeafletAndMapFilters();
           //}
         });
