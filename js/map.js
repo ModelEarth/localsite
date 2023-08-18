@@ -3001,7 +3001,9 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     loadScript(theroot + 'js/d3.v5.min.js', function(results) {
     waitForVariable('customD3loaded', function() {
     consoleLog("Google data requested " + dp.googleCSV);
-    d3.csv(dp.googleCSV).then(function(data) { // One element containing all rows from spreadsheet
+    //dp.googleCSV = "DISABLEX"
+    d3.csv(dp.googleCSV).then(function(data,error) { // One element containing all rows from spreadsheet
+
       consoleLog("Google data loaded");
       // LOAD GOOGLE SHEET
         //dp.data = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
@@ -3036,6 +3038,9 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
         } else {
           processOutput(dp,map1,map2,whichmap,whichmap2,basemaps1,basemaps2,function(results){});
         }
+    }, function(error, rows) {
+        consoleLog("ERROR fetching google sheet. " + error);
+        // if not 404, try again here after .5 second settimeout. Limit attempts to 100. Display status in browser.
     });
     });
     });
@@ -3250,7 +3255,7 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
 }
 
 function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callback) {
-  console.log("processOutput");
+  consoleLog("processOutput");
 
   if (typeof map === 'undefined' || !map.length) {
     console.log("processOutput: map not yet defined or populated.");
