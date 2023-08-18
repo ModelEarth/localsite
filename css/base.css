@@ -902,7 +902,6 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   z-index: 999999;
   top:70%;
   left:50px;
-  max-height:200px;
   padding: 8px 8px 8px 8px;
   color:#fff;
   background: rgba(0,0,0,.8);
@@ -912,7 +911,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 #log_display textarea {
   color:#fff;
   background: rgba(0,0,0,0);
-  min-width: 400px;
+  min-width: 600px;
   min-height: 150px;
   overflow:scroll;
   border:1px solid #ccc;

@@ -540,6 +540,7 @@ function clearHash(toClear) {
 
 var consoleLogHolder = ""; // Hold until div available in DOM
 function consoleLog(text,value) {
+  let thetime = (Date.now() - localStart)/1000;
   if (value) {
     console.log((Date.now() - localStart)/1000 + ": " + text, value);
   } else {
@@ -563,10 +564,12 @@ function consoleLog(text,value) {
 
     } else {
       //dsconsole.innerHTML += (text + "\n");
-      let content = document.createTextNode(text + "\n");
+      let content = document.createTextNode(thetime + ": " + text + "\n");
       dsconsole.appendChild(content);
     }
     //dsconsole.scrollTop(dsconsole[0].scrollHeight - dsconsole.height() - 17); // Adjusts for bottom alignment
+    dsconsole.scrollTo({ top: dsconsole.scrollHeight, behavior: 'smooth'});
+
   } else {
 
     if (value) {

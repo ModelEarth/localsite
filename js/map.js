@@ -3040,7 +3040,12 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
         }
     }, function(error, rows) {
         consoleLog("ERROR fetching google sheet. " + error);
-        // if not 404, try again here after .5 second settimeout. Limit attempts to 100. Display status in browser.
+        // if not 404, try again here after .5 second settimeout. Display status in browser.
+
+        setTimeout(function() {
+          attempts = attempts + 1;
+          loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback);
+        }, 500);
     });
     });
     });
