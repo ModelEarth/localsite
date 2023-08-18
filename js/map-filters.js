@@ -1548,14 +1548,16 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
 
     		// Switching to: http://tabulator.info/examples/5.0
 
-    		//Load in contents of CSV file
+    		//Load in contents of CSV file for Tabulator (separate from map county shapes)
     		if (theState.length == 2) {
                 let csvFilePath = local_app.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv";
                 if (hash.mapview == "zip") {
                     csvFilePath = local_app.community_data_root() + "us/zipcodes/zipcodes6.csv";
                 }
     			d3.csv(csvFilePath).then(function(myData,error) {
-    				if (error) {
+                //d3.csv(csvFilePath, function(myData) {
+                //d3.csv(csvFilePath).then(function(error,myData) {
+    				if (error) { // Wasn't reached.
     					//alert("error")
     					console.log("Error loading file. " + error);
     				}
@@ -1638,7 +1640,11 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                     consoleLog(myData.length + " counties loaded.");
                     //console.log(myData);
     				showTabulatorList(element, 0);
-
+                    $(".geoListCounties").show();
+                }, function(error, rows) {
+                    console.log("ERROR fetching csv file for TabulatorList (counties or zip). " + error);
+                    $(".geoListCounties").hide();
+                    //console.log(error);
     			});
     		}
     	} else {
@@ -3357,7 +3363,8 @@ function styleShape(feature) { // Called FOR EACH topojson row
         theValue = localObject.state[getState(stateID)].CO2_per_capita;
       }
       theValue = theValue/4; // Ranges from 0 to 26
-      fillColor = colorTheStateCarbon(theValue);
+      //fillColor = colorTheStateCarbon(theValue); // Stopped working. Wasn't a function. Maybe try to reactivate.
+      fillColor = colorTheStateCarbon;
       //console.log("fillColor: " + fillColor + "; theValue: " + theValue + " " + feature.properties.name);
       fillOpacity = .5;
   } return {

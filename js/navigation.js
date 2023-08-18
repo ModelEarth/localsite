@@ -236,6 +236,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		showLeftIcon = true;
 		$(".siteTitleShort").text("Model Georgia");
 		param.titleArray = [];
+		console.log("local_app.localsite_root() " + local_app.localsite_root()); // https://model.earth was in here: https://map.georgia.org/localsite/map/#show=recyclers
 		param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.localsite_root() + "img/logo/states/GA.png' style='width:140px;padding-top:4px'></a>";
 		param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.localsite_root() + "img/logo/states/GA-notext.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
 		if (document.title) {

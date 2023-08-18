@@ -283,8 +283,19 @@ function updateHash(addToHash, addToExisting, removeFromHash) { // Avoids trigge
     if (addToExisting != false) {
       hash = getHashOnly(); // Include all existing. Excludes hiddenhash.
     }
-    hash = mix(addToHash,hash); // Gives priority to addToHash
+    
+    const newObj = {}; // For removal of blank keys in addToHash
+    Object.entries(addToHash).forEach(([k, v]) => {
+      if (v === Object(v)) {
+        newObj[k] = removeEmpty(v);
+        delete hash[k];
+        delete hiddenhash[k];
+      } else if (v != null) {
+        newObj[k] = addToHash[k];
+      }
+    });
 
+    // Secondary way to remove, using a string
     if (removeFromHash) {
       if (typeof removeFromHash == "string") {
         removeFromHash = removeFromHash.split(",");
@@ -295,6 +306,8 @@ function updateHash(addToHash, addToExisting, removeFromHash) { // Avoids trigge
       }
     }
     
+    hash = mix(newObj,hash); // Gives priority to addToHash
+
     var hashString = decodeURIComponent($.param(hash)); // decode to display commas in URL
     var pathname = window.location.pathname.replace(/\/\//g, '\/')
     var queryString = "";
