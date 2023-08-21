@@ -660,7 +660,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
             return;
         }
     }
-    $('.partnerCheckboxes :checkbox').change(function () {
+    $('.partnerCheckboxes :checkbox').on('change', function () {
 
         if($(this).is(":checked")) { // Show Layer
             //$(this).parent().parent().find('.layerAction .layerActionIcon').css('color', '#3B99FC');
