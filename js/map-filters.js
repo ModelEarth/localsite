@@ -290,7 +290,6 @@ $(document).ready(function () {
     	event.stopPropagation();
     });
     $(document).on("change", "#country_select", function(event) {
-        //alert("this.value " + this.value);
         goHash({'mapview':this.value,'state':''});
     });
  	$(document).on("change", "#state_select", function(event) {
@@ -304,8 +303,6 @@ $(document).ready(function () {
 	    	//$("#filterLocations").hide(); // So state appears on map immediately
 	    } else { // US selected
 	    	goHash({'mapview':'country','state':''});
-	    	//clearHash("state")
-	    	//$("#industryListHolder").hide();
 	    }
 	});
 	$('.selected_state').on('change', function() {
@@ -381,7 +378,7 @@ $(document).ready(function () {
     });
 
 	function hideNonListPanels() {
-        updateHash({"mapview":""});
+        goHash({"mapview":""});
 		$(".fieldSelector").hide(); // Avoid since this occurs when typing text in search field.
     	$('#topPanel').hide();
     	$("#introText").hide();
@@ -671,7 +668,8 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
         $("#geoPicker").show();
         $('#' + whichmap).show();
         if (!$("#" + whichmap).is(":visible")) {
-          console.log("Error: whichmap not visible " + whichmap);
+          $("#filterLocations").show(); //Why did we need here?
+          console.log("Caution: #" + whichmap + " not visible. May effect tile loading.");
           //return; // Prevents incomplete tiles
         }
 
@@ -749,8 +747,6 @@ function renderMapShapeAfterPromise(whichmap, hash, attempts) {
           // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
         } else { // ALL COUNTRIES
         //} else if (hash.mapview == "earth") {
-
-
           url = local_app.modelearth_root() + "/topojson/world-countries-sans-antarctica.json";
           topoObjName = "topoob.objects.countries1";
         }
@@ -1396,14 +1392,18 @@ function locationFilterChange(selectedValue,selectedGeo) {
     $(".geoListCounties").show();
 
     //showSearchFilter(); // Display filters
-    hideLocationFilters();
+
+    //alert("reactivate these 2. " + selectedValue);
+    // When to hide?
+    //hideLocationFilters();
+    //hideLocationsMenu();
 
     //$(".hideLocationsMenu").trigger("click");
     $('.countyTitleText').text(""); // Used by cities and counties
     removeCityFilter();
     $('.countyList').hide();
 
-    hideLocationsMenu();
+    
     $(".listHolder").hide();
 
     //hideCounties();
@@ -1428,7 +1428,7 @@ function locationFilterChange(selectedValue,selectedGeo) {
         }
         //activateEntireState();
         $("#zip").val('');
-        $('.goSearch').trigger("click");
+        //$('.goSearch').trigger("click");
     }
 
     if (selectedValue == 'country') {
@@ -1473,10 +1473,6 @@ function locationFilterChange(selectedValue,selectedGeo) {
             }
             Cookies.set('searchParams', { 'useCurrent': '0', 'centerlat': $("#lat").val(), 'centerlon': $("#lon").val(), 'locationDD': 'zip' });
         }
-    }
-    if (selectedValue == 'counties') {
-    	// Not necessary to show when not displayed yet
-    	//loadStateCounties(0);
     }
     if (selectedValue == 'city') {
         $("#distanceField").show();
@@ -1527,6 +1523,7 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
     loadScript(theroot + 'js/d3.v5.min.js', function(results) {
     	if (typeof d3 !== 'undefined') {
 
+            //alert("loadStateCounties")
             let element = {};
             element.scope = "geo";
 
@@ -1557,9 +1554,14 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
     			d3.csv(csvFilePath).then(function(myData,error) {
                 //d3.csv(csvFilePath, function(myData) {
                 //d3.csv(csvFilePath).then(function(error,myData) {
-    				if (error) { // Wasn't reached.
+
+    				if (error) { // Wasn't reached. Will delete this. Now reaches error message at bottom of ds.csv function instead.
     					//alert("error")
-    					console.log("Error loading file. " + error);
+                        if (location.host.indexOf('localhost') >= 0) {
+                            alert("Error loading file. " + error);
+                        } else {
+    					   console.log("Error loading file. " + error);
+                        }
     				}
 
                     if (hash.mapview == "zip") {
@@ -1744,6 +1746,8 @@ function loadObjectData(element, attempts) {
         }
 
     } else {
+        loadScript(theroot + 'js/d3.v5.min.js', function(results) {
+        });
         attempts = attempts + 1;
           if (attempts < 2000) {
             setTimeout( function() {
@@ -2735,25 +2739,24 @@ if(typeof hiddenhash == 'undefined') {
 
 function hashChanged() {
 	let loadGeomap = false;
-    //alert("param.mapview " + param.mapview);
 	let hash = getHash(); // Includes changes to hiddenhash
-    //let hash = $.extend(true, {}, getHash()); 
 
     console.log("hashChanged() map-filters.js");
     //alert("hash.mapview incoming is " + hash.mapview);
 
 	if (hash.show == "undefined") { // To eventually remove
-		delete hash.show; // Fix URL bug from indicator select hamburger menu
+		//delete hash.show; // Fix URL bug from indicator select hamburger menu
 		//updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
 	}
 	// Temp for PPE
 	if (!hash.state && location.host.indexOf("georgia") >= 0 && (hash.mapview == "" || hash.mapview == "state" || hash.mapview == "counties")) {
-	    hash.state = "GA";
-	    hiddenhash.state = "GA";
+	    // Could populate hiddenhash.state in map.js when map layers are loaded, or use those default state values.
+        //hash.state = "GA";
+	    //hiddenhash.state = "GA";
 	}
     if (hash.mapview == "state" && hash.state == undefined) {
         // To Do: Pull the states from the geo values
-        hash.mapview = "country"
+        //hash.mapview = "country"
     }
 	populateFieldsFromHash();
 	productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
@@ -2768,14 +2771,7 @@ function hashChanged() {
 	} else {
         //$(".locationTabText").text("United States");
     }
-    if (hash.mapview == "earth") {
-        $("#state_select").hide();
-    } else if (hash.mapview == "country") {
-        $("#geoPicker").show(); // Required for map to load
-        $("#state_select").show();
-    } else if (hash.mapview == "state") {
-        $("#state_select").show();
-    }
+
 
 	if (hash.show != priorHash.show) {
         closeLocationFilter();
@@ -2949,7 +2945,7 @@ function hashChanged() {
         closeLocationFilter();
     }
 
-    // hash.mapview &&  // Also used for state change in apps without map.
+    // Also used for state change in apps without map which don't have mapview
 	if (hash.state != priorHash.state) {
 		loadGeomap = true;
 		if(location.host.indexOf('model.georgia') >= 0) {
@@ -3008,41 +3004,57 @@ function hashChanged() {
             //$("#filterLocations").hide();
             //$("#industryListHolder").hide(); // Remove once national naics are loaded.
 		}
-		//'geo':'', 
-		//updateHash({'regiontitle':'', 'lat':'', 'lon':''});
-        loadStateCounties(0);
-    } else if (hash.mapview != priorHash.mapview && hash.mapview == "state") {
-        loadStateCounties(0);
-	} else if (hash.mapview != priorHash.mapview && hash.mapview == "country") {
-        let element = {};
-        element.scope = "state";
-        element.datasource = "https://model.earth/beyond-carbon-scraper/fused/result.json"; // Also resides in app/js/bc.js
-        element.columns = [
-                {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                {title:"State", field:"jurisdiction"},
-                {title:"Population", field:"population", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
-                {title:"CO<sub>2</sub> per capita", field:"CO2_per_capita", hozAlign:"right", formatter:"money", formatterParams:{precision:false}},
-            ];
-        loadObjectData(element, 0);
-    } else if (hash.mapview != priorHash.mapview && (hash.mapview == "earth" || hash.mapview == "countries")) {
-        let element = {};
-        element.scope = "countries";
-        element.key = "Country Code";
-        element.datasource = "https://model.earth/country-data/population/population-total.csv";
-        element.columns = [
-                {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                {title:"Country Name", field:"Country Name"},
-                {title:"2010", field:"2010", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
-                {title:"2020", field:"2020", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}}
-            ];
-        loadObjectData(element, 0);
-    } else if (hash.mapview != priorHash.mapview) { // For backing up within apps
-        if (typeof relocatedStateMenu != "undefined") {
-            relocatedStateMenu.appendChild(state_select); // For apps hero
+        if (hash.mapview == priorHash.mapview && hash.mapview == "state") { // Prevents dup loading when hash.mapview != priorHash.mapview below.
+            loadStateCounties(0);
         }
-        $("#hero_holder").show();
     }
-        
+
+    if (hash.mapview != priorHash.mapview) {
+        if (hash.mapview == "state") {
+            loadStateCounties(0);
+    	} else if (hash.mapview == "country") {
+            let element = {};
+            element.scope = "state";
+            element.datasource = "https://model.earth/beyond-carbon-scraper/fused/result.json"; // Also resides in app/js/bc.js
+            element.columns = [
+                    {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
+                    {title:"State", field:"jurisdiction"},
+                    {title:"Population", field:"population", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
+                    {title:"CO<sub>2</sub> per capita", field:"CO2_per_capita", hozAlign:"right", formatter:"money", formatterParams:{precision:false}},
+                ];
+            loadObjectData(element, 0);
+        } else if (hash.mapview == "earth" || hash.mapview == "countries") {
+            let element = {};
+            element.scope = "countries";
+            element.key = "Country Code";
+            element.datasource = "https://model.earth/country-data/population/population-total.csv";
+            element.columns = [
+                    {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
+                    {title:"Country Name", field:"Country Name"},
+                    {title:"2010", field:"2010", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
+                    {title:"2020", field:"2020", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}}
+                ];
+            loadObjectData(element, 0);
+        } else { // For backing up within apps
+            if (typeof relocatedStateMenu != "undefined") {
+                relocatedStateMenu.appendChild(state_select); // For apps hero
+            }
+            $("#hero_holder").show();
+        }
+    }
+    if (hash.mapview == "earth") {
+        $("#state_select").hide();
+    } else if (hash.mapview == "country") {
+        if (hash.mapview != priorHash.mapview) {
+            alert("country");
+            $("#geoPicker").show(); // Required for map to load
+            $("#state_select").show();
+            openMapLocationFilter();
+        }
+    } else if (hash.mapview == "state") {
+        $("#state_select").show();
+    }
+
     //Resides before geo
     if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state || hash.show != priorHash.show) {
         let theStateName;
@@ -3282,9 +3294,6 @@ $(document).ready(function () {
 	if (hash.regiontitle) {
 		$("#region_select").val(hash.regiontitle)
 		//$("#state_select option[value='NV']").prop('selected', true);
-	}
-	if (hash.mapview) { // Country map
-		//filterClickLocation(false);
 	}
 	hashChanged();
 	/*
