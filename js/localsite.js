@@ -719,7 +719,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       console.log("Ready DOM Loaded (But not template yet). Using theroot: " + theroot)
 
-      $(document).click(function(event) { // Hide open menus in core
+        $(document).on('click', function(event) { // Hide open menus in core
         $('.hideOnDocClick').hide();
       });
 
