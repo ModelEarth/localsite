@@ -670,11 +670,11 @@ function loadLeafletAndMapFilters() {
   //if (param.shownav) {
   if (param.showheader != "false" || param.showsearch == "true") {
     loadScript(theroot + 'js/navigation.js', function(results) {
-      $(document).ready(function () {
+      //$(document).ready(function () {
       // Apparently this is NOT triggered when backing up and reloading. Reload must be hit a second time.
-      // But navigation.js won't be in the DOM if we don't waitForElm('body'). Used $(document).ready above instead.
-      //waitForElm('body').then((elm) => {
-        console.log("body is now available"); // If missing header persists, remove waitForElm('body') here (line above annd closure)
+      // But navigation.js won't be in the DOM if we don't waitForElm('#bodyloaded'). Used $(document).ready above instead.
+      waitForElm('#bodyloaded').then((elm) => {
+        console.log("body is now available"); // If missing header persists, remove waitForElm('#bodyloaded') here (line above annd closure)
         // Puts space above flexmain for navcolumn to be visible after header
         $("body").prepend("<div id='local-header' class='flexheader noprint' style='display:none'></div>\r");
         waitForElm('#local-header').then((elm) => {
@@ -688,7 +688,7 @@ function loadLeafletAndMapFilters() {
 
 
         // To Do: wait for div from navigation.js
-        //waitForElm('body').then((elm) => {
+        //waitForElm('#bodyloaded').then((elm) => {
 
         //});
 
@@ -718,14 +718,20 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       //Doc ready was here, now further down
 
       console.log("Ready DOM Loaded (But not template yet). Using theroot: " + theroot)
+      // Add id to body tag
+      //document.body.id = "bodyloaded"; //Works, but avoid incase body already has an id.
 
-        $(document).on('click', function(event) { // Hide open menus in core
+      var divForBodyLoaded = '<div id="bodyloaded"></div>'; // Tells us the body is loaded, since body is not detected.
+      document.getElementsByTagName('body')[0].innerHTML += divForBodyLoaded;
+
+      $(document).on('click', function(event) { // Hide open menus in core
         $('.hideOnDocClick').hide();
       });
 
       // Load when body div becomes available, faster than waiting for all DOM .js files to load.
-      waitForElm('body').then((elm) => {
-       console.log("body becomes available")
+      waitForElm('#bodyloaded').then((elm) => {
+       //("Found #bodyloaded");
+       console.log("body becomes available"); // Never reached 
         if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
           var div = $("<div />", {
               html: '<style>.local{display:inline-block !important}.local-block{display:block !important}.localonly{display:block !important}</style>'

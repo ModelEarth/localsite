@@ -172,7 +172,7 @@ function closeExpandedMenus(menuClicked) {
 function showNavColumn() {
 	console.log("showNavColumn");
 	$("#sideIcons").hide();
-	$("#navcolumn").show();
+	$("#navcolumn").show(); $("#showSideInBar").hide();
 	if ($("#fullcolumn > .datascape").is(":visible")) { // When NOT embedded.
 		if ($("#listcolumn").is(":visible")) {
 			$('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed side columns.
@@ -301,7 +301,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		console.log("param.footer " + param.footer);
 	}
 	// Load when body div becomes available, faster than waiting for all DOM .js files to load.
-   	waitForElm('body').then((elm) => {
+   	waitForElm('#bodyloaded').then((elm) => {
 	 	$("body").wrapInner( "<div id='fullcolumn'></div>"); // Creates space for navcolumn
 	 	
 	 	

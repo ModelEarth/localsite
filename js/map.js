@@ -2078,7 +2078,6 @@ function showList(dp,map) {
 
     // Show the side columns
     $("#showNavColumn").hide();
-    $("#showSideInBar").show();
     $("#listcolumn").show();
     showListBodyMargin();
 
