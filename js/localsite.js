@@ -730,8 +730,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       // Load when body div becomes available, faster than waiting for all DOM .js files to load.
       waitForElm('#bodyloaded').then((elm) => {
-       //("Found #bodyloaded");
-       console.log("body becomes available"); // Never reached 
+       console.log("#bodyloaded becomes available");
         if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
           var div = $("<div />", {
               html: '<style>.local{display:inline-block !important}.local-block{display:block !important}.localonly{display:block !important}</style>'

@@ -337,7 +337,8 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 			let prependTo = "#datascape";
 			// BUG #fullcolumn > .datascape does not seem to be loaded yet
 			if ($("#fullcolumn > .datascape").is(":visible")) { // When NOT embedded
-				prependTo = "body";
+				console.log("Not embed");
+				//prependTo = "body"; // Might not have worked intermintantly for the following prepend here: http://localhost:8887/recycling/
 			}
 			/// POSSIBLE ISSUE - This might get overwritten
 	 		$(prependTo).prepend("<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv noprint sidecolumnLeft liteDiv' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement);
