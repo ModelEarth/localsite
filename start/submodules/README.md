@@ -21,11 +21,13 @@ git submodule update --init --recursive
 
 <!--Note: You'll switch the branch in GitHub Desktop to get updates to a submodule, then commit your main project so it's using the most recent version of each submodule.-->
 
-To bring in changes to a submodule, change (cd) to the folder and do
+To bring in changes to a submodule, change (cd) to the submodule's folder and do
 
 	git pull
 
-If a conflict occurs, [reset](https://stackoverflow.com/questions/6335681/how-do-i-get-the-latest-version-of-my-code) before pulling.
+Then commit using GitHub Desktop.
+
+If a pull conflict occurs, [reset](https://stackoverflow.com/questions/6335681/how-do-i-get-the-latest-version-of-my-code) before pulling.
 
 	git reset --hard HEAD
 	git clean -xffd
