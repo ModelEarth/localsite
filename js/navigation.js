@@ -57,7 +57,7 @@ if (modelpath == "./") {
 }
 var modelroot = ""; // For links that start with /
 
-if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('neighborhood.org') < 0) { // When not localhost or other sites that have a fork of io and community.
+if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('neighborhood.org') < 0) { // When not localhost or other site that has a fork of io and community.
 	// To do: allow "Input-Output Map" link in footer to remain relative.
 	modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
 	modelroot = "https://model.earth";
@@ -237,8 +237,8 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		$(".siteTitleShort").text("Model Georgia");
 		param.titleArray = [];
 		console.log("local_app.localsite_root() " + local_app.localsite_root()); // https://model.earth was in here: https://map.georgia.org/localsite/map/#show=recyclers
-		param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.localsite_root() + "img/logo/states/GA.png' style='width:140px;padding-top:4px'></a>";
-		param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.localsite_root() + "img/logo/states/GA-notext.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
+		param.headerLogo = "<a href='https://georgia.org'><img src='/localsite/img/logo/states/GA.png' style='width:140px;padding-top:4px'></a>";
+		param.headerLogoNoText = "<a href='https://georgia.org'><img src='/localsite/img/logo/states/GA-notext.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
 		if (document.title) {
 	 		document.title = "Georgia.org - " + document.title;
 	 	} else {
