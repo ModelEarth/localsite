@@ -449,10 +449,10 @@ summary::-webkit-details-marker {
   color: #fff;
   background-color: #b1b1b1;
 }
-.greyDiv a, .greyDiv a:visited {
+.greyDiv a, .greyDiv a:visited, .content .greyDiv a, .content .greyDiv a:visited {
   color: #fff;
 }
-.greyDiv b, .greyDiv .maincat, .greyDiv b a, .greyDiv b a:visited {
+.greyDiv b, .greyDiv .maincat, .greyDiv b a, .greyDiv b a:visited, .content .greyDiv b, .content .greyDiv .maincat, .content .greyDiv b a, .content .greyDiv b a:visited {
   color: #333;
 }
 .greyDiv b a:hover, .greyDiv b a:visited:hover {
