@@ -439,6 +439,25 @@ summary::-webkit-details-marker {
 .content a:visited {
   color: #0366d6;
 }
+.liteDiv {
+  border-right: solid 1px #e9e9e9;
+}
+.liteDiv a {
+  color: #333;
+}
+.greyDiv { /* Mix of light and dark text */
+  color: #fff;
+  background-color: #b1b1b1;
+}
+.greyDiv a, .greyDiv a:visited {
+  color: #fff;
+}
+.greyDiv b, .greyDiv .maincat, .greyDiv b a, .greyDiv b a:visited {
+  color: #333;
+}
+.greyDiv b a:hover, .greyDiv b a:visited:hover {
+  color: #fff;
+}
 .bodyLeftMargin .contentpadding {
   padding-left: 30px;
   padding-right: 30px;
