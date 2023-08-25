@@ -585,7 +585,12 @@ function loadLocalTemplate() {
   let datascapeFile = theroot + "info/template-main.html";
   let datascapeFileDiv = "#datascape";
   waitForElm(datascapeFileDiv).then((elm) => {
-    $(datascapeFileDiv).load(datascapeFile, function( response, status, xhr ) {
+
+    //$(datascapeFileDiv).load(datascapeFile, function( response, status, xhr ) { // This overwrote navcolumn and listcolumn
+    $.get(datascapeFile, function(theTemplate) { // Get and append template-main.html to #datascape
+      //$(theTemplate).find("#insertedText").appendTo(datascapeFileDiv);
+      $(theTemplate).appendTo(datascapeFileDiv);
+
       //$("#insertedTextSource").remove(); // For map/index.html. Avoids dup header.
 
       //$('img').each(function() {
