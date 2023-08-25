@@ -1314,13 +1314,10 @@ function showList(dp,map) {
           // Since some will have multiple subcats
           // This could be performed asynchronously during second iteration of rows.
 
-          // Should we walk the current subcatObject?
-          console.log(localObject.layerCategories[dp.show])
+          // console.log(localObject.layerCategories[dp.show])
           $.each(localObject.layerCategories[dp.show], function(index,value) {
-            console.log("value.SubCategory: " + value.SubCategory);
-            //console.log(subcatObject[value.SubCategory]);
+            //console.log("value.SubCategory: " + value.SubCategory);
             if (elementRaw[dp.subcatColumn] && elementRaw[dp.subcatColumn] == subcatObject[value.SubCategory]) {
-              
               subcatObject[value.SubCategory].count = subcatObject[value.SubCategory].count + 1;
               //subcatObject[value.SubCategory].count = 12345;
               console.log(subcatObject[value.SubCategory]);

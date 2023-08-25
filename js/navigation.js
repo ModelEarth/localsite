@@ -320,12 +320,17 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 			$("#datascape").addClass("datascape");
 			$("#datascape").addClass("datascapeEmbed");
 			$("#fullcolumn > #datascape").removeClass("datascapeEmbed");  // When #datascape is NOT embedded.
-			$('body').removeClass('bodyLeftMarginFull');
+			if (!$("#datascape").hasClass("datascapeEmbed")) {
+				$("#datascape").addClass("datascapeTop");
+			}
+
+			$('body').removeClass('bodyLeftMarginFull'); // Gets added back if navcolumn is displayed.
 			// Wait for template to be loaded so it doesn't overwrite listcolumn in #datascape.
 			//waitForElm('#insertedText').then((elm) => {
-			waitForElm('#fullcolumn > .datascape').then((elm) => { // When #datascape is NOT embedded.
+			waitForElm('#fullcolumn > .datascapeTop').then((elm) => { // When #datascape is NOT embedded.
 				// Place list in left margin for whole page use.
-				$("#datascape").prepend(listColumnElement);
+				//$("#datascape").prepend(listColumnElement);
+				$("body").prepend(listColumnElement);
 				listColumnElement = "";
 				//$('body').addClass('bodyLeftMarginFull'); // Avoid here. Places gap on /community
 			});
@@ -340,8 +345,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 				console.log("Not embed");
 				//prependTo = "body"; // Might not have worked intermintantly for the following prepend here: http://localhost:8887/recycling/
 			}
-			/// POSSIBLE ISSUE - This might get overwritten
-	 		$(prependTo).prepend("<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv noprint sidecolumnLeft liteDiv' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement);
+			$(prependTo).prepend("<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv noprint sidecolumnLeft liteDiv' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement); //  listColumnElement will be blank if already applied above.
 	 	} else {
 	 		// TODO - change to fixed when side reaches top of page
 	 		console.log("navigation.js report: navcolumn already exists")
