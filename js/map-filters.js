@@ -3046,7 +3046,7 @@ function hashChanged() {
         $("#state_select").hide();
     } else if (hash.mapview == "country") {
         if (hash.mapview != priorHash.mapview) {
-            alert("country");
+            //alert("country");
             $("#geoPicker").show(); // Required for map to load
             $("#state_select").show();
             openMapLocationFilter();
