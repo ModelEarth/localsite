@@ -65,7 +65,32 @@ Choose "Forwarding URL"
 \*.yourdomain.com/\*  
 https://yourdomain.com/#go=$2  
 
-### CloudFlare Firewall
+
+## Host your Github repos using Cloudflare
+
+### Optionally create a single-password site
+
+Optional: Include the "functions" folder from [charca's repo](https://dev.to/charca/password-protection-for-cloudflare-pages-8ma) to create the secure login.
+
+<!--
+No longer seeing this route, double-check then delete thiL
+Add a custom domain in cloudflare Pages by clicking "Create a project" at "Account Home > Pages"
+-->
+
+Workers & Pages > Pages tab > Connect to Git
+
+Connect to your repo, which can be a private repo.
+
+Make note of the generated subdomain where the project will be deployed.  It will be [generated subdomain].pages.dev
+
+Under Environmental variables, add CFP_PASSWORD [your password]
+
+Lastly, add a subdomain under Custom domains within Cloudflare pages.
+This will automatically create a CNAME record pointed at [generated subdomain].pages.dev after a few minutes.
+
+Use [submodules](../submodules) to place multiple repos in your parent repo.
+
+## CloudFlare Firewall
 Create a firewall rule to block IP's that attempt to hack a website. Websites check for hack attempts and send an email to admins with information such as the url, IP address, and url history. Since CloudFlare uses a proxy address, the IP address reported by the email is the CloudFlare proxy IP. CloudFlare includes the following header values which can be used to display non-proxied addresses: cf-connecting-ip, cf-connecting-ipv6, and x-forwarded-for. The code that checks for hack attempts checks for these header values and includes them in the email. Use the non-proxied IP addresses to create a firewall rule to block those IPs in CloudFlare. These same non-proxied IPs should be added to the Windows Firewall.
 
 1. Perform a [Whois lookup](https://www.whois.com/whois/) for the IP address that you want to block to see what country the IP address is assigned to. In most cases, the IP address will be outside of the U.S. If it is inside the U.S., use your best judgement to determine whether to block the IP address or not, such as the amount of hack attempts from the IP address. Ensure that the IP address is not associated with CloudFlare (in case you accidently copied the CloudFlare proxied address from the hack attempt email notification). 
@@ -115,24 +140,3 @@ For example, instead of 2001:db8:6a0b:1a01:d423:43b9:13c5:2e8f, enter one of the
 
 Reference:
 [Create a list in the dashboard](https://developers.cloudflare.com/fundamentals/global-configurations/lists/create-dashboard/)
-
-
-
-## Create a single-password site
-
-Include the "functions" folder from the following repo to create the secure login: https://dev.to/charca/password-protection-for-cloudflare-pages-8ma
-
-<!--
-No longer seeing this route, double-check then delete thiL
-Add a custom domain in cloudflare Pages by clicking "Create a project" at "Account Home > Pages"
--->
-
-Workers & Pages > Pages tab > Connect to Git
-
-Connect to your repo, which can be a private repo.
-
-Make note of the generated subdomain where the project will be deployed.  It will be [generated subdomain].pages.dev
-
-Under Environmental variables, add CFP_PASSWORD [your password]
-
-Lastly, add a subdomain under Custom domains within Cloudflare pages. This will automatically create a CNAME record pointed at [generated subdomain].pages.dev after a few minutes.
