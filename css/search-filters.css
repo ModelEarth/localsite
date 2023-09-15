@@ -465,6 +465,13 @@ input.filterClick[type="text"] {
   padding: 20px;
   padding-bottom: 10px;
 }
+.contentpadding .bigThumbMenuInner {
+  padding: 0px;
+}
+.contentpadding .bigThumbMenu {
+  padding: 0px;
+  padding-top: 20px;
+}
 
 @media (min-width: 350px) {
   .bigThumbMenuInner{

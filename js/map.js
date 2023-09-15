@@ -92,11 +92,9 @@ document.addEventListener('hiddenhashChangeEvent', function (elem) {
   hashChangedMap();
 }, false);
 
-let priorHashMap = {};
-
 // MAP 1
 // var map1 = {};
-var showprevious = param["show"];
+var showprevious = undefined;
 var tabletop; // Allows us to wait for tabletop to load.
 
 function clearListDisplay() {
@@ -174,7 +172,8 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       // #b2df8a, #33a02c 
       dp.valueColumn = "type";
       dp.valueColumnLabel = "Type";
-      dp.dataset = "https://model.earth/community-data/us/state/" + theState + "/" + theState.toLowerCase() + "-farmfresh.csv";
+      // https://model.earth/community-data
+      dp.dataset = local_app.community_data_root() + "us/state/" + theState + "/" + theState.toLowerCase() + "-farmfresh.csv";
     //} else {
     //  // Older data
     //  dp.valueColumn = "Prepared";
@@ -1935,14 +1934,14 @@ function showList(dp,map) {
             
             if (hash.details != "true") {
               if (hash.name) {
-                output += "&nbsp; | &nbsp;<a href='" + window.location + "&details=true'>Details</a>";
+                output += " | <a href='" + window.location + "&details=true'>Details</a>";
               } else {
-                output += "&nbsp; | &nbsp;<a href='" + window.location + "&name=" + name.replace(/ & /g,' AND ').replace(/ /g,"+") + "&details=true'>Details</a>";
+                output += " | <a href='" + window.location + "&name=" + name.replace(/ & /g,' AND ').replace(/ /g,"+") + "&details=true'>Details</a>";
               }
             }
             if (dp.editLink) {
               if (googleMapLink) {
-                output += "&nbsp; | &nbsp;"
+                output += " | "
               }
               output += "<a href='" + dp.editLink + "' target='edit" + param["show"] + "'>Make Updates</a><br>";
             }
@@ -1968,6 +1967,8 @@ function showList(dp,map) {
                 element.facebook = 'https://facebook.com/search/top/?q=' + element.facebook.replace(/'/g,'%27').replace(/ /g,'%20')
               }
               if (element[dp.latColumn] && dp.listLocation != false) {
+                output += " | ";
+              } else { // To do: Check if details link shown.
                 output += " | ";
               }
               output += "<a href='" + element.facebook + "' target='_blank'>Facebook</a>";
@@ -2245,6 +2246,10 @@ function renderCatList(catList,cat) {
     // If that's so, maybe set hash.show in localsite.js to include param.show from embed link.
     show = param.show;
   }
+  if ($("#mainCatList").attr("show") == show) {
+    console.log("Exit renderCatList, show did not chamge. " + showprevious);
+    return; // Avoid rerendering
+  }
   if (catList && Object.keys(catList).length > 0) {
     let catNavSide = "<div class='all_categories'><div class='legendDot'></div>All Categories</div>";
 
@@ -2321,7 +2326,7 @@ function renderCatList(catList,cat) {
     // Cat list gets rerendered even if the show value has not changed. Might be possible to avoid rerendering.
     $("#listLeft").html(""); // Clear
     // <div style='margin-left:10px'><b>CATEGORIES</b></div>
-    $("#listLeft").append("<div id='mainCatList' class='catList'>" + catNavSide + "<br></div>");
+    $("#listLeft").append("<div id='mainCatList' class='catList' show='" + show + "'>" + catNavSide + "<br></div>");
     if (maxCatTitleChars <= 32) {
       $("#mainCatList").addClass("catListAddMargin");
     }
@@ -3135,12 +3140,15 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
         tap: !L.Browser.mobile
       });
       layerControls[whichmap] = L.control.layers(basemaps, overlays, {position: 'bottomleft'}).addTo(map); // Init layer checkboxes (add checkbox later)
-      if (whichmap == "map2") {
-        basemaps["OpenStreetMap"].addTo(map);
+      if (onlineApp) {
+        if (whichmap == "map2") {
+          basemaps["OpenStreetMap"].addTo(map);
+        } else {
+          basemaps["Grayscale"].addTo(map); // Set the initial baselayer.
+        }
       } else {
-        basemaps["Grayscale"].addTo(map); // Set the initial baselayer.
+        $(".mapLoadingIcon").hide();
       }
-
       console.log("layerControls[whichmap]");
       console.log(layerControls[whichmap]);
     //}
@@ -3719,8 +3727,11 @@ function markerRadius(mapZoom,map) {
   return radiusOut;
 }
 
+let priorHashMap = {};
 function hashChangedMap() {
   let hash = getHash();
+
+  //alert("hiddenhash.mapview2 " + hiddenhash.mapview)
 
   if (hash.show == "undefined") { // To eventually remove
     delete hash.show; // Fix URL bug from indicator select hamburger menu

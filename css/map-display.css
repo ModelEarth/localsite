@@ -147,6 +147,9 @@ body {
 	color:#555;
 	padding: 7px 8px 7px 8px;
 }
+.catList .catListCurrent {
+	background-color: red;
+}
 #catListClone .catList {
 	width:100%;
 }
@@ -201,7 +204,8 @@ body {
 .catListSelected {
 	border: solid 1px #aaa !important;
 	background-color: #333;
-    border-left: solid 5px #aaf !important;
+	background-color: red;
+    border-leftX: solid 5px #aaf !important;
 } 
 #resultsPanel {
 	line-height: 20px;

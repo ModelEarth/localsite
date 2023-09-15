@@ -1,4 +1,3 @@
-
 // OLD PAGE - This page is being replaced by naics2.js
 // VIEW NEW VERSION: https://model.earth/localsite/info/naics/
 
@@ -141,7 +140,7 @@ function refreshNaicsWidget() {
         console.log("Exit refreshNaicsWidget - not for name change");
         return;
     }
-    if (hash.show != priorHash_naicspage.show) { // GET NAICS BASED ON THEME (recycing, bioeconomy, etc.)
+    if (!hash.show || hash.show != priorHash_naicspage.show) { // GET NAICS BASED ON THEME (recycing, bioeconomy, etc.)
         // Initial load
         //alert("hash.show " + hash.show)
         getNaics_setHiddenHash2(hash.show); // Sets hiddenhash.naics for use by other widgets.
@@ -182,7 +181,7 @@ function refreshNaicsWidget() {
         loadNAICS = true;
     } else if (hash.geo != priorHash_naicspage.geo) {
         loadNAICS = true;
-    } else if ((hash.naics != priorHash_naicspage.naics) && hash.naics.indexOf(",") > 0) { // Skip if only one naics
+    } else if ((hash.naics != priorHash_naicspage.naics) && hash.naics && hash.naics.indexOf(",") > 0) { // Skip if only one naics
         loadNAICS = true;
     } else if (hash.catsize != priorHash_naicspage.catsize) {
         loadNAICS = true;
@@ -390,10 +389,13 @@ function getNaics_setHiddenHash2(go) {
     // BUGBUG - Not sure where this sends the naics to the URL hash, which might be good until widget updates are tested.
     // Problem, naics in URL is not updated after initial load.
     console.log("Start hiddenhash.naics")
-    hiddenhash.naics = cat_filter.join(); // Overrides the existing naics
 
+
+    hiddenhash.naics = cat_filter.join(); // Overrides the existing naics
     delete hash.naics; // Since show value invokes new hiddenhash
-    //delete hiddenhash.naics;
+
+    console.log("hiddenhash.naics " + hiddenhash.naics)
+
     //clearHash("naics"); // Assuming this does not trigger a hash change event.
     updateHash({'naics':''})
 
@@ -453,6 +455,9 @@ function loadIndustryData(hash) {
     }
     $("#econ_list").html("<img src='" + local_app.localsite_root() + "img/icon/loading.gif' style='margin:40px; width:120px'><br>");
 
+    if(!stateAbbr) {
+        stateAbbr = param.state;
+    }
     // HACK BUGBUG - Until we have a path to data for entire country.
     if(!stateAbbr) {
         stateAbbr = "GA";
@@ -490,8 +495,9 @@ function loadIndustryData(hash) {
 }
 function promisesReady(values) {
     //let hash = getHash();
-    let hash = values[9];
-    console.log("promisesReady - promises loaded")
+    let hash = values[9]; // This include hash.naics
+    console.log("promisesReady - promises loaded");
+    console.log(hash);
     //$("#industryListHolder").show();
     d3.csv(local_app.community_data_root() + "us/id_lists/state_fips.csv").then( function(consdata) {
         var filteredData = consdata.filter(function(d) {
@@ -1468,12 +1474,10 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                         // Quick hack - need better way to wait for naics
                         loadScript(theroot + '../localsite/js/d3.v5.min.js', function(results) {
                             loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
-                                //displayImpactBubbles(1); // Red bubbles appear when toggling.
-                                //refreshBubbleWidget(); // No effect
-                                setTimeout( function() {
-                                      toggleBubbleHighlights();
-                                      toggleBubbleHighlights();
-                                }, 2000);
+                                waitForElm('#bubble-graph-id').then((elm) => {
+                                    // This may run before naics is available.
+                                    toggleBubbleHighlights();
+                                });
                             });
                         });
                              

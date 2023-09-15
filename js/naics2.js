@@ -131,7 +131,7 @@ function refreshNaicsWidget() {
         loadNAICS = true;
     } else if (hash.geo != priorHash_naicspage.geo) {
         loadNAICS = true;
-    } else if ((hash.naics != priorHash_naicspage.naics) && hash.naics.indexOf(",") > 0) { // Skip if only one naics
+    } else if ((hash.naics != priorHash_naicspage.naics) && hash.naics && hash.naics.indexOf(",") > 0) { // Skip if only one naics
         loadNAICS = true;
         //alert("test " + hash.naics.indexOf(","))
     } else if (hash.catsize != priorHash_naicspage.catsize) {

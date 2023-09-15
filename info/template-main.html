@@ -566,13 +566,6 @@
         </span>
       </div>
 
-      <div class="intranet" style="display:none">
-        <span id="intranet-nav" class="hideMobile" style="float:left">
-          <a href="/docs/" class="navlink-intranet"><span style="white-space: nowrap; margin-right:6px">Intranet</span></a>
-          <a href="/docs/admin/" class="navlink-floorplans"><span style="white-space: nowrap; margin-right:3px">Admin</span></a> 
-        </span>
-      </div>
-
     </div>
 
     <div id="headerIcons">
@@ -780,7 +773,7 @@
 <option value="DE" stateid="10" lat="38.9986" lon="-75.4416" km="5047">Delaware</option>
 <option value="DC" stateid="11" lat="38.9042" lon="-77.0165" km="158" style="display:none">District of Columbia</option>
 <option value="FL" stateid="12" lat="28.4574" lon="-82.4091" km="138947">Florida</option>
-<option value="GA" stateid="13" lat="32.6296" lon="-83.4235" km="149485">Georgia</option>
+<option value="GA" stateid="13" lat="32.73" lon="-83.4235" km="149485">Georgia</option>
 <option value="GU" stateid="66" lat="13.4417" lon="144.7719" km="544" style="display:none">Guam</option>
 <option value="HI" stateid="15" lat="19.5978" lon="-155.5024" km="16634">Hawaii</option>
 <option value="ID" stateid="16" lat="44.3484" lon="-114.5589" km="214050">Idaho</option>
@@ -1050,7 +1043,7 @@
                 
                 <div id="tabulator-statetable"></div>
                 <div id="tabulator-geotable"></div>
-                <div style="margin-top:8px; font-size: 12px">
+                <div id="tabulator-geocredit" style="display:none; margin-top:8px; font-size: 12px">
                   Dataset displayed by <a href="../../../localsite/info/data/" target="_blank">Tabulator</a><br><br>
                 </div>
 
@@ -1209,7 +1202,7 @@ Displayed by hashChanged() in map-filters.js
 
 <div class="displayOnload displayMapForLoad" style="display:none;position:relative;overflow:hidden;">
 
-  <div id="map1" class="displayMapForLoad" style="display:none; width:100%"><img src='/localsite/img/icon/loading.gif' loading='lazy' style='margin:100px 200px 100px 200px; width:120px'></div>
+  <div id="map1" class="displayMapForLoad" style="display:none; width:100%"><img src='/localsite/img/icon/loading.gif' loading='lazy' class='mapLoadingIcon' style='margin:100px 200px 100px 200px; width:120px'></div>
 
   <div id="mapList1Holder" style="display:none" class="darkDivText hideMobile">
     <div class="closeParent close-X-sm" style="position:absolute;top:-10px;right:-10px;padding:18px 14px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:32px;pointer-events:auto;">&#xE5CD;</i></div>

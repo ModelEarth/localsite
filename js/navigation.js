@@ -1,6 +1,6 @@
 // Site specific settings
 // Maintained in localsite/js/navigation.js
-//alert("navigation.js");
+//alert("navigation.js param.state " + param.state);
 if(typeof page_scripts == 'undefined') {  // Wraps script below to insure navigation.js is only loaded once.
 if(typeof localObject == 'undefined') { var localObject = {};}
 if(typeof localObject.layers == 'undefined') {
@@ -202,6 +202,7 @@ function showNavColumn() {
 function applyNavigation() { // Called by localsite.js so local_app path is available.
 	// To do: fetch the existing background-image.
 	console.log("location.host: " + location.host + " " + location.host.indexOf("locations.pages.dev"));
+	let hash = getHash();
 	if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio") {
 		//showLeftIcon = true;
 		$(".siteTitleShort").text("DreamStudio");
@@ -225,12 +226,14 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	// 
 	} else if (!Array.isArray(param.titleArray) && (location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
 		// The localsite repo is open to use by any state or country.
-		// Georgia Economic Development has been a primary driver of development.
+		// Georgia Economic Development has been a primary contributor.
 		// Show locally for Brave Browser only - insert before:  ) || false
 		// && navigator && navigator.brave
-		if (!param.state) {
+		if (!param.state && !hash.state) {
 			if (param.mapview != "earth") {
-				param.state = "GA"; // For displayBigThumbnails menu in map-filters.js
+				if (onlineApp) {
+					param.state = "GA"; // For displayBigThumbnails menu in map-filters.js
+				}
 			}
 		}
 		showLeftIcon = true;
@@ -939,6 +942,9 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 			// Setting param.state in navigation.js passes to hash here for menu to use theState:
 		    let hash = getHash();
 		    let theState = $("#state_select").find(":selected").val();
+		    if (param.state) { // Bugbug - might need a way to clear param.state
+		        theState = param.state.split(",")[0].toUpperCase();
+		    }
 		    if (hash.state) {
 		        theState = hash.state.split(",")[0].toUpperCase();
 		    }
@@ -1362,11 +1368,15 @@ $(document).on("click", "#filterClickLocation", function(event) {
     //console.log("#filterClickLocation click hash.state: " + hash.state);
     console.log("#filterClickLocation click hash.mapview: " + hash.mapview);
     //console.log("#filterClickLocation click param.mapview: " + param.mapview);
+    let mapviewState = hash.state;
+    if (!hash.state) {
+    	mapviewState = param.state; // Set in navigation.js based on domain.
+    }
     if (!hash.mapview) {
     	loadScript(theroot + 'js/map-filters.js', function(results) {
 			//if (!param.mapview) {
 			// Hash change triggers call to filterClickLocation() and map display.
-			if (hash.state) {
+			if (mapviewState) {
 				console.log("#filterClickLocation click go state");
 	    		goHash({'mapview':'state'});
 	    	} else {
@@ -1374,9 +1384,8 @@ $(document).on("click", "#filterClickLocation", function(event) {
 	    	}
     	});
 	} else {
-		// Triggers closeLocationFilter(); while setting priorHash.mapview.
-		//goHash({"mapview":""}); // Remove from URL using gohash so priorhash is also reset
-		goHash({},["mapview"]); //TODO - Alter so the above works instead.
+		// Triggers closeLocationFilter()
+		goHash({"mapview":""}); // Remove from URL using gohash so priorhash is also reset
 	}
     event.stopPropagation();
 });
@@ -1392,6 +1401,7 @@ function showApps(menuDiv) {
 
 		let hash = getHash();
 		console.log('.showApps click');
+		$("#filterClickLocation").removeClass("filterClickActive"); // But leave open
 
 	    if ($("#bigThumbPanelHolder").is(':visible')) {
 		//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) { // Prevented tab click from closing app menu
@@ -1426,7 +1436,7 @@ function showApps(menuDiv) {
 
 			$("#showAppsText").text("Local Topics");
 			waitForElm('#appSelectHolder').then((elm) => {
-				$("#appSelectHolder .showApps").addClass("filterClickActive");
+				$("#appSelectHolder .showApps").addClass("filterClickActive"); // Adds to local topics
 			});
 	        $("#bigThumbMenuInner").appendTo(menuDiv);
 			showThumbMenu(hash.show, menuDiv);
@@ -1460,15 +1470,24 @@ function filterClickLocation(loadGeoTable) {
     //alert("distanceFilterFromTop  " + distanceFilterFromTop);
 	//$('.hideMetaMenuClick').trigger("click"); // Otherwise covers location popup. Problem: hides hideLayers/hideLocationsMenu.
 	if ($("#filterLocations").is(':visible') && (distanceFilterFromTop < 300 || distanceFilterFromTop > 300)) {
-        closeLocationFilter();
+        closeLocationFilter(); console.log("closeLocationFilter");
 	} else { // OPEN MAP FILTER
-		openMapLocationFilter()
+		openMapLocationFilter();
 	}
 	$("#keywordFields").hide();
 }
+
+let mapFilterOpen = false;
 function openMapLocationFilter() {
+
+	if (mapFilterOpen) {
+	//if ($("#filterLocations").is(':visible')) { // Already open
+		//alert("openMapLocationFilter already open")
+		//return;
+	}
+	mapFilterOpen = true;
+
     let hash = getHash();
-    //alert("hash.state " + hash.state);
     //alert("openMapLocationFilter param.state " + param.state);
     console.log("openMapLocationFilter()");
     closeAppsMenu();
@@ -1521,10 +1540,12 @@ function openMapLocationFilter() {
 	            //}
 	        }
 	    }
-	    //alert("add filterClickActive")
-	    $("#filterClickLocation").addClass("filterClickActive");
+	    waitForElm('#filterClickLocation').then((elm) => {
+	    	$("#filterClickLocation").addClass("filterClickActive");
+	    });
 	    //loadScript(theroot + 'js/map.js', function(results) { // Load list before map
-	        renderMapShapes("geomap", hash, 1);// Called once map div is visible for tiles.
+	    	console.log("Call renderMapShapes from navigation.js")
+	        renderMapShapes("geomap", hash, "", 1);// Called once map div is visible for tiles.
 	    //});
 	    if ($("#filterLocations").length) {
 	        $('html,body').animate({
@@ -1540,13 +1561,13 @@ function openMapLocationFilter() {
 }
 function closeLocationFilter() {
     //delete(hash.mapview); // BUGBUG, clears but still in filterClickLocation click
-    //alert("hash.mapview: " + hash.mapview)
-    console.log("closeLocationFilter()");
+    console.log("closeLocationFilter() hash.mapview: " + hash.mapview);
     $(".locationTabText").text($(".locationTabText").attr("title"));
     $("#showLocations").hide();
     $("#hideLocations").show();
     //$(".locationTabText").text("Entire State");
     $("#filterLocations").hide();
+    mapFilterOpen = false;
     $("#filterClickLocation").removeClass("filterClickActive");
     if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
         $("#header.nav-up").hide();

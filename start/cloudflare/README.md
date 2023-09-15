@@ -75,11 +75,14 @@ Optional: Include the "functions" folder from [charca's repo](https://dev.to/cha
 <!--
 No longer seeing this route, double-check then delete thiL
 Add a custom domain in cloudflare Pages by clicking "Create a project" at "Account Home > Pages"
--->
 
 Workers & Pages > Pages tab > Connect to Git
+-->
+
+Workers & Pages > Overview > Create application > Pages tab > Connect to Git
 
 Connect to your repo, which can be a private repo.
+You'll have to install the Cloudflare Pages app into GitHub while logged into the GitHub account where the fork resides.
 
 Make note of the generated subdomain where the project will be deployed.  It will be [generated subdomain].pages.dev
 

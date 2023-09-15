@@ -5,6 +5,7 @@
 // Localsite Path Library - A global namespace singleton
 // Define a new object if localsite library does not exist yet.
 let localStart = Date.now();
+let onlineApp = true; // Change
 consoleLog("start localsite");
 var local_app = local_app || (function(module){
     let _args = {}; // private, also worked as []
@@ -86,14 +87,17 @@ var local_app = local_app || (function(module){
         },
         community_data_root : function() { // General US states and eventually some international
             let theroot = location.protocol + '//' + location.host + '/community-data/';
-            //if (location.host.indexOf('localhost') < 0) {
+            if (location.host.indexOf('localhost') < 0) {
               theroot = "https://model.earth/community-data/"; 
-            //}
+            }
             return (theroot);
         },
         modelearth_root : function() { // General US states and eventually some international
             // These repos will typically reside on github, so no localhost.
             let theroot = "https://model.earth"; // Probably will also remove slash from the ends of others.
+            if (location.host.indexOf('localhost') >= 0) {
+              theroot = "";
+            }
             return (theroot);
         },
         custom_data_root : function() { // Unique US states - will use javascript, domain, cookies and json.
@@ -264,7 +268,8 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
    return target2;
 }
 function getHash() { // Includes hiddenhash
-    return (mix(getHashOnly(),hiddenhash));
+    return (mix(getHashOnly(),hiddenhash)); // Dactivated since hiddenhash.mapview was getting set somewhere.
+    //return (getHashOnly());
 }
 function getHashOnly() {
     return (function (a) {
@@ -709,8 +714,9 @@ function loadLeafletAndMapFilters() {
   }
   if ((param.display == "map" || param.display == "everything") && param.show) {
     // Later we could omit map.js from info page unless dp.dataset or googleDocID.
-    loadScript(theroot + 'js/map.js', function(results) {
-
+    loadScript(theroot + 'js/d3.v5.min.js', function(results) { // For getScale
+      loadScript(theroot + 'js/map.js', function(results) {
+      });
     });
   }
 }
