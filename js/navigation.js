@@ -316,7 +316,6 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 			$("#fullcolumn").prepend("<div id='datascape' class='datascape'></div>\r");
 		}
  	});
-	
 	waitForElm('#datascape').then((elm) => {
 		let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSideList close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='listSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listInfo' class='listInfo content'></div></div>\r";
 		if(document.getElementById("datascape") != null || document.getElementById("datascape1") != null) {
@@ -471,13 +470,13 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		 		}
 
 				if (param.header) headerFile = param.header;
-				if (earthFooter) { // Or should this go above param?
+				//THE FOLLOWING LINE PREVENTED NAV FROM SHOWING IN DS.
+				//if (earthFooter) { // Or should this go above param?
 					headerFile = modelroot + "/localsite/header.html";
-				}
+				//}
 				//if (earthFooter && param.showSideTabs != "false") { // Sites includieng modelearth and neighborhood
 				// 	$(".showSideTabs").show(); // Before load headerFile for faster display.
 				//}
-
 				if (headerFile) {
 					// headerFile contains only navigation
 					//alert("headerFile " + headerFile);
