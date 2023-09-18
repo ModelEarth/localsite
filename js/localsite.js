@@ -732,8 +732,14 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       // Add id to body tag
       //document.body.id = "bodyloaded"; //Works, but avoid incase body already has an id.
 
-      var divForBodyLoaded = '<div id="bodyloaded"></div>'; // Tells us the body is loaded, since body is not detected.
-      document.getElementsByTagName('body')[0].innerHTML += divForBodyLoaded;
+      //var divForBodyLoaded = '<div id="bodyloaded"></div>'; // Tells us the body is loaded, since body is not detected.
+      var divForBodyLoaded = document.createElement('div');
+      divForBodyLoaded.id = "bodyloaded";
+      divForBodyLoaded.innerHTML = '<span>&nbsp;</span>'; // Tells us the body is loaded, since body is not detected.
+      
+      //this has side effects on JS apps and this approach brakes events and all kind of random things. Do not "add" to innerHTML. Use DOM API e.g. appendChild
+      //document.getElementsByTagName('body')[0].innerHTML += divForBodyLoaded;
+      document.body.appendChild(divForBodyLoaded);
 
       $(document).on('click', function(event) { // Hide open menus in core
         $('.hideOnDocClick').hide();
@@ -2227,7 +2233,9 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
   //});
 }
 function loadIntoDiv(pageFolder,divID,thediv,html,attempts,callback) {
-  if (thediv) {
+  //if (thediv) {
+  // TO DO: Append # if not in divID
+  waitForElm("#" + divID).then((elm) => {
     //alert("loadIntoDiv attempts: " + attempts);
     var newcontent = document.createElement('div');
     newcontent.innerHTML = html;
@@ -2263,6 +2271,8 @@ function loadIntoDiv(pageFolder,divID,thediv,html,attempts,callback) {
       }
     })
     if(callback) callback();
+  });
+  /*
   } else { // Try again
     attempts = attempts + 1;
     if (attempts < 100) {
@@ -2274,6 +2284,7 @@ function loadIntoDiv(pageFolder,divID,thediv,html,attempts,callback) {
       console.log("ALERT: " + divID + " not available in page for showdown to insert text after " + attempts + " attempts.");
     }
   }
+  */
 }
 
 consoleLog("end localsite");
