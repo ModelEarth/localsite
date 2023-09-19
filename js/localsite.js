@@ -558,7 +558,12 @@ function consoleLog(text,value) {
   if (dsconsole) { // Once in DOM
     //dsconsole.style.display = 'none'; // hidden
     if (consoleLogHolder.length > 0) { // Called only once to display pre-DOM values
-      dsconsole.innerHTML = consoleLogHolder;
+      //dsconsole.innerHTML = consoleLogHolder;
+
+      // New alternative to above line, haven't fully tested
+      let contentPreDom = document.createTextNode(consoleLogHolder + "DOM NOW AVAILABLE\n");
+      dsconsole.appendChild(contentPreDom);
+
       consoleLogHolder = "";
     }
     dsconsole.style.display = 'block';
