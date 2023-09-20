@@ -2913,9 +2913,10 @@ let map2 = {};
 let priorLayer;
 function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback) {
 
+  loadScript(theroot + 'js/d3.v5.min.js', function(results) { // Used by customD3loaded below
+
   // Pre-load Asynhronously the first time.
   /*
-  loadScript(theroot + 'js/d3.v5.min.js', function(results) {}); // BUG - change so map-filters.js does not require this on it's load
   loadScript(theroot + 'js/leaflet.js', function(results) {
     loadScript(theroot + 'js/leaflet.icon-material.js', function(results) {}); // Required leaflet.js, else: L is not defined
   });
@@ -3051,6 +3052,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
     });
     });
   }
+  });
 } // end function loadFromSheet
 
 // Move after processOutput once done creating
