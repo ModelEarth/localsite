@@ -742,9 +742,11 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       divForBodyLoaded.id = "bodyloaded";
       divForBodyLoaded.innerHTML = '<span>&nbsp;</span>'; // Tells us the body is loaded, since body is not detected.
       
-      //this has side effects on JS apps and this approach brakes events and all kind of random things. Do not "add" to innerHTML. Use DOM API e.g. appendChild
-      //document.getElementsByTagName('body')[0].innerHTML += divForBodyLoaded;
-      document.body.appendChild(divForBodyLoaded);
+      $(document).ready(function () {
+        // this approach brakes events. Do not "add" to innerHTML. Use DOM API e.g. appendChild
+        //document.getElementsByTagName('body')[0].innerHTML += divForBodyLoaded;
+        document.body.appendChild(divForBodyLoaded);
+      });
 
       $(document).on('click', function(event) { // Hide open menus in core
         $('.hideOnDocClick').hide();
