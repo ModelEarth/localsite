@@ -1575,6 +1575,8 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                 let csvFilePath = local_app.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv";
                 if (hash.mapview == "zip") {
                     csvFilePath = local_app.community_data_root() + "us/zipcodes/zipcodes6.csv";
+                } else if (hash.show == "cameraready" && hash.state == "GA") {
+                    csvFilePath = "/localsite/info/data/map-filters/state-county-sections-ga.csv";
                 }
     			d3.csv(csvFilePath).then(function(myData,error) {
                 //d3.csv(csvFilePath, function(myData) {
@@ -2973,7 +2975,7 @@ function hashChanged() {
         });
     } else if (priorHash.mapview && !hash.mapview) {
         $("#country_select").val("");
-        closeLocationFilter(); alert("closeLocationFilter");
+        closeLocationFilter();
     }
     */
 

@@ -1362,6 +1362,9 @@ function getPageFolder(pagePath) {
 } // End typeof page_scripts which checks if file is loaded twice.
 
 $(document).on("click", "#filterClickLocation", function(event) {
+
+	delete(hiddenhash.mapview); // Not sure where this gets set.
+
     let hash = getHash();
     //let hash = $.extend(true, {}, getHash());
     //console.log("#filterClickLocation click hash.state: " + hash.state);
@@ -1371,7 +1374,7 @@ $(document).on("click", "#filterClickLocation", function(event) {
     if (!hash.state) {
     	mapviewState = param.state; // Set in navigation.js based on domain.
     }
-    if (!hash.mapview) {
+    if (!hash.mapview || (hash.mapview && hash.appview)) {
     	loadScript(theroot + 'js/map-filters.js', function(results) {
 			//if (!param.mapview) {
 			// Hash change triggers call to filterClickLocation() and map display.
@@ -1404,6 +1407,7 @@ function showApps(menuDiv) {
 
 	    if ($("#bigThumbPanelHolder").is(':visible')) {
 		//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) { // Prevented tab click from closing app menu
+			updateHash({"appview":""});
 			$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
 			$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
 
@@ -1417,6 +1421,7 @@ function showApps(menuDiv) {
 			});
         	closeAppsMenu();
 		} else { // Show Apps, Close Locations (if no mapview)
+			updateHash({"appview":"topics"});
 			console.log("call showThumbMenu from navidation.js");
 			if (!hash.mapview) {
 	        	closeExpandedMenus($(".showSections")); // Close Locations sidetab and open Topics sidetab.
