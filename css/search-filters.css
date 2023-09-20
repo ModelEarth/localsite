@@ -302,7 +302,19 @@ input.filterClick[type="text"] {
 .mobileView #geomapHolder {
   float: none;
 }
-
+.bodyLeftMarginList #geomapHolder, .bodyLeftMarginList #geomap {
+  width: 100%;
+}
+.bodyLeftMarginList #geomapHolder {
+  padding-right: 30px;
+  padding-bottom: 20px;
+}
+.bodyLeftMarginList #geoListHolder, .bodyLeftMarginList .listHolderFooter {
+  padding-left: 0px;
+}
+.bodyLeftMarginList #geomapHolder {
+  float: none;
+}
 
 /*
 #locationFilterHolder .input-output b {
