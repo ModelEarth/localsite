@@ -204,8 +204,7 @@ body {
 .catListSelected {
 	border: solid 1px #aaa !important;
 	background-color: #333;
-	background-color: red;
-    border-leftX: solid 5px #aaf !important;
+    border-left: solid 5px #aaf !important;
 } 
 #resultsPanel {
 	line-height: 20px;

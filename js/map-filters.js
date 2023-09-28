@@ -292,19 +292,6 @@ $(document).ready(function () {
     $(document).on("change", "#country_select", function(event) {
         goHash({'mapview':this.value,'state':''});
     });
- 	$(document).on("change", "#state_select", function(event) {
-        console.log("state_select change");
- 		if (this.value) {
-	    	$("#geoPicker").show();
-	    	$("#region_select").val("");
-            // Later a checkbox could be added to retain geo values across multiple states
-            // Omitting for BC apps page  ,'mapview':'state'
-	    	goHash({'state':this.value,'geo':'','name':'','regiontitle':''}); // triggers renderMapShapes("geomap", hash); // County select map
-	    	//$("#filterLocations").hide(); // So state appears on map immediately
-	    } else { // US selected
-	    	goHash({'mapview':'country','state':''});
-	    }
-	});
 	$('.selected_state').on('change', function() {
 		//alert("selected_state " + this.getAttribute("id"))
 		$("#state_select").val(this.getAttribute("id"));
@@ -2756,7 +2743,7 @@ if(typeof hiddenhash == 'undefined') {
 //alert("map-filters")
 function hashChanged() {
 	let loadGeomap = false;
-	let hash = getHash(); // Includes changes to hiddenhash
+	let hash = getHash(); // Might still include changes to hiddenhash
 
     //alert("hiddenhash.mapview " + hiddenhash.mapview)
 
@@ -2780,8 +2767,9 @@ function hashChanged() {
 	populateFieldsFromHash();
 	productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 
+    let stateAbbrev = "";
 	if (hash.state) {
-		var stateAbbrev = hash.state.split(",")[0].toUpperCase();
+		stateAbbrev = hash.state.split(",")[0].toUpperCase();
 		// Apply early since may be used by changes to geo
 		$("#state_select").val(stateAbbrev);
         if (priorHash.state && hash.state != priorHash.state) {
@@ -2986,8 +2974,7 @@ function hashChanged() {
     }
     */
 
-    // Also used for state change in apps without map which don't have mapview
-	if (hash.state != priorHash.state) {
+    if (hash.state != priorHash.state) {
 		loadGeomap = true;
 		if(location.host.indexOf('model.georgia') >= 0) {
 			if (hash.state != "" && hash.state.split(",")[0].toUpperCase() != "GA") { // If viewing other state, use model.earth
@@ -2996,38 +2983,8 @@ function hashChanged() {
 			}
 		}
 
-		
+		$("#state_select").val(stateAbbrev);
 
-        //let imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/georgia.jpg";
-        //$("#hero-landscape-image").css('background-image', 'url(' + imageUrl + ')');
-
-        let theStateName; // Full name of state.
-        let theStateNameLowercase;
-        let imageUrl;
-        loadScript(theroot + 'js/map-filters.js', function(results) {
-            waitForElm('#state_select').then((elm) => {
-                $("#state_select").val(stateAbbrev);
-                if ($("#state_select").find(":selected").val()) { // Omits top which has no text
-                    theStateName = $("#state_select").find(":selected").text();
-                    //theState = $("#state_select").find(":selected").val();
-                }
-                if (theStateName && theStateName.length > 0) {
-                    theStateNameLowercase = theStateName.toLowerCase();
-                    imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/" + theStateNameLowercase.replace(/\s+/g, '-') + ".jpg";
-                    if (theStateNameLowercase == "georgia") {
-                    	imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
-                    }
-                    if (theStateName.length == 0) {
-                    	imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
-                    }
-                } else {
-                    imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
-                }
-                let imageUrl_scr = "url(" + imageUrl + ")";
-                //alert("imageUrl_scr  " + imageUrl_scr)
-                $("#hero-landscape-image").css('background-image', imageUrl_scr);
-            });
-        });
 		if (hash.state != "GA") {
 			$(".regionFilter").hide();
 			$(".geo-limited").hide();

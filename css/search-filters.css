@@ -20,6 +20,10 @@
   padding: 10px;
   border-radius: 20px;
 }
+.dark .hero-bucket #state_select, .dark #hero-rect #state_select {
+  background-color: #333;
+  color: #fff;
+}
 .select-menu-arrow-holder {
     position:absolute; right:4px; top:4px;
 }
@@ -60,6 +64,10 @@
     background-color: inherit;
     background-color: rgb(250 250 250/95%);
     border-bottom: 1px solid #eee;
+  }
+  .dark #filterFieldsHolder {
+    background-color: rgb(60 60 60/95%);
+    border-bottom: 1px solid #686868;
   }
   .filterFieldsHolderFixed {
     /* importatnt for FireFox because #filterFieldsHolder as ID seems to override class. */

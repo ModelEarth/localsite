@@ -1250,6 +1250,12 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 .iconPadding:hover {
   color: #222;
 }
+.dark .iconPadding {
+  color: #ccc;
+}
+.dark .iconPadding:hover {
+  color: #fff;
+}
 .darkDivText .iconPadding:hover {
   color: #fff;
 }

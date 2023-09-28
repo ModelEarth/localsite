@@ -66,6 +66,48 @@ console.log("modelpath " + modelpath);
 
 // INIT
 applyNavigation();
+hashChangedNavigation();
+
+document.addEventListener('hashChangeEvent', function (elem) {
+	console.log("map-filters.js detects URL hashChangeEvent");
+ 	hashChangedNavigation();
+}, false);
+
+function hashChangedNavigation() {
+	// More hashChange events reside in map-filters.js
+	let hash = getHash();
+
+	// Also used for state change in apps without map which don't have mapview
+	if (hash.state != priorHash.state) {
+		// Load state hero graphic
+        let theStateName; // Full name of state.
+        let theStateNameLowercase;
+        let imageUrl;
+        let stateAbbrev = hash.state.split(",")[0].toUpperCase();
+        waitForElm('#state_select').then((elm) => {
+            $("#state_select").val(stateAbbrev);
+            if ($("#state_select").find(":selected").val()) { // Omits top which has no text
+                theStateName = $("#state_select").find(":selected").text();
+                //theState = $("#state_select").find(":selected").val();
+            }
+            if (theStateName && theStateName.length > 0) {
+                theStateNameLowercase = theStateName.toLowerCase();
+                imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/" + theStateNameLowercase.replace(/\s+/g, '-') + ".jpg";
+                if (theStateNameLowercase == "georgia") {
+                	imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
+                }
+                if (theStateName.length == 0) {
+                	imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
+                }
+            } else {
+                imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
+            }
+            let imageUrl_scr = "url(" + imageUrl + ")";
+            //alert("imageUrl_scr  " + imageUrl_scr)
+            $("#hero-landscape-image").css('background-image', imageUrl_scr);
+        });
+    }
+}
 
 // Not in use, but might be cool to use
 function displayHexagonMenu(layerName, localObject) {
@@ -1370,6 +1412,19 @@ function getPageFolder(pagePath) {
 	console.log("ALERT: navigation.js is being loaded twice.")
 } // End typeof page_scripts which checks if file is loaded twice.
 
+$(document).on("change", "#state_select", function(event) {
+    console.log("state_select change");
+		if (this.value) {
+    	$("#geoPicker").show();
+    	$("#region_select").val("");
+        // Later a checkbox could be added to retain geo values across multiple states
+        // Omitting for BC apps page  ,'mapview':'state'
+    	goHash({'state':this.value,'geo':'','name':'','regiontitle':''}); // triggers renderMapShapes("geomap", hash); // County select map
+    	//$("#filterLocations").hide(); // So state appears on map immediately
+    } else { // US selected
+    	goHash({'mapview':'country','state':''});
+    }
+});
 $(document).on("click", "#filterClickLocation", function(event) {
 
 	delete(hiddenhash.mapview); // Not sure where this gets set.
