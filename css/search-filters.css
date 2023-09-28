@@ -534,7 +534,6 @@ input.filterClick[type="text"] {
   .bigThumbMenu {
     display: block;
     overflow: auto;
-    padding: 30px;
     background-color: #fff; /* honeycombPanel line 78 also sets bg color above icons */
     background-color: #fcfcfc;
   }

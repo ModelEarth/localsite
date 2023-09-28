@@ -458,6 +458,15 @@ summary::-webkit-details-marker {
 .greyDiv b a:hover, .greyDiv b a:visited:hover {
   color: #fff;
 }
+.dark .greyDiv {
+  background-color: #555;
+}
+.dark .greyDiv a, .greyDiv a:visited, .dark .content .greyDiv a, .dark .content .greyDiv a:visited {
+  color: #fff;
+}
+.dark .greyDiv b, .dark .greyDiv .maincat, .dark .greyDiv b a, .dark .greyDiv b a:visited, .dark .content .greyDiv b, .dark .content .greyDiv .maincat, .dark .content .greyDiv b a, .dark .content .greyDiv b a:visited {
+  color: #fff;
+}
 .bodyLeftMargin .contentpadding {
   padding-left: 30px;
   padding-right: 30px;
@@ -882,6 +891,9 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     border-radius: 28px;
     padding: 20px;
 }
+.dark .cardstyle {
+    background: #555;
+}
 @media (max-width: 1200px) {
     .pagecard {
         paddingX:40px;
@@ -1151,6 +1163,10 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     border-bottom: 1px solid rgb(238,238,238/95%); /* #eee */
     border-bottom: 1px solid rgb(238,238,238);
   }
+}
+.dark .headerbar {
+  background: #333;
+  border-bottom: 1px solid #333;
 }
 .headerbarhide {
   display: none !important;

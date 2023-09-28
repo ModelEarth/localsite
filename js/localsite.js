@@ -336,9 +336,18 @@ function go(addToHash) {
   updateHash(addToHash,false); // Drop existing
   triggerHashChangeEvent();
 }
+
+// Used by map-filters.js, map.js
+if(typeof priorHash == 'undefined') {
+  var priorHash = {};
+}
 // Triggers custom hashChangeEvent in multiple widgets.
 // Exception, React widgets use a different process.
 var triggerHashChangeEvent = function () {
+    //priorHash = getHash(); 
+    //priorHash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
+    priorHash = $.extend(true, {}, hash);
+
     // Create a new event
     var event = new CustomEvent('hashChangeEvent');
     // Dispatch the event
@@ -362,26 +371,41 @@ function loadScript(url, callback)
 
   //alert(urlID)
   if (loadFile && !document.getElementById(urlID)) { // Prevents multiple loads.
-    consoleLog("loadScript seeking: " + url + " via urlID: " + urlID);
-    var script = document.createElement('script');
+      consoleLog("loadScript seeking: " + url + " via urlID: " + urlID);
+      var script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = url;
       script.id = urlID; // Prevents multiple loads.
-      // Bind the event to the callback function. Two events for cross browser compatibility.
-      //script.onreadystatechange = callback; // This apparently is never called by Brave, but needed for some of the other browsers.
-      script.onreadystatechange = function() { // Cound eliminate these 3 lines and switch back to the line above.
-        consoleLog("loadScript ready: " + url); // This apparently is never called by Brave.
-        callback();
-      }
-      //script.onload = callback;
-      script.onload = function() {
-        consoleLog("loadScript loaded: " + url); // Once the entire file is processed.
-        callback();
-      }
+
       //$(document).ready(function () { // Only needed if appending to body
        var head = document.getElementsByTagName('head')[0];
        head.appendChild(script);
       //});
+
+      // NOT NEEDED, this did not yet resolve function not being found in navigation.js
+      /*
+      let cleanUrlID = urlID.replace(/^\/+|\/+$/g, '').replace(/\//g, '-').replace(/\./g, '-'); // Remove / and . and beginning and ending slashes;
+      var script2 = document.createElement('script');
+      script2.type = 'text/javascript';
+      script2.src = ""; // Later we might try changing the id of existing scripts instead (to remove slashes).
+      script2.id = cleanUrlID + "-inserted";
+      head.appendChild(script2);
+      */
+
+      // Bind the event to the callback function. Two events for cross browser compatibility.
+      ////script.onreadystatechange = callback; // This apparently is never called by Brave, but needed for some of the other browsers.
+      //script.onreadystatechange = function() { // Cound eliminate these 3 lines and switch back to the line above.
+      //  consoleLog("loadScript ready: " + url); // This apparently is never called by Brave.
+      //  callback();
+      //}
+      //script.onload = callback;
+      script.onload = function() {
+        //waitForElm(cleanUrlID).then((elm) => { // Since script.onload does not validate script is actually active in the DOM.
+          consoleLog("loadScript loaded: " + url); // Once the entire file is processed.
+          callback();
+        //});
+      }
+
         
   } else {
     consoleLog("loadScript script already available: " + url + " via ID: " + urlID);
@@ -415,40 +439,39 @@ function extractHostnameAndPort(url) { // TEMP HERE
 }
 */
 function get_localsite_root3() { // Also in two other places
-//alert("call localsite_repo");
-            if (localsite_repo3) { // Intensive, so allows to only run once
-              //alert(localsite_repo);
-              return(localsite_repo3);
-            }
+  if (localsite_repo3) { // Intensive, so limit to running once.
+    //alert(localsite_repo);
+    return(localsite_repo3);
+  }
 
-            let scripts = document.getElementsByTagName('script'); 
-            let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
-            //let myScript = null;
-            // Now try to find one containging map-embed.js
-            for (var i = 0; i < scripts.length; ++i) {
-                if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
-                  myScript = scripts[i];
-                }
-            }
-            let hostnameAndPort = extractHostnameAndPort(myScript.src);
-            console.log("hostnameAndPort: " + hostnameAndPort);
-            let theroot = location.protocol + '//' + location.host + '/localsite/';
+  let scripts = document.getElementsByTagName('script'); 
+  let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
+  //let myScript = null;
+  // Now try to find one containging map-embed.js
+  for (var i = 0; i < scripts.length; ++i) {
+      if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
+        myScript = scripts[i];
+      }
+  }
+  let hostnameAndPort = extractHostnameAndPort(myScript.src);
+  console.log("hostnameAndPort: " + hostnameAndPort);
+  let theroot = location.protocol + '//' + location.host + '/localsite/';
 
-            if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
-              //theroot = "https://map.georgia.org/localsite/";
-              theroot = hostnameAndPort + "/localsite/";
-            }
-            if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-              theroot = hostnameAndPort + "/localsite/";
-              //console.log("theroot: " + theroot);
-              //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
-            }
-            if (location.host.indexOf('localhost') >= 0) {
-              // Enable to test embedding without locathost repo in site theroot. Rename your localsite folder.
-              //theroot = "https://model.earth/localsite/";
-            }
-            localsite_repo3 = theroot; // Save to reduce DOM hits
-            return (theroot);
+  if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
+    //theroot = "https://map.georgia.org/localsite/";
+    theroot = hostnameAndPort + "/localsite/";
+  }
+  if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+    theroot = hostnameAndPort + "/localsite/";
+    //console.log("theroot: " + theroot);
+    //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
+  }
+  if (location.host.indexOf('localhost') >= 0) {
+    // Enable to test embedding without locathost repo in site theroot. Rename your localsite folder.
+    //theroot = "https://model.earth/localsite/";
+  }
+  localsite_repo3 = theroot; // Save to reduce DOM hits
+  return (theroot);
 }
 
 function toggleFullScreen(alsoToggleHeader) {
@@ -672,7 +695,7 @@ function showHeaderBar() {
   //alert("showHeaderBar")
 }
 
-function loadSearchFilterIncludes() {
+function loadSearchFilterCss() {
   includeCSS3(theroot + 'css/base.css',theroot);
   includeCSS3(theroot + 'css/menu.css',theroot);
   includeCSS3(theroot + 'css/search-filters.css',theroot);
@@ -707,11 +730,6 @@ function loadLeafletAndMapFilters() {
 
         //});
 
-        /// BUGBUG
-        setTimeout( function() {
-          //  console.log("applyNavigation() after 200 ms delay"); // 10 ms returned error on both CloudFlare and locally.
-          //applyNavigation();
-        }, 200 ); // Bugbug - better to wait for a div to be available. Try inserting from within navigation.js before DOM ready.
         });
 
       });
@@ -720,11 +738,20 @@ function loadLeafletAndMapFilters() {
   if ((param.display == "map" || param.display == "everything") && param.show) {
     // Later we could omit map.js from info page unless dp.dataset or googleDocID.
     loadScript(theroot + 'js/d3.v5.min.js', function(results) { // For getScale
-      loadScript(theroot + 'js/map.js', function(results) {
+      // Had to add these two here since calling within map.js did not value from leaflet.icon-material.js
+      // Leaflet L.IconMaterial undefined = leaflet.icon-material.js not loaded
+      loadScript(theroot + 'js/leaflet.js', function(results) {
+        loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Could skip when map does not use material icon colors
+          
+          loadScript(theroot + 'js/map.js', function(results) {
+          });
+
+        });
       });
     });
   }
 }
+
 // WAIT FOR JQuery
 loadScript(theroot + 'js/jquery.min.js', function(results) {
   var waitForJQuery = setInterval(function () { // Waits for $ within jquery.min.js file to become available.
@@ -831,6 +858,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         consoleLog("delete hiddenhash.name");
         delete hiddenhash.name; // Not sure where this is set.
         delete hiddenhash.cat; // Not sure where this is set.
+
         triggerHashChangeEvent();
       });
       //MutationObserver.observe(hiddenhash, triggerHashChangeEvent);
@@ -936,8 +964,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   */
 
 
-  
-
   let fullsite = false;
   // FULL SITE - everything or map
   if (param.showheader == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "navigation" || param.display == "map") {
@@ -986,7 +1012,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         includeCSS3(theroot + '../io/build/iochart.css',theroot);
       }
       
-      loadSearchFilterIncludes();
+      loadSearchFilterCss();
 
       includeCSS3(theroot + 'css/leaflet.icon-material.css',theroot);
       
@@ -1015,13 +1041,15 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       */
 
     }
-  } else if (param.showsearch == "true") {
-    loadSearchFilterIncludes();
+    if (param.mapview || param.appview) {
+      loadMapAndMapFilters();
+    }
 
-    // DONE, but not tested: Switched to just this, which loads map-filters.js for the tab click events.
-    console.log("loadScript called from localst.js")
-    loadScript(theroot + 'js/map.js', function(results) { // Load list before map
-    });
+  } else if (param.showsearch == "true" || hash.showmap || hash.appview) {
+    loadLocalTemplate();
+    loadMapAndMapFilters();
+
+
     // This is already in the above
     //loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
 
@@ -1039,13 +1067,24 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       });
     });
     */
-  } else if (param.showapps == "true") {
-    loadLocalTemplate();
-    loadSearchFilterIncludes(); // Could load less then all 4 css files.
-    loadScript(theroot + 'js/navigation.js', function(results) {
-    });
   } else {
     includeCSS3(theroot + 'css/base.css',theroot);
+  }
+
+
+  function loadMapAndMapFilters() {
+
+    console.log("loadScript called from localsite.js");
+
+    loadSearchFilterCss(); 
+
+    loadScript(theroot + 'js/navigation.js', function(results) {
+    });
+    loadScript(theroot + 'js/map.js', function(results) { // Load list before map
+    });
+    loadScript(theroot + 'js/map-filters.js', function(results) { // Load list before map
+    });
+
   }
 
   //} else { // Show map or list without header
@@ -1925,15 +1964,17 @@ function showSearchFilter() {
   let loadFilters = false;
   let headerHeight = $("#headerbar").height(); // Not sure why this is 99 rather than 100
   closeSideTabs(); // Later search will be pulled into side tab.
-  if (!$("#filterFieldsHolder").length) { // Filter doesn't exist yet, initial map/index.html load.
-    if (!$("#datascape").length) {
-      $('body').prepend("<div id='datascape'></div>");
-    }
+
+
+  if (!$("#filterFieldsHolder").length) { // Resides in template-main.html. Filter doesn't exist yet, initial map/index.html load.
+    //if (!$("#datascape").length) {
+    //  $('body').prepend("<div id='datascape'></div>");
+    //}
     //loadLocalTemplate(); // Loaded a second time on community page
-    loadSearchFilterIncludes();
+    loadSearchFilterCss();
     loadScript(theroot + 'js/navigation.js', function(results) {
-      console.log('%cloadLeafletAndMapFilters called by showSearchFilter(). Might cause dup', 'color: red; background: yellow; font-size: 14px');
-      loadLeafletAndMapFilters();
+      console.log('DEACTIVATED %cloadLeafletAndMapFilters called by showSearchFilter(). Might cause dup', 'color: red; background: yellow; font-size: 14px');
+      //loadLeafletAndMapFilters();
     });
     $('html,body').scrollTop(0);
     loadFilters = true;
@@ -2292,6 +2333,19 @@ function loadIntoDiv(pageFolder,divID,thediv,html,attempts,callback) {
     }
   }
   */
+}
+
+/* Allows map to remove selected shapes when backing up. */
+document.addEventListener('localHashChangeEvent', function (elem) {
+  console.log("localsite.js detects URL localHashChangeEvent");
+  localHashChanged();
+}, false);
+
+function localHashChanged() {
+  let hash = getHash();
+  if (hash.mapview && !priorHash.mapview) {
+
+  }
 }
 
 consoleLog("end localsite");

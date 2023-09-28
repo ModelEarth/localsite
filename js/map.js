@@ -26,9 +26,6 @@ if(typeof hash === 'undefined') {
 if(typeof dataObject == 'undefined') {
   var dataObject = {};
 }
-if(typeof priorHash == 'undefined') {
-  var priorHash = {};
-}
 if(typeof localObject == 'undefined') {
     var localObject = {};
 }
@@ -56,7 +53,6 @@ var mbAttr = '<a href="https://www.mapbox.com/">Mapbox</a>', mbUrl = 'https://ap
 // options for scales:
 // "scaleThreshold", "scaleOrdinal", "scaleOrdinal" or "scaleQuantile"
 //
-// hashChanged() resides within map-filters.js. In the index.html pages, any hash change invokes loadMap1
 //////////////////////////////////////////////////////////////////
 
 /////////// LOAD FROM HTML ///////////
@@ -3313,29 +3309,29 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
       loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
       loadScript(theroot + 'js/leaflet.js', function(results) {
       waitForVariable('L', function() {
-      loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { 
+        loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Does not get used (in time?) for L.IconMaterial. Had to wrap map.js load in localsite.js instead.
 
-        loadMapFiltersJS(theroot,1); // Loads map-filters.js.  Uses local_app library in localsite.js for community_data_root
-        
-        //FROM PROCESS OUTPUT
+          loadMapFiltersJS(theroot,1); // Loads map-filters.js.  Uses local_app library in localsite.js for community_data_root
+          
+          //FROM PROCESS OUTPUT
 
-        dp.group = L.layerGroup();
-        //dp.group2 = L.layerGroup();
+          dp.group = L.layerGroup();
+          //dp.group2 = L.layerGroup();
 
-        let zoomLevel1 = 7;
-        if (dp.zoom) zoomLevel1 = dp.zoom;
-        let zoomLevel2 = 7;
+          let zoomLevel1 = 7;
+          if (dp.zoom) zoomLevel1 = dp.zoom;
+          let zoomLevel2 = 7;
 
-        renderMap(dp,map1,"map1","datascape",null,zoomLevel1,"google");
+          renderMap(dp,map1,"map1","datascape",null,zoomLevel1,"google");
 
-        waitForElm('#datascape #map2').then((elm) => {
-          $("#sidemapCard").show();
-          $("#list_main").show();
-          $("#tableSide").show();
-          renderMap(dp,map2,"map2","datascape",null,zoomLevel2,"");
-        });
+          waitForElm('#datascape #map2').then((elm) => {
+            $("#sidemapCard").show();
+            $("#list_main").show();
+            $("#tableSide").show();
+            renderMap(dp,map2,"map2","datascape",null,zoomLevel2,"");
+          });
 
-    });
+      });
     }); // L avaialable for leaflet.icon-material.js
     });
     });
@@ -3483,10 +3479,14 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
     if (typeof L === 'undefined') {
       if (location.host.indexOf('localhost') >= 0) {
         alert("Leaflet L not yet loaded");
+      } else {
+        console.log("Leaflet L not yet loaded");
       }
     } else if (typeof L.IconMaterial === 'undefined') {
       if (location.host.indexOf('localhost') >= 0) {
-        alert("Leaflet L.IconMaterial undefined = leaflet.icon-material.js not loaded");
+        console.log("ALERT Leaflet L.IconMaterial undefined = leaflet.icon-material.js not loaded");
+      } else {
+        console.log("Leaflet L.IconMaterial undefined = leaflet.icon-material.js not loaded");
       }
     }
 
@@ -3729,7 +3729,6 @@ function markerRadius(mapZoom,map) {
   return radiusOut;
 }
 
-let priorHashMap = {};
 function hashChangedMap() {
   let hash = getHash();
 
@@ -3766,9 +3765,9 @@ function hashChangedMap() {
     $(".viewAllLink").hide();
   }
 
-  //alert("priorHashMap.show: " + priorHashMap.show)
-  //alert("priorHashMap.cat: " + priorHashMap.cat + " " + hash.cat);
-  if (hash.name !== priorHashMap.name) {
+  //alert("priorHash.show: " + priorHash.show)
+  //alert("priorHash.cat: " + priorHash.cat + " " + hash.cat);
+  if (hash.name !== priorHash.name) {
     loadMap1("hashChanged() in map.js new name for View Details " + hash.name, hash.show);
     $(document).ready(function () {
       if (document.getElementById("list_main") !== null) { //if exists. may not be loaded into Dom yet.
@@ -3776,13 +3775,13 @@ function hashChangedMap() {
         window.scroll(0, offTop);
       }
     });
-  } else if (hash.layers !== priorHashMap.layers) {
+  } else if (hash.layers !== priorHash.layers) {
     //applyIO(hiddenhash.naics);
     loadMap1("hashChangedMap() in map.js layers", hash.show);
-  } else if (hash.show !== priorHashMap.show) {
+  } else if (hash.show !== priorHash.show) {
     //applyIO(hiddenhash.naics);
     loadMap1("hash.show hashChangedMap() in map.js", hash.show);
-  } else if (hash.state && hash.state !== priorHashMap.state) {
+  } else if (hash.state && hash.state !== priorHash.state) {
     // Why are new map points not appearing
 
     loadScript(theroot + 'js/map-filters.js', function(results) { // map.js depends on map-filters.js
@@ -3814,18 +3813,14 @@ function hashChangedMap() {
       });
     });
 
-  } else if (hash.cat !== priorHashMap.cat) {
+  } else if (hash.cat !== priorHash.cat) {
 
     loadMap1("hashChanged() in map.js new cat " + hash.cat, hash.show);
-  } else if (hash.subcat !== priorHashMap.subcat) {
+  } else if (hash.subcat !== priorHash.subcat) {
     loadMap1("hashChanged() in map.js new subcat " + hash.subcat, hash.show);
-  } else if (hash.details !== priorHashMap.details) {
+  } else if (hash.details !== priorHash.details) {
     loadMap1("hashChanged() in map.js new details = " + hash.details, hash.show);
   }
-  
-  //priorHashMap = getHash(); // Avoid. This entangles and makes the object act like a function.
-  priorHashMap = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
-  //alert("set priorHashMap show = " + priorHashMap.show);
 }
 
 $(document).ready(function () {

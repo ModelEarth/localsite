@@ -447,9 +447,11 @@ function setSiteLook(siteLook,layerName) {
     
     // Force the brower to reload by changing version number. Avoid on localhost for in-browser editing. If else.
     var forceReload = (location.host.indexOf('localhost') >= 0 ? "" : "?v=3");
+    $("body").removeClass("dark");
     if (siteLook == "dark") {
         $('.sitebasemap').val("dark").change();
         //toggleVideo("show","nochange");
+        $("body").addClass("dark");
         includeCssExplore(root + 'css/site-dark.css' + forceReload); // To remove
         includeCssExplore('/localsite/css/dark.css' + forceReload);
         $("#css-site-dark-css").removeAttr('disabled');

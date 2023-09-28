@@ -2413,7 +2413,7 @@ $(document).ready(function () {
     }
     var catString = catTitle.replace(/ /g, '_').replace(/&/g, '%26');
     $("#bigThumbPanelHolder").hide();
-    $(".showApps").removeClass("filterClickActive");
+    $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
     if (catString == "All_Categories") {
         hash.cat = "";
         catString = "";
@@ -2724,9 +2724,6 @@ function callInitSiteObject(attempt) {
 */
 
 // INIT
-if(typeof priorHash == 'undefined') {
-    var priorHash = {};
-}
 if(!param.state) {
     local_app.loctitle = "United States";
 }
@@ -2756,8 +2753,7 @@ if(typeof hiddenhash == 'undefined') {
 // Load localObject.layers for later use when showApps clicked
 // Also adds state hash for layers requiring a state.
 //callInitSiteObject(1); // replaced by 
-
-
+//alert("map-filters")
 function hashChanged() {
 	let loadGeomap = false;
 	let hash = getHash(); // Includes changes to hiddenhash
@@ -2794,14 +2790,25 @@ function hashChanged() {
 	} else {
         //$(".locationTabText").text("United States");
     }
-
-
+    //alert("hash.appview " + hash.appview)
+    if (hash.appview && hash.appview != priorHash.appview) {
+        loadScript(theroot + 'js/navigation.js', function(results) {
+            alert("hash.appview exists")
+            showApps("#bigThumbMenu");
+        });
+    }
 	if (hash.show != priorHash.show) {
         if (hash.show && priorHash.show) {
             console.log("Close location filter, show new layer.");
             closeLocationFilter();
         }
-        closeAppsMenu();
+        if (!hash.appview) {
+            waitForElm('.showApps').then((elm) => {
+                // Same as in closeAppsMenu(), but calling that function from here generates blank page
+                $("#bigThumbPanelHolder").hide();
+                $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
+            });
+        }
         loadScript(theroot + 'js/map.js', function(results) {
         });
 
@@ -3047,10 +3054,14 @@ function hashChanged() {
         }
     }
 
+    console.log("hashChanged hash.mapview: " + hash.mapview + ".  priorHash.mapview: " + priorHash.mapview);
     if (hash.mapview != priorHash.mapview) {
+
         if (hash.mapview) {
             loadScript(theroot + 'js/navigation.js', function(results) {
-                openMapLocationFilter();
+                //setTimeout( function() { // Let's watch for a field instead  
+                    openMapLocationFilter();
+                //}, 2000 );
             });
         }
         if (hash.mapview == "state" || hash.mapview == "country") {
@@ -3330,10 +3341,6 @@ function hashChanged() {
 
     $(".regiontitle").text(local_app.loctitle);
     $(".service_title").text(local_app.loctitle + " - " + local_app.showtitle);
-	//priorHash = getHash();
-    //alert("hash.mapview " + hash.mapview);
-    priorHash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
-    //alert("Done, set priorHash.mapview to " + priorHash.mapview)
 
     /*
 	if (loadGeomap) {

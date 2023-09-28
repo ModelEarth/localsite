@@ -62,10 +62,12 @@ if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0
 	modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
 	modelroot = "https://model.earth";
 }
+console.log("modelpath " + modelpath);
 
 // INIT
 applyNavigation();
 
+// Not in use, but might be cool to use
 function displayHexagonMenu(layerName, localObject) {
 
   var currentAccess = 0;
@@ -104,7 +106,7 @@ function displayHexagonMenu(layerName, localObject) {
             }
         }
   }
-  $("#honeycombMenu").append("<ul id='hexGrid'>" + sectionMenu + "</ul>");
+  $("#honeycombMenu").append("<ul id='hexGrid'>" + sectionMenu + "</ul>"); // Resides in template-main.html
   $("#bigThumbPanelHolder").show();
   //$("#iconMenu").append(iconMenu);
     $("#honeyMenuHolder").show();
@@ -156,6 +158,12 @@ function showSideTabs() {
 		if (location.host.indexOf('localhost') >= 0) {
 	      //alert("LOCAL: ");
 	    }
+	    /*
+	    //if (!hash.mapview) {
+        	closeExpandedMenus($(".showSections")); // Close all sidetab's prior to opening new tab
+        //}
+        $("#topicsPanel").show();
+        */
 	}
 	$('body').addClass('bodyRightMargin'); // Creates margin on right for fixed sidetabs.
 	$('body').addClass('mobileView');
@@ -790,7 +798,7 @@ $(document).ready(function () {
 	});
 	$(document).on("click", ".hideThumbMenu", function(event) {
 		$("#bigThumbPanelHolder").hide();
-		$(".showApps").removeClass("filterClickActive");
+		$(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
 	});
 	$(document).on("click", ".filterBubble", function(event) {
 		console.log('filterBubble click')
@@ -853,7 +861,7 @@ $(document).on("click", ".showStories", function(event) {
     closeExpandedMenus(event.currentTarget);
     $("#storiesPanel").show();
 });
-$(document).on("click", ".showDesktop", function(event) {
+$(document).on("click", ".showDesktopNav", function(event) {
     closeExpandedMenus(event.currentTarget);
     $("#desktopPanel").show();
 });
@@ -927,18 +935,19 @@ function showThumbMenu(activeLayer, insertInto) {
 	if (!$(".bigThumbMenuContent").length) {
 		displayBigThumbnails(0, activeLayer, "main", insertInto);
 	}
-	$('.showApps').addClass("active");
     if (insertInto != "#bigThumbMenu") {
         $("#bigThumbPanelHolder").hide();
-        $(".showApps").removeClass("filterClickActive");
+        $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
+    } else {
+    	//$('.showApps').addClass("filterClickActive");
     }
 }
 function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
-
 	loadScript(theroot + 'js/map-filters.js', function(results) {
 		loadLocalObjectLayers(activeLayer, function() {
 
-			// Setting param.state in navigation.js passes to hash here for menu to use theState:
+		  waitForElm('#bigThumbPanelHolder').then((elm) => { //Not needed
+		  	// Setting param.state in navigation.js passes to hash here for menu to use theState:
 		    let hash = getHash();
 		    let theState = $("#state_select").find(":selected").val();
 		    if (param.state) { // Bugbug - might need a way to clear param.state
@@ -988,8 +997,7 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 
 			                        var icon = (thelayers[layer].icon ? thelayers[layer].icon : '<i class="material-icons">&#xE880;</i>');
 			                           if (thelayers[layer].item != "main" && thelayers[layer].section != "Admin" && thelayers[layer].title != "") {
-			                                // <h1 class='honeyTitle'>" + thelayers[layer].provider + "</h1>
-			                                //var thumbTitle = thelayers[layer].title;
+			                                console.log("Thumb title: " + thelayers[layer].title);
 			                                var bkgdUrl = thelayers[layer].image;
 			                                if (thelayers[layer].bigthumb) {
 			                                    bkgdUrl = thelayers[layer].bigthumb;
@@ -1086,12 +1094,12 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 		        }
 			} else {
 				$("#bigThumbPanelHolder").hide();
-		        $(".showApps").removeClass("filterClickActive");
+		        $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
 			}
 
 			$('.bigThumbHolder').click(function(event) {
 		        $("#bigThumbPanelHolder").hide(); // Could remain open when small version above map added. 
-		        $(".showApps").removeClass("filterClickActive");        
+		        $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});     
 		    });
 		    if (activeLayer) {
 		    	$(".bigThumbMenuContent[show='" + activeLayer +"']").addClass("bigThumbActive");
@@ -1100,6 +1108,7 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 		    		$("#showAppsText").attr("title",activeTitle);
 		    	}
 		    }
+		  });
 		});
 	});
 }
@@ -1316,13 +1325,13 @@ function activateSideColumn() {
 
 // INIT
 
-if (param.mapview == "state") {
-	loadScript(theroot + 'js/map.js', function(results) {
-		loadScript(theroot + 'js/map-filters.js', function(results) {
-			// mapview=state triggers display of location filter in map-filters.js. No additional script needed here.
-		});
-	});
-}
+//if (param.mapview == "state") {
+//	loadScript(theroot + 'js/map.js', function(results) {
+//		loadScript(theroot + 'js/map-filters.js', function(results) {
+//			// mapview=state triggers display of location filter in map-filters.js. No additional script needed here.
+//		});
+//	});
+//}
 
 function makeLinksRelative(divID,climbpath,pageFolder) {
 	  $("#" + divID + " a[href]").each(function() {
@@ -1374,7 +1383,14 @@ $(document).on("click", "#filterClickLocation", function(event) {
     if (!hash.state) {
     	mapviewState = param.state; // Set in navigation.js based on domain.
     }
-    if (!hash.mapview || (hash.mapview && hash.appview)) {
+
+    if (hash.mapview && hash.appview) {
+    	closeAppsMenu();
+    	$("#filterClickLocation").addClass("filterClickActive");
+    } else if (!hash.mapview) {
+    	if (!hash.appview) {
+    		closeAppsMenu();
+    	}
     	loadScript(theroot + 'js/map-filters.js', function(results) {
 			//if (!param.mapview) {
 			// Hash change triggers call to filterClickLocation() and map display.
@@ -1387,6 +1403,7 @@ $(document).on("click", "#filterClickLocation", function(event) {
     	});
 	} else {
 		// Triggers closeLocationFilter()
+		console.log("remove mapview from hash")
 		goHash({"mapview":""}); // Remove from URL using gohash so priorhash is also reset
 	}
     event.stopPropagation();
@@ -1402,16 +1419,16 @@ function showApps(menuDiv) {
 	loadScript(theroot + 'js/map-filters.js', function(results) {
 
 		let hash = getHash();
-		console.log('.showApps click');
+		console.log('showApps in ' + menuDiv);
 		$("#filterClickLocation").removeClass("filterClickActive"); // But leave open
 
-	    if ($("#bigThumbPanelHolder").is(':visible')) {
+	    if ($("#bigThumbPanelHolder").is(':visible')) { // CLOSE APPS MENU
 		//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) { // Prevented tab click from closing app menu
 			updateHash({"appview":""});
 			$("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
 			$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
 
-			$("#appSelectHolder .showApps").removeClass("filterClickActive");
+			$("#appSelectHolder .showApps").removeClass("filterClickActive"); updateHash({'appview':''});
 			$("#showAppsText").text($("#showAppsText").attr("title"));
 			$(".hideWhenPop").show();
 	        // To do: Only up scroll AND SHOW if not visible
@@ -1420,11 +1437,14 @@ function showApps(menuDiv) {
 				scrollTop: 0
 			});
         	closeAppsMenu();
+        	if ($("#filterLocations").is(':visible')) {
+        		$("#filterClickLocation").addClass("filterClickActive");
+        	}
 		} else { // Show Apps, Close Locations (if no mapview)
 			updateHash({"appview":"topics"});
 			console.log("call showThumbMenu from navidation.js");
 			if (!hash.mapview) {
-	        	closeExpandedMenus($(".showSections")); // Close Locations sidetab and open Topics sidetab.
+	        	closeExpandedMenus($(".showSections")); // Close all sidetab's prior to opening new tab
 	        }
 	        $("#topicsPanel").show();
 
@@ -1456,8 +1476,7 @@ function showApps(menuDiv) {
 }
 function closeAppsMenu() {
 	$("#bigThumbPanelHolder").hide();
-    $(".showApps").removeClass("filterClickActive");
-	//$('.showApps').removeClass("active"); // Still needed?
+    $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
 }
 function filterClickLocation(loadGeoTable) {
     console.log("filterClickLocation() " + loadGeoTable);
@@ -1466,7 +1485,7 @@ function filterClickLocation(loadGeoTable) {
 	//$("#filterFieldsHolder").hide();
 
 	$("#bigThumbPanelHolder").hide();
-	$('.showApps').removeClass("filterClickActive");
+	$('.showApps').removeClass("filterClickActive"); updateHash({'appview':''});
     let distanceFilterFromTop = 120;
     if ($("#filterLocations").length) {
     	distanceFilterFromTop = $("#filterLocations").offset().top - $(document).scrollTop();
@@ -1482,8 +1501,9 @@ function filterClickLocation(loadGeoTable) {
 }
 
 let mapFilterOpen = false;
+console.log("openMapLocationFilter1");
 function openMapLocationFilter() {
-
+	//alert("openMapLocationFilter2");
 	if (mapFilterOpen) {
 	//if ($("#filterLocations").is(':visible')) { // Already open
 		//alert("openMapLocationFilter already open")
