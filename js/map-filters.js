@@ -2740,11 +2740,12 @@ if(typeof hiddenhash == 'undefined') {
 // Load localObject.layers for later use when showApps clicked
 // Also adds state hash for layers requiring a state.
 //callInitSiteObject(1); // replaced by 
-//alert("map-filters")
+
 function hashChanged() {
 	let loadGeomap = false;
 	let hash = getHash(); // Might still include changes to hiddenhash
 
+    //alert("hash.mapview " + hash.mapview)
     //alert("hiddenhash.mapview " + hiddenhash.mapview)
 
     console.log("hashChanged() map-filters.js");
@@ -2773,7 +2774,8 @@ function hashChanged() {
 		// Apply early since may be used by changes to geo
 		$("#state_select").val(stateAbbrev);
         if (priorHash.state && hash.state != priorHash.state) {
-            $("#hitRefreshNote").show();
+            console.log("hitRefreshNote is now turned off")
+            //$("#hitRefreshNote").show();
         }
 	} else {
         //$(".locationTabText").text("United States");
@@ -3283,30 +3285,34 @@ function hashChanged() {
         }
     }
 
-    /*
+    //alert("mapview: " + hash.mapview + " " + priorHash.mapview);
     if (hash.mapview != priorHash.mapview) {
     	//$(".stateFilters").show();
     	//$("#filterLocations").show();
     	//$("#geomap").show(); // To trigger map filter display below.
-    	if (hash.mapview) {
+
+        // Opening mapview tab without state rendered yet - ToDo: check a data attribute to see what state is already loaded
+    	if (hash.mapview && hash.state ) { // && map2 data != hash.state
+            //alert("loadGeomap")
     		loadGeomap = true;
     	} else {
+            //alert("#filterLocations hide")
             $("#filterLocations").hide();
     	}
     }
-    */
+    
 
     $(".regiontitle").text(local_app.loctitle);
     $(".service_title").text(local_app.loctitle + " - " + local_app.showtitle);
 
-    /*
+    
 	if (loadGeomap) {
 		if($("#geomap").is(':visible')){
 			console.log("call renderMapShapes from map-filter.js hashChanged()");
 			renderMapShapes("geomap", hash, "county", 1); // County select map
 		}
 	}
-    */
+    
 }
 
 // INIT
@@ -3320,7 +3326,8 @@ $(document).ready(function () {
 		$("#region_select").val(hash.regiontitle)
 		//$("#state_select option[value='NV']").prop('selected', true);
 	}
-	hashChanged();
+	//hashChanged(); // Move to localsite.js since occurs twice if map-filter.js loaed by hash change.
+
 	/*
 	if (hiddenhash.showtitle) {
     	$("#showAppsText").text(hiddenhash.showtitle);

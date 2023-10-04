@@ -397,7 +397,8 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 				console.log("Not embed");
 				//prependTo = "body"; // Might not have worked intermintantly for the following prepend here: http://localhost:8887/recycling/
 			}
-			$(prependTo).prepend("<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv noprint sidecolumnLeft liteDiv' style='display:none'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement); //  listColumnElement will be blank if already applied above.
+			// min-height added since ds.ai html cropping to short side
+			$(prependTo).prepend("<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv noprint sidecolumnLeft liteDiv' style='display:none; min-height:300px'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement); //  listColumnElement will be blank if already applied above.
 	 	} else {
 	 		// TODO - change to fixed when side reaches top of page
 	 		console.log("navigation.js report: navcolumn already exists")
@@ -1623,8 +1624,8 @@ function openMapLocationFilter() {
 	    	$("#filterClickLocation").addClass("filterClickActive");
 	    });
 	    //loadScript(theroot + 'js/map.js', function(results) { // Load list before map
-	    	console.log("Call renderMapShapes from navigation.js")
-	        renderMapShapes("geomap", hash, "", 1);// Called once map div is visible for tiles.
+	    	//console.log("Call renderMapShapes from navigation.js")
+	        //renderMapShapes("geomap", hash, "", 1);// Called once map div is visible for tiles.
 	    //});
 	    if ($("#filterLocations").length) {
 	        $('html,body').animate({

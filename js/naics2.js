@@ -109,7 +109,7 @@ function refreshNaicsWidget() {
     if (!hash.catsize) hash.catsize = 6;
     let loadNAICS = false;
     // The following will narrow the naics to the current location
-    if (hash.regiontitle != priorHash_naicspage.regiontitle) {
+    if (hash.regiontitle != priorHash.regiontitle) {
         if (!hash.regiontitle) {
             if(!hash.geo) {
                 
@@ -122,21 +122,21 @@ function refreshNaicsWidget() {
             hash.geo = hiddenhash.geo; // Used by naics.js
         }
         loadNAICS = true;
-    } else if (hash.state != priorHash_naicspage.state) {
+    } else if (hash.state != priorHash.state) {
         // Initial load, if there is a state
         console.log("hash.state change call loadIndustryData(hash)")
         // Occurs on INIT
         loadNAICS = true;
-    } else if (hash.show != priorHash_naicspage.show) {
+    } else if (hash.show != priorHash.show) {
         loadNAICS = true;
-    } else if (hash.geo != priorHash_naicspage.geo) {
+    } else if (hash.geo != priorHash.geo) {
         loadNAICS = true;
-    } else if ((hash.naics != priorHash_naicspage.naics) && hash.naics && hash.naics.indexOf(",") > 0) { // Skip if only one naics
+    } else if ((hash.naics != priorHash.naics) && hash.naics && hash.naics.indexOf(",") > 0) { // Skip if only one naics
         loadNAICS = true;
         //alert("test " + hash.naics.indexOf(","))
-    } else if (hash.catsize != priorHash_naicspage.catsize) {
+    } else if (hash.catsize != priorHash.catsize) {
         loadNAICS = true;
-    } else if (hash.catsort != priorHash_naicspage.catsort) {
+    } else if (hash.catsort != priorHash.catsort) {
         loadNAICS = true;
     }
 

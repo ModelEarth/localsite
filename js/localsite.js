@@ -5,7 +5,7 @@
 // Localsite Path Library - A global namespace singleton
 // Define a new object if localsite library does not exist yet.
 let localStart = Date.now();
-let onlineApp = true; // Change
+let onlineApp = true; // Set to false during air travel
 consoleLog("start localsite");
 var local_app = local_app || (function(module){
     let _args = {}; // private, also worked as []
@@ -268,7 +268,9 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
    return target2;
 }
 function getHash() { // Includes hiddenhash
-    return (mix(getHashOnly(),hiddenhash)); // Dactivated since hiddenhash.mapview was getting set somewhere.
+    delete hiddenhash.mapview; // Hack to always clear. Need to find where this is set. Test with alers in map-filters.js hashChanged()
+    // Needed for bubble chart
+    return (mix(getHashOnly(),hiddenhash)); // Deactivated since hiddenhash.mapview was getting set somewhere.
     //return (getHashOnly());
 }
 function getHashOnly() {
@@ -1018,28 +1020,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       
       //loadScript(theroot + 'js/table-sort.js', function(results) {}); // For county grid column sort
 
-      /*
-      if (param.display == "everything") {
-        //if(param.showbubbles) {
-          loadScript(theroot + 'js/d3.v5.min.js', function(results) {
-            loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) { // moved to naics.js instead
-              // HACK - call twice so rollovers work.
-                //refreshBubbleWidget();
-                //alert("go")
-
-                // Instead, called from naics.js
-                //displayImpactBubbles(1);
-                //setTimeout( function() {
-                  
-                  // No luck...
-                  //displayImpactBubbles(1);
-                //}, 1000 );
-            });
-          });
-        //}
-      } // end everything
-      */
-
     }
     if (param.mapview || param.appview) {
       loadMapAndMapFilters();
@@ -1083,6 +1063,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     loadScript(theroot + 'js/map.js', function(results) { // Load list before map
     });
     loadScript(theroot + 'js/map-filters.js', function(results) { // Load list before map
+      hashChanged();
     });
 
   }
