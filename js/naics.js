@@ -225,6 +225,9 @@ function refreshNaicsWidget() {
         if (hash.state && hash.naics && hash.naics.indexOf(",") < 0) { // Hide when viewing just 1 naics within a state.
             $("#industryListHolder").hide();
             $("#industryDetail").show();
+        } else if (!hash.state) {
+            $("#industryListHolder").show();
+            $("#industries").html("<div style='padding:0 20px 20px 20px'>Select a location above for industry details.</div>");
         } else {
             $("#industryListHolder").show();
             $("#industryDetail").hide();

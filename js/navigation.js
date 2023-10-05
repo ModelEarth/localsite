@@ -274,15 +274,15 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 			//showClassInline(".earth");
 		}
 	// 
-	} else if (!Array.isArray(param.titleArray) && (location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
+	} else if (defaultState == "GA" && !Array.isArray(param.titleArray) && (location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
 		// The localsite repo is open to use by any state or country.
 		// Georgia Economic Development has been a primary contributor.
 		// Show locally for Brave Browser only - insert before:  ) || false
 		// && navigator && navigator.brave
 		if (!param.state && !hash.state) {
 			if (param.mapview != "earth") {
-				if (onlineApp) {
-					param.state = "GA"; // For displayBigThumbnails menu in map-filters.js
+				if (onlineApp && defaultState) {
+					param.state = defaultState; // For longer displayBigThumbnails menu in map-filters.js
 				}
 			}
 		}

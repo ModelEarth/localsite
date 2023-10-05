@@ -1776,7 +1776,7 @@ var geotable = {};
 function showTabulatorList(element, attempts) {
     consoleLog("showTabulatorList. Length: " + Object.keys(element).length + ". Attempt: " + attempts);
 	let hash = getHash();
-    theState = hash.state;
+    let theState = hash.state;
     if (element.state) {
         theState = element.state;
     }
@@ -2780,10 +2780,9 @@ function hashChanged() {
 	} else {
         //$(".locationTabText").text("United States");
     }
-    //alert("hash.appview " + hash.appview)
     if (hash.appview && hash.appview != priorHash.appview) {
         loadScript(theroot + 'js/navigation.js', function(results) {
-            alert("hash.appview exists")
+            console.log("hash.appview exists: " + hash.appview);
             showApps("#bigThumbMenu");
         });
     }
@@ -3043,8 +3042,10 @@ function hashChanged() {
                         ];
 
                     // Not needed since loadStateCounties above loads.
-                    //loadObjectData(element, 0);
-
+                    // Actual was need for tabulator list of states, but USA map shapes turned red.
+                    if (hash.mapview == "country") {
+                        loadObjectData(element, 0);
+                    }
                     $("#tabulator-geocredit").show();
                 }
             //}
@@ -3292,7 +3293,7 @@ function hashChanged() {
     	//$("#geomap").show(); // To trigger map filter display below.
 
         // Opening mapview tab without state rendered yet - ToDo: check a data attribute to see what state is already loaded
-    	if (hash.mapview && hash.state ) { // && map2 data != hash.state
+    	if (hash.mapview) { // && map2 data != hash.state  // && hash.state now allowing without state for country map
             //alert("loadGeomap")
     		loadGeomap = true;
     	} else {

@@ -688,6 +688,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     }
     #navcolumn {
       display: none;
+      z-index: 1000;
     }
 }
 .navcolumn-inpage {

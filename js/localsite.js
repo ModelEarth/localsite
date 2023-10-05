@@ -5,7 +5,8 @@
 // Localsite Path Library - A global namespace singleton
 // Define a new object if localsite library does not exist yet.
 let localStart = Date.now();
-let onlineApp = true; // Set to false during air travel
+let onlineApp = true; // Set to false during air travel. Also sets local to no state.
+let defaultState = ""; // GA
 consoleLog("start localsite");
 var local_app = local_app || (function(module){
     let _args = {}; // private, also worked as []
@@ -2109,7 +2110,7 @@ function waitForVariable(variable, callback) {
       return;
     }
     consoleLog('waitForVariable waiting ' + variable);
-  }, 40);
+  }, 80);
 }
 
 // TO DO: Optimize by checking just the nodes in the mutations
