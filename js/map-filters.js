@@ -1206,10 +1206,12 @@ function renderMapShapeAfterPromise(whichmap, hash, mapview, attempts) {
               // Send text to side box
               info.update(layer.feature.properties);
             }
-       
+            // Rollout map shape (county)
             function resetHighlight(e){
+                // Restores color prior to rollover
                 if (geoOverlays[layerName]) {
-                  console.log("Found layerName: " + layerName);
+                  //console.log("Rollout resetHighlight e.target ");
+                  //console.log(e.target);
                   geoOverlays[layerName].resetStyle(e.target);
                   info.update();
                 } else {
@@ -2056,10 +2058,13 @@ function showTabulatorList(element, attempts) {
 	}
 }
 function updateSelectedTableRows(geo, clear, attempts) {
+    let hash = getHash();
     if (!hash.state) {
         console.log("ALERT - A state value is needed in the URL")
     } else {
     	if (typeof geotable.getRows === "function") {
+            //alert("geotable.getRows === function")
+            // #tabulator-geotable
         	//geotable.selectRow(geotable.getRows().filter(row => row.getData().name.includes('Ba')));
         	if (clear) {
                 geotable.deselectRow(); // All

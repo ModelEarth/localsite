@@ -1177,10 +1177,10 @@ function showClassInline(theclass) {
 	setTimeout( function() {
 		$(theclass).css('display', 'inline');
 	}, 5000);
-		setTimeout( function() {
+	setTimeout( function() {
 		$(theclass).css('display', 'inline');
 	}, 10000);
-		setTimeout( function() {
+	setTimeout( function() {
 		$(theclass).css('display', 'inline');
 	}, 30000);
 	*/
@@ -1615,9 +1615,11 @@ function openMapLocationFilter() {
 	        }
 	        if (hash.mapview != "country") {
 	            //if (loadGeoTable != false) { // Prevents loading twice on init
-	                //alert("updateSelectedTableRows 1")
+	            
+	            // not needed, added hash = GetHash() to fix actual problem.
+	            //waitForElm('#tabulator-geotable .tabulator-table > .tabulator-row').then((elm) => {
 	                updateSelectedTableRows(hash.geo, clearall, 0);
-	            //}
+	            //});
 	        }
 	    }
 	    waitForElm('#filterClickLocation').then((elm) => {
