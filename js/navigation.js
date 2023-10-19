@@ -69,7 +69,7 @@ applyNavigation();
 hashChangedNavigation();
 
 document.addEventListener('hashChangeEvent', function (elem) {
-	console.log("map-filters.js detects URL hashChangeEvent");
+	console.log("navigation.js detects URL hashChangeEvent");
  	hashChangedNavigation();
 }, false);
 
@@ -835,6 +835,10 @@ $(document).ready(function () {
 		//$("#listingMenu").appendTo($(this).parent().parent());
 		event.stopPropagation();
 	});
+	$(document).on("click", ".hideGeoPicker", function(event) {
+		console.log("hideGeoPicker")
+		hideGeoPicker();
+	});
 	$(document).on("click", ".hideAdvanced", function(event) {
 		console.log("hideAdvanced")
 		hideAdvanced();
@@ -1185,18 +1189,22 @@ function showClassInline(theclass) {
 	}, 30000);
 	*/
 }
+function hideGeoPicker() {
+	$("#geoPicker").hide();
+}
 function hideAdvanced() {
 	// We might want to omit this line to retain mapview=earth
 	updateHash({"mapview":""});
+	// Should we show a search icon when closing?
 	$(".fieldSelector").hide();
 	$("#filterLocations").hide();
 	$("#filterClickLocation").removeClass("filterClickActive");
 
 	if (typeof relocatedStateMenu != "undefined") {
-  	relocatedStateMenu.appendChild(state_select); // For apps hero
-  }
-  $("#hero_holder").show();
-  $(".locationTabText").text($(".locationTabText").attr("title"));
+		relocatedStateMenu.appendChild(state_select); // For apps hero
+	}
+	$("#hero_holder").show();
+	$(".locationTabText").text($(".locationTabText").attr("title"));
 }
 function activateSideColumn() {
 	// Make paths relative to current page
@@ -1428,39 +1436,65 @@ $(document).on("change", "#state_select", function(event) {
 });
 $(document).on("click", "#filterClickLocation", function(event) {
 
-	delete(hiddenhash.mapview); // Not sure where this gets set.
+	//delete(hiddenhash.mapview); // Not sure where this gets set.
 
     let hash = getHash();
-    //let hash = $.extend(true, {}, getHash());
-    //console.log("#filterClickLocation click hash.state: " + hash.state);
-    console.log("#filterClickLocation click hash.mapview: " + hash.mapview);
-    //console.log("#filterClickLocation click param.mapview: " + param.mapview);
-    let mapviewState = hash.state;
-    if (!hash.state) {
-    	mapviewState = param.state; // Set in navigation.js based on domain.
-    }
-
-    if (hash.mapview && hash.appview) {
+    if ($("#geoPicker").is(':visible') && $("#bigThumbPanelHolder").is(':visible')) {
+    	//$("#bigThumbPanelHolder").hide();
+    	//$("#filterClickLocation").removeClass("filterClickActive");
+    	//$("#filterClickLocation").addClass("filterClickActive");
+    	goHash({"appview":""});
+    } else if ($("#geoPicker").is(':visible')) {
+    	//if (hash.mapview && hash.appview) {
+    	$("#geoPicker").hide();
     	closeAppsMenu();
-    	$("#filterClickLocation").addClass("filterClickActive");
-    } else if (!hash.mapview) {
-    	if (!hash.appview) {
-    		closeAppsMenu();
-    	}
+    	$("#filterClickLocation").removeClass("filterClickActive");
+    } else {
     	loadScript(theroot + 'js/map-filters.js', function(results) {
-			//if (!param.mapview) {
-			// Hash change triggers call to filterClickLocation() and map display.
-			if (mapviewState) {
-				console.log("#filterClickLocation click go state");
-	    		goHash({'mapview':'state'});
-	    	} else {
-	    		goHash({'mapview':'country'});
+	    	$("#filterLocations").show();
+	    	$("#geoPicker").show();
+	    	$("#filterClickLocation").addClass("filterClickActive");
+		    if(!hash.mapview && (hash.state || param.state)) {
+		    	hash.mapview = "state";
+		    	if (!hash.state) {
+		    		hash.state = param.state + "";
+		    	}
+		    	goHash({"mapview":hash.mapview});
+		    	//alert("updateHash " + hash.mapview);
+		    } else {
+		    	goHash({"mapview":"country"});
+		    }
+		    //let hash = $.extend(true, {}, getHash());
+		    //console.log("#filterClickLocation click hash.state: " + hash.state);
+		    console.log("#filterClickLocation click hash.mapview: " + hash.mapview);
+		    //console.log("#filterClickLocation click param.mapview: " + param.mapview);
+
+		    //let mapviewState = hash.state;
+		    //if (!hash.state) {
+		    //	mapviewState = param.state; // Set in navigation.js based on domain.
+		    //}
+		});
+	    /*
+	     if (!hash.mapview) {
+	    	if (!hash.appview) {
+	    		closeAppsMenu();
 	    	}
-    	});
-	} else {
-		// Triggers closeLocationFilter()
-		console.log("remove mapview from hash")
-		goHash({"mapview":""}); // Remove from URL using gohash so priorhash is also reset
+	    	loadScript(theroot + 'js/map-filters.js', function(results) {
+				//if (!param.mapview) {
+				// Hash change triggers call to filterClickLocation() and map display.
+				if (mapviewState) {
+					console.log("#filterClickLocation click go state");
+		    		goHash({'mapview':'state'});
+		    	} else {
+		    		goHash({'mapview':'country'});
+		    	}
+	    	});
+		} else {
+			// Triggers closeLocationFilter()
+			console.log("remove mapview from hash")
+			goHash({"mapview":""}); // Remove from URL using gohash so priorhash is also reset
+		}
+		*/
 	}
     event.stopPropagation();
 });
@@ -1557,7 +1591,6 @@ function filterClickLocation(loadGeoTable) {
 }
 
 let mapFilterOpen = false;
-console.log("openMapLocationFilter1");
 function openMapLocationFilter() {
 	//alert("openMapLocationFilter2");
 	if (mapFilterOpen) {
@@ -1606,6 +1639,7 @@ function openMapLocationFilter() {
 	    if (hash.mapview == "state") {
 		    locationFilterChange("counties");
 		} else {
+			console.log("Call locationFilterChange with no value")
 			locationFilterChange("");
 		}
 	    if (hash.geo) {

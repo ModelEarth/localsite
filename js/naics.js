@@ -11,7 +11,6 @@
 
 //let hash = loadParams(location.search,location.hash);
 //hash = mix(param,hash); // Add include file's param values.
-
 let initialNaicsLoad = true;
 let hash = getHash(); // Includes hiddenhash
 if (typeof dataObject == 'undefined') {
@@ -170,7 +169,9 @@ function refreshNaicsWidget() {
             hiddenhash.loctitle = hash.regiontitle;
             $("#region_select").val(hash.regiontitle.replace(/\+/g," "));
             hiddenhash.geo = $("#region_select option:selected").attr("geo");
-            hash.geo = hiddenhash.geo; // Used by naics.js
+            hash.geo = $("#region_select option:selected").attr("geo");
+            // Avoid this:
+            //hash.geo = hiddenhash.geo; // Used by naics.js
         }
         loadNAICS = true;
     } else if (hash.state != priorHash.state) {

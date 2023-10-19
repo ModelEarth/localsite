@@ -77,15 +77,9 @@ function populateFieldsFromHash() {
 
 
 // INIT
-
-//locationFilterChange("counties"); // Display county list
-//$("#filterClickLocation .locationTabText").html("Counties");
-//$(".filterUL li").removeClass("selected");
-//$(".filterUL li").find("[data-id='counties']").addClass("selected"); // Not working
-
-
-$(".showSearch").css("display","inline-block");
-$(".showSearch").removeClass("local");
+//alert("hey")
+//$(".showSearch").css("display","inline-block");
+//$(".showSearch").removeClass("local");
 
 catArray = [];
 $(document).ready(function () {
@@ -657,7 +651,7 @@ function renderMapShapeAfterPromise(whichmap, hash, mapview, attempts) {
         $("#geoPicker").show();
         $('#' + whichmap).show();
         if (!$("#" + whichmap).is(":visible")) {
-          $("#filterLocations").show(); //Why did we need here?
+          //$("#filterLocations").show(); //Why did we need here?
           console.log("Caution: #" + whichmap + " not visible. May effect tile loading.");
           //return; // Prevents incomplete tiles
         }
@@ -2213,12 +2207,9 @@ function populateCityList(callback) {
             }
         });
         $(".listHolder").append(n);
-        //$(".listPanelRows").prepend(n);
-        
 
         // We avoid showing .listHolder here because sometime list is populated without displaying.
         $('.cityList :checkbox').change(function () {
-            //alert('city list triggers goSearch');
             $('#goSearch').trigger("click");
         });
         $('.cityText').click(function(event) {
@@ -2747,9 +2738,10 @@ if(typeof hiddenhash == 'undefined') {
 //callInitSiteObject(1); // replaced by 
 
 function hashChanged() {
+    //alert("priorHash.geo: " + priorHash.geo)
 	let loadGeomap = false;
 	let hash = getHash(); // Might still include changes to hiddenhash
-
+    //alert("hash.geo1 " + hash.geo);
     //alert("hash.mapview " + hash.mapview)
     //alert("hiddenhash.mapview " + hiddenhash.mapview)
 
@@ -2851,7 +2843,7 @@ function hashChanged() {
 		//$("#infoColumn").show();
         $(".mainColumn1").show();
 	}
-	if (hash.geomap != priorHash.geomap) {
+    if (hash.geomap != priorHash.geomap) {
 		//if (hash.geomap) {
 			$("#aboutToolsDiv").hide();
 			//$("#infoColumn").show();
@@ -2860,6 +2852,8 @@ function hashChanged() {
 			// DOES NOT WORK - document.querySelector(whichmap)._leaflet_map not found
 			//reloadMapTiles('#geomap',1);
 			
+            alert("renderMapShapes")
+            renderMapShapes();
 			
 			/*
 			alert("show map")
@@ -3012,14 +3006,13 @@ function hashChanged() {
         //&& hash.mapview == "state"
         if (hash.mapview && hash.mapview == priorHash.mapview) { // Prevents dup loading when hash.mapview != priorHash.mapview below.
             if (hash.mapview != "earth") {
+                console.log("loadStateCounties invoked by state change");
                 loadStateCounties(0); // Add counties to state boundaries.
             }
         }
     }
 
-    console.log("hashChanged hash.mapview: " + hash.mapview + ".  priorHash.mapview: " + priorHash.mapview);
     if (hash.mapview != priorHash.mapview) {
-
         if (hash.mapview) {
             loadScript(theroot + 'js/navigation.js', function(results) {
                 //setTimeout( function() { // Let's watch for a field instead  
@@ -3031,6 +3024,9 @@ function hashChanged() {
             if (hash.mapview == "country") {
                 //loadStateCounties(0); // State border layer
             }
+            console.log("loadStateCounties invoked by mapview change");
+            console.log("priorHash.mapview: " + priorHash.mapview + ", hash.mapview: " + hash.mapview);
+            
             loadStateCounties(0);
 
             //if (hash.mapview == "country" && !hash.state) {
@@ -3084,7 +3080,8 @@ function hashChanged() {
             //alert("country");
             $("#geoPicker").show(); // Required for map to load
             $("#state_select").show();
-            openMapLocationFilter();
+            
+            //openMapLocationFilter();
         }
     } else if (hash.mapview == "state") {
         $("#state_select").show();
@@ -3117,10 +3114,12 @@ function hashChanged() {
             $(".locationTabText").text("United States");
         }
 
+        //alert("hash.regiontitle " + hash.regiontitle);
         if(!hash.regiontitle) {
-            //alert("no hash.regiontitle")
+            //alert("OKAY hash.geo before: " + hash.geo);
             delete hiddenhash.loctitle;
             delete hiddenhash.geo;
+            //alert("BUG hash.geo after: " + hash.geo);
             //delete param.geo;
             $(".regiontitle").text("");
             // Could add full "United States" from above. Could display longer "show" manufacing title.
@@ -3153,7 +3152,8 @@ function hashChanged() {
             
             $(".regiontitle").val(hash.regiontitle.replace(/\+/g," "));
             hiddenhash.geo = $("#region_select option:selected").attr("geo");
-            hash.geo = hiddenhash.geo;
+            hash.geo = $("#region_select option:selected").attr("geo");
+            //hash.geo = hiddenhash.geo;
             
             try {
 	        	params.geo = hiddenhash.geo; // Used by old naics.js
@@ -3162,7 +3162,8 @@ function hashChanged() {
 		    }
         }
     }
-
+    //alert("hash.geo 2 " + hash.geo);
+    //alert("priorHash.geo 2 " + priorHash.geo);
     if (hash.geo != priorHash.geo) {
         if (hash.geo && hash.geo.length > 4) { 
             $(".state-view").hide();
@@ -3313,6 +3314,8 @@ function hashChanged() {
 
     
 	if (loadGeomap) {
+        //alert("loadGeomap")
+        //$("#filterLocations").show();
 		if($("#geomap").is(':visible')){
 			console.log("call renderMapShapes from map-filter.js hashChanged()");
 			renderMapShapes("geomap", hash, "county", 1); // County select map

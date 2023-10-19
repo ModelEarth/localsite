@@ -133,6 +133,9 @@ let paramIncludeFile = getParamInclude(); // From localsite.js include file para
 if(typeof hiddenhash == 'undefined') {
   var hiddenhash = {};
 }
+// param values from page are placed in hiddenhash.
+// hiddenhash is loaded into hash in gethash if hash does not have an existing value.
+// That allows priorHash to contain the initial param value hardcoded in page (since hiddenhash holds it for getHash).
 if(typeof param != 'undefined') { // From settings in HTML page
   hiddenhash = mix(hiddenhash,paramIncludeFile); // Before URL values added. Priority to hiddenhash.
   hiddenhash = mix(param,hiddenhash); // param set in page takes priority over param set on localsite.js URL.
@@ -140,7 +143,7 @@ if(typeof param != 'undefined') { // From settings in HTML page
 } else { // No param object in page, but could be set in localsite.js include.
   hiddenhash = mix(hiddenhash,paramIncludeFile);
   //var param = {}; // Clone paramIncludeFile
-  var param = extend(true, loadParams(location.search,location.hash), paramIncludeFile); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
+  var param = structuredClone(extend(true, loadParams(location.search,location.hash), paramIncludeFile)); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
   //param = loadParams(location.search,location.hash); // Includes localsite.js include.
 }
 
@@ -243,16 +246,25 @@ function loadParams(paramStr,hashStr) {
    return params;
 }
 function mix(incoming, target) { // Combine two objects, priority to incoming. Delete blanks indicated by incoming.
-   //target2 = $.extend(true, {}, target); // Clone/copy object without entanglement
+   let target2;
+   //target2 = structuredClone($.extend(true, {}, target)); // Clone/copy object without entanglement
    //console.log("mix incoming and default (target). Incoming has priority.");
    //console.log(incoming);
    //console.log(target);
    if (window.jQuery) {
-    target2 = $.extend(true, target, incoming); // Clone/copy object without entanglement, subsequent overrides first.
+    target2 = structuredClone($.extend(true, target, incoming)); // structuredClone prevents entanglement, subsequent overrides first.
    } else {
+    console.log("USING non-jquery extend")
     // This non-JQuery extend results in "Uncaught (in promise) RangeError: Maximum call stack size exceeded" with map.js mix(dp,defaults)
-    target2 = extend(true, target, incoming); // Clone/copy object without entanglement, subsequent overrides first.
+    target2 = structuredClone(extend(true, target, incoming)); // Clone/copy object without entanglement, subsequent overrides first.
    }
+
+   // structuredClone solved this entanglement bug
+   //console.log("incoming.mapview: " + incoming.mapview);
+   //console.log("target.mapview: " + target.mapview);
+   //console.log("target2.mapview: " + target2.mapview);
+   //delete target.mapview;
+   //console.log("target2.mapview: " + target2.mapview);
 
    for(var key in incoming) {
      if (incoming.hasOwnProperty(key)) {
@@ -269,9 +281,7 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
    return target2;
 }
 function getHash() { // Includes hiddenhash
-    delete hiddenhash.mapview; // Hack to always clear. Need to find where this is set. Test with alers in map-filters.js hashChanged()
-    // Needed for bubble chart
-    return (mix(getHashOnly(),hiddenhash)); // Deactivated since hiddenhash.mapview was getting set somewhere.
+    return (mix(getHashOnly(),hiddenhash));
     //return (getHashOnly());
 }
 function getHashOnly() {
@@ -344,12 +354,16 @@ function go(addToHash) {
 if(typeof priorHash == 'undefined') {
   var priorHash = {};
 }
+//let nextPriorHash = {};
+let nextPriorHash = structuredClone(param); // Param values set in pages and the include URL are passed forward as a hiddenhash.
 // Triggers custom hashChangeEvent in multiple widgets.
 // Exception, React widgets use a different process.
 var triggerHashChangeEvent = function () {
-    //priorHash = getHash(); 
-    //priorHash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
-    priorHash = $.extend(true, {}, hash);
+    // priorHash includes remaining values in hiddenhash (which originate from param values in page)
+    priorHash = structuredClone($.extend(true, {}, nextPriorHash));
+    //alert("hiddenhash.mapview " + hiddenhash.mapview);
+    //nextPriorHash = getHashOnly();
+    nextPriorHash = getHash(); // Includes hiddenhash
 
     // Create a new event
     var event = new CustomEvent('hashChangeEvent');
@@ -787,7 +801,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
        console.log("#bodyloaded becomes available");
         if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
           var div = $("<div />", {
-              html: '<style>.local{display:inline-block !important}.local-block{display:block !important}.localonly{display:block !important}</style>'
+              html: '<style>.local{display:inline-block !important}.local-block{display:block !important}.localonly{display:block !important}.hidelocal{display:none}</style>'
             }).appendTo("body");
         } else {
           // Inject style rule
@@ -861,6 +875,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         consoleLog("delete hiddenhash.name");
         delete hiddenhash.name; // Not sure where this is set.
         delete hiddenhash.cat; // Not sure where this is set.
+        //delete hiddenhash.geo; // Not sure where this is set.
 
         triggerHashChangeEvent();
       });
@@ -995,6 +1010,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         loadScript(theroot + '../io/build/lib/useeio_widgets.js', function(results) {
           if (param.omit_old_naics == "true") {
             loadScript(theroot + 'js/naics2.js', function(results) {
+              consoleLog("ALERT naics2 loaded")
             });
           } else {
             loadScript(theroot + 'js/d3.v5.min.js', function(results) {
@@ -1424,7 +1440,7 @@ function extend () {
       if ( Object.prototype.hasOwnProperty.call( obj, prop ) ) {
         // If deep merge and property is an object, merge properties
         if ( deep && Object.prototype.toString.call(obj[prop]) === '[object Object]' ) {
-          extended[prop] = extend( true, extended[prop], obj[prop] );
+          extended[prop] = structuredClone(extend( true, extended[prop], obj[prop] ));
         } else {
           extended[prop] = obj[prop];
         }
@@ -2318,6 +2334,7 @@ function loadIntoDiv(pageFolder,divID,thediv,html,attempts,callback) {
 }
 
 /* Allows map to remove selected shapes when backing up. */
+/*
 document.addEventListener('localHashChangeEvent', function (elem) {
   console.log("localsite.js detects URL localHashChangeEvent");
   localHashChanged();
@@ -2329,5 +2346,5 @@ function localHashChanged() {
 
   }
 }
-
+*/
 consoleLog("end localsite");

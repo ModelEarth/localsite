@@ -119,7 +119,7 @@ function refreshNaicsWidget() {
             hiddenhash.loctitle = hash.regiontitle;
             $("#region_select").val(hash.regiontitle.replace(/\+/g," "));
             hiddenhash.geo = $("#region_select option:selected").attr("geo");
-            hash.geo = hiddenhash.geo; // Used by naics.js
+            hash.geo = $("#region_select option:selected").attr("geo");
         }
         loadNAICS = true;
     } else if (hash.state != priorHash.state) {
@@ -194,7 +194,7 @@ var industrytable = {};
 function showIndustryTabulatorList(attempts) {
     let hash = getHash();
     if (typeof Tabulator !== 'undefined') {
-        console.log("showTabulatorList")
+        console.log("showIndustryTabulatorList")
         // Try this with 5.0. Currently prevents row click from checking box.
         // selectable:true,
 
