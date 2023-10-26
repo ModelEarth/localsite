@@ -295,7 +295,7 @@ $(document).ready(function () {
  		//alert($(this).attr("geo"))
  	    //goHash({'regiontitle':this.value,'lat':this.options[this.selectedIndex].getAttribute('lat'),'lon':this.options[this.selectedIndex].getAttribute('lon'),'geo':this.options[this.selectedIndex].getAttribute('geo')});
  		hiddenhash.geo = this.options[this.selectedIndex].getAttribute('geo');
-        alert("hiddenhash.geo " + hiddenhash.geo);
+        console.log("hiddenhash.geo " + hiddenhash.geo);
         delete hash.geo;
         delete param.geo;
         try {
