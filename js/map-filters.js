@@ -1381,7 +1381,7 @@ function zoomFromKm(kilometers_wide, theState) {
   if (theState == "HI" || theState == "IN") {
     zoom = zoom + 2;
   }
-  if (theState == "DE") {
+  if (theState == "DE" || theState == "RI" || theState == "MA") {
     zoom = zoom + 3;
   }
   return zoom;
@@ -2777,6 +2777,10 @@ function hashChanged() {
 	} else {
         //$(".locationTabText").text("United States");
     }
+    if (!stateAbbrev && hash.mapview == "state") { // No state
+        updateHash({'mapview':''});
+        $("#country_select").val("country");
+    }
     if (hash.appview && hash.appview != priorHash.appview) {
         loadScript(theroot + 'js/navigation.js', function(results) {
             console.log("hash.appview exists: " + hash.appview);
@@ -2961,9 +2965,12 @@ function hashChanged() {
 
     console.log("hash.mapview: " + hash.mapview + " priorHash.mapview: " + priorHash.mapview);
 
-    /* Delete, occurs below
     if (hash.mapview && hash.mapview != priorHash.mapview) {
         $("#country_select").val(hash.mapview);
+    }
+    /* Delete, occurs below
+    if (hash.mapview && hash.mapview != priorHash.mapview) {
+        //$("#country_select").val(hash.mapview);
         loadScript(theroot + 'js/navigation.js', function(results) {
             alert("Call openMapLocationFilter() 1")
             openMapLocationFilter();
@@ -3134,7 +3141,7 @@ function hashChanged() {
                 } else {
                     //$(".region_service").text(hash.show.toTitleCase());
                     $("#pageTitle").text(hash.show.toTitleCase());
-                    $(".region_service_industries").text("Top Industries");
+                    $(".region_service_industries").text("Top Industries2");
                 }
             } else {
                 $(".region_service").text("Top " + $(".locationTabText").text() + " Industries");

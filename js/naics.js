@@ -12,23 +12,13 @@
 //let hash = loadParams(location.search,location.hash);
 //hash = mix(param,hash); // Add include file's param values.
 let initialNaicsLoad = true;
-let hash = getHash(); // Includes hiddenhash
+//let hash = getHash(); // Includes hiddenhash
 if (typeof dataObject == 'undefined') {
     var dataObject = {};
 }
 let stateID = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78,}
 let stateAbbr;
 let initialPageLoad = true;
-
-if (hash.geo){
-    let fip = hash.geo.split("US")[1]   
-    if (fip.startsWith("0")) {
-        dataObject.stateshown = hash.geo.split("US0")[1]
-    } else {
-        dataObject.stateshown = hash.geo.split("US")[1]
-    }
-}
-[fips,dataObject.stateshown]=getStateFips(hash);
 
 function getStateFips(hash) {
     if (hash.geo) {
@@ -91,28 +81,16 @@ function getStateFips(hash) {
     return stuff
 }
 
-console.log("fips" + fips)
-console.log("dataObject.stateshown: " + dataObject.stateshown);
-
-
 // INIT
 let priorHash_naicspage = {};
 if (typeof hash == 'undefined') {
-    let hash = getHash(); // Allows changes in refreshNaicsWidget to be available.
+    //let hash = getHash(); // Allows changes in refreshNaicsWidget to be available.
 }
 if (typeof hiddenhash == 'undefined') {
-    let hiddenhash = {};
+    //let hiddenhash = {};
 }
 refreshNaicsWidget();
-//loadNationalIfNoState(); // Caused duplicate call to applyIO when using param.state
 
-function loadNationalIfNoState() {
-    let hash = getHash()
-    if (!hash.state) { // No naics filter, use national
-        //alert("applyIO with nothing")
-        applyIO();
-    }
-}
 document.addEventListener('hashChangeEvent', function (elem) {
     if (hiddenhash.debug && location.host.indexOf('localhost') >= 0) {
         //alert('Localhost Alert: hashChangeEvent invoked by naics.js'); // Invoked twice by iogrid inflow-outflow chart
@@ -124,7 +102,19 @@ document.addEventListener('hashChangeEvent', function (elem) {
 
 function refreshNaicsWidget() {
     console.log("refreshNaicsWidget hiddenhash.naics: " + hiddenhash.naics);
-    hash = getHash(); // Includes hiddenhash
+    let hash = getHash(); // Includes hiddenhash
+
+    if (hash.geo){
+        let fip = hash.geo.split("US")[1]   
+        if (fip.startsWith("0")) {
+            dataObject.stateshown = hash.geo.split("US0")[1]
+        } else {
+            dataObject.stateshown = hash.geo.split("US")[1]
+        }
+    }
+    //[fips,dataObject.stateshown]=getStateFips(hash);
+    dataObject.stateshown =getStateFips(hash);
+
     if (hash.show == "undefined") { // To eventually remove
         delete hash.show; // Fix URL bug from indicator select hamburger menu
         updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
@@ -250,18 +240,19 @@ function refreshNaicsWidget() {
         $("#industryDetail").hide();
     }
     console.log("naics1 " + loadNAICS + " " + hash.show + " " + priorHash.show);
-    if ((initialPageLoad || hash.show != priorHash.show)) {
-        //alert("call applyIO no naics")
-        if (loadNAICS == false) { // Not sure if loadNAICS==false needed, or if applyIO is ever used here.
-            applyIO("");
-        }
+    // || hash.show != priorHash.show
+    if (initialPageLoad || loadNAICS) {
+        //if (loadNAICS == false) { // Not sure if loadNAICS==false needed, or if applyIO is ever used here.
+            //applyIO("");
+            //applyIO(hash.naics);
+        //}
         if(initialPageLoad) {
             loadScript(theroot + '../localsite/js/d3.v5.min.js', function(results) {
                 loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
                 });
             });
+            initialPageLoad = false;
         }
-        initialPageLoad = false;
     }
 
     //priorHash_naicspage = getHash();
@@ -406,7 +397,9 @@ function getNaics_setHiddenHash2(go) {
 
 
     hiddenhash.naics = cat_filter.join(); // Overrides the existing naics
-    delete hash.naics; // Since show value invokes new hiddenhash
+    //console.log("hiddenhash.naics before delete " + hiddenhash.naics)
+
+    //delete hash.naics; // Since show value invokes new hiddenhash
 
     console.log("hiddenhash.naics " + hiddenhash.naics)
 
@@ -460,7 +453,7 @@ function populateTitle(showtitle,showtab) {
 // NOT OPTIMALLY DESIGNED - No need to load all 3 naics datasets for state.
 // Calls promisesReady when completed.
 function loadIndustryData(hash) {
-    console.log("loadIndustryData");
+    //alert("loadIndustryData");
     let stateAbbr;
     if (hash.state && hash.state.length >= 2) {
         stateAbbr = hash.state.split(",")[0].toUpperCase();
@@ -1495,8 +1488,11 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                         loadScript(theroot + '../localsite/js/d3.v5.min.js', function(results) {
                             loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
                                 waitForElm('#bubble-graph-id').then((elm) => {
-                                    // This may run before naics is available.
-                                    toggleBubbleHighlights();
+                                    //setTimeout(() => {
+                                        // This may run before naics is available.
+                                        hash.naics = naicshash;
+                                        toggleBubbleHighlights(hash);
+                                    //},3000);
                                 });
                             });
                         });
@@ -1669,7 +1665,7 @@ function getKeyByValue(object, value) {
 
 function applyIO(naics) {
     console.log("applyIO heatmap with naics: " + naics);
-
+    let hash = getHash();
     if (!hash.indicators) {
         hash.indicators = "ACID,ETOX,EUTR,GHG,HTOX,LAND,OZON,PEST,SMOG,WATR";
     }
@@ -1681,9 +1677,10 @@ function applyIO(naics) {
     }
 
     if (!hash.state && !param.state) {
-        console.log("Show national by cleaing hiddenhash.naics.")
+        console.log("Show national by clearing hiddenhash.naics.")
         // Clear to show national heatmap mosaic and input-output chart.
-        hiddenhash.naics = "";
+        //hiddenhash.naics = "";
+        delete hiddenhash.naics;
     }
 
     var indicators = "";
