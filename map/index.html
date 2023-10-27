@@ -13,7 +13,9 @@
 let hash = getHash();
 if (!hash.show && !hash.appview && !hash.mapview) {
 	//showApps("#bigThumbMenu"); // For inital load when no map requested.
-	goHash({"appview":"topics"}); // Allows priorhash to be set for subsequent click of Locations tab.
+	loadScript(theroot + 'js/map-filters.js', function(results) {
+		goHash({"appview":"topics"}); // Allows priorhash to be set for subsequent click of Locations tab.
+	});
 }
 </script>
 <style>

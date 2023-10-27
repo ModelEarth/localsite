@@ -1,6 +1,7 @@
 // Site specific settings
 // Maintained in localsite/js/navigation.js
 //alert("navigation.js param.state " + param.state);
+var navigationJsLoaded = "true";
 if(typeof page_scripts == 'undefined') {  // Wraps script below to insure navigation.js is only loaded once.
 if(typeof localObject == 'undefined') { var localObject = {};}
 if(typeof localObject.layers == 'undefined') {

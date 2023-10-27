@@ -784,7 +784,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       //var divForBodyLoaded = '<div id="bodyloaded"></div>'; // Tells us the body is loaded, since body is not detected.
       var divForBodyLoaded = document.createElement('div');
       divForBodyLoaded.id = "bodyloaded";
-      divForBodyLoaded.innerHTML = '<span>&nbsp;</span>'; // Tells us the body is loaded, since body is not detected.
+      divForBodyLoaded.innerHTML = '<span style="display:none">&nbsp;</span>'; // Tells us the body is loaded, since body is not detected.
       
       $(document).ready(function () {
         // this approach brakes events. Do not "add" to innerHTML. Use DOM API e.g. appendChild
@@ -2117,7 +2117,7 @@ function loadIframe(iframeName, url) {
   return true;
 }
 
-function waitForVariable(variable, callback) {
+function waitForVariable(variable, callback) { // Declair variable using var since let will not be detected.
   var interval = setInterval(function() {
     if (window[variable]) {
       clearInterval(interval);

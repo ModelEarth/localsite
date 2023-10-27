@@ -2784,7 +2784,10 @@ function hashChanged() {
     if (hash.appview && hash.appview != priorHash.appview) {
         loadScript(theroot + 'js/navigation.js', function(results) {
             console.log("hash.appview exists: " + hash.appview);
-            showApps("#bigThumbMenu");
+            //navigationJsLoaded
+            waitForVariable('navigationJsLoaded', function() {
+                showApps("#bigThumbMenu");
+            });
         });
     }
 	if (hash.show != priorHash.show) {
