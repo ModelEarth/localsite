@@ -1484,7 +1484,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                         //$("#industries").show();
 
 
-                        // Quick hack - need better way to wait for naics
+                        // Quick hack - might need better way to wait for naics
                         loadScript(theroot + '../localsite/js/d3.v5.min.js', function(results) {
                             loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
                                 waitForElm('#bubble-graph-id').then((elm) => {

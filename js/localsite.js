@@ -146,7 +146,9 @@ if(typeof param != 'undefined') { // From settings in HTML page
   var param = structuredClone(extend(true, loadParams(location.search,location.hash), paramIncludeFile)); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
   //param = loadParams(location.search,location.hash); // Includes localsite.js include.
 }
-
+if (param.state) {
+  defaultState = param.state; // For /locations/index.html
+}
 // TO DO: Add paramIncludeFile to call once rather than in both function
 function getParamInclude() {
   let paramInclude = {};
