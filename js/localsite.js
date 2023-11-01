@@ -789,15 +789,58 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       divForBodyLoaded.innerHTML = '<span style="display:none">&nbsp;</span>'; // Tells us the body is loaded, since body is not detected.
       
       $(document).ready(function () {
+        useSet(); // Below
+
         // this approach brakes events. Do not "add" to innerHTML. Use DOM API e.g. appendChild
         //document.getElementsByTagName('body')[0].innerHTML += divForBodyLoaded;
         document.body.appendChild(divForBodyLoaded);
+
+        loadScript('/localsite/js/settings.js', function(results) { // Currently needed for cookies
+          let sitelook;
+          if (typeof Cookies != 'undefined' && Cookies.get('sitelook')) {
+            sitelook = Cookies.get('sitelook');
+          }
+          if (param.sitelook) {
+            sitelook = param.sitelook;
+          }
+          //alert(sitelook)
+          if (sitelook == "light") {
+            removeElement('/localsite/css/bootstrap.darkly.min.css');
+            removeElement('/explore/css/site-dark.css');
+            removeElement('/localsite/css/dark.css');
+            includeCSS3(theroot + 'css/light.css',theroot);
+            //$(".darkLayout").removeClass("darkLayout");
+            //loadScript(theroot + 'js/settings.js', function(results) {
+              if (typeof Cookies != 'undefined') {
+                  //$("#sitelook").val(Cookies.get('sitelook'));
+                  $("#sitelook").val(sitelook);
+                  Cookies.set('sitelook', sitelook);
+                  console.log("Bring on the sitelook: " + Cookies.get('sitelook'));
+              }
+            //});
+          }
+        });
       });
 
       $(document).on('click', function(event) { // Hide open menus in core
         $('.hideOnDocClick').hide();
       });
 
+      $(document).on("click", ".uOut", function(event) {
+        console.log(".uOut clicked")
+
+        // Keeping it real simple
+        Cookies.remove('at_a');
+        window.location = "../"
+        return;
+
+        //event.stopPropagation();
+      });
+      $(document).on("click", ".uIn", function(event) {
+        window.location = "/explore/menu/login/azure/";
+        return;
+      });
+      
       // Load when body div becomes available, faster than waiting for all DOM .js files to load.
       waitForElm('#bodyloaded').then((elm) => {
        console.log("#bodyloaded becomes available");
@@ -2349,4 +2392,214 @@ function localHashChanged() {
   }
 }
 */
+function removeElement(divID) {
+    // parentNode is used for IE.
+    let element = document.getElementById(divID);
+    if (element) {
+      element.parentNode.removeChild(element);
+    }
+}
+
+function useSet() {
+    let uAcc = 0;
+    if (Cookies.get('at_a')) {
+        if (location.host.indexOf('localhost') >= 0) {
+            uAcc = 8; // Local
+        } else {
+            uAcc = 5;
+        }
+    } // Others can reside here, Git recap
+    else {
+        uAcc = 0;
+    }
+    loadUse(uAcc); // Place style
+
+    //alert("param.minuse: " + param.minuse);
+    if (param.minuse && param.minuse > uAcc) { // Todo: Detect multiple acccess levels.
+        if (uAcc < 5) {
+          Cookies.set('golog', window.location.href);
+          if (param.minred) {
+            window.location = param.minred;
+          } else {
+            window.location = "/explore/menu/login/azure";
+          }
+          return;
+        }
+    }
+}
+function loadUse(use) {
+    var strUseCss = "<style>";
+    if (use==0) {
+      strUseCss += ".default{display:block !important}";
+    } else {
+      strUseCss += ".use-1{display:block !important}";
+      if (use==8) {
+        strUseCss += ".use-5{display:block !important}";
+      }
+      strUseCss += ".use-" + use + "{display:block !important}";
+    }
+    strUseCss += "<\/style>";
+    document.head.insertAdjacentHTML("beforeend", strUseCss);
+}
+
+
+// Source: explore/js/embed.js
+
+/*******************************************/
+
+/*!
+ * JavaScript Cookie v2.1.1
+ * https://github.com/js-cookie/js-cookie
+ *
+ * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
+ * Released under the MIT license
+ */
+;(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(factory);
+    } else if (typeof exports === 'object') {
+        module.exports = factory();
+    } else {
+        var OldCookies = window.Cookies;
+        var api = window.Cookies = factory();
+        api.noConflict = function () {
+            window.Cookies = OldCookies;
+            return api;
+        };
+    }
+}(function () {
+    function extend () {
+        var i = 0;
+        var result = {};
+        for (; i < arguments.length; i++) {
+            var attributes = arguments[ i ];
+            for (var key in attributes) {
+                result[key] = attributes[key];
+            }
+        }
+        return result;
+    }
+
+    function init (converter) {
+        function api (key, value, attributes) {
+            var result;
+            if (typeof document === 'undefined') {
+                return;
+            }
+
+            // Write
+
+            if (arguments.length > 1) {
+                attributes = extend({
+                    path: '/'
+                }, api.defaults, attributes);
+
+                if (typeof attributes.expires === 'number') {
+                    var expires = new Date();
+                    expires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);
+                    attributes.expires = expires;
+                }
+
+                try {
+                    result = JSON.stringify(value);
+                    if (/^[\{\[]/.test(result)) {
+                        value = result;
+                    }
+                } catch (e) {}
+
+                if (!converter.write) {
+                    value = encodeURIComponent(String(value))
+                        .replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
+                } else {
+                    value = converter.write(value, key);
+                }
+
+                key = encodeURIComponent(String(key));
+                key = key.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);
+                key = key.replace(/[\(\)]/g, escape);
+
+                return (document.cookie = [
+                    key, '=', value,
+                    attributes.expires && '; expires=' + attributes.expires.toUTCString(), // use expires attribute, max-age is not supported by IE
+                    attributes.path    && '; path=' + attributes.path,
+                    attributes.domain  && '; domain=' + attributes.domain,
+                    attributes.secure ? '; secure' : ''
+                ].join(''));
+            }
+
+            // Read
+
+            if (!key) {
+                result = {};
+            }
+
+            // To prevent the for loop in the first place assign an empty array
+            // in case there are no cookies at all. Also prevents odd result when
+            // calling "get()"
+            var cookies = document.cookie ? document.cookie.split('; ') : [];
+            var rdecode = /(%[0-9A-Z]{2})+/g;
+            var i = 0;
+
+            for (; i < cookies.length; i++) {
+                var parts = cookies[i].split('=');
+                var name = parts[0].replace(rdecode, decodeURIComponent);
+                var cookie = parts.slice(1).join('=');
+
+                if (cookie.charAt(0) === '"') {
+                    cookie = cookie.slice(1, -1);
+                }
+
+                try {
+                    cookie = converter.read ?
+                        converter.read(cookie, name) : converter(cookie, name) ||
+                        cookie.replace(rdecode, decodeURIComponent);
+
+                    if (this.json) {
+                        try {
+                            cookie = JSON.parse(cookie);
+                        } catch (e) {}
+                    }
+
+                    if (key === name) {
+                        result = cookie;
+                        break;
+                    }
+
+                    if (!key) {
+                        result[name] = cookie;
+                    }
+                } catch (e) {}
+            }
+
+            return result;
+        }
+
+        api.set = api;
+        api.get = function (key) {
+            return api(key);
+        };
+        api.getJSON = function () {
+            return api.apply({
+                json: true
+            }, [].slice.call(arguments));
+        };
+        api.defaults = {};
+
+        api.remove = function (key, attributes) {
+            api(key, '', extend(attributes, {
+                expires: -1
+            }));
+        };
+
+        api.withConverter = init;
+
+        return api;
+    }
+
+    return init(function () {});
+}));
+/* End jQuery Cookie Plugin */
+
+// End: explore/js/embed.js
+
 consoleLog("end localsite");

@@ -1,5 +1,7 @@
 console.log("settings.js loaded.")
 
+// Probably won't retain this page, copied from explore
+
 // For login and any cookie settings.
 
 /*******************************************/
@@ -158,11 +160,11 @@ console.log("settings.js loaded.")
 /* End jQuery Cookie Plugin */
 /*******************************************/
 
-let params = parseQuery(scriptParamString);
+//let params = parseQuery(scriptParamString);
 let showLogin = true;
 var workoffline = false;
 function embedded() {
-    if (params["embed"] == "1" || params["embed"] == "true") {
+    if (param["embed"] == "1" || param["embed"] == "true") {
         return true;
     } else {
         return false;
@@ -189,10 +191,10 @@ function initElements() {
             sitemode = param["sitemode"]; 
             Cookies.set('sitemode', sitemode);
             $(".sitemode").val(sitemode);
-        } else if (params["sitemode"]) { // From index.html
-            sitemode = params["sitemode"];
-            $(".sitemode").val(sitemode);
-            console.log("Set sitemode from index.html: " + sitemode);
+        //} else if (params["sitemode"]) { // From index.html
+        //   sitemode = params["sitemode"];
+        //    $(".sitemode").val(sitemode);
+        //    console.log("Set sitemode from index.html: " + sitemode);
         } else {
             setSiteMode(sitemode);
         }
@@ -229,10 +231,6 @@ function initElements() {
         $(".moduleContent").insertAfter($(".moduleContentPosition")); // .moduleContent resides in menu/wrap.html
         $(".smartHolderInsert").append($(".smartHolder")); // Used by dod
 
-        if (params["sitemode"] != "widget") { // Hides for /defense
-            //$(".topTitleBar").show();
-        }
-
         //setSiteSource(sitesource);
         if(layerName == "main") {
             $(".videoHeightHolder").show();
@@ -245,25 +243,14 @@ function initElements() {
                 $(".expandFromIFrame").show();
             }
         }
-        if (params["logo"]) {
-            //$( "#siteHeader" ).append( "<a href='/'><img src='" + params["logo"] + "' style='" + params["logostyle"] + "' /></a>" );
-        }
-        if (params["headerElement"]) {
-            $("#siteHeader").append( params["headerElement"] );
-        }
+        //if (params["headerElement"]) {
+        //    $("#siteHeader").append( params["headerElement"] );
+        //}
         if ($(".sitemode").val() != "fullnav") {
             // Never fix the navTop, always fix the siteHeader
             //$('#siteHeader').css("position","fixed");
             //$('.moduleBackgroundImage').css("position","fixed");
             // What about offset here?
-        }
-        if (params["heroheight"]) {
-            // Add space here: https://localhost/explore/defense/contractors/
-            //$(".panelMinHeight").css("min-height",params["heroheight"] + "px");
-            var heroHeight = parseInt(params["heroheight"]) + parseInt($("#siteHeader").height());
-            $(".moduleBackgroundImage").css("min-height",heroHeight + "px");
-            $(".sitemoduleBackground").hide();
-            $(".siteHeaderImage").hide();
         }
         /*
         setTimeout(function(){
@@ -317,8 +304,8 @@ function initElements() {
     if (param["sitelook"]) { // From URL
         sitelook = param["sitelook"]; 
         //Cookies.set('sitelook', sitelook);
-    } else if (params["sitelook"]) { // From widget
-        sitelook = params["sitelook"]; 
+    //} else if (params["sitelook"]) { // From widget
+    //    sitelook = params["sitelook"]; 
         // Prevent video from appearing when going to menu. Cookies probably need to be specific to domain.
         //Cookies.set('sitelook', sitelook);
     } else if (typeof Cookies != 'undefined' && Cookies.get('sitelook')) {
@@ -354,9 +341,7 @@ function getCurrentLayer() {
         consoleLog("getCurrentLayer(): " + theLayer);
         return theLayer;
     } else {
-        if (params["go"]) {
-            return(params["go"]); // Set within calling page.
-        }
+
         //return "main"; // Jan 2017
 
         // This will be changed sice it prevents a use of header without layer showing.
@@ -539,7 +524,7 @@ function loadUserAccess(userAccess) {
 }
 
 function parseQuery (query) {
-   var Params = new Object ();
+   let Params = new Object ();
    if ( ! query ) return Params; // return empty object
    var Pairs = query.split(/[;&]/);
    for ( var i = 0; i < Pairs.length; i++ ) {
@@ -609,9 +594,6 @@ function setSiteMode(sitemode) {
         var headerOffset = 90;
         $(".showFull").hide();
         $('.sectionBarBkgd2').css('background-position-y', -headerOffset);
-        if (params["navloc"] != "top") { // Not Film
-            //$(".sectionBarBkgd").removeClass("sectionBarBkgdColor");
-        }
         //$(".sectionBarSpacer").show();
 
         $(".sectionBarAtTop").prepend($(".sectionBar"));
@@ -647,11 +629,6 @@ function setSiteMode(sitemode) {
             $('.showSearchClick').trigger("click"); // For COI
             $('.searchHeader').show(); // For COI
             $('.hideEmbed').hide();
-            if (params["navbymap"] == "1") {
-                $('.tabSections').hide();
-                $('.byMap').prepend($('.tabSections'));
-                //$('.showLayers').trigger("click");
-            }
         } else {
             $('.layerTitleLine').show();
             $('.navTopRight .hideFilters').hide();

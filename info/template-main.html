@@ -152,11 +152,9 @@
                 </div>
               </div>
 
-              <div class="local" style="display:none">
-                <div class="showSettings rightTopItem">
-                    <i class="material-icons menuTopIcon">&#xE8B8;</i>
-                    <span>Settings</span>
-                </div>
+              <div class="showSettings rightTopItem">
+                  <i class="material-icons menuTopIcon">&#xE8B8;</i>
+                  <span>Settings</span>
               </div>
 
               <div class="local" style="display:none">
@@ -195,20 +193,22 @@
               </div>
 
               <div class="local" style="display:none">
-              <div class="showAccountTools rightTopItem" style="displayX:none">
-                  <div class="showAccount user-1">
+              <div class="showAccount rightTopItem local intranet" style="display:none">
+                  <div class="showAccount">
                       <i class="material-icons menuTopIcon">&#xE7FD;</i>
                       <span>Account</span>
                   </div>
               </div>
               </div>
 
+              <!--
               <div class="local" style="display:none">
               <div class="logoutAccount user-1 rightTopItem" style="display:none">
                   <i class="material-icons menuTopIcon">&#xE7FD;</i>
                   <span>Log out</span>
               </div>
               </div>
+              -->
 
               <div class="showSettingsInNavTop" style="float:left">
               </div>
@@ -304,25 +304,26 @@
                 <div class="setDiv"></div>
             </div>
             
-            <div class="setLeft"><div>Basemap</div></div>
-            <div class="setOverflow">
-              <div id='selector_menu' class="setRight">
-            
-                <select id='basemapSelector' class='layerSelector sitebasemap catchClick'>
-                  <option value='positron_light_nolabels'>Positron</option>
-                  <option value='osm'>Open Street Map</option>
-                  <option value='esri'><!--- Esri -->Satellite Map</option>
-                  <!-- Zoom not appearing -->
-                  <!--<option value='default'>Open Street Map 2</option>-->
-                  <!-- Zoom not appearing -->
-                  <!-- <option value='green'>Green Topo Map</option>-->
-                  <option value='dark'>Dark Background</option>
-                  <option value='firemap'>Fire Map</option>
-                </select>
-            
+            <div class="local" style="display:none">
+              <div class="setLeft"><div>Basemap</div></div>
+              <div class="setOverflow">
+                <div id='selector_menu' class="setRight">
+              
+                  <select id='basemapSelector' class='layerSelector sitebasemap catchClick'>
+                    <option value='positron_light_nolabels'>Positron</option>
+                    <option value='osm'>Open Street Map</option>
+                    <option value='esri'><!--- Esri -->Satellite Map</option>
+                    <!-- Zoom not appearing -->
+                    <!--<option value='default'>Open Street Map 2</option>-->
+                    <!-- Zoom not appearing -->
+                    <!-- <option value='green'>Green Topo Map</option>-->
+                    <option value='dark'>Dark Background</option>
+                    <option value='firemap'>Fire Map</option>
+                  </select>
+              
+                </div>
+              </div>
             </div>
-          </div>
-          
 
           <!--
           <div class="setDiv"></div>
@@ -421,7 +422,30 @@
               <br><br><br>
           </div>
         </div>
-        <!-- /Stories Panel -->
+        <!-- /Desktop Panel -->
+
+        <!-- Account Panel -->
+        <div id="accountPanel" class="menuExpanded topMenuOffset" style="display:none">
+          <div class="menuExpandedScroll">
+            <div style="font-size:16pt; margin-bottom:20px">Account</div>
+
+            <!-- fields here instead from recap -->
+
+            <div style="margin-bottom:5px">Your email address</div>
+            <input id="input123" autocompleteX="off" style="width:100%" class="mobileWide textInput si-input" type="text" value=""><br><br><br>
+
+            <div class="georgia" style="display:none">
+              <div><a href="https://partner.exploregeorgia.org/login">Partner Resources</a></div><br><br>
+            </div>
+
+            <div class="default" style="display:none">
+              <a class="uIn" href="">Staff Resources</a><br><br>
+            </div>
+            <div class="use-1" style="display:none;"><div class="uOut topButton" style="margin:0 0 20px 0; border:1px solid #777">Sign Out</div></div>
+          </div>
+        </div>
+        <!-- /Account Panel -->
+
 
         <!-- Print Options -->
         <div class="printOptionsHolderWide menuExpanded topMenuOffset" style="display:none">

@@ -886,10 +886,11 @@ $(document).on("click", ".showSettings", function(event) {
     //event.stopPropagation();
 });
 $(document).on("click", ".showAccount", function(event) {
+	closeExpandedMenus(event.currentTarget);
     //if ($(".moduleJS").width() <= 800) { // Narrow
     //    $('.hideApps').trigger("click"); // For mobile
     //}
-    $(".accountPanel").show();
+    $("#accountPanel").show();
 });
 $('.contactUs').click(function(event) {
     alert("The Contact Us link is not active.")
@@ -921,11 +922,6 @@ $(document).on("click", ".showPrintOptions, .print_button", function(event) {
     $('.printOptionsText').show();
     $('.printOptionsHolderWide').show();
     event.stopPropagation();
-});
-$('.accountPanelClose').click(function(event) {
-    //$(".hideAccount").hide();
-    //$(".showAccount").show(); // Bug, this caused menu item to appear when closing settings.
-    $(".accountPanel").hide();
 });
 
 $(document).on("click", ".showTheMenu", function(event) { // Seasons

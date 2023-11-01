@@ -1,0 +1,33 @@
+.darkLayout {
+    background-color: #fff !important;
+    color: #111 !important;
+}
+.darkLayout a {
+	color: #0366d6 !important;
+}
+.navLinks a {
+	color: #000 !important;
+}
+.contentpadding a, .contentpadding a:link, .contentpadding a:visited {
+    color: #0366d6 !important;
+}
+h1, h2, h3, h4, h5, h6 {
+	color: #6f6f6f !important;
+}
+
+/*
+#fullcolumn {
+	background: #1a1a1a;
+	background-color: #1a1a1a;
+	color: #ccc;
+}
+#fullcolumn  a:link, #fullcolumn  a:visited {
+  color: #8899ee;
+}
+#fullcolumn  b a:link, #fullcolumn  b a:visited {
+  color: #ccc;
+}
+#fullcolumn h1, #fullcolumn h2, #fullcolumn h3, #fullcolumn h4, #fullcolumn h5, #fullcolumn h6 {
+	color: #ccc;
+}
+*/
