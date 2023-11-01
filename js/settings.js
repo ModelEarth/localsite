@@ -181,7 +181,7 @@ function initElements() {
     var sitemode;
     var sitesource;
     var sitelook;
-    if(typeof Cookies!='undefined') {
+    if(typeof Cookies != 'undefined') {
         sitemode = Cookies.get('sitemode');
         sitesource = Cookies.get('sitesource');
         sitelook = Cookies.get('sitelook');
@@ -298,7 +298,7 @@ function initElements() {
         $('.bigThumbUl .user-4').detach(); // Prevents gap due to hidden divs when using nth-child in site.css
 
     });
-    if(typeof Cookies!='undefined') {
+    if(typeof Cookies != 'undefined') {
         if (Cookies.get('sitemode')) {
             $(".sitemode").val(Cookies.get('sitemode'));
         }
@@ -321,12 +321,12 @@ function initElements() {
         sitelook = params["sitelook"]; 
         // Prevent video from appearing when going to menu. Cookies probably need to be specific to domain.
         //Cookies.set('sitelook', sitelook);
-    } else if (typeof Cookies!='undefined' && Cookies.get('sitelook')) {
+    } else if (typeof Cookies != 'undefined' && Cookies.get('sitelook')) {
         sitelook = Cookies.get('sitelook');
     }
     console.log("sitelook init: " + sitelook);
     setSiteLook(sitelook,layerName);
-    if (typeof Cookies!='undefined') {
+    if (typeof Cookies != 'undefined') {
         $("#sitelook").val(Cookies.get('sitelook'));
     }
 }
@@ -388,7 +388,7 @@ $(document).on("change", ".sitesource", function(event) {
     event.stopPropagation();
 });
 $(document).on("change", "#sitelook", function(event) { // Style: default, coi, gc
-    if (typeof Cookies!='undefined') {
+    if (typeof Cookies != 'undefined') {
         Cookies.set('sitelook', $("#sitelook").val());
     }
     changeSiteLook();
@@ -396,7 +396,7 @@ $(document).on("change", "#sitelook", function(event) { // Style: default, coi, 
 });
 $(document).on("change", ".sitebasemap", function(event) {
     sitebasemap = $(".sitebasemap").val();
-    if (typeof Cookies!='undefined') {
+    if (typeof Cookies != 'undefined') {
         Cookies.set('sitebasemap', $(".sitebasemap").val());
     }
     setSiteSource($(".sitebasemap").val());
@@ -404,7 +404,6 @@ $(document).on("change", ".sitebasemap", function(event) {
 });
 
 function changeSiteLook() {
-    alert("changeSiteLook 1")
     layerName = getLayerName();
     consoleLog("changeSiteLook: " + $("#sitelook").val());
     setSiteLook($("#sitelook").val(),layerName);
@@ -438,7 +437,6 @@ function includeCssExplore(url) {
         head.appendChild(link); // Since site-narrow.css comes after site.css
     }
 }
-
 
 function setSiteLook(siteLook,layerName) {
 
@@ -478,6 +476,10 @@ function setSiteLook(siteLook,layerName) {
         $("#css-site-plain-css").attr("disabled", "disabled");
         //$('.searchTextHolder').append($('.searchTextMove'));
     } else { // Light
+        removeElement('/localsite/css/bootstrap.darkly.min.css');
+        removeElement(root + 'css/site-dark.css');
+        removeElement('/localsite/css/dark.css');
+
         $('.sitebasemap').val("positron_light_nolabels").change();
         includeCssExplore(root + 'css/site-plain.css' + forceReload);
         $("#css-site-plain-css").removeAttr('disabled');
@@ -670,7 +672,7 @@ function setSiteMode(sitemode) {
 }
 function initEvents() {
     $(document).ready(function () {
-        if(typeof Cookies!='undefined'){
+        if(typeof Cookies != 'undefined'){
             Cookies.remove('access_token'); // temp
             Cookies.remove('a_access_token'); // temp
             Cookies.remove('p_access_token'); // temp
@@ -1505,7 +1507,7 @@ $('.accountSignout').click(function(event) {
         window.location = gologout;
     }
     if (showLogin) {
-        $(".showAccountTools").show();
+        //$(".showAccount").show();
     }
     event.stopPropagation();
 });
