@@ -46,6 +46,9 @@ body {
   color: #333;
   line-heightX:0; /* prevents gaps betweet images, but 0 caused text to overlap on start and nav icons. */
 }
+.dark {
+  color: #eee;
+}
 .bodyIconMargin {
   margin-left: 64px;
 }
@@ -327,6 +330,29 @@ h6 {
   margin-top: 10px;
   margin-bottom: 0px;
 }
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #ccc;
+}
+
+/* hacks for useeio widgets */
+.dark .MuiTypography-h6 {
+  color: #ccc;
+}
+.dark .MuiTypography-body1 {
+  color: #ccc;
+}
+.dark .MuiInputBase-root {
+  color: #fff;
+}
+.dark .MuiIconButton-root {
+  color: #fff;
+}
+.dark .sector-list a, .dark .sector-list a:visited {
+  color: #fff;
+}
+.dark .sector-list .indicator-group {
+  color: #bbb;
+}
 sup {
   line-height: 0.8em;
   font-size: 0.6em;
@@ -438,6 +464,15 @@ summary::-webkit-details-marker {
 }
 .content a:visited {
   color: #0366d6;
+}
+.lite { /* Also in DS */
+  background-color: #eee;
+  color:  #777;
+}
+.dark .lite {
+  background-color: #555;
+  background: #555;
+  color:  #eee;
 }
 .liteDiv {
   border-right: solid 1px #e9e9e9;
@@ -803,26 +838,6 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   font-size: 13.5px;
 }
 
-.navLinks a {
-    height: 42px;
-    display: block;
-    float: left;
-    color: #aaa;
-    text-decoration: none !important;
-    margin-right:0px !important;
-    padding:8px 15px 0 13px;
-    font: 400 16px/1.8 "Lato", sans-serif;
-    -webkit-font-smoothing: inherit !important;
-}
-.navLinks .navActive {
-    font: 600 16px/1.8 "Lato", sans-serif !important;
-    color: #444 !important;
-}
-.navLinks a:hover {
-    color: #555;
-    background-color: #ddd;
-    text-decoration: none !important;
-}
 .pageLinks a {
   display: inline;
   float: none;
@@ -1034,6 +1049,11 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   margin-bottom: 10px;
 }
 
+.dark select {
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #555 !important;
+}
 
 #logospace {
   float:left;

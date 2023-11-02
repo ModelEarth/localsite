@@ -111,6 +111,9 @@
     background-color: #555 !important;
     border: 0px !important;
     border-radius: 6px !important;
+    margin-left: 4px;
+    padding: 0 10px;
+    text-decoration: none;
   }
   .leaflet-control-zoom-in {
     margin-bottom:6px;

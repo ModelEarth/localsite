@@ -530,6 +530,9 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	text-shadow: 1px 1px 4px #fff;
 	padding-right: 16px;
 }
+.dark .rightIcons {
+	text-shadow: none;
+}
 .bothSideIcons {
   top:0px;
   z-index:10000;
@@ -682,6 +685,39 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     margin-bottomX: 80px;
     heightX:100%; /* For counties map, but breaks fixed position map on tools page. */
 }
+.dark #fullcolumn  a:link, .dark #fullcolumn  a:visited {
+  color: #8899ee;
+}
+.dark #fullcolumn  b a:link, .dark #fullcolumn  b a:visited {
+  color: #ccc;
+}
+.dark #fullcolumn h1, .dark #fullcolumn h2, .dark #fullcolumn h3, .dark #fullcolumn h4, .dark #fullcolumn h5, .dark #fullcolumn h6 {
+  color: #ccc;
+}
+.navLinks a {
+  height: 42px;
+  display: block;
+  float: left;
+  color: #aaa;
+  text-decoration: none !important;
+  margin-right:0px !important;
+  padding:8px 15px 0 13px;
+  font: 400 16px/1.8 "Lato", sans-serif;
+  -webkit-font-smoothing: inherit !important;
+}
+.dark #fullcolumn .navLinks a:link, .dark #fullcolumn .navLinks a:visited {
+  color: #fff;
+}
+.navLinks a:hover {
+    color: #555;
+    background-color: #ddd;
+    text-decoration: none !important;
+}
+.navLinks .navActive {
+    font: 600 16px/1.8 "Lato", sans-serif !important;
+    color: #444 !important;
+}
+
 @media (max-width: 800px) {
     .content {
       padding: 30px 30px 30px 40px;
@@ -723,7 +759,9 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     color: #000;
     /* pointer-events: auto; */
 }
-
+.dark .settingsPanel select {
+	color: #ddd;
+}
 .menuExpanded {
     min-height: 200px;
     height: 100%;

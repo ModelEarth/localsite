@@ -469,6 +469,25 @@ var vis = document.getElementById('vis'),
   }
   </script>
 
+  <div id="cookieList"></div>
+  <script>
+  function listCookies() {
+      var theCookies = document.cookie.split(';');
+      var aString = '';
+      for (var i = 0 ; i < theCookies.length; i++) {
+          console.log("theCookies[i] " + theCookies[i]);
+          var theCookVal = theCookies[i].split('=');
+          aString += '<b>' + theCookVal[0] + '</b> ' + theCookVal[1] + "<br>\n";
+      }
+      $(document).ready(function () {
+        $("#cookieList").html("<h2>Cookies</h2>" + aString);
+      });
+  }
+  if (location.host.indexOf('localhost') >= 0) {
+    listCookies();
+  }
+  </script>
+
 </div>
 
 <script>
@@ -483,3 +502,6 @@ var vis = document.getElementById('vis'),
 
 </body>
 </html>
+
+
+

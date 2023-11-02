@@ -15,7 +15,7 @@
 /* Also insert "dark" class into body tag. */
 select {
     background-color: #333;
-    color: #fff;
+    color: #fff !important;
 }
 hr {
     border-bottom: 1px solid #ccc;

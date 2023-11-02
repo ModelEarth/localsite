@@ -9,11 +9,13 @@
 	color: #000 !important;
 }
 .contentpadding a, .contentpadding a:link, .contentpadding a:visited {
-    color: #0366d6 !important;
+    color: #0366d6;
 }
+/*
 h1, h2, h3, h4, h5, h6 {
 	color: #6f6f6f !important;
 }
+*/
 
 /*
 #fullcolumn {

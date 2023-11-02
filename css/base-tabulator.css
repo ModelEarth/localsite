@@ -6,6 +6,12 @@
     background-color: #fff;
     border-right: 1px solid #fff;
 }
+.dark .tabulator .tabulator-header .tabulator-col {
+   
+}
+.dark .tabulator-row {
+    background-color: transparent;
+}
 .tabulator-row .tabulator-cell {
     border-right: 1px solid #fff;
     border-bottom: 1px solid #ccc;

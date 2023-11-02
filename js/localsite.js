@@ -6,7 +6,7 @@
 // Define a new object if localsite library does not exist yet.
 let localStart = Date.now();
 let onlineApp = true; // Set to false during air travel. Also sets local to no state.
-let defaultState = ""; // GA
+let defaultState = "GA"; // GA
 consoleLog("start localsite");
 var local_app = local_app || (function(module){
     let _args = {}; // private, also worked as []
@@ -656,6 +656,7 @@ function loadLocalTemplate() {
       document.body.appendChild(elemDiv);
 
       console.log("Template Loaded: " + datascapeFile);
+      initSitelook();
       if (typeof relocatedStateMenu != "undefined") {
         relocatedStateMenu.appendChild(state_select); // For apps hero
         $(".stateFilters").hide();
@@ -795,7 +796,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         //document.getElementsByTagName('body')[0].innerHTML += divForBodyLoaded;
         document.body.appendChild(divForBodyLoaded);
 
-        loadScript('/localsite/js/settings.js', function(results) { // Currently needed for cookies
+        //loadScript('/localsite/js/settings.js', function(results) { // Currently needed for cookies
           let sitelook;
           if (typeof Cookies != 'undefined' && Cookies.get('sitelook')) {
             sitelook = Cookies.get('sitelook');
@@ -807,19 +808,19 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           if (sitelook == "light") {
             removeElement('/localsite/css/bootstrap.darkly.min.css');
             removeElement('/explore/css/site-dark.css');
-            removeElement('/localsite/css/dark.css');
             includeCSS3(theroot + 'css/light.css',theroot);
             //$(".darkLayout").removeClass("darkLayout");
             //loadScript(theroot + 'js/settings.js', function(results) {
               if (typeof Cookies != 'undefined') {
-                  //$("#sitelook").val(Cookies.get('sitelook'));
-                  $("#sitelook").val(sitelook);
+                  waitForElm('#sitelook').then((elm) => {
+                    $("#sitelook").val(sitelook);
+                  });
                   Cookies.set('sitelook', sitelook);
                   console.log("Bring on the sitelook: " + Cookies.get('sitelook'));
               }
             //});
           }
-        });
+        //});
       });
 
       $(document).on('click', function(event) { // Hide open menus in core
@@ -2601,5 +2602,129 @@ function loadUse(use) {
 /* End jQuery Cookie Plugin */
 
 // End: explore/js/embed.js
+
+
+// Copied from setting.js initElements()
+function initSitelook() {
+    let sitemode;
+    let sitesource;
+    let sitelook;
+    if(typeof Cookies != 'undefined') {
+        //sitemode = Cookies.get('sitemode');
+        sitesource = Cookies.get('sitesource');
+        sitelook = Cookies.get('sitelook');
+
+        /*
+        if (param["sitemode"]) { // From URL
+            sitemode = param["sitemode"]; 
+            Cookies.set('sitemode', sitemode);
+            $(".sitemode").val(sitemode);
+        //} else if (params["sitemode"]) { // From index.html
+        //   sitemode = params["sitemode"];
+        //    $(".sitemode").val(sitemode);
+        //    console.log("Set sitemode from index.html: " + sitemode);
+        } else {
+            setSitemode(sitemode);
+        }
+        */
+    }
+    /*
+    $(".moduleIntroHolder").append($(".moduleIntro"));
+
+    if ($(".insertFilters").length > 0) {
+        $(".insertFilters").append($(".filterHolder"));
+        //$("#contractors-table").hide();
+        //$("#contractors-table").prepend($(".k-grid-pager"));
+        $(".showFiltersButton").hide();
+    }
+    */
+
+    if(typeof Cookies != 'undefined') {
+        if (Cookies.get('sitemode')) {
+            $(".sitemode").val(Cookies.get('sitemode'));
+        }
+        if (Cookies.get('sitesource')) {
+            $(".sitesource").val(Cookies.get('sitesource'));
+        }
+        if (Cookies.get('sitebasemap')) {
+            $(".sitebasemap").val(Cookies.get('sitebasemap'));
+        }
+    }
+    
+    //if (!$("#sitelook").is(':visible')) {
+    //    sitelook = "default"; // For now, filterPanel background is always an image.
+    //}
+
+    if (param["sitelook"]) { // From URL
+        sitelook = param["sitelook"]; 
+        //Cookies.set('sitelook', sitelook);
+    //} else if (params["sitelook"]) { // From widget
+    //    sitelook = params["sitelook"]; 
+        // Prevent video from appearing when going to menu. Cookies probably need to be specific to domain.
+        //Cookies.set('sitelook', sitelook);
+    } else if (typeof Cookies != 'undefined' && Cookies.get('sitelook')) {
+        sitelook = Cookies.get('sitelook');
+    }
+    
+    setSitelook(sitelook);
+    if (typeof Cookies != 'undefined') {
+        $("#sitelook").val(Cookies.get('sitelook'));
+    }
+}
+
+function setSitemode(sitemode) {
+  // Not copied over from settings.js
+}
+function setSitelook(siteLook) {
+    console.log("setSitelook init: " + sitelook);
+
+    let root = "/explore/"; // TEMP
+    consoleLog("setSiteLook: " + siteLook);
+    
+    // Force the brower to reload by changing version number. Avoid on localhost for in-browser editing. If else.
+    var forceReload = (location.host.indexOf('localhost') >= 0 ? "" : "?v=3");
+    $("body").removeClass("dark");
+    if (siteLook == "dark") {
+        $('.sitebasemap').val("dark").change();
+        //toggleVideo("show","nochange");
+        $("body").addClass("dark");
+        includeCSS3(root + 'css/site-dark.css' + forceReload); // To remove
+        $("#css-site-dark-css").removeAttr('disabled');
+        $("#css-site-green-css").attr("disabled", "disabled");
+        $("#css-site-plain-css").attr("disabled", "disabled");
+        $('.searchTextHolder').append($('.searchTextMove'));
+    } else if (siteLook == "gc") {
+        $('.sitebasemap').val("osm").change();
+        //toggleVideo("hide","pauseVideo");
+        includeCSS3(root + 'css/site-green.css' + forceReload);
+        $("#css-site-green-css").removeAttr('disabled');
+        $("#css-site-dark-css").attr("disabled", "disabled");
+        $("#css-site-plain-css").attr("disabled", "disabled");
+        $('.searchTextHolder').append($('.searchTextMove'));
+    } else if (siteLook == "default") {
+        $("#css-site-green-css").removeAttr('disabled');
+        $("#css-site-dark-css").attr("disabled", "disabled");
+        $("#css-site-plain-css").attr("disabled", "disabled");
+        //$('.searchTextHolder').append($('.searchTextMove'));
+    } else { // Light
+        removeElement('/localsite/css/bootstrap.darkly.min.css');
+        removeElement(root + 'css/site-dark.css');
+
+        $('.sitebasemap').val("positron_light_nolabels").change();
+        includeCSS3(root + 'css/site-plain.css' + forceReload);
+        $("#css-site-plain-css").removeAttr('disabled');
+        $("#css-site-dark-css").attr("disabled", "disabled");
+        $("#css-site-green-css").attr("disabled", "disabled");
+
+        //$("#sectionCategoriesToggle").hide();
+        //$("#sectionNavigation").append($(".customFilters"));
+
+        //$('#sectionNavigation').append($('.searchTextMove'));
+        //$(".filterPanelHolder").show(); // Might need for COI
+        $(".layoutTabHolder").show();
+    }
+    //setTimeout(function(){ updateOffsets(); }, 200); // Allows time for css file to load.
+    //setTimeout(function(){ updateOffsets(); }, 4000);
+}
 
 consoleLog("end localsite");
