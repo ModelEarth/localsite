@@ -27,12 +27,18 @@
 .tabulator-selectable:hover { /* rows */
     background-color: #fafafa !important;
 }
+.dark .tabulator-selectable:hover { /* rows */
+    background-color: #333 !important;
+}
 .tabulator-row.tabulator-selected {
     background-color: #ddd;
     border-bottom: 1px solid #999;
 }
 .tabulator-row.tabulator-selected:hover {
     background-color: #ccc !important;
+}
+.dark .tabulator-row.tabulator-selected:hover {
+    background-color: #000 !important;
 }
 .tabulator-header {
     max-height: 32px !important;
