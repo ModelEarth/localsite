@@ -81,7 +81,6 @@ var local_app = local_app || (function(module){
               // For testing embedding without locathost repo in site theroot. Rename your localsite folder.
               // Why don't we reach ".showApps click" when activatied?:
               //theroot = "https://model.earth/localsite/";
-              //alert("theroot " + theroot)
             }
             localsite_repo = theroot; // Save to reduce DOM hits
             return (theroot);
@@ -2688,7 +2687,8 @@ function setSitelook(siteLook) {
         $('.sitebasemap').val("dark").change();
         //toggleVideo("show","nochange");
         $("body").addClass("dark");
-        includeCSS3(root + 'css/site-dark.css' + forceReload); // To remove
+        removeElement('/localsite/css/light.css');
+        includeCSS3(root + 'css/bootstrap.darkly.min.css');
         $("#css-site-dark-css").removeAttr('disabled');
         $("#css-site-green-css").attr("disabled", "disabled");
         $("#css-site-plain-css").attr("disabled", "disabled");
@@ -2696,32 +2696,33 @@ function setSitelook(siteLook) {
     } else if (siteLook == "gc") {
         $('.sitebasemap').val("osm").change();
         //toggleVideo("hide","pauseVideo");
-        includeCSS3(root + 'css/site-green.css' + forceReload);
+        //includeCSS3(root + 'css/site-green.css' + forceReload);
         $("#css-site-green-css").removeAttr('disabled');
         $("#css-site-dark-css").attr("disabled", "disabled");
         $("#css-site-plain-css").attr("disabled", "disabled");
         $('.searchTextHolder').append($('.searchTextMove'));
     } else if (siteLook == "default") {
+        removeElement('/localsite/css/light.css');
+        removeElement('/localsite/css/bootstrap.darkly.min.css');
         $("#css-site-green-css").removeAttr('disabled');
         $("#css-site-dark-css").attr("disabled", "disabled");
         $("#css-site-plain-css").attr("disabled", "disabled");
         //$('.searchTextHolder').append($('.searchTextMove'));
     } else { // Light
+        includeCSS3(root + 'css/light.css'); // + forceReload
         removeElement('/localsite/css/bootstrap.darkly.min.css');
-        removeElement(root + 'css/site-dark.css');
+        //removeElement(root + 'css/site-dark.css');
 
         $('.sitebasemap').val("positron_light_nolabels").change();
-        includeCSS3(root + 'css/site-plain.css' + forceReload);
+        //includeCSS3(root + 'css/site-plain.css' + forceReload);
+
+        /*
         $("#css-site-plain-css").removeAttr('disabled');
         $("#css-site-dark-css").attr("disabled", "disabled");
         $("#css-site-green-css").attr("disabled", "disabled");
+        */
 
-        //$("#sectionCategoriesToggle").hide();
-        //$("#sectionNavigation").append($(".customFilters"));
-
-        //$('#sectionNavigation').append($('.searchTextMove'));
-        //$(".filterPanelHolder").show(); // Might need for COI
-        $(".layoutTabHolder").show();
+        //$(".layoutTabHolder").show();
     }
     //setTimeout(function(){ updateOffsets(); }, 200); // Allows time for css file to load.
     //setTimeout(function(){ updateOffsets(); }, 4000);

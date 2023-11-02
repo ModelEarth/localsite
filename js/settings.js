@@ -437,6 +437,7 @@ function setSiteLook(siteLook,layerName) {
         //toggleVideo("show","nochange");
         $("body").addClass("dark");
         includeCssExplore(root + 'css/site-dark.css' + forceReload); // To remove
+        removeElement('/localsite/css/light.css');
         $("#css-site-dark-css").removeAttr('disabled');
         $("#css-site-green-css").attr("disabled", "disabled");
         $("#css-site-plain-css").attr("disabled", "disabled");
@@ -463,6 +464,7 @@ function setSiteLook(siteLook,layerName) {
     } else { // Light
         removeElement('/localsite/css/bootstrap.darkly.min.css');
         removeElement(root + 'css/site-dark.css');
+        includeCSS3(theroot + 'css/light.css',theroot);
 
         $('.sitebasemap').val("positron_light_nolabels").change();
         includeCssExplore(root + 'css/site-plain.css' + forceReload);

@@ -48,6 +48,7 @@ body {
 }
 .dark {
   color: #eee;
+  background-color: #333;
 }
 .bodyIconMargin {
   margin-left: 64px;
@@ -389,6 +390,9 @@ summary::-webkit-details-marker {
   display: table-cell;
   vertical-align: top;
   position: relative; /* Allows menu rollover/popups to overlap adjacent cell */
+}
+.dark .table-cell, .dark .table-cell-mobile {
+  background-colorX: #111;
 }
 @media (max-width: 800px) {
   .table-cell {
