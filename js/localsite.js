@@ -679,9 +679,12 @@ function loadLocalTemplate() {
         $("#sideTabs").prependTo("#fullcolumn"); // Move back up to top.
 
         // Replace paths in div
-        if(location.host.indexOf("intranet") >= 0) {
-          $("#intranet-nav a").each(function() {
-            $(this).attr('href', $(this).attr('href').replace(/\/docs\//g,"\/"));
+
+        if(location.host.indexOf("desktop") >= 0) {
+          waitForElm('#desktop-nav').then((elm) => {
+            $("#desktop-nav a").each(function() {
+              $(this).attr('href', $(this).attr('href').replace(/\/desktop\//g,"\/"));
+            });
           });
         }
         if(location.host.indexOf("dreamstudio") >= 0) {
@@ -791,35 +794,30 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       $(document).ready(function () {
         useSet(); // Below
 
-        // this approach brakes events. Do not "add" to innerHTML. Use DOM API e.g. appendChild
+        // This approach brakes events. Do not "add" to innerHTML. Use DOM API e.g. appendChild
         //document.getElementsByTagName('body')[0].innerHTML += divForBodyLoaded;
+        
         document.body.appendChild(divForBodyLoaded);
 
-        //loadScript('/localsite/js/settings.js', function(results) { // Currently needed for cookies
-          let sitelook;
-          if (typeof Cookies != 'undefined' && Cookies.get('sitelook')) {
-            sitelook = Cookies.get('sitelook');
+        let sitelook;
+        if (typeof Cookies != 'undefined' && Cookies.get('sitelook')) {
+          sitelook = Cookies.get('sitelook');
+        }
+        if (param.sitelook) {
+          sitelook = param.sitelook;
+        }
+        if (sitelook == "light") {
+          removeElement('/localsite/css/bootstrap.darkly.min.css');
+          removeElement('/explore/css/site-dark.css');
+          includeCSS3(theroot + 'css/light.css',theroot);
+          if (typeof Cookies != 'undefined') {
+              waitForElm('#sitelook').then((elm) => {
+                $("#sitelook").val(sitelook);
+              });
+              Cookies.set('sitelook', sitelook);
+              console.log("Bring on the sitelook: " + Cookies.get('sitelook'));
           }
-          if (param.sitelook) {
-            sitelook = param.sitelook;
-          }
-          //alert(sitelook)
-          if (sitelook == "light") {
-            removeElement('/localsite/css/bootstrap.darkly.min.css');
-            removeElement('/explore/css/site-dark.css');
-            includeCSS3(theroot + 'css/light.css',theroot);
-            //$(".darkLayout").removeClass("darkLayout");
-            //loadScript(theroot + 'js/settings.js', function(results) {
-              if (typeof Cookies != 'undefined') {
-                  waitForElm('#sitelook').then((elm) => {
-                    $("#sitelook").val(sitelook);
-                  });
-                  Cookies.set('sitelook', sitelook);
-                  console.log("Bring on the sitelook: " + Cookies.get('sitelook'));
-              }
-            //});
-          }
-        //});
+        }
       });
 
       $(document).on('click', function(event) { // Hide open menus in core

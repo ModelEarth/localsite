@@ -299,11 +299,13 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	 		document.title = "Georgia.org";
 	 	}
 		changeFavicon("/localsite/img/logo/states/GA-favicon.png");
-		if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("intranet") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
-			showClassInline(".intranet");
+		if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
+			showClassInline(".intranet"); // delete after checking other repos
+			showClassInline(".acct");
+			showClassInline(".garesource");
 		}
 		showClassInline(".georgia");
-		if (location.host.indexOf("intranet") < 0 && location.host.indexOf("locations.pages.dev") < 0) { // Since intranet site does not include community submodule
+		if (location.host.indexOf("locations.pages.dev") < 0 || location.host.indexOf("locations.georgia.org") >= 0) {
 			showClassInline(".earth");
 		}
 		$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
@@ -541,19 +543,11 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 
 							waitForElm('#navcolumn').then((elm) => { // #navcolumn is appended by this navigation.js script, so typically not needed.
 								$("#showNavColumn").show();
-								//$("#cloneLeft").clone().appendTo($("#navcolumn"));
-								//$("#cloneLeft").show(); // Still hidden, just removing the div that prevents initial exposure.
-								if(location.host.indexOf("intranet") >= 0) {
-							        $("#sidecolumnContent a").each(function() {
-							          $(this).attr('href', $(this).attr('href').replace(/\/docs\//g,"\/"));
-							        });
-							    }
 							    if(location.host.indexOf("dreamstudio") >= 0) {
 							        $("#sidecolumnContent a").each(function() {
 							          $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
 							        });
 							    }
-
 								let colEleLeft = document.querySelector('#sidecolumnContent');
 								let colCloneLeft = colEleLeft.cloneNode(true)
 								colCloneLeft.id = "cloneLeft";
@@ -870,16 +864,13 @@ $(document).on("click", ".showListings", function(event) {
 });
 $(document).on("click", ".showSettings", function(event) {
 	closeExpandedMenus(event.currentTarget);
-    //loadScript('/localsite/js/settings.js', function(results) {
-        $('.menuExpanded').hide();
-        if ($(".settingsPanel").is(':visible')) { 
+    $('.menuExpanded').hide();
+    if ($(".settingsPanel").is(':visible')) { 
 
-        } else {
-            $(".settingsPanel").show();
-            //$("#rightTopMenu").hide();
-        }
-    //}); // For "Settings" popup
-    //event.stopPropagation();
+    } else {
+        $(".settingsPanel").show();
+        //$("#rightTopMenu").hide();
+    }
 });
 $(document).on("click", ".showAccount", function(event) {
 	closeExpandedMenus(event.currentTarget);
