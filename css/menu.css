@@ -568,6 +568,10 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 		margin-left: -23px;
 	}
 }
+.dark #showNavColumn .material-icons {
+	background-color: #000 !important;
+	color: #fff !important;
+}
 #filterFieldsMain #showNavColumn {
 	float: left;
 }

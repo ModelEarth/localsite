@@ -478,9 +478,6 @@ summary::-webkit-details-marker {
   background: #555;
   color:  #eee;
 }
-.liteDiv {
-  border-right: solid 1px #e9e9e9;
-}
 .liteDiv a {
   color: #333;
 }
@@ -499,6 +496,7 @@ summary::-webkit-details-marker {
 }
 .dark .greyDiv {
   background-color: #555;
+  border: 0px;
 }
 .dark .greyDiv a, .greyDiv a:visited, .dark .content .greyDiv a, .dark .content .greyDiv a:visited {
   color: #fff;
@@ -653,6 +651,10 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   unicode-bidi: embed;
   font-family: monospace;
   /* white-space: pre-wrap; */ /* Causes Drupal to have large empty div's at top */
+}
+.dark code {
+  color: #ddd;
+  background-color: #111;
 }
 .link {
   color:#4091dd;
@@ -912,6 +914,16 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 }
 .dark .cardstyle {
     background: #555;
+}
+.dark .menuBuddyRight {
+  background: #666;
+}
+.dark .sideMenuColumn {
+  background: #444;
+  color: #fff;
+}
+.dark .sideMenuColumn .layerSection {
+  color: #fff;
 }
 @media (max-width: 1200px) {
     .pagecard {
