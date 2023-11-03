@@ -872,10 +872,6 @@ $(document).on("click", ".showSettings", function(event) {
 	closeExpandedMenus(event.currentTarget);
     //loadScript('/localsite/js/settings.js', function(results) {
         $('.menuExpanded').hide();
-        //hideOtherPopOuts();
-        //$("#showSettings").hide();
-        //$(".showSettings").hide(); // If used, would need to redisplay after changning Style > Header Images
-        //$(".showSettingsClick").hide();
         if ($(".settingsPanel").is(':visible')) { 
 
         } else {
