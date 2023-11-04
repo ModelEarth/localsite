@@ -305,7 +305,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 			showClassInline(".garesource");
 		}
 		showClassInline(".georgia");
-		if (location.host.indexOf("locations.pages.dev") < 0 || location.host.indexOf("locations.georgia.org") >= 0) {
+		if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
 			showClassInline(".earth");
 		}
 		$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
