@@ -5,14 +5,14 @@
 The following will create a .gitmodules file.
 This allows Cloudflare to sync multiple repos into one website.
 
-[Working with submodules](https://github.blog/2016-02-01-working-with-submodules/)
-
 git submodule add https://github.com/[user]/[repo] [repo]
 git commit -m "[repo] submodule"
 git submodule update --init --recursive
 
 Lastly, push within Github Desktop. (The repo will already be commited.) 
 You'll then see the submodule in the Github website.
+
+Source: [Working with submodules](https://github.blog/2016-02-01-working-with-submodules/)
 
 **Example:**
 git submodule add https://github.com/DreamStudioCode/StableStudio StableStudio
@@ -55,7 +55,7 @@ git checkout -b io
 If submodule repo is private, add a token. [details](https://stackoverflow.com/questions/72786625/deploying-repos-with-submodules-using-cloudflare-pages)
 
 Generate a token within your Github account at:
-Settings (click your profile image) > Developer Setting (bottom of left column)
+Settings (under your profile image) > Developer Setting (bottom of left column) > Personal access tokens > Tokens (classic)
 <!-- For display: selected no expiration "repo" Full control of private repositories -->
 
 [Using Github access token with submodules](https://medium.com/@alexander.sirenko/using-github-access-token-with-submodules-5038b6d639e8)

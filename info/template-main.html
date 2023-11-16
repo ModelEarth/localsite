@@ -431,8 +431,10 @@
 
             <!-- fields here instead from recap -->
 
-            <div style="margin-bottom:5px">Your email address</div>
-            <input id="input123" autocompleteX="off" style="width:100%" class="mobileWide textInput si-input" type="text" value=""><br><br><br>
+            <div class="local" style="display:none">
+              <div style="margin-bottom:5px">Your email address</div>
+              <input id="input123" autocompleteX="off" style="width:100%" class="mobileWide textInput si-input" type="text" value=""><br><br><br>
+            </div>
 
             <div class="georgia" style="display:none">
               <div><a href="https://partner.exploregeorgia.org/login">Partner Resources</a></div><br><br>
@@ -441,7 +443,9 @@
             <div class="default" style="display:none">
               <a class="uIn" href="">Staff Resources</a><br><br>
             </div>
-            <div class="use-1" style="display:none;"><div class="uOut topButton" style="margin:0 0 20px 0; border:1px solid #777">Sign Out</div></div>
+            <div class="use-1" style="display:none;">
+              <a class="uOut" style="margin:0 0 20px 0;">Log Out</a>
+            </div>
           </div>
         </div>
         <!-- /Account Panel -->
@@ -500,7 +504,7 @@
 <!-- HEADER BAR -->
 <div id="headerbar" class="headerbar headerbarheight headerbarhide" style="display:none;position:fixed;overflow:visible;z-index:1002;pointer-events:auto;">
 
-  <div id="headerLogoholder" class="contentpadding" style="padding-top:0px; padding-bottom:0px; float:left; min-width: 200px">
+  <div id="headerLogoholder" class="contentpadding" style="padding-top:0px; padding-bottom:0px; padding-left:64px; loat:left; min-width: 200px">
     <div id="logospace" class="headerbarheight">
       <div id="logoholder">
         

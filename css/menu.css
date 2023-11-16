@@ -700,8 +700,10 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 .navLinks a {
   height: 42px;
+  /* Causes DS footer to mis-align
   display: block;
   float: left;
+  */
   color: #aaa;
   text-decoration: none !important;
   margin-right:0px !important;

@@ -168,6 +168,7 @@ input.filterClick[type="text"] {
     margin-bottom:-12px;
     height: 46px; /* 45px to short for Locations tab due to unresolved height issue  */
     background-color: #fcfcfc;
+    background-color: #eee; /* matches .lite */
 }
 .dark .filterClickActive {
   background-color: #555;

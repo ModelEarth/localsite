@@ -494,8 +494,8 @@ summary::-webkit-details-marker {
 .greyDiv b a:hover, .greyDiv b a:visited:hover {
   color: #fff;
 }
-.dark .greyDiv {
-  background-color: #555;
+.dark .greyDiv { /* Left side nav */
+  background-color: #444;
   border: 0px;
 }
 .dark .greyDiv a, .greyDiv a:visited, .dark .content .greyDiv a, .dark .content .greyDiv a:visited {
