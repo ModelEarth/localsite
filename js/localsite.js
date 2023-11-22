@@ -6,7 +6,7 @@
 // Define a new object if localsite library does not exist yet.
 let localStart = Date.now();
 let onlineApp = true; // Set to false during air travel. Also sets local to no state.
-let defaultState = "GA"; // GA
+let defaultState = ""; // GA
 consoleLog("start localsite");
 var local_app = local_app || (function(module){
     let _args = {}; // private, also worked as []
@@ -809,7 +809,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         if (sitelook == "light") {
           removeElement('/localsite/css/bootstrap.darkly.min.css');
           removeElement('/explore/css/site-dark.css');
-          includeCSS3(theroot + 'css/light.css',theroot);
+          //includeCSS3(theroot + 'css/light.css',theroot);
           if (typeof Cookies != 'undefined') {
               waitForElm('#sitelook').then((elm) => {
                 $("#sitelook").val(sitelook);
@@ -1085,7 +1085,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       loadMapAndMapFilters();
     }
 
-  } else if (param.showsearch == "true" || hash.showmap || hash.appview) {
+  } else if (param.showsearch == "true" || param.showmap || param.appview) { // Second two were hash, but not defined here
     loadLocalTemplate();
     loadMapAndMapFilters();
 
@@ -2675,7 +2675,8 @@ function setSitemode(sitemode) {
 function setSitelook(siteLook) {
     console.log("setSitelook init: " + sitelook);
 
-    let root = "/explore/"; // TEMP
+    //let root = "/explore/"; // TEMP
+    //let root = "/localsite/";
     consoleLog("setSiteLook: " + siteLook);
     
     // Force the brower to reload by changing version number. Avoid on localhost for in-browser editing. If else.
@@ -2685,8 +2686,8 @@ function setSitelook(siteLook) {
         $('.sitebasemap').val("dark").change();
         //toggleVideo("show","nochange");
         $("body").addClass("dark");
-        removeElement('/localsite/css/light.css');
-        includeCSS3(root + 'css/bootstrap.darkly.min.css');
+        //removeElement('/localsite/css/light.css');
+        includeCSS3('/localsite/css/bootstrap.darkly.min.css');
         $("#css-site-dark-css").removeAttr('disabled');
         $("#css-site-green-css").attr("disabled", "disabled");
         $("#css-site-plain-css").attr("disabled", "disabled");
@@ -2700,14 +2701,14 @@ function setSitelook(siteLook) {
         $("#css-site-plain-css").attr("disabled", "disabled");
         $('.searchTextHolder').append($('.searchTextMove'));
     } else if (siteLook == "default") {
-        removeElement('/localsite/css/light.css');
+        //removeElement('/localsite/css/light.css');
         removeElement('/localsite/css/bootstrap.darkly.min.css');
         $("#css-site-green-css").removeAttr('disabled');
         $("#css-site-dark-css").attr("disabled", "disabled");
         $("#css-site-plain-css").attr("disabled", "disabled");
         //$('.searchTextHolder').append($('.searchTextMove'));
     } else { // Light
-        includeCSS3(root + 'css/light.css'); // + forceReload
+        //includeCSS3(root + 'css/light.css'); // + forceReload
         removeElement('/localsite/css/bootstrap.darkly.min.css');
         //removeElement(root + 'css/site-dark.css');
 

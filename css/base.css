@@ -463,11 +463,11 @@ summary::-webkit-details-marker {
 .content a {
   text-decoration: none;
 }
-.content a:link {
+.content a:link, .content a:visited {
   color: #0366d6;
 }
-.content a:visited {
-  color: #0366d6;
+.dark .content a:link, .dark .content a:visited {
+  color: #acb;
 }
 .lite { /* Also in DS */
   background-color: #eee;
@@ -485,10 +485,10 @@ summary::-webkit-details-marker {
   color: #fff;
   background-color: #b1b1b1;
 }
-.greyDiv a, .greyDiv a:visited, .content .greyDiv a, .content .greyDiv a:visited {
+.greyDiv a:link, .greyDiv a:visited, .content .greyDiv a:link, .content .greyDiv a:visited {
   color: #fff;
 }
-.greyDiv b, .greyDiv .maincat, .greyDiv b a, .greyDiv b a:visited, .content .greyDiv b, .content .greyDiv .maincat, .content .greyDiv b a, .content .greyDiv b a:visited {
+.greyDiv b, .greyDiv .maincat, .greyDiv b a:link, .greyDiv b a:visited, .content .greyDiv b, .content .greyDiv .maincat, .content .greyDiv b a:link, .content .greyDiv b a:visited {
   color: #333;
 }
 .greyDiv b a:hover, .greyDiv b a:visited:hover {
@@ -498,11 +498,23 @@ summary::-webkit-details-marker {
   background-color: #444;
   border: 0px;
 }
-.dark .greyDiv a, .greyDiv a:visited, .dark .content .greyDiv a, .dark .content .greyDiv a:visited {
+.dark .greyDiv a:link, .greyDiv a:visited, .dark .content .greyDiv a:link, .dark .content .greyDiv a:visited {
   color: #fff;
 }
 .dark .greyDiv b, .dark .greyDiv .maincat, .dark .greyDiv b a, .dark .greyDiv b a:visited, .dark .content .greyDiv b, .dark .content .greyDiv .maincat, .dark .content .greyDiv b a, .dark .content .greyDiv b a:visited {
   color: #fff;
+}
+.litetext {
+  color:#888;
+}
+.darktext {
+  color:#333;
+}
+.dark .litetext {
+  color:#fff;
+}
+.dark .darktext {
+  color:#aaa;
 }
 .bodyLeftMargin .contentpadding {
   padding-left: 30px;

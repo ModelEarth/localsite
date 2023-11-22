@@ -218,7 +218,7 @@ function refreshNaicsWidget() {
             $("#industryDetail").show();
         } else if (!hash.state) {
             $("#industryListHolder").show();
-            $("#industries").html("<div style='padding:0 20px 20px 20px'>Select a location above for industry details.</div>");
+            $("#industries").html("<div style='padding:10px 20px 10px 20px'>Select a location above for industry and impact details.</div>");
         } else {
             $("#industryListHolder").show();
             $("#industryDetail").hide();

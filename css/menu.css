@@ -690,7 +690,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     heightX:100%; /* For counties map, but breaks fixed position map on tools page. */
 }
 .dark #fullcolumn  a:link, .dark #fullcolumn  a:visited {
-  color: #8899ee;
+  color: #acb;
 }
 .dark #fullcolumn  b a:link, .dark #fullcolumn  b a:visited {
   color: #ccc;
