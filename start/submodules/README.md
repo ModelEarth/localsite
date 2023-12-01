@@ -29,8 +29,8 @@ Then commit using GitHub Desktop.
 
 If a pull conflict occurs, [reset](https://stackoverflow.com/questions/6335681/how-do-i-get-the-latest-version-of-my-code) before pulling.
 
-	git reset --hard HEAD
-	git clean -xffd
+	git reset --hard HEAD && 
+	git clean -xffd && 
 	git pull
 
 Or you may need to specify the path and branch. Example:

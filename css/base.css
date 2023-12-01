@@ -460,10 +460,10 @@ summary::-webkit-details-marker {
   padding-right: 40px;
   padding-bottom: 45px;
 }
-.content a {
+.content a, .contentfull a {
   text-decoration: none;
 }
-.content a:link, .content a:visited {
+.content a:link, .content a:visited, .contentfull a:link, .contentfull a:visited {
   color: #0366d6;
 }
 .dark .content a:link, .dark .content a:visited {

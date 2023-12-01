@@ -1089,7 +1089,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     loadLocalTemplate();
     loadMapAndMapFilters();
 
-
     // This is already in the above
     //loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
 
