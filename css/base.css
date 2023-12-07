@@ -280,7 +280,7 @@ h2 {
   color: #333;
   overflow: auto;
 }
-h2::before { /* Avoids hashtag headbutting browser window */
+.flexmain h2::before { /* Prevents hashtag h2 links from being covered by site header */
   display: block; 
   content: " "; 
   margin-top: -120px; 
