@@ -288,7 +288,7 @@ h2::before { /* Avoids hashtag headbutting browser window */
   visibility: hidden; 
   pointer-events: none;
 }
-section::before { /* Avoids hashtag headbutting browser window */
+.flexmain section::before { /* Prevents hashtag section links from being covered by site header */
   display: block; 
   content: " "; 
   margin-top: -120px; 
