@@ -108,6 +108,20 @@ function hashChangedNavigation() {
             $("#hero-landscape-image").css('background-image', imageUrl_scr);
         });
     }
+    if (hash.show != priorHash.show) {
+    	let show = hash.show;
+    	if (!hash.show) {
+    		show = "industries";
+    	}
+		//if (activeLayer) {
+			$(".bigThumbMenuContent").removeClass("bigThumbActive");
+	    	$(".bigThumbMenuContent[show='" + show +"']").addClass("bigThumbActive");
+	    	let activeTitle = $(".bigThumbMenuContent[show='" + show +"'] .bigThumbText").text();
+	    	//if (activeTitle) { // Keep prior if activeLayer is not among app list.
+	    		$("#showAppsText").attr("title",activeTitle);
+	    	//}
+	    //}
+	}
 }
 
 // Not in use, but might be cool to use
@@ -167,7 +181,7 @@ function thumbClick(show,path) {
 	delete hash.details;
 	delete hash.m; // Birdseye view
     let pageContainsInfoWidgets = false;
-    if ($("#iogrid").length >= 0 || $(".sector-list").length >= 0) {
+    if ($("#iogrid").length >= 0 || $("#sector-list").length >= 0) {
         pageContainsInfoWidgets = true; // Stay on the current page if it contains widgets.
     }
     // !pageContainsInfoWidgets && // Prevented bioeconomy from leaving map page.
@@ -293,11 +307,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		console.log("local_app.localsite_root() " + local_app.localsite_root()); // https://model.earth was in here: https://map.georgia.org/localsite/map/#show=recyclers
 		param.headerLogo = "<a href='https://georgia.org'><img src='/localsite/img/logo/states/GA.png' style='width:140px;padding-top:4px'></a>";
 		param.headerLogoNoText = "<a href='https://georgia.org'><img src='/localsite/img/logo/states/GA-notext.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
-		if (document.title) {
-	 		document.title = "Georgia.org - " + document.title;
-	 	} else {
-	 		document.title = "Georgia.org";
-	 	}
+		localsiteTitle = "Georgia.org";
 		changeFavicon("/localsite/img/logo/states/GA-favicon.png");
 		if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
 			showClassInline(".acct");
@@ -316,7 +326,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		$(".siteTitleShort").text("Neighborhood Modeling");
 		param.titleArray = ["neighbor","hood"]
 		param.headerLogoSmall = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
-		document.title = "Neighborhood.org - " + document.title
+		localsiteTitle = "Neighborhood.org";
 		changeFavicon("/localsite/img/logo/partners/neighborhood-icon.png")
 		showClassInline(".neighborhood");
 		earthFooter = true;
@@ -334,11 +344,11 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		if (location.host.indexOf("planet.live") >= 0) {
 			$(".siteTitleShort").text("Planet Live");
 			param.titleArray = ["planet","live"]
-			document.title = "Planet Live - " + document.title
+			localsiteTitle = "Planet Live";
 		} else {
 			$(".siteTitleShort").text("Model Earth");
 			param.titleArray = ["model","earth"]
-			document.title = "Model Earth - " + document.title
+			localsiteTitle = "Model Earth";
 		}
 		param.headerLogoSmall = "<img src='/localsite/img/logo/earth/model-earth.png' style='width:34px; margin-right:2px'>";
 		changeFavicon(modelpath + "../localsite/img/logo/earth/model-earth.png")
@@ -346,6 +356,13 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		console.log(".earth display");
 		earthFooter = true;
 	}
+
+	if (document.title) {
+ 		document.title = localsiteTitle + " - " + document.title;
+ 	} else {
+ 		document.title = localsiteTitle;
+ 	}
+
 	if (location.host.indexOf('model.earth') >= 0) { // Since above might not be detecting model.earth, probably is now.
 		showLeftIcon = true;
 		earthFooter = true;
@@ -1026,6 +1043,9 @@ function showThumbMenu(activeLayer, insertInto) {
     }
 }
 function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
+	if (!activeLayer) {
+		activeLayer = "industries";
+	}
 	loadScript(theroot + 'js/map-filters.js', function(results) {
 		loadLocalObjectLayers(activeLayer, function() {
 
@@ -1584,7 +1604,7 @@ function showApps(menuDiv) {
 			$("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").hide();
 			$("#appSelectHolder .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
 
-			$("#showAppsText").text("Local Topics");
+			$("#showAppsText").text("Location Topics");
 			waitForElm('#appSelectHolder').then((elm) => {
 				$("#appSelectHolder .showApps").addClass("filterClickActive"); // Adds to local topics
 			});

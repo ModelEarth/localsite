@@ -1856,7 +1856,7 @@ function applyIO(naics) {
 
     var sectorList = useeio.sectorList({
         model: model,
-        selector: '.sector-list',
+        selector: '#sector-list',
     });
     config.withDefaults({
         view: ["mosaic"],

@@ -6,6 +6,7 @@
 // Define a new object if localsite library does not exist yet.
 let localStart = Date.now();
 let onlineApp = true; // Set to false during air travel. Also sets local to no state.
+let localsiteTitle = "Localsite";
 let defaultState = ""; // GA
 consoleLog("start localsite");
 var local_app = local_app || (function(module){

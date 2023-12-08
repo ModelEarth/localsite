@@ -154,28 +154,33 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   // "blocked by CORS policy: No 'Access-Control-Allow-Origin' header" 
 
   // Temp - until widget includes local industry lists
-  if((show == "industries" || show == "parts" || show == "vehicles" || show == "bioeconomy") && location.href.indexOf('/info') == -1) {
+  if((show == "industries" || show == "vehicles" || show == "bioeconomy") && location.href.indexOf('/info') == -1) {
     ////location.href = "/localsite/info/" + location.hash;
     //location.href = "/localsite/info/#show=" + show;
   }
 
-  if (show == "farmfresh" && theState) {
+  if (show == "farmfresh") { // In naics.js we also default to GA for this one topic // && theState
+    if (!theState) {
+      //theState = "GA"; // Since there is not a national dataset for map.
+    }
     dp.listTitle = "USDA Farm Produce";
-    //if (location.host.indexOf('localhost') >= 0) {
-      //dp.categories = "farm = Direct from Farm, market = Farmers Markets";
-      dp.categories = {"farm": {"title":"Direct from Farm","color":"#b2df8a"}, "market": {"title":"Farmers Markets","color":"#33a02c"}};
-      // Green colors above
-      // #b2df8a, #33a02c 
-      dp.valueColumn = "type";
-      dp.valueColumnLabel = "Type";
-      // https://model.earth/community-data
-      dp.dataset = local_app.community_data_root() + "us/state/" + theState + "/" + theState.toLowerCase() + "-farmfresh.csv";
-    //} else {
-    //  // Older data
-    //  dp.valueColumn = "Prepared";
-    //  dp.dataset = local_app.custom_data_root()  + "farmfresh/farmersmarkets-" + theState.toLowercase() + ".csv";
-    //}
-    //dp.name = "Local Farms"; // To remove
+    if (theState) {
+      //if (location.host.indexOf('localhost') >= 0) {
+        //dp.categories = "farm = Direct from Farm, market = Farmers Markets";
+        dp.categories = {"farm": {"title":"Direct from Farm","color":"#b2df8a"}, "market": {"title":"Farmers Markets","color":"#33a02c"}};
+        // Green colors above
+        // #b2df8a, #33a02c 
+        dp.valueColumn = "type";
+        dp.valueColumnLabel = "Type";
+        // https://model.earth/community-data
+        dp.dataset = local_app.community_data_root() + "us/state/" + theState + "/" + theState.toLowerCase() + "-farmfresh.csv";
+      //} else {
+      //  // Older data
+      //  dp.valueColumn = "Prepared";
+      //  dp.dataset = local_app.custom_data_root()  + "farmfresh/farmersmarkets-" + theState.toLowercase() + ".csv";
+      //}
+      //dp.name = "Local Farms"; // To remove
+    }
     dp.dataTitle = "Farm Fresh Produce";
 
     dp.markerType = "google"; // BUGBUG doesn't seem to work with county boundary background (showShapeMap)

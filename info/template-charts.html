@@ -22,11 +22,18 @@
 <div id="template-charts">
 <!-- INFO TEMPLATE -->
 
+<script>
+function showIndustryList() {
+	alert("showIndustryList")
+	goHash({'naics':''});
+}
+</script>
+
 <div id="industryDetail" style="display:none">
 	<div class="contentX contentpadding">
 		<div style="float:right">
 			<a id="showIndustries" href="" class="btn btn-white" 
-			onclick="goHash({'naics':''});">Show Industry List</a>
+			onclick="showIndustryList();">Show Industry List</a>
 		</div>
 		<h1 id="industryDetailTitle" class="h1-home">
 			NAICS Industry
@@ -57,7 +64,8 @@
 				</div>
 
 				<div style="clear:both">
-					<h1 class="region_service region_service_industries" style="margin-top:0;padding-top:0;"></h1>
+					<h1 id="pageTitle" class="h1-home"></h1><!-- For 6 impact sets -->
+					<h1 class="region_service" style="margin-top:0;padding-top:0;"></h1>
 					<h2 class="location_titles" style="font-size:24px;color:#555;display:none"></h2>
 				</div>
 
@@ -188,9 +196,10 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
             -->
 
             <!-- Supply Chain -->
-            <h1 id="pageTitle" class="h1-home" style="margin-top:0px; margin-bottom:10px;"></h1>
-            <div class="region_service" style="margin-bottom:20px"></div>
+            <h1 class="h1-homeXX" style="margin-top:0px; margin-bottom:10px;">Supply Chain Inflow-Outflow</h1>
+            <div class="region_service" style="font-size:20px; margin-bottom:20px"></div>
             
+
             <style>
             	@media (max-width: 1200px) {
             	}
@@ -492,7 +501,7 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 		Move sliders to emulate the effects of changes to production <b>levels per dollar spent</b>.<br>
 		Data source: U.S. Bureau of Economic Analysis (BEA) commodities combined with EPA indicators. 
 		- <a href="https://model.earth/io/charts/">About&nbsp;Widgets</a><br>
-		In November 2023, we'll transition to the BEA's 73 commodity resolution instead of 405.<br>
+		In 2024, we'll transition to the BEA's 73 commodity resolution instead of 405.<br>
 		<br>
 	</span>
 	<div id="iogrid"></div>
@@ -528,9 +537,11 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 <section id="impact">
 <div class="contentpadding" style="min-height:200px;border-bottom:1px solid #ccc;">
 
-	<h1 style="margin-bottom: 0px">Impact Levels</h1>
-	<span class="region_service"></span><br>
-	<div class="sector-list"></div>
+	<div id="sectorListTitles">
+		<h1 style="margin-bottom: 0px">Impact Levels</h1>
+		<span class="region_service"></span>
+	</div>
+	<div id="sector-list" class="sector-list"></div>
 	<!--
 	JOBS and VADD are excluded from the default sort
 	https://github.com/USEPA/useeio-widgets/issues/35
@@ -669,9 +680,6 @@ config.join(sectorList);
 
 	<div style="clear:both"></div>
 
-
-
-
 	<div class="io" style=" max-width: 850px; margin: auto;">
 	        <h1 class="text-center">Impact chart</h1>
 	        <p>
@@ -682,8 +690,6 @@ config.join(sectorList);
 	        </div>
 	</div>
 
-
-	<div id="sector-listXX" class="sector-listXX"></div>
 </div>
 
 <br><br><br>

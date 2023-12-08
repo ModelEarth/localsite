@@ -3133,21 +3133,33 @@ function hashChanged() {
             //delete param.geo;
             $(".regiontitle").text("");
             // Could add full "United States" from above. Could display longer "show" manufacing title.
+            let appTitle = $("#showAppsText").attr("title");
+            console.log("appTitle: " + appTitle);
             if (hash.show && local_app.loctitle) {
                 $(".region_service").text(local_app.loctitle + " - " + hash.show.toTitleCase());
             } else if (hash.show) {
-                let appTitle = $("#showAppsText").attr("title");
-                $(".region_service").text("Supply Chain Inflow-Outflow");
+                /*
                 if (appTitle) {
                     $("#pageTitle").text(appTitle); // Ex: Parts Manufacturing
-                    $(".region_service_industries").text("Top " + appTitle);
                 } else {
                     //$(".region_service").text(hash.show.toTitleCase());
                     $("#pageTitle").text(hash.show.toTitleCase());
-                    $(".region_service_industries").text("Top Industries2");
                 }
+                */
             } else {
-                $(".region_service").text("Top " + $(".locationTabText").text() + " Industries");
+                //$(".region_service").text("Top " + $(".locationTabText").text() + " Industries");
+            }
+            if (appTitle) {
+
+                /*
+                // Under development
+                alert(document.title);
+                let siteAppTitle = appTitle;
+                //if (document.title != siteAppTitle) {
+                    document.title = siteAppTitle;
+                //}
+                alert(document.title);
+                */
             }
         } else {
             hiddenhash.loctitle = hash.regiontitle;
@@ -3277,29 +3289,6 @@ function hashChanged() {
             });
         }
         */
-    }
-
-    if (hash.set != priorHash.set) {
-        if (hash.set == "air") {
-            $('#pageTitle').text('Air and Climate')
-        } else if (hash.set == "water") {
-            $('#pageTitle').text('Water Use and Quality')
-        } else if (hash.set == "land") {
-            $('#pageTitle').text('Land Use')
-        } else if (hash.set == "energy") {
-            $('#pageTitle').text('Energy Use')
-        } else if (hash.set == "prosperity") {
-            $('#pageTitle').text('Jobs and Value Added')
-        } else if (hash.set == "health") {
-            $('#pageTitle').text('Health Impact')
-        }
-        $(".impactIcons div").removeClass("active");
-        if (hash.set) {
-            const capitalizeSetName = hash.set.toLowerCase().replace(/\b[a-z]/g, function(letter) {
-                return letter.toUpperCase();
-            });
-            $(".impactIcons div:contains(" + capitalizeSetName + ")").addClass("active");
-        }
     }
 
     //alert("mapview: " + hash.mapview + " " + priorHash.mapview);
