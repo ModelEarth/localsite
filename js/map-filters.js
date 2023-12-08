@@ -2781,13 +2781,18 @@ function hashChanged() {
         updateHash({'mapview':''});
         $("#country_select").val("country");
     }
-    if (hash.appview && hash.appview != priorHash.appview) {
+    if (hash.appview != priorHash.appview) {
         loadScript(theroot + 'js/navigation.js', function(results) {
-            console.log("hash.appview exists: " + hash.appview);
-            //navigationJsLoaded
-            waitForVariable('navigationJsLoaded', function() {
-                showApps("#bigThumbMenu");
-            });
+            if (hash.appview) {
+                    console.log("hash.appview exists: " + hash.appview);
+                    //navigationJsLoaded
+                    waitForVariable('navigationJsLoaded', function() {
+                        showApps("#bigThumbMenu");
+                    });
+                
+            } else {
+                closeAppsMenu();
+            }
         });
     }
 	if (hash.show != priorHash.show) {

@@ -493,8 +493,10 @@ function populateTitle(showtitle,showtab) {
 
     if (thestate && localsiteTitle.indexOf(thestate) >= 0) { // Avoids showing state twice in browser title
         document.title = localsiteTitle + " - " + showtitle;
-    } else {
+    } else if (regionServiceTitle) {
         document.title = localsiteTitle + " - " + regionServiceTitle;
+    } else if (showtitle) {
+        document.title = localsiteTitle + " - " + showtitle;
     }
 }
 
