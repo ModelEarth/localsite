@@ -2396,7 +2396,8 @@ $(document).ready(function () {
     }
     var catString = catTitle.replace(/ /g, '_').replace(/&/g, '%26');
     $("#bigThumbPanelHolder").hide();
-    $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
+    $(".showApps").removeClass("filterClickActive");
+    //updateHash({'appview':''});
     if (catString == "All_Categories") {
         hash.cat = "";
         catString = "";
@@ -2599,112 +2600,6 @@ function localJsonpCallback(json) {
     alert(json.Message);
   }
 }
-function loadLocalObjectLayers(layerName, callback) { // layerName is not currently used
-    //alert("loadLocalObjectLayers " + layerName);
-    // Do we need to load this function on init, for state hash for layers requiring a state.
-
-    //console.log("loadLocalObjectLayers is deactivated. Using thumb menu load instead.")
-    //return;
-
-    let hash = getHash();
-	//if(location.host.indexOf('localhost') >= 0) {
-	    // Greenville:
-	    // https://github.com/codeforgreenville/leaflet-google-sheets-template
-	    // https://data.openupstate.org/map-layers
-
-	    //var layerJson = local_app.community_data_root() + "us/state/GA/ga-layers.json"; // CORS prevents live
-	    // The URL above is outdated. Now resides here:
-	    let layerJson = local_app.localsite_root() + "info/data/ga-layers-array.json";
-        if(location.host.indexOf("georgia") >= 0) {
-	    	// For B2B Recyclers, since localsite folder does not reside on same server.
-	    	layerJson = "https://model.earth/localsite/info/data/ga-layers-array.json";
-	    	console.log("Set layerJson: " + layerJson);
-		}
-        //alert(layerJson)
-	    //console.log(layerJson);
-
-        if (localObject.layers.length >= 0) {
-            callback();
-            return;
-        }
-	    let layerObject = (function() {
-            //alert("loadLocalObjectLayers layerObject " + layerName);
-    
-            if(!localObject.layers) {
-                console.log("Error: no localObject.layers");
-            }
-            $.getJSON(layerJson, function (layers) {
-
-                //console.log("The localObject.layers");
-                //console.log(localObject.layers);
-
-                // Create an object of objects so show.hash is the layers key
-                $.each(layers, function (i) {
-
-                    // To Do, avoid including "item" in object since it is already the key.
-                    localObject.layers[layers[i].item] = layers[i];
-
-                    //$.each(layerObject[i], function (key, val) {
-                    //    alert(key + val);
-                    //});
-                });
-
-                console.log("The localObject 2");
-                console.log(localObject);
-
-                //console.log("The localObject.layers");
-                //console.log(localObject.layers);
-
-                let layer = hash.show;
-                //alert(hash.show)
-                //alert(localObject.layers[layer].state)
-                
-
-
-
-
-          		// These should be lazy loaded when clicking menu
-                //displayBigThumbnails(0, hash.show, "main");
-                //displayHexagonMenu("", layerObject);
-                
-                if (!hash.show && !param.show) { // INITial load
-                	// alert($("#fullcolumn").width()) = null
-                	if ($("body").width() >= 800) {
-
-                		//showThumbMenu(hash.show, "#bigThumbMenu");
-                	}
-            	}
-                callback();
-                return;
-                //return layerObject;
-	            
-	        });
-	    })(); // end layerObject
-	    
-	    
-	//}
-} // end loadLocalObjectLayers
-
-/*
-function callInitSiteObject(attempt) {
-    alert("callInitSiteObject")
-    if (typeof localObject.layers != 'undefined' && localObject.layers.length >= 0) {
-        alert("localObject.layers already loaded " + localObject.layers.length)
-        return;
-    }
-	if (typeof local_app !== 'undefined') {
-		loadLocalObjectLayers("");
-        return;
-	} else if (attempt < 100) { // wait for local_app
-		setTimeout( function() {
-   			console.log("callInitSiteObject again")
-			callInitSiteObject(attempt+1);
-   		}, 100 );
-	} else {
-		console.log("ERROR: Too many search-filters local_app attempts. " + attempt);
-	}
-}
-*/
 
 // INIT
 if(!param.state) {
@@ -2781,20 +2676,6 @@ function hashChanged() {
         updateHash({'mapview':''});
         $("#country_select").val("country");
     }
-    if (hash.appview != priorHash.appview) {
-        loadScript(theroot + 'js/navigation.js', function(results) {
-            if (hash.appview) {
-                    console.log("hash.appview exists: " + hash.appview);
-                    //navigationJsLoaded
-                    waitForVariable('navigationJsLoaded', function() {
-                        showApps("#bigThumbMenu");
-                    });
-                
-            } else {
-                closeAppsMenu();
-            }
-        });
-    }
 	if (hash.show != priorHash.show) {
         if (hash.show && priorHash.show) {
             console.log("Close location filter, show new layer.");
@@ -2804,7 +2685,7 @@ function hashChanged() {
             waitForElm('.showApps').then((elm) => {
                 // Same as in closeAppsMenu(), but calling that function from here generates blank page
                 $("#bigThumbPanelHolder").hide();
-                $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
+                $(".showApps").removeClass("filterClickActive");
             });
         }
         loadScript(theroot + 'js/map.js', function(results) {

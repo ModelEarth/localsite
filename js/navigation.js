@@ -122,6 +122,18 @@ function hashChangedNavigation() {
 	    	//}
 	    //}
 	}
+	if (hash.appview != priorHash.appview) {
+		//alert("appview change")
+        if (hash.appview) {
+            console.log("hash.appview exists: " + hash.appview);
+            //navigationJsLoaded
+            waitForVariable('navigationJsLoaded', function() {
+                showApps("#bigThumbMenu");
+            });
+        } else {
+            closeAppsMenu();
+        }
+    }
 }
 
 // Not in use, but might be cool to use
@@ -1027,6 +1039,113 @@ $(document).click(function(event) { // Hide open menus
 	//$("#filterLocations").hide();
 });
 
+function loadLocalObjectLayers(layerName, callback) { // layerName is not currently used
+    //alert("loadLocalObjectLayers " + layerName);
+    // Do we need to load this function on init, for state hash for layers requiring a state.
+
+    //console.log("loadLocalObjectLayers is deactivated. Using thumb menu load instead.")
+    //return;
+
+    let hash = getHash();
+	//if(location.host.indexOf('localhost') >= 0) {
+	    // Greenville:
+	    // https://github.com/codeforgreenville/leaflet-google-sheets-template
+	    // https://data.openupstate.org/map-layers
+
+	    //var layerJson = local_app.community_data_root() + "us/state/GA/ga-layers.json"; // CORS prevents live
+	    // The URL above is outdated. Now resides here:
+	    let layerJson = local_app.localsite_root() + "info/data/ga-layers-array.json";
+        if(location.host.indexOf("georgia") >= 0) {
+	    	// For B2B Recyclers, since localsite folder does not reside on same server.
+	    	layerJson = "https://model.earth/localsite/info/data/ga-layers-array.json";
+	    	console.log("Set layerJson: " + layerJson);
+		}
+        //alert(layerJson)
+	    //console.log(layerJson);
+
+        if (localObject.layers.length >= 0) {
+            callback();
+            return;
+        }
+	    let layerObject = (function() {
+            //alert("loadLocalObjectLayers layerObject " + layerName);
+    
+            if(!localObject.layers) {
+                console.log("Error: no localObject.layers");
+            }
+            $.getJSON(layerJson, function (layers) {
+
+                //console.log("The localObject.layers");
+                //console.log(localObject.layers);
+
+                // Create an object of objects so show.hash is the layers key
+                $.each(layers, function (i) {
+
+                    // To Do, avoid including "item" in object since it is already the key.
+                    localObject.layers[layers[i].item] = layers[i];
+
+                    //$.each(layerObject[i], function (key, val) {
+                    //    alert(key + val);
+                    //});
+                });
+
+                console.log("The localObject 2");
+                console.log(localObject);
+
+                //console.log("The localObject.layers");
+                //console.log(localObject.layers);
+
+                let layer = hash.show;
+                //alert(hash.show)
+                //alert(localObject.layers[layer].state)
+                
+
+
+
+
+          		// These should be lazy loaded when clicking menu
+                //displayBigThumbnails(0, hash.show, "main");
+                //displayHexagonMenu("", layerObject);
+                
+                if (!hash.show && !param.show) { // INITial load
+                	// alert($("#fullcolumn").width()) = null
+                	if ($("body").width() >= 800) {
+
+                		//showThumbMenu(hash.show, "#bigThumbMenu");
+                	}
+            	}
+                callback();
+                return;
+                //return layerObject;
+	            
+	        });
+	    })(); // end layerObject
+	    
+	    
+	//}
+} // end loadLocalObjectLayers
+
+/*
+function callInitSiteObject(attempt) {
+    alert("callInitSiteObject")
+    if (typeof localObject.layers != 'undefined' && localObject.layers.length >= 0) {
+        alert("localObject.layers already loaded " + localObject.layers.length)
+        return;
+    }
+	if (typeof local_app !== 'undefined') {
+		loadLocalObjectLayers("");
+        return;
+	} else if (attempt < 100) { // wait for local_app
+		setTimeout( function() {
+   			console.log("callInitSiteObject again")
+			callInitSiteObject(attempt+1);
+   		}, 100 );
+	} else {
+		console.log("ERROR: Too many search-filters local_app attempts. " + attempt);
+	}
+}
+*/
+
 function showThumbMenu(activeLayer, insertInto) {
 	$("#menuHolder").css('margin-right','-250px');
     if (insertInto == "#bigThumbMenu") {
@@ -1202,7 +1321,7 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 
 			$('.bigThumbHolder').click(function(event) {
 		        $("#bigThumbPanelHolder").hide(); // Could remain open when small version above map added. 
-		        $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});     
+		        $(".showApps").removeClass("filterClickActive"); ////updateHash({'appview':''});     
 		    });
 		    if (activeLayer) {
 		    	$(".bigThumbMenuContent[show='" + activeLayer +"']").addClass("bigThumbActive");
@@ -1499,17 +1618,22 @@ $(document).on("click", "#filterClickLocation", function(event) {
     	//$("#bigThumbPanelHolder").hide();
     	//$("#filterClickLocation").removeClass("filterClickActive");
     	//$("#filterClickLocation").addClass("filterClickActive");
-    	goHash({"appview":""});
+    	//goHash({"appview":""});
+    	closeAppsMenu();
+    	$("#filterClickLocation").addClass("filterClickActive");
     } else if ($("#geoPicker").is(':visible')) {
     	//if (hash.mapview && hash.appview) {
     	$("#geoPicker").hide();
     	closeAppsMenu();
     	$("#filterClickLocation").removeClass("filterClickActive");
     } else {
+    	closeAppsMenu();
     	loadScript(theroot + 'js/map-filters.js', function(results) {
 	    	$("#filterLocations").show();
 	    	$("#geoPicker").show();
-	    	$("#filterClickLocation").addClass("filterClickActive");
+	    	if (!hash.appview) {
+	    		$("#filterClickLocation").addClass("filterClickActive");
+	    	}
 		    if(!hash.mapview && (hash.state || param.state)) {
 		    	hash.mapview = "state";
 		    	if (!hash.state) {
@@ -1583,9 +1707,11 @@ function showApps(menuDiv) {
 				scrollTop: 0
 			});
         	closeAppsMenu();
-        	if ($("#filterLocations").is(':visible')) {
-        		$("#filterClickLocation").addClass("filterClickActive");
-        	}
+        	if (!hash.appview) {
+	        	if ($("#filterLocations").is(':visible')) {
+	        		$("#filterClickLocation").addClass("filterClickActive");
+	        	}
+	        }
 		} else { // Show Apps, Close Locations (if no mapview)
 			updateHash({"appview":"topics"});
 			console.log("call showThumbMenu from navidation.js");
@@ -1631,7 +1757,7 @@ function filterClickLocation(loadGeoTable) {
 	//$("#filterFieldsHolder").hide();
 
 	$("#bigThumbPanelHolder").hide();
-	$('.showApps').removeClass("filterClickActive"); updateHash({'appview':''});
+	$('.showApps').removeClass("filterClickActive"); ////updateHash({'appview':''});
     let distanceFilterFromTop = 120;
     if ($("#filterLocations").length) {
     	distanceFilterFromTop = $("#filterLocations").offset().top - $(document).scrollTop();
@@ -1646,20 +1772,10 @@ function filterClickLocation(loadGeoTable) {
 	$("#keywordFields").hide();
 }
 
-let mapFilterOpen = false;
 function openMapLocationFilter() {
-	//alert("openMapLocationFilter2");
-	if (mapFilterOpen) {
-	//if ($("#filterLocations").is(':visible')) { // Already open
-		//alert("openMapLocationFilter already open")
-		//return;
-	}
-	mapFilterOpen = true;
-
     let hash = getHash();
     //alert("openMapLocationFilter param.state " + param.state);
     console.log("openMapLocationFilter()");
-    closeAppsMenu();
     loadScript(theroot + 'js/map-filters.js', function(results) {
     	if (!hash.state && param.state) {
 	        hash.state = param.state; // For /apps/base/
@@ -1712,9 +1828,11 @@ function openMapLocationFilter() {
 	            //});
 	        }
 	    }
-	    waitForElm('#filterClickLocation').then((elm) => {
-	    	$("#filterClickLocation").addClass("filterClickActive");
-	    });
+	    if (!hash.appview) {
+		    waitForElm('#filterClickLocation').then((elm) => {
+		    	$("#filterClickLocation").addClass("filterClickActive");
+		    });
+		}
 	    //loadScript(theroot + 'js/map.js', function(results) { // Load list before map
 	    	//console.log("Call renderMapShapes from navigation.js")
 	        //renderMapShapes("geomap", hash, "", 1);// Called once map div is visible for tiles.
@@ -1739,7 +1857,6 @@ function closeLocationFilter() {
     $("#hideLocations").show();
     //$(".locationTabText").text("Entire State");
     $("#filterLocations").hide();
-    mapFilterOpen = false;
     $("#filterClickLocation").removeClass("filterClickActive");
     if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
         $("#header.nav-up").hide();

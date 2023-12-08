@@ -162,6 +162,12 @@ function refreshNaicsWidget() {
         }
     }
 
+    // Get naics and set titles
+    getNaics_setHiddenHash2(hash.show); // Sets hiddenhash.naics for use by other widgets.
+    // Get the hash again - since hiddenhash.naics is set in getNaics_setHiddenHash2
+    hash = getHash(); // Get new hiddenhash
+
+    /*  
     if (!hash.show || hash.show != priorHash.show) { // GET NAICS BASED ON THEME (recycing, bioeconomy, etc.)
         // Initial load
         //alert("hash.show " + hash.show)
@@ -177,6 +183,7 @@ function refreshNaicsWidget() {
     } else if (hash.catsize != priorHash.catsize) {
         //getNaics_setHiddenHash2(hash.show);
     }
+    */
 
     let loadNAICS = false;
     // The following will narrow the naics to the current location
