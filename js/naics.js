@@ -95,6 +95,13 @@ function initialWidgetLoad() {
     }
     //alert("hiddenhash.indicators " + hiddenhash.indicators)
     refreshNaicsWidget();
+    
+    waitForElm('#sectorListTitles').then((elm) => {
+        waitForElm('#sector-list .sector-list-table').then((elm) => {
+            $("#sectorListTitles").prependTo($("#sector-list > div"));
+            $("<style>#sector-list > div { margin-top:50px !important}</style>").prependTo($("#sector-list > div"));
+        });
+    });
 }
 
 
