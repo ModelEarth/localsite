@@ -1612,7 +1612,9 @@ $(document).on("change", "#state_select", function(event) {
 $(document).on("click", "#filterClickLocation", function(event) {
 
 	//delete(hiddenhash.mapview); // Not sure where this gets set.
-
+	if ($("#geoPicker").is(':visible')) {
+		console.log($("#filterLocations").offset().top);
+	}
     let hash = getHash();
     if ($("#geoPicker").is(':visible') && $("#bigThumbPanelHolder").is(':visible')) {
     	//$("#bigThumbPanelHolder").hide();
@@ -1644,16 +1646,10 @@ $(document).on("click", "#filterClickLocation", function(event) {
 		    } else {
 		    	goHash({"mapview":"country"});
 		    }
-		    //let hash = $.extend(true, {}, getHash());
-		    //console.log("#filterClickLocation click hash.state: " + hash.state);
-		    console.log("#filterClickLocation click hash.mapview: " + hash.mapview);
-		    //console.log("#filterClickLocation click param.mapview: " + param.mapview);
 
-		    //let mapviewState = hash.state;
-		    //if (!hash.state) {
-		    //	mapviewState = param.state; // Set in navigation.js based on domain.
-		    //}
+		    console.log("#filterClickLocation click hash.mapview: " + hash.mapview);
 		});
+		$('html,body').scrollTop(0);
 	    /*
 	     if (!hash.mapview) {
 	    	if (!hash.appview) {

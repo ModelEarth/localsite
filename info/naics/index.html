@@ -27,6 +27,9 @@ Reactivate once widget widths fixed
 #detail_section {
 	display: none !important;
 }
+.tabulator-tableHolder {
+	overflow: scroll;
+}
 </style>
 
 </head>
@@ -36,12 +39,12 @@ Reactivate once widget widths fixed
 <div id="datascape"></div>
 
 <div style="padding-left:30px; padding-right:30px">
-	<div class="input-output content contentpadding" style="padding:0px">
+	<div class="input-output contentX contentpadding" style="padding:0px">
 		<br>
 		<div id="readmeDiv"></div>
 		<div id="append_industryFilters"></div>
 
-		<div style="height:500px">
+		<div style="heightX:500px;overflowX:scroll">
 			<div id="tabulator-industrytable"></div>
 			<div id="tabulator-industrytable-count"></div>
 		</div>

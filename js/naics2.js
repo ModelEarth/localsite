@@ -1,3 +1,7 @@
+// TO BE DELETED SOON
+
+// These updates now reside in naics.js, then this page will be deleted.
+
 // Might replace "industry" with "cat" and use for any category that occurs in multiple locations.
 
 // TODO: Might move counties.csv and state_fips.csv into promises
@@ -12,9 +16,6 @@ if(typeof localObject.zip == 'undefined') {
 let fips = [];
 let stateID = 13;
 let stateAbbr = "";
-
-// Not yet used
-let stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78,}
 let industries = d3.map(); // Populated in promises by industryTitleFile
 
 // BUGBUG - Use a small file with just two columns
@@ -55,11 +56,11 @@ function callPromises(industryLocDataFile) {
         //fips = [13189,13025,13171]; // TEMP
         //fips = ["US13189","US13025","US13171"];
 
-        fips = [];
-        let hash = getHash();
-        if (hash.geo) {
-            fips = hash.geo.replace(/US/g,'').split(","); // Remove US from geo values to create array of fips.
-        }
+        //fips = [];
+        //let hash = getHash();
+        //if (hash.geo) {
+        //    fips = hash.geo.replace(/US/g,'').split(","); // Remove US from geo values to create array of fips.
+        //}
 
         topRatesInFips(localObject, fips); // Renders header and processes county values
 
@@ -85,8 +86,7 @@ if (typeof hiddenhash == 'undefined') {
     let hiddenhash = {};
 }
 
-let industryZipFile = getIndustryZipPath(hash.zip);
-alert(industryZipFile)
+//let industryZipFile = getIndustryZipPath(hash.zip);
 
 refreshNaicsWidget();
 document.addEventListener('hashChangeEvent', function (elem) {
@@ -204,7 +204,11 @@ function showIndustryTabulatorList(attempts) {
         // More filter samples
         // https://stackoverflow.com/questions/2722159/how-to-filter-object-array-based-on-attributes
 
-        // Changed maxHeight from 100% to 500px to enable scroll. - No effect yet
+        console.log("data:localObject.industries");
+        console.log(localObject.industries);
+
+        // ToDo: Replace width on Industry with a cell that fills any excess space.
+
         industrytable = new Tabulator("#tabulator-industrytable", {
             data:localObject.industries,     //load row data from array of objects
             layout:"fitColumns",      //fit columns to width of table
@@ -217,11 +221,12 @@ function showIndustryTabulatorList(attempts) {
             initialSort:[             //set the initial sort order of the data - NOT WORKING
                 {column:"id", dir:"asc"},
             ],
-            maxHeight:"100%",
-            paginationSize:50000,
+            frozenRows:1,
+            paginationSize:20, // No effect
+            maxHeight:"500px",
             columns:[
                 {title:"Naics", field:"id", width:80},
-                {title:"Industry", field:"title"},
+                {title:"Industry", field:"title", width:400},
                 {title:"Payroll", field:"payroll", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
                 {title:"Locations", field:"establishments", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
                 {title:"Employees", field:"employees", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
@@ -258,22 +263,22 @@ function showIndustryTabulatorList(attempts) {
                 // Possible way to get currently selected rows - not sure is this includes rows not in DOM
                 // var selectedRows = $("#tabulator-industrytable").tabulator("getSelectedRows"); //get array of currently selected row components.
 
-                // Merge with existing geo values from hash. This allows map to match.
+                // Merge with existing naics values from hash. This allows map to match.
                 let hash = getHash();
                 if (row.isSelected()) {
-                    if(hash.geo) {
-                        //hash.geo = hash.geo + "," + currentRowIDs.toString();
-                        hash.geo = hash.geo + "," + row._row.data.id;
+                    if(hash.naics) {
+                        //hash.naics = hash.naics + "," + currentRowIDs.toString();
+                        hash.naics = hash.naics + "," + row._row.data.id;
                     } else {
-                        hash.geo = currentRowIDs.toString();
+                        hash.naics = currentRowIDs.toString();
                     }
                 } else { // Uncheck
                     // Remove only unchecked row.
                     //$.each(currentRowIDs, function(index, value) {
-                        hash.geo = hash.geo.split(',').filter(e => e !== row._row.data.id).toString();
+                        hash.naics = hash.naics.split(',').filter(e => e !== row._row.data.id).toString();
                     //}
                 }
-                goHash({'geo':hash.geo});
+                goHash({'naics':hash.naics});
 
                 //var selectedData = industrytable.getSelectedData(); // Array of currently selected
                 //alert(selectedData);
@@ -619,7 +624,7 @@ function topRatesInFipsOld(dataSet, fips) { // REMOVED , hash
                         rates_list.push(forlist[key])
                     });
 
-                }else if(fips==stateID){ //Example: fips=13
+                } else if(fips==stateID){ //Example: fips=13
                     // Was dataSet.industryDataStateApi.ActualRate[this_key], try changing to localObject.industryCounties
                         if(hash.census_scope=="state"){
                             Object.keys(localObject.industryCounties).forEach( this_key=>{
