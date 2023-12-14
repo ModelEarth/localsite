@@ -107,7 +107,6 @@
 	z-index: 1;
     width: 200px;
 	min-width: 160px;
-	background: rgb(238, 238, 238);
 }
 @media (min-width: 1401px) {
 	.layerSectionTitle {
@@ -162,7 +161,6 @@
 		max-width: 38px;
 		width: 38px;
 		overflow: visible;
-		background: rgb(238, 238, 238);
 	}
 	.layerSection {
 		/* max-width: 38px; Avoid, else background is not visible. */
