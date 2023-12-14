@@ -17,7 +17,8 @@ if (typeof dataObject == 'undefined') {
 }
 
 // For v2
-let industries = d3.map(); // Populated in promises by industryTitleFile
+let industries = d3.map(); // Populated in promises from industryTitleFile
+let epaSectors = d3.map(); // Populated from sectorsJsonFile
 
 let stateID = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78,}
 let stateAbbr;
@@ -2005,6 +2006,149 @@ function applyIO(naics) {
 
 }
 
+// New 73 Sectors
+getEpaSectors();
+function getEpaSectors() {
+    let sectorsJsonFile = "/io/build/api/USEEIOv2.0/sectors.json";
+    let promises = [
+        d3.csv(sectorsJsonFile, function(d) {
+            epaSectors.set(d.id, d.index, d.name, d.code, d.location, d.description);
+            return d;
+        })
+    ]
+    Promise.all(promises).then(sectorsPromisesReady);
+    function sectorsPromisesReady(values) { // Wait for sectors json
+        // Returns Residential building repair and maintanence
+        //alert(epaSectors.get("230302/US"));
+        localObject.epaSectors = values[0]; // 73 EPA sectors
+        console.log("localObject.epaSectors");
+        console.log(localObject.epaSectors);
+        showSectorTabulatorList(0);
+    }
+}
+
+var sectortable = {};
+function showSectorTabulatorList(attempts) {
+    let hash = getHash();
+    if (typeof Tabulator !== 'undefined') {
+        sectortable = new Tabulator("#tabulator-sectortable", {
+            data:localObject.epaSectors,     //load row data from array of objects
+            layout:"fitColumns",      //fit columns to width of table
+            responsiveLayout:"hide",  //hide columns that dont fit on the table
+            tooltips:true,            //show tool tips on cells
+            addRowPos:"top",          //when adding a new row, add it to the top of the table
+            history:true,             //allow undo and redo actions on the table
+            movableColumns:true,      //allow column order to be changed
+            resizableRows:true,       //allow row order to be changed
+            initialSort:[             //set the initial sort order of the data - NOT WORKING
+                {column:"id", dir:"asc"},
+            ],
+            frozenRows:1,
+            paginationSize:400, // No effect
+            maxHeight:"500px", // For frozenRows
+            columns:[
+                {title:"ID", field:"id", width:80},
+                {title:"Index", field:"index", width:80},
+                {title:"Name", field:"name", width:300},
+                {title:"Code", field:"code", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
+                {title:"Location", field:"location", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
+                {title:"Description", field:"description", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} }
+            
+            ],
+            dataLoaded: function(data) {
+
+                //var newDiv= document.createElement('div');
+                $("#totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
+                var totalcount_div = Object.assign(document.createElement('div'),{id:"totalcount",style:"float:left"})
+                $("#tabulator-sectortable-count").append(totalcount_div);
+
+                //var el = document.getElementById("total_count");
+                totalcount_div.innerHTML = data.length + " industries";    
+            },
+            rowClick:function(e, row) {
+                row.toggleSelect(); //toggle row selected state on row click
+
+                console.log("row:");
+                console.log(row); // Single row component
+                console.log(e); // Info about PointerEvent - the click event object
+
+                currentRowIDs = [];
+                //e.forEach(function (row) {
+                    //console.log(row.geoid);
+                    currentRowIDs.push(row._row.data.id);
+                //});
+                //alert(currentRowIDs.toString())
+
+                // Possible way to get currently selected rows - not sure is this includes rows not in DOM
+                // var selectedRows = $("#tabulator-industrytable").tabulator("getSelectedRows"); //get array of currently selected row components.
+
+                // Merge with existing naics values from hash. This allows map to match.
+                let hash = getHash();
+                if (row.isSelected()) {
+                    if(hash.naics) {
+                        //hash.naics = hash.naics + "," + currentRowIDs.toString();
+                        hash.naics = hash.naics + "," + row._row.data.id;
+                    } else {
+                        hash.naics = currentRowIDs.toString();
+                    }
+                } else { // Uncheck
+                    // Remove only unchecked row.
+                    //$.each(currentRowIDs, function(index, value) {
+                        hash.naics = hash.naics.split(',').filter(e => e !== row._row.data.id).toString();
+                    //}
+                }
+                goHash({'naics':hash.naics});
+
+                //var selectedData = industrytable.getSelectedData(); // Array of currently selected
+                //alert(selectedData);
+            },
+            rowSelectionChanged: function(e, row) {
+                //alert("rowSelectionChanged")
+
+                //console.log("rowSelectionChanged");
+                //console.log(e); // Contains all selected rows.
+
+                //console.log("Row Selection (checkbox) Changed");
+                //console.log(row); // Has extra levels
+
+                /*
+                currentRowIDs = [];
+                e.forEach(function (row) {
+                    //console.log(row.geoid); // naics now, will be sector
+                    currentRowIDs.push(row.id)
+                });
+                */
+
+                if (row[0]) {
+                    //console.log(e[0].id); // the geoid
+
+                    // Works - but currently showing first item in array of objects:
+                    //console.log(row[0]._row.data.id); // .data.geoid
+
+                    //this.recalc();
+                }
+            },
+        });
+
+        //industrytable.selectRow(industrytable.getRows().filter(row => row.getData().name == 'Fulton County, GA'));
+        //industrytable.selectRow(industrytable.getRows().filter(row => row.getData().name.includes('Ba')));
+
+        // Place click-through on checkbox - allows hashchange to update row.
+        //$('.tabulator-row input:checkbox').prop('pointer-events', 'none'); // Bug - this only checks visible
+        
+
+    } else {
+      attempts = attempts + 1;
+      if (attempts < 200) {
+        // To do: Add a loading image after a coouple seconds. 2000 waits about 300 seconds.
+        setTimeout( function() {
+          showIndustryTabulatorList(attempts);
+        }, 20 );
+      } else {
+        alert("Tabulator JS not available for displaying list.")
+      }
+    }
+}
 
 // From naics2.js for v2
 
@@ -2196,9 +2340,6 @@ function callPromises(industryLocDataFile) { // From naics2.js
         // Returns Logging
         //alert(industries.get("113310"));
 
-        showIndustryTabulatorList(0);
-
-        // This code will be removed
-        //displayIndustryList(localObject); 
+        showIndustryTabulatorList(0); 
     }
 }

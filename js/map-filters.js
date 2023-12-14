@@ -1940,10 +1940,10 @@ function showTabulatorList(element, attempts) {
                     rowData = localObject.geo.filter(function(el){return el.state == theState.split(",")[0].toUpperCase();}); // load row data from array of objects
                     columnArray = [
                         {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                        {title:"County", field:"name"},
-                        {title:"Population", field:"pop", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
-                        {title:"Sq Miles", field:"sqmiles", hozAlign:"right"},
-                        {title:"Per Mile", field:"permile", hozAlign:"right"},
+                        {title:"County", field:"name", width:170},
+                        {title:"Population", field:"pop", width:110, hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
+                        {title:"Sq Miles", field:"sqmiles", width:90, hozAlign:"right"},
+                        {title:"Per Mile", field:"permile", width:100, hozAlign:"right"},
                     ];
                 }
         		geotable = new Tabulator("#tabulator-geotable", {
