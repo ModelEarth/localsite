@@ -312,6 +312,9 @@ function refreshNaicsWidget() {
             $("#industryTableHolder").show();
 
             let industryLocDataFile = getIndustryLocFileString(hash.catsize);
+            if (location.host.indexOf('localhost') >= 0) {
+                $("#tabulator-industrytable-intro").append(" - <a href='" + industryLocDataFile + "''>industryLocDataFile</a>");
+            }
             d3.csv(industryLocDataFile).then( function(county_data) {
                 //alert("load it " + hash.catsize);
                 //showIndustryTabulatorList(0);
@@ -2021,7 +2024,8 @@ function showIndustryTabulatorList(attempts) {
 
         // Already sent to console
         //console.log("data:localObject.industries");
-        //console.log(localObject.industries);
+
+        // $("#tabulator-industrytable-count").append(totalcount_div);
 
         // ToDo: Replace width on Industry with a cell that fills any excess space.
 
@@ -2042,7 +2046,7 @@ function showIndustryTabulatorList(attempts) {
             maxHeight:"500px", // For frozenRows
             columns:[
                 {title:"Naics", field:"id", width:80},
-                {title:"Industry", field:"title", width:120},
+                {title:"Industry", field:"title", width:300},
                 {title:"Payroll", field:"payroll", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
                 {title:"Locations", field:"establishments", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
                 {title:"Employees", field:"employees", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
