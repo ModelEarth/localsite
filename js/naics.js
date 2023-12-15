@@ -2009,9 +2009,10 @@ function applyIO(naics) {
 // New 73 Sectors
 getEpaSectors();
 function getEpaSectors() {
-    let sectorsJsonFile = "/io/build/api/USEEIOv2.0/sectors.json";
+    // USEEIOv2.0 has 411 sector rows.
+    let sectorsJsonFile = "/io/build/api/GAEEIOv1.0/sectors.json";
     let promises = [
-        d3.csv(sectorsJsonFile, function(d) {
+        d3.json(sectorsJsonFile, function(d) {
             epaSectors.set(d.id, d.index, d.name, d.code, d.location, d.description);
             return d;
         })
@@ -2030,6 +2031,8 @@ function getEpaSectors() {
 var sectortable = {};
 function showSectorTabulatorList(attempts) {
     let hash = getHash();
+
+    // BUGBUG - Only start of description before : is displayed.
     if (typeof Tabulator !== 'undefined') {
         sectortable = new Tabulator("#tabulator-sectortable", {
             data:localObject.epaSectors,     //load row data from array of objects
@@ -2044,26 +2047,21 @@ function showSectorTabulatorList(attempts) {
                 {column:"id", dir:"asc"},
             ],
             frozenRows:1,
-            paginationSize:400, // No effect
             maxHeight:"500px", // For frozenRows
+            paginationSize:400, // No effect
             columns:[
-                {title:"ID", field:"id", width:80},
-                {title:"Index", field:"index", width:80},
+                {title:"ID", field:"id", width:100},
+                {title:"Index", field:"index", width:70},
                 {title:"Name", field:"name", width:300},
                 {title:"Code", field:"code", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
                 {title:"Location", field:"location", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
                 {title:"Description", field:"description", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} }
-            
             ],
             dataLoaded: function(data) {
-
-                //var newDiv= document.createElement('div');
-                $("#totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
-                var totalcount_div = Object.assign(document.createElement('div'),{id:"totalcount",style:"float:left"})
+                $("#sectors_totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
+                let totalcount_div = Object.assign(document.createElement('div'),{id:"sectors_totalcount",style:"margin-bottom:10px"})
                 $("#tabulator-sectortable-count").append(totalcount_div);
-
-                //var el = document.getElementById("total_count");
-                totalcount_div.innerHTML = data.length + " industries";    
+                totalcount_div.innerHTML = data.length + " sectors";  
             },
             rowClick:function(e, row) {
                 row.toggleSelect(); //toggle row selected state on row click
@@ -2186,8 +2184,8 @@ function showIndustryTabulatorList(attempts) {
                 {column:"id", dir:"asc"},
             ],
             frozenRows:1,
+            maxHeight:"480px", // For frozenRows
             paginationSize:400, // No effect
-            maxHeight:"500px", // For frozenRows
             columns:[
                 {title:"Naics", field:"id", width:80},
                 {title:"Industry", field:"title", width:300},
@@ -2195,17 +2193,12 @@ function showIndustryTabulatorList(attempts) {
                 {title:"Locations", field:"establishments", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
                 {title:"Employees", field:"employees", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
                 {title:"Population", field:"population", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                {title:"Counties", field:"instances", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number" },
-            
+                {title:"Counties", field:"instances", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number" }
             ],
             dataLoaded: function(data) {
-
-                //var newDiv= document.createElement('div');
-                $("#totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
-                var totalcount_div = Object.assign(document.createElement('div'),{id:"totalcount",style:"float:left"})
+                $("#industries_totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
+                let totalcount_div = Object.assign(document.createElement('div'),{id:"industries_totalcount",style:"margin-bottom:10px"})
                 $("#tabulator-industrytable-count").append(totalcount_div);
-
-                //var el = document.getElementById("total_count");
                 totalcount_div.innerHTML = data.length + " industries";    
             },
             rowClick:function(e, row) {

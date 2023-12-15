@@ -589,7 +589,7 @@
 
       <div class="georgia" style="display:none">
         <span id="intranet-nav" class="hideMobile" style="float:left">
-          <a href="/locations/" class="navlink-industries"><span style="white-space: nowrap; margin-right:6px">Industries</span></a>
+          <a href="/localsite/info/#mapview=state&state=GA" class="navlink-industries"><span style="white-space: nowrap; margin-right:6px">Industries</span></a>
           <a href="/display/exporters/" class="navlink-exporters"><span style="white-space: nowrap; margin-right:3px">Exporters</span></a>
           <a href="/recycling/georgia/" class="navlink-recyclers"><span style="white-space: nowrap; margin-right:3px">Recyclers</span></a>
         </span>
@@ -1033,6 +1033,11 @@
 
                   <div style="float:right; padding:0px 0px 0px 12px; margin-top:5px; margin-bottom:5px;">
                     <div class="detailbutton hideGeoPicker greenbutton" style="padding:10px 18px 10px 18px;">DONE</div>
+
+                      <!-- Test another chlorpleth -->
+                      <div class="local" style="display:none">
+                        <div id="show_county_colors">Test</div>
+                      </div>
                   </div>
 
                   <div style="displayX:table; width:100%">
@@ -1043,7 +1048,7 @@
 
                 </div>
 
-              <div class="geoListCounties" style="overflow:scroll; margin-bottom:45px">
+              <div class="geoListCounties" style="overflowX:scroll; margin-bottom:45px">
                 <!-- Activate or remove
                 <div style="float:right;margin:12px 0px 0 12px">
                   <input id="showValues" type="checkbox" checked> Show values
@@ -1072,15 +1077,16 @@
                 
                 <div id="tabulator-statetable"></div>
                 <div id="tabulator-geotable"></div>
+                
+                <!--
+                <div style="width:100%" class="output_table rotateHeader">
+                    Test another chlorpleth button was here.  Moved next to Done button.
+                    To do: Investigaate how .output_table is used.  Is it needed?
+                </div>
+                -->
+
                 <div id="tabulator-geocredit" style="display:none; margin-top:8px; font-size: 12px">
                   Dataset displayed by <a href="../../../localsite/info/data/" target="_blank">Tabulator</a><br><br>
-                </div>
-
-                <div style="width:100%" class="output_table rotateHeader">
-                </div>
-
-                <div class="localonly" style="display:none">
-                  <div id="show_county_colors">Test another chlorpleth</div>
                 </div>
 
               </div>

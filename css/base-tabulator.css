@@ -16,6 +16,11 @@
     border-right: 1px solid #fff;
     border-bottom: 1px solid #ccc;
 }
+/* Enables scrolling when top row set with frozenRows */
+.tabulator-tableHolder {
+    overflow-x: scroll;
+    margin-bottom: -14px;
+}
 .tabulator .tabulator-footer {
     background-color: transparent;
     border-right: 1px solid #fff;

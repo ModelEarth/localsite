@@ -1958,6 +1958,8 @@ function showTabulatorList(element, attempts) {
         		    initialSort:[             //set the initial sort order of the data - NOT WORKING
         		        {column:"pop", dir:"desc"},
         		    ],
+                    frozenRows:1,
+                    maxHeight:"500px", // For frozenRows
         		    paginationSize:10000,
         		    columns:columnArray,
 
@@ -2857,18 +2859,6 @@ function hashChanged() {
     if (hash.mapview && hash.mapview != priorHash.mapview) {
         $("#country_select").val(hash.mapview);
     }
-    /* Delete, occurs below
-    if (hash.mapview && hash.mapview != priorHash.mapview) {
-        //$("#country_select").val(hash.mapview);
-        loadScript(theroot + 'js/navigation.js', function(results) {
-            alert("Call openMapLocationFilter() 1")
-            openMapLocationFilter();
-        });
-    } else if (priorHash.mapview && !hash.mapview) {
-        $("#country_select").val("");
-        closeLocationFilter();
-    }
-    */
 
     if (hash.state != priorHash.state) {
 		loadGeomap = true;
@@ -2943,7 +2933,7 @@ function hashChanged() {
                     if (hash.mapview == "country") {
                         loadObjectData(element, 0);
                     }
-                    $("#tabulator-geocredit").show();
+                    //$("#tabulator-geocredit").show();
                 }
             //}
         } else if (hash.mapview == "earth" || hash.mapview == "countries") {
@@ -2976,8 +2966,6 @@ function hashChanged() {
             //alert("country");
             $("#geoPicker").show(); // Required for map to load
             $("#state_select").show();
-            
-            //openMapLocationFilter();
         }
     } else if (hash.mapview == "state") {
         $("#state_select").show();
