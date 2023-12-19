@@ -414,11 +414,32 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.lonColumn = "longitude";
 
       } else if (show == "solidwaste") {
-        dp.listTitle = "Georgia Solid Waste (2023)";
+        dp.listTitle = "Georgia Solid Waste (Oct 2023)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
         dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates. Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='/recycling/georgia/'>More&nbsp;Recycling&nbsp;Datasets</a>.";
       
-        // From Solid Waste tab
+        // From Solid Waste 2023-10 tab
+        dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1567915085&single=true&output=csv";
+        // BUGBUG - Allow these to start with uppercase to match sheet
+        dp.nameColumn = "facility name";
+        dp.titleColumn = "facility name";
+        dp.searchFields = "facility name";
+        dp.search = {"In Name": "Facility Name","In Address": "Address", "Status": "Operating Status"};
+
+        //dp.showWhenStatus = "Operating"
+        dp.catColumn = "Operating Status";
+        dp.valueColumn = "operating status";
+        dp.valueColumnLabel = "Operating Status";
+
+        dp.markerType = "google";
+        dp.color = "#933";
+
+      } else if (show == "solidwaste-old") { // This tab can be deleted in Google Sheet
+        dp.listTitle = "Georgia Solid Waste (Old)";
+        dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
+        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates. Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='/recycling/georgia/'>More&nbsp;Recycling&nbsp;Datasets</a>.";
+      
+        // From "Solid Waste Old" tab
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=809637033&single=true&output=csv";
         // BUGBUG - Allow these to start with uppercase to match sheet
         dp.nameColumn = "facility name";
@@ -1273,8 +1294,8 @@ function showList(dp,map) {
     catFound = 0;
     let filterMatchFound = true;
 
-    if (count > 4000) {
-        console.log("Count exceeds 4000");
+    if (count > 10000) {
+        console.log("Count exceeds 10000");
         return;
     }
 

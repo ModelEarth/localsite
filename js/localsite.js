@@ -5,7 +5,10 @@
 // Localsite Path Library - A global namespace singleton
 // Define a new object if localsite library does not exist yet.
 let localStart = Date.now();
-let onlineApp = true; // Set to false during air travel. Also sets local to no state.
+let onlineApp = true;
+if (location.host.indexOf('localhost') >= 0) {
+  //onlineApp = false; // Set to false during air travel. Also sets local to no state.
+}
 let localsiteTitle = "Localsite";
 let defaultState = ""; // GA
 consoleLog("start localsite");
