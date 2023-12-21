@@ -288,9 +288,13 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.mapInfo = "<a href='https://map.georgia.org/display/products/'>View active version</a>";
         dp.search = {"In Company Name": "Account Name", "In Industries": "Industries Trade"};
 
-  } else if (theState == "GA") {
+  //} else if (theState == "GA") {
 
-      if (show == "opendata") {
+  //    if (show == "opendata") {
+
+  // Switch to 2 lines above when other states are added
+  } else if (show == "opendata") {
+
         dp.editLink = "https://docs.google.com/spreadsheets/d/1bvD9meJgMqLywdoiGwe3f93sw1IVI_ZRjWSuCLSebZo/edit?usp=sharing";
         dp.dataTitle = "Georgia Open Data";
         dp.listTitle = "Georgia Open Data Resources";
@@ -424,7 +428,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.nameColumn = "facility name";
         dp.titleColumn = "facility name";
         dp.searchFields = "facility name";
-        dp.search = {"In Name": "Facility Name","In Address": "Address", "Status": "Operating Status"};
+        dp.search = {"In Name": "Facility Name","In Address": "Address", "Status": "Operating Status", "Permit Number": "Permit Number"};
 
         //dp.showWhenStatus = "Operating"
         dp.catColumn = "Operating Status";
@@ -589,22 +593,6 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         dp.valueColumnLabel = "EV Industry";
         dp.markerType = "google";
         dp.search = {"EV Industry": "EV Industry", "In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
-      } else if (show == "vax" || show == "vac") { // Phase out vac
-        dp.listTitle = "Vaccine Locations";
-        //dp.dataset = "https://docs.google.com/spreadsheets/d/1odIH33Y71QGplQhjJpkYhZCfN5gYCA6zXALTctSavwE/gviz/tq?tqx=out:csv&sheet=Sheet1"; // MapBox sample
-        // Link above works, but Google enforces CORS with this link to Vaccine data:
-        //dp.dataset = "https://docs.google.com/spreadsheets/d/1q5dvOEaAoTFfseZDqP_mIZOf2PhD-2fL505jeKndM88/gviz/tq?tqx=out:csv&sheet=Sheet3";
-        dp.editLink = "https://docs.google.com/spreadsheets/d/1_wvZXUWFnpbgSAZGuIb1j2ni8p9Gqj3Qsvd8gV95i90/edit?ts=60233cb5#gid=698462553";
-        dp.googleDocID = "1_wvZXUWFnpbgSAZGuIb1j2ni8p9Gqj3Qsvd8gV95i90";
-        dp.sheetName = "Current Availability";
-        dp.mapInfo = "<br><br><a href='https://docs.google.com/spreadsheets/d/1_wvZXUWFnpbgSAZGuIb1j2ni8p9Gqj3Qsvd8gV95i90/edit?ts=60233cb5#gid=698462553'>Help update Google Sheet data by posting comments</a>.<br><br><a href='https://myvaccinegeorgia.com/'>Preregister with myvaccinegeorgia.com</a> and join the <a href='https://vaxstandby.com/'>VAX Standby</a> list to receive a message when extra doses are available. Also receive text messages on availability from <a href='https://twitter.com/DiscoDroidAI'>Disco Droid</a> or check their <a href='https://twitter.com/DiscoDroidAI'>Tweets</a>.<br><br><a href='https://www.vaccinatega.com/vaccination-sites/providers-in-georgia'>Check provider status</a> at <a href='https://VaccinateGA.com'>VaccinateGA.com</a> and <a href='neighborhood/'>assist with data and coding</a>.";
-        // <a href='neighborhood/vaccines/'>view availability and contribute updates</a>
-        dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
-        // "In Description": "description", "In City Name": "city", "In Zip Code" : "zip"
-        dp.valueColumn = "county";
-        dp.valueColumnLabel = "County";
-        dp.countyColumn = "county";
-        dp.itemsColumn = "Category1";
       } else if (show == "smart") { // param["data"] for legacy: https://www.georgia.org/smart-mobility
         dp.shortTitle = "Smart Data Projects";
         dp.listTitle = "Data Driven Decision Making";
@@ -699,7 +687,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
         console.log("no show text match for listing map: " + show);
       }
 
-  } // end state GA
+  // } // end state GA
 
   if (theState == "CA") {
     //alert("theState " + theState)
@@ -3816,7 +3804,7 @@ function hashChangedMap() {
         // Copied from map-filters.js
         $("#state_select").val(hash.state.split(",")[0].toUpperCase());
         if($("#state_select").find(":selected").val()) {
-          let theState = $("#state_select").find(":selected").val();
+          let theState = $("#state_select").find(":selected").val(); // 2 characters
             if (theState != "") {
               let kilometers_wide = $("#state_select").find(":selected").attr("km");
               //zoom = 1/kilometers_wide * 1800000;

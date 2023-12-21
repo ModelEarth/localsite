@@ -518,11 +518,16 @@ function getNaics_setHiddenHash2(go) {
     return cat_filter;
 }
 function populateTitle(showtitle,showtab) {
+    //alert("showtitle " + showtitle);
     hash = getHash();
     let thestate;
     let regionServiceTitle = showtitle;
     if (hiddenhash.loctitle) {
-        regionServiceTitle = hiddenhash.loctitle + " - " + showtitle;
+        if (showtitle) {
+            regionServiceTitle = hiddenhash.loctitle + " - " + showtitle;
+        } else {
+            regionServiceTitle = hiddenhash.loctitle;
+        }
     } else if (hash.state) {
         $("#state_select").val(hash.state.split(",")[0].toUpperCase());
         thestate = $("#state_select").find(":selected").text();
@@ -540,7 +545,9 @@ function populateTitle(showtitle,showtab) {
     $("#showAppsText").text(showtab);
     $("#showAppsText").attr("title",showtab); // Swaps in when viewing app thumbs
     $(".regiontitle").text(regionServiceTitle);
-    $(".region_service").text(regionServiceTitle);
+
+    // Might not be needed since set in map-filters
+    //$(".region_service").text(regionServiceTitle);
 
     if (thestate && localsiteTitle.indexOf(thestate) >= 0) { // Avoids showing state twice in browser title
         if (showtitle) {

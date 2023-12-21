@@ -2163,7 +2163,28 @@ function loadIframe(iframeName, url) {
   return true;
 }
 
-function waitForVariable(variable, callback) { // Declair variable using var since let will not be detected.
+
+function waitForSubObject(theObject, theSubObject, callback) { // To confirm: Declare object using var since let will not be detected.
+  var interval = setInterval(function() {
+    if (window[theObject]) {
+      console.log('waitForObject found parent ' + theObject + '. Waiting for ' + theSubObject);
+      if (theSubObject in window[theObject] && Object.keys(window[theObject][theSubObject]).length > 0) {
+        //consoleLog("layers count " + );
+
+        //if (window[theObject].layers["bioeconomy"].section) {
+
+          clearInterval(interval);
+          consoleLog('waitForSubObject found ' + theObject + '.' + theSubObject);
+          callback();
+          return;
+        //}
+      }
+    }
+    //consoleLog('waitForSubObject ' + theObject + '.' + theSubObject);
+  }, 300);
+}
+
+function waitForVariable(variable, callback) { // Declare variable using var since let will not be detected.
   var interval = setInterval(function() {
     if (window[variable]) {
       clearInterval(interval);

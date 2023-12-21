@@ -117,9 +117,7 @@ function hashChangedNavigation() {
 			$(".bigThumbMenuContent").removeClass("bigThumbActive");
 	    	$(".bigThumbMenuContent[show='" + show +"']").addClass("bigThumbActive");
 	    	let activeTitle = $(".bigThumbMenuContent[show='" + show +"'] .bigThumbText").text();
-	    	//if (activeTitle) { // Keep prior if activeLayer is not among app list.
-	    		$("#showAppsText").attr("title",activeTitle);
-	    	//}
+	    	$("#showAppsText").attr("title",activeTitle);
 	    //}
 	}
 	if (hash.appview != priorHash.appview) {
@@ -1159,6 +1157,48 @@ function showThumbMenu(activeLayer, insertInto) {
         $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
     } else {
     	//$('.showApps').addClass("filterClickActive");
+    }
+}
+
+function removeFrontFolder(path) {
+    //return("../.." + path);
+    return(path);
+}
+function getDirectLink(livedomain,directlink,rootfolder,hashStr) {
+    let hash = getHash();
+    if (directlink) {
+        directlink = removeFrontFolder(directlink);
+    } else if (rootfolder) {
+        if (rootfolder.indexOf('/explore/') < 0) {
+            //rootfolder = "/explore/" + rootfolder;
+        }
+        directlink = removeFrontFolder(rootfolder + "#" + hashStr);
+        //alert(directlink)
+    } else {
+        //directlink = removeFrontFolder("/explore/#" + hashStr);
+    }
+    if (hash.state && directlink.indexOf('state=') < 0) {
+        if (directlink.indexOf('#') >= 0) {
+            directlink = directlink + "&state=" + hash.state;
+        } else {
+            directlink = directlink + "#state=" + hash.state;
+        }
+    }
+    if (livedomain && location.host.indexOf('localhost') < 0) {
+    	return(livedomain + directlink);
+    } else {
+    	return(directlink);
+	}
+}
+function access(minlevel,alevel) {
+    var level = 0;
+    if (alevel) { level = parseInt(alevel) }
+    if (minlevel >= level) {
+        //consoleLog("TRUE minlevel " + minlevel + " level " + level);
+        return true;
+    } else {
+        //consoleLog("FALSE minlevel " + minlevel + " level " + level);
+        return false;
     }
 }
 function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {

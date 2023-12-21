@@ -2499,50 +2499,6 @@ $(document).ready(function () {
 	});
 });
 
-// HEX
-function access(minlevel,alevel) {
-    var level = 0;
-    if (alevel) { level = parseInt(alevel) }
-    if (minlevel >= level) {
-        //consoleLog("TRUE minlevel " + minlevel + " level " + level);
-        return true;
-    } else {
-        //consoleLog("FALSE minlevel " + minlevel + " level " + level);
-        return false;
-    }
-}
-function removeFrontFolder(path) {
-    //return("../.." + path);
-    return(path);
-}
-
-
-function getDirectLink(livedomain,directlink,rootfolder,hashStr) {
-    let hash = getHash();
-    if (directlink) {
-        directlink = removeFrontFolder(directlink);
-    } else if (rootfolder) {
-        if (rootfolder.indexOf('/explore/') < 0) {
-            //rootfolder = "/explore/" + rootfolder;
-        }
-        directlink = removeFrontFolder(rootfolder + "#" + hashStr);
-        //alert(directlink)
-    } else {
-        //directlink = removeFrontFolder("/explore/#" + hashStr);
-    }
-    if (hash.state && directlink.indexOf('state=') < 0) {
-        if (directlink.indexOf('#') >= 0) {
-            directlink = directlink + "&state=" + hash.state;
-        } else {
-            directlink = directlink + "#state=" + hash.state;
-        }
-    }
-    if (livedomain && location.host.indexOf('localhost') < 0) {
-    	return(livedomain + directlink);
-    } else {
-    	return(directlink);
-	}
-}
 
 // These is missing var promises = [] and ready.
 // Let's look at Industry Mix first: http://localhost:8887/community/zip/leaflet/#columns=JobsAgriculture:50;JobsManufacturing:50
@@ -2916,7 +2872,7 @@ function hashChanged() {
             loadStateCounties(0);
 
             //if (hash.mapview == "country" && !hash.state) {
-                if (onlineApp) {
+                //if (onlineApp) {
                     let element = {};
                     element.scope = "state";
                     //element.datasource = "https://model.earth/beyond-carbon-scraper/fused/result.json"; // Also loaded in apps/js/bc.js
@@ -2934,7 +2890,7 @@ function hashChanged() {
                         loadObjectData(element, 0);
                     }
                     //$("#tabulator-geocredit").show();
-                }
+                //}
             //}
         } else if (hash.mapview == "earth" || hash.mapview == "countries") {
             let element = {};
@@ -2976,6 +2932,8 @@ function hashChanged() {
     //Resides before geo
     if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state || hash.show != priorHash.show) {
         let theStateName;
+
+        // Don't use, needs a waitfor
         if ($("#state_select").find(":selected").value) {
         	theStateName = $("#state_select").find(":selected").text();
         }
@@ -3009,19 +2967,63 @@ function hashChanged() {
             // Could add full "United States" from above. Could display longer "show" manufacing title.
             let appTitle = $("#showAppsText").attr("title");
             console.log("appTitle: " + appTitle);
-            if (hash.show && local_app.loctitle) {
-                $(".region_service").text(local_app.loctitle + " - " + hash.show.toTitleCase());
-            } else if (hash.show) {
+
+            let showTitle;
+            if (hash.show) {
                 /*
                 if (appTitle) {
                     $("#pageTitle").text(appTitle); // Ex: Parts Manufacturing
                 } else {
-                    //$(".region_service").text(hash.show.toTitleCase());
+                    ////$(".region_service").text(hash.show.toTitleCase());
                     $("#pageTitle").text(hash.show.toTitleCase());
                 }
                 */
+                showTitle = hash.show.toTitleCase();
+            }
+
+
+            if (hash.show && local_app.loctitle) {
+                $(".region_service").text(local_app.loctitle + " - " + hash.show.toTitleCase());
+                
+            } else if (hash.state) {
+
+                $(".region_service").text(hash.state); // While waiting for full state name
+                waitForElm('#state_select').then((elm) => {
+                    //$("#state_select").val(stateAbbrev);
+                    console.log("fetch theStateName from #state_select");
+                    if ($("#state_select").find(":selected").val()) { // Omits top which has no text
+                        theStateName = $("#state_select").find(":selected").text();
+                        console.log("fetched " + theStateName);
+                        $(".region_service").text(theStateName + " Industries");
+                        if (showTitle) {
+                            $(".region_service").text(theStateName + " - " + hash.show.toTitleCase());
+                        }
+                    }
+
+                    if (hash.show && param.display == "everything") { // Limitig to everything since /map page does not load layers, or need longer title.
+                        let layer = hash.show;
+                        waitForSubObject('localObject','layers', function() { 
+                        //waitForObjectProperty('localObject','layers', function() { 
+                            if (localObject.layers[layer] && localObject.layers[layer].section) {
+                                let section = localObject.layers[layer].section;
+                                updateRegionService(section);
+                            }
+                        });
+                        //setTimeout(() => { // Works
+                        //    alert("localObject.layers " + localObject.layers[layer].section);
+                        //},3000);
+                    }
+                });
+
+                /*
+                if (theStateName) {
+                    $(".region_service").text(theStateName);
+                } else {
+                    $(".region_service").text(hash.state);
+                }
+                */
             } else {
-                //$(".region_service").text("Top " + $(".locationTabText").text() + " Industries");
+                ////$(".region_service").text("Top " + $(".locationTabText").text() + " Industries");
             }
             if (appTitle) {
 
@@ -3036,6 +3038,7 @@ function hashChanged() {
                 */
             }
         } else {
+            //alert("hash.regiontitle1 " + hash.regiontitle);
             hiddenhash.loctitle = hash.regiontitle;
             $(".regiontitle").text(hash.regiontitle);
             if (hash.show) {
@@ -3058,6 +3061,7 @@ function hashChanged() {
 		    }
         }
     }
+
     //alert("hash.geo 2 " + hash.geo);
     //alert("priorHash.geo 2 " + priorHash.geo);
     if (hash.geo != priorHash.geo) {
@@ -3195,6 +3199,32 @@ function hashChanged() {
 		}
 	}
     
+}
+function updateRegionService(section) {
+
+    let theLocation = hash.regiontitle;
+    if (!theLocation) {
+        let theStateName = $("#state_select").find(":selected").text();
+        if (theStateName) {
+            theLocation = theStateName;
+            //alert("theLocation " + theLocation)
+        } else if (hash.state) {
+            theLocation = hash.state;
+            waitForElm('#state_select').then((elm) => {
+                //$("#state_select").val(param.state.split(",")[0]);
+                //alert(param.state.split(",")[0])
+                //if ($("#state_select").find(":selected").value) {
+                //    alert("found #state_select");
+                    updateRegionService(section);
+                //}
+            });
+        }
+    }
+    if (theLocation) {
+        $(".region_service").text(theLocation + " - " + section);
+    } else {
+        $(".region_service").text(section);
+    }
 }
 
 // INIT
