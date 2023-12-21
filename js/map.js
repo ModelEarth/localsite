@@ -1904,6 +1904,9 @@ function showList(dp,map) {
               output += element[dp.valueColumn] + "<br>";
             }
           }
+          if (element["permit number"]) {
+            output += "<b>Permit:</b> <a target='permit_info' href='https://github.com/GeorgiaMap/recycling/tree/main/georgia/data/counties'>" + element["permit number"] + "</a><br>";
+          }
           if (element[dp.showKeys]) {
             output += "<b>" + dp.showLabels + ":</b> " + element[dp.showKeys] + "<br>";
           }
