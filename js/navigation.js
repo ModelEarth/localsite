@@ -278,7 +278,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	// To do: fetch the existing background-image.
 	console.log("location.host: " + location.host + " " + location.host.indexOf("locations.pages.dev"));
 	let hash = getHash();
-	if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio") {
+	if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio" || location.href.indexOf("/swarm/") >= 0) {
 		//showLeftIcon = true;
 		$(".siteTitleShort").text("DreamStudio");
 		param.titleArray = [];
@@ -586,7 +586,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 
 		          					$("#topicsMenu").prepend(colCloneRight);
 
-									if (location.href.indexOf('desktop') >= 0 || location.host.indexOf('dreamstudio') >= 0 || location.href.indexOf('dreamstudio') >= 0) {
+									if (location.href.indexOf('desktop') >= 0 || location.host.indexOf('dreamstudio') >= 0 || location.href.indexOf('dreamstudio') >= 0 || location.href.indexOf('/swarm/') >= 0 || location.href.indexOf('/LinearA/') >= 0) {
 										let storiesFile = "https://dreamstudio.com/seasons/episodes.md";
 										//console.log("location.href index: " + location.href.indexOf("/dreamstudio/"));
 										if(location.host.indexOf('localhost') >= 0) {
