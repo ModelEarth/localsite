@@ -288,7 +288,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		if (location.host.indexOf("localhost") >= 0) {
 			siteRoot = "/dreamstudio";
 		}
-		param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px'></a>";
+		param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
 		param.headerLogoNoText = "<img src='/storyboard/img/logo/ds/favicon.png' style='float:left;width:38px;margin-right:7px'>";
 		if (location.host.indexOf("dreamstudio") >= 0) {
 			//param.headerLogo = param.headerLogo.replace(/\/dreamstudio\//g,"\/");

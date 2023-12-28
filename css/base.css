@@ -1279,9 +1279,15 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   .upperIcons {
     margin-right: 8px;
   }
-}
-@media (max-width: 260px) {
   #headerLogoholder {
+    padding-left: 20px;
+  }
+}
+@media (max-width: 350px) {
+  #headerLocTitleHolder {
+    display: none;
+  }
+  .headerLogoDesktop {
     display: none;
   }
 }

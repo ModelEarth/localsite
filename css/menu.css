@@ -704,8 +704,9 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
   */
   color: #aaa;
   text-decoration: none !important;
-  margin-right:0px !important;
-  padding:8px 15px 0 13px;
+  margin: 1px;
+  margin-rightX:2px !important;
+  padding:8px 13px 8px 13px;
   font: 400 16px/1.8 "Lato", sans-serif;
   -webkit-font-smoothing: inherit !important;
 }
@@ -713,9 +714,12 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
   color: #fff;
 }
 .navLinks a:hover {
-    color: #555;
-    background-color: #ddd;
+    colorX: #555;
+    background-colorX: #ddd;
     text-decoration: none !important;
+    font-weightX: bolder;
+    border: 1px solid #777;
+    margin: 0px;
 }
 .navLinks .navActive {
     font: 600 16px/1.8 "Lato", sans-serif !important;
