@@ -1283,7 +1283,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     padding-left: 20px;
   }
 }
-@media (max-width: 350px) {
+@media (max-width: 300px) {
   #headerLocTitleHolder {
     display: none;
   }
