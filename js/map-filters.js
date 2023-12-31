@@ -342,9 +342,6 @@ $(document).ready(function () {
     	$('#keywordFields').hide();
     	$('#topPanel').hide();
 	});
-    $(document).on("click", ".showNavColumn, #navcolumn", function(event) {
-        event.stopPropagation();
-    });
 	$(document).on("click", "body", function(event) {
         if ($("#navcolumn").is(":visible") && window.innerWidth < 1200) { 
             $('#navcolumn').hide();

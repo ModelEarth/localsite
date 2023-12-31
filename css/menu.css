@@ -543,7 +543,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 		top:64px;
 	}
 	.sideIconsLower {
-	 	top:62px;
+	 	top:4px;
 	}
 }
 #showNavColumn {
@@ -561,11 +561,13 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
  	opacity: .7;
  	cursor: pointer;
 }
-@media (max-width: 1100px) {
+/*
+@media (min-width: 600px) and (max-width: 1100px) {
 	#showNavColumn {
 		margin-left: -23px;
 	}
 }
+*/
 .dark #showNavColumn .material-icons {
 	background-color: #000 !important;
 	color: #fff !important;

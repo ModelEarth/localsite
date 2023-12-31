@@ -335,9 +335,9 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		showLeftIcon = true;
 		$(".siteTitleShort").text("Neighborhood Modeling");
 		param.titleArray = ["neighbor","hood"]
-		param.headerLogoSmall = "<img src='/localsite/img/logo/partners/neighborhood-icon.png' style='width:40px;opacity:0.7'>"
+		param.headerLogoSmall = "<img src='/localsite/img/logo/apps/neighborhood.png' style='width:40px;opacity:0.7'>"
 		localsiteTitle = "Neighborhood.org";
-		changeFavicon("/localsite/img/logo/partners/neighborhood-icon.png")
+		changeFavicon("/localsite/img/logo/apps/neighborhood.png")
 		showClassInline(".neighborhood");
 		earthFooter = true;
 	} else if (!Array.isArray(param.titleArray) && (location.host.indexOf("democracy.lab") >= 0)) {
@@ -456,6 +456,19 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	 	$(document).on("click", ".hideSide", function(event) {
 	 		hideSide("");
 		});
+
+		$(document).on("click", ".showNavColumn, #navcolumn", function(event) {
+		  event.stopPropagation();
+		});
+		$(document).on('click', function(event) {
+			if ($("#navcolumn").is(':visible')) {
+				if ($('#fullcolumn').width() <= 800) {
+	 				//alert($('#fullcolumn').width())
+			  		hideSide();
+				}
+			}
+		});
+
 		function hideSide(which) {
 			console.log("hideSide " + which);
 			if (which != "list") {
