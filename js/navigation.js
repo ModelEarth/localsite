@@ -279,7 +279,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	console.log("location.host: " + location.host + " " + location.host.indexOf("locations.pages.dev"));
 	let hash = getHash();
 	if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio" || location.href.indexOf("/swarm/") >= 0) {
-		//showLeftIcon = true;
+		localsiteTitle = "DreamStudio";
 		$(".siteTitleShort").text("DreamStudio");
 		param.titleArray = [];
 		//param.headerLogo = "<a href='https://dreamstudio.com'><img src='https://dreamstudio.com/dreamstudio/img/logo/dreamstudio-text.png' style='height:23px'></a>";
@@ -463,7 +463,6 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		$(document).on('click', function(event) {
 			if ($("#navcolumn").is(':visible')) {
 				if ($('#fullcolumn').width() <= 800) {
-	 				//alert($('#fullcolumn').width())
 			  		hideSide();
 				}
 			}
