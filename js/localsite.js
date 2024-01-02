@@ -10,7 +10,7 @@ if (location.host.indexOf('localhost') >= 0) {
   //onlineApp = false; // Set to false during air travel. Also sets local to no state.
 }
 let localsiteTitle = "Localsite";
-let defaultState = ""; // GA
+let defaultState = ""; // Set to GA to include additional map layers in top nav
 consoleLog("start localsite");
 var local_app = local_app || (function(module){
     let _args = {}; // private, also worked as []
@@ -1055,19 +1055,13 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       if (param.display == "everything") {
 
         loadScript(theroot + '../io/build/lib/useeio_widgets.js', function(results) {
-          if (param.omit_old_naics == "true") {
-            loadScript(theroot + 'js/naics2.js', function(results) {
-              consoleLog("ALERT naics2 loaded")
-            });
-          } else {
-            loadScript(theroot + 'js/d3.v5.min.js', function(results) {
-              waitForVariable('customD3loaded', function() {
-                loadScript(theroot + 'js/naics.js', function(results) {
-                  console.log("everything");
-                });
+          loadScript(theroot + 'js/d3.v5.min.js', function(results) {
+            waitForVariable('customD3loaded', function() {
+              loadScript(theroot + 'js/naics.js', function(results) {
+                console.log("everything");
               });
             });
-          }
+          });
         });
       }
 
