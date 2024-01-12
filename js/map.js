@@ -3,7 +3,7 @@
 // 2. LOCATION DETAILS ON SIDE MAP
 // Top geomap is displayed by map-filters.js
 
-// RenderMap calls addIcons
+// For each map, RenderMap calls addIcons
 
 // To Do: Rename, use or remove dataParameters
 
@@ -103,8 +103,10 @@ function clearListDisplay() {
 }
 
 let dp = {}; // So available on .detail click for popMapPoint() and zoomMapPoint().
-function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe still index.html, map-embed.js
-  // Calls loadFromSheet
+
+// TO DO: Can we avoid calling outside of the localsite repo by files in community, including community/map/starter/embed-map.js 
+function loadMap1(calledBy, show, dp_incoming) {
+  // Calls loadDataset
   let hash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement. Includes hiddenhash
     if (!show && param["show"]) {
     show = param["show"];
@@ -309,7 +311,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       } else if (show == "360") {
         dp.listTitle = "Birdseye Views";
         dp.dataset =  local_app.custom_data_root() + "360/GeorgiaPowerSites.csv";
-        dp.search = {"In Dataset Name": "name", "In City": "CITY", "In Property URL": "property_link"};
+        dp.search = {"In Location Name": "name", "In City": "CITY", "In Property URL": "property_link"};
         dp.color = "#ff9819"; // orange - Since there is no type column. An item column is filtered.
         dp.markerType = "google";
       } else if (show == "dmap") {
@@ -734,7 +736,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
   hash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
   if (hash.geo) {
     loadGeos(hash.geo,0,function(results) {
-      loadFromSheet('map1','map2', dp, basemaps1, basemaps2, 1, function(results) {
+      loadDataset('map1','map2', dp, basemaps1, basemaps2, 1, function(results) {
         initialHighlight(hash);
       });
     });
@@ -746,7 +748,7 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
       $(".locationTabText").text($("#state_select").find(":selected").text());
       $(".locationTabText").attr("title",$("#state_select").find(":selected").text());
     }
-    loadFromSheet('map1','map2', dp, basemaps1, basemaps2, 1, function(results) {
+    loadDataset('map1','map2', dp, basemaps1, basemaps2, 1, function(results) {
       initialHighlight(hash);  
     });
   }
@@ -776,18 +778,15 @@ function loadMap1(calledBy, show, dp_incoming) { // Called by this page. Maybe s
 
 } // loadMap1
 
-
-
-
 function initialHighlight(hash) {
   // When is this called - not for list highlight
   if (hash.name) {
     let locname = hash.name.replace(/_/g," ").replace(/ & /g,' AND ');
 
     // console.log("Auto select the first location in list")
-    //$("#detaillist > [name='"+locname+"']" ).trigger("click");
+    //$("#detaillist > [name=\""+locname+"\"]" ).trigger("click");
 
-    //$("#detaillist").scrollTop($("#detaillist").scrollTop() + $("#detaillist > [name='"+locname+"']" ).position().top);
+    //$("#detaillist").scrollTop($("#detaillist").scrollTop() + $("#detaillist > [name=\""+locname+"\"]" ).position().top);
 
     // https://stackoverflow.com/questions/2346011/how-do-i-scroll-to-an-element-within-an-overflowed-div?noredirect=1&lq=1
 
@@ -795,7 +794,7 @@ function initialHighlight(hash) {
     //element.scrollTop = element.scrollHeight;
     //$("#detaillist").scrollTop(200);
 
-    $("#detaillist").scrollTo("#detaillist > [name='"+locname+"']");
+    $("#detaillist").scrollTo("#detaillist > [name=\""+locname+"\"]");
 
   } else {
     if (!(param["show"] == "suppliers" || param["show"] == "ppe")) {
@@ -829,20 +828,12 @@ $(document).on("click", "#show_county_colors", function(event) {
   });
   //alert("done"); // Occurs before layers above appear.
 });
-$(document).on("click", ".detail", function(event) { // Provides close-up using map2
+
+function centerMap(lat,lon,name,map,whichmap) {
     
     $("#sidemapCard").show(); // map2 - show first to maximize time tiles have to see full size of map div.
     $('.detail').removeClass("detailActiveHold"); // Remove prior
-    //console.log("OCCURS TWICE: List detail click");
-    let locnameUrl = $(this).attr("name").replace(/ & /g," AND ").replace(/ /g,"_");
-    let locname = $(this).attr("name").replace(/ AND /g," & ").replace(/_/g," ");
-    consoleLog("click detail This: " + $(this).attr("name"));
-    consoleLog("click detail URL: " + locnameUrl);
-    consoleLog("click detail: " + locname);
-    let hash = getHash(); // Probably remove too.
-    // ToDO (Make sure "View Details" button is not using goHash
-    updateHash({"show":hash.show,"name":locnameUrl});
-    
+
     $('#sidemapName').text($(this).attr("name"));
 
     //$(this).css("border","1px solid #ccc");
@@ -855,30 +846,80 @@ $(document).on("click", ".detail", function(event) { // Provides close-up using 
     }
     
     // Hide all listings, show clicked listing
-    $("#detaillist .detail").hide();
-    $("#dataList").hide();
-    $("#detaillist .detail[name='" + locname +"']").show();
+    //$("#detaillist .detail").hide();
+    //$("#dataList").hide();
+    //$("#detaillist .detail[name='" + locname +"']").show();
 
     var listingsVisible = $('#detaillist .detail:visible').length;
     if (listingsVisible == 1 || hash.cat) {
       $(".viewAllLink").show();
     }
-    console.log("Zoom to map point " + $(this).attr("latitude"));
-    if ($(this).attr("latitude") && $(this).attr("longitude")) {
-      centerMapPoint(map1, $(this).attr("latitude"), $(this).attr("longitude")); // Top map
-      // Lower map
-      popMapPoint(dp, map2, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
-      zoomMapPoint(dp, map2, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
-    } else {
-      //$("#sidemapCard").hide(); // Contains just the map
+    if (lat && lon) {
+      let color = "#cc7777";
+      centerMapPoint(map, lat, lon);
+      popMapPoint(dp, map, lat, lon, name, color);
+      if(whichmap == "map2") {
+        // Lower map
+        
+        zoomMapPoint(dp, map, lat, lon, name, color);
+
+        // Scroll to area with map2
+        /*
+        window.scrollTo({
+          top: $("#sidemapCard").offset().top - 140,
+          left: 0
+        });
+        */
+
+      }
     }
-    // Scroll to area with map2
-    window.scrollTo({
-      top: $("#sidemapCard").offset().top - 140,
-      left: 0
-    });
     $(".go_local").show();
-    event.stopPropagation();
+}
+function showDetail() {
+    
+    //let locname = $(this).attr("name").replace(/ AND /g," & ").replace(/_/g," ");
+    //alert("click detail This: " + $(this).attr("name"));
+    //alert("click detail: " + locname);
+
+    let locnameUrl = $(this).attr("name").replace(/ & /g," AND ").replace(/ /g,"_");
+    let hash = getHash(); 
+    // ToDO (Make sure "View Details" button is not using goHash
+    
+    let latitude = $(this).attr("latitude");
+    let longitude = $(this).attr("longitude");
+    console.log("Used name to fetch lat " + latitude);
+    //goHash({"show":hash.show,"name":locnameUrl});
+    updateHash({"show":hash.show,"name":locnameUrl,"m":""}); 
+    if (latitude && longitude) { // To do: Add a IsValidGeo function here
+      centerMap(latitude, longitude, name, map1, "map1");
+      centerMap(latitude, longitude, name, map2, "map2");
+    } else {
+      console.log("No lat lon for listing");
+    }
+    if ($(this).attr("m")) {
+      loadScript(theroot + 'js/map-filters.js', function(results) {
+        let mapframe = getMapframeUrl($(this).attr("m"));
+        if (mapframe) {
+          $("#mapframe").prop("src", mapframe);
+          $(".mapframeClass").show();
+          window.scrollTo({
+              top: $('#mapframe').offset().top - 95,
+              left: 0
+            });
+        }
+      });
+    }
+}
+$(document).on("click", "#listcolumnList .detail, #detaillist .detail", function(event) { // Provides close-up using map2
+    console.log("detail click");
+
+    let hash = getHash();
+    let locnameUrl = $(this).attr("name").replace(/ & /g," AND ").replace(/ /g,"_");
+    let m = $(this).attr("m"); // iFrame
+    goHash({"show":hash.show,"name":locnameUrl,"m":m});
+
+    //showDetail(this);
+    //event.stopPropagation();
 });
 $(document).on("click", ".showItemMenu", function(event) { 
   $("#listingMenu").show();
@@ -1001,28 +1042,60 @@ function loadGeos(geo, attempts, callback) {
   }
 }
 
-function getMapframe(element) {
-  if (element.virtual_tour) {
-    if (element.virtual_tour.toLowerCase().includes("kuula.co")) {
+function shortenMapframe(mapframeLong) {
+  let mapframeUrl = "";
+  if (mapframeLong.length) {
+    if (mapframeLong.toLowerCase().includes("kuula.co")) {
       // viewID resides at the end of Kuula incomoing link.
-      let pieces = element.virtual_tour.split("/");
+      let pieces = mapframeLong.split("/");
       let viewID = pieces[pieces.length-1];
+      if(viewID.includes("?")) {
+        viewID = viewID.split("?")[0];
+      }
       // Embed Format: "https://kuula.co/share/collection/" + viewID + "?fs=1&vr=1&zoom=0&initload=1&thumbs=1&chromeless=1&logo=-1";
-      element.mapframe = "kuula_" + viewID;
-    } else {
+      mapframeUrl = "kuula_" + viewID; // Allows for shorter URLs
+    } else if (mapframeLong.toLowerCase().includes("roundme")) {
       // Incoming: https://roundme.com/tour/463798/view/1595277/
       // Embed Format: https://roundme.com/embed/463798/1595277
-      element.mapframe = "roundme_" + element.virtual_tour.replace("https://roundme.com/tour/","").replace("view/","");
+      mapframeUrl = "roundme_" + mapframeLong.replace("https://roundme.com/tour/","").replace("view/","");
+    } else {
+      console.log("Unable to shorten mapframe " + mapframeLong);
+      mapframeUrl = mapframeLong;
     }
   }
-  return(element.mapframe);
+  return(mapframeUrl);
+}
+function getMapframeUrl(m) {
+    //alert("getMapframeUrl " + m);
+    if (m == "ej") {
+        mapframe = "https://ejscreen.epa.gov/mapper/";
+    } else if (m == "peach") {
+        mapframe = "https://kuula.co/share/collection/7PYZK?fs=1&vr=1&zoom=0&initload=1&thumbs=1&chromeless=1&logo=-1";
+    } else if (m.includes("kuula_")) {
+        mapframe = "https://kuula.co/share/collection/" + m.replace("kuula_","") + "?fs=1&vr=1&zoom=1&initload=1&thumbs=1&chromeless=1&logo=-1";
+    } else if (m.includes("roundme_")) {
+        mapframe = "https://roundme.com/embed/" + m.replace("roundme_","");
+    } else {
+        //mapframe = m + "?fs=1&vr=1&zoom=0&initload=1&thumbs=1&chromeless=1&logo=-1";
+        //mapframe = "https://kuula.co/share/collection/7lrpl?fs=1&vr=1&zoom=0&initload=1&thumbs=1&chromeless=1&logo=-1";
+        mapframe = m;
+    }
+    return mapframe;
 }
 
 let subcatObject = {};
 let subcatArray = [];
 let subcatList = "";
 
+function hideSideList() {
 
+  // Alternatively, could use hideSide("list") in navigation.js, but will we always load navigation.js?
+  // hideSide("list");
+
+  $("#showNavColumn").hide();
+  $("#listcolumn").show();
+  showListBodyMargin();
+}
 function showList(dp,map) {
   console.log("showList");
   console.log("Call showList for " + dp.dataTitle + " list");
@@ -1069,7 +1142,8 @@ function showList(dp,map) {
   if (!dp.lonColumn) {
     dp.lonColumn = "longitude";
   }
-  $("#detaillist").text(""); // Clear prior results
+  //$("#detaillist").text(""); // Clear prior results
+  $("#detaillist").remove(); // Used to trigger waitfor
   if (dp.search && $("#activeLayer").text() != dp.dataTitle) { // Only set when active layer changes, otherwise selection overwritten on change.
     
     let search = [];
@@ -1210,10 +1284,8 @@ function showList(dp,map) {
     dp.data = data_sorted;
   }
 
-  console.log("showlist() VIEW DATA (dp.data) - Limit to: " + hash.name)
-  console.log(dp.data)
-
-  //alert("what1")
+  console.log("showlist() VIEW DATA (dp.data) - Limit to: " + hash.name);
+  console.log(dp.data);
 
   let output = "";
   let output_details = "";
@@ -1709,8 +1781,7 @@ function showList(dp,map) {
       if (element.website && !element.website.toLowerCase().includes("http")) {
         element.website = "http://" + element.website;
       }
-      element.mapframe = getMapframe(element);
-
+      element.mapframe = shortenMapframe(element.virtual_tour);
       let showListing = true;
       if (element.status && !jQuery.isEmptyObject(element.status) && (element.status != "Update" && element.status != "Active")) {
           showListing = false;
@@ -1742,13 +1813,16 @@ function showList(dp,map) {
           }
         }
         
+        let extraAttributes = "";
+        if (element.mapframe) {
+          extraAttributes += " m='" + element.mapframe + "'";
+        }
 
         // Hide all until displayed after adding to dom
         if (element[dp.latColumn] && element[dp.lonColumn]) {
-
-          output += "<div style='clear:both;display:none' class='detail' name='" + name.replace(/'/g,'&#39;') + "' latitude='" + element[dp.latColumn] + "' longitude='" + element[dp.lonColumn] + "' color='" + bulletColor + "'>";
+          output += "<div style='clear:both;display:none' class='detail' name='" + name.replace(/'/g,'&#39;') + "' latitude='" + element[dp.latColumn] + "' longitude='" + element[dp.lonColumn] + "'" + extraAttributes + " color='" + bulletColor + "'>";
         } else {
-          output += "<div style='clear:both;display:none' class='detail' name='" + name.replace(/'/g,'&#39;') + "' color='" + bulletColor + "'>";
+          output += "<div style='clear:both;display:none' class='detail' name='" + name.replace(/'/g,'&#39;') + "'" + extraAttributes + " color='" + bulletColor + "'>";
         }
 
         if (element.photo1) {
@@ -1855,12 +1929,13 @@ function showList(dp,map) {
           }
 
           let markerID = dataMatchCount;
-          if (outaddress) { // Only listings with locations, for map points. 
-            // To do: Adjust so Google link is used when address but no latitude and longitude.
+          if (outaddress) { // Only listings with locations, for map points.
+
+            // To do: Adjust so Google link is used when address has no latitude and longitude for map.
             if (element[dp.latColumn] && element[dp.lonColumn]) {
-              shortout += "<div class='detail' markerid='" + markerID + "' name='" + name.replace(/'/g,'&#39;') + "' latitude='" + element[dp.latColumn] + "' longitude='" + element[dp.lonColumn] + "' color='" + bulletColor + "'>";
+              shortout += "<div class='detail' markerid='" + markerID + "' name='" + name.replace(/'/g,'&#39;') + "' latitude='" + element[dp.latColumn] + "' longitude='" + element[dp.lonColumn] + "' color='" + bulletColor + "'" + extraAttributes + ">";
             } else {
-              shortout += "<div class='detail' markerid='" + markerID + "' name='" + name.replace(/'/g,'&#39;') + "' color='" + bulletColor + "'>";
+              shortout += "<div class='detail' markerid='" + markerID + "' name='" + name.replace(/'/g,'&#39;') + "' color='" + bulletColor + "'" + extraAttributes + ">";
             }
             shortout += "<div class='detailTitle'>" + name + "</div>";
             if (outaddress) {
@@ -1919,7 +1994,8 @@ function showList(dp,map) {
           output += "<div style='height:10px'></div>";
           output += "<div class='detailLinks'>";
             if (element.mapframe) {
-                output += "<a href='#show=360&m=" + element.mapframe + "'>Birdseye View<br>";
+                output += "<a href='#show=360&name=" + name.replace(/'/g,'&#39;') + "&m=" + encodeURIComponent(element.mapframe) + "'>Birdseye View<br>";
+                //console.log("encodeURIComponent " + encodeURIComponent(element.mapframe))
             }
             if (element.property_link) {
                 output += "<a href='" + element.property_link + "'>Property Details</a><br>";
@@ -2026,9 +2102,9 @@ function showList(dp,map) {
     }
   });
 
-  waitForElm('#detaillist').then((elm) => {
+  waitForElm('#detaillistHolder').then((elm) => {
 
-    $("#detaillist").append(output);
+    $("#detaillistHolder").append("<div id='detaillist'>" + output + "</div>");
     $("#detaillist").append("<div style='height:60px'></div>"); // For space behind absolute buttons at bottom.
 
     if (subcatObject["null"].count > 0) {
@@ -2066,6 +2142,7 @@ function showList(dp,map) {
     if (hash.name && $("#detaillist > [name=\""+ hash.name.replace(/_/g,' ').replace(/ AND /g,' & ') + "\"]").length) {
       let listingName = hash.name.replace(/_/g,' ').replace(/ AND /g,' & ');
       //$("#detaillist > [name=\""+ listingName.replace(/'/g,'&#39;') +"\"]").show(); // To do: check if this or next line for apostrophe in name.
+      
       $("#detaillist > [name=\""+ listingName +"\"]").show();
       
       //alert("show detail for " + hash.name);
@@ -2088,9 +2165,11 @@ function showList(dp,map) {
     $("#listcolumnList").html(shortout);
 
     // Show the side columns
-    $("#showNavColumn").hide();
-    $("#listcolumn").show();
-    showListBodyMargin();
+    if (!hash.name) { // List closed for detail page
+      hideSideList();
+    } else {
+      $("#showListInBar").show();
+    }
 
     $(".sidelistHolder").show();
 
@@ -2105,7 +2184,8 @@ function showList(dp,map) {
         $("#map1 .leaflet-marker-pane svg:nth-child(" + markerID +")").addClass("activeMarker");
       }
       // This older script can be used to change the mappoint color, but the color is not removed.
-      // popMapPoint(dp, map, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
+      // map is not available here
+      //popMapPoint(dp, map, $(this).attr("latitude"), $(this).attr("longitude"), $(this).attr("name"), $(this).attr("color"));
     });
 
     var imenu = "<div style='display:none'>";
@@ -2373,8 +2453,8 @@ function linkify(inputText) { // https://stackoverflow.com/questions/37684/how-t
   return replacedText;
 }
 function popMapPoint(dp, map, latitude, longitude, name, color) {
-  // Place large icon on side map and zoom
-  color = "#666"; // Override incoming
+  // Place large icon on map
+  //color = "#666"; // Override incoming
   if (!latitude || !longitude) {
     console.log("No latitude or longitude for " + name)
     return;
@@ -2681,7 +2761,7 @@ function bottomReached(elem) { // bottom scrolled into view
   }
   var docViewTop = $(window).scrollTop();
   var docViewBottom = docViewTop + $(window).height();
-  var hangover = 10; // Extend into the next section, so map remains visible.
+  var hangover = -10; // Extend into the next section, so map remains visible. // Was 10
   //var elemTop = $(elem).offset().top;
   var elemBottom = $(elem).offset().top + $(elem).height() + hangover - docViewBottom;
   //console.log('offset: ' + $(elem).offset().top + ' height:' + $(elem).height() + ' docViewBottom:' + docViewBottom + ' elemBottom: ' + elemBottom);
@@ -2863,6 +2943,18 @@ function lockSidemap() {
   }
 }
 
+$(document).on("click", "#iZoomButton", function(event) {
+  $( "#iZoom" ).prop("checked", !$( "#iZoom" ).prop("checked")); // Toggle on/off
+  if ($('#iZoom').is(':checked')) {
+    $('#iframeCover').hide();
+    $('.showIframeCover').show();
+  } else {
+    $('#iframeCover').show();
+    $('.showIframeCover').hide();
+  }
+  event.stopPropagation();
+});
+
 $(document).on("click", "#changeHublistHeight", function(event) {
   $("#hublist").addClass("hublistFull");
   $("#changeHublistHeight").hide();
@@ -2920,11 +3012,11 @@ var overlays = {};
 var overlays1 = {};
 var overlays2 = {};
 
-//Tyring, might be necessary to be outside loadFromSheet for .detail click. Test it inside.
+//Tyring, might be necessary to be outside loadDataset for .detail click. Test it inside.
 let map1 = {};
 let map2 = {};
 let priorLayer;
-function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback) {
+function loadDataset(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback) {
 
   loadScript(theroot + 'js/d3.v5.min.js', function(results) { // Used by customD3loaded below
 
@@ -2939,7 +3031,7 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
   // Calls processOutput after fetching data from Google Sheet. processOutput calls showList.
 
   if (attempts > 40) {
-    console.log("loadFromSheet attempts exceed 40.");
+    console.log("loadDataset attempts exceed 40.");
     return;
   }
 
@@ -3059,25 +3151,33 @@ function loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callba
 
         setTimeout(function() {
           attempts = attempts + 1;
-          loadFromSheet(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback);
+          loadDataset(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback);
         }, 500);
     });
     });
     });
   }
   });
-} // end function loadFromSheet
+} // end function loadDataset
 
 // Move after processOutput once done creating
 function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) {
 
-  waitForElm('#' + parentDiv + ' #' + whichmap).then((elm) => { // Didn't help with map refresh. 
+  waitForElm('#' + parentDiv + ' #' + whichmap).then((elm) => { // Didn't help with map refresh.
+  let hash = $.extend(true, {}, getHash());
+  if (whichmap == "map1") {
+    if (hash.name) { // Viewing a listing so top map becomes a header.
+      $('#' + whichmap).height("250px");
+    } else {
+      $('#' + whichmap).height("85vh");
+    }
+  }
   $('#' + whichmap).show();
   let mapDiv = "#" + whichmap;
   if (parentDiv) {
     mapDiv = "#" + parentDiv + " #" + whichmap;
   }
-  let hash = $.extend(true, {}, getHash());
+  
   let dataTitle = dp.dataTitle;
   if (hash.subcat) {
     dataTitle = hash.subcat;
@@ -3166,10 +3266,9 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       }
       console.log("layerControls[whichmap]");
       console.log(layerControls[whichmap]);
+      $("#" + whichmap).append('<div class="dragHandle"><i class="material-icons show-on-load" style="font-size:30px;line-height:17px;font-weight:100;pointer-events:none">&#xE25D;</i></div>');
     //}
   }
-
-
   
   map.on('click', function() {
     //Toggle scrollwheel zoom - Click to activate zooming with mousewheel.
@@ -3239,8 +3338,12 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       
       if (typeof overlays[dataTitle] != "object") { // Prevent adding duplicate checkbox
         layerControls[whichmap].addOverlay(layerGroup, dataTitle); // Add layer checkbox - works
-        addIcons(dp,map,layerGroup,zoom,markerType);
+        addIcons(dp,map,whichmap,layerGroup,zoom,markerType); // Adds to both map1 and map2
         overlays[dataTitle] = layerGroup; // Available to both map1 and map2
+      } else {
+        //alert("highlight mappoint here for existing maps")
+        console.log("TO DO: Use the name to fetch the lat and lon from div.")
+        //centerMap(element[dp.latColumn], element[dp.lonColumn], name, map, whichmap);
       }
       if (overlays) {
         // Checks the box, which displays the layer. (Basically boxes and icons are ready at this point.)
@@ -3278,11 +3381,11 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
   }); // waitForElm
 }
 
-function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callback) {
+function processOutput(dp,map1,map2,whichmap,whichmap2,basemaps1,basemaps2,callback) {
   consoleLog("processOutput");
 
-  if (typeof map === 'undefined' || !map.length) {
-    console.log("processOutput: map not yet defined or populated.");
+  if (typeof map1 === 'undefined' || !map1.length) {
+    console.log("processOutput: map1 not yet defined or populated."); // Ok, so let's define it with renderMap below.
   }
   
   let dataTitle = dp.dataTitle;
@@ -3305,7 +3408,7 @@ function processOutput(dp,map,map2,whichmap,whichmap2,basemaps1,basemaps2,callba
 
       // RENDER THE LIST - from dp.data
       $("#widgetTitle").text(dataTitle);  
-      dp = showList(dp,map); // Reduces list based on filters
+      dp = showList(dp,map1); // Reduces list based on filters
 
   //  }); 
   //}); 
@@ -3441,14 +3544,17 @@ function hex2rgb(hex) {
   return null;
 }
 
-function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced use of dp.group and dp.group2
+function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup replaced use of dp.group and dp.group2
   var circle;
   var iconColor, iconColorRGB, iconName;
 
   let hash = getHash();
   let uniqueID = 0;
   let radius = markerRadius(zoom,map);
-  //alert("radius " + radius)
+  let currentName;
+  if (hash.name) {
+    currentName = hash.name.replace(/_/g,' ').replace(/ AND /g,' & ');
+  }
   //console.log("dp.color " + dp.color);
   dp.data.forEach(function(element) {
     uniqueID++;
@@ -3507,14 +3613,12 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
       }
     }
 
-
     let name = element.name;
     if (element[dp.nameColumn]) {
       name = element[dp.nameColumn];
     } else if (element.title) {
       name = element.title;
     }
-
     if (dp.latColumn.includes(".")) { // ToDo - add support for third level
       element[dp.latColumn] = element[dp.latColumn.split(".")[0]][dp.latColumn.split(".")[1]];
       element[dp.lonColumn] = element[dp.lonColumn.split(".")[0]][dp.lonColumn.split(".")[1]];
@@ -3539,11 +3643,16 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
       circle = L.marker([element[dp.latColumn], element[dp.lonColumn]], {icon: busIcon}).addTo(layerGroup); // Works, but not in Drupal site.
     } else {
       circle = L.circle([element[dp.latColumn], element[dp.lonColumn]], {
-          color: dp.scale(element[dp.valueColumn]),
-          fillColor: dp.scale(element[dp.valueColumn]),
+          color: "#cc7777",
+          fillColor: "#cc7777",
           fillOpacity: 1,
-          radius: radius // was 50.  Aiming for 1 to 10
+          radius: radius
       }).addTo(layerGroup);
+      circle.setRadius(100);
+      // For both colors above, but it's a light blue that looks like water
+      // dp.scale(element[dp.valueColumn])
+      // radius was 50.  Aiming for 1 to 10. 8.5 radius arrives from markerRadius(zoom,map)
+      //console.log(whichmap + " color " + dp.scale(element[dp.valueColumn])); // Returns a6cee3
     }
 
     // MAP POPUP
@@ -3630,7 +3739,7 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
       output += "distance: " + dp.distance + "<br>";
     }
 
-    element.mapframe = getMapframe(element);
+    element.mapframe = shortenMapframe(element.virtual_tour);
     if (element.mapframe) {
       output += "<a href='#show=360&m=" + element.mapframe + "'>Birdseye View<br>";
     }
@@ -3640,14 +3749,24 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
     } else if (element[dp.nameColumn] || element["name"]) {
       let entityName = element[dp.nameColumn] || element["name"];
       entityName = entityName.replace(/\ /g,"_").replace(/'/g,"\'")
-      output += "<a class='btn btn-success' style='margin-top:10px' onclick='goHash({\"show\":\"" + hash.show + "\",\"name\":\"" + entityName + "\"}); return false;' href='#show=" + hash.show + "&name=" + entityName + "'>View Details</a><br>";
+      // Needs to remove m,q,search
+      // onclick='goHash({\"show\":\"" + hash.show + "\",\"name\":\"" + entityName + "\"}); return false;' 
+      output += "<a class='btn btn-success' style='margin-top:10px' href='#show=" + hash.show + "&name=" + entityName + "'>View Details</a><br>";
     }
     // ADD POPUP BUBBLES TO MAP POINTS
     if (circle) {
       circle.bindPopup(L.popup({paddingTopLeft:[200,200]}).setContent(output));
     }
 
+    // Center on a MapPoint from name in URL
+    if (currentName && currentName == name && element[dp.latColumn] && element[dp.lonColumn]) {
+      // Called for each map
+      centerMap(element[dp.latColumn], element[dp.lonColumn], name, map, whichmap);
+    }
+
   });
+
+
 
   // Also see community-forecasting/map/leaflet/index.html for sample of svg layer that resizes with map
   map.on('zoomend', function() { // zoomend
@@ -3656,7 +3775,8 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
       //console.log('zoom ' + map.getZoom());
       if (marker.setRadius) {
         // Only reached when circles are used instead of map points.
-        marker.setRadius(markerRadius(zoom,map));
+        console.log("marker.setRadius diabled for test")
+        //marker.setRadius(markerRadius(zoom,map));
       }
     });
 
@@ -3697,7 +3817,8 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
     layerGroup.eachLayer(function (marker) { // This hits every point individually. A CSS change might be less processing intensive
       //console.log('zoom ' + map.getZoom());
       if (marker.setRadius) {
-        marker.setRadius(markerRadius(1,map2));
+        // Test
+        //marker.setRadius(markerRadius(1,map2));
       }
     });
     $(".leaflet-interactive").show();
@@ -3707,7 +3828,6 @@ function addIcons(dp,map,layerGroup,zoom,markerType) {  // layerGroup replaced u
     $(".leaflet-interactive").hide();
     $(".l-icon-material").show();
   });
-  
 }
 
 function markerRadius(mapZoom,map) {
@@ -3747,6 +3867,7 @@ function markerRadius(mapZoom,map) {
 }
 
 function hashChangedMap() {
+  //alert("hashChangedMap")
   let hash = getHash();
 
   //alert("hiddenhash.mapview2 " + hiddenhash.mapview)
@@ -3770,12 +3891,6 @@ function hashChangedMap() {
     //hiddenhash.state = param.state;
   }
 
-  // Temp for PPE
-  if ((hash.show == "ppe" || hash.show == "suppliers") && !hash.state && location.host.indexOf("georgia") >= 0) {
-    hash.state = "GA";
-    hiddenhash.state = "GA";
-  }
-
   if (hash.cat || hash.name) {
     $(".viewAllLink").show();
   } else {
@@ -3784,15 +3899,36 @@ function hashChangedMap() {
 
   //alert("priorHash.show: " + priorHash.show)
   //alert("priorHash.cat: " + priorHash.cat + " " + hash.cat);
+  //alert("hash.name " + hash.name + " priorHash.name " + priorHash.name)
+
   if (hash.name !== priorHash.name) {
-    loadMap1("hashChanged() in map.js new name for View Details " + hash.name, hash.show);
+    if (!hash.name) { // Reveal list
+      $("#detaillist .detail").show(); // Show all
+      $("#changeHublistHeight").show();
+    } else {
+      waitForElm('#detaillist').then((elm) => {
+        console.log("Limit to details matching name.");
+        $("#detaillist .detail").hide(); // Hide all
+        let thename = hash.name.replace(/_/g,' ').replace(/ AND /g,' & ');
+        $("#detaillist > [name=\"" + thename + "\"]").show();
+        //let mapframe = $("#detaillist > [name=\"" + thename + "\"]").attr("m");
+        let mapframe = $("#detaillist > [name=\"" + thename + "\"]").attr("m");
+        mapframe = getMapframeUrl(mapframe);
+        //alert("Redundent call");
+        $("#mapframe").prop("src", mapframe);
+        $(".mapframeClass").show();
+      });
+    }
+    //loadMap1("hashChanged() in map.js new name for View Details " + hash.name, hash.show);
     $(document).ready(function () {
       if (document.getElementById("list_main") !== null) { //if exists. may not be loaded into Dom yet.
         let offTop = $("#list_main").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height();
         window.scroll(0, offTop);
       }
     });
-  } else if (hash.layers !== priorHash.layers) {
+  }
+
+  if (hash.layers !== priorHash.layers) {
     //applyIO(hiddenhash.naics);
     loadMap1("hashChangedMap() in map.js layers", hash.show);
   } else if (hash.show !== priorHash.show) {
@@ -3837,6 +3973,26 @@ function hashChangedMap() {
     loadMap1("hashChanged() in map.js new subcat " + hash.subcat, hash.show);
   } else if (hash.details !== priorHash.details) {
     loadMap1("hashChanged() in map.js new details = " + hash.details, hash.show);
+  }
+  if (hash.m != priorHash.m) {
+    // For 360 iFrame
+    //$(".mapframeClass").hide();
+    //$("#mapframe").prop("src", "about:blank");
+    if (hash.m) {
+      let mapframe = getMapframeUrl(hash.m);
+      if (mapframe) {
+        $("#mapframe").prop("src", mapframe);
+        //alert("mapframe changed " + mapframe)
+        $(".mapframeClass").show();
+        window.scrollTo({
+          top: $('#mapframe').offset().top - 95,
+          left: 0
+        });
+      }
+    } else {
+      $("#mapframe").prop("src", "");
+      $(".mapframeClass").hide();
+    }
   }
 }
 

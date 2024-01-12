@@ -29,7 +29,7 @@ localsite.js pulls the #insertedText div from this page as the template for head
 <script>
   let hash = getHash();
   if (!hash.show) {
-    hiddenhash.layers = "brigades"; // Only dataset with entire country in one file. Used by loadFromSheet which is called by loadMap1
+    hiddenhash.layers = "brigades"; // Only dataset with entire country in one file. Used by loadDataset which is called by loadMap1
   }
   if (!hash.state) {
     if (hash.show == "recycling" || hash.show == "ppe" || hash.show == "suppliers" || hash.show == "360" || hash.show == "opendata") {

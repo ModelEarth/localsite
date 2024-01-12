@@ -1603,7 +1603,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
                         } else if (params.show == "vehicles") {
                             $(".regiontitle").text("Vehicles and Vehicle Parts");
                         } else if (gotext) {
-                            // Would overwrite longer title from map.js loadFromSheet which includes non-datasets
+                            // Would overwrite longer title from map.js loadDataset which includes non-datasets
                             //$(".regiontitle").text(gotext);
                         } else {
                             // Temp, reactivate after iogrid stops deleteing hash values.

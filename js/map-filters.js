@@ -368,16 +368,22 @@ $(document).ready(function () {
     }
     $(document).on("click", "#goSearch", function(event) {
         let searchQuery = $('#keywordsTB').val();
-        console.log("goSearch for " + searchQuery);
+        console.log("Search for " + searchQuery);
         let search = $('.selected_col:checked').map(function() {return this.id;}).get().join(',');
         // To do: set search to empty array if all search boxes are checked.
 
-        // Might be good to change this to goHash, and remove call to loadMap1() below from map-filters.js
-        updateHash({"q":searchQuery,"search":search}); // Avoids triggering hash change event.
         if(!hash.show) {
             window.location = "/localsite/info/" + location.hash;
             return;
         }
+
+        goHash({"q":searchQuery,"search":search}); // triggers hash change event.
+        event.stopPropagation();
+        return;
+
+        /*
+        //updateHash({"q":searchQuery,"search":search}); // Avoids triggering hash change event.
+
 	    hideNonListPanels(); // Omitted this instead, remove comment above.
 
 	    if ($('#catListHolder').css('display') == 'none' && $('#catListHolderShow').css('display') == 'none') {
@@ -389,6 +395,7 @@ $(document).ready(function () {
 		
 		loadMap1("loadMap1 called from map-filters.js");
 	    event.stopPropagation();
+        */
    	});
 
     $(document).on("click", "#keywordsTB", function(event) {
@@ -1863,11 +1870,11 @@ function showTabulatorList(element, attempts) {
                             row._row.data.state = "GA";
                         }
                         if (!row._row.data.state) {
-                            console.log('%cCANCEL To Do: add state abbreviation to data file, or pull from dropdown. ', 'color: green; background: yellow; font-size: 14px');
-                            goHash({'geo':'','locname':row._row.data.jurisdiction});
+                            console.log('%cTO DO: add state abbreviation to data file. ', 'color: green; background: yellow; font-size: 14px');
+                            goHash({'geo':'','statename':row._row.data.jurisdiction});
                         } else {
-                            console.log('%cCANCEL To Do: add support for multiple states. ', 'color: green; background: yellow; font-size: 14px');
-                            goHash({'geo':'','locname':'','state':row._row.data.state});
+                            console.log('%cTO DO: add support for multiple states. ', 'color: green; background: yellow; font-size: 14px');
+                            goHash({'geo':'','statename':'','state':row._row.data.state});
                         }
                     } else {
                         goHash({'geo':hash.geo});
@@ -2616,8 +2623,22 @@ function hashChanged() {
 	productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 
     let stateAbbrev = "";
+    if (hash.statename) { // From Tabulator state list, convert to 2-char abbrviation
+        waitForElm('#state_select').then((elm) => {
+            //theState = $("#state_select").find(":selected").val();
+            //stateAbbrev = $("#state_select[name=\"" + hash.statename + "\"]").val();
+            stateAbbrev = $('#state_select option:contains(' + hash.statename + ')').val();
+            //alert(stateAbbrev);
+            $("#state_select").val(stateAbbrev);
+            updateHash({'state':stateAbbrev,'statename':''});
+        });
+        return;
+    }
 	if (hash.state) {
 		stateAbbrev = hash.state.split(",")[0].toUpperCase();
+        waitForElm('#state_select').then((elm) => {
+            $("#state_select").val(stateAbbrev);
+        });      
 		// Apply early since may be used by changes to geo
 		$("#state_select").val(stateAbbrev);
         if (priorHash.state && hash.state != priorHash.state) {
@@ -2988,6 +3009,8 @@ function hashChanged() {
                 waitForElm('#state_select').then((elm) => {
                     //$("#state_select").val(stateAbbrev);
                     console.log("fetch theStateName from #state_select");
+                    //$("#state_select").val(hash.state.split(",")[0].toUpperCase());
+
                     if ($("#state_select").find(":selected").val()) { // Omits top which has no text
                         theStateName = $("#state_select").find(":selected").text();
                         console.log("fetched " + theStateName);
@@ -3095,40 +3118,9 @@ function hashChanged() {
     }
 
 	$(".locationTabText").attr("title",$(".locationTabText").text());
-	if (hash.m != priorHash.m) {
-		// For 360 iFrame
-		var mapframe;
-		$("#mapframe").hide(); $("#iframeCover").hide();
-		$("#mapframe").prop("src", "about:blank");
-		if (hash.m) {
-	    	if (hash.m == "ej") {
-	    		mapframe = "https://ejscreen.epa.gov/mapper/";
-	    	} else if (hash.m == "peach") {
-	    		mapframe = "https://kuula.co/share/collection/7PYZK?fs=1&vr=1&zoom=0&initload=1&thumbs=1&chromeless=1&logo=-1";
-	    	} else if (hash.m.includes("kuula_")) {
-	    		mapframe = "https://kuula.co/share/collection/" + hash.m.replace("kuula_","") + "?fs=1&vr=1&zoom=1&initload=1&thumbs=1&chromeless=1&logo=-1";
-	    	} else if (hash.m.includes("roundme_")) {
-	    		mapframe = "https://roundme.com/embed/" + hash.m.replace("roundme_","");
-	    	} else {
-	    		//alert(hash.m)
-	    		//mapframe = hash.m + "?fs=1&vr=1&zoom=0&initload=1&thumbs=1&chromeless=1&logo=-1";
-	    		//mapframe = "https://kuula.co/share/collection/7lrpl?fs=1&vr=1&zoom=0&initload=1&thumbs=1&chromeless=1&logo=-1";
-	    		mapframe = hash.m;
-	    	}
-	    	if (mapframe) {
-	    		$("#mapframe").prop("src", mapframe);
-				$("#mapframe").show(); $("#iframeCover").show();
-				window.scrollTo({
-			      top: $('#mapframe').offset().top - 95,
-			      left: 0
-			    });
-			}
-		}
-	}
 	if (hash.cat != priorHash.cat) {
 		changeCat(hash.cat)
 	}
-
     if (hash.catsort) {
 		$("#catsort").val(hash.catsort);
 	}
@@ -3225,6 +3217,7 @@ function updateRegionService(section) {
 }
 
 // INIT
+hashChanged();
 $(document).ready(function () {
 	let hash = getHash();
 	if (hash.state) {

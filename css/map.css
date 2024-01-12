@@ -200,6 +200,7 @@
   #mapHolder {
     padding-left: 20px;
     width: 44%;
+    min-width: 300px;
     z-index: 10; /* to exceed right column in external site */
     position: relative;
     float:right;
@@ -290,7 +291,12 @@
     bottom: auto;
     width: 100%;
   }
-
+  .bodyLeftMarginList .mapHolderFixed, .bodyRightMargin .mapHolderFixed { /* prevent fixed position when narrow */
+    position: static;
+  }
+  .bodyLeftMarginList .mapHolderBottom, .bodyRightMargin .mapHolderBottom { /* prevent fixed position when narrow */
+    position: static;
+  }
   /*
   @media (min-width: 1400px) {
     .mapHolderFixed {
@@ -394,7 +400,7 @@
   padding-right: 20px;
 }
 #hublist, #tableSide {
-  max-height: 750px;
+  max-height: 450px; /* 750px; */
 }
 .hublistFull {
   max-height: none !important;

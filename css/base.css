@@ -154,6 +154,19 @@ body {
     margin-left:0px !important;
   }
 }
+@media (max-width: 2200px) {
+  #flexwrapper {
+    /*display: block;*/
+  }
+  .bodyLeftMarginFull.bodyRightMargin #mapHolder {
+    float: left;
+    width: 100%;
+  }
+  .bodyLeftMarginFull.bodyRightMargin #mapHolderInner {
+    position: relative;
+    width: 100%;
+  }
+}
 @media (max-width: 1800px) {
   /* only hide if 2 classes on body */
   .bodyLeftMargin.bodyRightMargin .hideMobileSooner {
@@ -169,9 +182,6 @@ body {
   }
 }
 @media (max-width: 1400px) {
-  #flexwrapper {
-    display: block;
-  }
   #hublist {
     width: 100%;
     padding-right: 0px;
@@ -185,23 +195,12 @@ body {
     width: 100%;
   }
 }
-@media (max-width: 2200px) {
-  #flexwrapper {
-    /*display: block;*/
-  }
-  #hublistX {
-    width: 100%;
-    padding-right: 0px;
-  }
-  .bodyLeftMarginFull.bodyRightMargin #mapHolder {
-    float: left;
-    width: 100%;
-  }
-  .bodyLeftMarginFull.bodyRightMargin #mapHolderInner {
-    position: relative;
-    width: 100%;
+@media (max-width: 1200px) {
+  .bodyLeftMarginList #flexwrapper {
+    display: block;
   }
 }
+
 .flexbodyX {
   display: flex; /* for footer */
   flex-direction: column; /* for footer */
@@ -220,20 +219,7 @@ td {
   padding: 0px;
   vertical-align: top;
 }
-input {
-  /* padding-left:5px; */
-  /* margin-right:2px; */
-}
-input, select {
-  /* margin-bottom:8px; */
-}
-
-/*
-input, textarea {
-Creates gap on some image buttons. Might reactivate after search page graphic button and others changed.
-*/
 textarea {
-    /* border:solid 1px #777; */
     border-color: #777;
 }
 
@@ -331,6 +317,9 @@ h6 {
   margin-top: 10px;
   margin-bottom: 0px;
 }
+
+
+
 .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
   color: #ccc;
 }
@@ -456,7 +445,8 @@ summary::-webkit-details-marker {
 }
 .contentpadding {
   padding-top: 25px;
-  padding-left: 64px; /* was 50 */
+  padding-left: 50px; /* also used 64, 50 */
+  padding-left: 60px; /* to avoid overlapping upper left menu */
   padding-right: 40px;
   padding-bottom: 45px;
 }
@@ -1497,4 +1487,61 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     width: 100% !important;
     clear: none !important;
   }
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 28px;
+}
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+input:checked + .slider {
+  background-color: #2196F3;
+}
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+input:checked + .slider:before {
+  -webkit-transform: translateX(18px);
+  -ms-transform: translateX(18px);
+  transform: translateX(18px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }
