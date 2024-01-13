@@ -1827,7 +1827,7 @@ function showTabulatorList(element, attempts) {
                 history:true,             //allow undo and redo actions on the table
                 movableColumns:true,      //allow column order to be changed
                 resizableRows:true,       //allow row order to be changed
-                
+                maxHeight:"500px",        // For frozenRows
                 paginationSize:10000,
                 columns:element.columns,
                 rowClick:function(e, row){
@@ -1836,8 +1836,6 @@ function showTabulatorList(element, attempts) {
                     console.log("data row:");
                     console.log(row); // Single row component
                     console.log(e); // Info about PointerEvent - the click event object
-
-                    
 
                     currentRowIDs = [];
                     //e.forEach(function (row) {
@@ -2887,11 +2885,12 @@ function hashChanged() {
     }
 
     if (hash.mapview != priorHash.mapview || (priorHash.state && !hash.state)) {
+        alert("Load mapview")
         if (hash.mapview) {
             loadScript(theroot + 'js/navigation.js', function(results) {
-                //setTimeout( function() { // Let's watch for a field instead  
+                waitForVariable('navigationJsLoaded', function() {
                     openMapLocationFilter();
-                //}, 2000 );
+                });
             });
         }
         if (hash.mapview == "state" || hash.mapview == "country") {
