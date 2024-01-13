@@ -1120,7 +1120,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     loadScript(theroot + 'js/map.js', function(results) { // Load list before map
     });
     loadScript(theroot + 'js/map-filters.js', function(results) { // Load list before map
-      hashChanged();
+      //hashChanged();
     });
 
   }

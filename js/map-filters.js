@@ -1683,7 +1683,7 @@ function loadObjectData(element, attempts) {
 
         // Just load from file the first time
         if (Object.keys(localObject[element.scope]).length <= 0) { // state, countries
-
+            console.log("element.scope " + element.scope + " does not exist yet.");
             if (element.datasource.toLowerCase().endsWith(".csv")) {
                 d3.csv(element.datasource).then(function(data) { // One row per line
                     // element.scope = countries
@@ -1744,16 +1744,17 @@ function loadObjectData(element, attempts) {
 
                         // To Do: Remove from json:
                         // jurisdiction: "Alabama"
-                        // juristiction: "Alabama"
 
                         localObject[element.scope] = $.extend(true, {}, json); // Clone/copy object without entanglement
                         console.log("localObject.state")
-                        console.log(localObject[element.scope])
+                        //console.log(localObject[element.scope])
+                        console.log(localObject.state)
                         showTabulatorList(element, 0);
                 });
             }
 
         } else {
+            console.log("element.scope " + element.scope + " exists.");
             showTabulatorList(element, 0);
         }
 
@@ -2595,7 +2596,6 @@ if(typeof hiddenhash == 'undefined') {
 //callInitSiteObject(1); // replaced by 
 
 function hashChanged() {
-    //alert("priorHash.geo: " + priorHash.geo)
 	let loadGeomap = false;
 	let hash = getHash(); // Might still include changes to hiddenhash
     //alert("hash.geo1 " + hash.geo);
@@ -2624,16 +2624,20 @@ function hashChanged() {
 
     let stateAbbrev = "";
     if (hash.statename) { // From Tabulator state list, convert to 2-char abbrviation
+        //alert("hash.statename1 " + hash.statename);
+        //alert("hiddenhash.statename1 " + hiddenhash.statename);
         waitForElm('#state_select').then((elm) => {
             //theState = $("#state_select").find(":selected").val();
             //stateAbbrev = $("#state_select[name=\"" + hash.statename + "\"]").val();
             stateAbbrev = $('#state_select option:contains(' + hash.statename + ')').val();
-            //alert(stateAbbrev);
             $("#state_select").val(stateAbbrev);
-            updateHash({'state':stateAbbrev,'statename':''});
+            //alert("hiddenhash.state " + hiddenhash.state);
+            hiddenhash.statename = "";
+            goHash({'state':stateAbbrev,'statename':''});
         });
         return;
     }
+
 	if (hash.state) {
 		stateAbbrev = hash.state.split(",")[0].toUpperCase();
         waitForElm('#state_select').then((elm) => {
@@ -2647,6 +2651,16 @@ function hashChanged() {
         }
 	} else {
         //$(".locationTabText").text("United States");
+    }
+    if (hash.state != priorHash.state) {
+        waitForElm('#state_select').then((elm) => {
+            //alert("hash.state " + hash.state + " stateAbbrev: " + stateAbbrev);
+            if (stateAbbrev) {
+                $("#state_select").val(stateAbbrev);
+            } else {
+                $("#state_select").val("");
+            }
+        });
     }
     if (!stateAbbrev && hash.mapview == "state") { // No state
         updateHash({'mapview':''});
@@ -2872,7 +2886,7 @@ function hashChanged() {
         }
     }
 
-    if (hash.mapview != priorHash.mapview) {
+    if (hash.mapview != priorHash.mapview || (priorHash.state && !hash.state)) {
         if (hash.mapview) {
             loadScript(theroot + 'js/navigation.js', function(results) {
                 //setTimeout( function() { // Let's watch for a field instead  
@@ -2902,8 +2916,7 @@ function hashChanged() {
                             {title:"CO<sub>2</sub> per capita", field:"CO2_per_capita", hozAlign:"right", formatter:"money", formatterParams:{precision:false}},
                         ];
 
-                    // Not needed since loadStateCounties above loads.
-                    // Actual was need for tabulator list of states, but USA map shapes turned red.
+                    // Displays tabulator list of states, but USA map shapes turned red.
                     if (hash.mapview == "country") {
                         loadObjectData(element, 0);
                     }

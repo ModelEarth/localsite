@@ -15,7 +15,9 @@ let initialNaicsLoad = true;
 if (typeof dataObject == 'undefined') {
     var dataObject = {};
 }
-
+if(typeof localObject == 'undefined') {
+    var localObject = {};
+}
 // For v2
 let industries = d3.map(); // Populated in promises from industryTitleFile
 let epaSectors = d3.map(); // Populated from sectorsJsonFile

@@ -1649,8 +1649,9 @@ function getPageFolder(pagePath) {
 } // End typeof page_scripts which checks if file is loaded twice.
 
 $(document).on("change", "#state_select", function(event) {
+
     console.log("state_select change");
-		if (this.value) {
+	if (this.value) {
     	$("#geoPicker").show();
     	$("#region_select").val("");
         // Later a checkbox could be added to retain geo values across multiple states
@@ -1658,6 +1659,7 @@ $(document).on("change", "#state_select", function(event) {
     	goHash({'state':this.value,'geo':'','name':'','regiontitle':''}); // triggers renderMapShapes("geomap", hash); // County select map
     	//$("#filterLocations").hide(); // So state appears on map immediately
     } else { // US selected
+    	hiddenhash.state = ""; // Bug Otherwise prior state stays in dropdown when choosing no state using top option.
     	goHash({'mapview':'country','state':''});
     }
 });
