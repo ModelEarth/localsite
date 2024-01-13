@@ -284,7 +284,7 @@ $(document).ready(function () {
     	event.stopPropagation();
     });
     $(document).on("change", "#country_select", function(event) {
-        goHash({'mapview':this.value,'state':''});
+        goHash({'mapview':this.value});
     });
 	$('.selected_state').on('change', function() {
 		//alert("selected_state " + this.getAttribute("id"))
