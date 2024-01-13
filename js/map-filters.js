@@ -2885,7 +2885,7 @@ function hashChanged() {
     }
 
     if (hash.mapview != priorHash.mapview || (priorHash.state && !hash.state)) {
-        alert("Load mapview")
+        //alert("Load mapview")
         if (hash.mapview) {
             loadScript(theroot + 'js/navigation.js', function(results) {
                 waitForVariable('navigationJsLoaded', function() {
