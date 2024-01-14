@@ -316,6 +316,7 @@ function refreshNaicsWidget() {
 
             let industryLocDataFile = getIndustryLocFileString(hash.catsize);
             if (location.host.indexOf('localhost') >= 0) {
+                // BUGBUG - Occurs everytime state or county changes.
                 $("#tabulator-industrytable-intro").append(" - <a href='" + industryLocDataFile + "''>industryLocDataFile</a>");
             }
             d3.csv(industryLocDataFile).then( function(county_data) {
