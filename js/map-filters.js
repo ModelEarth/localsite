@@ -2894,12 +2894,8 @@ function hashChanged() {
             });
         }
         if (hash.mapview == "state" || hash.mapview == "country") {
-            if (hash.mapview == "country") {
-                //loadStateCounties(0); // State border layer
-            }
             console.log("loadStateCounties invoked by mapview change");
             console.log("priorHash.mapview: " + priorHash.mapview + ", hash.mapview: " + hash.mapview);
-            
             loadStateCounties(0);
 
             //if (hash.mapview == "country" && !hash.state) {
@@ -3189,17 +3185,16 @@ function hashChanged() {
 
     $(".regiontitle").text(local_app.loctitle);
     $(".service_title").text(local_app.loctitle + " - " + local_app.showtitle);
-
-    
 	if (loadGeomap) {
-        //alert("loadGeomap")
         //$("#filterLocations").show();
-		if($("#geomap").is(':visible')){
+		//if($("#geomap").is(':visible')){
+        waitForElm('#geomap').then((elm) => {
+            //alert("loadGeomap")
 			console.log("call renderMapShapes from map-filter.js hashChanged()");
 			renderMapShapes("geomap", hash, "county", 1); // County select map
-		}
+        });
+		//}
 	}
-    
 }
 function updateRegionService(section) {
 

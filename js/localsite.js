@@ -1108,26 +1108,16 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     includeCSS3(theroot + 'css/base.css',theroot);
   }
 
-
   function loadMapAndMapFilters() {
-
     console.log("loadScript called from localsite.js");
-
     loadSearchFilterCss(); 
-
     loadScript(theroot + 'js/navigation.js', function(results) {
     });
     loadScript(theroot + 'js/map.js', function(results) { // Load list before map
     });
     loadScript(theroot + 'js/map-filters.js', function(results) { // Load list before map
-      //hashChanged();
     });
-
   }
-
-  //} else { // Show map or list without header
-
-  
 
   if (param.material_icons != "false") {
     param.material_icons = "true"; // Could lazy load if showSideTabs changed to graphic.
