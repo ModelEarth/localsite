@@ -11,7 +11,7 @@
 
 <script>
 let hash = getHash();
-if (!hash.show && !hash.appview && !hash.mapview) {
+if (!hash.show && !hash.appview && !hash.geoview) {
 	//showApps("#bigThumbMenu"); // For inital load when no map requested.
 	loadScript(theroot + 'js/map-filters.js', function(results) {
 		goHash({"appview":"topics"}); // Allows priorhash to be set for subsequent click of Locations tab.

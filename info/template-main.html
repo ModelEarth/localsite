@@ -592,7 +592,7 @@
 
       <div class="georgia" style="display:none">
         <span id="intranet-nav" class="hideMobile" style="float:left">
-          <a href="/localsite/info/#mapview=state&state=GA" class="navlink-industries"><span style="white-space: nowrap; margin-right:6px">Industries</span></a>
+          <a href="/localsite/info/#geoview=state&state=GA" class="navlink-industries"><span style="white-space: nowrap; margin-right:6px">Industries</span></a>
           <a href="/display/exporters/" class="navlink-exporters"><span style="white-space: nowrap; margin-right:3px">Exporters</span></a>
           <a href="/recycling/georgia/" class="navlink-recyclers"><span style="white-space: nowrap; margin-right:3px">Recyclers</span></a>
         </span>
@@ -780,10 +780,9 @@
         <div class="stateFilters input-output" style="float:left;display:none" class="mock-up earth">
 
               <select id="country_select" style="float:left">
+                <option value="none">Geoview...</option>
                 <option value="earth">Earth</option>
-                <!--
                 <option value="countries">Countries</option>
-                -->
                 <option value="country">United States</option>
                 <option value="state" selected>State</option><!-- was counties -->
               </select>
@@ -1017,9 +1016,9 @@
           </div>
         <!-- /Secondary Location Filters -->
 
-        <div style="clear:both; margin-bottom:12px"></div>
+        <div style="clear:both;"></div>
 
-        <div id="geoPicker">
+        <div id="geoPicker" style="margin-top:2px;display:none;">
           <div id="geomapHolder">
             <!-- Must be displayed initiallly so tiles are visible -->
               <div id="geomap">

@@ -284,7 +284,7 @@ $(document).ready(function () {
     	event.stopPropagation();
     });
     $(document).on("change", "#country_select", function(event) {
-        goHash({'mapview':this.value});
+        goHash({'geoview':this.value});
     });
 	$('.selected_state').on('change', function() {
 		//alert("selected_state " + this.getAttribute("id"))
@@ -357,7 +357,7 @@ $(document).ready(function () {
     });
 
 	function hideNonListPanels() {
-        goHash({"mapview":""});
+        goHash({"geoview":""});
 		$(".fieldSelector").hide(); // Avoid since this occurs when typing text in search field.
     	$('#topPanel').hide();
     	$("#introText").hide();
@@ -373,11 +373,11 @@ $(document).ready(function () {
         let search = $('.selected_col:checked').map(function() {return this.id;}).get().join(',');
         // TODO: set search to empty array if all search boxes are checked.
         if(!hash.show && location.href.indexOf('/localsite/info/') < 0) {
-            // TODO: Remove mapview
+            // TODO: Remove geoview
             window.location = "/localsite/info/" + location.hash;
             return;
         }
-        goHash({"q":searchQuery,"search":search,"mapview":""}); // triggers hash change event.
+        goHash({"q":searchQuery,"search":search,"geoview":""}); // triggers hash change event.
         event.stopPropagation();
    	});
 
@@ -589,7 +589,7 @@ function productList(startRange, endRange, text) {
     //    event.stopPropagation();
     //});
 }
-function renderMapShapes(whichmap, hash, mapview, attempts) {
+function renderMapShapes(whichmap, hash, geoview, attempts) {
   console.log("renderMapShapes() state: " + hash.state + " attempts: " + attempts);
   loadScript(local_app.modelearth_root() + '/localsite/js/topojson-client.min.js', function(results) {
     renderMapShapeAfterPromise(whichmap, hash, attempts);
@@ -598,8 +598,8 @@ function renderMapShapes(whichmap, hash, mapview, attempts) {
 
 //var geojsonLayer; // Hold the prior letter. We can use an array or object instead.
 var geoOverlays = {};
-function renderMapShapeAfterPromise(whichmap, hash, mapview, attempts) {
-
+function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
+ //alert("renderMapShapeAfterPromise " + whichmap);
  includeCSS3(theroot + 'css/leaflet.css',theroot);
   loadScript(theroot + 'js/leaflet.js', function(results) {
     //alert("pre L")
@@ -615,7 +615,7 @@ function renderMapShapeAfterPromise(whichmap, hash, mapview, attempts) {
     // In addition, the state could also be derived from the geo values.
 
     var stateCount = typeof hash.state !== "undefined" ? hash.state.split(",").length : 0;
-    if (stateCount > 1 && hash.mapview != "country") {
+    if (stateCount > 1 && hash.geoview != "country") {
       hash.state.split(",").forEach(function(state) {
         hashclone = $.extend(true, {}, hash); // Clone/copy object without entanglement
         hashclone.state = state.toUpperCase(); // One state at a time
@@ -684,12 +684,8 @@ function renderMapShapeAfterPromise(whichmap, hash, mapview, attempts) {
         var url;
         let topoObjName = "";
         var layerName = "Map Layer";
-        if (hash.mapview == "earth") {
-          //hideAdvanced();
-          showGlobalMap("https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
-        } 
 
-        if (hash.mapview == "zip") {
+        if (hash.geoview == "zip") {
           layerName = "Zipcodes";
           if (stateAbbr) {
             url = local_app.modelearth_root() + "/community-forecasting/map/zcta/states/" + getState(stateAbbr) + ".topo.json";
@@ -697,7 +693,7 @@ function renderMapShapeAfterPromise(whichmap, hash, mapview, attempts) {
             url = local_app.modelearth_root() + "/community-forecasting/map/zip/topo/zips_us_topo.json";
           }
           topoObjName = "topoob.objects.data";
-        }  else if (hash.mapview == "country") { // USA  && stateAbbr.length != 2
+        }  else if (hash.geoview == "country") { // USA  && stateAbbr.length != 2
           layerName = "States";
           url = local_app.modelearth_root() + "/localsite/map/topo/states-10m.json";
           topoObjName = "topoob.objects.states";
@@ -716,7 +712,7 @@ function renderMapShapeAfterPromise(whichmap, hash, mapview, attempts) {
           //url = local_app.modelearth_root() + "/topojson/countries/us-states/GA-13-georgia-counties.json";
           // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
         } else { // ALL COUNTRIES
-        //} else if (hash.mapview == "earth") {
+        //} else if (hash.geoview == "earth") {
           url = local_app.modelearth_root() + "/topojson/world-countries-sans-antarctica.json";
           topoObjName = "topoob.objects.countries1";
         }
@@ -831,11 +827,11 @@ function renderMapShapeAfterPromise(whichmap, hash, mapview, attempts) {
           // Georgia 32.1656° N, 82.9001° W
           
 
-          if (hash.mapview == "earth" && theState == "") {
+          if (hash.geoview == "earth" && theState == "") {
             zoom = 2
             lat = "25"
             lon = "0"
-          } else if (hash.mapview == "country") { // && theState == ""
+          } else if (hash.geoview == "country") { // && theState == ""
             zoom = 4
             lat = "39.5"
             lon = "-96"
@@ -1426,7 +1422,7 @@ function locationFilterChange(selectedValue,selectedGeo) {
     	$(".stateFilters").hide();
     } else {
     	if (hash.state || hash.geo) {
-    		$("#geoPicker").show();
+    		///$("#geoPicker").show();
     	}
     	$(".stateFilters").show();
     }
@@ -1543,7 +1539,7 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
     		//Load in contents of CSV file for Tabulator (separate from map county shapes)
     		if (theState && theState.length == 2) {
                 let csvFilePath = local_app.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv";
-                if (hash.mapview == "zip") {
+                if (hash.geoview == "zip") {
                     csvFilePath = local_app.community_data_root() + "us/zipcodes/zipcodes6.csv";
                 } else if (hash.show == "cameraready" && hash.state == "GA") {
                     csvFilePath = "/localsite/info/data/map-filters/state-county-sections-ga.csv";
@@ -1561,7 +1557,7 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                         }
     				}
 
-                    if (hash.mapview == "zip") {
+                    if (hash.geoview == "zip") {
 
                     } else { // Counties
 
@@ -1917,7 +1913,7 @@ function showTabulatorList(element, attempts) {
 
                 var columnArray;
                 var rowData;
-                if (hash.mapview == "zip") {
+                if (hash.geoview == "zip") {
                     columnArray = [
                         {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
                         {title:"ZIPCODE", field:"name"}
@@ -2458,7 +2454,7 @@ $(document).ready(function () {
 	  event.stopPropagation();
 	});
 	$('.go_map').click(function(event) {
-	  goHash({'mapview':'country'});
+	  goHash({'geoview':'country'});
 	  window.scrollTo({
 	      top: $('#map1').offset().top,
 	      left: 0
@@ -2580,25 +2576,25 @@ function hashChanged() {
 	let loadGeomap = false;
 	let hash = getHash(); // Might still include changes to hiddenhash
     //alert("hash.geo1 " + hash.geo);
-    //alert("hash.mapview " + hash.mapview)
-    //alert("hiddenhash.mapview " + hiddenhash.mapview)
+    //alert("hash.geoview " + hash.geoview)
+    //alert("hiddenhash.geoview " + hiddenhash.geoview)
 
     console.log("hashChanged() map-filters.js");
-    //alert("hash.mapview incoming is " + hash.mapview);
+    //alert("hash.geoview incoming is " + hash.geoview);
 
 	if (hash.show == "undefined") { // To eventually remove
 		//delete hash.show; // Fix URL bug from indicator select hamburger menu
 		//updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
 	}
 	// Temp for PPE
-	if (!hash.state && location.host.indexOf("georgia") >= 0 && (hash.mapview == "" || hash.mapview == "state" || hash.mapview == "counties")) {
+	if (!hash.state && location.host.indexOf("georgia") >= 0 && (hash.geoview == "" || hash.geoview == "state" || hash.geoview == "counties")) {
 	    // Could populate hiddenhash.state in map.js when map layers are loaded, or use those default state values.
         //hash.state = "GA";
 	    //hiddenhash.state = "GA";
 	}
-    if (hash.mapview == "state" && hash.state == undefined) {
+    if (hash.geoview == "state" && hash.state == undefined) {
         // To Do: Pull the states from the geo values
-        //hash.mapview = "country"
+        //hash.geoview = "country"
     }
 	populateFieldsFromHash();
 	productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
@@ -2643,8 +2639,8 @@ function hashChanged() {
             }
         });
     }
-    if (!stateAbbrev && hash.mapview == "state") { // No state
-        updateHash({'mapview':''});
+    if (!stateAbbrev && hash.geoview == "state") { // No state
+        updateHash({'geoview':''});
         $("#country_select").val("country");
     }
 	if (hash.show != priorHash.show) {
@@ -2716,7 +2712,7 @@ function hashChanged() {
 			// DOES NOT WORK - document.querySelector(whichmap)._leaflet_map not found
 			//reloadMapTiles('#geomap',1);
 			
-            alert("renderMapShapes")
+            //alert("renderMapShapes")
             renderMapShapes();
 			
 			/*
@@ -2823,10 +2819,10 @@ function hashChanged() {
 		}
 	}
 
-    console.log("hash.mapview: " + hash.mapview + " priorHash.mapview: " + priorHash.mapview);
+    console.log("hash.geoview: " + hash.geoview + " priorHash.geoview: " + priorHash.geoview);
 
-    if (hash.mapview && hash.mapview != priorHash.mapview) {
-        $("#country_select").val(hash.mapview);
+    if (hash.geoview && hash.geoview != priorHash.geoview) {
+        $("#country_select").val(hash.geoview);
     }
 
     if (hash.state != priorHash.state) {
@@ -2858,30 +2854,30 @@ function hashChanged() {
             //$("#industryListHolder").hide(); // Remove once national naics are loaded.
 		}
 
-        //&& hash.mapview == "state"
-        if (hash.mapview && hash.mapview == priorHash.mapview) { // Prevents dup loading when hash.mapview != priorHash.mapview below.
-            if (hash.mapview != "earth") {
+        //&& hash.geoview == "state"
+        if (hash.geoview && hash.geoview == priorHash.geoview) { // Prevents dup loading when hash.geoview != priorHash.geoview below.
+            if (hash.geoview != "earth") {
                 console.log("loadStateCounties invoked by state change");
                 loadStateCounties(0); // Add counties to state boundaries.
             }
         }
     }
 
-    if (hash.mapview != priorHash.mapview || (priorHash.state && !hash.state)) {
-        //alert("Load mapview")
-        if (hash.mapview) {
+    if (hash.geoview != priorHash.geoview || (priorHash.state && !hash.state)) {
+        //alert("Load geoview")
+        if (hash.geoview) {
             loadScript(theroot + 'js/navigation.js', function(results) {
                 waitForVariable('navigationJsLoaded', function() {
                     openMapLocationFilter();
                 });
             });
         }
-        if (hash.mapview == "state" || hash.mapview == "country") {
-            console.log("loadStateCounties invoked by mapview change");
-            console.log("priorHash.mapview: " + priorHash.mapview + ", hash.mapview: " + hash.mapview);
+        if (hash.geoview == "state" || hash.geoview == "country") {
+            console.log("loadStateCounties invoked by geoview change");
+            console.log("priorHash.geoview: " + priorHash.geoview + ", hash.geoview: " + hash.geoview);
             loadStateCounties(0);
 
-            //if (hash.mapview == "country" && !hash.state) {
+            //if (hash.geoview == "country" && !hash.state) {
                 //if (onlineApp) {
                     let element = {};
                     element.scope = "state";
@@ -2895,18 +2891,18 @@ function hashChanged() {
                         ];
 
                     // Displays tabulator list of states, but USA map shapes turned red.
-                    if (hash.mapview == "country") {
+                    if (hash.geoview == "country") {
                         loadObjectData(element, 0);
                     }
                     //$("#tabulator-geocredit").show();
                 //}
             //}
-        } else if (hash.mapview == "earth" || hash.mapview == "countries") {
+        } else if (hash.geoview == "earth" || hash.geoview == "countries") {
             let element = {};
             element.scope = "countries";
             element.key = "Country Code";
             //element.datasource = "https://model.earth/country-data/population/population-total.csv";
-            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/country-populations.json";
+            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/country-populations.csv";
             element.columns = [
                     {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
                     {title:"Country Name", field:"Country Name"},
@@ -2923,18 +2919,18 @@ function hashChanged() {
         }
     }
 
-    //alert("hash.mapview " + hash.mapview);
-    if (hash.mapview == "earth") {
+    //alert("hash.geoview " + hash.geoview);
+    if (hash.geoview == "earth") {
         $("#state_select").hide();
-    } else if (hash.mapview == "country") {
-        if (hash.mapview != priorHash.mapview) {
+    } else if (hash.geoview == "country") {
+        if (hash.geoview != priorHash.geoview) {
             //alert("country");
-            $("#geoPicker").show(); // Required for map to load
+            ///$("#geoPicker").show(); // Required for map to load
             $("#state_select").show();
         }
-    } else if (hash.mapview == "state") {
+    } else if (hash.geoview == "state") {
         $("#state_select").show();
-    } else if (priorHash.mapview && !hash.mapview) {
+    } else if (priorHash.geoview && !hash.geoview) {
         closeLocationFilter(); console.log("closeLocationFilter2");
     }
 
@@ -3100,7 +3096,7 @@ function hashChanged() {
         	//clearall = true;
         }
         if($("#geomap").is(':visible')){
-        	if (hash.mapview != "country") {
+        	if (hash.geoview != "country") {
         		//alert("updateSelectedTableRows 2"); // Might need this delay.
         		updateSelectedTableRows(hash.geo, clearall, 0);
         	}
@@ -3148,23 +3144,25 @@ function hashChanged() {
         }
         */
     }
-
-    //alert("mapview: " + hash.mapview + " " + priorHash.mapview);
-    if (hash.mapview != priorHash.mapview) {
+    if (hash.geoview != priorHash.geoview) {
     	//$(".stateFilters").show();
     	//$("#filterLocations").show();
     	//$("#geomap").show(); // To trigger map filter display below.
-
-        // Opening mapview tab without state rendered yet - ToDo: check a data attribute to see what state is already loaded
-    	if (hash.mapview) { // && map2 data != hash.state  // && hash.state now allowing without state for country map
-            //alert("loadGeomap")
+        if (hash.geoview && hash.geoview != "earth") {
+            $("#nullschoolHeader").hide();
+        }
+        if (hash.geoview == "none") {
+            $("#geoPicker").hide();
+        } else if (hash.geoview == "earth") {
+            showGlobalMap("https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
+        } else if (hash.geoview) {
     		loadGeomap = true;
     	} else {
             //alert("#filterLocations hide")
             $("#filterLocations").hide();
+            $("#geoPicker").hide();
     	}
     }
-    
 
     $(".regiontitle").text(local_app.loctitle);
     $(".service_title").text(local_app.loctitle + " - " + local_app.showtitle);
@@ -3273,14 +3271,14 @@ function styleShape(feature) { // Called FOR EACH topojson row
   if (hash.geo && hash.geo.includes("US" + feature.properties.STATEFP + feature.properties.COUNTYFP)) {
       fillColor = 'purple';
       fillOpacity = .2;
-  } else if (hash.mapview == "country" && hash.state && hash.state.includes(stateID)) {
+  } else if (hash.geoview == "country" && hash.state && hash.state.includes(stateID)) {
       fillColor = 'red';
       fillOpacity = .2;
 
       fillColor = 'white';
       fillOpacity = 0;
 
-  } else if (hash.mapview == "countries") {
+  } else if (hash.geoview == "countries") {
       let theValue = 2;
       //console.log("country: " + (feature.properties.name));
       if (localObject.countries && localObject.countries[feature.id]) {
@@ -3289,10 +3287,11 @@ function styleShape(feature) { // Called FOR EACH topojson row
       }
       // TO DO - Adjust for 2e-7
       theValue = theValue/10000000;
-      fillColor = colorTheCountry(theValue);
+      //fillColor = colorTheCountry(theValue);
+      fillColor = colorTheCountry;
       //console.log("fillColor: " + fillColor + "; theValue: " + theValue + " " + feature.properties.name);
       fillOpacity = .5;
-  } else if ((hash.mapview == "country" || (hash.mapview == "state" && !hash.state)) && typeof localObject.state != 'undefined') {
+  } else if ((hash.geoview == "country" || (hash.geoview == "state" && !hash.state)) && typeof localObject.state != 'undefined') {
       let theValue = 2;
        if (localObject.state[getState(stateID)] && localObject.state[getState(stateID)].CO2_per_capita != "No data") {
         //console.log("state: " + stateID + " " + getState(stateID));

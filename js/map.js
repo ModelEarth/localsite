@@ -945,7 +945,7 @@ function loadGeos(geo, attempts, callback) {
     //let theState = "GA"; // TEMP - TODO: loop trough states from start of geo
     let theState = hash.state ? hash.state.split(",")[0].toUpperCase() : undefined;
     if (!theState) {
-      goHash({'mapview':'state'});
+      goHash({'geoview':'state'});
       filterClickLocation();
     }
     //if (theState && theState.includes(",")) {
@@ -3870,7 +3870,7 @@ function hashChangedMap() {
   //alert("hashChangedMap")
   let hash = getHash();
 
-  //alert("hiddenhash.mapview2 " + hiddenhash.mapview)
+  //alert("hiddenhash.mapview2 " + hiddenhash.geoview)
 
   if (hash.show == "undefined") { // To eventually remove
     delete hash.show; // Fix URL bug from indicator select hamburger menu

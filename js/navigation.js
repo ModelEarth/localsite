@@ -78,7 +78,7 @@ function hashChangedNavigation() {
 	// More hashChange events reside in map-filters.js
 	let hash = getHash();
 
-	// Also used for state change in apps without map which don't have mapview
+	// Also used for state change in apps without map which don't have geoview
 	if (hash.state != priorHash.state) {
 		// Load state hero graphic
         let theStateName; // Full name of state.
@@ -226,7 +226,7 @@ function showSideTabs() {
 	      //alert("LOCAL: ");
 	    }
 	    /*
-	    //if (!hash.mapview) {
+	    //if (!hash.geoview) {
         	closeExpandedMenus($(".showSections")); // Close all sidetab's prior to opening new tab
         //}
         $("#topicsPanel").show();
@@ -305,7 +305,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		// Show locally for Brave Browser only - insert before:  ) || false
 		// && navigator && navigator.brave
 		if (!param.state && !hash.state) {
-			if (param.mapview != "earth") {
+			if (param.geoview != "earth") {
 				if (onlineApp && defaultState) {
 					param.state = defaultState; // For longer displayBigThumbnails menu in map-filters.js
 				}
@@ -1420,8 +1420,8 @@ function hideGeoPicker() {
 	$("#geoPicker").hide();
 }
 function hideAdvanced() {
-	// We might want to omit this line to retain mapview=earth
-	updateHash({"mapview":""});
+	// We might want to omit this line to retain geoview=earth
+	updateHash({"geoview":""});
 	// Should we show a search icon when closing?
 	$(".fieldSelector").hide();
 	$("#filterLocations").hide();
@@ -1603,10 +1603,10 @@ function activateSideColumn() {
 
 // INIT
 
-//if (param.mapview == "state") {
+//if (param.geoview == "state") {
 //	loadScript(theroot + 'js/map.js', function(results) {
 //		loadScript(theroot + 'js/map-filters.js', function(results) {
-//			// mapview=state triggers display of location filter in map-filters.js. No additional script needed here.
+//			// geoview=state triggers display of location filter in map-filters.js. No additional script needed here.
 //		});
 //	});
 //}
@@ -1652,20 +1652,19 @@ $(document).on("change", "#state_select", function(event) {
 
     console.log("state_select change");
 	if (this.value) {
-    	$("#geoPicker").show();
     	$("#region_select").val("");
         // Later a checkbox could be added to retain geo values across multiple states
-        // Omitting for BC apps page  ,'mapview':'state'
+        // Omitting for BC apps page  ,'geoview':'state'
     	goHash({'state':this.value,'geo':'','name':'','regiontitle':''}); // triggers renderMapShapes("geomap", hash); // County select map
     	//$("#filterLocations").hide(); // So state appears on map immediately
     } else { // US selected
     	hiddenhash.state = ""; // BugFix - Without this prior state stays in dropdown when choosing no state using top option.
-    	goHash({'mapview':'country','state':'','geo':''});
+    	goHash({'geoview':'country','state':'','geo':''});
     }
 });
 $(document).on("click", "#filterClickLocation", function(event) {
 
-	//delete(hiddenhash.mapview); // Not sure where this gets set.
+	//delete(hiddenhash.geoview); // Not sure where this gets set.
 	if ($("#geoPicker").is(':visible')) {
 		console.log($("#filterLocations").offset().top);
 	}
@@ -1678,7 +1677,7 @@ $(document).on("click", "#filterClickLocation", function(event) {
     	closeAppsMenu();
     	$("#filterClickLocation").addClass("filterClickActive");
     } else if ($("#geoPicker").is(':visible')) {
-    	//if (hash.mapview && hash.appview) {
+    	//if (hash.geoview && hash.appview) {
     	$("#geoPicker").hide();
     	closeAppsMenu();
     	$("#filterClickLocation").removeClass("filterClickActive");
@@ -1686,43 +1685,43 @@ $(document).on("click", "#filterClickLocation", function(event) {
     	closeAppsMenu();
     	loadScript(theroot + 'js/map-filters.js', function(results) {
 	    	$("#filterLocations").show();
-	    	$("#geoPicker").show();
+	    	///$("#geoPicker").show();
 	    	if (!hash.appview) {
 	    		$("#filterClickLocation").addClass("filterClickActive");
 	    	}
-		    if(!hash.mapview && (hash.state || param.state)) {
-		    	hash.mapview = "state";
+		    if(!hash.geoview && (hash.state || param.state)) {
+		    	hash.geoview = "state";
 		    	if (!hash.state) {
 		    		hash.state = param.state + "";
 		    	}
-		    	goHash({"mapview":hash.mapview});
-		    	//alert("updateHash " + hash.mapview);
+		    	goHash({"geoview":hash.geoview});
+		    	//alert("updateHash " + hash.geoview);
 		    } else {
-		    	goHash({"mapview":"country"});
+		    	goHash({"geoview":"country"});
 		    }
 
-		    console.log("#filterClickLocation click hash.mapview: " + hash.mapview);
+		    console.log("#filterClickLocation click hash.geoview: " + hash.geoview);
 		});
 		$('html,body').scrollTop(0);
 	    /*
-	     if (!hash.mapview) {
+	     if (!hash.geoview) {
 	    	if (!hash.appview) {
 	    		closeAppsMenu();
 	    	}
 	    	loadScript(theroot + 'js/map-filters.js', function(results) {
-				//if (!param.mapview) {
+				//if (!param.geoview) {
 				// Hash change triggers call to filterClickLocation() and map display.
 				if (mapviewState) {
 					console.log("#filterClickLocation click go state");
-		    		goHash({'mapview':'state'});
+		    		goHash({'geoview':'state'});
 		    	} else {
-		    		goHash({'mapview':'country'});
+		    		goHash({'geoview':'country'});
 		    	}
 	    	});
 		} else {
 			// Triggers closeLocationFilter()
-			console.log("remove mapview from hash")
-			goHash({"mapview":""}); // Remove from URL using gohash so priorhash is also reset
+			console.log("remove geoview from hash")
+			goHash({"geoview":""}); // Remove from URL using gohash so priorhash is also reset
 		}
 		*/
 	}
@@ -1762,18 +1761,18 @@ function showApps(menuDiv) {
 	        		$("#filterClickLocation").addClass("filterClickActive");
 	        	}
 	        }
-		} else { // Show Apps, Close Locations (if no mapview)
+		} else { // Show Apps, Close Locations (if no geoview)
 			updateHash({"appview":"topics"});
 			console.log("call showThumbMenu from navidation.js");
-			if (!hash.mapview) {
+			if (!hash.geoview) {
 	        	closeExpandedMenus($(".showSections")); // Close all sidetab's prior to opening new tab
 	        }
 	        $("#topicsPanel").show();
 
 	        if ($("#filterLocations").is(':visible')) {
-	        	////goHash({"mapview":""});
-	        	// Deactivated so both apps and mapview shown on localsite/map:
-	        	//goHash({},["mapview"]); //TODO - Alter so the above works instead.
+	        	////goHash({"geoview":""});
+	        	// Deactivated so both apps and geoview shown on localsite/map:
+	        	//goHash({},["geoview"]); //TODO - Alter so the above works instead.
 
 	            ////filterClickLocation(); // Toggle county-select closedhttp://localhost:8887/localsite/map/#show=recyclers&state=GA
 	        }
@@ -1827,7 +1826,7 @@ function openMapLocationFilter() {
     //alert("openMapLocationFilter param.state " + param.state);
     console.log("openMapLocationFilter()");
     loadScript(theroot + 'js/map-filters.js', function(results) {
-	    if (!hash.mapview) {
+	    if (!hash.geoview) {
 	        let currentStates = [];
 	        if(hash.geo && !hash.state) {
 	            let geos = hash.geo.split(",");
@@ -1836,12 +1835,12 @@ function openMapLocationFilter() {
 	            }
 	        }
 	        if (currentStates.length > 0) { // Multiple states, use first one.
-	            goHash({"mapview":"state","state":currentStates[0]});
+	            goHash({"geoview":"state","state":currentStates[0]});
 	        } else {
-	            goHash({"mapview":"state"});
+	            goHash({"geoview":"state"});
 	        }
 	    }
-	    $("#geoPicker").show();
+	    ///$("#geoPicker").show();
 	    $("#filterLocations").show();
 	    $(".locationTabText").text("Locations");
 	    $("#topPanel").hide();
@@ -1853,7 +1852,7 @@ function openMapLocationFilter() {
 	        state_select_holder.appendChild(state_select); // For apps hero
 	    }
 
-	    if (hash.mapview == "state") {
+	    if (hash.geoview == "state") {
 		    locationFilterChange("counties");
 		} else {
 			console.log("Call locationFilterChange with no value")
@@ -1864,7 +1863,7 @@ function openMapLocationFilter() {
 	        if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
 	            clearall = true;
 	        }
-	        if (hash.mapview != "country") {
+	        if (hash.geoview != "country") {
 	            //if (loadGeoTable != false) { // Prevents loading twice on init
 	            
 	            // not needed, added hash = GetHash() to fix actual problem.
@@ -1895,8 +1894,8 @@ function openMapLocationFilter() {
 	});
 }
 function closeLocationFilter() {
-    //delete(hash.mapview); // BUGBUG, clears but still in filterClickLocation click
-    console.log("closeLocationFilter() hash.mapview: " + hash.mapview);
+    //delete(hash.geoview); // BUGBUG, clears but still in filterClickLocation click
+    console.log("closeLocationFilter() hash.geoview: " + hash.geoview);
     $(".locationTabText").text($(".locationTabText").attr("title"));
     $("#showLocations").hide();
     $("#hideLocations").show();
@@ -1913,11 +1912,11 @@ function closeLocationFilter() {
     $("#hero_holder").show();
 
     /*
-    if(location.host.indexOf("localhost") >= 0 || location.host.indexOf("georgia") >= 0) { // TEMP until state is enforced while international map is still avalable. Applied when clicking "Top Industires" here: /localsite/map/#show=trade&mapview=countries
+    if(location.host.indexOf("localhost") >= 0 || location.host.indexOf("georgia") >= 0) { // TEMP until state is enforced while international map is still avalable. Applied when clicking "Top Industires" here: /localsite/map/#show=trade&geoview=countries
         console.log("Populate with state based on domain.")
-        goHash({"mapview":"","state":"GA"});
+        goHash({"geoview":"","state":"GA"});
     } else {
-        //updateHash({"mapview":""});
+        //updateHash({"geoview":""});
         
     }
     */

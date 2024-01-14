@@ -263,14 +263,6 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
     // This non-JQuery extend results in "Uncaught (in promise) RangeError: Maximum call stack size exceeded" with map.js mix(dp,defaults)
     target2 = structuredClone(extend(true, target, incoming)); // Clone/copy object without entanglement, subsequent overrides first.
    }
-
-   // structuredClone solved this entanglement bug
-   //console.log("incoming.mapview: " + incoming.mapview);
-   //console.log("target.mapview: " + target.mapview);
-   //console.log("target2.mapview: " + target2.mapview);
-   //delete target.mapview;
-   //console.log("target2.mapview: " + target2.mapview);
-
    for(var key in incoming) {
      if (incoming.hasOwnProperty(key)) {
         if (incoming[key] === null || incoming[key] === undefined || incoming[key] === '') {
@@ -366,7 +358,7 @@ let nextPriorHash = structuredClone(param); // Param values set in pages and the
 var triggerHashChangeEvent = function () {
     // priorHash includes remaining values in hiddenhash (which originate from param values in page)
     priorHash = structuredClone($.extend(true, {}, nextPriorHash));
-    //alert("hiddenhash.mapview " + hiddenhash.mapview);
+    //alert("hiddenhash.geoview " + hiddenhash.geoview);
     //nextPriorHash = getHashOnly();
     nextPriorHash = getHash(); // Includes hiddenhash
 
@@ -1079,7 +1071,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       //loadScript(theroot + 'js/table-sort.js', function(results) {}); // For county grid column sort
 
     }
-    if (param.mapview || param.appview) {
+    if (param.geoview || param.appview) {
       loadMapAndMapFilters();
     }
 
@@ -2393,7 +2385,7 @@ document.addEventListener('localHashChangeEvent', function (elem) {
 
 function localHashChanged() {
   let hash = getHash();
-  if (hash.mapview && !priorHash.mapview) {
+  if (hash.geoview && !priorHash.geoview) {
 
   }
 }

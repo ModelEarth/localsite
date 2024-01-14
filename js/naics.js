@@ -1941,7 +1941,7 @@ function applyIO(naics) {
 
     // Waiting for widgets to be updated for state data by Wes's team at the EPA.
     // Test here:
-    // http://localhost:8887/localsite/info/#show=vehicles&mapview=country&state=GA
+    // http://localhost:8887/localsite/info/#show=vehicles&geoview=country&state=GA
     if (1==2 && location.host.indexOf('localhost') >= 0) {
         if (hash.state && (hash.state=="GA" || hash.state=="ME" || hash.state=="MN" || hash.state=="OR" || hash.state=="WA")) {
             naics = ""; // TEMP. With transition to 73 Sectors the Naics are not in the models.
