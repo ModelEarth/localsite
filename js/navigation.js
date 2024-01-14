@@ -1659,8 +1659,8 @@ $(document).on("change", "#state_select", function(event) {
     	goHash({'state':this.value,'geo':'','name':'','regiontitle':''}); // triggers renderMapShapes("geomap", hash); // County select map
     	//$("#filterLocations").hide(); // So state appears on map immediately
     } else { // US selected
-    	hiddenhash.state = ""; // Bug Otherwise prior state stays in dropdown when choosing no state using top option.
-    	goHash({'mapview':'country','state':''});
+    	hiddenhash.state = ""; // BugFix - Without this prior state stays in dropdown when choosing no state using top option.
+    	goHash({'mapview':'country','state':'','geo':''});
     }
 });
 $(document).on("click", "#filterClickLocation", function(event) {
@@ -1827,11 +1827,6 @@ function openMapLocationFilter() {
     //alert("openMapLocationFilter param.state " + param.state);
     console.log("openMapLocationFilter()");
     loadScript(theroot + 'js/map-filters.js', function(results) {
-    	if (!hash.state && param.state) {
-	        hash.state = param.state; // For /apps/base/
-	        console.log("filterClickLocation updatesHash state " + hash.state);
-	        updateHash({"state":hash.state});
-	    }
 	    if (!hash.mapview) {
 	        let currentStates = [];
 	        if(hash.geo && !hash.state) {

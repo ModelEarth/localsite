@@ -367,35 +367,18 @@ $(document).ready(function () {
     	}
     }
     $(document).on("click", "#goSearch", function(event) {
+        let hash = getHash();
         let searchQuery = $('#keywordsTB').val();
         console.log("Search for " + searchQuery);
         let search = $('.selected_col:checked').map(function() {return this.id;}).get().join(',');
-        // To do: set search to empty array if all search boxes are checked.
-
-        if(!hash.show) {
+        // TODO: set search to empty array if all search boxes are checked.
+        if(!hash.show && location.href.indexOf('/localsite/info/') < 0) {
+            // TODO: Remove mapview
             window.location = "/localsite/info/" + location.hash;
             return;
         }
-
-        goHash({"q":searchQuery,"search":search}); // triggers hash change event.
+        goHash({"q":searchQuery,"search":search,"mapview":""}); // triggers hash change event.
         event.stopPropagation();
-        return;
-
-        /*
-        //updateHash({"q":searchQuery,"search":search}); // Avoids triggering hash change event.
-
-	    hideNonListPanels(); // Omitted this instead, remove comment above.
-
-	    if ($('#catListHolder').css('display') == 'none' && $('#catListHolderShow').css('display') == 'none') {
-	    	// In case user has resized from mobile to full and industry list is not available.
-	    	// Coule be moved to a screen width watcher.
-			$('#catListHolderShow').show();
-			$('#catListHolderShow').text('Product Categories');
-		}
-		
-		loadMap1("loadMap1 called from map-filters.js");
-	    event.stopPropagation();
-        */
    	});
 
     $(document).on("click", "#keywordsTB", function(event) {
