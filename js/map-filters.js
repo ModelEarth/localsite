@@ -815,23 +815,13 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
 
             //console.log(topodata)
-
-
-
-
-          //// USA
-          //var lat = 38.3;
-          //var lon = -96.5;
-          //var zoom = 5;
-
-          // Georgia 32.1656° N, 82.9001° W
           
 
           if (hash.geoview == "earth" && theState == "") {
             zoom = 2
             lat = "25"
             lon = "0"
-          } else if (hash.geoview == "country") { // && theState == ""
+          } else if (hash.geoview == "country") {
             zoom = 4
             lat = "39.5"
             lon = "-96"
@@ -2575,27 +2565,7 @@ if(typeof hiddenhash == 'undefined') {
 function hashChanged() {
 	let loadGeomap = false;
 	let hash = getHash(); // Might still include changes to hiddenhash
-    //alert("hash.geo1 " + hash.geo);
-    //alert("hash.geoview " + hash.geoview)
-    //alert("hiddenhash.geoview " + hiddenhash.geoview)
-
     console.log("hashChanged() map-filters.js");
-    //alert("hash.geoview incoming is " + hash.geoview);
-
-	if (hash.show == "undefined") { // To eventually remove
-		//delete hash.show; // Fix URL bug from indicator select hamburger menu
-		//updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
-	}
-	// Temp for PPE
-	if (!hash.state && location.host.indexOf("georgia") >= 0 && (hash.geoview == "" || hash.geoview == "state" || hash.geoview == "counties")) {
-	    // Could populate hiddenhash.state in map.js when map layers are loaded, or use those default state values.
-        //hash.state = "GA";
-	    //hiddenhash.state = "GA";
-	}
-    if (hash.geoview == "state" && hash.state == undefined) {
-        // To Do: Pull the states from the geo values
-        //hash.geoview = "country"
-    }
 	populateFieldsFromHash();
 	productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 
@@ -2638,10 +2608,6 @@ function hashChanged() {
                 $("#state_select").val("");
             }
         });
-    }
-    if (!stateAbbrev && hash.geoview == "state") { // No state
-        updateHash({'geoview':''});
-        $("#country_select").val("country");
     }
 	if (hash.show != priorHash.show) {
         if (hash.show && priorHash.show) {
@@ -2893,6 +2859,8 @@ function hashChanged() {
                     // Displays tabulator list of states, but USA map shapes turned red.
                     if (hash.geoview == "country") {
                         loadObjectData(element, 0);
+                    } else if (hash.geoview == "state" && !hash.state) {
+                        loadObjectData(element, 0); // Display tabulator list of states.
                     }
                     //$("#tabulator-geocredit").show();
                 //}

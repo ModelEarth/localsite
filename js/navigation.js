@@ -1852,7 +1852,9 @@ function openMapLocationFilter() {
 	        state_select_holder.appendChild(state_select); // For apps hero
 	    }
 
-	    if (hash.geoview == "state") {
+	    // Tabulator list is already updated before adjacent geomap is rendered.
+
+	    if (hash.geoview == "state" && hash.state) {
 		    locationFilterChange("counties");
 		} else {
 			console.log("Call locationFilterChange with no value")
