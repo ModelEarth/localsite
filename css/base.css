@@ -461,7 +461,7 @@ summary::-webkit-details-marker {
 }
 .lite { /* Also in DS */
   background-color: #eee;
-  color:  #777;
+  color:  #333;
 }
 .dark .lite {
   background-color: #555;

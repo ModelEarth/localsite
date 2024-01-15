@@ -3121,14 +3121,18 @@ function hashChanged() {
         }
         if (hash.geoview == "none") {
             $("#geoPicker").hide();
-        } else if (hash.geoview == "earth") {
+        } else {
+            $("#geoPicker").show();
+        }
+
+        if (hash.geoview == "earth") {
             showGlobalMap("https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
         } else if (hash.geoview) {
     		loadGeomap = true;
     	} else {
             //alert("#filterLocations hide")
             $("#filterLocations").hide();
-            $("#geoPicker").hide();
+            //$("#geoPicker").hide();
     	}
     }
 

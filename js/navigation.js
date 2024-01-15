@@ -904,6 +904,16 @@ $(document).on("click", ".showListings", function(event) {
     showSideTabs();
     event.stopPropagation();
 });
+$(document).on("click", ".showLocale", function(event) {
+	closeExpandedMenus(event.currentTarget);
+	$("#filterClickLocation").removeClass("filterClickActive");
+	$("#filterLocations").appendTo($("#localeDiv"));
+	$("#locationFilterHolder").hide(); // Checked when opening with tab.
+    $(".showLocale").addClass("active");
+    $("#localePanel").show();
+    showSideTabs();
+    event.stopPropagation();
+});
 $(document).on("click", ".showSettings", function(event) {
 	closeExpandedMenus(event.currentTarget);
     $('.menuExpanded').hide();
@@ -1675,26 +1685,35 @@ $(document).on("change", "#state_select", function(event) {
 $(document).on("click", "#filterClickLocation", function(event) {
 
 	$("#draggableSearch").hide();
-	$("#filterLocations").appendTo($("#insertedText"));
+	$("#filterLocations").appendTo($("#locationFilterHolder"));
+	if ($("#localePanel").is(':visible')) {
+		closeSideTabs();
+		$("#topicsPanel").show(); // So return to apps menu shows something
+		$(".rightTopMenuInner div").removeClass("active"); // So not displayed when returning
+	}
 
 	//delete(hiddenhash.geoview); // Not sure where this gets set.
 	if ($("#geoPicker").is(':visible')) {
 		console.log($("#filterLocations").offset().top);
 	}
     let hash = getHash();
-    if ($("#geoPicker").is(':visible') && $("#bigThumbPanelHolder").is(':visible')) {
+    if ($("#locationFilterHolder").is(':visible') && $("#bigThumbPanelHolder").is(':visible')) { // was #geoPicker
     	//$("#bigThumbPanelHolder").hide();
     	//$("#filterClickLocation").removeClass("filterClickActive");
     	//$("#filterClickLocation").addClass("filterClickActive");
     	//goHash({"appview":""});
     	closeAppsMenu();
     	$("#filterClickLocation").addClass("filterClickActive");
-    } else if ($("#geoPicker").is(':visible')) {
+    	$("#locationFilterHolder").show();
+    } else if ($("#locationFilterHolder").is(':visible')) { // was #geoPicker
     	//if (hash.geoview && hash.appview) {
-    	$("#geoPicker").hide();
+
+    	$("#locationFilterHolder").hide();
+    	//$("#geoPicker").hide();
     	closeAppsMenu();
     	$("#filterClickLocation").removeClass("filterClickActive");
     } else {
+    	$("#locationFilterHolder").show();
     	closeAppsMenu();
     	loadScript(theroot + 'js/map-filters.js', function(results) {
 	    	$("#filterLocations").show();

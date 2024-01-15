@@ -138,10 +138,10 @@
               </div>
               -->
 
-              <div class="localX" style="display:none">
-                <div class="rightTopItem" action="https://dreamstudio.ai/prompt-guide">
+              <div class="local earth garesource georgia" style="display:none">
+                <div class="showLocale rightTopItem" action="https://dreamstudio.ai/prompt-guide">
                     <i class="material-icons menuTopIcon">&#xE8F4;</i>
-                    <span>Explore</span>
+                    <span>Locale</span>
                 </div>
               </div>
 
@@ -243,6 +243,14 @@
           <div id="listingsPanelScroll" class="menuExpandedScroll always-show-scroll" style="padding:0px 0px 60px 0px">
               <div id="listingsDiv"></div>
               <div id="mapList1" class="sidelist sidelistDark"></div>
+          </div>
+        </div>
+        <!-- /Listings Panel -->
+
+        <!-- Locale Panel -->
+        <div id="localePanel" class="menuExpanded topMenuOffset narrowDiv" style="display:none; font-size: 18.5px;">
+          <div id="localePanelScroll" class="menuExpandedScroll always-show-scroll" style="padding:0px 0px 60px 0px">
+              <div id="localeDiv"></div>
           </div>
         </div>
         <!-- /Listings Panel -->
@@ -786,16 +794,18 @@ document.addEventListener('mousedown', function(e) {
   .draggable {
     position: fixed;
     right: 30px;
-    bottom: 30px;
+    top: 100px;
+    bottom: 80px;
     border: 1px solid #000;
     background-color: #f2f2f2;
     z-index: 10000;
     overflow: hidden;
-    overflow: none;
+    overflowX: none;
     width: 330px;
-    height: 127px;
+    heightX: 127px;
     padding-top: 24px;
     pointer-events:auto;
+    resize: both;
   }
   .draggable-title {
     position: absolute;
@@ -819,19 +829,25 @@ document.addEventListener('mousedown', function(e) {
     cursor: se-resize;
     z-index: 10001;
   }
-  #draggableSearch .hideinpop {
+  .narrowDiv .hideinpop {
     display: none;
   }
-  #draggableSearch #geomap {
+  .narrowDiv #geomap {
     display: none !important;
   }
-  #draggableSearch #locationFilterHolder {
+  .narrowDiv .listHolderFooter {
+    display: none;
+  }
+  .narrowDiv #locationFilterHolder {
     padding-top: 12px;
     padding-left: 12px;
   }
+  .narrowDiv #geoListHolder {
+    padding-left: 0px;
+  }
 </style>
 
-<div id="draggableSearch" class="draggable" style="display:none;">
+<div id="draggableSearch" class="draggable narrowDiv" style="display:none;">
   <div class="draggable-title"><div class="hideAdvanced close-X" style="float:right;padding:0px;margin:0px;font-size:14px;color:#555">&#10005;</div><div style="color:#fff;pointer-events:none;">Location</div></div>
   <div class="resizable-handle"></div>
   <div id="locationFilterPop"></div>
@@ -841,7 +857,8 @@ document.addEventListener('mousedown', function(e) {
 
 <!-- LOCATION SEARCH -->
 <!-- For inactive portions - copy scripts from explore/js/embed.js -->
-<div id="filterLocations" class="lite fieldSelector filterBubbleHolder" style="display:none">
+<div id="locationFilterHolder" class="lite">
+<div id="filterLocations" class="fieldSelector filterBubbleHolder" style="display:none">
 
     
       <!-- Stores location options. Not displayed. -->
@@ -865,7 +882,7 @@ document.addEventListener('mousedown', function(e) {
       </div>
       -->
 
-      <div id="locationFilterHolder" style="position: relative;">
+      <div id="locationFilterHolderX" style="position: relative;">
           
         <div style="position:absolute;top:0;right:0" class="hideinpop">
           <div class="popAdvanced" style="float:left;cursor:pointer;" alt="Popout"><i class="material-icons" alt="Pop out" style="font-size:20px;pointer-events:auto;color:#aaa;padding:16px;padding-right:10px;">&#xE99F;</i></div>
@@ -1122,7 +1139,7 @@ document.addEventListener('mousedown', function(e) {
               </div>
           </div>
 
-          <div id="geoListHolder" style="padding-right:25px; border:0px solid #ccc; position:relative">
+          <div id="geoListHolder" class="lite" style="padding-right:25px; border:0px solid #ccc; position:relative">
 
               <div class="listHolder">
                 <!--Cities -->
@@ -1194,7 +1211,7 @@ document.addEventListener('mousedown', function(e) {
 
       </div>
 
-            
+</div>          
 </div>
 <!-- /LOCATION SEARCH -->
 
