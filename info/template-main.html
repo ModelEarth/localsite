@@ -741,8 +741,102 @@
 <div style="clear:both"></div>
 <!-- /APP MENU -->
 
+<!-- FLOATING FILTER -->
+<script>
+document.addEventListener('mousedown', function(e) {
+  if (e.target.classList.contains('draggable-title')) {
+    const parent = e.target.parentNode;
+    const rect = parent.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
 
+    document.addEventListener('mousemove', dragElement);
+    document.addEventListener('mouseup', function() {
+      document.removeEventListener('mousemove', dragElement);
+    });
 
+    function dragElement(e) {
+      parent.style.left = e.clientX - offsetX + 'px';
+      parent.style.top = e.clientY - offsetY + 'px';
+    }
+  }
+});
+
+// Apply the resizable functionality to the div
+document.addEventListener('mousedown', function(e) {
+  if (e.target.classList.contains('resizable-handle')) {
+    const parent = e.target.parentNode;
+    const rect = parent.getBoundingClientRect();
+    const offsetX = rect.left + rect.width - e.clientX;
+    const offsetY = rect.top + rect.height - e.clientY;
+
+    document.addEventListener('mousemove', resizeElement);
+    document.addEventListener('mouseup', function() {
+      document.removeEventListener('mousemove', resizeElement);
+    });
+
+    function resizeElement(e) {
+      parent.style.width = e.clientX - rect.left + offsetX + 'px';
+      parent.style.height = e.clientY - rect.top + offsetY + 'px';
+    }
+  }
+});
+</script>
+<style>
+  .draggable {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    border: 1px solid #000;
+    background-color: #f2f2f2;
+    z-index: 10000;
+    overflow: hidden;
+    overflow: none;
+    width: 330px;
+    height: 127px;
+    padding-top: 24px;
+    pointer-events:auto;
+  }
+  .draggable-title {
+    position: absolute;
+    cursor: move;
+    background-color: #ccc;
+    padding: 5px;
+    padding-left: 12px;
+    min-height: 12px;
+    z-index: 10002;
+    top: 0;
+    right: 0;
+    left: 0;
+  }
+  .resizable-handle {
+    width: 10px;
+    height: 10px;
+    background-color: #99b;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    cursor: se-resize;
+    z-index: 10001;
+  }
+  #draggableSearch .hideinpop {
+    display: none;
+  }
+  #draggableSearch #geomap {
+    display: none !important;
+  }
+  #draggableSearch #locationFilterHolder {
+    padding-top: 12px;
+    padding-left: 12px;
+  }
+</style>
+
+<div id="draggableSearch" class="draggable" style="display:none;">
+  <div class="draggable-title"><div class="hideAdvanced close-X" style="float:right;padding:0px;margin:0px;font-size:14px;color:#555">&#10005;</div><div style="color:#fff;pointer-events:none;">Location</div></div>
+  <div class="resizable-handle"></div>
+  <div id="locationFilterPop"></div>
+</div>
+<!-- /FLOATING FILTER -->
 
 
 <!-- LOCATION SEARCH -->
@@ -770,12 +864,15 @@
       <div class="uparrow uparrow-white" style="left: 34px;">
       </div>
       -->
-    
-      <div id="locationFilterHolder" style="position: relative;">
-            
-        <div class="hideAdvanced close-X" style="position:absolute;top:0;right:0">&#10005;
-        </div>
 
+      <div id="locationFilterHolder" style="position: relative;">
+          
+        <div style="position:absolute;top:0;right:0" class="hideinpop">
+          <div class="popAdvanced" style="float:left;cursor:pointer;" alt="Popout"><i class="material-icons" alt="Pop out" style="font-size:20px;pointer-events:auto;color:#aaa;padding:16px;padding-right:10px;">&#xE99F;</i></div>
+
+          <div class="hideAdvanced close-X" style="float:left;padding-left:12px">&#10005;
+          </div>
+        </div>
         <div style="padding-right:40px">
         <div class="stateFilters input-output" style="float:left;display:none" class="mock-up earth">
 

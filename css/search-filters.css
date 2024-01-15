@@ -340,18 +340,6 @@ input.filterClick[type="text"] {
   float: none;
 }
 
-/*
-#locationFilterHolder .input-output b {
-  color:#777;
-  font-weight: 200;
-  margin-bottom:4px;
-}
-*/
-@media (max-width: 800px) {
-    #locationFilterHolderXX {
-        margin:40px 0 0 40px;
-    }
-}
 .close-X {
   cursor:pointer;
   padding:14px 26px 15px 26px;

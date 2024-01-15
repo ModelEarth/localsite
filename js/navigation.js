@@ -876,6 +876,10 @@ $(document).ready(function () {
 		console.log("hideAdvanced")
 		hideAdvanced();
 	});
+	$(document).on("click", ".popAdvanced", function(event) {
+		console.log("popAdvanced")
+		popAdvanced();
+	});
 	$(document).on("click", ".hideThumbMenu", function(event) {
 		$("#bigThumbPanelHolder").hide();
 		$(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
@@ -1417,7 +1421,7 @@ function showClassInline(theclass) {
 	*/
 }
 function hideGeoPicker() {
-	$("#geoPicker").hide();
+	hideAdvanced();
 }
 function hideAdvanced() {
 	// We might want to omit this line to retain geoview=earth
@@ -1426,12 +1430,18 @@ function hideAdvanced() {
 	$(".fieldSelector").hide();
 	$("#filterLocations").hide();
 	$("#filterClickLocation").removeClass("filterClickActive");
-
+	$("#draggableSearch").hide();
+	
 	if (typeof relocatedStateMenu != "undefined") {
 		relocatedStateMenu.appendChild(state_select); // For apps hero
 	}
 	$("#hero_holder").show();
 	$(".locationTabText").text($(".locationTabText").attr("title"));
+}
+function popAdvanced() {
+	$("#filterClickLocation").removeClass("filterClickActive");
+	$("#filterLocations").appendTo($("#locationFilterPop"));
+	$("#draggableSearch").show();
 }
 function activateSideColumn() {
 	// Make paths relative to current page
@@ -1664,6 +1674,9 @@ $(document).on("change", "#state_select", function(event) {
 });
 $(document).on("click", "#filterClickLocation", function(event) {
 
+	$("#draggableSearch").hide();
+	$("#filterLocations").appendTo($("#insertedText"));
+
 	//delete(hiddenhash.geoview); // Not sure where this gets set.
 	if ($("#geoPicker").is(':visible')) {
 		console.log($("#filterLocations").offset().top);
@@ -1808,7 +1821,7 @@ function filterClickLocation(loadGeoTable) {
 	$("#bigThumbPanelHolder").hide();
 	$('.showApps').removeClass("filterClickActive"); ////updateHash({'appview':''});
     let distanceFilterFromTop = 120;
-    if ($("#filterLocations").length) {
+    if ($("#locationFilterHolder #filterLocations").length) {
     	distanceFilterFromTop = $("#filterLocations").offset().top - $(document).scrollTop();
     }
     //alert("distanceFilterFromTop  " + distanceFilterFromTop);
