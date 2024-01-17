@@ -343,6 +343,21 @@ h6 {
 .dark .sector-list .indicator-group {
   color: #bbb;
 }
+.dark .tabulator .tabulator-header {
+  background-color: transparent;
+  border-bottom: 1px solid transparent;
+}
+.dark .tabulator .tabulator-tableholder .tabulator-table {
+  background-color: #333;
+  color: #fff;
+}
+.dark .tabulator .tabulator-header .tabulator-col {
+  background-color: #000;
+  color: #fff;
+}
+.dark .tabulator .tabulator-header .tabulator-col:hover {
+  background-color: #555;
+}
 sup {
   line-height: 0.8em;
   font-size: 0.6em;
@@ -1070,7 +1085,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
 .dark select {
   background-color: #000;
   color: #fff;
-  border: 1px solid #555 !important;
+  border: 0px solid #555 !important;
 }
 
 #logospace {

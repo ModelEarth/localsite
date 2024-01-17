@@ -27,6 +27,9 @@
 .select-menu-arrow-holder {
     position:absolute; right:4px; top:4px;
 }
+.stateFilters {
+  padding-top:10px;
+}
 #appSelectHolder .showApps {
   padding-right:4px;
 }
@@ -64,7 +67,7 @@
   }
   .dark #filterFieldsHolder {
     background-color: rgb(60 60 60/95%);
-    border-bottom: 1px solid #686868;
+    border-bottom: 0px solid #686868;
   }
   .filterFieldsHolderFixed {
     /* importatnt for FireFox because #filterFieldsHolder as ID seems to override class. */
@@ -282,7 +285,6 @@ input.filterClick[type="text"] {
 #geomap {
   width:700px;
   height:520px; /* Optimal for gstate zoom */
-  border:1px solid blue;
   position: relative;
 }
 #geomapHolder {

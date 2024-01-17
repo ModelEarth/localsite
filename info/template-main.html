@@ -793,7 +793,7 @@ document.addEventListener('mousedown', function(e) {
 <style>
   .draggable {
     position: fixed;
-    right: 30px;
+    left: 70%;
     top: 100px;
     bottom: 80px;
     border: 1px solid #000;
@@ -805,7 +805,7 @@ document.addEventListener('mousedown', function(e) {
     heightX: 127px;
     padding-top: 24px;
     pointer-events:auto;
-    resize: both;
+    resizeX: both;
   }
   .draggable-title {
     position: absolute;
@@ -885,13 +885,11 @@ document.addEventListener('mousedown', function(e) {
       <div id="locationFilterHolderX" style="position: relative;">
           
         <div style="position:absolute;top:0;right:0" class="hideinpop">
-          <div class="popAdvanced" style="float:left;cursor:pointer;" alt="Popout"><i class="material-icons" alt="Pop out" style="font-size:20px;pointer-events:auto;color:#aaa;padding:16px;padding-right:10px;">&#xE99F;</i></div>
-
           <div class="hideAdvanced close-X" style="float:left;padding-left:12px">&#10005;
           </div>
         </div>
         <div style="padding-right:40px">
-        <div class="stateFilters input-output" style="padding-top:10px;float:left;display:none" class="mock-up earth">
+        <div class="stateFilters input-output" style="float:left;display:none" class="mock-up earth">
 
               <select id="country_select" style="float:left">
                 <option value="none">Geoview...</option>
@@ -1173,7 +1171,6 @@ document.addEventListener('mousedown', function(e) {
                 
                 <style>
                   #show_county_colors {
-                    positionX: absolute;
                     right:50px;
                     bottom:50px;
                     background-color: #fff;
@@ -1186,6 +1183,9 @@ document.addEventListener('mousedown', function(e) {
                   #show_county_colors:hover {
                     background-color: #999;
                     color:#fff;
+                  }
+                  .dark #show_county_colors {
+                    background-color: #000;
                   }
                 </style>
 

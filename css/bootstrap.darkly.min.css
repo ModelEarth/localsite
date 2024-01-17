@@ -94,12 +94,6 @@ a:link, a:visited {
     border-right: 1px solid #333 !important;
     border-bottom: 1px solid #333 !important;
 }
-.filterClick, .detailbutton {
-    background-color: rgb(55 55 55/95%) !important;
-    background-color: rgb(33 33 33/95%) !important;
-    color: #fff !important;
-    border: 0px !important;
-}
 /* .filterClick:hover, Avoid with dark */
 .detailbutton:hover {
     background-color: rgb(77 77 77/95%) !important;
