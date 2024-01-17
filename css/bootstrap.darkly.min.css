@@ -83,21 +83,6 @@ a:link, a:visited {
 .navLinks a:hover {
     background-color: #555;
 }
-.filterFields {
-    background-color: rgb(55 55 55/95%);
-}
-#filterLocations {
-    background-color: rgb(55 55 55/95%);
-    color: #fff;
-}
-#filterFieldsHolder {
-    border-top: 0px solid #333 !important;
-    border-bottom: 0px solid #333 !important;
-}
-.filterFieldsHolderFixed {
-    background-color: rgb(55 55 55/95%);
-    border-bottom: 0px solid #333;
-}
 #keywordsTB::placeholder {
   color: #fff;
   opacity: 1; /* Firefox */
@@ -115,7 +100,8 @@ a:link, a:visited {
     color: #fff !important;
     border: 0px !important;
 }
-.filterClick:hover, .detailbutton:hover {
+/* .filterClick:hover, Avoid with dark */
+.detailbutton:hover {
     background-color: rgb(77 77 77/95%) !important;
     color: #fff !important;
 }

@@ -521,7 +521,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 .rightIcons {
 	position: absolute;
-	top: 0px;
+	top: 12px;
 	right: 0px;
 	z-index: 999;
 	font-size: 44px;
