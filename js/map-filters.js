@@ -2532,8 +2532,8 @@ function showTabulatorList(element, attempts) {
                         {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
                         {title:"County", field:"name", width:170},
                         {title:"Population", field:"pop", width:110, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false}},
-                        {title:"Sq Miles", field:"sqmiles", width:90, hozAlign:"right"},
-                        {title:"Per Mile", field:"permile", width:100, hozAlign:"right"},
+                        {title:"Sq Miles", field:"sqmiles", width:90, hozAlign:"right", sorter:"number"},
+                        {title:"Per Mile", field:"permile", width:100, hozAlign:"right", sorter:"number"},
                     ];
                 }
 
