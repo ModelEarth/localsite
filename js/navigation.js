@@ -131,11 +131,21 @@ function hashChangedNavigation() {
         }
     }
     if (hash.geoview != priorHash.geoview) {
-    	filterLocationChange();
+    	//filterLocationChange();
     }
     if (hash.sidetab != priorHash.sidetab) {
     	showSideTabs();
+    	if(priorHash.sidetab == "locale") {
+    		//alert("hide locale")
+    	}
     }
+    if (hash.locpop != priorHash.locpop) {
+    	if(hash.locpop){
+			popAdvanced();
+		} else {
+			hideAdvanced();
+		}
+	}
 }
 
 // Not in use, but might be cool to use
@@ -894,12 +904,10 @@ $(document).ready(function () {
 		hideGeoPicker();
 	});
 	$(document).on("click", ".hideAdvanced", function(event) {
-		console.log("hideAdvanced")
-		hideAdvanced();
+		goHash({'locpop':'','geoview':''});
 	});
 	$(document).on("click", ".popAdvanced", function(event) {
-		console.log("popAdvanced")
-		popAdvanced();
+		goHash({'locpop':'true','geoview':'state'});
 	});
 	$(document).on("click", ".hideThumbMenu", function(event) {
 		$("#bigThumbPanelHolder").hide();
@@ -1472,8 +1480,7 @@ function hideGeoPicker() {
 	hideAdvanced();
 }
 function hideAdvanced() {
-	// We might want to omit this line to retain geoview=earth
-	updateHash({"geoview":""});
+	console.log("hideAdvanced");
 	// Should we show a search icon when closing?
 	$(".fieldSelector").hide();
 	$("#filterLocations").hide();
@@ -1488,16 +1495,22 @@ function hideAdvanced() {
 	$(".locationTabText").text($(".locationTabText").attr("title"));
 }
 function popAdvanced() {
-	loadScript(theroot + 'js/map.js', function(results) {
-		loadScript(theroot + 'js/map-filters.js', function(results) { // For pages without
-			goHash({'geoview':'state'});
-      		//filterClickLocation();
+	waitForElm('#filterLocations').then((elm) => {
+				
+		console.log("popAdvanced");
+		closeSideTabs();
+		/*
+		loadScript(theroot + 'js/map.js', function(results) {
+			loadScript(theroot + 'js/map-filters.js', function(results) { // For pages without
+				goHash({'geoview':'state'});
+	      		//filterClickLocation();
+			});
 		});
+		*/
+		$("#filterClickLocation").removeClass("filterClickActive");
+		$("#filterLocations").appendTo($("#locationFilterPop"));
+		$("#draggableSearch").show();
 	});
-
-	$("#filterClickLocation").removeClass("filterClickActive");
-	$("#filterLocations").appendTo($("#locationFilterPop"));
-	$("#draggableSearch").show();
 }
 function activateSideColumn() {
 	// Make paths relative to current page
@@ -1896,21 +1909,19 @@ function filterClickLocation(loadGeoTable) {
     console.log("filterClickLocation() " + loadGeoTable);
     let hash = getHash();
     if (hash.sidetab == "locale" && hash.geoview) {
-    	goHash({'sidetab':''});
+    	goHash({'sidetab':'','locpop':''});
     } else if (hash.geoview) {
-    	goHash({'geoview':''});
+    	goHash({'geoview':'','locpop':''});
     } else if (hash.state) {
-    	goHash({'geoview':'state'});
+    	goHash({'geoview':'state','locpop':''});
     } else {
-    	goHash({'geoview':'country'});
+    	goHash({'geoview':'country','locpop':''});
     }
     return;
 }
 function filterLocationChange() {
-	//alert("filterLocationChange")
-	$("#searchLocation").focus(); // Not working
-	//document.getElementById("searchLocation").focus(); // Not working
-	//$("#filterFieldsHolder").hide();
+
+	// REMOVING - Using map-filters.js instead
 
 	$("#bigThumbPanelHolder").hide();
 	$('.showApps').removeClass("filterClickActive"); ////updateHash({'appview':''});
@@ -1920,12 +1931,14 @@ function filterLocationChange() {
     }
     //alert("distanceFilterFromTop  " + distanceFilterFromTop);
 	//$('.hideMetaMenuClick').trigger("click"); // Otherwise covers location popup. Problem: hides hideLayers/hideLocationsMenu.
-	if ($("#filterLocations").is(':visible') && (distanceFilterFromTop < 300 || distanceFilterFromTop > 300)) {
+	
+
+	if ($("#filterLocations").is(':visible')) { // && (distanceFilterFromTop < 300 || distanceFilterFromTop > 300)
         //alert("closeLocationFilter()");
         closeLocationFilter();
         console.log("closeLocationFilter");
 	} else { // OPEN MAP FILTER
-		//alert("openLocationFilter()");
+		alert("openLocationFilter() 1");
 		$("#filterLocations").prependTo($("#locationFilterHolder"));
 		openMapLocationFilter();
 		waitForElm('#geomap').then((elm) => {
@@ -1957,13 +1970,19 @@ function openMapLocationFilter() {
 	                currentStates.push(getKeyByValue(us_stateIDs, Number(geos[i].replace("US","").substring(0,2))));
 	            }
 	        }
+
+	        /*
 	        if (currentStates.length > 0) { // Multiple states, use first one.
 	            goHash({"geoview":"state","state":currentStates[0]});
 	        } else {
 	            goHash({"geoview":"state"});
 	        }
+	        */
 	    }
 	    ///$("#geoPicker").show();
+	    $("#filterLocations").prependTo($("#locationFilterHolder")); // Move back from sidetabs
+	    $("#geomap").appendTo($("#geomapHolder")); // Move back from sidetabs
+	    $("#locationFilterHolder").show();
 	    $("#filterLocations").show();$("#imagineBar").show();
 	    $(".locationTabText").text("Locations");
 	    $("#topPanel").hide();

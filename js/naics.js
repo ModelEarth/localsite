@@ -2191,11 +2191,12 @@ function showIndustryTabulatorList(attempts) {
             movableColumns:true,      //allow column order to be changed
             resizableRows:true,       //allow row order to be changed
             initialSort:[             //set the initial sort order of the data - NOT WORKING
-                {column:"id", dir:"asc"},
+                {column:"employees", dir:"desc"},
             ],
             frozenRows:1,
             maxHeight:"480px", // For frozenRows
-            paginationSize:400, // No effect
+            paginationX:true, //enable.
+            paginationSizeX:10,
             columns:[
                 {title:"Naics", field:"id", width:80},
                 {title:"Industry", field:"title", width:300},

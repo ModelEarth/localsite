@@ -35,6 +35,618 @@ if(typeof localObject.geo == 'undefined') {
     localObject.geo = []; // Holds counties. Should this also be {} ?
 }
 
+// Load localObject.layers for later use when showApps clicked
+// Also adds state hash for layers requiring a state.
+//callInitSiteObject(1); // replaced by 
+
+function hashChanged() {
+    let loadGeomap = false;
+    let hash = getHash(); // Might still include changes to hiddenhash
+    console.log("hashChanged() map-filters.js");
+    populateFieldsFromHash();
+    productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
+
+    let stateAbbrev = "";
+    if (hash.statename) { // From Tabulator state list, convert to 2-char abbrviation
+        //alert("hash.statename1 " + hash.statename);
+        //alert("hiddenhash.statename1 " + hiddenhash.statename);
+        waitForElm('#state_select').then((elm) => {
+            //theState = $("#state_select").find(":selected").val();
+            //stateAbbrev = $("#state_select[name=\"" + hash.statename + "\"]").val();
+            stateAbbrev = $('#state_select option:contains(' + hash.statename + ')').val();
+            $("#state_select").val(stateAbbrev);
+            //alert("hiddenhash.state " + hiddenhash.state);
+            hiddenhash.statename = "";
+            goHash({'state':stateAbbrev,'statename':''});
+        });
+        return;
+    }
+
+    if (hash.state) {
+        stateAbbrev = hash.state.split(",")[0].toUpperCase();
+        waitForElm('#state_select').then((elm) => {
+            $("#state_select").val(stateAbbrev);
+        });      
+        // Apply early since may be used by changes to geo
+        $("#state_select").val(stateAbbrev);
+        if (priorHash.state && hash.state != priorHash.state) {
+            console.log("hitRefreshNote is now turned off")
+            //$("#hitRefreshNote").show();
+        }
+    } else {
+        //$(".locationTabText").text("United States");
+    }
+    if (hash.state != priorHash.state) {
+        waitForElm('#state_select').then((elm) => {
+            //alert("hash.state " + hash.state + " stateAbbrev: " + stateAbbrev);
+            if (stateAbbrev) {
+                $("#state_select").val(stateAbbrev);
+            } else {
+                $("#state_select").val("");
+            }
+        });
+    }
+    if (hash.show != priorHash.show) {
+        if (hash.show && priorHash.show) {
+            console.log("Close location filter, show new layer.");
+            closeLocationFilter();
+        }
+        if (!hash.appview) {
+            waitForElm('.showApps').then((elm) => {
+                // Same as in closeAppsMenu(), but calling that function from here generates blank page
+                $("#bigThumbPanelHolder").hide();
+                $(".showApps").removeClass("filterClickActive");
+            });
+        }
+        loadScript(theroot + 'js/map.js', function(results) {
+        });
+
+        //if (hash.show == priorHash.show) {
+        //  hash.show = ""; // Clear the suppliers display
+        //}
+        if (priorHash.show) {
+          $(".listTitle").empty();
+          $(".catList").empty();
+        } else if (!hash.show) {
+            loadScript(theroot + 'js/navigation.js', function(results) {
+                hideSide("list");
+            });
+        }
+        delete hash.naics; // Since show value invokes new hiddenhash
+        clearHash("naics");
+        //getNaics_setHiddenHash(hash.show); // Sets hiddenhash.naics for use by other widgets.
+
+        //hash.naics = ""; // Since go value invokes hiddenhash
+        // Then we call applyIO at end of this hashChanged function
+
+
+        //$(document).ready(function() {
+            if (hash.show != "vehicles") {
+                $("#introframe").hide();
+            }
+            if (hash.show != "ppe" || hash.show != "suppliers") {
+                $(".layerclass.ppe").hide();
+            }
+            if (hash.show != "opendata") {
+                $(".layerclass.opendata").hide();
+            }
+
+            //$("#tableSide").hide();
+
+            if ($("#navcolumn .catList").is(":visible")) {
+                $("#selected_states").hide();
+            }
+
+            $(".layerclass." + hash.show).show();
+        //});
+    }
+
+    /*
+    if (hash.geomap) {
+        //$("#infoColumn").show();
+        $(".mainColumn1").show();
+    }
+    if (hash.geomap != priorHash.geomap) {
+        //if (hash.geomap) {
+            $("#aboutToolsDiv").hide();
+            //$("#infoColumn").show();
+            $("#geomap").show();
+            
+            // DOES NOT WORK - document.querySelector(whichmap)._leaflet_map not found
+            //reloadMapTiles('#geomap',1);
+            
+            alert("renderMapShapes")
+            renderMapShapes();
+            
+            
+            //alert("show map")
+            //if (document.querySelector('#geomap')._leaflet_map) {
+            //  alert("redraw map")
+            //  document.querySelector('#geomap')._leaflet_map.invalidateSize(); // Refresh map tiles.
+            //}
+            
+            
+        //} else {
+        //  $("#geomap").hide();
+        //  $("#aboutToolsDiv").show();
+        //}
+    }
+    */
+
+    // To remove
+    /*
+    if (hash.show != priorHash.show) {
+        if (hash.show == "farmfresh") {
+            $(".data-section").show();
+        } else if (hash.show == "suppliers") {
+            $(".data-section").show();
+            $(".suppliers").show();
+        } else {
+            $(".data-section").hide();
+            $(".suppliers").hide();
+        }
+    }
+    */
+
+    let mapCenter = [];
+    let zoom = 4; // Wide for entire US
+    // Before hash.state to utilize initial lat/lon
+    if (hash.lat != priorHash.lat || hash.lon != priorHash.lon) {
+        //alert("hash.lat " + hash.lat + " priorHash.lat " + priorHash.lat)
+        $("#lat").val(hash.lat);
+        $("#lon").val(hash.lon);
+        mapCenter = [hash.lat,hash.lon];
+    }
+    if (hash.state != priorHash.state) {
+        // If map is already loaded, recenter map.  See same thing below
+        // Get lat/lon from state dropdown #state_select
+
+        // Potential BugBug - this runs after initial map load, not needed (but okay as long as zoom is not set).
+        
+        // Similar resides in map.js for ds
+        
+        // Used for map2
+        /*
+        if($("#state_select").find(":selected").val()) {
+            let theState = $("#state_select").find(":selected").val();
+            if (theState != "") {
+              let kilometers_wide = $("#state_select").find(":selected").attr("km");
+              zoom = zoomFromKm(kilometers_wide); // In map.js
+              let lat = $("#state_select").find(":selected").attr("lat");
+              let lon = $("#state_select").find(":selected").attr("lon");
+              //alert("lat " + lat + " lon " + lon)
+              mapCenter = [lat,lon];
+            }
+        } else {
+            console.log("ERROR #state_select not available");
+        }
+        console.log("Recenter map " + mapCenter)
+        */
+
+        //showThumbMenu(hash.show, "#bigThumbMenu");
+    }
+    if (hash.state) {
+        $(".showforstates").show();
+    } else {
+        $(".showforstates").hide();
+    }
+    
+    if (mapCenter.length > 0) { // Set when hash.lat changes
+        //if (typeof L != "undefined") {
+        if (typeof L.DomUtil === "object") {
+            // Avoiding including ",5" for zoom since 7 is already set. 
+            // NOT IDEAL: This also runs during init.
+            // TODO: If reactiveating, omit on init, or pass in default zoom.
+            /*
+            console.log("Recenter map zoom " + zoom)
+            let pagemap = document.querySelector('#map1')._leaflet_map; // Recall existing map
+            let pagemap_container = L.DomUtil.get(pagemap);
+            if (pagemap_container != null) {
+                // Test here: http://localhost:8887/localsite/info/embed.html#state=GA
+              pagemap.flyTo(mapCenter, zoom);
+            }
+            */
+            if (typeof document.querySelector('#map2') === 'undefined' || typeof document.querySelector('#map2') === 'null') {
+                console.log("#map2 undefined");
+            } else if (document.querySelector('#map2')) {
+
+                let pagemap2 = document.querySelector('#map2')._leaflet_map; // Recall existing map
+                let pagemap_container2 = L.DomUtil.get(pagemap2);
+                // This will not be reachable on initial load.
+                if (pagemap_container2 != null) {
+                  pagemap2.flyTo(mapCenter);
+
+                }
+            }
+        } else {
+            console.log("ERROR lat changed for map2, but leaflet not loaded. typeof L undefined.");
+        }
+    }
+
+    console.log("hash.geoview: " + hash.geoview + " priorHash.geoview: " + priorHash.geoview);
+    
+    // Tabulator list is already updated before adjacent geomap is rendered.
+    if (hash.geoview == "state" && hash.state) {
+        locationFilterChange("counties");
+    } else {
+        console.log("Call locationFilterChange with no value")
+        locationFilterChange("");
+    }
+
+    if (hash.geoview && hash.geoview != priorHash.geoview) {
+        $("#geoview_select").val(hash.geoview);
+    }
+
+    if (hash.state != priorHash.state) {
+        loadGeomap = true;
+        if(location.host.indexOf('model.georgia') >= 0) {
+            if (hash.state != "" && hash.state.split(",")[0].toUpperCase() != "GA") { // If viewing other state, use model.earth
+                let goModelEarth = "https://model.earth" + window.location.pathname + window.location.search + window.location.hash;
+                window.location = goModelEarth;
+            }
+        }
+
+        $("#state_select").val(stateAbbrev);
+
+        if (hash.state != "GA") {
+            $(".regionFilter").hide();
+            $(".geo-limited").hide();
+        } else {
+            $(".regionFilter").show();
+            $(".geo-US13").show();
+        }
+        if(location.host.indexOf('localhost') >= 0) {
+            //alert("localhost hash.state " + hash.state);
+        }
+        if (hash.state && hash.state.length == 2 && !($("#filterLocations").is(':visible'))) {
+            $(".locationTabText").text($("#state_select").find(":selected").text());
+        } else {
+            $(".locationTabText").text("Locations");
+            //$("#filterLocations").hide();
+            //$("#industryListHolder").hide(); // Remove once national naics are loaded.
+        }
+
+        //&& hash.geoview == "state"
+        if (hash.geoview && hash.geoview == priorHash.geoview) { // Prevents dup loading when hash.geoview != priorHash.geoview below.
+            if (hash.geoview != "earth") {
+                console.log("loadStateCounties invoked by state change");
+                loadStateCounties(0); // Add counties to state boundaries.
+            }
+        }
+    }
+
+    if (hash.geoview != priorHash.geoview || (priorHash.state && !hash.state)) {
+        //alert("Load geoview")
+        
+        /*
+        if (hash.geoview) {
+            loadScript(theroot + 'js/navigation.js', function(results) {
+                waitForVariable('navigationJsLoaded', function() {
+                    openMapLocationFilter();
+                });
+            });
+        }
+        */
+        if (hash.geoview == "state" || hash.geoview == "country") {
+            console.log("loadStateCounties invoked by geoview change");
+            console.log("priorHash.geoview: " + priorHash.geoview + ", hash.geoview: " + hash.geoview);
+            loadStateCounties(0);
+
+            //if (hash.geoview == "country" && !hash.state) {
+                //if (onlineApp) {
+                    let element = {};
+                    element.scope = "state";
+                    //element.datasource = "https://model.earth/beyond-carbon-scraper/fused/result.json"; // Also loaded in apps/js/bc.js
+                    element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states.json";
+                    element.columns = [
+                            {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
+                            {title:"State", field:"jurisdiction"},
+                            {title:"Population", field:"population", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
+                            {title:"CO<sub>2</sub> per capita", field:"CO2_per_capita", hozAlign:"right", formatter:"money", formatterParams:{precision:false}},
+                        ];
+
+                    // Displays tabulator list of states, but USA map shapes turned red.
+                    if (hash.geoview == "country") {
+                        loadObjectData(element, 0);
+                    } else if (hash.geoview == "state" && !hash.state) {
+                        loadObjectData(element, 0); // Display tabulator list of states.
+                    }
+                    //$("#tabulator-geocredit").show();
+                //}
+            //}
+        } else if (hash.geoview == "earth" || hash.geoview == "countries") {
+            let element = {};
+            element.scope = "countries";
+            element.key = "Country Code";
+            //element.datasource = "https://model.earth/country-data/population/population-total.csv";
+            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/country-populations.csv";
+            element.columns = [
+                    {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
+                    {title:"Country Name", field:"Country Name"},
+                    {title:"2010", field:"2010", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
+                    {title:"2020", field:"2020", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}}
+                ];
+            loadObjectData(element, 0);
+        } else { // For backing up within apps
+            console.log("NO MAPVIEW");
+            if (typeof relocatedStateMenu != "undefined") {
+                relocatedStateMenu.appendChild(state_select); // For apps hero
+            }
+            $("#hero_holder").show();
+        }
+    }
+
+    //alert("hash.geoview " + hash.geoview);
+    if (hash.geoview == "earth") {
+        $("#state_select").hide();
+    } else if (hash.geoview == "country") {
+        if (hash.geoview != priorHash.geoview) {
+            //alert("country");
+            ///$("#geoPicker").show(); // Required for map to load
+            $("#state_select").show();
+        }
+    } else if (hash.geoview == "state") {
+        $("#state_select").show();
+    }
+
+    //Resides before geo
+    if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state || hash.show != priorHash.show) {
+        let theStateName;
+
+        // Don't use, needs a waitfor
+        if ($("#state_select").find(":selected").value) {
+            theStateName = $("#state_select").find(":selected").text();
+        }
+        if (theStateName != "") {
+            $(".statetitle").text(theStateName);
+            $(".regiontitle").text(theStateName);
+            $(".locationTabText").text(theStateName);
+            local_app.loctitle = theStateName;
+        } else if (hash.state) {
+            //let multiStateString = hash.state.replace(",",", ") + " - USA";
+            let multiStateString = hash.state + " USA";
+            $(".statetitle").text(multiStateString);
+            $(".regiontitle").text(multiStateString);
+            $(".locationTabText").text(multiStateString);
+            local_app.loctitle = multiStateString;
+        } else {
+            local_app.loctitle = "USA";
+            $(".statetitle").text("US");
+            $(".regiontitle").text("United States");
+            $(".locationTabText").text("United States");
+        }
+
+        //alert("hash.regiontitle " + hash.regiontitle);
+        if(!hash.regiontitle) {
+            //alert("OKAY hash.geo before: " + hash.geo);
+            delete hiddenhash.loctitle;
+            delete hiddenhash.geo;
+            //alert("BUG hash.geo after: " + hash.geo);
+            //delete param.geo;
+            $(".regiontitle").text("");
+            // Could add full "United States" from above. Could display longer "show" manufacing title.
+            let appTitle = $("#showAppsText").attr("title");
+            console.log("appTitle: " + appTitle);
+
+            let showTitle;
+            if (hash.show) {
+                /*
+                if (appTitle) {
+                    $("#pageTitle").text(appTitle); // Ex: Parts Manufacturing
+                } else {
+                    ////$(".region_service").text(hash.show.toTitleCase());
+                    $("#pageTitle").text(hash.show.toTitleCase());
+                }
+                */
+                showTitle = hash.show.toTitleCase();
+            }
+
+
+            if (hash.show && local_app.loctitle) {
+                $(".region_service").text(local_app.loctitle + " - " + hash.show.toTitleCase());
+                
+            } else if (hash.state) {
+
+                $(".region_service").text(hash.state); // While waiting for full state name
+                waitForElm('#state_select').then((elm) => {
+                    //$("#state_select").val(stateAbbrev);
+                    console.log("fetch theStateName from #state_select");
+                    //$("#state_select").val(hash.state.split(",")[0].toUpperCase());
+
+                    if ($("#state_select").find(":selected").val()) { // Omits top which has no text
+                        theStateName = $("#state_select").find(":selected").text();
+                        console.log("fetched " + theStateName);
+                        $(".region_service").text(theStateName + " Industries");
+                        if (showTitle) {
+                            $(".region_service").text(theStateName + " - " + hash.show.toTitleCase());
+                        }
+                    }
+
+                    if (hash.show && param.display == "everything") { // Limitig to everything since /map page does not load layers, or need longer title.
+                        let layer = hash.show;
+                        waitForSubObject('localObject','layers', function() { 
+                        //waitForObjectProperty('localObject','layers', function() { 
+                            if (localObject.layers[layer] && localObject.layers[layer].section) {
+                                let section = localObject.layers[layer].section;
+                                updateRegionService(section);
+                            }
+                        });
+                        //setTimeout(() => { // Works
+                        //    alert("localObject.layers " + localObject.layers[layer].section);
+                        //},3000);
+                    }
+                });
+
+                /*
+                if (theStateName) {
+                    $(".region_service").text(theStateName);
+                } else {
+                    $(".region_service").text(hash.state);
+                }
+                */
+            } else {
+                ////$(".region_service").text("Top " + $(".locationTabText").text() + " Industries");
+            }
+            if (appTitle) {
+
+                /*
+                // Under development
+                alert(document.title);
+                let siteAppTitle = appTitle;
+                //if (document.title != siteAppTitle) {
+                    document.title = siteAppTitle;
+                //}
+                alert(document.title);
+                */
+            }
+        } else {
+            //alert("hash.regiontitle1 " + hash.regiontitle);
+            hiddenhash.loctitle = hash.regiontitle;
+            $(".regiontitle").text(hash.regiontitle);
+            if (hash.show) {
+                $(".region_service").text(hash.regiontitle + " - " + hash.show.toTitleCase());
+            } else {
+                $(".region_service").text(hash.regiontitle);
+            }
+            $(".locationTabText").text(hash.regiontitle.replace(/\+/g," "));
+            local_app.loctitle = hash.regiontitle.replace(/\+/g," ");
+            
+            $(".regiontitle").val(hash.regiontitle.replace(/\+/g," "));
+            hiddenhash.geo = $("#region_select option:selected").attr("geo");
+            hash.geo = $("#region_select option:selected").attr("geo");
+            //hash.geo = hiddenhash.geo;
+            
+            try {
+                params.geo = hiddenhash.geo; // Used by old naics.js
+            } catch(e) {
+                console.log("Remove params.geo after upgrading naics.js " + e);
+            }
+        }
+    }
+
+    //alert("hash.geo 2 " + hash.geo);
+    //alert("priorHash.geo 2 " + priorHash.geo);
+    if (hash.geo != priorHash.geo) {
+        if (hash.geo && hash.geo.length > 4) { 
+            $(".state-view").hide();
+            $(".county-view").show();
+            //$(".industry_filter_settings").show(); // temp
+        } else {
+            $(".county-view").hide();
+            $(".state-view").show();
+            //$(".industry_filter_settings").hide(); // temp
+        }
+        if (hash.geo) {
+            if (hash.geo.split(",").length >= 3) {
+                $("#top-content-columns").addClass("top-content-columns-wide");
+            } else {
+                $("#top-content-columns").removeClass("top-content-columns-wide");
+            }
+        } else {
+            $(".mainColumn1").show();
+        }
+
+        let clearall = false;
+        if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
+            //clearall = true;
+        }
+        if($("#geomap").is(':visible')){
+            if (hash.geoview != "country") {
+                //alert("updateSelectedTableRows 2"); // Might need this delay.
+                updateSelectedTableRows(hash.geo, clearall, 0);
+            }
+        }
+        loadGeomap = true;
+    }
+
+    $(".locationTabText").attr("title",$(".locationTabText").text());
+    if (hash.cat != priorHash.cat) {
+        changeCat(hash.cat)
+    }
+    if (hash.catsort) {
+        $("#catsort").val(hash.catsort);
+    }
+    if (hash.catsize) {
+        $("#catsize").val(hash.catsize);
+    }
+    if (hash.catmethod) {
+        $("#catmethod").val(hash.catmethod);
+    }
+    if (hash.indicators != priorHash.indicators) {
+        //alert("Selected hash.indicators " + hash.indicators);
+        //$("#indicators").prop("selectedIndex", 0).value("Selected hash.indicators " + hash.indicators);
+
+        //$("#indicators").prepend("<option value='" + hash.indicators + "' selected='selected'>" + hash.indicators + "</option>");
+       $("#indicators").val(hash.indicators);
+       if (!$("#indicators").val()) { // Select first one
+           $('#indicators option').each(function () {
+                if ($(this).css('display') != 'none') {
+                    $(this).prop("selected", true);
+                    return false;
+                }
+            });
+        }
+
+        /*
+        if (hash.indicators) {
+           $('#indicators option').each(function () {
+                if ($(this).val() == 'JOBS' || $(this).val() == 'VADD') {
+                    $(this).prop("selected", true);
+                    alert("select")
+                    //return false;
+                }
+            });
+        }
+        */
+    }
+    if (hash.geoview && ((priorHash.sidetab == "locale" && hash.sidetab != "locale")) || (priorHash.locpop  && !hash.locpop)) {
+        // Closing sidetab or locpop, move geomap back to holder.
+        $("#filterLocations").prependTo($("#locationFilterHolder")); // Move back from sidetabs
+        $("#geomap").appendTo($("#geomapHolder")); // Move back from sidetabs
+
+        if (!hash.sidetab) { // For when clicking on Location top tab
+            $("#locationFilterHolder").show();
+            loadGeomap = true;
+        }
+    }
+    if (hash.geoview != priorHash.geoview) {
+        //$(".stateFilters").show();
+        //$("#filterLocations").show();$("#imagineBar").show();
+        //$("#geomap").show(); // To trigger map filter display below.
+        if (hash.geoview && hash.geoview != "earth") {
+            $("#nullschoolHeader").hide();
+        }
+        if (hash.geoview == "none") {
+            $("#geoPicker").hide();
+        } else {
+            $("#geoPicker").show();
+        }
+
+        if (hash.geoview == "earth") {
+            showGlobalMap("https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
+        } else if (hash.geoview) {
+            loadGeomap = true;
+        } else {
+            //alert("#filterLocations hide")
+            $("#filterLocations").hide();
+            //$("#geoPicker").hide();
+        }
+    }
+
+    $(".regiontitle").text(local_app.loctitle);
+    $(".service_title").text(local_app.loctitle + " - " + local_app.showtitle);
+    if (loadGeomap) {
+        //$("#filterLocations").show();$("#imagineBar").show();
+        //if($("#geomap").is(':visible')){
+        waitForElm('#geomap').then((elm) => {
+            //alert("loadGeomap")
+            console.log("call renderMapShapes from map-filter.js hashChanged()");
+            renderMapShapes("geomap", hash, "county", 1); // County select map
+        });
+        //}
+    }
+}
+
 function populateFieldsFromHash() {
     let hash = getHash();
 	$("#keywordsTB").val(hash.q);
@@ -605,7 +1217,7 @@ function renderMapShapes(whichmap, hash, geoview, attempts) {
 //var geojsonLayer; // Hold the prior letter. We can use an array or object instead.
 var geoOverlays = {};
 function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
- //alert("renderMapShapeAfterPromise " + whichmap);
+ console.log("renderMapShapeAfterPromise " + whichmap);
  includeCSS3(theroot + 'css/leaflet.css',theroot);
   loadScript(theroot + 'js/leaflet.js', function(results) {
     //alert("pre L")
@@ -644,7 +1256,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
         $("#geoPicker").show();
         $('#' + whichmap).show();
         if (!$("#" + whichmap).is(":visible")) {
-          $("#filterLocations").show();$("#imagineBar").show(); // Oddly, this is needed when using 3-keys to reload: Cmd-shift-R
+          // Oddly, this is needed when using 3-keys to reload: Cmd-shift-R
+          $("#filterLocations").show();$("#imagineBar").show(); 
+
           console.log("Caution: #" + whichmap + " not visible. May effect tile loading.");
           //return; // Prevents incomplete tiles
         }
@@ -1887,16 +2501,14 @@ function showTabulatorList(element, attempts) {
         } // End typeof stateImpact != 'undefined'
 
 
-        // STATE
-		// Might modify to load multiple states
-
+        // STATE COUNTY LIST
         if (theState) {
 
             //document.addEventListener("#tabulator-geotable", function(event) { // Wait for #tabulator-geotable div availability.
 
             waitForElm('#tabulator-geotable').then((elm) => {
 
-                //console.log("#tabulator-geotable available. State: " + hash.state);
+                console.log("#tabulator-geotable available. State: " + hash.state + " element.scope: " + element.scope);
 
                 $("#tabulator-statetable").hide();
                 $("#tabulator-geotable").show();
@@ -1924,9 +2536,11 @@ function showTabulatorList(element, attempts) {
                         {title:"Per Mile", field:"permile", width:100, hozAlign:"right"},
                     ];
                 }
+
+
         		geotable = new Tabulator("#tabulator-geotable", {
         		    data:rowData,  
-        		    layout:"fitColumns",      //fit columns to width of table
+        		    layout:"fitColumns",      //fit columns to width of table - bug show dead space on right. bug 1/3 loads don't display without min-width:550px included
         		    responsiveLayout:"hide",  //hide columns that dont fit on the table
          		    //tooltips:true,            //show tool tips on cells
         		    addRowPos:"top",          //when adding a new row, add it to the top of the table
@@ -2564,606 +3178,6 @@ if(typeof hiddenhash == 'undefined') {
     var hiddenhash = {};
 }
 
-// Load localObject.layers for later use when showApps clicked
-// Also adds state hash for layers requiring a state.
-//callInitSiteObject(1); // replaced by 
-
-function hashChanged() {
-	let loadGeomap = false;
-	let hash = getHash(); // Might still include changes to hiddenhash
-    console.log("hashChanged() map-filters.js");
-	populateFieldsFromHash();
-	productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
-
-    let stateAbbrev = "";
-    if (hash.statename) { // From Tabulator state list, convert to 2-char abbrviation
-        //alert("hash.statename1 " + hash.statename);
-        //alert("hiddenhash.statename1 " + hiddenhash.statename);
-        waitForElm('#state_select').then((elm) => {
-            //theState = $("#state_select").find(":selected").val();
-            //stateAbbrev = $("#state_select[name=\"" + hash.statename + "\"]").val();
-            stateAbbrev = $('#state_select option:contains(' + hash.statename + ')').val();
-            $("#state_select").val(stateAbbrev);
-            //alert("hiddenhash.state " + hiddenhash.state);
-            hiddenhash.statename = "";
-            goHash({'state':stateAbbrev,'statename':''});
-        });
-        return;
-    }
-
-	if (hash.state) {
-		stateAbbrev = hash.state.split(",")[0].toUpperCase();
-        waitForElm('#state_select').then((elm) => {
-            $("#state_select").val(stateAbbrev);
-        });      
-		// Apply early since may be used by changes to geo
-		$("#state_select").val(stateAbbrev);
-        if (priorHash.state && hash.state != priorHash.state) {
-            console.log("hitRefreshNote is now turned off")
-            //$("#hitRefreshNote").show();
-        }
-	} else {
-        //$(".locationTabText").text("United States");
-    }
-    if (hash.state != priorHash.state) {
-        waitForElm('#state_select').then((elm) => {
-            //alert("hash.state " + hash.state + " stateAbbrev: " + stateAbbrev);
-            if (stateAbbrev) {
-                $("#state_select").val(stateAbbrev);
-            } else {
-                $("#state_select").val("");
-            }
-        });
-    }
-	if (hash.show != priorHash.show) {
-        if (hash.show && priorHash.show) {
-            console.log("Close location filter, show new layer.");
-            closeLocationFilter();
-        }
-        if (!hash.appview) {
-            waitForElm('.showApps').then((elm) => {
-                // Same as in closeAppsMenu(), but calling that function from here generates blank page
-                $("#bigThumbPanelHolder").hide();
-                $(".showApps").removeClass("filterClickActive");
-            });
-        }
-        loadScript(theroot + 'js/map.js', function(results) {
-        });
-
-		//if (hash.show == priorHash.show) {
-		//	hash.show = ""; // Clear the suppliers display
-		//}
-        if (priorHash.show) {
-          $(".listTitle").empty();
-		  $(".catList").empty();
-        } else if (!hash.show) {
-            loadScript(theroot + 'js/navigation.js', function(results) {
-                hideSide("list");
-            });
-        }
-		delete hash.naics; // Since show value invokes new hiddenhash
-		clearHash("naics");
-		//getNaics_setHiddenHash(hash.show); // Sets hiddenhash.naics for use by other widgets.
-
-		//hash.naics = ""; // Since go value invokes hiddenhash
-		// Then we call applyIO at end of this hashChanged function
-
-
-		//$(document).ready(function() {
-            if (hash.show != "vehicles") {
-                $("#introframe").hide();
-            }
-            if (hash.show != "ppe" || hash.show != "suppliers") {
-                $(".layerclass.ppe").hide();
-            }
-            if (hash.show != "opendata") {
-                $(".layerclass.opendata").hide();
-            }
-
-            //$("#tableSide").hide();
-
-            if ($("#navcolumn .catList").is(":visible")) {
-                $("#selected_states").hide();
-            }
-
-            $(".layerclass." + hash.show).show();
-        //});
-
-
-	}
-	if (hash.geomap) {
-		//$("#infoColumn").show();
-        $(".mainColumn1").show();
-	}
-    if (hash.geomap != priorHash.geomap) {
-		//if (hash.geomap) {
-			$("#aboutToolsDiv").hide();
-			//$("#infoColumn").show();
-			$("#geomap").show();
-			
-			// DOES NOT WORK - document.querySelector(whichmap)._leaflet_map not found
-			//reloadMapTiles('#geomap',1);
-			
-            //alert("renderMapShapes")
-            renderMapShapes();
-			
-			/*
-			alert("show map")
-			if (document.querySelector('#geomap')._leaflet_map) {
-				alert("redraw map")
-				document.querySelector('#geomap')._leaflet_map.invalidateSize(); // Refresh map tiles.
-			}
-			*/
-			
-		//} else {
-		//	$("#geomap").hide();
-		//	$("#aboutToolsDiv").show();
-		//}
-	}
-
-	// To remove
-	/*
-	if (hash.show != priorHash.show) {
-		if (hash.show == "farmfresh") {
-			$(".data-section").show();
-		} else if (hash.show == "suppliers") {
-			$(".data-section").show();
-			$(".suppliers").show();
-		} else {
-			$(".data-section").hide();
-			$(".suppliers").hide();
-		}
-	}
-	*/
-
-	let mapCenter = [];
-    let zoom = 4; // Wide for entire US
-    // Before hash.state to utilize initial lat/lon
-    if (hash.lat != priorHash.lat || hash.lon != priorHash.lon) {
-        //alert("hash.lat " + hash.lat + " priorHash.lat " + priorHash.lat)
-        $("#lat").val(hash.lat);
-        $("#lon").val(hash.lon);
-        mapCenter = [hash.lat,hash.lon];
-    }
-	if (hash.state != priorHash.state) {
-		// If map is already loaded, recenter map.  See same thing below
-   		// Get lat/lon from state dropdown #state_select
-
-   		// Potential BugBug - this runs after initial map load, not needed (but okay as long as zoom is not set).
-   		
-   		// Similar resides in map.js for ds
-   		
-   		// Used for map2
-   		/*
-        if($("#state_select").find(":selected").val()) {
-       		let theState = $("#state_select").find(":selected").val();
-            if (theState != "") {
-              let kilometers_wide = $("#state_select").find(":selected").attr("km");
-              zoom = zoomFromKm(kilometers_wide); // In map.js
-              let lat = $("#state_select").find(":selected").attr("lat");
-              let lon = $("#state_select").find(":selected").attr("lon");
-              //alert("lat " + lat + " lon " + lon)
-              mapCenter = [lat,lon];
-            }
-        } else {
-        	console.log("ERROR #state_select not available");
-        }
-        console.log("Recenter map " + mapCenter)
-		*/
-
-        //showThumbMenu(hash.show, "#bigThumbMenu");
-	}
-	if (hash.state) {
-        $(".showforstates").show();
-    } else {
-    	$(".showforstates").hide();
-	}
-	
-	if (mapCenter.length > 0) { // Set when hash.lat changes
-		//if (typeof L != "undefined") {
-		if (typeof L.DomUtil === "object") {
-			// Avoiding including ",5" for zoom since 7 is already set. 
-	        // NOT IDEAL: This also runs during init.
-	        // TODO: If reactiveating, omit on init, or pass in default zoom.
-	        /*
-			console.log("Recenter map zoom " + zoom)
-		 	let pagemap = document.querySelector('#map1')._leaflet_map; // Recall existing map
-		    let pagemap_container = L.DomUtil.get(pagemap);
-		    if (pagemap_container != null) {
-		    	// Test here: http://localhost:8887/localsite/info/embed.html#state=GA
-		      pagemap.flyTo(mapCenter, zoom);
-		    }
-	        */
-	        if (typeof document.querySelector('#map2') === 'undefined' || typeof document.querySelector('#map2') === 'null') {
-	            console.log("#map2 undefined");
-	        } else if (document.querySelector('#map2')) {
-
-	    	    let pagemap2 = document.querySelector('#map2')._leaflet_map; // Recall existing map
-	    	    let pagemap_container2 = L.DomUtil.get(pagemap2);
-	    	    // This will not be reachable on initial load.
-	    	    if (pagemap_container2 != null) {
-	    	      pagemap2.flyTo(mapCenter);
-
-	    	    }
-	        }
-		} else {
-			console.log("ERROR lat changed for map2, but leaflet not loaded. typeof L undefined.");
-		}
-	}
-
-    console.log("hash.geoview: " + hash.geoview + " priorHash.geoview: " + priorHash.geoview);
-    
-    // Tabulator list is already updated before adjacent geomap is rendered.
-    if (hash.geoview == "state" && hash.state) {
-        locationFilterChange("counties");
-    } else {
-        console.log("Call locationFilterChange with no value")
-        locationFilterChange("");
-    }
-
-    if (hash.geoview && hash.geoview != priorHash.geoview) {
-        $("#geoview_select").val(hash.geoview);
-    }
-
-    if (hash.state != priorHash.state) {
-		loadGeomap = true;
-		if(location.host.indexOf('model.georgia') >= 0) {
-			if (hash.state != "" && hash.state.split(",")[0].toUpperCase() != "GA") { // If viewing other state, use model.earth
-				let goModelEarth = "https://model.earth" + window.location.pathname + window.location.search + window.location.hash;
-				window.location = goModelEarth;
-			}
-		}
-
-		$("#state_select").val(stateAbbrev);
-
-		if (hash.state != "GA") {
-			$(".regionFilter").hide();
-			$(".geo-limited").hide();
-		} else {
-			$(".regionFilter").show();
-			$(".geo-US13").show();
-		}
-        if(location.host.indexOf('localhost') >= 0) {
-            //alert("localhost hash.state " + hash.state);
-        }
-		if (hash.state && hash.state.length == 2 && !($("#filterLocations").is(':visible'))) {
-            $(".locationTabText").text($("#state_select").find(":selected").text());
-		} else {
-			$(".locationTabText").text("Locations");
-            //$("#filterLocations").hide();
-            //$("#industryListHolder").hide(); // Remove once national naics are loaded.
-		}
-
-        //&& hash.geoview == "state"
-        if (hash.geoview && hash.geoview == priorHash.geoview) { // Prevents dup loading when hash.geoview != priorHash.geoview below.
-            if (hash.geoview != "earth") {
-                console.log("loadStateCounties invoked by state change");
-                loadStateCounties(0); // Add counties to state boundaries.
-            }
-        }
-    }
-
-    if (hash.geoview != priorHash.geoview || (priorHash.state && !hash.state)) {
-        //alert("Load geoview")
-        
-        /*
-        if (hash.geoview) {
-            loadScript(theroot + 'js/navigation.js', function(results) {
-                waitForVariable('navigationJsLoaded', function() {
-                    openMapLocationFilter();
-                });
-            });
-        }
-        */
-        if (hash.geoview == "state" || hash.geoview == "country") {
-            console.log("loadStateCounties invoked by geoview change");
-            console.log("priorHash.geoview: " + priorHash.geoview + ", hash.geoview: " + hash.geoview);
-            loadStateCounties(0);
-
-            //if (hash.geoview == "country" && !hash.state) {
-                //if (onlineApp) {
-                    let element = {};
-                    element.scope = "state";
-                    //element.datasource = "https://model.earth/beyond-carbon-scraper/fused/result.json"; // Also loaded in apps/js/bc.js
-                    element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states.json";
-                    element.columns = [
-                            {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                            {title:"State", field:"jurisdiction"},
-                            {title:"Population", field:"population", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
-                            {title:"CO<sub>2</sub> per capita", field:"CO2_per_capita", hozAlign:"right", formatter:"money", formatterParams:{precision:false}},
-                        ];
-
-                    // Displays tabulator list of states, but USA map shapes turned red.
-                    if (hash.geoview == "country") {
-                        loadObjectData(element, 0);
-                    } else if (hash.geoview == "state" && !hash.state) {
-                        loadObjectData(element, 0); // Display tabulator list of states.
-                    }
-                    //$("#tabulator-geocredit").show();
-                //}
-            //}
-        } else if (hash.geoview == "earth" || hash.geoview == "countries") {
-            let element = {};
-            element.scope = "countries";
-            element.key = "Country Code";
-            //element.datasource = "https://model.earth/country-data/population/population-total.csv";
-            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/country-populations.csv";
-            element.columns = [
-                    {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                    {title:"Country Name", field:"Country Name"},
-                    {title:"2010", field:"2010", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
-                    {title:"2020", field:"2020", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}}
-                ];
-            loadObjectData(element, 0);
-        } else { // For backing up within apps
-            console.log("NO MAPVIEW");
-            if (typeof relocatedStateMenu != "undefined") {
-                relocatedStateMenu.appendChild(state_select); // For apps hero
-            }
-            $("#hero_holder").show();
-        }
-    }
-
-    //alert("hash.geoview " + hash.geoview);
-    if (hash.geoview == "earth") {
-        $("#state_select").hide();
-    } else if (hash.geoview == "country") {
-        if (hash.geoview != priorHash.geoview) {
-            //alert("country");
-            ///$("#geoPicker").show(); // Required for map to load
-            $("#state_select").show();
-        }
-    } else if (hash.geoview == "state") {
-        $("#state_select").show();
-    }
-
-    //Resides before geo
-    if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state || hash.show != priorHash.show) {
-        let theStateName;
-
-        // Don't use, needs a waitfor
-        if ($("#state_select").find(":selected").value) {
-        	theStateName = $("#state_select").find(":selected").text();
-        }
-        if (theStateName != "") {
-        	$(".statetitle").text(theStateName);
-        	$(".regiontitle").text(theStateName);
-            $(".locationTabText").text(theStateName);
-            local_app.loctitle = theStateName;
-        } else if (hash.state) {
-        	//let multiStateString = hash.state.replace(",",", ") + " - USA";
-        	let multiStateString = hash.state + " USA";
-        	$(".statetitle").text(multiStateString);
-        	$(".regiontitle").text(multiStateString);
-            $(".locationTabText").text(multiStateString);
-            local_app.loctitle = multiStateString;
-        } else {
-            local_app.loctitle = "USA";
-            $(".statetitle").text("US");
-            $(".regiontitle").text("United States");
-            $(".locationTabText").text("United States");
-        }
-
-        //alert("hash.regiontitle " + hash.regiontitle);
-        if(!hash.regiontitle) {
-            //alert("OKAY hash.geo before: " + hash.geo);
-            delete hiddenhash.loctitle;
-            delete hiddenhash.geo;
-            //alert("BUG hash.geo after: " + hash.geo);
-            //delete param.geo;
-            $(".regiontitle").text("");
-            // Could add full "United States" from above. Could display longer "show" manufacing title.
-            let appTitle = $("#showAppsText").attr("title");
-            console.log("appTitle: " + appTitle);
-
-            let showTitle;
-            if (hash.show) {
-                /*
-                if (appTitle) {
-                    $("#pageTitle").text(appTitle); // Ex: Parts Manufacturing
-                } else {
-                    ////$(".region_service").text(hash.show.toTitleCase());
-                    $("#pageTitle").text(hash.show.toTitleCase());
-                }
-                */
-                showTitle = hash.show.toTitleCase();
-            }
-
-
-            if (hash.show && local_app.loctitle) {
-                $(".region_service").text(local_app.loctitle + " - " + hash.show.toTitleCase());
-                
-            } else if (hash.state) {
-
-                $(".region_service").text(hash.state); // While waiting for full state name
-                waitForElm('#state_select').then((elm) => {
-                    //$("#state_select").val(stateAbbrev);
-                    console.log("fetch theStateName from #state_select");
-                    //$("#state_select").val(hash.state.split(",")[0].toUpperCase());
-
-                    if ($("#state_select").find(":selected").val()) { // Omits top which has no text
-                        theStateName = $("#state_select").find(":selected").text();
-                        console.log("fetched " + theStateName);
-                        $(".region_service").text(theStateName + " Industries");
-                        if (showTitle) {
-                            $(".region_service").text(theStateName + " - " + hash.show.toTitleCase());
-                        }
-                    }
-
-                    if (hash.show && param.display == "everything") { // Limitig to everything since /map page does not load layers, or need longer title.
-                        let layer = hash.show;
-                        waitForSubObject('localObject','layers', function() { 
-                        //waitForObjectProperty('localObject','layers', function() { 
-                            if (localObject.layers[layer] && localObject.layers[layer].section) {
-                                let section = localObject.layers[layer].section;
-                                updateRegionService(section);
-                            }
-                        });
-                        //setTimeout(() => { // Works
-                        //    alert("localObject.layers " + localObject.layers[layer].section);
-                        //},3000);
-                    }
-                });
-
-                /*
-                if (theStateName) {
-                    $(".region_service").text(theStateName);
-                } else {
-                    $(".region_service").text(hash.state);
-                }
-                */
-            } else {
-                ////$(".region_service").text("Top " + $(".locationTabText").text() + " Industries");
-            }
-            if (appTitle) {
-
-                /*
-                // Under development
-                alert(document.title);
-                let siteAppTitle = appTitle;
-                //if (document.title != siteAppTitle) {
-                    document.title = siteAppTitle;
-                //}
-                alert(document.title);
-                */
-            }
-        } else {
-            //alert("hash.regiontitle1 " + hash.regiontitle);
-            hiddenhash.loctitle = hash.regiontitle;
-            $(".regiontitle").text(hash.regiontitle);
-            if (hash.show) {
-                $(".region_service").text(hash.regiontitle + " - " + hash.show.toTitleCase());
-            } else {
-                $(".region_service").text(hash.regiontitle);
-            }
-            $(".locationTabText").text(hash.regiontitle.replace(/\+/g," "));
-            local_app.loctitle = hash.regiontitle.replace(/\+/g," ");
-            
-            $(".regiontitle").val(hash.regiontitle.replace(/\+/g," "));
-            hiddenhash.geo = $("#region_select option:selected").attr("geo");
-            hash.geo = $("#region_select option:selected").attr("geo");
-            //hash.geo = hiddenhash.geo;
-            
-            try {
-	        	params.geo = hiddenhash.geo; // Used by old naics.js
-		    } catch(e) {
-		    	console.log("Remove params.geo after upgrading naics.js " + e);
-		    }
-        }
-    }
-
-    //alert("hash.geo 2 " + hash.geo);
-    //alert("priorHash.geo 2 " + priorHash.geo);
-    if (hash.geo != priorHash.geo) {
-        if (hash.geo && hash.geo.length > 4) { 
-            $(".state-view").hide();
-            $(".county-view").show();
-            //$(".industry_filter_settings").show(); // temp
-        } else {
-            $(".county-view").hide();
-            $(".state-view").show();
-            //$(".industry_filter_settings").hide(); // temp
-        }
-        if (hash.geo) {
-            if (hash.geo.split(",").length >= 3) {
-                $("#top-content-columns").addClass("top-content-columns-wide");
-            } else {
-                $("#top-content-columns").removeClass("top-content-columns-wide");
-            }
-        } else {
-            $(".mainColumn1").show();
-        }
-
-        let clearall = false;
-        if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
-        	//clearall = true;
-        }
-        if($("#geomap").is(':visible')){
-        	if (hash.geoview != "country") {
-        		//alert("updateSelectedTableRows 2"); // Might need this delay.
-        		updateSelectedTableRows(hash.geo, clearall, 0);
-        	}
-    	}
-        loadGeomap = true;
-    }
-
-	$(".locationTabText").attr("title",$(".locationTabText").text());
-	if (hash.cat != priorHash.cat) {
-		changeCat(hash.cat)
-	}
-    if (hash.catsort) {
-		$("#catsort").val(hash.catsort);
-	}
-	if (hash.catsize) {
-		$("#catsize").val(hash.catsize);
-	}
-	if (hash.catmethod) {
-		$("#catmethod").val(hash.catmethod);
-	}
-	if (hash.indicators != priorHash.indicators) {
-        //alert("Selected hash.indicators " + hash.indicators);
-        //$("#indicators").prop("selectedIndex", 0).value("Selected hash.indicators " + hash.indicators);
-
-        //$("#indicators").prepend("<option value='" + hash.indicators + "' selected='selected'>" + hash.indicators + "</option>");
-	   $("#indicators").val(hash.indicators);
-       if (!$("#indicators").val()) { // Select first one
-           $('#indicators option').each(function () {
-                if ($(this).css('display') != 'none') {
-                    $(this).prop("selected", true);
-                    return false;
-                }
-            });
-        }
-
-        /*
-        if (hash.indicators) {
-           $('#indicators option').each(function () {
-                if ($(this).val() == 'JOBS' || $(this).val() == 'VADD') {
-                    $(this).prop("selected", true);
-                    alert("select")
-                    //return false;
-                }
-            });
-        }
-        */
-    }
-    if (hash.geoview != priorHash.geoview) {
-    	//$(".stateFilters").show();
-    	//$("#filterLocations").show();$("#imagineBar").show();
-    	//$("#geomap").show(); // To trigger map filter display below.
-        if (hash.geoview && hash.geoview != "earth") {
-            $("#nullschoolHeader").hide();
-        }
-        if (hash.geoview == "none") {
-            $("#geoPicker").hide();
-        } else {
-            $("#geoPicker").show();
-        }
-
-        if (hash.geoview == "earth") {
-            showGlobalMap("https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
-        } else if (hash.geoview) {
-    		loadGeomap = true;
-    	} else {
-            //alert("#filterLocations hide")
-            $("#filterLocations").hide();
-            //$("#geoPicker").hide();
-    	}
-    }
-
-    $(".regiontitle").text(local_app.loctitle);
-    $(".service_title").text(local_app.loctitle + " - " + local_app.showtitle);
-	if (loadGeomap) {
-        //$("#filterLocations").show();$("#imagineBar").show();
-		//if($("#geomap").is(':visible')){
-        waitForElm('#geomap').then((elm) => {
-            //alert("loadGeomap")
-			console.log("call renderMapShapes from map-filter.js hashChanged()");
-			renderMapShapes("geomap", hash, "county", 1); // County select map
-        });
-		//}
-	}
-}
 function updateRegionService(section) {
 
     let theLocation = hash.regiontitle;

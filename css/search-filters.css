@@ -61,7 +61,7 @@
 @media (not (prefers-color-scheme: dark)) {
   #filterFieldsHolder {
     background-color: inherit;
-    background-color: rgb(250 250 250/95%);
+    background-color: rgb(250 250 250);
     border-bottom: 1px solid #eee;
   }
   .dark #filterFieldsHolder {
@@ -268,7 +268,7 @@ input.filterClick[type="text"] {
 #geoListHolder {
     padding-left: 30px;
     display: flex;
-    flex-flow: column;
+    /* flex-flow: column; */
     height: 530px;
     border: 10px solid blue;
 }
@@ -277,7 +277,7 @@ input.filterClick[type="text"] {
   bottom:0;
   left:0px;
   right:0px;
-  padding:2px 2px 2px 16px;
+  margin-top:5px;
   padding-left: 30px;
   z-index:2;
 }
