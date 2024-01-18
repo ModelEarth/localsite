@@ -521,7 +521,6 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 .rightIcons {
 	position: absolute;
-	top: 12px;
 	right: 0px;
 	z-index: 999;
 	font-size: 44px;
@@ -779,7 +778,6 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     background-color: #555;
     box-sizing: border-box;
     position: relative;
-    line-heightX: 0.9em;
     font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif; /* avoiding 'Nunito Sans' for menu */
 }
 .menuExpanded h2, .menuExpanded h3, .menuExpanded h4 {
@@ -799,7 +797,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
-    padding: 28px 24px 34px 28px;
+    padding: 12px 24px 34px 16px;
 }
 .menuTitle {
   font-size:18pt;

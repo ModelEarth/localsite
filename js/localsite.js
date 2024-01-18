@@ -277,9 +277,9 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
    //console.log(target2);
    return target2;
 }
-function getHash() { // Includes hiddenhash
-    return (mix(getHashOnly(),hiddenhash));
-    //return (getHashOnly());
+function getHash() {
+    //return (mix(getHashOnly(),hiddenhash)); // Includes hiddenhash
+    return (getHashOnly());
 }
 function getHashOnly() {
     return (function (a) {
@@ -860,7 +860,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         }
 
         if(param.showheader == "true") {
-          $('body').prepend("<div id='sideIcons' class='noprint bothSideIcons sideIconsLower' style='position:fixed;left:0;width:32px'><div id='showNavColumn' class='showNavColumn' style='left:-28px;display:none'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border:1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
+          // border:1px solid #555; 
+          $('body').prepend("<div id='sideIcons' class='noprint bothSideIcons sideIconsLower' style='position:fixed;left:0;width:32px'><div id='showNavColumn' class='showNavColumn' style='left:-28px;display:none'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
         }
 
         if (param.showheader == "true" || param.showsearch == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "map") {
@@ -1771,11 +1772,6 @@ addEventListener("load", function(){
   };
   document.querySelector("body").addEventListener('click', function(e) {
     $(".hideOnBodyClick").hide();
-
-    $("#hideMenu").hide(); // Avoids double clicking.
-    $("#showSideTabs").show();
-
-    //consoleLog('click ' + Date.now())
     var anchor = getParentAnchor(e.target);
     if(anchor !== null) {
       //$('#log_display').hide();
@@ -1983,7 +1979,7 @@ function getState(stateCode) {
 function showSearchFilter() {
   let loadFilters = false;
   let headerHeight = $("#headerbar").height(); // Not sure why this is 99 rather than 100
-  closeSideTabs(); // Later search will be pulled into side tab.
+  //closeSideTabs(); // Later search will be pulled into side tab.
 
 
   if (!$("#filterFieldsHolder").length) { // Resides in template-main.html. Filter doesn't exist yet, initial map/index.html load.
@@ -2095,12 +2091,12 @@ function showSearchFilter() {
   }
 }
 function closeSideTabs() {
+  alert("closeSideTabs()");
   $("#sideTabs").hide();
   $("body").removeClass("bodyRightMargin");
   if (!$('body').hasClass('bodyLeftMargin')) {
     $('body').removeClass('mobileView');
   }
-  //$("#hideMenu").hide();
   $("#closeSideTabs").hide();
   $("#showSideTabs").show();
 }

@@ -41,15 +41,14 @@
 .showApps.active > .material-icons {
   color: #eee;
 }
-#geoPicker {
-  padding-bottom: 20px;
-}
 @media (prefers-color-scheme: dark) {
   #filterFieldsHolder {
     /* background-color: #333; */
   }
 }
-
+#locationFilterHolder #filterLocations {
+  padding-left: 60px;
+}
 .filterFieldsHolderFixed {
   position: fixed;
   top: 0px;

@@ -283,8 +283,14 @@ $(document).ready(function () {
 	$('#searchloc').click(function () {
     	event.stopPropagation();
     });
-    $(document).on("change", "#country_select", function(event) {
-        goHash({'geoview':this.value});
+    $(document).on("change", "#geoview_select", function(event) {
+        if (this.value == "countries" || this.value == "earth") {
+            hiddenhash.state = "";
+            goHash({"geoview":this.value,"state":"",});
+        } else {
+            goHash({"geoview":this.value});
+        }
+        
     });
 	$('.selected_state').on('change', function() {
 		//alert("selected_state " + this.getAttribute("id"))
@@ -638,7 +644,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
         $("#geoPicker").show();
         $('#' + whichmap).show();
         if (!$("#" + whichmap).is(":visible")) {
-          //$("#filterLocations").show(); //Why did we need here?
+          $("#filterLocations").show();$("#imagineBar").show(); // Oddly, this is needed when using 3-keys to reload: Cmd-shift-R
           console.log("Caution: #" + whichmap + " not visible. May effect tile loading.");
           //return; // Prevents incomplete tiles
         }
@@ -2786,9 +2792,17 @@ function hashChanged() {
 	}
 
     console.log("hash.geoview: " + hash.geoview + " priorHash.geoview: " + priorHash.geoview);
+    
+    // Tabulator list is already updated before adjacent geomap is rendered.
+    if (hash.geoview == "state" && hash.state) {
+        locationFilterChange("counties");
+    } else {
+        console.log("Call locationFilterChange with no value")
+        locationFilterChange("");
+    }
 
     if (hash.geoview && hash.geoview != priorHash.geoview) {
-        $("#country_select").val(hash.geoview);
+        $("#geoview_select").val(hash.geoview);
     }
 
     if (hash.state != priorHash.state) {
@@ -2831,6 +2845,8 @@ function hashChanged() {
 
     if (hash.geoview != priorHash.geoview || (priorHash.state && !hash.state)) {
         //alert("Load geoview")
+        
+        /*
         if (hash.geoview) {
             loadScript(theroot + 'js/navigation.js', function(results) {
                 waitForVariable('navigationJsLoaded', function() {
@@ -2838,6 +2854,7 @@ function hashChanged() {
                 });
             });
         }
+        */
         if (hash.geoview == "state" || hash.geoview == "country") {
             console.log("loadStateCounties invoked by geoview change");
             console.log("priorHash.geoview: " + priorHash.geoview + ", hash.geoview: " + hash.geoview);
@@ -2898,8 +2915,6 @@ function hashChanged() {
         }
     } else if (hash.geoview == "state") {
         $("#state_select").show();
-    } else if (priorHash.geoview && !hash.geoview) {
-        closeLocationFilter(); console.log("closeLocationFilter2");
     }
 
     //Resides before geo
@@ -3114,7 +3129,7 @@ function hashChanged() {
     }
     if (hash.geoview != priorHash.geoview) {
     	//$(".stateFilters").show();
-    	//$("#filterLocations").show();
+    	//$("#filterLocations").show();$("#imagineBar").show();
     	//$("#geomap").show(); // To trigger map filter display below.
         if (hash.geoview && hash.geoview != "earth") {
             $("#nullschoolHeader").hide();
@@ -3139,7 +3154,7 @@ function hashChanged() {
     $(".regiontitle").text(local_app.loctitle);
     $(".service_title").text(local_app.loctitle + " - " + local_app.showtitle);
 	if (loadGeomap) {
-        //$("#filterLocations").show();
+        //$("#filterLocations").show();$("#imagineBar").show();
 		//if($("#geomap").is(':visible')){
         waitForElm('#geomap').then((elm) => {
             //alert("loadGeomap")

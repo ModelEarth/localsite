@@ -77,7 +77,6 @@ document.addEventListener('hashChangeEvent', function (elem) {
 function hashChangedNavigation() {
 	// More hashChange events reside in map-filters.js
 	let hash = getHash();
-
 	// Also used for state change in apps without map which don't have geoview
 	if (hash.state != priorHash.state) {
 		// Load state hero graphic
@@ -121,7 +120,6 @@ function hashChangedNavigation() {
 	    //}
 	}
 	if (hash.appview != priorHash.appview) {
-		//alert("appview change")
         if (hash.appview) {
             console.log("hash.appview exists: " + hash.appview);
             //navigationJsLoaded
@@ -131,6 +129,12 @@ function hashChangedNavigation() {
         } else {
             closeAppsMenu();
         }
+    }
+    if (hash.geoview != priorHash.geoview) {
+    	filterLocationChange();
+    }
+    if (hash.sidetab != priorHash.sidetab) {
+    	showSideTabs();
     }
 }
 
@@ -216,27 +220,44 @@ function thumbClick(show,path) {
 }
 
 function showSideTabs() {
-	console.log("showSideTabs()");
-	if(location.href.indexOf("/seasons") >= 0) {
-		closeExpandedMenus(".showStories");
-		$("#storiesPanel").show();
-	} else {
-		// check #topicsMenu
-		if (location.host.indexOf('localhost') >= 0) {
-	      //alert("LOCAL: ");
-	    }
-	    /*
-	    //if (!hash.geoview) {
-        	closeExpandedMenus($(".showSections")); // Close all sidetab's prior to opening new tab
-        //}
-        $("#topicsPanel").show();
-        */
-	}
-	$('body').addClass('bodyRightMargin'); // Creates margin on right for fixed sidetabs.
-	$('body').addClass('mobileView');
-	$("#sideTabs").show();
-	$("#showSideTabs").hide();
-	$("#hideMenu").show();
+	waitForElm('#sideTabs').then((elm) => {
+		let hash = getHash();
+		
+		if (hash.sidetab) {
+			$('body').addClass('bodyRightMargin'); // Creates margin on right for fixed sidetabs.
+			$('body').addClass('mobileView');
+			$(".rightTopMenuInner div").removeClass("active");
+			$(".menuExpanded").hide(); // Hide any open
+			if (hash.sidetab == "sections") {
+				//showSections();
+				$(".showSections").addClass("active");
+				$("#sectionsPanel").show();
+			} else if (hash.sidetab == "seasons") {
+				$(".showSeasons").addClass("active");
+				$("#seasonsPanel").show();
+			} else if (hash.sidetab == "topics") {
+				showTopics();
+			} else if (hash.sidetab == "locale") {
+				showLocale();
+			} else if (hash.sidetab == "settings") {
+				$(".showSettings").addClass("active");
+			    $(".settingsPanel").show();
+			} else if (hash.sidetab == "desktop") {
+				$(".showDesktop").addClass("active");
+			    $("#desktopPanel").show();
+			} else if (hash.sidetab == "account") {
+				$(".showAccount").addClass("active");
+			    $("#accountPanel").show();
+			} else {
+				//$("#sideTabs").show();
+			}
+			$("#sideTabs").show();
+		} else {
+			$('body').removeClass('bodyRightMargin'); // Creates margin on right for fixed sidetabs.
+			$('body').removeClass('mobileView');
+			$("#sideTabs").hide();
+		}
+	});
 }
 function closeExpandedMenus(menuClicked) {
     $(".rightTopMenuInner div").removeClass("active");
@@ -889,9 +910,19 @@ $(document).ready(function () {
 	    event.stopPropagation(); // To keep location filter open when clicking
 	});
 });
+$(document).on("click", ".showSections", function(event) {
+	goHash({'sidetab':'sections'});
+    event.stopPropagation();	
+});
+function showSections() {
 
-$(document).on("click", ".showListings", function(event) {
-	closeExpandedMenus(event.currentTarget);
+}
+$(document).on("click", ".showTopics", function(event) {
+	goHash({'sidetab':'topics'});
+    event.stopPropagation();
+});
+function showTopics() {
+	//closeExpandedMenus(event.currentTarget);
 	if (!$.trim($("#mapList1").html())) { // If the location list is not empty, load the list of types.
     	$("#bigThumbMenuInner").appendTo("#listingsPanelScroll");
         if (!document.getElementById("#bigThumbMenuInner")) {
@@ -899,37 +930,39 @@ $(document).on("click", ".showListings", function(event) {
             showThumbMenu(hash.show, "#listingsPanelScroll");
         }
     }
-    $(".showListings").addClass("active");
+    $(".showTopics").addClass("active");
     $("#listingsPanel").show();
-    showSideTabs();
-    event.stopPropagation();
-});
+    $("#sideTabs").show();
+}
 $(document).on("click", ".showLocale", function(event) {
-	closeExpandedMenus(event.currentTarget);
-	$("#filterClickLocation").removeClass("filterClickActive");
-	$("#filterLocations").appendTo($("#localeDiv"));
-	$("#locationFilterHolder").hide(); // Checked when opening with tab.
-    $(".showLocale").addClass("active");
-    $("#localePanel").show();
-    showSideTabs();
+	//goHash({'geoview':'state','sidetab':'locale'});
+	goHash({'sidetab':'locale'});
     event.stopPropagation();
 });
+function showLocale(){
+	//alert("showLocale()");
+	//closeExpandedMenus(event.currentTarget);
+	$("#filterClickLocation").removeClass("filterClickActive");
+	loadScript(theroot + 'js/map.js', function(results) {
+		loadScript(theroot + 'js/map-filters.js', function(results) { // For pages without
+	    
+	    	openMapLocationFilter();
+	    	$("#sideTabs").show();
+			$("#filterLocations").appendTo($("#localeDiv"));
+			$("#geomap").appendTo($("#rightTopMenu"));
+			$("#locationFilterHolder").hide(); // Checked when opening with tab.
+		    $(".showLocale").addClass("active");
+		    $("#localePanel").show();
+		});
+	});
+}
 $(document).on("click", ".showSettings", function(event) {
-	closeExpandedMenus(event.currentTarget);
-    $('.menuExpanded').hide();
-    if ($(".settingsPanel").is(':visible')) { 
-
-    } else {
-        $(".settingsPanel").show();
-        //$("#rightTopMenu").hide();
-    }
+	goHash({'sidetab':'settings'});
+    event.stopPropagation();
 });
 $(document).on("click", ".showAccount", function(event) {
-	closeExpandedMenus(event.currentTarget);
-    //if ($(".moduleJS").width() <= 800) { // Narrow
-    //    $('.hideApps').trigger("click"); // For mobile
-    //}
-    $("#accountPanel").show();
+	goHash({'sidetab':'account'});
+    event.stopPropagation();
 });
 $('.contactUs').click(function(event) {
     alert("The Contact Us link is not active.")
@@ -940,18 +973,13 @@ $('.shareThis').click(function(event) {
     event.stopPropagation();
 });
 
-$(document).on("click", ".showSections", function(event) {
-    closeExpandedMenus(event.currentTarget);
-    //$('.menuExpanded').hide();
-    $("#topicsPanel").show();
+$(document).on("click", ".showSeasons", function(event) {
+	goHash({'sidetab':'seasons'});
+    event.stopPropagation();
 });
-$(document).on("click", ".showStories", function(event) {
-    closeExpandedMenus(event.currentTarget);
-    $("#storiesPanel").show();
-});
-$(document).on("click", ".showDesktopNav", function(event) {
-    closeExpandedMenus(event.currentTarget);
-    $("#desktopPanel").show();
+$(document).on("click", ".showDesktop", function(event) { // Was .showDesktopNav
+    goHash({'sidetab':'desktop'});
+    event.stopPropagation();
 });
 
 // SETTINGS
@@ -1020,12 +1048,20 @@ $(document).on("click", ".showTheMenu", function(event) { // Seasons
 	console.log("Clicked .showTheMenu");
 		$(".navLinks").show();
 		//$("#showSideTabs").hide();
-		//$("#hideMenu").show();
 	event.stopPropagation();
 });
 
 $(document).on("click", ".showSideTabs", function(event) {
-	showSideTabs();
+	let hash = getHash();
+	if (hash.sidetab) {
+		goHash({'sidetab':''});
+	} else {
+		if(location.href.indexOf("/seasons") >= 0) {
+			goHash({'sidetab':'seasons'});
+		} else {
+			goHash({'sidetab':'sections'});
+		}
+	}
 	event.stopPropagation();
 });
 
@@ -1034,7 +1070,9 @@ $(document).on('click', '.closeParent', function () {
     event.stopPropagation();
 });
 $(document).on("click", ".closeSideTabs", function(event) {
-	closeSideTabs();
+	goHash({'sidetab':''});
+	//closeSideTabs();
+	event.stopPropagation();
 });
 $(document).on("click", ".showEarth", function(event) {
 	if ($("#nullschoolHeader").is(':visible')) {
@@ -1439,6 +1477,7 @@ function hideAdvanced() {
 	// Should we show a search icon when closing?
 	$(".fieldSelector").hide();
 	$("#filterLocations").hide();
+	$("#imagineBar").hide();
 	$("#filterClickLocation").removeClass("filterClickActive");
 	$("#draggableSearch").hide();
 	
@@ -1449,6 +1488,13 @@ function hideAdvanced() {
 	$(".locationTabText").text($(".locationTabText").attr("title"));
 }
 function popAdvanced() {
+	loadScript(theroot + 'js/map.js', function(results) {
+		loadScript(theroot + 'js/map-filters.js', function(results) { // For pages without
+			goHash({'geoview':'state'});
+      		//filterClickLocation();
+		});
+	});
+
 	$("#filterClickLocation").removeClass("filterClickActive");
 	$("#filterLocations").appendTo($("#locationFilterPop"));
 	$("#draggableSearch").show();
@@ -1683,14 +1729,23 @@ $(document).on("change", "#state_select", function(event) {
     }
 });
 $(document).on("click", "#filterClickLocation", function(event) {
-
-	$("#draggableSearch").hide();
-	$("#filterLocations").appendTo($("#locationFilterHolder"));
+	if ($("#draggableSearch").is(':visible')) {
+		$("#draggableSearch").hide();
+		alert("append")
+		//$("#filterLocations").prependTo($("#locationFilterHolder"));
+		$("#filterLocations").hide();
+	}
 	if ($("#localePanel").is(':visible')) {
 		closeSideTabs();
 		$("#topicsPanel").show(); // So return to apps menu shows something
 		$(".rightTopMenuInner div").removeClass("active"); // So not displayed when returning
 	}
+
+	filterClickLocation();
+	event.stopPropagation();
+	return;
+
+
 
 	//delete(hiddenhash.geoview); // Not sure where this gets set.
 	if ($("#geoPicker").is(':visible')) {
@@ -1705,6 +1760,7 @@ $(document).on("click", "#filterClickLocation", function(event) {
     	closeAppsMenu();
     	$("#filterClickLocation").addClass("filterClickActive");
     	$("#locationFilterHolder").show();
+    	updateHash({"geoview":""});
     } else if ($("#locationFilterHolder").is(':visible')) { // was #geoPicker
     	//if (hash.geoview && hash.appview) {
 
@@ -1712,11 +1768,12 @@ $(document).on("click", "#filterClickLocation", function(event) {
     	//$("#geoPicker").hide();
     	closeAppsMenu();
     	$("#filterClickLocation").removeClass("filterClickActive");
+    	updateHash({"geoview":""});
     } else {
     	$("#locationFilterHolder").show();
     	closeAppsMenu();
     	loadScript(theroot + 'js/map-filters.js', function(results) {
-	    	$("#filterLocations").show();
+	    	$("#filterLocations").show();$("#imagineBar").show();
 	    	///$("#geoPicker").show();
 	    	if (!hash.appview) {
 	    		$("#filterClickLocation").addClass("filterClickActive");
@@ -1833,6 +1890,18 @@ function closeAppsMenu() {
 }
 function filterClickLocation(loadGeoTable) {
     console.log("filterClickLocation() " + loadGeoTable);
+    let hash = getHash();
+    if (hash.geoview) {
+    	goHash({'geoview':''});
+    } else if (hash.state) {
+    	goHash({'geoview':'state'});
+    } else {
+    	goHash({'geoview':'country'});
+    }
+    return;
+}
+function filterLocationChange() {
+	//alert("filterLocationChange")
 	$("#searchLocation").focus(); // Not working
 	//document.getElementById("searchLocation").focus(); // Not working
 	//$("#filterFieldsHolder").hide();
@@ -1846,19 +1915,35 @@ function filterClickLocation(loadGeoTable) {
     //alert("distanceFilterFromTop  " + distanceFilterFromTop);
 	//$('.hideMetaMenuClick').trigger("click"); // Otherwise covers location popup. Problem: hides hideLayers/hideLocationsMenu.
 	if ($("#filterLocations").is(':visible') && (distanceFilterFromTop < 300 || distanceFilterFromTop > 300)) {
-        closeLocationFilter(); console.log("closeLocationFilter");
+        //alert("closeLocationFilter()");
+        closeLocationFilter();
+        console.log("closeLocationFilter");
 	} else { // OPEN MAP FILTER
+		//alert("openLocationFilter()");
+		$("#filterLocations").prependTo($("#locationFilterHolder"));
 		openMapLocationFilter();
+		waitForElm('#geomap').then((elm) => {
+
+		  if (document.querySelector('#geomap')._leaflet_map) {
+		  	alert("found, refresh geomap")
+	      	document.querySelector('#geomap')._leaflet_map.invalidateSize(); // Force Leaflet map to reload
+	      }
+
+			/*
+	    	// Refresh since may have been loaded when map not visible.
+	    	// To do, turn off where loading occurs when not visible at this link: http://localhost:8887/localsite/info/#state=GA when "Change Location" clicked before Locations tab.
+		    let geomap = document.querySelector('#geomap')._leaflet_map; // Recall existing map
+		    geomap.invalidateSize(); // Refresh map tiles.
+		    */
+		});
+
 	}
 	$("#keywordFields").hide();
 }
-
 function openMapLocationFilter() {
     let hash = getHash();
-    //alert("openMapLocationFilter param.state " + param.state);
-    console.log("openMapLocationFilter()");
     loadScript(theroot + 'js/map-filters.js', function(results) {
-	    if (!hash.geoview) {
+	    if (!hash.geoview) { // && hash.sidetab != "locale"
 	        let currentStates = [];
 	        if(hash.geo && !hash.state) {
 	            let geos = hash.geo.split(",");
@@ -1873,7 +1958,7 @@ function openMapLocationFilter() {
 	        }
 	    }
 	    ///$("#geoPicker").show();
-	    $("#filterLocations").show();
+	    $("#filterLocations").show();$("#imagineBar").show();
 	    $(".locationTabText").text("Locations");
 	    $("#topPanel").hide();
 	    $("#showLocations").show();
@@ -1884,14 +1969,6 @@ function openMapLocationFilter() {
 	        state_select_holder.appendChild(state_select); // For apps hero
 	    }
 
-	    // Tabulator list is already updated before adjacent geomap is rendered.
-
-	    if (hash.geoview == "state" && hash.state) {
-		    locationFilterChange("counties");
-		} else {
-			console.log("Call locationFilterChange with no value")
-			locationFilterChange("");
-		}
 	    if (hash.geo) {
 	        let clearall = false;
 	        if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
@@ -1907,9 +1984,11 @@ function openMapLocationFilter() {
 	        }
 	    }
 	    if (!hash.appview) {
-		    waitForElm('#filterClickLocation').then((elm) => {
-		    	$("#filterClickLocation").addClass("filterClickActive");
-		    });
+	    	waitForElm('#filterClickLocation').then((elm) => {
+		    	if ($("#locationFilterHolder").is(':visible')) {
+			    	$("#filterClickLocation").addClass("filterClickActive");
+				}
+			});
 		}
 	    //loadScript(theroot + 'js/map.js', function(results) { // Load list before map
 	    	//console.log("Call renderMapShapes from navigation.js")
@@ -1928,6 +2007,7 @@ function openMapLocationFilter() {
 	});
 }
 function closeLocationFilter() {
+	//alert("closeLocationFilter()")
     //delete(hash.geoview); // BUGBUG, clears but still in filterClickLocation click
     console.log("closeLocationFilter() hash.geoview: " + hash.geoview);
     $(".locationTabText").text($(".locationTabText").attr("title"));
@@ -1935,6 +2015,7 @@ function closeLocationFilter() {
     $("#hideLocations").show();
     //$(".locationTabText").text("Entire State");
     $("#filterLocations").hide();
+    $("#imagineBar").hide();
     $("#filterClickLocation").removeClass("filterClickActive");
     if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
         $("#header.nav-up").hide();

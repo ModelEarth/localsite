@@ -2276,7 +2276,7 @@ function showList(dp,map) {
 
     // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
     // Remove name from hash to trigger refresh
-    let viewListLink = "<br><br><a href='' onclick='return false;' class='showListings btn btn-success'>View List</a>";
+    let viewListLink = "<br><br><a href='' onclick='return false;' class='showTopics btn btn-success'>View List</a>";
     let showAllLink = " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\",\"cat\",\"subcat\"]); return false;' href='#show=" + param["show"] + "'>Show All</a></span>";
     //$(".sidelistText").html(searchFor + viewListLink);
 
