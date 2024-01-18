@@ -753,23 +753,22 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 /* End For navcolumn from header.html */
 
-/* Settings Menu */
-.settingsPanel select {
-    min-width: 215px;
-    padding: 5px;
+#rightTopMenu select {
+    width: 280px;
+    padding: 8px;
     font-size: 16px;
     line-height: 1;
-    border: 1px solid #d9d9de;
-    
     border-radius: 6px;
-    /* height: 40px; */
-    /* -webkit-appearance: none; */
     font-size: 16pt;
-    color: #000;
-    /* pointer-events: auto; */
+    color: #ddd;
+    background-color: #777;
+    margin-right: 30px;
+    padding-right: 30px;
+    border: 0px !important;
 }
-.dark .settingsPanel select {
+.dark #rightTopMenu select {
 	color: #ddd;
+	background-color: #aaa;
 }
 .menuExpanded {
     min-height: 200px;

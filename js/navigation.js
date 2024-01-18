@@ -1729,17 +1729,21 @@ $(document).on("change", "#state_select", function(event) {
     }
 });
 $(document).on("click", "#filterClickLocation", function(event) {
+
+	
 	if ($("#draggableSearch").is(':visible')) {
 		$("#draggableSearch").hide();
-		alert("append")
+		//alert("append")
 		//$("#filterLocations").prependTo($("#locationFilterHolder"));
 		$("#filterLocations").hide();
 	}
+	/*
 	if ($("#localePanel").is(':visible')) {
 		closeSideTabs();
 		$("#topicsPanel").show(); // So return to apps menu shows something
 		$(".rightTopMenuInner div").removeClass("active"); // So not displayed when returning
 	}
+	*/
 
 	filterClickLocation();
 	event.stopPropagation();
@@ -1891,7 +1895,9 @@ function closeAppsMenu() {
 function filterClickLocation(loadGeoTable) {
     console.log("filterClickLocation() " + loadGeoTable);
     let hash = getHash();
-    if (hash.geoview) {
+    if (hash.sidetab == "locale" && hash.geoview) {
+    	goHash({'sidetab':''});
+    } else if (hash.geoview) {
     	goHash({'geoview':''});
     } else if (hash.state) {
     	goHash({'geoview':'state'});

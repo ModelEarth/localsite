@@ -29,7 +29,7 @@ svg{max-width:none;} /* Fix for embedding material icon map points in Drupal */
   .bodyLeftMarginFull .showMobileFull, .bodyLeftMarginList .showMobileFull, .bodyMargin .showMobileFull, .bodyRightMargin .showMobileFull {display:inline-block !important;}
 }
 @media (min-width: 801px) {
-  .showDesktop {display:inline-block !important;}
+  .showWide {display:inline-block !important;}
 }
 @media (max-width: 900px) {
   .hideMobileWide {display:none;}
