@@ -1938,7 +1938,7 @@ function filterLocationChange() {
         closeLocationFilter();
         console.log("closeLocationFilter");
 	} else { // OPEN MAP FILTER
-		alert("openLocationFilter() 1");
+		//alert("openLocationFilter() 1");
 		$("#filterLocations").prependTo($("#locationFilterHolder"));
 		openMapLocationFilter();
 		waitForElm('#geomap').then((elm) => {
