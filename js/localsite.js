@@ -2091,7 +2091,7 @@ function showSearchFilter() {
   }
 }
 function closeSideTabs() {
-  alert("closeSideTabs()");
+  console.log("closeSideTabs()");
   $("#sideTabs").hide();
   $("body").removeClass("bodyRightMargin");
   if (!$('body').hasClass('bodyLeftMargin')) {
