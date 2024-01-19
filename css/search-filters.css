@@ -272,7 +272,7 @@ input.filterClick[type="text"] {
     height: 530px;
     border: 10px solid blue;
 }
-.listHolderFooter {
+.listHolderFooterX {
   position:absolute;
   bottom:0;
   left:0px;
