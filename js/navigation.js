@@ -679,7 +679,7 @@ function hashChanged() {
         if (hash.geoview && hash.geoview != "earth") {
             $("#nullschoolHeader").hide();
         }
-        //waitForElm('#state_select').then((elm) => {
+        waitForElm('#state_select').then((elm) => {
 	        if (!hash.geoview || hash.geoview == "none") {
 	            $("#geoPicker").hide();
 	            $(".stateFilters").hide();
@@ -687,7 +687,7 @@ function hashChanged() {
 	            $("#geoPicker").show();
 	            $(".stateFilters").show();
 	        }
-        //});
+       	});
         if (hash.geoview == "earth") {
             showGlobalMap("https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
         } else if (hash.geoview) {
