@@ -654,7 +654,7 @@ function loadLocalTemplate() {
       initSitelook();
       if (typeof relocatedStateMenu != "undefined") {
         relocatedStateMenu.appendChild(state_select); // For apps hero
-        //$(".stateFilters").hide();
+        $(".stateFilters").hide();
       }
       waitForElm('#filterClickLocation').then((elm) => {
         if (param.showstates != "false") {
