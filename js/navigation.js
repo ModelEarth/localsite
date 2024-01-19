@@ -1322,31 +1322,29 @@ function renderMapShapes(whichmap, hash, geoview, attempts) {
 //var geojsonLayer; // Hold the prior letter. We can use an array or object instead.
 var geoOverlays = {};
 function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
- console.log("renderMapShapeAfterPromise " + whichmap);
  includeCSS3(theroot + 'css/leaflet.css',theroot);
   loadScript(theroot + 'js/leaflet.js', function(results) {
-    //alert("pre L")
-    waitForVariable('L', function() {
-      //alert("Got L")
+    waitForVariable('L', function() { // Wait for Leaflet
 
     let stateAbbr = "";
     if (hash.state) {
       stateAbbr = hash.state.split(",")[0].toUpperCase();
     }
-    console.log("renderMapShapeAfterPromise " + whichmap + " state: " + stateAbbr);
-
-    // In addition, the state could also be derived from the geo values.
-
+    
+    // In addition, the state could also be derived from the county geo value(s).
     var stateCount = typeof hash.state !== "undefined" ? hash.state.split(",").length : 0;
     if (stateCount > 1 && hash.geoview != "country") {
-      hash.state.split(",").forEach(function(state) {
+      console.log("Call renderMapShapeAfterPromise for each state in " + hash.state);
+      let reversedStr = hash.state.split(",").reverse().join(",");
+      console.log("TO DO: Figure out why ony last state is retained on map")
+      reversedStr.split(",").forEach(function(state) { // Loop through each state
         hashclone = $.extend(true, {}, hash); // Clone/copy object without entanglement
         hashclone.state = state.toUpperCase(); // One state at a time
-        // Loop through each state
         renderMapShapeAfterPromise(whichmap, hashclone, 0); // Using clone since hash could be modified mid-loop by another widget,
       });
       return;
     }
+    console.log("renderMapShapeAfterPromise " + whichmap + " state: " + stateAbbr);
 
     if (stateAbbr == "GA") { // TO DO: Add regions for all states
       $(".regionFilter").show();
@@ -1354,7 +1352,6 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
       $(".regionFilter").hide();
     }
     $("#state_select").val(stateAbbr); // Used for lat lon fetch
-
 
     waitForElm('#' + whichmap).then((elm) => {
 
@@ -1378,11 +1375,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
         // BUGBUG - Shouldn't need to fetch counties.json every time.
 
-
-
         // TOPO Files: https://github.com/modelearth/topojson/countries/us-states/AL-01-alabama-counties.json";
-        // US: 
-        
+
+        // US:
         let stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78};
         let state2char = ('0'+stateIDs[stateAbbr]).slice(-2);
         //let stateNameLowercase = $("#state_select option:selected").text().toLowerCase();
@@ -1913,10 +1908,12 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
             // CLICK SHAPE ON MAP
             function mapFeatureClick(e) {
+
               param = loadParams(location.search,location.hash); // param is declared in localsite.js
               var layer = e.target;
               //map.fitBounds(e.target.getBounds()); // Zoom to boundary area clicked
               if (layer.feature.properties.COUNTYFP) {
+              	consoleLog("Click state map");
                 var fips = "US" + layer.feature.properties.STATEFP + layer.feature.properties.COUNTYFP;
                 
                 //var fipsString = fips;
@@ -1933,8 +1930,8 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
               } else if (layer.feature.properties.name) { // Full state name
                   let hash = getHash();
                   let theStateID = getIDfromStateName(layer.feature.properties.name);
-                  console.log("theStateID " + theStateID);
-                  console.log("hash.state " + hash.state);
+                  consoleLog("Click state map theStateID " + theStateID);
+                  //console.log("hash.state " + hash.state);
                   if (hash.state) {
                     if (hash.state.includes(theStateID)) {
                         //if (hash.state.includes(",")) { // Assuming user is removing state.
@@ -1961,8 +1958,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                     hash.state = theStateID;
                   }
                   // ,'geo':'','regiontitle':''
-                  console.log("COULD BE ISSUE WITH MULTISTATE: goHash " + hash.state);
-                  goHash({'state':hash.state});
+                  goHash({'state':hash.state,'geoview':'state'});
               }
             }
             // ROLLOVER SHAPE ON MAP
@@ -3266,25 +3262,8 @@ $(document).ready(function () {
 		$("#state_select").val(stateAbbrev);
 	}
 	if (hash.regiontitle) {
-		$("#region_select").val(hash.regiontitle)
-		//$("#state_select option[value='NV']").prop('selected', true);
+		$("#region_select").val(hash.regiontitle);
 	}
-	//hashChanged(); // Move to localsite.js since occurs twice if map-filter.js loaed by hash change.
-
-	/*
-	if (hiddenhash.showtitle) {
-    	$("#showAppsText").text(hiddenhash.showtitle);
-    	$("#showAppsText").attr("",hiddenhash.showtitle);
-
-    	console.log("why is regiontitle not set here?"); // Neither console.log or alert appears
-    	$(".regiontitle").text(hiddenhash.showtitle);
-    	
-	}
-	*/
-    // Insert for map filters since header.html file is not loaded.
-    // Insert in #local-header so flexheader encompasses both.
-    // This is slow, so best if already reside in #local-header
-    //$("#local-header").append( "<div id='filterbaroffset' style='height:56px; pointer-events:none'></div>");
 });
 
 // For stateImpact colors
