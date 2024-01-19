@@ -347,7 +347,7 @@ function go(addToHash) {
   triggerHashChangeEvent();
 }
 
-// Used by map-filters.js, map.js
+// Used by navigation.js, map.js
 if(typeof priorHash == 'undefined') {
   var priorHash = {};
 }
@@ -654,7 +654,7 @@ function loadLocalTemplate() {
       initSitelook();
       if (typeof relocatedStateMenu != "undefined") {
         relocatedStateMenu.appendChild(state_select); // For apps hero
-        $(".stateFilters").hide();
+        //$(".stateFilters").hide();
       }
       waitForElm('#filterClickLocation').then((elm) => {
         if (param.showstates != "false") {
@@ -1079,24 +1079,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   } else if (param.showsearch == "true" || param.showmap || param.appview) { // Second two were hash, but not defined here
     loadLocalTemplate();
     loadMapAndMapFilters();
-
-    // This is already in the above
-    //loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
-
-    /*
-    // TODO: Then remove these dependencies and lazy load these when switching to the above and tabs are clicked.
-    loadScript(theroot + 'js/d3.v5.min.js', function(results) { // BUG - change so map-filters.js does not require this on it's load
-      includeCSS3(theroot + 'css/leaflet.css',theroot);
-      loadScript(theroot + 'js/leaflet.js', function(results) {
-        loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Could skip when map does not use material icon colors
-          loadScript(theroot + 'js/map.js', function(results) {
-            // Loads map-filters.js
-            loadMapFiltersJS(theroot,1); // Uses local_app library in localsite.js for community_data_root
-          });
-        });
-      });
-    });
-    */
   } else {
     includeCSS3(theroot + 'css/base.css',theroot);
   }
@@ -1106,10 +1088,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     loadSearchFilterCss(); 
     loadScript(theroot + 'js/navigation.js', function(results) {
     });
-    loadScript(theroot + 'js/map.js', function(results) { // Load list before map
-    });
-    loadScript(theroot + 'js/map-filters.js', function(results) { // Load list before map
-    });
+    //loadScript(theroot + 'js/map.js', function(results) { // Load list before map
+    //});
   }
 
   if (param.material_icons != "false") {
@@ -1415,14 +1395,9 @@ function getUrlID3(url,theroot) {
 function loadMapFiltersJS(theroot, count) {
   console.log("loadMapFiltersJS");
   if (typeof customD3loaded !== 'undefined' && typeof localsite_map !== 'undefined') {
-    //alert("localsite_map " + localsite_map)
-    //loadScript(theroot + 'https://cdn.jsdelivr.net/npm/vue', function(results) { // Need to check if function loaded
-      loadScript(theroot + 'js/map-filters.js', function(results) {});
-      //alert("loadMapFiltersJS says D3 is ready for map-filters.js");
       if (document.getElementById("/icon?family=Material+Icons")) {
           $(".show-on-load").removeClass("show-on-load");
       }
-    //});
   } else if (count<100) { // Wait a milisecond and try again
     setTimeout( function() {
       consoleLog("try loadMapFiltersJS again")

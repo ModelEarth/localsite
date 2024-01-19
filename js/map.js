@@ -3962,17 +3962,17 @@ function hashChangedMap() {
         } else {
           console.log("ERROR #state_select not available in hashChangedMap()2");
         }    
-        loadMap1("hashChanged() in map.js new state(s) " + hash.state, hash.show, dp);
+        loadMap1("hashChangedMap() in map.js new state(s) " + hash.state, hash.show, dp);
       });
     });
 
   } else if (hash.cat !== priorHash.cat) {
 
-    loadMap1("hashChanged() in map.js new cat " + hash.cat, hash.show);
+    loadMap1("hashChangedMap() in map.js new cat " + hash.cat, hash.show);
   } else if (hash.subcat !== priorHash.subcat) {
-    loadMap1("hashChanged() in map.js new subcat " + hash.subcat, hash.show);
+    loadMap1("hashChangedMap() in map.js new subcat " + hash.subcat, hash.show);
   } else if (hash.details !== priorHash.details) {
-    loadMap1("hashChanged() in map.js new details = " + hash.details, hash.show);
+    loadMap1("hashChangedMap() in map.js new details = " + hash.details, hash.show);
   }
   if (hash.m != priorHash.m) {
     // For 360 iFrame

@@ -1179,9 +1179,9 @@ document.addEventListener('mousedown', function(e) {
 
                 <!-- Tabulator: Latest version -->
                 
-                <div id="tabulator-statetable"></div>
+                <div id="tabulator-statetable" style="min-width:510px"></div>
                 <div id="tabulator-geotable" style="min-width:510px;overflowX:visible"></div>
-                <!-- min-width 510px added because 1/3 loads were not visible. (prior to upgrading to 5.5) -->
+                <!-- min-width 510px added because 1/3 loads were not visible. (Bug continues with 5.5) -->
                 <!-- min-height:200px seemed to break verticle scroll. min-height was added for short Hawaii bug. -->
                 
                 <!--
@@ -1215,11 +1215,8 @@ document.addEventListener('mousedown', function(e) {
 </div>
 <!-- /LOCATION SEARCH -->
 
-
-
-
 <!-- 
-Displayed by hashChanged() in map-filters.js
+Displayed by hashChanged() in navigation.js
 -->
 <div class="content contentpadding" style="background-color:rgb(246, 246, 246); max-width:1500px; padding-top:0; padding-bottom:0">
   <iframe id="introframe" style="display:none" width="100%" height="900px" src="" frameborder="0" ></iframe>
