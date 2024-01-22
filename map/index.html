@@ -10,13 +10,16 @@
 <script type="text/javascript" src="../js/localsite.js?display=map&showheader=true&showfooter=false&showsearch=true"></script>
 
 <script>
-let hash = getHash();
-if (!hash.show && !hash.appview && !hash.geoview) {
-	//showApps("#bigThumbMenu"); // For inital load when no map requested.
-	loadScript(theroot + 'js/map-filters.js', function(results) {
-		goHash({"appview":"topics"}); // Allows priorhash to be set for subsequent click of Locations tab.
-	});
+function initialMapPageLoad() {
+	let hash = getHash();
+	if (!hash.show && !hash.appview && !hash.geoview) {
+		// Show topic menu on inital load when no map requested.
+		loadScript(theroot + 'js/map-filters.js', function(results) {
+			goHash({"appview":"topics"}); // Allows priorhash to be set for subsequent click of Locations tab.
+		});
+	}
 }
+initialMapPageLoad();
 </script>
 <style>
 	#bigThumbPanelHolder {

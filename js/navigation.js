@@ -260,23 +260,26 @@ function hashChanged() {
             console.log("ERROR lat changed for map2, but leaflet not loaded. typeof L undefined.");
         }
     }
-
-    console.log("hash.geoview: " + hash.geoview + " priorHash.geoview: " + priorHash.geoview);
     
-    // Tabulator list is already updated before adjacent geomap is rendered.
-    if (hash.geoview == "state" && hash.state) {
-        locationFilterChange("counties");
-    } else {
-        console.log("Call locationFilterChange with no value")
-        locationFilterChange("");
-    }
-
     if (hash.geoview && hash.geoview != priorHash.geoview) {
         $("#geoview_select").val(hash.geoview);
+
+        /*
+        // Tabulator list is already updated before adjacent geomap is rendered.
+	    if (hash.geoview == "state" && hash.state) {
+	    	console.log("Call1 locationFilterChange counties");
+	        locationFilterChange("counties");
+	    } else {
+	        //console.log("Call locationFilterChange with no value")
+	        //locationFilterChange("");
+	    }
+		*/
     }
 
     if (hash.state != priorHash.state) {
-        loadGeomap = true;
+    	if (hash.geoview) {
+        	loadGeomap = true;
+    	}
         if(location.host.indexOf('model.georgia') >= 0) {
             if (hash.state != "" && hash.state.split(",")[0].toUpperCase() != "GA") { // If viewing other state, use model.earth
                 let goModelEarth = "https://model.earth" + window.location.pathname + window.location.search + window.location.hash;
@@ -971,7 +974,7 @@ $(document).ready(function () {
     });
 
     
-	
+	/*
 	$(".filterUL li").click(function(e) {
 		//$(".filterBubbleHolder").hide();
 		e.preventDefault();
@@ -990,7 +993,7 @@ $(document).ready(function () {
 		//$(".fieldSelector").hide(); // Close loc menu
 		e.stopPropagation(); // Prevents click on containing #filterClickLocation.
 	 });
-
+	*/
     $('#topPanelFooter').click(function () {
     	$('#productSubcats').css("max-height","none");
     	$('#topPanelFooter').hide();

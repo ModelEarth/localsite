@@ -1285,7 +1285,7 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
     margin-right: 8px;
   }
   #headerLogoholder {
-    padding-left: 47px;
+    padding-left: 59px;
   }
 }
 @media (max-width: 300px) {
