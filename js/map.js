@@ -1044,7 +1044,7 @@ function loadGeos(geo, attempts, callback) {
 
 function shortenMapframe(mapframeLong) {
   let mapframeUrl = "";
-  if (mapframeLong.length) {
+  if (mapframeLong && mapframeLong.length) {
     if (mapframeLong.toLowerCase().includes("kuula.co")) {
       // viewID resides at the end of Kuula incomoing link.
       let pieces = mapframeLong.split("/");
