@@ -1071,9 +1071,9 @@ function getMapframeUrl(m) {
         mapframe = "https://ejscreen.epa.gov/mapper/";
     } else if (m == "peach") {
         mapframe = "https://kuula.co/share/collection/7PYZK?fs=1&vr=1&zoom=0&initload=1&thumbs=1&chromeless=1&logo=-1";
-    } else if (m.includes("kuula_")) {
+    } else if (m && m.includes("kuula_")) {
         mapframe = "https://kuula.co/share/collection/" + m.replace("kuula_","") + "?fs=1&vr=1&zoom=1&initload=1&thumbs=1&chromeless=1&logo=-1";
-    } else if (m.includes("roundme_")) {
+    } else if (m && m.includes("roundme_")) {
         mapframe = "https://roundme.com/embed/" + m.replace("roundme_","");
     } else {
         //mapframe = m + "?fs=1&vr=1&zoom=0&initload=1&thumbs=1&chromeless=1&logo=-1";
@@ -1086,15 +1086,14 @@ function getMapframeUrl(m) {
 let subcatObject = {};
 let subcatArray = [];
 let subcatList = "";
-
 function hideSideList() {
-
-  // Alternatively, could use hideSide("list") in navigation.js, but will we always load navigation.js?
+  // Alternatively, could use hideSide("list") in navigation.js, but waitfor navigation.js
   // hideSide("list");
 
-  $("#showNavColumn").hide();
-  $("#listcolumn").show();
-  showListBodyMargin();
+  // These show the side list. Not needed with: http://localhost:8887/localsite/map/#show=farmfresh&state=NY
+  //$("#showNavColumn").hide();
+  //$("#listcolumn").show();
+  //showListBodyMargin();
 }
 function showList(dp,map) {
   console.log("showList");
@@ -3913,10 +3912,12 @@ function hashChangedMap() {
         $("#detaillist > [name=\"" + thename + "\"]").show();
         //let mapframe = $("#detaillist > [name=\"" + thename + "\"]").attr("m");
         let mapframe = $("#detaillist > [name=\"" + thename + "\"]").attr("m");
-        mapframe = getMapframeUrl(mapframe);
-        //alert("Redundent call");
-        $("#mapframe").prop("src", mapframe);
-        $(".mapframeClass").show();
+        if (mapframe) {
+          mapframe = getMapframeUrl(mapframe);
+          //alert("Redundent call");
+          $("#mapframe").prop("src", mapframe);
+          $(".mapframeClass").show();
+        }
       });
     }
     //loadMap1("hashChanged() in map.js new name for View Details " + hash.name, hash.show);
