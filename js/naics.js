@@ -310,7 +310,7 @@ function refreshNaicsWidget() {
         }
 
         // v2
-        if (location.host.indexOf('localhost') >= 0) {
+        if (hash.beta == "true" || location.host.indexOf('localhost') >= 0) {
 
             $("#industryTableHolder").show();
 
