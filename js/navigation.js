@@ -5265,9 +5265,6 @@ function openMapLocationFilter() {
 	});
 }
 function closeLocationFilter() {
-	//alert("closeLocationFilter()")
-    //delete(hash.geoview); // BUGBUG, clears but still in filterClickLocation click
-    console.log("closeLocationFilter() hash.geoview: " + hash.geoview);
     $(".locationTabText").text($(".locationTabText").attr("title"));
     $("#showLocations").hide();
     $("#hideLocations").show();
@@ -5283,14 +5280,4 @@ function closeLocationFilter() {
         relocatedStateMenu.appendChild(state_select); // For apps hero
     }
     $("#hero_holder").show();
-
-    /*
-    if(location.host.indexOf("localhost") >= 0 || location.host.indexOf("georgia") >= 0) { // TEMP until state is enforced while international map is still avalable. Applied when clicking "Top Industires" here: /localsite/map/#show=trade&geoview=countries
-        console.log("Populate with state based on domain.")
-        goHash({"geoview":"","state":"GA"});
-    } else {
-        //updateHash({"geoview":""});
-        
-    }
-    */
 }
