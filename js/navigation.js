@@ -86,6 +86,11 @@ function hashChanged() {
             }
         });
     }
+    if (priorHash.show && hash.show !== priorHash.show) {
+        hideSide("list");
+    } else if (hash.state !== priorHash.state) {
+        hideSide("list");
+    }
     if (hash.show != priorHash.show) {
         if (hash.show && priorHash.show) {
             console.log("Close location filter, show new layer.");
@@ -714,6 +719,81 @@ function hashChanged() {
         });
         //}
     }
+}
+function hideSide(which) {
+    console.log("hideSide " + which);
+    if (which == "list") {
+        $("#listcolumn").hide();
+        $("#showListInBar").show();
+    } else {
+        $("#navcolumn").hide();
+        $('body').removeClass('bodyLeftMarginFull');
+        if ($("#fullcolumn > .datascape").is(":visible")) { // When NOT embedded
+            if ($("#listcolumn").is(':visible')) {
+                $('#listcolumn').addClass('listcolumnOnly');
+                console.log("addClass bodyLeftMarginList");
+                $('body').addClass('bodyLeftMarginList');
+            }
+        }
+    }
+    if (!$("#navcolumn").is(':visible') && !$("#listcolumn").is(':visible')) {
+        $("#showNavColumn").show();$("#showSideInBar").hide();
+        $("#sideIcons").show();
+    } else if (!$("#navcolumn").is(':visible') && $("#listcolumn").is(':visible')) {
+        $("#showSideInBar").show();
+    }
+    if (!$("#navcolumn").is(':visible')) {
+        $('body').removeClass('bodyLeftMargin');
+    }
+    if (!$("#listcolumn").is(':visible')) {
+        $('body').removeClass('bodyLeftMarginList');
+    }
+    if (!$("#navcolumn").is(':visible') || !$("#listcolumn").is(':visible')) {
+        $('body').removeClass('bodyLeftMarginFull');
+    }
+    if (!$('body').hasClass('bodyRightMargin')) {
+        $('body').removeClass('mobileView');
+    }
+    // Might not need this with mobile
+
+    // Stopped working after reconfuring to load map1 and map2 with same function.
+    /*
+    if (document.querySelector('#map1')._leaflet_map) {
+        document.querySelector('#map1')._leaflet_map.invalidateSize(); // Refresh map tiles.
+    }
+    if (document.querySelector('#map2')._leaflet_map) {
+        document.querySelector('#map2')._leaflet_map.invalidateSize(); // Refresh map tiles.
+    }
+    */
+    // Works instead
+    if ($("#map1").text().trim().length > 1) {
+        if (map1) {
+            map1.invalidateSize(); // Refresh map tiles.
+        }
+    }
+    if ($("#map2").text().trim().length > 1) {
+        if (map2) {
+            map2.invalidateSize(); // Refresh map tiles.
+        }
+    }
+}
+function popAdvanced() {
+    waitForElm('#filterLocations').then((elm) => {
+                
+        console.log("popAdvanced");
+        closeSideTabs();
+        /*
+        loadScript(theroot + 'js/map.js', function(results) {
+            loadScript(theroot + 'js/navigation.js', function(results) { // For pages without
+                goHash({'geoview':'state'});
+                //filterClickLocation();
+            });
+        });
+        */
+        $("#filterClickLocation").removeClass("filterClickActive");
+        $("#filterLocations").appendTo($("#locationFilterPop"));
+        $("#draggableSearch").show();
+    });
 }
 function showSideTabs() {
 	waitForElm('#sideTabs').then((elm) => {
@@ -3733,64 +3813,6 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 				}
 			}
 		});
-
-		function hideSide(which) {
-			console.log("hideSide " + which);
-			if (which != "list") {
-				$("#navcolumn").hide();
-				$('body').removeClass('bodyLeftMarginFull');
-				if ($("#fullcolumn > .datascape").is(":visible")) { // When NOT embedded
-					if ($("#listcolumn").is(':visible')) {
-						$('#listcolumn').addClass('listcolumnOnly');
-						console.log("addClass bodyLeftMarginList");
-						$('body').addClass('bodyLeftMarginList');
-					}
-				}
-			} else {
-				$("#listcolumn").hide();
-				$("#showListInBar").show();
-			}
-			if (!$("#navcolumn").is(':visible') && !$("#listcolumn").is(':visible')) {
-				$("#showNavColumn").show();$("#showSideInBar").hide();
-				$("#sideIcons").show();
-			} else if (!$("#navcolumn").is(':visible') && $("#listcolumn").is(':visible')) {
-				$("#showSideInBar").show();
-			}
-			if (!$("#navcolumn").is(':visible')) {
-				$('body').removeClass('bodyLeftMargin');
-			}
-			if (!$("#listcolumn").is(':visible')) {
-				$('body').removeClass('bodyLeftMarginList');
-			}
-			if (!$("#navcolumn").is(':visible') || !$("#listcolumn").is(':visible')) {
-				$('body').removeClass('bodyLeftMarginFull');
-			}
-			if (!$('body').hasClass('bodyRightMargin')) {
-	        	$('body').removeClass('mobileView');
-	    	}
-	    	// Might not need this with mobile
-
-	    	// Stopped working after reconfuring to load map1 and map2 with same function.
-	    	/*
-			if (document.querySelector('#map1')._leaflet_map) {
-				document.querySelector('#map1')._leaflet_map.invalidateSize(); // Refresh map tiles.
-			}
-			if (document.querySelector('#map2')._leaflet_map) {
-				document.querySelector('#map2')._leaflet_map.invalidateSize(); // Refresh map tiles.
-			}
-			*/
-			// Works instead
-			if ($("#map1").text().trim().length > 1) {
-				if (map1) {
-					map1.invalidateSize(); // Refresh map tiles.
-				}
-			}
-			if ($("#map2").text().trim().length > 1) {
-				if (map2) {
-					map2.invalidateSize(); // Refresh map tiles.
-				}
-			}
-		}
 	 	if (param["showapps"] && param["showapps"] == "false") {
 	 		$(".showApps").hide();
 			$("#appSelectHolder").hide();
@@ -4728,24 +4750,6 @@ function hideAdvanced() {
 	}
 	$("#hero_holder").show();
 	$(".locationTabText").text($(".locationTabText").attr("title"));
-}
-function popAdvanced() {
-	waitForElm('#filterLocations').then((elm) => {
-				
-		console.log("popAdvanced");
-		closeSideTabs();
-		/*
-		loadScript(theroot + 'js/map.js', function(results) {
-			loadScript(theroot + 'js/navigation.js', function(results) { // For pages without
-				goHash({'geoview':'state'});
-	      		//filterClickLocation();
-			});
-		});
-		*/
-		$("#filterClickLocation").removeClass("filterClickActive");
-		$("#filterLocations").appendTo($("#locationFilterPop"));
-		$("#draggableSearch").show();
-	});
 }
 function activateSideColumn() {
 	// Make paths relative to current page

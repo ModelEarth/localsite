@@ -21,7 +21,7 @@ if(typeof layerControls=='undefined'){ var layerControls = {}; }// Object contai
 if(typeof hash === 'undefined') {
   // Need to figure out where already declared.
   // Avoid putting var in front, else "Identifier 'hash' has already been declared" error occurs here: http://localhost:8887/localsite/map/
-  hash = {};
+  //hash = {};
 }
 if(typeof dataObject == 'undefined') {
   var dataObject = {};
@@ -1088,15 +1088,6 @@ function getMapframeUrl(m) {
 let subcatObject = {};
 let subcatArray = [];
 let subcatList = "";
-function hideSideList() {
-  // Alternatively, could use hideSide("list") in navigation.js, but waitfor navigation.js
-  // hideSide("list");
-
-  // These show the side list. Not needed with: http://localhost:8887/localsite/map/#show=farmfresh&state=NY
-  //$("#showNavColumn").hide();
-  //$("#listcolumn").show();
-  //showListBodyMargin();
-}
 function showList(dp,map) {
   console.log("showList");
   console.log("Call showList for " + dp.dataTitle + " list");
@@ -2166,10 +2157,8 @@ function showList(dp,map) {
     $("#listcolumnList").html(shortout);
 
     // Show the side columns
-    if (!hash.name) { // List closed for detail page
-      hideSideList();
-    } else {
-      $("#showListInBar").show();
+    if (!$("#listcolumn").is(":visible")) { // #listcolumn may already be visible if icon clicked while page is loading.
+        $("#showListInBar").show();
     }
 
     $(".sidelistHolder").show();
@@ -2332,6 +2321,7 @@ function showListBodyMargin() {
 }
 
 function renderCatList(catList,cat) {
+  let hash = getHash();
   console.log("the catList");
   console.log(catList);
   let show = hash.show;
@@ -3018,7 +3008,7 @@ let map1 = {};
 let map2 = {};
 let priorLayer;
 function loadDataset(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback) {
-
+  let hash = getHash();
   loadScript(theroot + 'js/d3.v5.min.js', function(results) { // Used by customD3loaded below
 
   // Pre-load Asynhronously the first time.
@@ -3870,11 +3860,12 @@ function markerRadius(mapZoom,map) {
 }
 
 function hashChangedMap() {
-  //alert("hashChangedMap")
   let hash = getHash();
-
-  //alert("hiddenhash.mapview2 " + hiddenhash.geoview)
-
+  if (priorHash.show && hash.show !== priorHash.show) {
+    clearListDisplay();
+  } else if (hash.state !== priorHash.state) {
+    clearListDisplay();
+  }
   if (hash.show == "undefined") { // To eventually remove
     delete hash.show; // Fix URL bug from indicator select hamburger menu
     updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
@@ -3932,7 +3923,6 @@ function hashChangedMap() {
       }
     });
   }
-
   if (hash.layers !== priorHash.layers) {
     //applyIO(hiddenhash.naics);
     loadMap1("hashChangedMap() in map.js layers", hash.show);
