@@ -10,7 +10,7 @@
 */
 
 /*global L*/
-
+var leafletIconLoaded = "true";
 (function (window, document, undefined) {
     "use strict";
 

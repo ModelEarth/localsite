@@ -21,7 +21,7 @@ if(typeof layerControls=='undefined'){ var layerControls = {}; }// Object contai
 if(typeof hash === 'undefined') {
   // Need to figure out where already declared.
   // Avoid putting var in front, else "Identifier 'hash' has already been declared" error occurs here: http://localhost:8887/localsite/map/
-  hash = {};
+  //hash = {};
 }
 if(typeof dataObject == 'undefined') {
   var dataObject = {};
@@ -163,7 +163,8 @@ function loadMap1(calledBy, show, dp_incoming) {
 
   if (show == "farmfresh") { // In naics.js we also default to GA for this one topic // && theState
     if (!theState) {
-      //theState = "GA"; // Since there is not a national dataset for map.
+      theState = "GA"; // Since there is not a national dataset for map.
+      updateHash({"state":theState});
     }
     dp.listTitle = "USDA Farm Produce";
     if (theState) {
@@ -195,6 +196,7 @@ function loadMap1(calledBy, show, dp_incoming) {
     dp.searchFields = "name";
     dp.addressColumn = "street";
     dp.stateColumn = "state";
+    dp.stateRequired = "true";
     dp.addlisting = "https://www.ams.usda.gov/services/local-regional/food-directories-update";
     // community/farmfresh/ 
     dp.mapInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community/farmfresh/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
@@ -1086,15 +1088,6 @@ function getMapframeUrl(m) {
 let subcatObject = {};
 let subcatArray = [];
 let subcatList = "";
-function hideSideList() {
-  // Alternatively, could use hideSide("list") in navigation.js, but waitfor navigation.js
-  // hideSide("list");
-
-  // These show the side list. Not needed with: http://localhost:8887/localsite/map/#show=farmfresh&state=NY
-  //$("#showNavColumn").hide();
-  //$("#listcolumn").show();
-  //showListBodyMargin();
-}
 function showList(dp,map) {
   console.log("showList");
   console.log("Call showList for " + dp.dataTitle + " list");
@@ -2164,10 +2157,8 @@ function showList(dp,map) {
     $("#listcolumnList").html(shortout);
 
     // Show the side columns
-    if (!hash.name) { // List closed for detail page
-      hideSideList();
-    } else {
-      $("#showListInBar").show();
+    if (!$("#listcolumn").is(":visible")) { // #listcolumn may already be visible if icon clicked while page is loading.
+        $("#showListInBar").show();
     }
 
     $(".sidelistHolder").show();
@@ -2330,6 +2321,7 @@ function showListBodyMargin() {
 }
 
 function renderCatList(catList,cat) {
+  let hash = getHash();
   console.log("the catList");
   console.log(catList);
   let show = hash.show;
@@ -3016,7 +3008,7 @@ let map1 = {};
 let map2 = {};
 let priorLayer;
 function loadDataset(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback) {
-
+  let hash = getHash();
   loadScript(theroot + 'js/d3.v5.min.js', function(results) { // Used by customD3loaded below
 
   // Pre-load Asynhronously the first time.
@@ -3555,217 +3547,219 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
     currentName = hash.name.replace(/_/g,' ').replace(/ AND /g,' & ');
   }
   //console.log("dp.color " + dp.color);
-  dp.data.forEach(function(element) {
-    uniqueID++;
-    // Add a lowercase instance of each column name
-    var key, keys = Object.keys(element);
-    var n = keys.length;
-    //var element={};
-    while (n--) {
-      key = keys[n];
-      element[key.toLowerCase()] = element[key];
-    }
+  loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Might not get used (in time?) for L.IconMaterial. Previously, had to wrap map.js load in localsite.js instead.
+  waitForVariable('leafletIconLoaded', function() {
+    dp.data.forEach(function(element) {
+      uniqueID++;
+      // Add a lowercase instance of each column name
+      var key, keys = Object.keys(element);
+      var n = keys.length;
+      //var element={};
+      while (n--) {
+        key = keys[n];
+        element[key.toLowerCase()] = element[key];
+      }
 
-    if (dp.colorColumn) {
-      iconColor = dp.scale(element[dp.colorColumn]);
-    } else if (dp.valueColumn) {
-      // If the valueColumn = type, the item column may be filtered. For PPE the item contains multiple types.
+      if (dp.colorColumn) {
+        iconColor = dp.scale(element[dp.colorColumn]);
+      } else if (dp.valueColumn) {
+        // If the valueColumn = type, the item column may be filtered. For PPE the item contains multiple types.
 
-      //console.log("dp.valueColumn: " + dp.valueColumn);
-      //console.log("dp.valueColumn value valueColumn: " + element[dp.valueColumn]);
-      //console.log("dp.valueColumn value 'Type' column: " + element["type"]); // Had to be lowercase for farmfresh
-      //console.log("dp.valueColumn value Category: " + element["Category"]);
+        //console.log("dp.valueColumn: " + dp.valueColumn);
+        //console.log("dp.valueColumn value valueColumn: " + element[dp.valueColumn]);
+        //console.log("dp.valueColumn value 'Type' column: " + element["type"]); // Had to be lowercase for farmfresh
+        //console.log("dp.valueColumn value Category: " + element["Category"]);
+        
+        // A function that returns colors based on the categories in the Values column
+        iconColor = dp.scale(element[dp.valueColumn]);
+
+      } else if (dp.color) {
+        iconColor = dp.color;
+      } else {
+        iconColor = "#548d1a"; // Green. Was "blue"
+      }
       
-      // A function that returns colors based on the categories in the Values column
-      iconColor = dp.scale(element[dp.valueColumn]);
-
-    } else if (dp.color) {
-      iconColor = dp.color;
-    } else {
-      iconColor = "#548d1a"; // Green. Was "blue"
-    }
-    
-    //console.log("element[dp.valueColumn] " + element[dp.valueColumn] + " iconColor: " + iconColor + " dp.valueColumn: " + dp.valueColumn);
-    
-    if (typeof dp.latColumn == "undefined") {
-      dp.latColumn = "latitude";
-    }
-    if (typeof dp.lonColumn == "undefined") {
-      dp.lonColumn = "longitude";
-    }
-
-    //console.log("iconColor: " + iconColor);
-    //console.log("---");
-    iconColorRGB = hex2rgb(iconColor);
-    iconName = dp.iconName;
-    if (typeof L === 'undefined') {
-      if (location.host.indexOf('localhost') >= 0) {
-        alert("Leaflet L not yet loaded");
-      } else {
-        console.log("Leaflet L not yet loaded");
+      //console.log("element[dp.valueColumn] " + element[dp.valueColumn] + " iconColor: " + iconColor + " dp.valueColumn: " + dp.valueColumn);
+      
+      if (typeof dp.latColumn == "undefined") {
+        dp.latColumn = "latitude";
       }
-    } else if (typeof L.IconMaterial === 'undefined') {
-      if (location.host.indexOf('localhost') >= 0) {
-        console.log("ALERT Leaflet L.IconMaterial undefined = leaflet.icon-material.js not loaded");
-      } else {
-        console.log("Leaflet L.IconMaterial undefined = leaflet.icon-material.js not loaded");
+      if (typeof dp.lonColumn == "undefined") {
+        dp.lonColumn = "longitude";
       }
-    }
 
-    let name = element.name;
-    if (element[dp.nameColumn]) {
-      name = element[dp.nameColumn];
-    } else if (element.title) {
-      name = element.title;
-    }
-    if (dp.latColumn.includes(".")) { // ToDo - add support for third level
-      element[dp.latColumn] = element[dp.latColumn.split(".")[0]][dp.latColumn.split(".")[1]];
-      element[dp.lonColumn] = element[dp.lonColumn.split(".")[0]][dp.lonColumn.split(".")[1]];
-    }
-    if (!element[dp.latColumn] || !element[dp.lonColumn]) {
-      console.log("Missing lat/lon: " + name + ". For columns: " + dp.latColumn + " and " + dp.lonColumn);
-      return;
-    }
-    if (markerType == "google") {
-      var busIcon = L.IconMaterial.icon({
-        icon: iconName,            // Name of Material icon - star
-        iconColor: '#fff',         // Material icon color (could be rgba, hex, html name...)
-        markerColor: 'rgba(' + iconColorRGB + ',0.7)',  // Marker fill color
-        outlineColor: 'rgba(' + iconColorRGB + ',0.7)', // Marker outline color
-        outlineWidth: 1,                   // Marker outline width 
-      })
-      // Show an old-style marker when Google Material Icon version not supported
-      //circle = L.marker([element[dp.latColumn], element[dp.lonColumn]]).addTo(layerGroup);
+      //console.log("iconColor: " + iconColor);
+      //console.log("---");
+      iconColorRGB = hex2rgb(iconColor);
+      iconName = dp.iconName;
+      if (typeof L === 'undefined') {
+        if (location.host.indexOf('localhost') >= 0) {
+          alert("Leaflet L not yet loaded");
+        } else {
+          console.log("Leaflet L not yet loaded");
+        }
+      } else if (typeof L.IconMaterial === 'undefined') {
+        if (location.host.indexOf('localhost') >= 0) {
+          console.log("ALERT Leaflet L.IconMaterial undefined = leaflet.icon-material.js not loaded");
+        } else {
+          console.log("Leaflet L.IconMaterial undefined = leaflet.icon-material.js not loaded");
+        }
+      }
 
-      // Attach the icon to the marker and add to the map
-      // If this line returns an error, try setting dp1.latColumn and dp1.latColumn to the names of your latitude and longitude columns.
-      circle = L.marker([element[dp.latColumn], element[dp.lonColumn]], {icon: busIcon}).addTo(layerGroup); // Works, but not in Drupal site.
-    } else {
-      circle = L.circle([element[dp.latColumn], element[dp.lonColumn]], {
-          color: "#cc7777",
-          fillColor: "#cc7777",
-          fillOpacity: 1,
-          radius: radius
-      }).addTo(layerGroup);
-      circle.setRadius(100);
-      // For both colors above, but it's a light blue that looks like water
-      // dp.scale(element[dp.valueColumn])
-      // radius was 50.  Aiming for 1 to 10. 8.5 radius arrives from markerRadius(zoom,map)
-      //console.log(whichmap + " color " + dp.scale(element[dp.valueColumn])); // Returns a6cee3
-    }
+      let name = element.name;
+      if (element[dp.nameColumn]) {
+        name = element[dp.nameColumn];
+      } else if (element.title) {
+        name = element.title;
+      }
+      if (dp.latColumn.includes(".")) { // ToDo - add support for third level
+        element[dp.latColumn] = element[dp.latColumn.split(".")[0]][dp.latColumn.split(".")[1]];
+        element[dp.lonColumn] = element[dp.lonColumn.split(".")[0]][dp.lonColumn.split(".")[1]];
+      }
+      if (!element[dp.latColumn] || !element[dp.lonColumn]) {
+        console.log("Missing lat/lon: " + name + ". For columns: " + dp.latColumn + " and " + dp.lonColumn);
+        return;
+      }
+      if (markerType == "google") {
+        var busIcon = L.IconMaterial.icon({
+          icon: iconName,            // Name of Material icon - star
+          iconColor: '#fff',         // Material icon color (could be rgba, hex, html name...)
+          markerColor: 'rgba(' + iconColorRGB + ',0.7)',  // Marker fill color
+          outlineColor: 'rgba(' + iconColorRGB + ',0.7)', // Marker outline color
+          outlineWidth: 1,                   // Marker outline width 
+        })
+        // Show an old-style marker when Google Material Icon version not supported
+        //circle = L.marker([element[dp.latColumn], element[dp.lonColumn]]).addTo(layerGroup);
 
-    // MAP POPUP
-    var output = "<b>" + name + "</b><br>";
-    if (element.description) {
-      output += element.description + "<br>";
-    } else if (element.description) {
-      output += element.description + "<br>";
-    } else if (element["business description"]) {
-      output += element["business description"] + "<br>";
-    }
-    if (element[dp.addressColumn]) {
-      output +=  element[dp.addressColumn] + "<br>";
-    } else if (element.address || element.city || element.state || element.zip) { 
-      if (element.address) {
-        output += element.address + "<br>";
+        // Attach the icon to the marker and add to the map
+        // If this line returns an error, try setting dp1.latColumn and dp1.latColumn to the names of your latitude and longitude columns.
+        circle = L.marker([element[dp.latColumn], element[dp.lonColumn]], {icon: busIcon}).addTo(layerGroup); // Works, but not in Drupal site.
       } else {
-        if (element.city) {
-          output += element.city;
+        circle = L.circle([element[dp.latColumn], element[dp.lonColumn]], {
+            color: "#cc7777",
+            fillColor: "#cc7777",
+            fillOpacity: 1,
+            radius: radius
+        }).addTo(layerGroup);
+        circle.setRadius(100);
+        // For both colors above, but it's a light blue that looks like water
+        // dp.scale(element[dp.valueColumn])
+        // radius was 50.  Aiming for 1 to 10. 8.5 radius arrives from markerRadius(zoom,map)
+        //console.log(whichmap + " color " + dp.scale(element[dp.valueColumn])); // Returns a6cee3
+      }
+
+      // MAP POPUP
+      var output = "<b>" + name + "</b><br>";
+      if (element.description) {
+        output += element.description + "<br>";
+      } else if (element.description) {
+        output += element.description + "<br>";
+      } else if (element["business description"]) {
+        output += element["business description"] + "<br>";
+      }
+      if (element[dp.addressColumn]) {
+        output +=  element[dp.addressColumn] + "<br>";
+      } else if (element.address || element.city || element.state || element.zip) { 
+        if (element.address) {
+          output += element.address + "<br>";
+        } else {
+          if (element.city) {
+            output += element.city;
+          }
+          if (element.state || element.zip) {
+            output += ", ";
+          }
+          if (element.state) {
+            output += element.state + " ";
+          }
+          if (element.zip) {
+            output += element.zip;
+          }
+          output += "<br>";
         }
-        if (element.state || element.zip) {
-          output += ", ";
+      }
+
+      if (element.phone || element.phone_afterhours) {
+        if (element.phone) {
+          output += element.phone + " ";
         }
-        if (element.state) {
-          output += element.state + " ";
-        }
-        if (element.zip) {
-          output += element.zip;
+        if (element.phone_afterhours) {
+         output += element.phone_afterhours;
         }
         output += "<br>";
       }
-    }
-
-    if (element.phone || element.phone_afterhours) {
-      if (element.phone) {
-        output += element.phone + " ";
-      }
-      if (element.phone_afterhours) {
-       output += element.phone_afterhours;
-      }
-      output += "<br>";
-    }
-    if (element[dp.valueColumn]) {
-      if (dp.valueColumnLabel) {
-        output += "<b>" + dp.valueColumnLabel + ":</b> " + element[dp.valueColumn].replace(/,/g,", ") + "<br>";
-      } else if (element[dp.valueColumn] != element.name) {
-        output += element[dp.valueColumn].replace(/,/g,", ") + "<br>";
-      }
-    }
-    if (element[dp.showKeys]) {
-      output += "<b>" + dp.showLabels + ":</b> " + element[dp.showKeys] + "<br>";
-    }
-    if (element.schedule) {
-      output += "Hours: " + element.schedule + "<br>";
-    }
-    if (element.items) {
-      output += "<b>Items:</b> " + element.items + "<br>";
-    }
-
-    if (element.website && !element.website.toLowerCase().includes("http")) {
-        element.website = "http://" + element.website;
-    }
-    if (element.website) {
-      if (element.website.length <= 50) {
-        output += "<b>Website:</b> <a href='" + element.website + "' target='_blank'>" + element.website.replace("https://","").replace("http://","").replace("www.","").replace(/\/$/, "") + "</a>";
-      } else {
-        // To Do: Display domain only
-        output += "<b>Website:</b> <a href='" + element.website + "' target='_blank'>" + element.website.replace("https://","").replace("http://","").replace("www.","").replace(/\/$/, "") + "</a>"; 
-      }
-    }
-    if (dp.listLocation != false) {
-      if (element[dp.latColumn]) {
-        if (element.website) {
-          output += " | ";
+      if (element[dp.valueColumn]) {
+        if (dp.valueColumnLabel) {
+          output += "<b>" + dp.valueColumnLabel + ":</b> " + element[dp.valueColumn].replace(/,/g,", ") + "<br>";
+        } else if (element[dp.valueColumn] != element.name) {
+          output += element[dp.valueColumn].replace(/,/g,", ") + "<br>";
         }
-        //console.log("latitude2: " + dp.latColumn + " " + element.latitude);
-        //output += "<div class='detail' latitude='" + element[dp.latColumn] + "' longitude='" + element[dp.lonColumn] + "'>Zoom In</div> | ";
-        output += "<a href='https://www.waze.com/ul?ll=" + element[dp.latColumn] + "%2C" + element[dp.lonColumn] + "&navigate=yes&zoom=17'>Waze Directions</a><br>";
       }
-    } else if (element.website) {
-      output += "<br>";
-    }
-    if (dp.distance) {
-      output += "distance: " + dp.distance + "<br>";
-    }
+      if (element[dp.showKeys]) {
+        output += "<b>" + dp.showLabels + ":</b> " + element[dp.showKeys] + "<br>";
+      }
+      if (element.schedule) {
+        output += "Hours: " + element.schedule + "<br>";
+      }
+      if (element.items) {
+        output += "<b>Items:</b> " + element.items + "<br>";
+      }
 
-    element.mapframe = shortenMapframe(element.virtual_tour);
-    if (element.mapframe) {
-      output += "<a href='#show=360&m=" + element.mapframe + "'>Birdseye View<br>";
-    }
-    output = "<div class='leaflet-popup-text'>" + output + "</div>";
-    if (element.property_link) {
-      output += "<a href='" + element.property_link + "'>Property Details</a><br>";
-    } else if (element[dp.nameColumn] || element["name"]) {
-      let entityName = element[dp.nameColumn] || element["name"];
-      entityName = entityName.replace(/\ /g,"_").replace(/'/g,"\'")
-      // Needs to remove m,q,search
-      // onclick='goHash({\"show\":\"" + hash.show + "\",\"name\":\"" + entityName + "\"}); return false;' 
-      output += "<a class='btn btn-success' style='margin-top:10px' href='#show=" + hash.show + "&name=" + entityName + "'>View Details</a><br>";
-    }
-    // ADD POPUP BUBBLES TO MAP POINTS
-    if (circle) {
-      circle.bindPopup(L.popup({paddingTopLeft:[200,200]}).setContent(output));
-    }
+      if (element.website && !element.website.toLowerCase().includes("http")) {
+          element.website = "http://" + element.website;
+      }
+      if (element.website) {
+        if (element.website.length <= 50) {
+          output += "<b>Website:</b> <a href='" + element.website + "' target='_blank'>" + element.website.replace("https://","").replace("http://","").replace("www.","").replace(/\/$/, "") + "</a>";
+        } else {
+          // To Do: Display domain only
+          output += "<b>Website:</b> <a href='" + element.website + "' target='_blank'>" + element.website.replace("https://","").replace("http://","").replace("www.","").replace(/\/$/, "") + "</a>"; 
+        }
+      }
+      if (dp.listLocation != false) {
+        if (element[dp.latColumn]) {
+          if (element.website) {
+            output += " | ";
+          }
+          //console.log("latitude2: " + dp.latColumn + " " + element.latitude);
+          //output += "<div class='detail' latitude='" + element[dp.latColumn] + "' longitude='" + element[dp.lonColumn] + "'>Zoom In</div> | ";
+          output += "<a href='https://www.waze.com/ul?ll=" + element[dp.latColumn] + "%2C" + element[dp.lonColumn] + "&navigate=yes&zoom=17'>Waze Directions</a><br>";
+        }
+      } else if (element.website) {
+        output += "<br>";
+      }
+      if (dp.distance) {
+        output += "distance: " + dp.distance + "<br>";
+      }
 
-    // Center on a MapPoint from name in URL
-    if (currentName && currentName == name && element[dp.latColumn] && element[dp.lonColumn]) {
-      // Called for each map
-      centerMap(element[dp.latColumn], element[dp.lonColumn], name, map, whichmap);
-    }
+      element.mapframe = shortenMapframe(element.virtual_tour);
+      if (element.mapframe) {
+        output += "<a href='#show=360&m=" + element.mapframe + "'>Birdseye View<br>";
+      }
+      output = "<div class='leaflet-popup-text'>" + output + "</div>";
+      if (element.property_link) {
+        output += "<a href='" + element.property_link + "'>Property Details</a><br>";
+      } else if (element[dp.nameColumn] || element["name"]) {
+        let entityName = element[dp.nameColumn] || element["name"];
+        entityName = entityName.replace(/\ /g,"_").replace(/'/g,"\'")
+        // Needs to remove m,q,search
+        // onclick='goHash({\"show\":\"" + hash.show + "\",\"name\":\"" + entityName + "\"}); return false;' 
+        output += "<a class='btn btn-success' style='margin-top:10px' href='#show=" + hash.show + "&name=" + entityName + "'>View Details</a><br>";
+      }
+      // ADD POPUP BUBBLES TO MAP POINTS
+      if (circle) {
+        circle.bindPopup(L.popup({paddingTopLeft:[200,200]}).setContent(output));
+      }
 
+      // Center on a MapPoint from name in URL
+      if (currentName && currentName == name && element[dp.latColumn] && element[dp.lonColumn]) {
+        // Called for each map
+        centerMap(element[dp.latColumn], element[dp.lonColumn], name, map, whichmap);
+      }
+
+    });
   });
-
-
+  });
 
   // Also see community-forecasting/map/leaflet/index.html for sample of svg layer that resizes with map
   map.on('zoomend', function() { // zoomend
@@ -3866,11 +3860,12 @@ function markerRadius(mapZoom,map) {
 }
 
 function hashChangedMap() {
-  //alert("hashChangedMap")
   let hash = getHash();
-
-  //alert("hiddenhash.mapview2 " + hiddenhash.geoview)
-
+  if (priorHash.show && hash.show !== priorHash.show) {
+    clearListDisplay();
+  } else if (hash.state !== priorHash.state) {
+    clearListDisplay();
+  }
   if (hash.show == "undefined") { // To eventually remove
     delete hash.show; // Fix URL bug from indicator select hamburger menu
     updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
@@ -3928,7 +3923,6 @@ function hashChangedMap() {
       }
     });
   }
-
   if (hash.layers !== priorHash.layers) {
     //applyIO(hiddenhash.naics);
     loadMap1("hashChangedMap() in map.js layers", hash.show);
