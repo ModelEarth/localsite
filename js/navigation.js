@@ -3442,9 +3442,6 @@ if(typeof localObject.layers == 'undefined') {
     localObject.layers = {}; // Holds layers.
 }
 const page_scripts = document.getElementsByTagName("script");
-const current_code_path = page_scripts[page_scripts.length-1].src;
-console.log("current_code_path " + current_code_path);
-const slash_count = (current_code_path.match(/\//g) || []).length; // To set path to header.html
 let earthFooter = false;
 let showLeftIcon = false;
 if(typeof param=='undefined'){ var param={}; }
@@ -3469,22 +3466,6 @@ if (climbpath == "") {
 	climbpath += "../";
 }
 //console.log("climbpath " + climbpath);
-
-const changeFavicon = link => {
-  let $favicon = document.querySelector('link[rel="icon"]')
-  // If a <link rel="icon"> element already exists,
-  // change its href to the given link.
-  if ($favicon !== null) {
-    $favicon.href = link
-  	// Otherwise, create a new element and append it to <head>.
-  } else {
-    $favicon = document.createElement("link")
-    $favicon.rel = "icon"
-    $favicon.href = link
-    document.head.appendChild($favicon)
-  }
-}
-
 
 var modelpath = climbpath;
 if (modelpath == "./") {
@@ -3624,6 +3605,20 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	// To do: fetch the existing background-image.
 	console.log("location.host: " + location.host + " " + location.host.indexOf("locations.pages.dev"));
 	let hash = getHash();
+    const changeFavicon = link => { // var for Safari
+      let $favicon = document.querySelector('link[rel="icon"]')
+      // If a <link rel="icon"> element already exists,
+      // change its href to the given link.
+      if ($favicon !== null) {
+        $favicon.href = link
+        // Otherwise, create a new element and append it to <head>.
+      } else {
+        $favicon = document.createElement("link")
+        $favicon.rel = "icon"
+        $favicon.href = link
+        document.head.appendChild($favicon)
+      }
+    }
 	if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio" || location.href.indexOf("/swarm/") >= 0) {
 		localsiteTitle = "DreamStudio";
 		$(".siteTitleShort").text("DreamStudio");
@@ -3840,11 +3835,17 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 	 		// LOAD HEADER.HTML
 	 		//if (earthFooter) {
 		 		let headerFile;
+
+                /*
+                const current_code_path = page_scripts[page_scripts.length-1].src;
+                console.log("current_code_path " + current_code_path);
+                const slash_count = (current_code_path.match(/\//g) || []).length; // To set path to header.html
 		 		if (slash_count <= 4) { // Folder is the root of site
 		 			// Currently avoid since "https://model.earth/" is prepended to climbpath above.
 		 			//headerFile = climbpath + "../header.html";
 		 		}
-		 		
+		 		*/
+
 		 		if (param.header) {
 					headerFile = modelroot + param.header;
 				} else if (param.headerFile) {
@@ -5265,9 +5266,6 @@ function openMapLocationFilter() {
 	});
 }
 function closeLocationFilter() {
-	//alert("closeLocationFilter()")
-    //delete(hash.geoview); // BUGBUG, clears but still in filterClickLocation click
-    console.log("closeLocationFilter() hash.geoview: " + hash.geoview);
     $(".locationTabText").text($(".locationTabText").attr("title"));
     $("#showLocations").hide();
     $("#hideLocations").show();
@@ -5283,14 +5281,4 @@ function closeLocationFilter() {
         relocatedStateMenu.appendChild(state_select); // For apps hero
     }
     $("#hero_holder").show();
-
-    /*
-    if(location.host.indexOf("localhost") >= 0 || location.host.indexOf("georgia") >= 0) { // TEMP until state is enforced while international map is still avalable. Applied when clicking "Top Industires" here: /localsite/map/#show=trade&geoview=countries
-        console.log("Populate with state based on domain.")
-        goHash({"geoview":"","state":"GA"});
-    } else {
-        //updateHash({"geoview":""});
-        
-    }
-    */
 }
