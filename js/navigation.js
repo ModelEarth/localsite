@@ -3545,8 +3545,9 @@ function showNavColumn() {
 	} else {
 		$("#fullcolumn #showNavColumn").hide();
 		$('body').addClass('bodyLeftMargin'); // Margin on left for fixed nav column.
-		$('body').addClass('mobileView');
-
+        if ($('body').hasClass('bodyRightMargin')) {
+		  $('body').addClass('mobileView');
+        }
 		// Refreshs to load map tiles. Worked at one point.
 		// Maybe vars map1 and map2 need to be called directly? They are now declaired universally.
 		// Test is we need this with mobile.
@@ -3620,7 +3621,9 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
 			showClassInline(".acct");
 			showClassInline(".garesource");
-		}
+		} else if (hash.state == "GA") {
+            showClassInline(".garesource");
+        }
 		showClassInline(".georgia");
 		if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
 			showClassInline(".earth");
