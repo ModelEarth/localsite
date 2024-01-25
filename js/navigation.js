@@ -2984,15 +2984,6 @@ function isInt(value) {
 String.prototype.split2 = function(separator) {
     return this == "" ? [] : this.split(separator); // Avoid returning 1 when null.
 }
-function displayResults() {
-	console.log("displayResults disabled - use showList in Dual-Map.js instead");
-	return;
-
-	// SEE search-filters-removed.js - See if anything for HS Codes is usable
-
-	// NOT USED - See Dual-Map instead
-
-}
 function displayRow(rowArray) {
 	// NOT USED?
 	// <input name='contact' type='checkbox' value='" + rowArray[0] + "'> 
@@ -3024,40 +3015,6 @@ function displayListX() {
      if (matchCount > 0) {
   		$("#resultsPanel").show();
   	}
-}
-function displayGrid(applyFilter) {
-	var container = d3.select("#d3div")
-      .html('').append("table") // Empty the div to clear previous before appending
-
-      .selectAll("tr")
-          .data(dataSet).enter()
-          .append("tr")
-
-      .selectAll("td")
-          .data(function(d) { return d; }).enter()
-          .append("td")
-          .text(function(d) { return d; });
-
-    if (applyFilter) {
-  		// initial load for URL hash params
-		displayResults();
-	}
-}
-function SearchProductCodes(event1) {
-	console.log("SearchProductCodes")
-	var kCode = String.fromCharCode(event1.keyCode);
-	alert("Not currently active. " + $("#productCodes").val())
-	
-	//if ($("#productCodes").val().length==0) {
-		//loadHtmlTable(true);
-	//} else {
-		//if (kCode == "\n" || kCode == "\r") {
-			//alert("SearchProductCodes")
-	        
-			//return false;
-		//}
-	//}
-	event.stopPropagation();
 }
 
 function changeCat(catTitle) {
@@ -3588,8 +3545,9 @@ function showNavColumn() {
 	} else {
 		$("#fullcolumn #showNavColumn").hide();
 		$('body').addClass('bodyLeftMargin'); // Margin on left for fixed nav column.
-		$('body').addClass('mobileView');
-
+        if ($('body').hasClass('bodyRightMargin')) {
+		  $('body').addClass('mobileView');
+        }
 		// Refreshs to load map tiles. Worked at one point.
 		// Maybe vars map1 and map2 need to be called directly? They are now declaired universally.
 		// Test is we need this with mobile.
@@ -3663,7 +3621,9 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
 			showClassInline(".acct");
 			showClassInline(".garesource");
-		}
+		} else if (hash.state == "GA") {
+            showClassInline(".garesource");
+        }
 		showClassInline(".georgia");
 		if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
 			showClassInline(".earth");
