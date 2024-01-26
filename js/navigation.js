@@ -3577,7 +3577,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         document.head.appendChild($favicon)
       }
     }
-	if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio" || location.href.indexOf("/swarm/") >= 0) {
+    if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio" || location.href.indexOf("/swarm/") >= 0) {
 		localsiteTitle = "DreamStudio";
 		$(".siteTitleShort").text("DreamStudio");
 		param.titleArray = [];
@@ -3597,7 +3597,20 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		if (location.host.indexOf('localhost') >= 0) {
 			//showClassInline(".earth");
 		}
-	// 
+
+	} else if (location.href.indexOf("atlanta") >= 0) {
+        showLeftIcon = true;
+        $(".siteTitleShort").text("Civic Tech Atlanta");
+        param.titleArray = ["civic tech","atlanta"]
+        param.headerLogo = "<a href='https://codeforatlanta.org'><img src='/community/img/logo/orgs/civic-tech-atlanta-text.png' style='width:200px;padding-top:8px'></a>";
+        
+        localsiteTitle = "Civic Tech Atlanta";
+        changeFavicon("/localsite/img/logo/apps/neighborhood.png")
+        showClassInline(".neighborhood");
+        earthFooter = true;
+        showClassInline(".georgia"); // Temp side nav
+        showClassInline(".earth"); // Temp side nav
+
 	} else if (defaultState == "GA" && !Array.isArray(param.titleArray) && (location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
 		// The localsite repo is open to use by any state or country.
 		// Georgia Economic Development has been a primary contributor.
