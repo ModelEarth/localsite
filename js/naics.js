@@ -2063,9 +2063,9 @@ function showSectorTabulatorList(attempts) {
                 {title:"ID", field:"id", width:100},
                 {title:"Index", field:"index", width:70},
                 {title:"Name", field:"name", width:300},
-                {title:"Code", field:"code", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
-                {title:"Location", field:"location", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                {title:"Description", field:"description", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} }
+                {title:"Code", field:"code", width:80, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
+                {title:"Location", field:"location", width:80, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
+                {title:"Description", field:"description", width:320, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" }
             ],
             dataLoaded: function(data) {
                 $("#sectors_totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
