@@ -3602,7 +3602,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         showLeftIcon = true;
         $(".siteTitleShort").text("Civic Tech Atlanta");
         param.titleArray = ["civic tech","atlanta"]
-        param.headerLogo = "<a href='https://codeforatlanta.org'><img src='/community/img/logo/orgs/civic-tech-atlanta-text.png' style='width:200px;padding-top:8px'></a>";
+        param.headerLogo = "<a href='https://codeforatlanta.org'><img src='/community/img/logo/orgs/civic-tech-atlanta-text.png' style='width:186px;padding-top:8px'></a>";
         
         localsiteTitle = "Civic Tech Atlanta";
         changeFavicon("/localsite/img/logo/apps/neighborhood.png")
@@ -4130,9 +4130,9 @@ $(document).ready(function () {
 		//$("#listingMenu").appendTo($(this).parent().parent());
 		event.stopPropagation();
 	});
-	$(document).on("click", ".hideGeoPicker", function(event) {
-		console.log("hideGeoPicker")
-		hideGeoPicker();
+	$(document).on("click", ".imagineLocation", function(event) {
+		console.log("imagineLocation")
+		imagineLocation();
 	});
 	$(document).on("click", ".hideAdvanced", function(event) {
 		goHash({'locpop':'','geoview':''});
@@ -4707,7 +4707,13 @@ function showClassInline(theclass) {
 	}, 30000);
 	*/
 }
-function hideGeoPicker() {
+function imagineLocation() {
+    if (location.href.indexOf('/info') == -1) {
+        updateHash({"geoview":""}); // Prevents location filter from remaining open after redirect.
+        location.href = "/localsite/info/" + location.hash;
+        return;
+    }
+    updateHash({"geoview":""}); // Should this reside in hideAdvanced()?
 	hideAdvanced();
 }
 function hideAdvanced() {
