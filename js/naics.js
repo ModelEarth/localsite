@@ -2041,7 +2041,6 @@ function getEpaSectors() {
 var sectortable = {};
 function showSectorTabulatorList(attempts) {
     let hash = getHash();
-
     // BUGBUG - Only start of description before : is displayed.
     if (typeof Tabulator !== 'undefined') {
         sectortable = new Tabulator("#tabulator-sectortable", {
@@ -2065,7 +2064,7 @@ function showSectorTabulatorList(attempts) {
                 {title:"Name", field:"name", width:300},
                 {title:"Code", field:"code", width:80, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
                 {title:"Location", field:"location", width:80, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
-                {title:"Description", field:"description", width:320, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" }
+                {title:"Description", field:"description", width:320, hozAlign:"left", headerSortStartingDir:"desc" }
             ],
             dataLoaded: function(data) {
                 $("#sectors_totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
