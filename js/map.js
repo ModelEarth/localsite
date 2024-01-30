@@ -4007,7 +4007,7 @@ function zoomFromKm2(kilometers_wide, theState) {
   } else if (kilometers_wide > 105000) { // Hawaii and Idaho
     zoom = 6
   }
-  if (theState == "AL" || theState == "GA" || theState == "CO" || theState == "IA") { // Zoom closer for some states
+  if (theState == "AL" || theState == "AR" || theState == "GA" || theState == "CO" || theState == "IA") { // Zoom closer for some states
     zoom = zoom + 1;
   }
   if (theState == "HI" || theState == "IN") {

@@ -31,12 +31,16 @@ function getStateFips(hash) {
         //if (hash.geo.includes(",")) {
             var geos=hash.geo.split(",");
             fips=[]
-            for (var i = 0; i<geos.length; i++){
-                let fip=geos[i].split("US")[1]
-                if (fip.startsWith("0")){
-                    fips.push(parseInt(geos[i].split("US0")[1]))
+            for (var i = 0; i < geos.length; i++){
+                let fip = geos[i].split("US")[1];
+                if (fip) {
+                    if (fip.startsWith("0")){
+                        fips.push(parseInt(geos[i].split("US0")[1]))
+                    } else {
+                        fips.push(parseInt(geos[i].split("US")[1]))
+                    }
                 } else {
-                    fips.push(parseInt(geos[i].split("US")[1]))
+                    console.log("fip without US = " + geos[i]);
                 }
             }
             st=(geos[0].split("US")[1]).slice(0,2)
@@ -138,7 +142,7 @@ function getIndustryZipPath(zip) {
 }
 
 function refreshNaicsWidget() {
-    console.log("refreshNaicsWidgetA hiddenhash.naics: " + hiddenhash.naics);
+    console.log("refreshNaicsWidget() hiddenhash.naics: " + hiddenhash.naics);
     let hash = getHash(); // Includes hiddenhash
     //console.log("refreshNaicsWidgetB hiddenhash.naics: " + hash.naics);
     //alert("refreshNaicsWidgetB hash.indicators: " + hash.indicators);
@@ -248,6 +252,9 @@ function refreshNaicsWidget() {
         loadNAICS = true;
     } else if (hash.catsort != priorHash.catsort) {
         loadNAICS = true;
+    } else if (hash.x != priorHash.x || hash.y != priorHash.y || hash.z != priorHash.z) {
+        loadNAICS = true; // Bubblechart axis change.
+        //alert("xyz changed")
     } else {
 
         if (hash.name && hash.name != priorHash.name) {
@@ -257,8 +264,8 @@ function refreshNaicsWidget() {
         }
 
         // TEMP for US
-        console.log("loadNAICS for any change - added for US")
-        loadNAICS = true; // Allows toggleBubbleHighlights() to be called, which calls midFunc
+        //console.log("loadNAICS for any change - added for US")
+        //loadNAICS = true; // Allows toggleBubbleHighlights() to be called, which calls midFunc
     }
     /*
     } else if (hash.indicators != priorHash.indicators) {
@@ -2041,7 +2048,6 @@ function getEpaSectors() {
 var sectortable = {};
 function showSectorTabulatorList(attempts) {
     let hash = getHash();
-    // BUGBUG - Only start of description before : is displayed.
     if (typeof Tabulator !== 'undefined') {
         sectortable = new Tabulator("#tabulator-sectortable", {
             data:localObject.epaSectors,     //load row data from array of objects

@@ -354,8 +354,8 @@ input.filterClick[type="text"] {
 
 .close-X {
   cursor:pointer;
-  padding:14px 26px 15px 26px;
-  font-size:20px;
+  padding:10px 26px 15px 26px;
+  font-size:28px;
   color:#bbb;
 }
 #honeycombPanel {
