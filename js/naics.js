@@ -262,10 +262,14 @@ function refreshNaicsWidget() {
             // BUGBUG - Only return here if no other sector-related hash changes occured.
             return;
         }
-
-        // TEMP for US
-        //console.log("loadNAICS for any change - added for US")
-        //loadNAICS = true; // Allows toggleBubbleHighlights() to be called, which calls midFunc
+        if (!hash.state) {
+            // BUGBUG - This gets called when clicking Locations tab (geoview=country) or opening upper right.
+            if (location.host.indexOf('localhost') >= 0) {
+                alert("Localhost notice: loadNAICS called for any change - for US when no state");
+            }
+            console.log("loadNAICS for any change - for US when no state");
+            loadNAICS = true; // Allows toggleBubbleHighlights() to be called, which calls midFunc
+        }
     }
     /*
     } else if (hash.indicators != priorHash.indicators) {
