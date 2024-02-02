@@ -90,6 +90,10 @@ function hashChanged() {
         hideSide("list");
     } else if (hash.state !== priorHash.state) {
         hideSide("list");
+
+        // Seemed to get repopulated with Georgia.
+        //$(".listTitle").hide(); // Recyclers
+        //alert("test2")
     }
     if (hash.show != priorHash.show) {
         if (hash.show && priorHash.show) {
@@ -395,6 +399,8 @@ function hashChanged() {
     if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state || hash.show != priorHash.show) {
         let theStateName;
 
+        //alert("hash.regiontitle  " + hash.regiontitle);
+
         // Don't use, needs a waitfor
         if ($("#state_select").find(":selected").value) {
             theStateName = $("#state_select").find(":selected").text();
@@ -677,16 +683,7 @@ function hashChanged() {
 			hideAdvanced();
 		}
 	}
-    if (hash.geoview && ((priorHash.sidetab == "locale" && hash.sidetab != "locale")) || (priorHash.locpop  && !hash.locpop)) {
-        // Closing sidetab or locpop, move geomap back to holder.
-        $("#filterLocations").prependTo($("#locationFilterHolder")); // Move back from sidetabs
-        $("#geomap").appendTo($("#geomapHolder")); // Move back from sidetabs
 
-        if (!hash.sidetab) { // For when clicking on Location top tab
-            $("#locationFilterHolder").show();
-            loadGeomap = true;
-        }
-    }
     if (hash.geoview != priorHash.geoview) {
 
         //$("#filterLocations").show();$("#imagineBar").show();
@@ -707,21 +704,40 @@ function hashChanged() {
             showGlobalMap("https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
         } else if (hash.geoview) {
             loadGeomap = true;
+
+            // if ((priorHash.sidetab == "locale" && hash.sidetab != "locale") || (priorHash.locpop  && !hash.locpop)) {
+            
+                // Closing sidetab or locpop, move geomap back to holder.
+                $("#filterLocations").prependTo($("#locationFilterHolder")); // Move back from sidetabs
+                $("#geomap").appendTo($("#geomapHolder")); // Move back from sidetabs
+
+                if (!hash.sidetab) { // For when clicking on Location top tab
+                    $("#locationFilterHolder").show();
+                    loadGeomap = true;
+                }
+            //}
+
         } else {
             //alert("#filterLocations hide")
             $("#filterLocations").hide();
             //$("#geoPicker").hide();
         }
     }
-
+    if (hash.locpop != priorHash.locpop) {
+        if (hash.locpop) {
+            loadGeomap = true;
+        }
+    }
     $(".regiontitle").text(local_app.loctitle);
     $(".service_title").text(local_app.loctitle + " - " + local_app.showtitle);
     if (loadGeomap) {
+        // TO DO: Should we avoid reloading if already loaded for a state?  Occurs when hash.locpop & changes.
+
         //$("#filterLocations").show();$("#imagineBar").show();
         //if($("#geomap").is(':visible')){
         waitForElm('#geomap').then((elm) => {
             //alert("loadGeomap")
-            console.log("call renderMapShapes from map-filter.js hashChanged()");
+            console.log("call renderMapShapes from navigation.js hashChanged()");
             renderMapShapes("geomap", hash, "county", 1); // County select map
         });
         //}
@@ -731,7 +747,9 @@ function hideSide(which) {
     console.log("hideSide " + which);
     if (which == "list") {
         $("#listcolumn").hide();
-        $("#showListInBar").show();
+        if ($("#listcolumnList").text().trim().length > 0) {
+            $("#showListInBar").show();
+        }
     } else {
         $("#navcolumn").hide();
         $('body').removeClass('bodyLeftMarginFull');
@@ -803,6 +821,7 @@ function popAdvanced() {
     });
 }
 function showSideTabs() {
+    consoleLog("showSideTabs() in navigation.js");
 	waitForElm('#sideTabs').then((elm) => {
 		let hash = getHash();
 		
@@ -4132,7 +4151,7 @@ $(document).ready(function () {
 		goHash({'locpop':'','geoview':''});
 	});
 	$(document).on("click", ".popAdvanced", function(event) {
-		goHash({'locpop':'true','geoview':'state'});
+		goHash({'locpop':'true'});
 	});
 	$(document).on("click", ".hideThumbMenu", function(event) {
 		$("#bigThumbPanelHolder").hide();
@@ -4173,7 +4192,7 @@ $(document).on("click", ".showLocale", function(event) {
     event.stopPropagation();
 });
 function showLocale(){
-	//alert("showLocale()");
+	alert("showLocale()");
 	//closeExpandedMenus(event.currentTarget);
 	$("#filterClickLocation").removeClass("filterClickActive");
 	//loadScript(theroot + 'js/map.js', function(results) {
@@ -4189,6 +4208,25 @@ function showLocale(){
 		});
 	//});
 }
+function popAdvancedDELETE() {
+    waitForElm('#filterLocations').then((elm) => {
+                
+        console.log("popAdvanced");
+        closeSideTabs();
+        /*
+        loadScript(theroot + 'js/map.js', function(results) {
+            loadScript(theroot + 'js/navigation.js', function(results) { // For pages without
+                goHash({'geoview':'state'});
+                //filterClickLocation();
+            });
+        });
+        */
+        $("#filterClickLocation").removeClass("filterClickActive");
+        $("#filterLocations").appendTo($("#locationFilterPop"));
+        $("#draggableSearch").show();
+    });
+}
+
 $(document).on("click", ".showSettings", function(event) {
 	goHash({'sidetab':'settings'});
     event.stopPropagation();

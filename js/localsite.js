@@ -278,8 +278,12 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
    return target2;
 }
 function getHash() {
-    //return (mix(getHashOnly(),hiddenhash)); // Includes hiddenhash
-    return (getHashOnly());
+    // This allow initial param values to be mixed in, but we need clear the hiddenhash whenever clearing a hash value.
+    if (param.length > 0) {
+      return (mix(getHashOnly(),hiddenhash)); // Includes hiddenhash
+    } else {
+      return (getHashOnly());
+    }
 }
 function getHashOnly() {
     return (function (a) {

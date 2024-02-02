@@ -262,10 +262,10 @@ function refreshNaicsWidget() {
             // BUGBUG - Only return here if no other sector-related hash changes occured.
             return;
         }
-        if (!hash.state) {
-            // BUGBUG - This gets called when clicking Locations tab (geoview=country) or opening upper right.
+        if (!hash.state && (initialNaicsLoad || priorHash.state)) {
+            // initialNaicsLoad prevents calling when clicking Locations tab (geoview=country) or opening upper right.
             if (location.host.indexOf('localhost') >= 0) {
-                alert("Localhost notice: loadNAICS called for any change - for US when no state");
+                //alert("Localhost notice: loadNAICS called for any change - for US when no state");
             }
             console.log("loadNAICS for any change - for US when no state");
             loadNAICS = true; // Allows toggleBubbleHighlights() to be called, which calls midFunc
@@ -364,6 +364,7 @@ function refreshNaicsWidget() {
 
     //alert("afterr " + priorHash.naics);
     // priorHash_naicspage = mix(getHash(),hash); // So we include changes above.
+    initialNaicsLoad = false;
 }
 
 function getNaics_setHiddenHash2(go) {
@@ -844,7 +845,7 @@ function renderIndustryChart(dataObject,values,hash) {
     //    return; // None have changed
     //}
 
-    initialNaicsLoad = false; // So further non-related hash changes are ignored by return above.
+    //initialNaicsLoad = false; // So further non-related hash changes are ignored by return above.
 
     subsetKeys = ['emp_reported','emp_est1','emp_est3', 'payann_reported','payann_est1','payann_est3', 'estab', 'NAICS2012_TTL','GEO_TTL','state','COUNTY','relevant_naics','estimate_est1','estimate_est3']
     subsetKeys_state = ['emp_agg', 'payann_agg', 'estab_agg', 'NAICS2012_TTL','GEO_TTL','state','COUNTY','relevant_naics']
@@ -1615,7 +1616,9 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                                     //setTimeout(() => {
                                         // This may run before naics is available.
                                         hash.naics = naicshash;
-                                        toggleBubbleHighlights(hash);
+                                        if (hash.state) { // Quick fix because allData note found with waitForVariable in allData. Will later add bubble chart when no state.
+                                            toggleBubbleHighlights(hash);
+                                        }
                                     //},3000);
                                 });
                             });
