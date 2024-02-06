@@ -31,12 +31,16 @@ function getStateFips(hash) {
         //if (hash.geo.includes(",")) {
             var geos=hash.geo.split(",");
             fips=[]
-            for (var i = 0; i<geos.length; i++){
-                let fip=geos[i].split("US")[1]
-                if (fip.startsWith("0")){
-                    fips.push(parseInt(geos[i].split("US0")[1]))
+            for (var i = 0; i < geos.length; i++){
+                let fip = geos[i].split("US")[1];
+                if (fip) {
+                    if (fip.startsWith("0")){
+                        fips.push(parseInt(geos[i].split("US0")[1]))
+                    } else {
+                        fips.push(parseInt(geos[i].split("US")[1]))
+                    }
                 } else {
-                    fips.push(parseInt(geos[i].split("US")[1]))
+                    console.log("fip without US = " + geos[i]);
                 }
             }
             st=(geos[0].split("US")[1]).slice(0,2)
@@ -138,7 +142,7 @@ function getIndustryZipPath(zip) {
 }
 
 function refreshNaicsWidget() {
-    console.log("refreshNaicsWidgetA hiddenhash.naics: " + hiddenhash.naics);
+    console.log("refreshNaicsWidget() hiddenhash.naics: " + hiddenhash.naics);
     let hash = getHash(); // Includes hiddenhash
     //console.log("refreshNaicsWidgetB hiddenhash.naics: " + hash.naics);
     //alert("refreshNaicsWidgetB hash.indicators: " + hash.indicators);
@@ -248,6 +252,9 @@ function refreshNaicsWidget() {
         loadNAICS = true;
     } else if (hash.catsort != priorHash.catsort) {
         loadNAICS = true;
+    } else if (hash.x != priorHash.x || hash.y != priorHash.y || hash.z != priorHash.z) {
+        loadNAICS = true; // Bubblechart axis change.
+        //alert("xyz changed")
     } else {
 
         if (hash.name && hash.name != priorHash.name) {
@@ -255,10 +262,14 @@ function refreshNaicsWidget() {
             // BUGBUG - Only return here if no other sector-related hash changes occured.
             return;
         }
-
-        // TEMP for US
-        console.log("loadNAICS for any change - added for US")
-        loadNAICS = true; // Allows toggleBubbleHighlights() to be called, which calls midFunc
+        if (!hash.state && (initialNaicsLoad || priorHash.state)) {
+            // initialNaicsLoad prevents calling when clicking Locations tab (geoview=country) or opening upper right.
+            if (location.host.indexOf('localhost') >= 0) {
+                //alert("Localhost notice: loadNAICS called for any change - for US when no state");
+            }
+            console.log("loadNAICS for any change - for US when no state");
+            loadNAICS = true; // Allows toggleBubbleHighlights() to be called, which calls midFunc
+        }
     }
     /*
     } else if (hash.indicators != priorHash.indicators) {
@@ -353,6 +364,7 @@ function refreshNaicsWidget() {
 
     //alert("afterr " + priorHash.naics);
     // priorHash_naicspage = mix(getHash(),hash); // So we include changes above.
+    initialNaicsLoad = false;
 }
 
 function getNaics_setHiddenHash2(go) {
@@ -833,7 +845,7 @@ function renderIndustryChart(dataObject,values,hash) {
     //    return; // None have changed
     //}
 
-    initialNaicsLoad = false; // So further non-related hash changes are ignored by return above.
+    //initialNaicsLoad = false; // So further non-related hash changes are ignored by return above.
 
     subsetKeys = ['emp_reported','emp_est1','emp_est3', 'payann_reported','payann_est1','payann_est3', 'estab', 'NAICS2012_TTL','GEO_TTL','state','COUNTY','relevant_naics','estimate_est1','estimate_est3']
     subsetKeys_state = ['emp_agg', 'payann_agg', 'estab_agg', 'NAICS2012_TTL','GEO_TTL','state','COUNTY','relevant_naics']
@@ -1604,7 +1616,9 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                                     //setTimeout(() => {
                                         // This may run before naics is available.
                                         hash.naics = naicshash;
-                                        toggleBubbleHighlights(hash);
+                                        if (hash.state) { // Quick fix because allData note found with waitForVariable in allData. Will later add bubble chart when no state.
+                                            toggleBubbleHighlights(hash);
+                                        }
                                     //},3000);
                                 });
                             });
@@ -2041,8 +2055,6 @@ function getEpaSectors() {
 var sectortable = {};
 function showSectorTabulatorList(attempts) {
     let hash = getHash();
-
-    // BUGBUG - Only start of description before : is displayed.
     if (typeof Tabulator !== 'undefined') {
         sectortable = new Tabulator("#tabulator-sectortable", {
             data:localObject.epaSectors,     //load row data from array of objects
@@ -2065,7 +2077,7 @@ function showSectorTabulatorList(attempts) {
                 {title:"Name", field:"name", width:300},
                 {title:"Code", field:"code", width:80, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
                 {title:"Location", field:"location", width:80, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
-                {title:"Description", field:"description", width:320, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" }
+                {title:"Description", field:"description", width:320, hozAlign:"left", headerSortStartingDir:"desc" }
             ],
             dataLoaded: function(data) {
                 $("#sectors_totalcount").remove(); // Prevent dup - this will also remove events bound to the element.

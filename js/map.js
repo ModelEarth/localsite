@@ -309,13 +309,14 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.valueColumnLabel = "Type";
         dp.mapInfo = "<a href='https://docs.google.com/spreadsheets/d/1bvD9meJgMqLywdoiGwe3f93sw1IVI_ZRjWSuCLSebZo/edit?usp=sharing'>Update Google Sheet</a>.";
         dp.search = {"In Dataset Name": "name", "In Type": "Category1", "In Website URL": "website"};
-              
+        dp.datastates = "GA";    
       } else if (show == "360") {
         dp.listTitle = "Birdseye Views";
         dp.dataset =  local_app.custom_data_root() + "360/GeorgiaPowerSites.csv";
         dp.search = {"In Location Name": "name", "In City": "CITY", "In Property URL": "property_link"};
         dp.color = "#ff9819"; // orange - Since there is no type column. An item column is filtered.
         dp.markerType = "google";
+        dp.datastates = "GA";
       } else if (show == "dmap") {
         dp.listTitle = "Georgia Map";
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRPe-t3GBhimUV6JN62lLmtpZ5XsmLDXPusjOfrJ-_tW7BZlVrvcVT4oLFXtAtRX79WSAgVQe9zK2Ik/pub?gid=0&single=true&output=csv";
@@ -333,7 +334,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.showLabels = "Industry";
         dp.search = {"In Company Name": "recipient_name", "In naics description": "naics description", "In Address" : "address"};
         dp.itemsColumn = "NAICS Description"; // The column being search
-
+        dp.datastates = "GA";
       } else if (show == "recyclers") {
         dp.listTitle = "Georgia B2B Recyclers";
         dp.dataTitle = "B2B Recyclers";
@@ -360,7 +361,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.listInfo = "<a href='https://map.georgia.org/recycling/georgia/'>View Recycling Datasets</a>";
         dp.mapInfo = "Add <a href='https://map.georgia.org/recycling/'>B2B&nbsp;Recycler Listings</a> or post comments to submit additions to our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a>.";
         dp.search = {"In Main Category": "Category", "In Materials Accepted": "Materials Accepted", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
-      
+        dp.datastates = "GA";
       } else if (show == "wastewater") {
         //alert("wastewater4")
         dp.listTitle = "Georgia Wastewater Facilities (2023)";
@@ -395,7 +396,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.markerType = "google";
         dp.color = "#339";
         dp.search = {"In Name": "PERMIT_NAME", "In Address": "facility_addr", "In County Name": "county", "SIC Code": "SIC_CODE_LIST", };
-
+        dp.datastates = "GA";
       } else if (show == "landfills") {
         dp.listTitle = "Georgia Landfills (2017)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
@@ -420,7 +421,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.color = "#393";
         dp.latColumn = "latitude"; // Only works when lowercase, despite Google Sheet column being uppercase
         dp.lonColumn = "longitude";
-
+        dp.datastates = "GA";
       } else if (show == "solidwaste") {
         dp.listTitle = "Georgia Solid Waste (Oct 2023)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
@@ -441,7 +442,7 @@ function loadMap1(calledBy, show, dp_incoming) {
 
         dp.markerType = "google";
         dp.color = "#933";
-
+        dp.datastates = "GA";
       } else if (show == "solidwaste-old") { // This tab can be deleted in Google Sheet
         dp.listTitle = "Georgia Solid Waste (Old)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
@@ -462,7 +463,7 @@ function loadMap1(calledBy, show, dp_incoming) {
 
         dp.markerType = "google";
         dp.color = "#933";
-        
+        dp.datastates = "GA";
       } else if (show == "cameraready-locations") {
         dp.listTitle = "CameraReady Film Locations";
         dp.dataTitle = "Filming Locations";
@@ -474,7 +475,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.showKeys = "hours_saturday";
         dp.showLabels = "Saturday";
         dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website", "Type": "tag"};
-        
+        dp.datastates = "GA";
       } else if (show == "cameraready") {
         dp.listTitle = "CameraReady County Liaisons";
         dp.dataTitle = "CameraReady Liaisons";
@@ -484,7 +485,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.markerType = "google";
         dp.filters = {tag:"Liaisons"}; // Supports comma separated values
         dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website", "Type": "tag"};
-      
+        dp.datastates = "GA";
       } else if (show == "aerospace") {
         dp.listTitle = "Georgia Aerospace Directory";
         dp.dataTitle = "Aerospace Directory";
@@ -519,7 +520,7 @@ function loadMap1(calledBy, show, dp_incoming) {
 
         dp.filters = {type:"aerospace"}; // Supports comma separated values
         dp.search = {"In Main Category": "Category", "In Location Name": "Organization Name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
-      
+        dp.datastates = "GA";
       } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfillsX")) { // recycling-processors
         // NOT USED - LOOK ABOVE
         if (hash.state == "GA") {
@@ -2516,7 +2517,6 @@ function centerMapPoint(map, latitude, longitude) {
 }
 function zoomMapPoint(dp, map, latitude, longitude, name, color) {
   // Place large icon on side map and zoom
-
   if (!latitude || !longitude) {
     console.log("No latitude or longitude for " + name)
     return;
@@ -3032,8 +3032,13 @@ function loadDataset(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback
   if (dp.datastates && hash.state) {
     if (dp.datastates.split(",").indexOf(hash.state.split(",")[0].toUpperCase()) == -1) {
       stateAllowed = false;
-      console.log("State1 of " + hash.state + " has no map point data based on dp.datastates indicated.");
+      console.log("State of " + hash.state + " not in dp.datastates indicated for " + hash.show);
+      // Avoiding so user can retain show and switch to another state.
+      //updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
+      // TO DO: Show message: "State does not have data for " + hash.show;
       $("#list_main").hide();
+      $("#navcolumnTitle").hide();
+      $("#listLeft").hide();
       $("#map1").hide();
       return;
     }
@@ -3741,10 +3746,12 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
         output += "<a href='" + element.property_link + "'>Property Details</a><br>";
       } else if (element[dp.nameColumn] || element["name"]) {
         let entityName = element[dp.nameColumn] || element["name"];
-        entityName = entityName.replace(/\ /g,"_").replace(/'/g,"\'")
+        // Doesn't work .replace(/'/g,"\'")
+        entityName = entityName.replace(/\ /g,"_")
+        entityName = encodeURIComponent(entityName);
         // Needs to remove m,q,search
         // onclick='goHash({\"show\":\"" + hash.show + "\",\"name\":\"" + entityName + "\"}); return false;' 
-        output += "<a class='btn btn-success' style='margin-top:10px' href='#show=" + hash.show + "&name=" + entityName + "'>View Details</a><br>";
+        output += "<a class='btn btn-success' style='margin-top:10px' href=\"#show=" + hash.show + "&name=" + entityName + "\">View Details</a><br>";
       }
       // ADD POPUP BUBBLES TO MAP POINTS
       if (circle) {
@@ -3860,6 +3867,7 @@ function markerRadius(mapZoom,map) {
 }
 
 function hashChangedMap() {
+  //alert("hashChangedMap")
   let hash = getHash();
   if (priorHash.show && hash.show !== priorHash.show) {
     clearListDisplay();
@@ -4007,7 +4015,7 @@ function zoomFromKm2(kilometers_wide, theState) {
   } else if (kilometers_wide > 105000) { // Hawaii and Idaho
     zoom = 6
   }
-  if (theState == "AL" || theState == "GA" || theState == "CO" || theState == "IA") { // Zoom closer for some states
+  if (theState == "AL" || theState == "AR" || theState == "GA" || theState == "CO" || theState == "IA") { // Zoom closer for some states
     zoom = zoom + 1;
   }
   if (theState == "HI" || theState == "IN") {

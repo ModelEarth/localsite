@@ -278,8 +278,12 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
    return target2;
 }
 function getHash() {
-    //return (mix(getHashOnly(),hiddenhash)); // Includes hiddenhash
-    return (getHashOnly());
+    // This allow initial param values to be mixed in, but we need clear the hiddenhash whenever clearing a hash value.
+    if (param.length > 0) {
+      return (mix(getHashOnly(),hiddenhash)); // Includes hiddenhash
+    } else {
+      return (getHashOnly());
+    }
 }
 function getHashOnly() {
     return (function (a) {
@@ -298,7 +302,7 @@ function updateHash(addToHash, addToExisting, removeFromHash) { // Avoids trigge
     if (addToExisting != false) {
       hash = getHashOnly(); // Include all existing. Excludes hiddenhash.
     }
-    
+    console.log(addToHash)
     const newObj = {}; // For removal of blank keys in addToHash
     Object.entries(addToHash).forEach(([k, v]) => {
       if (v === Object(v)) {
@@ -2114,7 +2118,7 @@ function loadIframe(iframeName, url) {
 function waitForSubObject(theObject, theSubObject, callback) { // To confirm: Declare object using var since let will not be detected.
   var interval = setInterval(function() {
     if (window[theObject]) {
-      console.log('waitForObject found parent ' + theObject + '. Waiting for ' + theSubObject);
+      console.log('waitForSubObject. theObject: ' + theObject + '. Waiting for theSubObject: ' + theSubObject);
       if (theSubObject in window[theObject] && Object.keys(window[theObject][theSubObject]).length > 0) {
         //consoleLog("layers count " + );
 

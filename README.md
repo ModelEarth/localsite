@@ -4,7 +4,8 @@ The&nbsp;[localsite&nbsp;repo](https://github.com/modelearth/localsite/) provide
 
 ## Get Involved
 
-[Local Webroot Setup](start/)
+[Model.Earth](https://model.earth)  
+[Local Webroot Setup](https://model.earth/start/)  
 [Current Project Areas](https://model.earth/community/projects/)
 
 ## Embed Datascapes
