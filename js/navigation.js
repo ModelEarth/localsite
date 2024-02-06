@@ -472,6 +472,8 @@ function hashChanged() {
 
                     if (hash.show && param.display == "everything") { // Limitig to everything since /map page does not load layers, or need longer title.
                         let layer = hash.show;
+
+                        /* Bug waitForSubObject is not finding localObject layers
                         waitForSubObject('localObject','layers', function() { 
                         //waitForObjectProperty('localObject','layers', function() { 
                             if (localObject.layers[layer] && localObject.layers[layer].section) {
@@ -479,6 +481,7 @@ function hashChanged() {
                                 updateRegionService(section);
                             }
                         });
+                        */
                         //setTimeout(() => { // Works
                         //    alert("localObject.layers " + localObject.layers[layer].section);
                         //},3000);
@@ -3275,6 +3278,7 @@ if(typeof hiddenhash == 'undefined') {
 
 function updateRegionService(section) {
 
+    //alert("updateRegionService");
     let theLocation = hash.regiontitle;
     if (!theLocation) {
         let theStateName = $("#state_select").find(":selected").text();
@@ -3288,7 +3292,7 @@ function updateRegionService(section) {
                 //alert(param.state.split(",")[0])
                 //if ($("#state_select").find(":selected").value) {
                 //    alert("found #state_select");
-                    updateRegionService(section);
+                //    updateRegionService(section);
                 //}
             });
         }

@@ -302,7 +302,7 @@ function updateHash(addToHash, addToExisting, removeFromHash) { // Avoids trigge
     if (addToExisting != false) {
       hash = getHashOnly(); // Include all existing. Excludes hiddenhash.
     }
-    
+    console.log(addToHash)
     const newObj = {}; // For removal of blank keys in addToHash
     Object.entries(addToHash).forEach(([k, v]) => {
       if (v === Object(v)) {
@@ -2118,7 +2118,7 @@ function loadIframe(iframeName, url) {
 function waitForSubObject(theObject, theSubObject, callback) { // To confirm: Declare object using var since let will not be detected.
   var interval = setInterval(function() {
     if (window[theObject]) {
-      console.log('waitForObject found parent ' + theObject + '. Waiting for ' + theSubObject);
+      console.log('waitForSubObject. theObject: ' + theObject + '. Waiting for theSubObject: ' + theSubObject);
       if (theSubObject in window[theObject] && Object.keys(window[theObject][theSubObject]).length > 0) {
         //consoleLog("layers count " + );
 

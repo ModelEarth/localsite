@@ -2517,7 +2517,6 @@ function centerMapPoint(map, latitude, longitude) {
 }
 function zoomMapPoint(dp, map, latitude, longitude, name, color) {
   // Place large icon on side map and zoom
-
   if (!latitude || !longitude) {
     console.log("No latitude or longitude for " + name)
     return;
@@ -3747,10 +3746,12 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
         output += "<a href='" + element.property_link + "'>Property Details</a><br>";
       } else if (element[dp.nameColumn] || element["name"]) {
         let entityName = element[dp.nameColumn] || element["name"];
-        entityName = entityName.replace(/\ /g,"_").replace(/'/g,"\'")
+        // Doesn't work .replace(/'/g,"\'")
+        entityName = entityName.replace(/\ /g,"_")
+        entityName = encodeURIComponent(entityName);
         // Needs to remove m,q,search
         // onclick='goHash({\"show\":\"" + hash.show + "\",\"name\":\"" + entityName + "\"}); return false;' 
-        output += "<a class='btn btn-success' style='margin-top:10px' href='#show=" + hash.show + "&name=" + entityName + "'>View Details</a><br>";
+        output += "<a class='btn btn-success' style='margin-top:10px' href=\"#show=" + hash.show + "&name=" + entityName + "\">View Details</a><br>";
       }
       // ADD POPUP BUBBLES TO MAP POINTS
       if (circle) {
@@ -3866,6 +3867,7 @@ function markerRadius(mapZoom,map) {
 }
 
 function hashChangedMap() {
+  //alert("hashChangedMap")
   let hash = getHash();
   if (priorHash.show && hash.show !== priorHash.show) {
     clearListDisplay();
