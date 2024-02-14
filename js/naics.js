@@ -1,23 +1,17 @@
-// Loren is pulling functions into this page from naics2.js as we transition to USEEIO states.
-// VIEW TEST VERSION: https://model.earth/localsite/info/naics/
+// Displays list of industries to identify local areas of impact
 
-// Default is currently state13 for GA.
-// The value after naics is the number of digits in the naics code
-
-//  Sample: Columns from 6_state_all
+//  Phasing our these columns: Columns from 6_state_all
 // id  COUNTY  GEO_TTL NAICS_Sector    NAICS2012_TTL   state   relevant_naics  estab_agg   emp_agg payann_agg  emp_api payann_api  estab_api
 // 759 13  999 Statewide   55  Corporate, subsidiary, and regional managing offices    13  551114  1541.3499999999995  110283.20000000004  11605999.4  116336.0    12059746.4  1542.8
 
-//let hash = loadParams(location.search,location.hash);
-//hash = mix(param,hash); // Add include file's param values.
 let initialNaicsLoad = true;
-//let hash = getHash(); // Includes hiddenhash
 if (typeof dataObject == 'undefined') {
     var dataObject = {};
 }
 if(typeof localObject == 'undefined') {
     var localObject = {};
 }
+
 // For v2
 let industries = d3.map(); // Populated in promises from industryTitleFile
 let epaSectors = d3.map(); // Populated from sectorsJsonFile
@@ -25,6 +19,8 @@ let epaSectors = d3.map(); // Populated from sectorsJsonFile
 let stateID = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78,}
 let stateAbbr;
 let initialPageLoad = true;
+
+// TO DO - Point at US naics Gaurav generated and remove "GA" now that EPA has all states.
 
 function getStateFips(hash) {
     if (hash.geo) {
