@@ -712,9 +712,7 @@ function showHeaderBar() {
   //$('.headerOffset').show(); 
   $('#headerbar').show();
   $('#headerbar').removeClass("headerbarhide");
-  $('#headerbar').removeClass("headerbarhide");
   $('#local-header').show();
-  //alert("showHeaderBar")
 }
 
 function loadSearchFilterCss() {
@@ -740,18 +738,6 @@ function loadLeafletAndMapFilters() {
         waitForElm('#local-header').then((elm) => {
           $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
           $("#local-header").show();
-        
-        // Might need to add a check here. Occasional:
-        // Uncaught ReferenceError: applyNavigation is not defined
-
-        // if #local-header already exists, abort
-
-
-        // To Do: wait for div from navigation.js
-        //waitForElm('#bodyloaded').then((elm) => {
-
-        //});
-
         });
 
       });
