@@ -4202,8 +4202,7 @@ $(document).on("click", ".showLocale", function(event) {
 	goHash({'sidetab':'locale'});
     event.stopPropagation();
 });
-function showLocale(){
-	alert("showLocale()");
+function showLocale() {
 	//closeExpandedMenus(event.currentTarget);
 	$("#filterClickLocation").removeClass("filterClickActive");
 	//loadScript(theroot + 'js/map.js', function(results) {
