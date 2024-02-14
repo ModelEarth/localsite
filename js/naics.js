@@ -1,8 +1,5 @@
 // Displays list of industries to identify local areas of impact
-
-//  Phasing our these columns: Columns from 6_state_all
-// id  COUNTY  GEO_TTL NAICS_Sector    NAICS2012_TTL   state   relevant_naics  estab_agg   emp_agg payann_agg  emp_api payann_api  estab_api
-// 759 13  999 Statewide   55  Corporate, subsidiary, and regional managing offices    13  551114  1541.3499999999995  110283.20000000004  11605999.4  116336.0    12059746.4  1542.8
+// View at https://model.earth/localsite/info/#state=NY
 
 let initialNaicsLoad = true;
 if (typeof dataObject == 'undefined') {
@@ -21,6 +18,12 @@ let stateAbbr;
 let initialPageLoad = true;
 
 // TO DO - Point at US naics Gaurav generated and remove "GA" now that EPA has all states.
+// TO DO - Use the 73 Sectors loaded below with io/js/bubble.js (previously 389)
+
+// Phasing out these columns: Columns from 6_state_all
+// id  COUNTY  GEO_TTL NAICS_Sector    NAICS2012_TTL   state   relevant_naics  estab_agg   emp_agg payann_agg  emp_api payann_api  estab_api
+// 759 13  999 Statewide   55  Corporate, subsidiary, and regional managing offices    13  551114  1541.3499999999995  110283.20000000004  11605999.4  116336.0    12059746.4  1542.8
+
 
 function getStateFips(hash) {
     if (hash.geo) {
@@ -596,9 +599,6 @@ function loadIndustryData(hash) {
     }
 
     if(!stateAbbr) {
-        // Later we might support naics/sector filters on US data.
-        // To do, load the new 73 Sectors here and display with io/js/bubble.js.
-
         //delete hiddenhash.naics;
         //delete hash.naics;
         applyIO("");
@@ -613,6 +613,7 @@ function loadIndustryData(hash) {
         dataObject.stateshown=stateID[stateAbbr.toUpperCase()];
         console.log("Load naics promises using " + stateAbbr);
         var promises = [
+            // OLD VERSION - Removing soon now that new naics county data is ready.
             d3.csv(local_app.community_data_root() + "us/id_lists/industry_id_list.csv"),
             d3.tsv(local_app.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics2_all.tsv"),
             //d3.tsv(local_app.community_data_root() + "data/c3.tsv"),
