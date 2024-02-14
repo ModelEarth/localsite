@@ -3101,6 +3101,10 @@ function loadDataset(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback
     });
     });
   } else if (dp.googleCSV) {
+    if (!onlineApp) {
+      alert("onlineApp=false in localsite.js so not pulling from Google Sheet")
+      return;
+    }
     loadScript(theroot + 'js/d3.v5.min.js', function(results) {
     waitForVariable('customD3loaded', function() {
     consoleLog("Google data requested " + dp.googleCSV);

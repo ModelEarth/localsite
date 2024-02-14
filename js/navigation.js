@@ -25,7 +25,7 @@ if(typeof layerControls=='undefined'){ var layerControls = {}; }// Object contai
 
 // localObject.geo will save a list of loaded counties for multiple states
 if(typeof localObject == 'undefined') { var localObject = {};}
-let us_stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78,}
+let us_stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78};
 
 if(typeof localObject.stateCountiesLoaded == 'undefined') {
     localObject.stateCountiesLoaded = []; // Holds a geo code for each state and province loaded. (but not actual counties)
@@ -3259,12 +3259,15 @@ function localJsonpCallback(json) {
 }
 
 // INIT
+// BUGBUG - param is not available here
+/*
 if(!param.state) {
     local_app.loctitle = "United States";
 }
 if(!param.show) {
     local_app.showtitle = "Industries";
 }
+*/
 
 /* Allows map to remove selected shapes when backing up. */
 document.addEventListener('hashChangeEvent', function (elem) {
@@ -3289,7 +3292,7 @@ function updateRegionService(section) {
             theLocation = hash.state;
             waitForElm('#state_select').then((elm) => {
                 //$("#state_select").val(param.state.split(",")[0]);
-                //alert(param.state.split(",")[0])
+                //alert(param.state.split(",")[0])applyNavigation();
                 //if ($("#state_select").find(":selected").value) {
                 //    alert("found #state_select");
                 //    updateRegionService(section);
@@ -3305,8 +3308,12 @@ function updateRegionService(section) {
 }
 
 // INIT
-hashChanged();
+
 $(document).ready(function () {
+
+    // Wait for localsite.js
+    hashChanged(); // Ideally this resides before $(document).ready, but we'll need a copy of waitForVariable here
+
 	let hash = getHash();
 	if (hash.state) {
 		let stateAbbrev = hash.state.split(",")[0].toUpperCase();
@@ -3572,7 +3579,7 @@ function showNavColumn() {
 }
 function applyNavigation() { // Called by localsite.js so local_app path is available.
 	// To do: fetch the existing background-image.
-	console.log("location.host: " + location.host + " " + location.host.indexOf("locations.pages.dev"));
+    console.log("applyNavigation()");
 	let hash = getHash();
     const changeFavicon = link => { // var for Safari
       let $favicon = document.querySelector('link[rel="icon"]')
