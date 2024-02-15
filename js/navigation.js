@@ -25,7 +25,7 @@ if(typeof layerControls=='undefined'){ var layerControls = {}; }// Object contai
 
 // localObject.geo will save a list of loaded counties for multiple states
 if(typeof localObject == 'undefined') { var localObject = {};}
-let us_stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78};
+localObject.us_stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78};
 
 if(typeof localObject.stateCountiesLoaded == 'undefined') {
     localObject.stateCountiesLoaded = []; // Holds a geo code for each state and province loaded. (but not actual counties)
@@ -2332,8 +2332,8 @@ function locClick(which) {
 }
 */
 // Data as values, not objects.
-let geoCountyTable = []; // Array of arrays
-let currentRowIDs = [];
+//let geoCountyTable = []; // Array of arrays
+
 function loadStateCounties(attempts) { // To avoid broken tiles, this won't be executed if the #geomap div is not visible.
 	consoleLog("loadStateCounties " + attempts);
     loadScript(theroot + 'js/d3.v5.min.js', function(results) {
@@ -2402,7 +2402,7 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
 
         				// geo is country, state/province, county
 
-        				let theStateGeo = "US" + ('0'+us_stateIDs[theState]).slice(-2);
+        				let theStateGeo = "US" + ('0' + localObject.us_stateIDs[theState]).slice(-2);
         				
         				myData.forEach(function(d, i) {
 
@@ -2424,7 +2424,7 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
         				 	// Add an array to the empty array with the values of each:
         				 	// d.difference, 
         				 	// , d.sq_miles
-        			 	 	geoCountyTable.push([d.idname, d.totalpop18, d.perMile]);
+        			 	 	//geoCountyTable.push([d.idname, d.totalpop18, d.perMile]);
 
         			 	 	// Save to localObject so counties in multiple states can be selected
         			 	 	if (localObject.stateCountiesLoaded.indexOf(theStateGeo)==-1) { // Just add first time
@@ -2583,7 +2583,8 @@ function loadObjectData(element, attempts) {
 var statetable = {};
 var geotable = {};
 function showTabulatorList(element, attempts) {
-    //alert("showTabulatorList scope: " + element.scope + ". Length: " + Object.keys(element).length + ". Attempt: " + attempts);
+    let currentRowIDs = [];
+    console.log("showTabulatorList scope: " + element.scope + ". Length: " + Object.keys(element).length + ". Attempt: " + attempts);
 	let hash = getHash();
     let theState = hash.state;
     if (element.state) {
@@ -3455,9 +3456,30 @@ if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0
 }
 console.log("modelpath " + modelpath);
 
-// INIT
-applyNavigation();
 
+function waitForVariableNav(variable, callback) { // Declare variable using var since let will not be detected.
+  var interval = setInterval(function() {
+    if (window[variable]) {
+      clearInterval(interval);
+      consoleLog('waitForVariable found ' + variable);
+      callback();
+      return;
+    }
+    consoleLog('waitForVariable waiting ' + variable);
+  }, 80);
+}
+
+// INIT
+waitForVariableNav('localStart', function() {
+    if (typeof localObject.navigationLoaded == "undefined") {
+        // Initial load. Prevents reload if navigation.js is placed on page without id.
+        localObject.navigationLoaded = true; // Var so universally available.
+    } else {
+        console.log("ALERT! navigation.js already loaded. Add an id in the javascript include. Or remove navigation.js since localsite.js loads.");
+        return;
+    }
+    applyNavigation();
+});
 
 // Not in use, but might be cool to use
 function displayHexagonMenu(layerName, localObject) {
@@ -3578,8 +3600,9 @@ function showNavColumn() {
 	}
 }
 function applyNavigation() { // Called by localsite.js so local_app path is available.
+
 	// To do: fetch the existing background-image.
-    console.log("applyNavigation()");
+    
 	let hash = getHash();
     const changeFavicon = link => { // var for Safari
       let $favicon = document.querySelector('link[rel="icon"]')
@@ -5222,7 +5245,7 @@ function openMapLocationFilter() {
 	        if(hash.geo && !hash.state) {
 	            let geos = hash.geo.split(",");
 	            for(var i = 0 ; i < geos.length ; i++) {
-	                currentStates.push(getKeyByValue(us_stateIDs, Number(geos[i].replace("US","").substring(0,2))));
+	                currentStates.push(getKeyByValue(localObject.us_stateIDs, Number(geos[i].replace("US","").substring(0,2))));
 	            }
 	        }
 

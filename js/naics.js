@@ -2088,8 +2088,11 @@ function showSectorTabulatorList(attempts) {
                 console.log("row:");
                 console.log(row); // Single row component
                 console.log(e); // Info about PointerEvent - the click event object
-
-                currentRowIDs = [];
+                if (location.host.indexOf('localhost') >= 0) {
+                    alert("rowClick naics.js on localhost");
+                }
+                // Added let Feb 2024
+                let currentRowIDs = [];
                 //e.forEach(function (row) {
                     //console.log(row.geoid);
                     currentRowIDs.push(row._row.data.id);

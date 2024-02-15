@@ -4,7 +4,7 @@
 
 // Localsite Path Library - A global namespace singleton
 // Define a new object if localsite library does not exist yet.
-let localStart = Date.now();
+var localStart = Date.now(); // A var so waitForVariableNav detects in navigation.js.
 let onlineApp = true;
 if (location.host.indexOf('localhost') >= 0) {
   //onlineApp = false; // Set to false during air travel. Also sets local to no state.
