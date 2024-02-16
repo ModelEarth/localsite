@@ -2629,8 +2629,10 @@ function showTabulatorList(element, attempts) {
             //alert("element.columns.length inside " + element.columns.length);
              $("#tabulator-geotable").hide();
              $("#tabulator-statetable").show();
-             // Not sure why this occurs when changing #state_select dropdown to no state.
-             // TypeError: Cannot read properties of undefined (reading 'slice')
+             // BUGBUG - TypeError: Cannot read properties of undefined (reading 'slice')
+             // Not sure why this occurs when there is no state.
+             // Example http://localhost:8887/apps/ev/#geoview=country
+             
              statetable = new Tabulator("#tabulator-statetable", {
                 data:dataForTabulator,    //load row data from array of objects
                 layout:"fitColumns",      //fit columns to width of table
