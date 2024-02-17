@@ -350,7 +350,7 @@ function hashChanged() {
                         {title:"Population", field:"population", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
                         {title:"CO<sub>2</sub> per capita", field:"CO2_per_capita", hozAlign:"right", formatter:"money", formatterParams:{precision:false}},
                     ];
-                    console.log("columns for countries, including per capita");
+                    console.log("columns for country, including per capita");
                     // Displays tabulator list of states, but USA map shapes turned red.
                     if (hash.geoview == "country") {
                         loadObjectData(element, 0);
