@@ -4,7 +4,8 @@ The following will allow you to launch [http://localhost:8887/localsite/](http:/
 
 WITH A PYTHON COMMAND:
 
-Go to the folder where your webroot resides and run the following to view pages on localhost. On a Mac, you can right-click your webroot folder and choose "New Terminal at Folder".
+Go to the folder where your webroot resides and run the following to view pages on localhost.
+On a Mac, you can right-click your webroot folder and choose "New Terminal at Folder".
 
 Run this command to start your localhost web server:
 
