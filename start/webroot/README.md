@@ -4,8 +4,9 @@ The following will allow you to launch [http://localhost:8887/localsite/](http:/
 
 WITH A PYTHON COMMAND:
 
-Go to the folder where you'd like your webroot to reside and run the following to view pages on localhost:  
-Run this command to start localhost whenever you restart your computer.
+Go to the folder where your webroot resides and run the following to view pages on localhost. On a Mac, you can right-click your webroot folder and choose "New Terminal at Folder".
+
+Run this command to start your localhost web server:
 
 	python -m http.server 8887
 
@@ -14,7 +15,7 @@ Run this command to start localhost whenever you restart your computer.
 
  	python3 -m http.server 8887 -d /Sites
 
-If the above do not work, you can also try:  
+If the above do not work, you can try:  
 
 	python -m SimpleHTTPServer 8887
 
@@ -27,7 +28,6 @@ ON A PC: [Install IIS](https://www.techwalla.com/articles/how-to-circumvent-mcaf
 
  WITH CHORME: Alternatively, you can install [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb?hl=en) to view and develop pages offline using http://localhost:8887 on your computer. Web Server for Chrome also allows you to [load a custom domain](https://medium.com/@jmatix/using-chrome-as-a-local-web-server-af04baffd581). Web Server for Chrome does not work as a Brave browser extension on Mac (as of December 2019), but you can add as a Chrome extension, then utilize from within Brave.
 
-ON A MAC: Right-click the folder where your websites reside and choose "New Terminal at Folder"  
 
 On a Mac, you can add a shorthand "localsite" command in your .bash_profile file. Change /Site to your webroot:
 
