@@ -1,9 +1,10 @@
+[Data Pipeline](../../../../data-pipeline/)  
 
 # Dive Into Data Commons
 
-Join us to create new tools and industry maps for Sustainable Material Management (SMM) that integrate with [Google Data Commons](https://datacommons.org).  Get started with our [Data Commons Lite setup steps](/localsite/info/data/datacommons/#setup) 
+Join us to create new tools and industry maps for Sustainable Material Management (SMM) that integrate with [Google Data Commons](https://datacommons.org).
 
-
+Get started with our [Data Commons Lite setup steps](/localsite/info/data/datacommons/#setup) 
 
 We're exploring infusing Google Data Commons with US EPA indicators. 
 
@@ -41,6 +42,3 @@ Areas of focus include:
 1. Korean SK Innovation's $1.6 billion plant adds $960 million [EV battery expansion in Commerce, GA](https://www.bizjournals.com/atlanta/news/2020/06/30/sk-innovation-georgia-electric-vehicle-plant.html)   
 -->
 
-
---- 
-<br>
