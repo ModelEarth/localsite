@@ -4,6 +4,18 @@ You can use [Localsite Pages](../) to create websites and stories with free GitH
 
 If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns](https://twitter.com/LorenHeyns).
 
+### Quick local install
+
+In a local folder called "webroot" run:
+
+	git clone https://github.com/ModelEarth/localsite localsite &&  
+	git clone https://github.com/ModelEarth/io io &&  
+	git clone https://github.com/ModelEarth/data-pipeline data-pipeline &&
+	python -m http.server 8887
+
+Now you can open our timeline project at: [localhost:8887/data-pipeline/timelines/tabulator](http://localhost:8887/data-pipeline/timelines/tabulator/)
+For futher commands, open a new terminal window since the prior is now dedicated to being an http server.
+
 <!--
 	Not using currently, made a physcial copy instead
 	https://github.com/ModelGeorgia/io/compare/master...modelearth:master
@@ -16,14 +28,15 @@ If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns]
 	https://github.com/GeorgiaData/io/compare/master...modelearth:master
 	https://github.com/GeorgiaData/localsite/compare/master...modelearth:master
 -->
+<br>
 
-### Steps for hosting your pages
+### Alternative: Steps for forking and contributing
 
 The following steps are elaborated on after this summary.  
 
-1. Fork the [localsite repo](https://github.com/modelearth/localsite) and turn on [GitHub Pages](#github-pages).  
+1. [Activate a local webroot](#webroot) on your local computer for [http://localhost:8887](http://localhost:8887/)
+2. Fork the [localsite repo](https://github.com/modelearth/localsite) and turn on [GitHub Pages](#github-pages).  
 After a few minutes, you can view your fork at [[your account].github.io/localsite](https://modelearth.github.io/apps)  
-2. [Activate a local webroot](#webroot) on your local computer for [http://localhost:8887](http://localhost:8887/)
 3. [Clone the forked repos](#clone) into your local webroot folder.
 4. Deploy your updates
 5. [Fetch upstream](#fetch-upstream) changes to your forked repos.
@@ -35,29 +48,9 @@ For samples of location parameters, view and fork the ModelEarth [apps repo](htt
 You can generate images locally using [StableStudio](http://dreamstudio.com/studio/), the open source UX behind the [DreamStudio.ai](https://dreamstudio.ai) frontend.
 <br>
 
-<section id="github-pages"></section>
-
-## 1. Click the "Fork" button in the upper right of the [localsite repo](https://github.com/modelearth/localsite)
-
-Optional: Also fork the [io repo](https://github.com/modelearth/io) and [apps repo](https://github.com/modelearth/apps) if your story will include environmental impact data.
-
-You can [use Github .submodules](../submodules/) to deploy multiple repos into a single [Cloudflare site](../cloudflare/).  
-
-1B. Activate GitHub Pages for each of your forked repos by going to "Settings > Pages" and choosing "main" (or master) then save.
-
-<div style="border:1px solid #ccc; padding:15px; display:inline-block; margin-bottom:20px">
-<img src="../img/github-pages.png">
-</div>
-
-IMPORTANT: DO NOT SELECT A THEME - The Jekyll theme will break the modular site integration.  
-
-Wait a few minutes for a new GitHub Pages site to become available at a link in the following format:
-
-https://[your account].Github.io/[repo name]  
-
 <section id="webroot"></section>
 
-## 2. Activate a webroot folder on your computer
+## 1. Activate a webroot folder on your computer
 
 The following will allow you to launch [http://localhost:8887/localsite/](http://localhost:8887/localsite/).&nbsp; You'll view multiple repos in the same webroot.
 
@@ -68,6 +61,26 @@ Go to the webroot folder and run the following to view pages locally at http://l
 
 You can run the command above to start localhost whenever you restart your computer.
 If that dose't work, here are more options for [activating your webroot](../webroot).
+
+
+
+<section id="github-pages"></section>
+
+## 2. Click the "Fork" button in the upper right of the [localsite repo](https://github.com/modelearth/localsite)
+
+Also fork the [io repo](https://github.com/modelearth/io) and [data-pipeline repo](https://github.com/modelearth/data-pipeline). 
+
+Activate GitHub Pages for each of your forked repos by going to "Settings > Pages" and choosing "main" (or master) then save.
+
+<div style="border:1px solid #ccc; padding:15px; display:inline-block; margin-bottom:20px">
+<img src="../img/github-pages.png">
+</div>
+
+IMPORTANT: DO NOT SELECT A THEME - The Jekyll theme will break the modular site integration.  
+
+Wait a few minutes for a new GitHub Pages site to become available at a link in the following format:
+
+https://[your account].Github.io/[repo name]  
 
 
 <section id="clone"></section>
@@ -144,6 +157,8 @@ To fix conflicts, you may need delete .DS_Store files within the Github.com webs
 
 Occasionally merge in updates from parent repos by clicking "Fetch Upstream > Fetch and Merge" in GitHub.
 
+Or run the script to refresh your local clones on the [io/charts](../../../io/charts/) page.
+
 <!--
 In the old days you had to do the following:
 
@@ -175,6 +190,8 @@ You can point a domain at all the repos in your Github account with the steps be
 - Activate GitHub Pages for each additional repo residing within the primary account. These can be forks from other accounts.  
 - Avoid putting referenced files in your [github username].github.io root repo because it won't be the root of your site when you view on localhost.  
 - Fork the "[localsite](https://github.com/modelearth/localsite/)" repo into your GitHub account if you'd like to include it's functionality in any of your sites. Turn on GitHub pages to display at YourDomain.com/localsite/  
+
+We sometimes [use Github .submodules](../submodules/) to deploy multiple repos into a single [Cloudflare site](../cloudflare/). A super high traffic site can use Cloudflare's free CDN to avoid exceeding limits in Github.
 
 
 ## Additional Resources

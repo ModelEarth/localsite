@@ -33,7 +33,9 @@ On a Mac, you can add a shorthand "localsite" command in your .bash_profile file
 
  	alias localsite="python3 -m http.server 8887 -d /Site"
 
-BUG - The above might cause the terminal to issue unneeded commands. The following kept running. Need to test again. <!-- http://localhost:8887/localsite/info/#show=recyclers&state=GA -->
+<!--
+BUG - The above might cause the terminal to issue unneeded commands. 
+This did not reoccur, so commenting out.
 
     Serving HTTP on :: port 8887 (http://[::]:8887/) ...
     ::ffff:192.168.127.92 - - [17/Feb/2022 12:07:37] code 404, message File not found
@@ -78,5 +80,6 @@ BUG - The above might cause the terminal to issue unneeded commands. The followi
     ::ffff:192.168.127.92 - - [17/Feb/2022 12:09:08] code 404, message File not found
     ::ffff:192.168.127.92 - - [17/Feb/2022 12:09:08] "GET /cgi-bin/ncbook/book.cgi HTTP/1.1" 404 -
 
+-->
 
 [Set up steps](../)
