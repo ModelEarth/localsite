@@ -2,7 +2,7 @@
 
 # Dive Into Data Commons
 
-Join us to create new tools and industry maps for Sustainable Material Management (SMM) that integrate with [Google Data Commons](https://datacommons.org).
+Join us in creating new UX tools and industry maps for Sustainable Material Management (SMM) that integrate with [Google Data Commons](https://datacommons.org).
 
 We'll be using the Google Data Commons API to pull international data for our industry impact timelines. Please add to the notes to include how to view data from the API using Postman, JQuery and React, and save international Environment country data as .csv files using Python.
 
