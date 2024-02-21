@@ -3,7 +3,7 @@
 You'll be running a local copy of the [datacommons.org](https://datacommons.org) website, but without local data.
 
 Please update these steps by foring and editing the [localsite repo](../../../start/steps/).
-The steps were created prior to 2021, so they may be outdated.
+These steps were created prior to 2021, so they may be outdated.
 
 Clone the Google Data Commons "[website](https://github.com/datacommonsorg/website/)" repo and run commands within your cloned folder.  
 
