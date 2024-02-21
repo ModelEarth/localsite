@@ -133,22 +133,34 @@ var local_app = local_app || (function(module){
 // USE param for any html page using localsite.js.
 // mix gives priority to the first (allowing it to delete using blanks). extend gives priority to the second.
 let paramIncludeFile = getParamInclude(); // From localsite.js include file param.
+
 if(typeof hiddenhash == 'undefined') {
   var hiddenhash = {};
 }
-// param values from page are placed in hiddenhash.
+if (hiddenhash.geoview) {
+    alert("BUG L1 hiddenhash.geoview " + hiddenhash.geoview);
+}
+// param values from page are placed in hiddenhash. (UNLESS THEY ARE ALREADY IN THE HASH.)
 // hiddenhash is loaded into hash in gethash if hash does not have an existing value.
-// That allows priorHash to contain the initial param value hardcoded in page (since hiddenhash holds it for getHash).
+// priorHash holds the initial param value hardcoded in page, then changes with each hash update.
 if(typeof param != 'undefined') { // From settings in HTML page
+  // hiddenhash and hash allow params to be altered after initial load.
+  // hiddenhash DOES NOT contain location.search
   hiddenhash = mix(hiddenhash,paramIncludeFile); // Before URL values added. Priority to hiddenhash.
   hiddenhash = mix(param,hiddenhash); // param set in page takes priority over param set on localsite.js URL.
+
+  // param includes location.search, but might not need to.
+  // param is coming in from page settings, so we give it priority over localsite.js includes and the URL
   param = mix(param,loadParams(location.search,location.hash)); // Priority to first, the param values set in page.
+  param = mix(param,paramIncludeFile);
+
 } else { // No param object in page, but could be set in localsite.js include.
   hiddenhash = mix(hiddenhash,paramIncludeFile);
-  //var param = {}; // Clone paramIncludeFile
+  // Now we add in the hash, after hiddenhash is set without hash
   var param = structuredClone(extend(true, loadParams(location.search,location.hash), paramIncludeFile)); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
   //param = loadParams(location.search,location.hash); // Includes localsite.js include.
 }
+
 if (param.state) {
   defaultState = param.state; // For /locations/index.html
 }
@@ -235,8 +247,8 @@ function loadParams(paramStr,hashStr) {
           continue;
       let pair = pairs[i].split('=');
       params[decodeURIComponent(pair[0]).toLowerCase()] = decodeURIComponent(pair[1]);
-   }
-
+  }
+   
   let hashPairs = hashStr.split('&');
   for (let i = 0; i < hashPairs.length; i++) {
       if(!hashPairs[i])
@@ -248,20 +260,22 @@ function loadParams(paramStr,hashStr) {
       let hashPair = hashPairs[i].split('=');
       params[decodeURIComponent(hashPair[0]).toLowerCase()] = decodeURIComponent(hashPair[1]);
    }
+   
    return params;
 }
 function mix(incoming, target) { // Combine two objects, priority to incoming. Delete blanks indicated by incoming.
    let target2;
-   //target2 = structuredClone($.extend(true, {}, target)); // Clone/copy object without entanglement
+
+   let target1 = structuredClone(extend(true, {}, target)); // Clone/copy object without entanglement - prevents making hashhidden = hash
    //console.log("mix incoming and default (target). Incoming has priority.");
    //console.log(incoming);
    //console.log(target);
    if (window.jQuery) {
-    target2 = structuredClone($.extend(true, target, incoming)); // structuredClone prevents entanglement, subsequent overrides first.
+    target2 = structuredClone(extend(true, target1, incoming)); // structuredClone prevents entanglement, subsequent overrides first.
    } else {
     console.log("USING non-jquery extend")
     // This non-JQuery extend results in "Uncaught (in promise) RangeError: Maximum call stack size exceeded" with map.js mix(dp,defaults)
-    target2 = structuredClone(extend(true, target, incoming)); // Clone/copy object without entanglement, subsequent overrides first.
+    target2 = structuredClone(extend(true, target1, incoming)); // Clone/copy object without entanglement, subsequent overrides first.
    }
    for(var key in incoming) {
      if (incoming.hasOwnProperty(key)) {
@@ -278,12 +292,7 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
    return target2;
 }
 function getHash() {
-    // This allow initial param values to be mixed in, but we need clear the hiddenhash whenever clearing a hash value.
-    if (param.length > 0) {
-      return (mix(getHashOnly(),hiddenhash)); // Includes hiddenhash
-    } else {
-      return (getHashOnly());
-    }
+    return (mix(getHashOnly(),hiddenhash)); // Includes hiddenhash
 }
 function getHashOnly() {
     return (function (a) {
@@ -2687,5 +2696,4 @@ function setSitelook(siteLook) {
     //setTimeout(function(){ updateOffsets(); }, 200); // Allows time for css file to load.
     //setTimeout(function(){ updateOffsets(); }, 4000);
 }
-
 consoleLog("end localsite");

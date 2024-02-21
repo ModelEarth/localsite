@@ -1,6 +1,5 @@
 // Displays list of industries to identify local areas of impact
 // View at https://model.earth/localsite/info/#state=NY
-
 let initialNaicsLoad = true;
 if (typeof dataObject == 'undefined') {
     var dataObject = {};
@@ -93,19 +92,15 @@ function getStateFips(hash) {
 // INIT
 let priorHash_naicspage = {};
 initialWidgetLoad();
+if (typeof hiddenhash == 'undefined') {
+    var hiddenhash = {}; // Use var only. Declaired in localsite.js
+}
 function initialWidgetLoad() {
-    //if (typeof hash == 'undefined') {
-        let hash = getHash();
-    //}
-    if (typeof hiddenhash == 'undefined') {
-        //let hiddenhash = {};
-    }
+    let hash = getHash();
     if (!hash.indicators) {
         hiddenhash.indicators = "ACID,ETOX,EUTR,GHG,HTOX,LAND,OZON,PEST,SMOG,WATR";
     }
-    //alert("hiddenhash.indicators " + hiddenhash.indicators)
-    refreshNaicsWidget();
-    
+    refreshNaicsWidget(true);
     waitForElm('#sectorListTitles').then((elm) => {
         waitForElm('#sector-list .sector-list-table').then((elm) => {
             $("#sectorListTitles").prependTo($("#sector-list > div"));
@@ -121,7 +116,7 @@ document.addEventListener('hashChangeEvent', function (elem) {
     }
     //let hash = loadParams(location.search,location.hash);
     console.log("naics.js detects hash change");
-    refreshNaicsWidget();                    
+    refreshNaicsWidget(false);                    
  }, false);
 
 // For v2
@@ -140,32 +135,14 @@ function getIndustryZipPath(zip) {
     return local_app.community_data_root() + "us/zipcodes/naics/" + zip.replace(/(.{1})/g,"\/$1") + "/zipcode" + zip + "-census-naics6-2018.csv";
 }
 
-function refreshNaicsWidget() {
-    console.log("refreshNaicsWidget() hiddenhash.naics: " + hiddenhash.naics);
+function refreshNaicsWidget(initialLoad) {
+    //alert("refreshNaicsWidget() hiddenhash.indicators: " + hiddenhash.indicators);
+
+    //hiddenhash.naics is populated after changing state in hash, not on initial load (unless set in param.naics within page).
+    //alert("refreshNaicsWidget() hiddenhash.naics: " + hiddenhash.naics);
+
     let hash = getHash(); // Includes hiddenhash
-    //console.log("refreshNaicsWidgetB hiddenhash.naics: " + hash.naics);
-    //alert("refreshNaicsWidgetB hash.indicators: " + hash.indicators);
-    //alert("refreshNaicsWidget " + typeof hash.naics + " " + typeof priorHash.naics)
-
-    if (hash.geo){
-        let fip = hash.geo.split("US")[1]   
-        if (fip.startsWith("0")) {
-            dataObject.stateshown = hash.geo.split("US0")[1]
-        } else {
-            dataObject.stateshown = hash.geo.split("US")[1]
-        }
-    }
-    //[fips,dataObject.stateshown]=getStateFips(hash);
-    dataObject.stateshown = getStateFips(hash);
-
-    if (hash.show == "undefined") { // To eventually remove
-        delete hash.show; // Fix URL bug from indicator select hamburger menu
-        updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
-        console.log("REMOVED hash=undefined");
-    }
-
-    //hash = loadParams(location.search,location.hash); // Also used by loadIndustryData(hash)
-    //hash = mix(param,hash); // Add include file's param values.
+    console.log("refreshNaicsWidget hash.naics: " + hash.naics + " and prior naics: " + priorHash.naics);
 
     if (hash.set != priorHash.set) {
         if (!hash.set) {
@@ -194,6 +171,36 @@ function refreshNaicsWidget() {
             $(".impactIcons div:contains(" + capitalizeSetName + ")").addClass("active");
         }
     }
+
+
+    // TO DO: Watch only for changes to geo
+    // 
+    if (!initialLoad && hash.geo != priorHash.geo) {
+        console.log("No change for refreshNaicsWidget()");
+        return;
+    }
+
+    if (hash.geo){
+        let fip = hash.geo.split("US")[1]   
+        if (fip.startsWith("0")) {
+            dataObject.stateshown = hash.geo.split("US0")[1]
+        } else {
+            dataObject.stateshown = hash.geo.split("US")[1]
+        }
+    }
+    //[fips,dataObject.stateshown]=getStateFips(hash);
+    dataObject.stateshown = getStateFips(hash);
+
+    if (hash.show == "undefined") { // To eventually remove
+        delete hash.show; // Fix URL bug from indicator select hamburger menu
+        updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
+        console.log("REMOVED hash=undefined");
+    }
+
+    //hash = loadParams(location.search,location.hash); // Also used by loadIndustryData(hash)
+    //hash = mix(param,hash); // Add include file's param values.
+
+
 
     // Get naics and set titles
     getNaics_setHiddenHash2(hash.show); // Sets hiddenhash.naics for use by other widgets.
@@ -612,6 +619,7 @@ function loadIndustryData(hash) {
     } else {
         dataObject.stateshown=stateID[stateAbbr.toUpperCase()];
         console.log("Load naics promises using " + stateAbbr);
+        //alert(local_app.community_data_root() + "us/id_lists/industry_id_list.csv");
         var promises = [
             // OLD VERSION - Removing soon now that new naics county data is ready.
             d3.csv(local_app.community_data_root() + "us/id_lists/industry_id_list.csv"),
@@ -763,7 +771,7 @@ $(document).ready(function() {
                 local_app.showtitle = "Local Topics";
                 $(".regiontitle").text("US Local Topics");
             }
-            refreshNaicsWidget();
+            refreshNaicsWidget(false);
             return; 
 
 
@@ -2030,8 +2038,8 @@ function applyIO(naics) {
 // New 73 Sectors
 getEpaSectors();
 function getEpaSectors() {
-    // USEEIOv2.0 has 411 sector rows.
-    let sectorsJsonFile = "/io/build/api/GAEEIOv1.0/sectors.json";
+    let sectorsJsonFile = "/io/build/api/GAEEIOv1.0/sectors.json"; // 146/2 = 73
+    //let sectorsJsonFile = "/io/build/api/USEEIOv2.0/sectors.json"; // 411 sectors
     let promises = [
         d3.json(sectorsJsonFile, function(d) {
             epaSectors.set(d.id, d.index, d.name, d.code, d.location, d.description);
@@ -2076,12 +2084,6 @@ function showSectorTabulatorList(attempts) {
                 {title:"Location", field:"location", width:80, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
                 {title:"Description", field:"description", width:320, hozAlign:"left", headerSortStartingDir:"desc" }
             ],
-            dataLoaded: function(data) {
-                $("#sectors_totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
-                let totalcount_div = Object.assign(document.createElement('div'),{id:"sectors_totalcount",style:"margin-bottom:10px"})
-                $("#tabulator-sectortable-count").append(totalcount_div);
-                totalcount_div.innerHTML = data.length + " sectors";  
-            },
             rowClick:function(e, row) {
                 row.toggleSelect(); //toggle row selected state on row click
 
@@ -2156,6 +2158,12 @@ function showSectorTabulatorList(attempts) {
         // Place click-through on checkbox - allows hashchange to update row.
         //$('.tabulator-row input:checkbox').prop('pointer-events', 'none'); // Bug - this only checks visible
         
+        sectortable.on("dataLoaded", function(data){
+            $("#sectors_totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
+            let totalcount_div = Object.assign(document.createElement('div'),{id:"sectors_totalcount",style:"margin-bottom:10px"})
+            $("#tabulator-sectortable-count").append(totalcount_div);
+            totalcount_div.innerHTML = data.length + " sectors";  
+        });
 
     } else {
       attempts = attempts + 1;
@@ -2218,12 +2226,6 @@ function showIndustryTabulatorList(attempts) {
                 {title:"Population", field:"population", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
                 {title:"Counties", field:"instances", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number" }
             ],
-            dataLoaded: function(data) {
-                $("#industries_totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
-                let totalcount_div = Object.assign(document.createElement('div'),{id:"industries_totalcount",style:"margin-bottom:10px"})
-                $("#tabulator-industrytable-count").append(totalcount_div);
-                totalcount_div.innerHTML = data.length + " industries";    
-            },
             rowClick:function(e, row) {
                 row.toggleSelect(); //toggle row selected state on row click
 
@@ -2295,6 +2297,12 @@ function showIndustryTabulatorList(attempts) {
         // Place click-through on checkbox - allows hashchange to update row.
         //$('.tabulator-row input:checkbox').prop('pointer-events', 'none'); // Bug - this only checks visible
         
+        industrytable.on("dataLoaded", function(data){
+            $("#industries_totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
+            let totalcount_div = Object.assign(document.createElement('div'),{id:"industries_totalcount",style:"margin-bottom:10px"})
+            $("#tabulator-industrytable-count").append(totalcount_div);
+            totalcount_div.innerHTML = data.length + " industries";  
+        });
 
     } else {
       attempts = attempts + 1;

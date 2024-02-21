@@ -84,8 +84,11 @@ document.addEventListener('hashChangeEvent', function (elem) {
   hashChangedMap();
 }, false);
 document.addEventListener('hiddenhashChangeEvent', function (elem) {
-  console.log("map.js detects hiddenhashChangeEvent, calls hashChangedMap()");
-  hashChangedMap();
+  console.log("Doinng nothing: map.js detects hiddenhashChangeEvent, calls hashChangedMap()");
+  // Instead, we'll create a hash change event without changing the hash.
+  
+  // But needed for io center column red bars (not)
+  //hashChangedMap();
 }, false);
 
 // MAP 1
@@ -97,9 +100,10 @@ function clearListDisplay() {
   $(".listTitle").html(""); // Clear
   $(".listSubtitle").html(""); // Clear
   $(".listSpecs").html(""); // Clear
+  $(".sideListSpecs").html(""); // Clear
   $("#listcolumnList").html(""); // Clear
   $("#dataList").html(""); // Clear
-  $("#detailList").html(""); // Clear
+  $("#detaillist").html(""); // Clear
 }
 
 let dp = {}; // So available on .detail click for popMapPoint() and zoomMapPoint().
@@ -107,8 +111,10 @@ let dp = {}; // So available on .detail click for popMapPoint() and zoomMapPoint
 // TO DO: Can we avoid calling outside of the localsite repo by files in community, including community/map/starter/embed-map.js 
 function loadMap1(calledBy, show, dp_incoming) {
   // Calls loadDataset
-  let hash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement. Includes hiddenhash
-    if (!show && param["show"]) {
+  //let hash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement. Includes hiddenhash
+  let hash = getHash();
+
+  if (!show && param["show"]) {
     show = param["show"];
   }
   consoleLog('loadMap1 start. CalledBy ' + calledBy + '. Show: ' + show + '. Cat: ' + hash.cat);
@@ -125,9 +131,13 @@ function loadMap1(calledBy, show, dp_incoming) {
   // Could display a very small loading indicator
 
   let theState;
-  if (param["state"]) {
-    theState = param["state"].toUpperCase();
+  //if (param["state"]) {
+  //  theState = param["state"].toUpperCase();
+  //}
+  if (hash.state) {
+    theState = hash.state;
   }
+
   waitForElm('#state_select').then((elm) => {
 
     if (theState != "") {
@@ -833,7 +843,7 @@ $(document).on("click", "#show_county_colors", function(event) {
 });
 
 function centerMap(lat,lon,name,map,whichmap) {
-    
+    console.log("centerMap " + whichmap);
     $("#sidemapCard").show(); // map2 - show first to maximize time tiles have to see full size of map div.
     $('.detail').removeClass("detailActiveHold"); // Remove prior
 
@@ -1135,10 +1145,10 @@ function showList(dp,map) {
   if (!dp.lonColumn) {
     dp.lonColumn = "longitude";
   }
-  //$("#detaillist").text(""); // Clear prior results
+  console.log("Clear prior list results");
+  $("#detaillist").text(""); // Clear prior results
   $("#detaillist").remove(); // Used to trigger waitfor
   if (dp.search && $("#activeLayer").text() != dp.dataTitle) { // Only set when active layer changes, otherwise selection overwritten on change.
-    
     let search = [];
     if (param["search"]) {
       search = param["search"].replace(/\+/g," ").toLowerCase().split(",");
@@ -1669,7 +1679,6 @@ function showList(dp,map) {
 
     while (n--) {
       key = keys[n];
-      //element[key] = elementRaw[key]; // Also keep uppercase for element["Prepared"]
       element[key.toLowerCase()] = elementRaw[key];
       if (hash.details == "true") {
         if (key && elementRaw[key]) {
@@ -1846,11 +1855,11 @@ function showList(dp,map) {
 
           output += "<div class='detailTitle'>" + name + "</div>";
           if (element[dp.description]) {
-            output += "<div style='padding-bottom:8px'>" + element[dp.description] + "</div>";
+            output += "<div>" + element[dp.description] + "</div>";
           } else if (element.description) {
-            output += "<div style='padding-bottom:8px'>" + element.description + "</div>";
+            output += "<div>" + element.description + "</div>";
           } else if (element["business description"]) {
-            output += "<div style='padding-bottom:8px'>" + element["business description"] + "</div>";
+            output += "<div>" + element["business description"] + "</div>";
           }
 
           // Lower
@@ -1862,7 +1871,9 @@ function showList(dp,map) {
           var outaddress = "";
           if (element[dp.addressColumn]) { 
               outaddress +=  element[dp.addressColumn] + "<br>"; 
-          } else if (element.address || element.city || element.state || element.zip) {
+          } 
+          //else // Removed use of else so farmfresh showed city, state, zip
+          if (element.address || element.city || element.state || element.zip) {
             if (element.address) {
               outaddress += element.address + "<br>";
             }
@@ -1886,10 +1897,11 @@ function showList(dp,map) {
             
           }
           if (outaddress) {
-            output += "<b>Location:</b> " + outaddress;
+            //output += "<b>Location:</b> " + outaddress; // Not using because address is on two lines.
+            output += outaddress;
           }
           if (element.county) {
-            output += '<b>Location:</b> ' + element.county + " County<br>";
+            output += '<b>County:</b> ' + element.county + " County<br>";
           }
 
           if (element.website) {
@@ -2096,7 +2108,6 @@ function showList(dp,map) {
   });
 
   waitForElm('#detaillistHolder').then((elm) => {
-
     $("#detaillistHolder").append("<div id='detaillist'>" + output + "</div>");
     $("#detaillist").append("<div style='height:60px'></div>"); // For space behind absolute buttons at bottom.
 
@@ -2264,6 +2275,7 @@ function showList(dp,map) {
       }
     }
     $(".listSpecs").html(searchFor);
+    $(".sideListSpecs").html(searchFor);
 
     // We're not using "loc" yet, but it seems better than using id to avoid conflicts.
     // Remove name from hash to trigger refresh
@@ -3162,7 +3174,7 @@ function loadDataset(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback
 
 // Move after processOutput once done creating
 function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) {
-
+  console.log("renderMap " + whichmap);
   waitForElm('#' + parentDiv + ' #' + whichmap).then((elm) => { // Didn't help with map refresh.
   let hash = $.extend(true, {}, getHash());
   if (whichmap == "map1") {
@@ -3193,7 +3205,6 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
     zoom = dp.zoom
   }
 
-
   if (!basemaps) {
     basemaps = {
       //'Grayscale' : L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
@@ -3211,11 +3222,9 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
   // TODO - Adjust to allow for map1 also
 
   //overlays[dataTitle] = dp.group2; Added a dup checkbox
-
-
   //console.log(whichmap + " length: " + $(mapDiv).length);
   if($(mapDiv).text().trim().length > 1) {
-    
+    console.log("Existing map found, center it. (Map point refresh needed.) " + whichmap);
     if (whichmap=="map1") {
       map = map1;
       overlays = overlays1;
@@ -3223,12 +3232,14 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       map = map2;
       overlays = overlays2;
     } 
-
     consoleLog(mapDiv + " div found. Length: " + $(mapDiv).text().trim().length);
     //map = document.querySelector(mapDiv)._leaflet_map; // Recall existing map. Didn't work. Declared map1 and map2 externally instead.
     //alert("typeof map: " + typeof map);
 
     map.setView(mapCenter,zoom);
+
+    let layerGroup = L.layerGroup();
+    addIcons(dp,map,whichmap,layerGroup,zoom,markerType); // Adds to both map1 and map2
 
   } else {
     consoleLog("Initiate map " + mapDiv + " ");
@@ -3341,7 +3352,8 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
         addIcons(dp,map,whichmap,layerGroup,zoom,markerType); // Adds to both map1 and map2
         overlays[dataTitle] = layerGroup; // Available to both map1 and map2
       } else {
-        //alert("highlight mappoint here for existing maps")
+        //alert("TODO: highlight mappoint here for existing maps")
+
         console.log("TO DO: Use the name to fetch the lat and lon from div.")
         //centerMap(element[dp.latColumn], element[dp.lonColumn], name, map, whichmap);
       }
@@ -3385,7 +3397,7 @@ function processOutput(dp,map1,map2,whichmap,whichmap2,basemaps1,basemaps2,callb
   consoleLog("processOutput");
 
   if (typeof map1 === 'undefined' || !map1.length) {
-    console.log("processOutput: map1 not yet defined or populated."); // Ok, so let's define it with renderMap below.
+    console.log("processOutput: map1 not yet defined or populated. We'll render with renderMap()"); // Ok, so let's define it with renderMap below.
   }
   
   let dataTitle = dp.dataTitle;
@@ -3442,6 +3454,8 @@ function processOutput(dp,map1,map2,whichmap,whichmap2,basemaps1,basemaps2,callb
           if (dp.zoom) zoomLevel1 = dp.zoom;
           let zoomLevel2 = 7;
 
+          //console.log("call renderMap")
+          //console.log(dp.data);
           renderMap(dp,map1,"map1","datascape",null,zoomLevel1,"google");
 
           waitForElm('#datascape #map2').then((elm) => {
@@ -3455,7 +3469,7 @@ function processOutput(dp,map1,map2,whichmap,whichmap2,basemaps1,basemaps2,callb
     }); // L avaialable for leaflet.icon-material.js
     });
     });
-  }// showmap = true
+  } // showmap = true
 }
 
 
@@ -3555,7 +3569,7 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
   if (hash.name) {
     currentName = hash.name.replace(/_/g,' ').replace(/ AND /g,' & ');
   }
-  //console.log("dp.color " + dp.color);
+  console.log(whichmap + " addIcons dp.color " + dp.color);
   loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Might not get used (in time?) for L.IconMaterial. Previously, had to wrap map.js load in localsite.js instead.
   waitForVariable('leafletIconLoaded', function() {
     dp.data.forEach(function(element) {
@@ -3567,6 +3581,13 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
       while (n--) {
         key = keys[n];
         element[key.toLowerCase()] = element[key];
+      }
+
+      let name = element.name;
+      if (element[dp.nameColumn]) {
+        name = element[dp.nameColumn];
+      } else if (element.title) {
+        name = element.title;
       }
 
       if (dp.colorColumn) {
@@ -3588,7 +3609,7 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
         iconColor = "#548d1a"; // Green. Was "blue"
       }
       
-      //console.log("element[dp.valueColumn] " + element[dp.valueColumn] + " iconColor: " + iconColor + " dp.valueColumn: " + dp.valueColumn);
+      console.log("element[dp.valueColumn] " + element[dp.valueColumn] + " iconColor: " + iconColor + " dp.valueColumn: " + dp.valueColumn + " " + name);
       
       if (typeof dp.latColumn == "undefined") {
         dp.latColumn = "latitude";
@@ -3603,7 +3624,7 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
       iconName = dp.iconName;
       if (typeof L === 'undefined') {
         if (location.host.indexOf('localhost') >= 0) {
-          alert("Leaflet L not yet loaded");
+          alert("localhost Alert: Leaflet L not yet loaded");
         } else {
           console.log("Leaflet L not yet loaded");
         }
@@ -3615,12 +3636,6 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
         }
       }
 
-      let name = element.name;
-      if (element[dp.nameColumn]) {
-        name = element[dp.nameColumn];
-      } else if (element.title) {
-        name = element.title;
-      }
       if (dp.latColumn.includes(".")) { // ToDo - add support for third level
         element[dp.latColumn] = element[dp.latColumn.split(".")[0]][dp.latColumn.split(".")[1]];
         element[dp.lonColumn] = element[dp.lonColumn.split(".")[0]][dp.lonColumn.split(".")[1]];
@@ -3884,11 +3899,11 @@ function hashChangedMap() {
   }
 
   // For PPE embed, also in map-filters.js. Will likely change
-  if (!hash.show) {
-    // For embed link
-    hash.show = param.show;
-    hiddenhash.show = param.show;
-  }
+  //if (!hash.show) {
+  //  // For embed link
+  //  hash.show = param.show;
+  //  hiddenhash.show = param.show;
+  //}
   if (!hash.state && param.state) {
     // For embed link
 

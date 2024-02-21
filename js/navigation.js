@@ -381,8 +381,6 @@ function hashChanged() {
             $("#hero_holder").show();
         }
     }
-
-    //alert("hash.geoview " + hash.geoview);
     if (hash.geoview == "earth") {
         $("#state_select").hide();
     } else if (hash.geoview == "country") {
@@ -393,6 +391,8 @@ function hashChanged() {
         }
     } else if (hash.geoview == "state") {
         $("#state_select").show();
+    } else if (!hash.geoview && priorHash.geoview) {
+        closeLocationFilter();
     }
 
     //Resides before geo
@@ -654,9 +654,9 @@ function hashChanged() {
 	}
     if (hash.imgview != priorHash.imgview) {
         if (hash.imgview == "state") {
-            //loadScript('/apps/js/apps-menus.js', function(results) {
-            //    showHeroMenu("feature", menu, "my_site");
-            //});
+            loadScript('/apps/js/apps-menus.js', function(results) {
+                showHeroMenu("feature", {}, "my_site");
+            });
         }
     }
 	if (hash.appview != priorHash.appview) {
@@ -689,7 +689,7 @@ function hashChanged() {
 
     if (hash.geoview != priorHash.geoview) {
 
-        //$("#filterLocations").show();$("#imagineBar").show();
+        //$("#filterLocations").show();$("#locationFilterHolder").show();$("#imagineBar").show();
         //$("#geomap").show(); // To trigger map filter display below.
         if (hash.geoview && hash.geoview != "earth") {
             $("#nullschoolHeader").hide();
@@ -736,7 +736,7 @@ function hashChanged() {
     if (loadGeomap) {
         // TO DO: Should we avoid reloading if already loaded for a state?  Occurs when hash.locpop & changes.
 
-        //$("#filterLocations").show();$("#imagineBar").show();
+        //$("#filterLocations").show();$("#locationFilterHolder").show();$("#imagineBar").show();
         //if($("#geomap").is(':visible')){
         waitForElm('#geomap').then((elm) => {
             //alert("loadGeomap")
@@ -1471,7 +1471,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
         $('#' + whichmap).show();
         if (!$("#" + whichmap).is(":visible")) {
           // Oddly, this is needed when using 3-keys to reload: Cmd-shift-R
-          $("#filterLocations").show();$("#imagineBar").show(); 
+          $("#filterLocations").show();$("#locationFilterHolder").show();$("#imagineBar").show(); 
 
           console.log("Caution: #" + whichmap + " not visible. May effect tile loading.");
           //return; // Prevents incomplete tiles
@@ -3281,7 +3281,6 @@ document.addEventListener('hashChangeEvent', function (elem) {
 if(typeof hiddenhash == 'undefined') {
     var hiddenhash = {};
 }
-
 function updateRegionService(section) {
 
     //alert("updateRegionService");
@@ -3680,11 +3679,11 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		param.headerLogoNoText = "<a href='https://georgia.org'><img src='/localsite/img/logo/states/GA-notext.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
 		localsiteTitle = "Georgia.org";
 		changeFavicon("/localsite/img/logo/states/GA-favicon.png");
-		if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
+		if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
 			showClassInline(".acct");
 			showClassInline(".garesource");
 		} else if (hash.state == "GA") {
-            showClassInline(".garesource");
+            //showClassInline(".garesource");
         }
 		showClassInline(".georgia");
 		if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
@@ -3759,7 +3758,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		}
  	});
 	waitForElm('#datascape').then((elm) => {
-		let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSideList close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='listSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listInfo' class='listInfo content'></div></div>\r";
+		let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSideList close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='sideListSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listInfo' class='listInfo content'></div></div>\r";
 		if(document.getElementById("datascape") != null || document.getElementById("datascape1") != null) {
 			$("#datascape").addClass("datascape");
 			$("#datascape").addClass("datascapeEmbed");
@@ -5076,7 +5075,7 @@ $(document).on("click", "#filterClickLocation", function(event) {
     	$("#locationFilterHolder").show();
     	closeAppsMenu();
     	loadScript(theroot + 'js/navigation.js', function(results) {
-	    	$("#filterLocations").show();$("#imagineBar").show();
+	    	$("#filterLocations").show();$("#locationFilterHolder").show();$("#imagineBar").show();
 	    	///$("#geoPicker").show();
 	    	if (!hash.appview) {
 	    		$("#filterClickLocation").addClass("filterClickActive");
@@ -5262,7 +5261,7 @@ function openMapLocationFilter() {
 	    ///$("#geoPicker").show();
 	    $("#filterLocations").prependTo($("#locationFilterHolder")); // Move back from sidetabs
 	    $("#geomap").appendTo($("#geomapHolder")); // Move back from sidetabs
-	    $("#locationFilterHolder").show();
+        // Here we show the interior, but not #locationFilterHolder.
 	    $("#filterLocations").show();$("#imagineBar").show();
 	    $(".locationTabText").text("Locations");
 	    $("#topPanel").hide();
@@ -5316,7 +5315,8 @@ function closeLocationFilter() {
     $("#showLocations").hide();
     $("#hideLocations").show();
     //$(".locationTabText").text("Entire State");
-    $("#filterLocations").hide();
+    $("#locationFilterHolder").hide();
+    $("#filterLocations").hide(); // Not sure why this was still needed.
     $("#imagineBar").hide();
     $("#filterClickLocation").removeClass("filterClickActive");
     if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
