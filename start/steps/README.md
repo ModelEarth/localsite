@@ -19,7 +19,8 @@ If you are contributing updates to a repo, please fork it and change "ModelEarth
 Now you can open our timeline project at: [localhost:8887/data-pipeline/timelines/tabulator](http://localhost:8887/data-pipeline/timelines/tabulator/)
 For futher commands, open a new terminal window since the prior is now dedicated to being an http server.
 
-Run the following weekly in your webroot to pull down our recent updates. (Change "ModelEarth" to pull from the forks in your GitHub account if you are contributing to updates.)
+Run the following weekly in your webroot to pull down our recent updates.
+(If you are contributing to updates, change "ModelEarth" to your GitHub account to pull from your forks.)
 
 	cd localsite &&  
 	git pull https://github.com/ModelEarth/localsite main &&  
