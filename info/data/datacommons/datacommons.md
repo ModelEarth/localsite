@@ -2,14 +2,14 @@
 
 You'll be running a local copy of the [datacommons.org](https://datacommons.org) website, but without local data.
 
-Please update these steps by foring and editing the [localsite repo](../../../start/steps/).
+Please update these steps by forking and editing the [localsite repo](../../../start/steps/).
 These steps were created prior to 2021, so they may be outdated.
 
 Clone the Google Data Commons "[website](https://github.com/datacommonsorg/website/)" repo and run commands within your cloned folder.  
 
 In the [Data Commons Developer Guide](https://github.com/datacommonsorg/website/blob/master/docs/developer_guide.md) page, scroll down to "Develop with Flask (simple/lite)". Get your gcloud connection working using the lite steps.  
 
-After cloning the website repo, run to load submodule "mixer":  
+After cloning the website repo, run to load submodule "mixer":
 
 	git submodule foreach git pull origin master
 
