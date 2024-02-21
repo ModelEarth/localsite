@@ -232,7 +232,7 @@ function loadParams(paramStr,hashStr) {
   //alert(myScript.src);
 
   let params = {};
-  console.log("Get param from " + myScript.src);
+  //console.log("Get param from " + myScript.src);
   let includepairs = myScript.src.substring(myScript.src.indexOf('?') + 1).split('&');
   for (let i = 0; i < includepairs.length; i++) {
     if(!includepairs[i]) continue;
@@ -273,7 +273,7 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
    if (window.jQuery) {
     target2 = structuredClone(extend(true, target1, incoming)); // structuredClone prevents entanglement, subsequent overrides first.
    } else {
-    console.log("USING non-jquery extend")
+    consoleLog("USING non-jquery extend")
     // This non-JQuery extend results in "Uncaught (in promise) RangeError: Maximum call stack size exceeded" with map.js mix(dp,defaults)
     target2 = structuredClone(extend(true, target1, incoming)); // Clone/copy object without entanglement, subsequent overrides first.
    }
@@ -444,7 +444,7 @@ function loadScript(url, callback)
 var localsite_repo3; // TEMP HERE
 /*
 function extractHostnameAndPort(url) { // TEMP HERE
-    console.log("hostname from: " + url);
+    consoleLog("hostname from: " + url);
     let hostname;
     let protocol = "";
     //find & remove protocol (http, ftp, etc.) and get hostname
@@ -481,7 +481,7 @@ function get_localsite_root3() { // Also in two other places
       }
   }
   let hostnameAndPort = extractHostnameAndPort(myScript.src);
-  console.log("hostnameAndPort: " + hostnameAndPort);
+  //consoleLog("hostnameAndPort: " + hostnameAndPort);
   let theroot = location.protocol + '//' + location.host + '/localsite/';
 
   if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
@@ -641,7 +641,7 @@ function consoleLog(text,value) {
 }
 
 function loadLocalTemplate() {
-  console.log("loadLocalTemplate()");
+  consoleLog("loadLocalTemplate()");
   let datascapeFile = theroot + "info/template-main.html";
   let datascapeFileDiv = "#datascape";
   waitForElm(datascapeFileDiv).then((elm) => {
@@ -663,7 +663,7 @@ function loadLocalTemplate() {
       elemDiv.innerHTML = "testing";
       document.body.appendChild(elemDiv);
 
-      console.log("Template Loaded: " + datascapeFile);
+      consoleLog("Template Loaded: " + datascapeFile);
       initSitelook();
       if (typeof relocatedStateMenu != "undefined") {
         relocatedStateMenu.appendChild(state_select); // For apps hero
@@ -777,7 +777,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       //Doc ready was here, now further down
 
-      console.log("Ready DOM Loaded (But not template yet). Using theroot: " + theroot)
+      consoleLog("Ready DOM Loaded (But not template yet). Using theroot: " + theroot)
       // Add id to body tag
       //document.body.id = "bodyloaded"; //Works, but avoid incase body already has an id.
 
@@ -881,7 +881,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           let infoFile = theroot + "info/template-charts.html #template-charts"; // Including #template-charts limits to div within page, prevents other includes in page from being loaded.
           //console.log("Before template Loaded infoFile: " + infoFile);
           $("#infoFile").load(infoFile, function( response, status, xhr ) {
-            console.log("Info Template Loaded: " + infoFile);
+            consoleLog("Info Template Loaded: " + infoFile);
             $("#industryFilters").appendTo("#append_industryFilters");
           });
         }
@@ -1491,7 +1491,7 @@ function updateHiddenhash(hashObject) {
 }
 
 function extractHostnameAndPort(url) {
-    console.log("hostname from: " + url);
+    //consoleLog("hostname from: " + url);
     let hostname;
     let protocol = "";
     // find & remove protocol (http, ftp, etc.) and get hostname
@@ -1970,10 +1970,10 @@ function showSearchFilter() {
     loadFilters = true;
   } else {
     let filterTop = $("#filterFieldsHolder").offset().top - window.pageYOffset;
-    console.log("showSearchFilter #filterFieldsHolder offset top: " + filterTop);
+    consoleLog("showSearchFilter #filterFieldsHolder offset top: " + filterTop);
     //  || (!$("#headerbar").is(':visible') && filterTop >= 0)
     if ($("#filterFieldsHolder").is(':visible') && (($("#headerbar").is(':visible') && filterTop >= headerHeight) )) { // Might need to allow for coverage by header.
-      console.log("Hide #filterFieldsHolder");
+      consoleLog("Hide #filterFieldsHolder");
       $("#filterFieldsHolder").hide();
       $("#filterFieldsHolder").addClass("filterFieldsHidden");
       //$("#filterbaroffset").hide();
