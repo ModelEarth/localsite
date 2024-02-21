@@ -11,10 +11,25 @@ In a local folder called "webroot" run:
 	git clone https://github.com/ModelEarth/localsite localsite &&  
 	git clone https://github.com/ModelEarth/io io &&  
 	git clone https://github.com/ModelEarth/data-pipeline data-pipeline &&
+	git clone https://github.com/ModelEarth/community community &&  
 	python -m http.server 8887
+
+If you are contributing updates to a repo, please fork it and change "ModelEarth" to your Github account page. The most common repo to fork is the data-pipeline, where we also place frontend examples.
 
 Now you can open our timeline project at: [localhost:8887/data-pipeline/timelines/tabulator](http://localhost:8887/data-pipeline/timelines/tabulator/)
 For futher commands, open a new terminal window since the prior is now dedicated to being an http server.
+
+Run the following weekly in your webroot to pull down our recent updates:
+
+	cd localsite &&  
+	git pull https://github.com/ModelEarth/localsite main &&  
+	cd ../io &&  
+	git pull https://github.com/ModelEarth/io main &&  
+	cd ../data-pipeline &&  
+	git pull https://github.com/ModelEarth/data-pipeline main &&  
+	cd ../community &&  
+	git pull https://github.com/ModelEarth/community master &&  
+	cd ../
 
 <!--
 	Not using currently, made a physcial copy instead
