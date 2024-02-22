@@ -41,18 +41,16 @@ For machine learning projects, use the full install with [Minikube](https://mini
 
 ## Optional: Install "tools" repo
 
-### For covid19-dashboard sample
-
 NOTE: To view the "tools" repo samples locally, you'll need to initiate a server from the "website" repo first. (Looking for an alternative to this, or maybe "tools" should be a submodule of "website" so all the routes continue working for both "website" and "tools".)  
 
 The Tools repos was created by a previous Google intern using React Web starter.  
 
 To view and edit the tools repo locally, clone [datacommonsorg/tools](https://github.com/datacommonsorg/tools) repo or the [ModelEarth fork](https://github.com/modelearth/tools)  
 
-Open terminal. (Type CTRL+\` if you're using VS Code.)  
+Open terminal. (Type CTRL+\` if you're using VS Code).
+For a dashboard sample:
 
 	cd covid19-dashboard
-
 
 Run the following and choose your Google account <!-- map.g 00 -->. You should be directed to a page saying "You are now authenticated with the Google Cloud SDK!"  
 
