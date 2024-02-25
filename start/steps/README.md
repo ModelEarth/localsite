@@ -1,10 +1,10 @@
-# Website Setup Steps 
+# Quick Local Site Install 
 
 You can use [Localsite Pages](../) to create websites and stories with free GitHub hosting.
 
 If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns](https://twitter.com/LorenHeyns).
 
-### Quick local install for contributors.
+### Quick local install for contributors
 
 Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">our data-pipeline</a> repo and place your GitHub account name in the cmd below. Run in a local folder called "webroot":
 
@@ -14,10 +14,12 @@ Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">our d
 	git clone https://github.com/ModelEarth/community community &&  
 	python -m http.server 8887
 
-If you are a REACT contributor, fork the io folder instead.
+If you are a REACT contributor, also fork the io folder.
 
 Now you can open our active projects page at: [localhost:8887/io](http://localhost:8887/io/)
 For futher commands, open a new terminal window since the prior is now dedicated to being an http server.
+
+### Refresh you local repos
 
 Run the following weekly in your webroot to pull down our recent updates.
 (If you are contributing to updates, change "ModelEarth" to your GitHub account to pull from your forks.)
@@ -27,10 +29,12 @@ Run the following weekly in your webroot to pull down our recent updates.
 	cd ../io &&  
 	git pull https://github.com/ModelEarth/io main &&  
 	cd ../data-pipeline &&  
-	git pull https://github.com/ModelEarth/data-pipeline main &&  
+	git pull https://github.com/[YOUR GITHUB ACCOUNT]/data-pipeline main &&  
 	cd ../community &&  
 	git pull https://github.com/ModelEarth/community master &&  
 	cd ../
+
+TO DO: Add a #gitaccount textbox at the top of this page for saving one's GitHub account in the browser cache. Repopulate [YOUR GITHUB ACCOUNT] in the cmds above when opening the page.
 
 <!--
 	Not using currently, made a physcial copy instead
@@ -46,7 +50,7 @@ Run the following weekly in your webroot to pull down our recent updates.
 -->
 <br>
 
-### Alternative: Steps for forking and contributing
+# Detailed steps for deploying static websites
 
 The following steps are elaborated on after this summary.  
 
