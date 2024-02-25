@@ -12,6 +12,7 @@ Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">our d
 	git clone https://github.com/ModelEarth/io io &&  
 	git clone https://github.com/[YOUR GITHUB ACCOUNT]/data-pipeline data-pipeline &&
 	git clone https://github.com/ModelEarth/community community &&  
+	git clone https://github.com/ModelEarth/apps apps &&  
 	python -m http.server 8887
 
 If you are a REACT contributor, also fork the io folder.
@@ -22,7 +23,7 @@ For futher commands, open a new terminal window since the prior is now dedicated
 ### Refresh you local repos
 
 Run the following weekly in your webroot to pull down our recent updates.
-(If you are contributing to updates, change "ModelEarth" to your GitHub account to pull from your forks.)
+Change [YOUR GITHUB ACCOUNT] to pull from your fork(s).
 
 	cd localsite &&  
 	git pull https://github.com/ModelEarth/localsite main &&  
@@ -32,6 +33,8 @@ Run the following weekly in your webroot to pull down our recent updates.
 	git pull https://github.com/[YOUR GITHUB ACCOUNT]/data-pipeline main &&  
 	cd ../community &&  
 	git pull https://github.com/ModelEarth/community master &&  
+	cd ../apps &&  
+	git pull https://github.com/ModelEarth/apps main &&  
 	cd ../
 
 TO DO: Add a #gitaccount textbox at the top of this page for saving one's GitHub account in the browser cache. Repopulate [YOUR GITHUB ACCOUNT] in the cmds above when opening the page.
