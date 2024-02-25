@@ -6,7 +6,9 @@ If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns]
 
 ### Quick local install for contributors
 
-Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">our data-pipeline</a> repo and place your GitHub account name in the cmd below. Run in a local folder called "webroot":
+Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">our data-pipeline</a> repo to make contributions.
+If you are a REACT contributor, also fork <a href="https://github.com/ModelEarth/io" target="_blank">our io repo</a>.  
+Place your GitHub account name in the forked repos below and run in a local folder called "webroot":
 
 	git clone https://github.com/ModelEarth/localsite localsite &&  
 	git clone https://github.com/ModelEarth/io io &&  
@@ -15,10 +17,10 @@ Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">our d
 	git clone https://github.com/ModelEarth/apps apps &&  
 	python -m http.server 8887
 
-If you are a REACT contributor, also fork the io folder.
+<!-- Activate GitHub Pages so we can preview your contributions. -->
 
 Now you can open our active projects page at: [localhost:8887/io](http://localhost:8887/io/)
-For futher commands, open a new terminal window since the prior is now dedicated to being an http server.
+For futher commands, open a new terminal window - the prior is now dedicated to being an http server.
 
 ### Refresh you local repos
 
