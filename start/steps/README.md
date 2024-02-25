@@ -4,19 +4,19 @@ You can use [Localsite Pages](../) to create websites and stories with free GitH
 
 If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns](https://twitter.com/LorenHeyns).
 
-### Quick local install
+### Quick local install for contributors.
 
-In a local folder called "webroot" run:
+Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">our data-pipeline</a> repo and place your GitHub account name in the cmd below. Run in a local folder called "webroot":
 
 	git clone https://github.com/ModelEarth/localsite localsite &&  
 	git clone https://github.com/ModelEarth/io io &&  
-	git clone https://github.com/ModelEarth/data-pipeline data-pipeline &&
+	git clone https://github.com/[YOUR GITHUB ACCOUNT]/data-pipeline data-pipeline &&
 	git clone https://github.com/ModelEarth/community community &&  
 	python -m http.server 8887
 
-If you are contributing updates to a repo, please fork it and change "ModelEarth" to your Github account page. The most common repo to fork is the data-pipeline, where we also place frontend examples.
+If you are a REACT contributor, fork the io folder instead.
 
-Now you can open our timeline project at: [localhost:8887/data-pipeline/timelines/tabulator](http://localhost:8887/data-pipeline/timelines/tabulator/)
+Now you can open our active projects page at: [localhost:8887/io](http://localhost:8887/io/)
 For futher commands, open a new terminal window since the prior is now dedicated to being an http server.
 
 Run the following weekly in your webroot to pull down our recent updates.
