@@ -19,7 +19,7 @@
 .swiper-container {
   width: 100%;
   heightX: 100%;
-  max-heightX: 700px;
+  max-height: 500px;
   /*overflow: auto;*/
   margin-left: auto;
   margin-right: auto;

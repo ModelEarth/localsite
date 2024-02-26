@@ -129,7 +129,8 @@ text-align:left; overflow:scroll;
           (when intended pause occurs), so we omit loading icon here. -->
         <!--<div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>-->
         <div class="slideText" style="top:48%">
-          Localsite Parameters
+          <b>Edit Localsite Parameters</b><br>
+          Scroll down to view parameters that you can set in your HTML pages.
         </div>
       </div>
 
@@ -296,8 +297,6 @@ const buildSwiperSlider = sliderElm => {
         hashNavigation: {
           watchState: true,
         },
-        
-
         keyboard: {
           enabled: true,
           onlyInViewport: false
@@ -414,8 +413,25 @@ var vis = document.getElementById('vis'),
 
 <!-- /Swiper and Plyr -->
 
+<style>
+  #readmeDiv H1{
+  display: none;
+}
+.pageColumnStyle H1, .pageColumnStyle H2 {
+  font-family: Raleway, Lato, "Helvetica Neue", Helvetica, "Lato", sans-serif;
+  font-weight: 1000 !important;
+  margin-top: 0px;
+  font-size: 1.4em;
+  padding-top: 12px;
+  padding-bottom: 5px !important;
+  border-bottom: 1px solid #ddd;
+  color: rgb(77, 82, 89);
+  color: #333;
+  line-height: 1.55;
+}
+</style>
 
-<div class="content contentpadding" style="padding-top: 0px">
+<div class="pageColumnStyle content contentpadding" style="padding-top: 0px">
 
   <div style="float:right">
     <!--
