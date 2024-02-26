@@ -1,4 +1,8 @@
-### Issues with NREL Fuel Station Locator Widget
+# Sad Websites
+
+Once these sites are fixed, we'll remove them from our sad list.
+
+## Issues with NREL Fuel Station Locator Widget
 
 1. The station-locator widget overwrites other hash values when auto-refreshing the URL on the initial load.  
 An extra slash is inserted after the # symbol.  
@@ -10,6 +14,13 @@ Example: Watch the existing hash values disappear - hit refresh here:  <a href="
 
 4. The use of black for the lower bar looks like the end of the page and breaks up the flow. Consider placing the source credit in the upper right, top justified with the top tabs.  
 
-5. Map zooms when scrolling over. Considering adding a map click to toggle on zoom-on-scroll. (Try clicking second map on page for example.)  
+5. Map zooms when scrolling over. Considering adding a map click to toggle on zoom-on-scroll. (Try clicking second map on page for example.)
+
+## DataUSA.io API
+
+DataUSA.io praises themselves for being an open data source, yet fails to remove statements that they provide an API.
+
+Let's explore further and [update our DataUSA.io API notes](/localsite/info/data/datausa)
+
 
 

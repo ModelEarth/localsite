@@ -1,4 +1,4 @@
-## Integration between Websites
+# Integration between Websites
 
 <a href="https://github.com/modelearth/localsite/" target="_parent">The Localsite Framework</a> uses hash values to share settings between Github submodule repos.  
 
