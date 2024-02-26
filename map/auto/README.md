@@ -2,7 +2,6 @@
 
 Search utilizes [Google Places API autocomplete](https://developers.google.com/maps/documentation/javascript/places-autocomplete) functionality, returning Google's Place "predictions" as the user is typing in a search term. Once the user makes a selection, the details of the selection (geo coordinates, address, phone, website, etc..) are returned from the API.
 
-
 For the address search to work, you'll need to get a new Google Maps API key. You can get yours and enable it by following these instructions: [https://developers.google.com/maps/documentation/javascript/get-api-key](https://developers.google.com/maps/documentation/javascript/get-api-key)  
 
 When you get a key, set the google_api_key in localsite/map/auto/config.json
