@@ -10,12 +10,14 @@ Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">our d
 If you are a REACT contributor, also fork <a href="https://github.com/ModelEarth/io" target="_blank">our io repo</a>.  
 Place your GitHub account name in the forked repos below and run in a local folder called "webroot":
 
-	git clone https://github.com/ModelEarth/localsite localsite &&  
-	git clone https://github.com/ModelEarth/io io &&  
-	git clone https://github.com/[YOUR GITHUB ACCOUNT]/data-pipeline data-pipeline &&
-	git clone https://github.com/ModelEarth/community community &&  
-	git clone https://github.com/ModelEarth/apps apps &&  
-	python -m http.server 8887
+<textarea class="codetext" rows="6">
+git clone https://github.com/ModelEarth/localsite localsite &&  
+git clone https://github.com/ModelEarth/io io &&  
+git clone https://github.com/[YOUR GITHUB ACCOUNT]/data-pipeline data-pipeline &&
+git clone https://github.com/ModelEarth/community community &&  
+git clone https://github.com/ModelEarth/apps apps &&  
+python -m http.server 8887
+</textarea>
 
 <!-- Activate GitHub Pages so we can preview your contributions. -->
 

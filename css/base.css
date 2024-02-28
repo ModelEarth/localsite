@@ -664,7 +664,7 @@ code {
   padding: 2px  5px;
   overflow: scroll;
 }
-content .js, pre code { /* Prevents .js from impacting js class within Drupal body tag */
+content .js, pre code, .codetext { /* Prevents .js from impacting js class within Drupal body tag */
   background-color: #eee;
   padding:15px;
   border-left: 4px solid #137AD1;
@@ -673,6 +673,17 @@ content .js, pre code { /* Prevents .js from impacting js class within Drupal bo
   unicode-bidi: embed;
   font-family: monospace;
   /* white-space: pre-wrap; */ /* Causes Drupal to have large empty div's at top */
+}
+.codetext {
+  width:100%;
+  overflow:hidden;
+  background-color: #eee;
+  padding: 15px;
+  border: none;
+  border-left: 4px solid #137AD1 !important;
+  font-family: monospace;
+  font-size: 15px;
+  line-height: 1.55;
 }
 .dark code {
   color: #ddd;
