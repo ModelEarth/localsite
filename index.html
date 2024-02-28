@@ -291,13 +291,16 @@ const buildSwiperSlider = sliderElm => {
         mousewheelX: true, // Avoiding because also invokes verticle scroll on desktop.
         releaseOnEdgesX: true,
 
-        /* change hash value (and load based on hash) -- problem: overwrites other hash values */
+        /* Change hash value as images changes (and load based on hash) */
+        /*
+        BIG PROBLEM: overwrites other hash values, immediatly close upperright navigation. */
         /* also causes favicon to reload */
-
-        
+        /*
         hashNavigation: {
           watchState: true,
         },
+        */
+
         keyboard: {
           enabled: true,
           onlyInViewport: false
