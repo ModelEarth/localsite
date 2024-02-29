@@ -65,33 +65,28 @@ After a few minutes, you can view your fork at [[your account].github.io/localsi
 5. [Fetch upstream](#fetch-upstream) changes to your forked repos.
 6. [Point a domain](#domain) at your repos (optional)
 
-If your site will be displaying environmental [impact widgets](https://model.earth/io/charts/), also fork the [io repo](https://github.com/modelearth/io).
-For samples of location parameters, view and fork the ModelEarth [apps repo](https://model.earth/apps).  
-
-You can generate images locally using [StableStudio](http://dreamstudio.com/studio/), the open source UX behind the [DreamStudio.ai](https://dreamstudio.ai) frontend.
-<br>
-
 <section id="webroot"></section>
 
 ## 1. Activate a webroot folder on your computer
 
 The following will allow you to launch [http://localhost:8887/localsite/](http://localhost:8887/localsite/).&nbsp; You'll view multiple repos in the same webroot.
 
-Create a webroot folder called "Web" in your "Documents" folder or anywhere you prefer.
+Create a webroot folder called "webroot" in your "Documents" folder, or anywhere you prefer.
 Go to the webroot folder and run the following to view pages locally at http://localhost:8887  
 
 	python -m http.server 8887
 
-You can run the command above to start localhost whenever you restart your computer.
-If that dose't work, here are more options for [activating your webroot](../webroot).
-
+Run the command above to restart your localhost server whenever you restart your computer.
+If that doesn't work, here are more options for [activating your webroot](../webroot).
 
 
 <section id="github-pages"></section>
 
 ## 2. Click the "Fork" button in the upper right of the [localsite repo](https://github.com/modelearth/localsite)
 
-Also fork the [io repo](https://github.com/modelearth/io) and [data-pipeline repo](https://github.com/modelearth/data-pipeline). 
+Fork both the [localsite repo](https://github.com/modelearth/localsite) and the [io repo](https://github.com/modelearth/io).
+If you are making pipeline updates, also fork [data-pipeline repo](https://github.com/modelearth/data-pipeline). 
+If you are generating data updates, fork [community-data](https://github.com/modelearth/community-data) and [community-forecasting](https://github.com/modelearth/community-forecasting) for timeline data. 
 
 Activate GitHub Pages for each of your forked repos by going to "Settings > Pages" and choosing "main" (or master) then save.
 
@@ -101,9 +96,10 @@ Activate GitHub Pages for each of your forked repos by going to "Settings > Page
 
 IMPORTANT: DO NOT SELECT A THEME - The Jekyll theme will break the modular site integration.  
 
-Wait a few minutes for a new GitHub Pages site to become available at a link in the following format:
+Wait a few minutes for a new GitHub Pages site to become available in the following link format:
 
-https://[your account].Github.io/[repo name]  
+https://[your account].github.io/io
+https://[your account].github.io/localsite
 
 
 <section id="clone"></section>
@@ -122,7 +118,7 @@ Also clone the <a href='https://github.com/modelearth/io/'>io repo</a> into the 
 
 Also clone the <a href='https://github.com/modelearth/apps/'>apps repo</a> if you are making a custom page.  
 
-To redirect into a repo, you can place an index.html file in your webroot with the following:  
+To redirect into a repo, you can place an index.html file in your webroot with the following redirect:  
 
 	<script language="JavaScript">window.location="localsite/"</script>
 
