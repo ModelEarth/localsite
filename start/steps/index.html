@@ -27,28 +27,38 @@ function updateGitCmds() {
     checkboxIds.forEach(function(checkboxId) {
         var checkbox = document.getElementById(checkboxId);
         let repoName = checkboxId.replace("Forked","");
+        let branch = "main";
         var updatedLine = "git clone https://github.com/modelearth/" + repoName + " " + repoName + " &&";
+        //var updatedLineRefresh = "git pull https://github.com/modelearth/" + repoName + " " + branch + " &&";
+        var updatedLineRefresh = "git pull https://github.com/modelearth/" + repoName + " &&";
         if (checkbox.checked) {
             // If checkbox is checked, construct the updated line
             updatedLine = "git clone https://github.com/" + gitAccount + "/" + repoName + " " + repoName + " &&";
+            //updatedLineRefresh = "git pull https://github.com/" + gitAccount + "/" + repoName + " " + branch + " &&";
+            updatedLineRefresh = "git pull https://github.com/" + gitAccount + "/" + repoName + " &&";
             checkForks.push(checkboxId);
         }
-        // Get the current value of the textarea
+        // Get the current values of the textareas
         var currentCmd = document.getElementById("cloneCmd").value;
+        var refreshCmd = document.getElementById("refreshCmd").value;
 
         // Split the textarea value by lines
-        var lines = currentCmd.split("\n");
+        var linesClone = currentCmd.split("\n");
+        var linesRefresh = refreshCmd.split("\n");
 
         // Replace the third line with the updated line
-        lines[lineIndex] = updatedLine;
+        linesClone[lineIndex] = updatedLine;
 
-        // Join the lines back together
-        var updatedCmd = lines.join("\n");
-        localStorage.gitsForked = JSON.stringify(checkForks);
+        linesRefresh[(lineIndex*2)+1] = updatedLineRefresh;
 
-        // Update the textarea value
+        // Join the lines back together and update the textareas
+        let updatedCmd = linesClone.join("\n");
         document.getElementById("cloneCmd").value = updatedCmd;
+        let refreshedCmd = linesRefresh.join("\n");
+        document.getElementById("refreshCmd").value = refreshedCmd;
 
+        // Save changes to the checkboxes
+        localStorage.gitsForked = JSON.stringify(checkForks);
         lineIndex++;
     });
 }

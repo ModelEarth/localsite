@@ -29,39 +29,28 @@ python -m http.server 8887</textarea>
 
 Run the command above in a local folder called "webroot" or a name of your choice.
 Now you can open our active projects page at: [localhost:8887/io](http://localhost:8887/io/)
-For futher commands, open a new terminal window - the prior is now dedicated to being an http server.
+
+For further commands, open a new terminal window - the prior is now dedicated to being an http server.
 
 ### Refresh you local repos
 
-Run the following weekly in your webroot to pull down our recent updates.
-Change [YOUR GITHUB ACCOUNT] to pull from your fork(s).
+Run the following weekly in any repo to pull down recent updates.
+Run daily (hourly) if you are editing pages that others might also be editing.
 
-	cd localsite &&  
-	git pull https://github.com/ModelEarth/localsite main &&  
-	cd ../io &&  
-	git pull https://github.com/ModelEarth/io main &&  
-	cd ../data-pipeline &&  
-	git pull https://github.com/[YOUR GITHUB ACCOUNT]/data-pipeline main &&  
-	cd ../community &&  
-	git pull https://github.com/ModelEarth/community master &&  
-	cd ../apps &&  
-	git pull https://github.com/ModelEarth/apps main &&  
-	cd ../
+<textarea id="refreshCmd" class="codetext" rows="11">
+cd ../localsite &&  
+git pull https://github.com/ModelEarth/localsite main &&  
+cd ../io &&  
+git pull https://github.com/ModelEarth/io main &&  
+cd ../data-pipeline &&  
+git pull https://github.com/ModelEarth/data-pipeline main &&  
+cd ../community &&  
+git pull https://github.com/ModelEarth/community master &&  
+cd ../apps &&  
+git pull https://github.com/ModelEarth/apps main &&  
+cd ../data-pipeline</textarea>
 
-TO DO: Add a #gitaccount textbox at the top of this page for saving one's GitHub account in the browser cache. Repopulate [YOUR GITHUB ACCOUNT] in the cmds above when opening the page.
-
-<!--
-	Not using currently, made a physcial copy instead
-	https://github.com/ModelGeorgia/io/compare/master...modelearth:master
-
-	Removed domain model.georgia.org from GitHub pages.
-
-	https://github.com/modelearth/localsite/compare/master...localsite:master
-
-	Georgia Data
-	https://github.com/GeorgiaData/io/compare/master...modelearth:master
-	https://github.com/GeorgiaData/localsite/compare/master...modelearth:master
--->
+That's it! &nbsp;You can stop the steps here. Your updated local site is now visible at: [localhost:8887/io](http://localhost:8887/io/)
 <br>
 
 # Detailed steps for deploying static websites
