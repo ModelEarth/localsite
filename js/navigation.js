@@ -19,9 +19,9 @@
 //alert("navigation.js");
 if(typeof layerControls=='undefined'){ var layerControls = {}; }// Object containing one control for each map on page.
 
-//if(typeof dataObject == 'undefined') {
-//    var dataObject = {};
-//}
+if(typeof dataObject == 'undefined') {
+    var dataObject = {};
+}
 
 // localObject.geo will save a list of loaded counties for multiple states
 if(typeof localObject == 'undefined') { var localObject = {};}
@@ -535,6 +535,8 @@ function hashChanged() {
         }
     }
 
+    
+    // Not sure if we need this
     if (hash.geo != priorHash.geo) {
         if (hash.geo && hash.geo.length > 4) { 
             $(".state-view").hide();
@@ -565,7 +567,19 @@ function hashChanged() {
                 updateSelectedTableRows(hash.geo, clearall, 0);
             }
         }
-        loadGeomap = true;
+
+        // TEST
+        //dataObject.stateshown = getStateFips(hash);
+        
+        /*
+        if (hash.geo) {
+            alert("hash geo");
+            loadGeos(hash.geo,0,function(results) {
+                alert("test3");
+            });
+        }
+        */
+        //loadGeomap = true; // No longer showing map when just geo.
     }
 
     $(".locationTabText").attr("title",$(".locationTabText").text());

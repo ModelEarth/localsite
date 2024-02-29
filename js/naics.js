@@ -24,71 +24,6 @@ let initialPageLoad = true;
 // 759 13  999 Statewide   55  Corporate, subsidiary, and regional managing offices    13  551114  1541.3499999999995  110283.20000000004  11605999.4  116336.0    12059746.4  1542.8
 
 
-function getStateFips(hash) {
-    if (hash.geo) {
-        //if (hash.geo.includes(",")) {
-            var geos=hash.geo.split(",");
-            fips=[]
-            for (var i = 0; i < geos.length; i++){
-                let fip = geos[i].split("US")[1];
-                if (fip) {
-                    if (fip.startsWith("0")){
-                        fips.push(parseInt(geos[i].split("US0")[1]))
-                    } else {
-                        fips.push(parseInt(geos[i].split("US")[1]))
-                    }
-                } else {
-                    console.log("fip without US = " + geos[i]);
-                }
-            }
-            st=(geos[0].split("US")[1]).slice(0,2)
-            if (st.startsWith("0")){
-                dataObject.stateshown=(geos[0].split("US0")[1]).slice(0,1)
-            } else {
-                if (geos[0].split("US")[1].length==4){
-                    dataObject.stateshown=(geos[0].split("US")[1]).slice(0,1)
-                } else {
-                    dataObject.stateshown=(geos[0].split("US")[1]).slice(0,2)
-                }
-                
-            }
-        /* BUG - was loading Westion County from Wyoming when only one county selected.
-        } else {
-            //alert("split on US")
-            fip=hash.geo.split("US")[1]
-            
-            if (fip.startsWith("0")){
-                fips=parseInt(hash.geo.split("US0")[1])
-            } else {
-                fips=parseInt(hash.geo.split("US")[1])
-            }
-            st=(hash.geo.split("US")[1]).slice(0,2)
-            if (st.startsWith("0")){
-                    dataObject.stateshown=(hash.geo.split("US0")[1]).slice(0,1)
-            } else {
-                if (hash.geo.split("US")[1].length==4){
-                    dataObject.stateshown=(hash.geo.split("US")[1]).slice(0,1)
-                } else {
-                    dataObject.stateshown=(hash.geo.split("US")[1]).slice(0,2)
-                }
-            
-            }
-        }
-        */
-    } else if (hash.state) {
-        //fips = $("#state_select").find(":selected").attr("stateid").trimLeft("0");
-        fips = stateID[hash.state.split(",")[0].toUpperCase()];
-        dataObject.stateshown = fips;
-        //alert("the fips " + fips)
-    } else {
-        fips = dataObject.stateshown;
-    }
-    stuff=[]
-    stuff.push(fips)
-    stuff.push(dataObject.stateshown)
-    return stuff
-}
-
 // INIT
 let priorHash_naicspage = {};
 initialWidgetLoad();
@@ -2042,8 +1977,10 @@ function getEpaSectors() {
     //let sectorsJsonFile = "/io/build/api/USEEIOv2.0/sectors.json"; // 411 sectors
     let promises = [
         d3.json(sectorsJsonFile, function(d) {
-            epaSectors.set(d.id, d.index, d.name, d.code, d.location, d.description);
-            return d;
+            // Not reached, so commenting out. But the above line is needed.
+            //epaSectors.set(d.id, d.index, d.name, d.code, d.location, d.description);
+            //alert("epaSectors");
+            //return d;
         })
     ]
     Promise.all(promises).then(sectorsPromisesReady);
@@ -2051,6 +1988,10 @@ function getEpaSectors() {
         // Returns Residential building repair and maintanence
         //alert(epaSectors.get("230302/US"));
         localObject.epaSectors = values[0]; // 73 EPA sectors
+
+        // Remove duplicates using filter() method to remove objects with a "location" equal to "RoUS" 
+        localObject.epaSectors = localObject.epaSectors.filter(obj => obj.location !== "RoUS");
+
         console.log("localObject.epaSectors");
         console.log(localObject.epaSectors);
         showSectorTabulatorList(0);
@@ -2070,18 +2011,18 @@ function showSectorTabulatorList(attempts) {
             history:true,             //allow undo and redo actions on the table
             movableColumns:true,      //allow column order to be changed
             resizableRows:true,       //allow row order to be changed
-            initialSort:[             //set the initial sort order of the data - NOT WORKING
-                {column:"id", dir:"asc"},
+            initialSort:[             //set the initial sort order of the data
+                {column:"index", dir:"asc"},
             ],
             frozenRows:1,
             maxHeight:"500px", // For frozenRows
             paginationSize:400, // No effect
             columns:[
-                {title:"ID", field:"id", width:100},
-                {title:"Index", field:"index", width:70},
+                {title:"ID", field:"id", width:100, sorter:"number"},
+                {title:"Index", field:"index", width:70, sorter:"number"},
                 {title:"Name", field:"name", width:300},
                 {title:"Code", field:"code", width:80, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
-                {title:"Location", field:"location", width:80, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
+                {title:"Location", field:"location", width:80, hozAlign:"right", headerSortStartingDir:"desc" },
                 {title:"Description", field:"description", width:320, hozAlign:"left", headerSortStartingDir:"desc" }
             ],
             rowClick:function(e, row) {
@@ -2162,7 +2103,7 @@ function showSectorTabulatorList(attempts) {
             $("#sectors_totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
             let totalcount_div = Object.assign(document.createElement('div'),{id:"sectors_totalcount",style:"margin-bottom:10px"})
             $("#tabulator-sectortable-count").append(totalcount_div);
-            totalcount_div.innerHTML = data.length + " sectors";  
+            totalcount_div.innerHTML = data.length-1 + " sectors";  
         });
 
     } else {

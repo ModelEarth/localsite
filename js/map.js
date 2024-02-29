@@ -745,10 +745,11 @@ function loadMap1(calledBy, show, dp_incoming) {
   // Load the map using settings above
 
   // INIT - geo fetches the county for filtering.
-  //hash = getHash();
   hash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
-  if (hash.geo) {
+  if (!hash.state && hash.geo) { // Wait for geo load when no state to center.
+    alert("here");
     loadGeos(hash.geo,0,function(results) {
+      alert("there");
       loadDataset('map1','map2', dp, basemaps1, basemaps2, 1, function(results) {
         initialHighlight(hash);
       });
@@ -946,114 +947,6 @@ $(document).on("click", ".showLocMenu", function(event) {
 $('#hideSideMap').click(function () {
   $("#sidemapCard").hide(); // map2
 });
-
-function loadGeos(geo, attempts, callback) {
-  // load only, no search filter display - get county name from geo value.
-  // created from a copy of loadStateCounties() in search-filters.js
-
-  if (typeof d3 !== 'undefined') {
-
-    let hash = getHash();
-    let stateID = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78,}
-    //let theState = "GA"; // TEMP - TODO: loop trough states from start of geo
-    let theState = hash.state ? hash.state.split(",")[0].toUpperCase() : undefined;
-    if (!theState) {
-      goHash({'geoview':'state'});
-      filterClickLocation();
-    }
-    //if (theState && theState.includes(",")) {
-    //  theState = theState.substring(0, 2);
-    //}
-    var geos=geo.split(",");
-    fips=[]
-    for (var i = 0; i < geos.length; i++){
-        fip=geos[i].split("US")[1]
-        if (fip) {
-          if(fip.startsWith("0")){
-              fips.push(parseInt(geos[i].split("US0")[1]))
-          }else{
-              fips.push(parseInt(geos[i].split("US")[1]))
-          }
-        } else {
-          console.log("ALERT: geo value does not start with US.")
-        }
-    }
-    if (geos[0].split("US")[1]) {
-      st=(geos[0].split("US")[1]).slice(0,2)
-      if(st.startsWith("0")){
-          dataObject.stateshown=(geos[0].split("US0")[1]).slice(0,1)
-      }else{
-          if(geos[0].split("US")[1].length==4){
-              dataObject.stateshown=(geos[0].split("US")[1]).slice(0,1)
-          }else{
-              dataObject.stateshown=(geos[0].split("US")[1]).slice(0,2)
-          }
-      }
-    } else {
-      console.log("ALERT: geos[0].split(US)[1] does not start with US.")
-    }
-
-    //Load in contents of CSV file
-    if (theState) {
-      d3.csv(local_app.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv").then(function(myData,error) {
-        if (error) {
-          //alert("error")
-          console.log("Error loading file. " + error);
-        }
-        let geoArray = [];
-
-        myData.forEach(function(d, i) {
-
-          let geoParams = {};
-          d.difference =  d.US_2007_Demand_$;
-
-          // OBJECTID,STATEFP10,COUNTYFP10,GEOID10,NAME10,NAMELSAD10,totalpop18,Reg_Comm,Acres,sq_miles,Label,lat,lon
-          //d.name = ;
-          //d.idname = "US" + d.GEOID + "-" + d.NAME + " County";
-
-          //d.perMile = Math.round(d.totalpop18 / d.sq_miles).toLocaleString(); // Breaks sort
-          d.perMile = Math.round(d.totalpop18 / d.sq_miles);
-
-          d.sq_miles = Number(Math.round(d.sq_miles).toLocaleString());
-          var activeGeo = false;
-          var theGeo = "US" + d.GEOID;
-          //alert(geo + " " + theGeo)
-          let geos=geo.split(",");
-          //fips=[]
-          for (var i = 0; i<geos.length; i++){
-              if (geos[i] == theGeo) {
-                activeGeo = true;
-              }
-          }
-
-
-          geoParams.name = d.NAME;
-          geoParams.pop = d.totalpop18;
-          geoParams.permile = d.perMile;
-          geoParams.active = activeGeo;
-
-          geoArray.push([theGeo, geoParams]); // Append a key-value with an object as the value
-        });
-
-        console.log("geoArray")
-        console.log(geoArray)
-        dataObject.geos = geoArray;
-        //callback(); // TypeError: callback is not a function
-        return;
-      });
-    }
-  } else {
-    attempts = attempts + 1;
-        if (attempts < 2000) {
-          // To do: Add a loading image after a coouple seconds. 2000 waits about 300 seconds.
-          setTimeout( function() {
-            loadGeos(geo,attempts);
-          }, 20 );
-        } else {
-          alert("D3 javascript not available for loading counties csv.")
-        }
-  }
-}
 
 function shortenMapframe(mapframeLong) {
   let mapframeUrl = "";

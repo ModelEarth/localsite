@@ -1,4 +1,4 @@
-## Parameters
+# Parameters
 
 To create a page where you can edit parameters, copy our [base starter page](../../apps/base/).  
 You can copy parameters from the URL.  Here's a sample with [Air impacts for Fulton and DeKalb Counties](../info/#geo=US13121,US13089&set=air&indicators=GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS)
@@ -7,6 +7,7 @@ You can copy parameters from the URL.  Here's a sample with [Air impacts for Ful
     param.lat = 37
     param.lon = -95.7
     param.state = "GA"
+    param.geoview = "state"
     param.geo = "US13121,US13089" // Fulton and DeKalb Counties
     param.zip = "30318" // See zip output sample link below
     param.set = "air"
