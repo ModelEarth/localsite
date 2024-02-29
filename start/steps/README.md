@@ -1,3 +1,4 @@
+[Starter Samples](../../../community/start/)
 # Local Site Install 
 
 You can use [Localsite Pages](../) to create websites and stories with free GitHub hosting.

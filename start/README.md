@@ -7,7 +7,7 @@
 
 ### More...
 
-<a href="steps/">Website Setup Steps</a> - With Minimum Commands
+<a href="steps/">Local Site Install</a> - With Minimum Commands
 <a href="../../io/charts/">Local Impact Charts</a> - With Install Commands
 
 The local impact charts are included with either setup link above. The charts reside in the io repo.
