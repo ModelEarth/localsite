@@ -1,26 +1,34 @@
-# Quick Local Site Install 
+# Local Site Install 
 
 You can use [Localsite Pages](../) to create websites and stories with free GitHub hosting.
 
 If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns](https://twitter.com/LorenHeyns).
 
-### Quick local install for contributors
+### Quick setup for contributors
 
-Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">our data-pipeline</a> repo to make contributions.
-If you are a REACT contributor, also fork <a href="https://github.com/ModelEarth/io" target="_blank">our io repo</a>.  
-Place your GitHub account name in the forked repos below and run in a local folder called "webroot":
+Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">our data-pipeline</a> repo to make contributions. If you are a REACT contributor, also fork <a href="https://github.com/ModelEarth/io" target="_blank">our io repo</a>.  
+Enter your GitHub account to update the cmd below for your forked repos.
 
-<textarea class="codetext" rows="6">
+*Your Github Account:*
+<input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateCmd()"><br>
+
+*Repos you've forked:*
+<input id="localsiteForked" type="checkbox" onclick="updateCmd()">localsite &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateCmd()">io &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateCmd()">data-pipeline  &nbsp;&nbsp; <input id="communityForked" type="checkbox"  onclick="updateCmd()">community &nbsp;&nbsp; <input id="appsForked" type="checkbox" onclick="updateCmd()">apps
+
+<div>
+<textarea id="cloneCmd" class="codetext" rows="6">
 git clone https://github.com/ModelEarth/localsite localsite &&  
 git clone https://github.com/ModelEarth/io io &&  
-git clone https://github.com/[YOUR GITHUB ACCOUNT]/data-pipeline data-pipeline &&
+git clone https://github.com/[YOUR ACCOUNT]/data-pipeline data-pipeline &&
 git clone https://github.com/ModelEarth/community community &&  
 git clone https://github.com/ModelEarth/apps apps &&  
-python -m http.server 8887
-</textarea>
+python -m http.server 8887</textarea>
+</div>
+
 
 <!-- Activate GitHub Pages so we can preview your contributions. -->
 
+Run the command above in a local folder called "webroot" or a name of your choice.
 Now you can open our active projects page at: [localhost:8887/io](http://localhost:8887/io/)
 For futher commands, open a new terminal window - the prior is now dedicated to being an http server.
 

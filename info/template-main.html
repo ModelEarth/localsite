@@ -851,7 +851,7 @@ document.addEventListener('mousedown', function(e) {
 <!-- LOCATION SEARCH -->
 <!-- For inactive portions - copy scripts from explore/js/embed.js -->
 <div id="locationFilterHolder" class="lite">
-<div id="filterLocations" class="fieldSelector filterBubbleHolder" style="display:none;">
+<div id="filterLocations" class="fieldSelector filterBubbleHolder" style="display:none; min-height:12px; margin-bottom:1px solid #ccc;">
 
     
       <!-- Stores location options. Not displayed. -->
@@ -975,6 +975,17 @@ document.addEventListener('mousedown', function(e) {
 
               </div>
             </div>
+
+            <div class="local" style="display:none">
+            <div id="imagineBar" class="lite" style="float:left; padding:0px 0px 8px 0px;display:none">
+              <div class="detailbutton imagineLocation greenbutton localX" style="display:none; padding:10px 18px 10px 18px;">Imagine</div>
+
+                <!-- Test another chlorpleth -->
+                <div class="local" style="display:none">
+                  <div id="show_county_colors" class="detailbutton">Test County Colors</div>
+                </div>
+            </div>
+          </div>
       </div>
 
         <!-- GOOGLE ADDRESS AUTOCOMPLETE -->
@@ -1199,15 +1210,6 @@ document.addEventListener('mousedown', function(e) {
 
       </div>
 
-</div>
-
-<div id="imagineBar" class="lite" style="padding:8px 0px 8px 60px;border-bottom:1px solid #aaa;display:none">
-  <div class="detailbutton imagineLocation greenbutton" style="padding:10px 18px 10px 18px;">Imagine</div>
-
-    <!-- Test another chlorpleth -->
-    <div class="local" style="display:none">
-      <div id="show_county_colors" class="detailbutton">Test County Colors</div>
-    </div>
 </div>
 
 </div>

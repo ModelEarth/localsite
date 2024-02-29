@@ -10,6 +10,87 @@
 <link type="text/css" href="../../css/base.css" rel="stylesheet" id="/localsite/css/base.css" />
 <script type="text/javascript" src="../../js/localsite.js?showheader=true"></script>
 
+<script>
+//document.getElementById("gitAccount").addEventListener("input", updateCmd);
+
+
+function updateCmd() {
+    // Get the value of the git account input field
+    var gitAccount = document.getElementById("gitAccount").value;
+    localStorage.gitAccount = gitAccount ;
+    if (gitAccount == "") { 
+      gitAccount = "[YOUR GITHUB ACCOUNT]";
+    }
+    // For these checkbox IDs
+    var checkboxIds = ["localsiteForked", "ioForked", "data-pipelineForked", "communityForked", "appsForked"];
+
+    // Loop through each checkbox
+    let lineIndex = 0;
+    let checkForks = [];
+    checkboxIds.forEach(function(checkboxId) {
+        var checkbox = document.getElementById(checkboxId);
+        let repoName = checkboxId.replace("Forked","");
+        var updatedLine = "git clone https://github.com/modelearth/" + repoName + " " + repoName + " &&";
+        if (checkbox.checked) {
+            // If checkbox is checked, construct the updated line
+            updatedLine = "git clone https://github.com/" + gitAccount + "/" + repoName + " " + repoName + " &&";
+            checkForks.push(checkboxId);
+        }
+        // Get the current value of the textarea
+        var currentCmd = document.getElementById("cloneCmd").value;
+
+        // Split the textarea value by lines
+        var lines = currentCmd.split("\n");
+
+        // Replace the third line with the updated line
+        lines[lineIndex] = updatedLine;
+
+        // Join the lines back together
+        var updatedCmd = lines.join("\n");
+        localStorage.gitsForked = JSON.stringify(checkForks);
+
+        // Update the textarea value
+        document.getElementById("cloneCmd").value = updatedCmd;
+
+        lineIndex++;
+    });
+}
+
+
+waitForElm('#gitAccount').then((elm) => {
+  // Create and append copy icon
+  var copyIcon = document.createElement("span");
+  copyIcon.innerHTML = "&#x1F4CB;"; // Unicode for clipboard icon
+  copyIcon.style.position = "absolute";
+  copyIcon.style.bottom = "5px";
+  copyIcon.style.right = "5px";
+  copyIcon.style.cursor = "pointer";
+  copyIcon.title = "Copy to Clipboard";
+  document.getElementById("cloneCmd").parentNode.appendChild(copyIcon);
+
+  // Add click event listener to copy icon
+  copyIcon.addEventListener("click", function() {
+      var textarea = document.getElementById("cloneCmd");
+      textarea.select();
+      document.execCommand("copy");
+      alert("Text copied to clipboard!");
+  });
+
+  document.getElementById("gitAccount").value = localStorage.gitAccount;
+
+  checkForks = JSON.parse(localStorage.gitsForked);
+  checkForks.forEach(function(checkboxId) {
+        var checkbox = document.getElementById(checkboxId);
+        if (checkbox) {
+            // If checkbox exists, check it
+            checkbox.checked = true;
+        }
+    });
+
+  updateCmd(); // Insert GitHub name into cmds
+});
+</script>
+
 <style>
 </style>
 </head>

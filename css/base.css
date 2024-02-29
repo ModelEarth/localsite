@@ -676,7 +676,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 }
 .codetext {
   width:100%;
-  overflow:hidden;
+  overflow:auto;
   background-color: #eee;
   padding: 15px;
   border: none;
