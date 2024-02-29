@@ -11,10 +11,7 @@
 <script type="text/javascript" src="../../js/localsite.js?showheader=true"></script>
 
 <script>
-//document.getElementById("gitAccount").addEventListener("input", updateCmd);
-
-
-function updateCmd() {
+function updateGitCmds() {
     // Get the value of the git account input field
     var gitAccount = document.getElementById("gitAccount").value;
     localStorage.gitAccount = gitAccount ;
@@ -70,24 +67,26 @@ waitForElm('#gitAccount').then((elm) => {
 
   // Add click event listener to copy icon
   copyIcon.addEventListener("click", function() {
-      var textarea = document.getElementById("cloneCmd");
-      textarea.select();
-      document.execCommand("copy");
-      alert("Text copied to clipboard!");
+    var textarea = document.getElementById("cloneCmd");
+    textarea.select();
+    document.execCommand("copy");
+    alert("Text copied to clipboard!");
   });
 
-  document.getElementById("gitAccount").value = localStorage.gitAccount;
-
-  checkForks = JSON.parse(localStorage.gitsForked);
-  checkForks.forEach(function(checkboxId) {
-        var checkbox = document.getElementById(checkboxId);
-        if (checkbox) {
-            // If checkbox exists, check it
-            checkbox.checked = true;
-        }
+  if (typeof localStorage.gitAccount != 'undefined') {
+    document.getElementById("gitAccount").value = localStorage.gitAccount;
+  }
+  if (localStorage.gitsForked) {
+    checkForks = JSON.parse(localStorage.gitsForked);
+    checkForks.forEach(function(checkboxId) {
+      var checkbox = document.getElementById(checkboxId);
+      if (checkbox) {
+          // If checkbox exists, check it
+          checkbox.checked = true;
+      }
     });
-
-  updateCmd(); // Insert GitHub name into cmds
+  }
+  updateGitCmds(); // Insert GitHub name into cmds
 });
 </script>
 

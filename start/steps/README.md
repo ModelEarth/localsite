@@ -7,25 +7,23 @@ If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns]
 
 ### Quick setup for contributors
 
-Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">our data-pipeline</a> repo to make contributions. If you are a REACT contributor, also fork <a href="https://github.com/ModelEarth/io" target="_blank">our io repo</a>.  
+*1. Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">our data-pipeline</a> repo* to make contributions. If you are a REACT contributor, also fork <a href="https://github.com/ModelEarth/io" target="_blank">our io repo</a>.  
 Enter your GitHub account to update the cmd below for your forked repos.
 
-*Your Github Account:*
-<input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateCmd()"><br>
+*2. Enter Your Github Account:*
+<input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
-*Repos you've forked:*
-<input id="localsiteForked" type="checkbox" onclick="updateCmd()">localsite &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateCmd()">io &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateCmd()">data-pipeline  &nbsp;&nbsp; <input id="communityForked" type="checkbox"  onclick="updateCmd()">community &nbsp;&nbsp; <input id="appsForked" type="checkbox" onclick="updateCmd()">apps
+*3. Indicate the Repos you've forked:*
+<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="communityForked" type="checkbox"  onclick="updateGitCmds()">community &nbsp;&nbsp; <input id="appsForked" type="checkbox" onclick="updateGitCmds()">apps
 
-<div>
+*4. Run in a local webroot folder*
 <textarea id="cloneCmd" class="codetext" rows="6">
 git clone https://github.com/ModelEarth/localsite localsite &&  
 git clone https://github.com/ModelEarth/io io &&  
-git clone https://github.com/[YOUR ACCOUNT]/data-pipeline data-pipeline &&
+git clone https://github.com/ModelEarth/data-pipeline data-pipeline &&
 git clone https://github.com/ModelEarth/community community &&  
 git clone https://github.com/ModelEarth/apps apps &&  
 python -m http.server 8887</textarea>
-</div>
-
 
 <!-- Activate GitHub Pages so we can preview your contributions. -->
 
