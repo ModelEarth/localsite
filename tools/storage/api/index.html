@@ -43,7 +43,7 @@ $(document).ready(function() {
 
 	function updateLocalStorage() {
 	  localStorage.setItem('aPro', JSON.stringify(aPro));
-	  $('#aProOutput').show().val(JSON.stringify(aPro, null, 2)).select();
+	  $('#aProOutput').show().val(JSON.stringify(aPro, null, 2)); // .select()
 	}
 
 	function generateRepeatingSection(index) {
