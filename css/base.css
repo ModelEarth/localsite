@@ -227,7 +227,15 @@ td {
 textarea {
     border-color: #777;
 }
-
+.textInput {
+  font-size: 15px;
+  box-sizing: border-box;
+  height: 34px;
+  min-height: 34px;
+  padding-left: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
 /* Lighter: #4091dd */
 p {
   margin-top: 0px;

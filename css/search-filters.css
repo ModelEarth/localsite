@@ -126,13 +126,6 @@
     clear: both;
   }
 }
-.textInput {
-	font-size: 15px;
-	box-sizing: border-box;
-	height: 34px;
-	min-height: 34px;
-  padding-left: 8px;
-}
 .filterClick {
     position: relative;
     cursor: pointer;

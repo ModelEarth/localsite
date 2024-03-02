@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Key Form</title>
+
+<!--
+<script type="text/javascript" src="/localsite/js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
+id is appended below to avoid reloading
+-->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" id="/localsite/js/jquery.min.js"></script>
+
+
+<link type="text/css" href="../../../css/base.css" rel="stylesheet" id="/localsite/css/base.css" />
+<script type="text/javascript" src="../../../js/localsite.js?showheader=true"></script>
+</head>
+<body>
+
+<div class="content contentpadding">
+	<h1>API Key Local Storage</h1>
+	<div id="formContainer"></div>
+	<button id="addApi" class="button">Add API</button>
+	<button id="clearAll" class="button">Clear All</button>
+	<button id="copyBtn" class="button">Copy</button>
+	<button id="pasteBtn" class="button">Paste</button>
+	
+	<div style="clear:both; height:20px"></div>
+	<textarea id="aProOutput"></textarea>
+
+	<textarea id="aProInput" style="display: none;"></textarea>
+	<div style="clear:both; height:4px"></div>
+	<button id="updateBtn" class="button">Update</button>
+
+	<button id="closeBtn" class="button" style="display: none;">Close</button>
+
+</div>
+
+<script>
+$(document).ready(function() {
+	var aPro = JSON.parse(localStorage.getItem('aPro')) || {};
+
+	function updateLocalStorage() {
+	  localStorage.setItem('aPro', JSON.stringify(aPro));
+	  $('#aProOutput').show().val(JSON.stringify(aPro, null, 2)).select();
+	}
+
+	function generateRepeatingSection(index) {
+	  var html = '<div class="repeating-section" id="panel' + index + '">' +
+	             '  <div style="float: left;">' +
+	             '    <label for="apiProvider' + index + '">API Provider</label><br>' +
+	             '    <select id="apiProvider' + index + '">' +
+	             '      <option value="">Select a provider...</option>' +
+	             '      <option>Observable API</option>' +
+	             '      <option>Google Data Commons</option>' +
+	             '      <option>ChatGPT Pro</option>' +
+	             '      <option>ChatGPT Assistant</option>' +
+	             '      <option>GitHub</option>' +
+	             '      <option>Replicate API</option>' +
+	             '      <option>Building Transparency</option>' +
+	             '      <!-- Add more API providers here -->' +
+	             '      <option>Other</option>' +
+	             '    </select>' +
+	             '    <input type="text" id="apiProviderOther' + index + '" placeholder="Other Provider" style="display: none;">' +
+	             '  </div>' +
+	             '  <div style="overflow: auto;">' +
+	             '    <label for="apiKey' + index + '">API Key</label><br>' +
+	             '    <input type="text" class="textInput" id="apiKey' + index + '">' +
+	             '  </div>' +
+	             '</div>';
+	  return html;
+	}
+
+	function populateRepeatingSections() {
+	  $('#formContainer').empty();
+	  for (var key in aPro) {
+	    var index = key.match(/\d+/)[0];
+	    $('#formContainer').append(generateRepeatingSection(index));
+	    $('#apiProvider' + index).val(key.replace(/\d+/, '').replace(/_/g, ' '));
+	    if ($('#apiProvider' + index).val() == 'Other') {
+	      $('#apiProviderOther' + index).val(aPro[key]).show();
+	    } else {
+	      $('#apiKey' + index).val(aPro[key]);
+	    }
+	  }
+	}
+
+	populateRepeatingSections();
+
+	$('#addApi').click(function() {
+	  var newIndex = $('.repeating-section').length + 1;
+	  $('#formContainer').append(generateRepeatingSection(newIndex));
+	});
+
+	$(document).on('change', 'select[id^="apiProvider"]', function() {
+	  var index = $(this).attr('id').match(/\d+/)[0];
+	  var provider = $(this).val();
+	  if (provider == 'Other') {
+	    $('#apiProviderOther' + index).show();
+	  } else {
+	    $('#apiProviderOther' + index).hide();
+	  }
+	});
+
+	$(document).on('input', 'input[id^="apiKey"]', function() {
+	  var index = $(this).attr('id').match(/\d+/)[0];
+	  var key = $(this).val();
+	  if (!key) {
+	    $('#panel' + index).remove();
+	    delete aPro[$('#apiProvider' + index).val().replace(/ /g, '_')];
+	    updateLocalStorage();
+	  } else {
+	    aPro[$('#apiProvider' + index).val().replace(/ /g, '_') + index] = key;
+	    updateLocalStorage();
+	  }
+	});
+
+	$('#copyBtn').click(function() {
+	  $('#aProOutput').show().val(JSON.stringify(aPro, null, 2)).select();
+	  document.execCommand('copy');
+	  $('#closeBtn').show();
+	});
+
+	$('#closeBtn').click(function() {
+	  $('#aProOutput').hide();
+	  $(this).hide();
+	});
+
+	$('#pasteBtn').click(function() {
+	  $('#aProInput').show();
+	  $('#aProInput').val('').focus();
+	});
+
+	$('#aProInput').on('input', function() {
+	  var input = $(this).val().trim();
+	  if (input) {
+	    try {
+	      var parsed = JSON.parse(input);
+	      for (var key in parsed) {
+	        var originalKey = key.replace(/\d+/g, '').replace(/_/g, ' ');
+	        var existingKeys = Object.keys(aPro).map(function(k) { return k.replace(/\d+/g, '').replace(/_/g, ' '); });
+	        if (!existingKeys.includes(originalKey)) {
+	          aPro[key] = parsed[key];
+	        } else {
+	          var counter = 2;
+	          while (existingKeys.includes(originalKey + counter)) {
+	            counter++;
+	          }
+	          aPro[originalKey.replace(/ /g, '_') + counter] = parsed[key];
+	        }
+	      }
+	      updateLocalStorage();
+	      populateRepeatingSections();
+	    } catch (error) {
+	      console.error('Error parsing input:', error);
+	    }
+	  }
+
+
+	$('#clearAll').click(function() {
+	  var confirmation = prompt('Are you sure? Enter "YES" to proceed.');
+	  if (confirmation && confirmation.toUpperCase() === 'YES') {
+	    localStorage.removeItem('aPro');
+	    aPro = {};
+	    populateRepeatingSections();
+	    alert('Your API Keys have been cleared from local storage.');
+	  }
+	});
+	});
+
+
+
+	function generateRepeatingSectionVerbose(index) {
+	  var popularProviders = [
+	    "Amazon Web Services (AWS)",
+	    "Building Transparency API",
+	    "ChatGPT Assistant API",
+	    "ChatGPT Pro API",
+	    "Dropbox API",
+	    "eBay API",
+	    "Facebook Graph API",
+	    "GitHub API",
+	    "Google API",
+	    "Google Data Commons API",
+	    "IBM Watson API",
+	    "Instagram Graph API",
+	    "LinkedIn API",
+	    "Mailchimp API",
+	    "Microsoft Azure API",
+	    "Observable API",
+	    "PayPal API",
+	    "Reddit API",
+	    "Replicate API",
+	    "Salesforce API",
+	    "SendGrid API",
+	    "Shopify API",
+	    "Slack API",
+	    "Spotify Web API",
+	    "Stripe API",
+	    "Twilio API",
+	    "Twitter API",
+	    "Yelp API",
+	    "YouTube API",
+	    "Zoom API"
+	  ];
+
+	  popularProviders.sort();
+
+	  var html = '<div class="repeating-section" id="panel' + index + '">' +
+	             '  <div style="float: left;">' +
+	             '    <label for="apiProvider' + index + '">API Provider</label>' +
+	             '    <select id="apiProvider' + index + '">' +
+	             '      <option>Select a provider...</option>';
+
+	  for (var i = 0; i < popularProviders.length; i++) {
+	    html += '<option>' + popularProviders[i] + '</option>';
+	  }
+
+	  html += '      <option>Other</option>' +
+	          '    </select>' +
+	          '    <input type="text" id="apiProviderOther' + index + '" placeholder="Other Provider" style="display: none;">' +
+	          '  </div>' +
+	          '  <div style="overflow: auto;">' +
+	          '    <label for="apiKey' + index + '">API Key</label>' +
+	          '    <input type="text" id="apiKey' + index + '">' +
+	          '  </div>' +
+	          '</div>';
+	  return html;
+	}
+});
+
+</script>
+
+<style>
+  .repeating-section {
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+  .repeating-section:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  .button {
+	  display: inline-block;
+	  padding: 10px 20px;
+	  font-size: 16px;
+	  border: none;
+	  border-radius: 22px;
+	  cursor: pointer;
+	  background-color: #3498db;
+	  color: #fff;
+	  text-align: center;
+	  text-decoration: none;
+	}
+	.button:hover {
+	  background-color: #0056b3;
+	}
+	.button:active {
+	  background-color: #0056b3;
+	}
+	.button:focus {
+	  outline: none;
+	}
+	textarea {
+	  width: 100%;
+	  max-width: 400px;
+	  height: auto;
+	  min-height: 10em;
+	  resize: vertical;
+	  padding: 8px;
+	  border: 1px solid #ccc;
+	  border-radius: 4px;
+	  font-size: 16px;
+	  line-height: 1.5;
+	}
+</style>
+
+</body>
+</html>
