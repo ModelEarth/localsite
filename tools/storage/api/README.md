@@ -1,4 +1,7 @@
-
+<!--
+https://chat.openai.com/c/94f107ae-5e51-4719-b64f-651eaa7f2b27
+https://chat.openai.com/share/82ca2102-1acd-4e94-8581-280365e012e3
+-->
 # About ChatGPT Dev
 
 There was still a lot of tweaking to get the form elements looking good.
@@ -36,4 +39,64 @@ Include a "Clear All" button that prompts the user: Are you sure? Enter "YES" to
 #34495e, #2c3e50 (Navy)
 #f1c40f, #f39c12 (Yellow)
 #95a5a6, #7f8c8d (Grey)
+-->
+
+<!--
+		function generateRepeatingSectionVerbose(index) {
+	  var popularProviders = [
+	    "Amazon Web Services (AWS)",
+	    "Building Transparency API",
+	    "ChatGPT Assistant API",
+	    "ChatGPT Pro API",
+	    "Dropbox API",
+	    "eBay API",
+	    "Facebook Graph API",
+	    "GitHub API",
+	    "Google API",
+	    "Google Data Commons API",
+	    "IBM Watson API",
+	    "Instagram Graph API",
+	    "LinkedIn API",
+	    "Mailchimp API",
+	    "Microsoft Azure API",
+	    "Observable API",
+	    "PayPal API",
+	    "Reddit API",
+	    "Replicate API",
+	    "Salesforce API",
+	    "SendGrid API",
+	    "Shopify API",
+	    "Slack API",
+	    "Spotify Web API",
+	    "Stripe API",
+	    "Twilio API",
+	    "Twitter API",
+	    "Yelp API",
+	    "YouTube API",
+	    "Zoom API"
+	  ];
+
+	  popularProviders.sort();
+
+	  var html = '<div class="repeating-section" id="panel' + index + '">' +
+	             '  <div style="float: left;">' +
+	             '    <label for="apiProvider' + index + '">API Provider</label>' +
+	             '    <select id="apiProvider' + index + '">' +
+	             '      <option>Select a provider...</option>';
+
+	  for (var i = 0; i < popularProviders.length; i++) {
+	    html += '<option>' + popularProviders[i] + '</option>';
+	  }
+
+	  html += '      <option>Other</option>' +
+	          '    </select>' +
+	          '    <input type="text" id="apiProviderOther' + index + '" placeholder="Other Provider" style="display: none;">' +
+	          '  </div>' +
+	          '  <div style="overflow: auto;">' +
+	          '    <label for="apiKey' + index + '">API Key</label>' +
+	          '    <input type="text" id="apiKey' + index + '">' +
+	          '  </div>' +
+	          '</div>';
+	  return html;
+	}
 -->
