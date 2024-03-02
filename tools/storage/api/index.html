@@ -12,7 +12,7 @@ id is appended below to avoid reloading
 -->
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" id="/localsite/js/jquery.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
 
 <link type="text/css" href="../../../css/base.css" rel="stylesheet" id="/localsite/css/base.css" />
 <script type="text/javascript" src="../../../js/localsite.js?showheader=true"></script>
@@ -24,11 +24,15 @@ id is appended below to avoid reloading
 	<div id="formContainer"></div>
 	<button id="addApi" class="button button-green">Add API</button>
 	<button id="clearAll" class="button">Clear All</button>
+
+	<!-- We can probably remove these
 	<button id="copyBtn" class="button">Copy</button>
 	<button id="pasteBtn" class="button">Paste</button>
-	
+	-->
+
 	<div style="clear:both; height:20px"></div>
 	<textarea id="aProOutput"></textarea>
+	<textarea id="aProOutputYaml"></textarea>
 
 	<textarea id="aProInput" style="display: none;"></textarea>
 	<div style="clear:both; height:4px"></div>
@@ -44,6 +48,10 @@ $(document).ready(function() {
 	function updateLocalStorage() {
 	  localStorage.setItem('aPro', JSON.stringify(aPro));
 	  $('#aProOutput').show().val(JSON.stringify(aPro, null, 2)); // .select()
+	  if (typeof jsyaml != "undefined") {
+		  let yamlString = jsyaml.dump(aPro);
+		  $('#aProOutputYaml').text(yamlString);
+		}
 	}
 
 	function generateRepeatingSection(index) {
@@ -84,7 +92,11 @@ $(document).ready(function() {
 	      $('#apiKey' + index).val(aPro[key]);
 	    }
 	  }
-	  $('#aProOutput').show().val(JSON.stringify(aPro, null, 2)).select(); // TO DO: Send as YAML.
+	  $('#aProOutput').show().val(JSON.stringify(aPro, null, 2)).select();
+	  if (typeof jsyaml != "undefined") {
+	  	let yamlString = jsyaml.dump(aPro); // TO DO: Remove ticks around YAML displayed in textbox.
+		  $('#aProOutputYaml').text(yamlString);
+		}
 	}
 	populateRepeatingSections();
 
@@ -130,6 +142,13 @@ $(document).ready(function() {
 	$('#pasteBtn').click(function() {
 	  $('#aProInput').show();
 	  $('#aProInput').val('').focus();
+	});
+
+	$('#updateBtn').click(function() {
+		aPro = JSON.parse($('#aProOutput').val());
+		// TO DO: alert("Not valid json."
+		updateLocalStorage();
+	  populateRepeatingSections();
 	});
 
 	$('#aProInput').on('input', function() {
