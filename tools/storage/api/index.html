@@ -81,9 +81,24 @@ $(document).ready(function() {
 	}
 
 	function populateRepeatingSections() { /* Only runs initially */
+		if (typeof aPro == "undefined") {
+			//alert("return")
+			//return;
+		}
+		console.log("aPro")
+		//alert(JSON.stringify(aPro));
 	  $('#formContainer').empty();
 	  for (var key in aPro) {
-	    var index = key.match(/\d+/)[0];
+	    //var index = key.match(/\d+/)[0];
+
+	    let index = key.match(/\d+/);
+			if (index) {
+			  index = index[0];
+			} else {
+			  // Handle the case when no match is found, e.g., set a default value
+			  index = 0;
+			}
+
 	    $('#formContainer').append(generateRepeatingSection(index));
 	    $('#apiProvider' + index).val(key.replace(/\d+/, '').replace(/_/g, ' '));
 	    if ($('#apiProvider' + index).val() == 'Other') {
@@ -99,6 +114,10 @@ $(document).ready(function() {
 		}
 	}
 	populateRepeatingSections();
+	if ($('.repeating-section').length == 0) {
+	  $('#formContainer').append(generateRepeatingSection(1)); // Show one panel at init
+	}
+
 
 	$('#addApi').click(function() {
 	  var newIndex = $('.repeating-section').length + 1;
