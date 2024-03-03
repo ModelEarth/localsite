@@ -48,9 +48,11 @@ $(document).ready(function() {
 	function updateLocalStorage() {
 	  localStorage.setItem('aPro', JSON.stringify(aPro));
 	  $('#aProOutput').show().val(JSON.stringify(aPro, null, 2)); // .select()
+	  
 	  if (typeof jsyaml != "undefined") {
 		  let yamlString = jsyaml.dump(aPro);
-		  $('#aProOutputYaml').text(yamlString);
+		  console.log("updateLocalStorage " + yamlString);
+		  $('#aProOutputYaml').val(yamlString);
 		}
 	}
 
@@ -70,9 +72,9 @@ $(document).ready(function() {
 	             '      <!-- Add more API providers here, see list in README file -->' +
 	             '      <option>Other</option>' +
 	             '    </select><br>' +
-	             '    <input type="text" id="apiProviderOther' + index + '" placeholder="Other Provider" class="textInput" style="display: none; min-width:225px">' +
+	             '    <input type="text" id="apiProviderOther' + index + '" placeholder="Other Provider" class="textInput" style="display:none; min-width:225px; margin-bottom:10px">' +
 	             '  </div>' +
-	             '  <div style="overflow: auto;">' +
+	             '  <div style="overflow:auto; min-width:300px">' +
 	             '    <label for="apiKey' + index + '">API Key</label><br>' +
 	             '    <input type="text" class="textInput" id="apiKey' + index + '" style="min-width:300px">' +
 	             '  </div>' +
@@ -107,7 +109,7 @@ $(document).ready(function() {
 	      $('#apiKey' + index).val(aPro[key]);
 	    }
 	  }
-	  $('#aProOutput').show().val(JSON.stringify(aPro, null, 2)).select();
+	  $('#aProOutput').show().val(JSON.stringify(aPro, null, 2)); // .select()
 	  if (typeof jsyaml != "undefined") {
 	  	let yamlString = jsyaml.dump(aPro); // TO DO: Remove ticks around YAML displayed in textbox.
 		  $('#aProOutputYaml').text(yamlString);
@@ -134,15 +136,20 @@ $(document).ready(function() {
 	  }
 	});
 
-	$(document).on('input', 'input[id^="apiKey"]', function() {
-	  var index = $(this).attr('id').match(/\d+/)[0];
-	  var key = $(this).val();
-	  if (!key) {
-	    $('#panel' + index).remove();
+	$(document).on('input', 'input[id^="apiKey"]', function() { // Editing apiKey field.
+	  let index = $(this).attr('id').match(/\d+/)[0];
+	  let value = $(this).val();
+	  if (!value) {
+	    console.log("Delete apiProvider " + $('#apiProvider' + index).val().replace(/ /g, '_'));
 	    delete aPro[$('#apiProvider' + index).val().replace(/ /g, '_')];
 	    updateLocalStorage();
+	    $('#panel' + index).remove();
 	  } else {
-	    aPro[$('#apiProvider' + index).val().replace(/ /g, '_') + index] = key;
+	  	if (index == 1) { // Omit 1 from end of provider key.
+	  		aPro[$('#apiProvider' + index).val().replace(/ /g, '_')] = value;
+	  	} else {
+	    	aPro[$('#apiProvider' + index).val().replace(/ /g, '_') + index] = value;
+	  	}
 	    updateLocalStorage();
 	  }
 	});
@@ -164,7 +171,9 @@ $(document).ready(function() {
 	});
 
 	$('#updateBtn').click(function() {
-		aPro = JSON.parse($('#aProOutput').val());
+		//aPro = JSON.parse($('#aProOutput').val()); // From json textbox.
+		aPro = jsyaml.load($('#aProOutputYaml').val()); // From yaml textbox.
+
 		// TO DO: alert("Not valid json."
 		updateLocalStorage();
 	  populateRepeatingSections();
@@ -221,8 +230,9 @@ $(document).ready(function() {
   .repeating-section {
   	display: inline-block;
     margin-bottom: 10px;
-    border: 1px solid #ccc;
-    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+    borderX: 1px solid #ccc;
+    paddingX: 10px 20px;
   }
   .repeating-section:after {
     content: "";
