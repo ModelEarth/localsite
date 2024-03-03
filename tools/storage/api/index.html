@@ -31,7 +31,7 @@ id is appended below to avoid reloading
 	-->
 
 	<div style="clear:both; height:20px"></div>
-	<textarea id="aProOutput"></textarea>
+	<textarea id="aProOutput" style="display:none"></textarea>
 	<textarea id="aProOutputYaml"></textarea>
 
 	<textarea id="aProInput" style="display: none;"></textarea>
@@ -39,35 +39,46 @@ id is appended below to avoid reloading
 	<button id="updateBtn" class="button">Update</button>
 
 	<button id="closeBtn" class="button" style="display: none;">Close</button>
+	<div style="clear:both; height:16px"></div>
+
+	Copy the text above to transfer your API keys to another browser.
 </div>
 
 <script>
 $(document).ready(function() {
+	// An object containing API Providers and API Keys as key-value pairs
 	var aPro = JSON.parse(localStorage.getItem('aPro')) || {};
 
+	// Store the object in the browser's local storage so it remains available after closing the browser.
 	function updateLocalStorage() {
 	  localStorage.setItem('aPro', JSON.stringify(aPro));
-	  $('#aProOutput').show().val(JSON.stringify(aPro, null, 2)); // .select()
+
+	  $('#aProOutput').val(JSON.stringify(aPro, null, 2)); // .select()
 	  
 	  if (typeof jsyaml != "undefined") {
 		  let yamlString = jsyaml.dump(aPro);
 		  console.log("updateLocalStorage " + yamlString);
-		  $('#aProOutputYaml').val(yamlString);
+		  if (JSON.stringify(aPro) === "{}") {
+		  	$('#aProOutputYaml').val("");
+		  } else {
+		  	$('#aProOutputYaml').val(yamlString);
+		  }
 		}
 	}
 
+	// Display a panel section for selecting or adding an API Provider and the user's API Key.
 	function generateRepeatingSection(index) {
 	  var html = '<div class="repeating-section" style="display:inline-text" id="panel' + index + '">' +
 	             '  <div style="float: left;">' +
 	             '    <label for="apiProvider' + index + '">API Provider</label><br>' +
-	             '    <select id="apiProvider' + index + '">' +
+	             '    <select id="apiProvider' + index + '" class="apiProvider">' +
 	             '      <option value="">Select a provider...</option>' +
-	             '      <option>Observable API</option>' +
+	             '      <option>Observable</option>' +
 	             '      <option>Google Data Commons</option>' +
 	             '      <option>ChatGPT Pro</option>' +
 	             '      <option>ChatGPT Assistant</option>' +
 	             '      <option>GitHub</option>' +
-	             '      <option>Replicate API</option>' +
+	             '      <option>Replicate</option>' +
 	             '      <option>Building Transparency</option>' +
 	             '      <!-- Add more API providers here, see list in README file -->' +
 	             '      <option>Other</option>' +
@@ -76,86 +87,153 @@ $(document).ready(function() {
 	             '  </div>' +
 	             '  <div style="overflow:auto; min-width:300px">' +
 	             '    <label for="apiKey' + index + '">API Key</label><br>' +
-	             '    <input type="text" class="textInput" id="apiKey' + index + '" style="min-width:300px">' +
+	             '    <input type="text" class="textInput" id="apiKey' + index + '" style="min-width:300px; margin-bottom:10px">' +
 	             '  </div>' +
 	             '</div>';
 	  return html;
 	}
 
-	function populateRepeatingSections() { /* Only runs initially */
-		if (typeof aPro == "undefined") {
-			//alert("return")
-			//return;
-		}
-		console.log("aPro")
-		//alert(JSON.stringify(aPro));
+	// Apply key-value pairs from the local storage object to the panels
+	function populateRepeatingSections() {
+		// Clears form and re-renders panels
 	  $('#formContainer').empty();
+	  let index = 1;
 	  for (var key in aPro) {
 	    //var index = key.match(/\d+/)[0];
 
-	    let index = key.match(/\d+/);
-			if (index) {
-			  index = index[0];
+	    /*
+	    let appendNumber = key.match(/\d+/);
+			if (appendNumber) {
+			  appendNumber = parseInt(appendNumber) + 1;
 			} else {
 			  // Handle the case when no match is found, e.g., set a default value
-			  index = 0;
+			  appendNumber = "";
 			}
 
-	    $('#formContainer').append(generateRepeatingSection(index));
-	    $('#apiProvider' + index).val(key.replace(/\d+/, '').replace(/_/g, ' '));
+			// Avoiding appending for now
+			appendNumber = "";
+			*/
+
+	    $('#formContainer').append(generateRepeatingSection(index)); // Add blank panel to populate
+	    //$('#apiProvider' + index).val(key.replace(/\d+/, '').replace(/_/g, ' '));
+	    $('#apiProvider' + index).val(key.replace(/\s*\(\d+\)$/, "")); // Remove number in parenthesis at end.
 	    if ($('#apiProvider' + index).val() == 'Other') {
 	      $('#apiProviderOther' + index).val(aPro[key]).show();
 	    } else {
 	      $('#apiKey' + index).val(aPro[key]);
 	    }
+	    index++;
 	  }
-	  $('#aProOutput').show().val(JSON.stringify(aPro, null, 2)); // .select()
-	  if (typeof jsyaml != "undefined") {
-	  	let yamlString = jsyaml.dump(aPro); // TO DO: Remove ticks around YAML displayed in textbox.
-		  $('#aProOutputYaml').text(yamlString);
+	  
+	  if (JSON.stringify(aPro) === "{}") {
+	  	//alert("okay " + JSON.stringify(aPro));
+	  	$('#aProOutput').val("");
+	  	$('#aProOutputYaml').val("");
+	  } else {
+		  $('#aProOutput').val(JSON.stringify(aPro, null, 2)); // .select()
+		  if (typeof jsyaml != "undefined") {
+		  	let yamlString = jsyaml.dump(aPro); // TO DO: Remove ticks around YAML displayed in textbox.
+			  $('#aProOutputYaml').text(yamlString);
+			}
 		}
 	}
+
+	// INIT
 	populateRepeatingSections();
 	if ($('.repeating-section').length == 0) {
 	  $('#formContainer').append(generateRepeatingSection(1)); // Show one panel at init
 	}
-
 
 	$('#addApi').click(function() {
 	  var newIndex = $('.repeating-section').length + 1;
 	  $('#formContainer').append(generateRepeatingSection(newIndex));
 	});
 
-	$(document).on('change', 'select[id^="apiProvider"]', function() {
+	$(document).on('change', 'select[id^="apiProvider"]', function() { // Changing provider dropdown
 	  var index = $(this).attr('id').match(/\d+/)[0];
-	  var provider = $(this).val();
-	  if (provider == 'Other') {
+	  var key = $(this).val();
+		let value = $("#apiKey" + index).val();
+		if (key == 'Other') {
+			key = $("#apiProviderOther" + index).val();
 	    $('#apiProviderOther' + index).show();
 	  } else {
 	    $('#apiProviderOther' + index).hide();
 	  }
+	  if (value) {
+  		updateApiRow(index,key,value);
+  	}
 	});
 
-	$(document).on('input', 'input[id^="apiKey"]', function() { // Editing apiKey field.
+	$(document).on('input', 'input[id^="apiKey"]', function() { // Editing apiKey field
 	  let index = $(this).attr('id').match(/\d+/)[0];
+	  let key = $("#apiProvider" + index).val();
 	  let value = $(this).val();
-	  if (!value) {
-	    console.log("Delete apiProvider " + $('#apiProvider' + index).val().replace(/ /g, '_'));
-	    delete aPro[$('#apiProvider' + index).val().replace(/ /g, '_')];
+    // Get key of nth pair in object
+    /*
+    for (let key in aPro) {
+	    if (aPro.hasOwnProperty(key)) {
+	      //count++;
+	    }
+	  }
+		*/
+		if (!value) { // Deleting Row by clearing API Key
+			console.log("Delete apiProvider " + $('#apiProvider' + index).val().replace(/ /g, '_'));
+	    delete aPro[$('#apiProvider' + index).val()];
 	    updateLocalStorage();
 	    $('#panel' + index).remove();
 	  } else {
-	  	if (index == 1) { // Omit 1 from end of provider key.
-	  		aPro[$('#apiProvider' + index).val().replace(/ /g, '_')] = value;
-	  	} else {
-	    	aPro[$('#apiProvider' + index).val().replace(/ /g, '_') + index] = value;
-	  	}
-	    updateLocalStorage();
+	  	updateApiRow(index,key,value);
 	  }
 	});
+	function updateApiRow(index,key,value) {
+		let apiProviderStr = $('#apiProvider' + index).val().replace(/\s*\(\d+\)$/, ""); // Remove number in parenthesis at end.
+  	let instanceCount = 0;
+  	for (let thekey in aPro) {
+		  if (thekey.startsWith(apiProviderStr)) {
+		    instanceCount++;
+		  }
+		}
+  	let keyName = $('#apiProvider' + index).val();
+  	aProCount = countKeyValuePairs(aPro);
+
+		//alert("Found " + instanceCount + " for index: " + index + " key: " + key + " value: " + value + " ");
+  	if (index > aProCount) { // Add new record - there are more panels than key-value pairs.
+  		//if(aPro[$('#apiProvider' + index).val()].length > 0) {
+  			if (instanceCount > 1) { // Already records
+  				keyName = keyName + " (" + (instanceCount+1) + ")"; // Increment since adding
+  				//alert("keyName " + keyName);
+  			}
+  		//}
+  	} else {
+  		if (instanceCount > 1) { // The existing record uses a paren number
+  				keyName = keyName + " (" + (instanceCount) + ")";
+  				//alert("keyName " + keyName);
+  			}
+  	}
+
+  	// In JavaScript, object keys must be unique
+  	aPro[keyName] = value;
+
+  	// Replaces spaces with _
+  	//if (index == 1) { // Omit 1 from end of provider key.
+  	//	aPro[$('#apiProvider' + index).val().replace(/ /g, '_')] = value;
+  	//} else {
+    //	aPro[$('#apiProvider' + index).val().replace(/ /g, '_') + index] = value;
+  	//}
+    updateLocalStorage();
+	}
+	function countKeyValuePairs(obj) { // Length of object
+	  let count = 0;
+	  for (let key in obj) {
+	    if (obj.hasOwnProperty(key)) {
+	      count++;
+	    }
+	  }
+	  return count;
+	}
 
 	$('#copyBtn').click(function() {
-	  $('#aProOutput').show().val(JSON.stringify(aPro, null, 2)).select();
+	  $('#aProOutput').val(JSON.stringify(aPro, null, 2)).select();
 	  document.execCommand('copy');
 	  $('#closeBtn').show();
 	});
@@ -207,17 +285,20 @@ $(document).ready(function() {
 
 	$('#clearAll').click(function() {
 
-		// TEMP - skip confirm step during dev
-		localStorage.removeItem('aPro');
-    aPro = {};
-    populateRepeatingSections();
-    return;
+		if (1==1) { // Skip confirmation step
+			localStorage.removeItem('aPro');
+	    aPro = {};
+	    populateRepeatingSections();
+	    $('#formContainer').append(generateRepeatingSection(1));
+	    return;
+    }
 
 	  var confirmation = prompt('Are you sure? Enter "YES" to proceed.');
 	  if (confirmation && confirmation.toUpperCase() === 'YES') {
 	    localStorage.removeItem('aPro');
 	    aPro = {};
 	    populateRepeatingSections();
+	    $('#formContainer').append(generateRepeatingSection(1));
 	    alert('Your API Keys have been cleared from local storage.');
 	  }
 	});
@@ -231,8 +312,7 @@ $(document).ready(function() {
   	display: inline-block;
     margin-bottom: 10px;
     border-bottom: 1px solid #ccc;
-    borderX: 1px solid #ccc;
-    paddingX: 10px 20px;
+    font-size: 16px;
   }
   .repeating-section:after {
     content: "";
