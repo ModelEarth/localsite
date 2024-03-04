@@ -42,7 +42,7 @@ id is appended below to avoid reloading
 	<button id="closeBtn" class="button" style="display: none;">Close</button>
 	<div style="clear:both; height:16px"></div>
 
-	Copy the text above to transfer your API keys to another browser.
+	Copy and paste text to transfer your API keys to another browser.
 </div>
 
 <script>
@@ -69,7 +69,7 @@ $(document).ready(function() {
 	  if (typeof jsyaml != "undefined") {
 		  let yamlString = jsyaml.dump(aPro);
 		  console.log("updateLocalStorage " + yamlString);
-		  if (JSON.stringify(aPro) === "{}") {
+		  if (JSON.stringify(aPro) === "{}" || typeof JSON.stringify(aPro) == "undefined") {
 		  	$('#aProOutputYaml').val("");
 		  	$('#copyBtn').hide();
 		  } else {
@@ -276,10 +276,14 @@ $(document).ready(function() {
 		$("#updateBtn").removeClass("button-green");
 		//aPro = JSON.parse($('#aProOutput').val()); // From json textbox.
 		aPro = jsyaml.load($('#aProOutputYaml').val()); // From yaml textbox.
-
-		// TO DO: alert("Not valid json."
 		updateLocalStorage();
-	  populateRepeatingSections();
+		if (countKeyValuePairs(aPro) == 0) {
+			if ($('#formContainer').is(':empty')) {
+				$('#formContainer').append(generateRepeatingSection(1));
+			}
+		} else {
+		  populateRepeatingSections();
+		}
 	});
 
 	$('#aProInput').on('input', function() {
