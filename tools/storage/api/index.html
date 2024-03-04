@@ -68,7 +68,7 @@ $(document).ready(function() {
 	  
 	  if (typeof jsyaml != "undefined") {
 		  let yamlString = jsyaml.dump(aPro);
-		  console.log("updateLocalStorage " + yamlString);
+		  console.log("updateLocalStorage:\n" + yamlString);
 		  if (JSON.stringify(aPro) === "{}" || typeof JSON.stringify(aPro) == "undefined") {
 		  	$('#aProOutputYaml').val("");
 		  	$('#copyBtn').hide();
@@ -182,47 +182,55 @@ $(document).ready(function() {
 	  let index = $(this).attr('id').match(/\d+/)[0];
 	  let key = $("#apiProvider" + index).val();
 	  let value = $(this).val();
-    // Get key of nth pair in object
-    /*
-    for (let key in aPro) {
-	    if (aPro.hasOwnProperty(key)) {
-	      //count++;
-	    }
-	  }
-		*/
-		if (!value) { // Deleting Row by clearing API Key
-			console.log("Delete apiProvider " + $('#apiProvider' + index).val().replace(/ /g, '_'));
-	    delete aPro[$('#apiProvider' + index).val()];
-	    updateLocalStorage();
-	    $('#panel' + index).remove();
-	  } else {
-	  	updateApiRow(index,key,value);
-	  }
+	  if (key) {
+	    // Get key of nth pair in object
+	    /*
+	    for (let key in aPro) {
+		    if (aPro.hasOwnProperty(key)) {
+		      //count++;
+		    }
+		  }
+			*/
+			if (!value) { // Deleting Row by clearing API Key
+				console.log("Delete apiProvider " + $('#apiProvider' + index).val().replace(/ /g, '_'));
+		    delete aPro[$('#apiProvider' + index).val()];
+		    updateLocalStorage();
+		    $('#panel' + index).remove();
+		  } else {
+		  	updateApiRow(index,key,value);
+		  }
+		}
 	});
 	function updateApiRow(index,key,value) {
 		let apiProviderStr = $('#apiProvider' + index).val().replace(/\s*\(\d+\)$/, ""); // Remove number in parenthesis at end.
   	let instanceCount = 0;
+  	let storageCount = 0;
   	for (let thekey in aPro) {
+  		storageCount++;
 		  if (thekey.startsWith(apiProviderStr)) {
 		    instanceCount++;
+		  } else if (storageCount == index) { // The incoming change when a change is made
+		  	instanceCount++;
 		  }
 		}
   	let keyName = $('#apiProvider' + index).val();
   	aProCount = countKeyValuePairs(aPro);
 
-		console.log("index: " + index + " provider: " + key + " value: " + value + " instance of provider: " + instanceCount);
+		console.log("index: " + index + "\nprovider: " + key + "\nkeyname (from dropdown via index): " + keyName + "\nvalue: " + value + "\nprovider instanceCount: " + instanceCount);
   	if (index > aProCount) { // Add new record - there are more panels than key-value pairs.
   		//if(aPro[$('#apiProvider' + index).val()].length > 0) {
   			if (instanceCount >= 1) { // Already records
   				keyName = keyName + " (" + (instanceCount+1) + ")"; // Increment since adding
-  				//alert("keyName " + keyName);
+  				console.log("Add new record keyName " + keyName);
   			}
   		//}
   	} else {
   		if (instanceCount > 1) { // The existing record uses a paren number
   				keyName = keyName + " (" + (instanceCount) + ")";
-  				//alert("keyName " + keyName);
-  			}
+  				console.log("Update keyName " + keyName);
+  		} else {
+  				console.log("Update - Only one instanceCount keyName " + keyName);
+  		}
   	}
 
   	// In JavaScript, object keys must be unique
@@ -275,16 +283,38 @@ $(document).ready(function() {
 	$('#updateBtn').click(function() {
 		$("#updateBtn").removeClass("button-green");
 		//aPro = JSON.parse($('#aProOutput').val()); // From json textbox.
-		aPro = jsyaml.load($('#aProOutputYaml').val()); // From yaml textbox.
-		updateLocalStorage();
-		if (countKeyValuePairs(aPro) == 0) {
-			if ($('#formContainer').is(':empty')) {
-				$('#formContainer').append(generateRepeatingSection(1));
-			}
+		if (hasDuplicateKeys($('#aProOutputYaml').val())) {
+			alert("Duplicate provides. Please add (2) after second instance.");
 		} else {
-		  populateRepeatingSections();
+			aPro = jsyaml.load($('#aProOutputYaml').val()); // From yaml textbox.
+			updateLocalStorage();
+			if (countKeyValuePairs(aPro) == 0) {
+				if ($('#formContainer').is(':empty')) {
+					$('#formContainer').append(generateRepeatingSection(1));
+				}
+			} else {
+			  populateRepeatingSections();
+			}
 		}
 	});
+	function hasDuplicateKeys(yamlString) {
+	    var lines = yamlString.split('\n');
+	    var seenKeys = {};
+
+	    for (var i = 0; i < lines.length; i++) {
+	        var line = lines[i].trim();
+	        if (line && line[0] !== '#') {
+	            var keyValue = line.split(':');
+	            var key = keyValue[0].trim();
+	            if (seenKeys[key]) {
+	                return true;
+	            } else {
+	                seenKeys[key] = true;
+	            }
+	        }
+	    }
+	    return false;
+	}
 
 	$('#aProInput').on('input', function() {
 	  var input = $(this).val().trim();
