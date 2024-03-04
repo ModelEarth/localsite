@@ -1961,10 +1961,11 @@ addEventListener("load", function(){
 });
 
 
+// Error on storage page: this.replace is not a function
+//String.prototype.toTitleCase = function () {
+//    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+//};
 
-String.prototype.toTitleCase = function () {
-    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-};
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
 }
