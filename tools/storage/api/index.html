@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>API Key Form</title>
 
-
 <script type="text/javascript" src="/localsite/js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
 <!--
 id is appended below to avoid reloading
@@ -88,14 +87,40 @@ $(document).ready(function() {
 	             '    <label for="apiProvider' + index + '">API Provider</label><br>' +
 	             '    <select id="apiProvider' + index + '" class="apiProvider">' +
 	             '      <option value="">Select a provider...</option>' +
-	             '      <option>Observable</option>' +
-	             '      <option>Google Data Commons</option>' +
+	             '      <option>Building Transparency</option>' +
+	             '      <option>Claude AI</option>' +
+	             '      <option>Dreamstudio AI</option>' +
 	             '      <option>ChatGPT Pro</option>' +
 	             '      <option>ChatGPT Assistant</option>' +
 	             '      <option>GitHub</option>' +
+	             '      <option>Google Data Commons</option>' +
+	             '      <option>Observable</option>' +
 	             '      <option>Replicate</option>' +
-	             '      <option>Building Transparency</option>' +
+	             '      <option>Twitter X</option>' +
 	             '      <!-- Add more API providers here, see list in README file -->' +
+	             /*
+	             '      <option>Amazon Web Services (AWS)</option>' +
+	             '      <option>Dropbox API</option>' +
+	             '      <option>eBay API</option>' +
+	             '      <option>Facebook Graph API</option>' +
+	             '      <option>Google API</option>' +
+	             '      <option>Instagram Graph API</option>' +
+	             '      <option>LinkedIn API</option>' +
+	             '      <option>Mailchimp API</option>' +
+	             '      <option>Microsoft Azure API</option>' +
+	             '      <option>PayPal API</option>' +
+	             '      <option>Reddit API</option>' +
+	             '      <option>Salesforce API</option>' +
+	             '      <option>SendGrid API</option>' +
+	             '      <option>Shopify API</option>' +
+	             '      <option>Slack API</option>' +
+	             '      <option>Spotify Web API</option>' +
+	             '      <option>Stripe API</option>' +
+	             '      <option>Twilio API</option>' +
+	             '      <option>Yelp API</option>' +
+	             '      <option>YouTube API</option>' +
+	             '      <option>Zoom API</option>' +
+	             */
 	             '      <option>Other</option>' +
 	             '    </select><br>' +
 	             '    <input type="text" id="apiProviderOther' + index + '" placeholder="Other Provider" class="textInput" style="display:none; min-width:225px; margin-bottom:10px">' +
@@ -236,6 +261,9 @@ $(document).ready(function() {
   	}
 
   	// In JavaScript, object keys must be unique
+  	if (typeof aPro == "undefined") { // Since may have been deleted using Clear All.
+  		aPro = {};
+  	}
   	aPro[keyName] = value;
 
   	// Replaces spaces with _
