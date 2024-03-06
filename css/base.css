@@ -505,6 +505,7 @@ summary::-webkit-details-marker {
 }
 .greyDiv a:link, .greyDiv a:visited, .content .greyDiv a:link, .content .greyDiv a:visited {
   color: #fff;
+  text-decoration: none;
 }
 .greyDiv b, .greyDiv .maincat, .greyDiv b a:link, .greyDiv b a:visited, .content .greyDiv b, .content .greyDiv .maincat, .content .greyDiv b a:link, .content .greyDiv b a:visited {
   color: #333;
