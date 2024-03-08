@@ -11,7 +11,7 @@
 <script type="text/javascript" src="../../js/localsite.js?showheader=true"></script>
 
 <script>
-// About localStorage 
+// About localStorage
 // https://blog.logrocket.com/localstorage-javascript-complete-guide/
 function updateGitCmds() {
     // Get the value of the git account input field
@@ -67,6 +67,7 @@ function updateGitCmds() {
 
 
 waitForElm('#gitAccount').then((elm) => {
+  
   // Create and append copy icon
   var copyIcon = document.createElement("span");
   copyIcon.innerHTML = "&#x1F4CB;"; // Unicode for clipboard icon
@@ -84,8 +85,10 @@ waitForElm('#gitAccount').then((elm) => {
     document.execCommand("copy");
     alert("Text copied to clipboard!");
   });
-
-  if (typeof localStorage.gitAccount != 'undefined') {
+  let hash = getHash();
+  if (hash.git) {
+    document.getElementById("gitAccount").value = hash.git;
+  } else if (typeof localStorage.gitAccount != 'undefined') {
     document.getElementById("gitAccount").value = localStorage.gitAccount;
   }
   if (localStorage.gitsForked) {
