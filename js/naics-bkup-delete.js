@@ -1776,7 +1776,7 @@ function applyIO(naics) {
      
 
     var config = useeio.urlConfig();
-    var modelID = config.get().model || 'USEEIOv2.0'; 
+    var modelID = config.get().model || 'USEEIOv2.0.1-411'; 
     // USEEIOv1.2 shows incorrect bars. $300.043 input per $1 for agriculture.
     // USEEIO showed fish for colleges
 

@@ -7,7 +7,7 @@
 
 ### More...
 
-<a href="steps/">Local Site Install</a> - With Minimum Commands
-<a href="../../io/charts/">Local Impact Charts</a> - With Install Commands
+<a href="steps/">Local Site Install</a> - With Install Command
+<a href="../../io/charts/">Impact Widgets</a> - With REACT Develoment Opportunities
 
-The local impact charts are included with either setup link above. The charts reside in the io repo.
+The impact widgets are included with either setup above. The charts reside in the io repo.
