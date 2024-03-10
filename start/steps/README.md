@@ -14,15 +14,17 @@ Enter your GitHub account to update the cmd below for your forked repos.
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
 *3. Indicate the Repos you've forked:*
-<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="communityForked" type="checkbox"  onclick="updateGitCmds()">community &nbsp;&nbsp; <input id="appsForked" type="checkbox" onclick="updateGitCmds()">apps
+<!-- Also add to checkboxIds array -->
+<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">data-commons  &nbsp;&nbsp; <input id="communityForked" type="checkbox"  onclick="updateGitCmds()">community &nbsp;&nbsp; <input id="appsForked" type="checkbox" onclick="updateGitCmds()">apps
 
 *4. Run in a local webroot folder*
-<textarea id="cloneCmd" class="codetext" rows="6">
-git clone https://github.com/ModelEarth/localsite localsite &&  
-git clone https://github.com/ModelEarth/io io &&  
+<textarea id="cloneCmd" class="codetext" rows="7">
+git clone https://github.com/ModelEarth/localsite localsite &&
+git clone https://github.com/ModelEarth/io io &&
 git clone https://github.com/ModelEarth/data-pipeline data-pipeline &&
-git clone https://github.com/ModelEarth/community community &&  
-git clone https://github.com/ModelEarth/apps apps &&  
+git clone https://github.com/ModelEarth/data-commons data-commons &&
+git clone https://github.com/ModelEarth/community community &&
+git clone https://github.com/ModelEarth/apps apps &&
 python -m http.server 8887</textarea>
 
 <!-- Activate GitHub Pages so we can preview your contributions. -->
@@ -32,14 +34,9 @@ Now you can open our active projects page at: [localhost:8887/io](http://localho
 
 For further commands, open a new terminal window - the prior is now dedicated to being an http server.
 
-Or use an http server that loads without .html
+Or use an http server that loads URLs without including .html
 
 	npx http-server
-
-To run in a virtual environment:
-
-	python3 -m venv env &&
-	source env/bin/activate
 
 
 ### Refresh you local repos
