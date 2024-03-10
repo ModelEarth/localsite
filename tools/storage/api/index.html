@@ -94,6 +94,7 @@ $(document).ready(function() {
 	             '      <option>ChatGPT Assistant</option>' +
 	             '      <option>GitHub</option>' +
 	             '      <option>Google Data Commons</option>' +
+	             '      <option>Groq</option>' +
 	             '      <option>Observable</option>' +
 	             '      <option>Replicate</option>' +
 	             '      <option>Twitter X</option>' +
@@ -127,7 +128,7 @@ $(document).ready(function() {
 	             '  </div>' +
 	             '  <div style="overflow:auto; min-width:300px">' +
 	             '    <label for="apiKey' + index + '">API Key</label><br>' +
-	             '    <input type="text" class="textInput" id="apiKey' + index + '" style="min-width:300px; margin-bottom:10px">' +
+	             '    <input type="text" class="textInput" id="apiKey' + index + '" style="min-width:300px;width:100%;max-width:540px; margin-bottom:10px">' +
 	             '  </div>' +
 	             '</div>';
 	  return html;
@@ -398,7 +399,6 @@ $(document).ready(function() {
 
 <style>
   .repeating-section {
-  	display: inline-block;
     margin-bottom: 10px;
     border-bottom: 1px solid #ccc;
     font-size: 16px;
@@ -434,7 +434,7 @@ $(document).ready(function() {
 	}
 	textarea {
 	  width: 100%;
-	  max-width: 400px;
+	  max-width: 780px;
 	  height: auto;
 	  min-height: 10em;
 	  resize: vertical;
