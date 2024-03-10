@@ -32,6 +32,16 @@ Now you can open our active projects page at: [localhost:8887/io](http://localho
 
 For further commands, open a new terminal window - the prior is now dedicated to being an http server.
 
+Or use an http server that loads without .html
+
+	npx http-server
+
+To run in a virtual environment:
+
+	python3 -m venv env &&
+	source env/bin/activate
+
+
 ### Refresh you local repos
 
 Run the following weekly in any repo to pull down recent updates.
