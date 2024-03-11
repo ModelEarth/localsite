@@ -1,28 +1,27 @@
 [Starter Samples](../../../community/start/)
 # Local Site Install 
 
-You can use [Localsite Pages](../) to create websites and stories with free GitHub hosting.
-
+You can use [Localsite Pages](../) to create websites and stories with free GitHub hosting.  
 If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns](https://twitter.com/LorenHeyns).
 
 ### Quick setup for contributors
 
-*1. Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">our data-pipeline</a> repo* to make contributions. If you are a REACT contributor, also fork <a href="https://github.com/ModelEarth/io" target="_blank">our io repo</a>.  
+**1.** Fork our <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a> and <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> repos to make contributions. If you are a REACT contributor, also fork <a href="https://github.com/ModelEarth/io" target="_blank">our io repo</a>.  
 Enter your GitHub account to update the cmd below for your forked repos.
 
-*2. Enter Your Github Account:*
+*2.* Enter Your Github Account (it will get inserted in cmds below):
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
-*3. Indicate the Repos you've forked:*
+*3.* Indicate the Repos you've forked:
 <!-- Also add to checkboxIds array -->
-<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">data-commons  &nbsp;&nbsp; <input id="communityForked" type="checkbox"  onclick="updateGitCmds()">community &nbsp;&nbsp; <input id="appsForked" type="checkbox" onclick="updateGitCmds()">apps
+<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">data-commons  &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="communityForked" type="checkbox"  onclick="updateGitCmds()">community &nbsp;&nbsp; <input id="appsForked" type="checkbox" onclick="updateGitCmds()">apps
 
-*4. Run in a local webroot folder*
+*4.* Run in a local webroot folder
 <textarea id="cloneCmd" class="codetext" rows="7">
 git clone https://github.com/ModelEarth/localsite localsite &&
 git clone https://github.com/ModelEarth/io io &&
-git clone https://github.com/ModelEarth/data-pipeline data-pipeline &&
 git clone https://github.com/ModelEarth/data-commons data-commons &&
+git clone https://github.com/ModelEarth/data-pipeline data-pipeline &&
 git clone https://github.com/ModelEarth/community community &&
 git clone https://github.com/ModelEarth/apps apps &&
 python -m http.server 8887</textarea>
@@ -38,25 +37,33 @@ Or use an http server that loads URLs without including .html
 
 	npx http-server
 
+The npx http-server command displays your local site here:
+[http://127.0.0.1:8080](http://127.0.0.1:8080)
+[http://192.168.1.210:8080](http://192.168.1.210:8080)
+
 
 ### Refresh you local repos
 
 Run the following weekly in any repo to pull down recent updates.
 Run daily (hourly) if you are editing pages that others might also be editing.
 
-<textarea id="refreshCmd" class="codetext" rows="11">
-cd ../localsite &&  
-git pull https://github.com/ModelEarth/localsite main &&  
-cd ../io &&  
-git pull https://github.com/ModelEarth/io main &&  
-cd ../data-pipeline &&  
-git pull https://github.com/ModelEarth/data-pipeline main &&  
-cd ../community &&  
-git pull https://github.com/ModelEarth/community master &&  
-cd ../apps &&  
-git pull https://github.com/ModelEarth/apps main &&  
-cd ../data-pipeline</textarea>
+<textarea id="refreshCmd" class="codetext" rows="7">
+cd ../localsite && git pull https://github.com/ModelEarth/localsite main &&  
+cd ../io && git pull https://github.com/ModelEarth/io main &&  
+cd ../data-commons && git pull https://github.com/ModelEarth/data-commons main && 
+cd ../data-pipeline && git pull https://github.com/ModelEarth/data-pipeline main &&  
+cd ../community &&  git pull https://github.com/ModelEarth/community master &&  
+cd ../apps && git pull https://github.com/ModelEarth/apps main &&  
+cd ../data-common</textarea>
 
+After pulling down data-common, build your static site, generating ./dist
+
+	yarn build	
+
+Then visit the following to view:
+<http://localhost:8887/data-commons/dist>
+<http://localhost:8887/data-commons/docs>
+	
 That's it! &nbsp;You can stop the steps here. Your updated local site is now visible at: [localhost:8887/io](http://localhost:8887/io/)
 <br>
 

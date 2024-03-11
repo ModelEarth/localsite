@@ -21,7 +21,7 @@ function updateGitCmds() {
       gitAccount = "[YOUR GITHUB ACCOUNT]";
     }
     // For these checkbox IDs
-    var checkboxIds = ["localsiteForked", "ioForked", "data-pipelineForked", "data-commonsForked", "communityForked", "appsForked"];
+    var checkboxIds = ["localsiteForked", "ioForked", "data-commonsForked", "data-pipelineForked", "communityForked", "appsForked"];
 
     // Loop through each checkbox
     let lineIndex = 0;
@@ -32,12 +32,12 @@ function updateGitCmds() {
         let branch = "main";
         var updatedLine = "git clone https://github.com/modelearth/" + repoName + " " + repoName + " &&";
         //var updatedLineRefresh = "git pull https://github.com/modelearth/" + repoName + " " + branch + " &&";
-        var updatedLineRefresh = "git pull https://github.com/modelearth/" + repoName + " &&";
+        var updatedLineRefresh = "cd ../" + repoName + " && git pull https://github.com/modelearth/" + repoName + " &&";
         if (checkbox.checked) {
             // If checkbox is checked, construct the updated line
             updatedLine = "git clone https://github.com/" + gitAccount + "/" + repoName + " " + repoName + " &&";
             //updatedLineRefresh = "git pull https://github.com/" + gitAccount + "/" + repoName + " " + branch + " &&";
-            updatedLineRefresh = "git pull https://github.com/" + gitAccount + "/" + repoName + " &&";
+            updatedLineRefresh = "cd ../" + repoName + " && git pull https://github.com/" + gitAccount + "/" + repoName + " &&";
             checkForks.push(checkboxId);
         }
         // Get the current values of the textareas
@@ -51,7 +51,8 @@ function updateGitCmds() {
         // Replace the third line with the updated line
         linesClone[lineIndex] = updatedLine;
 
-        linesRefresh[(lineIndex*2)+1] = updatedLineRefresh;
+        //linesRefresh[(lineIndex*2)+1] = updatedLineRefresh; // When two lines
+        linesRefresh[(lineIndex)] = updatedLineRefresh;
 
         // Join the lines back together and update the textareas
         let updatedCmd = linesClone.join("\n");
