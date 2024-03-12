@@ -9,14 +9,15 @@ If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns]
 **1.** Fork our <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a> and <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> repos to make contributions. If you are a REACT contributor, also fork <a href="https://github.com/ModelEarth/io" target="_blank">our io repo</a>.  
 Enter your GitHub account to update the cmd below for your forked repos.
 
-*2.* Enter Your Github Account (it will get inserted in cmds below):
+**2.** Enter Your Github Account (it will get inserted in cmds below):
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
-*3.* Indicate the Repos you've forked:
+**3.** Indicate the repos you've forked:
 <!-- Also add to checkboxIds array -->
 <input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">data-commons  &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="communityForked" type="checkbox"  onclick="updateGitCmds()">community &nbsp;&nbsp; <input id="appsForked" type="checkbox" onclick="updateGitCmds()">apps
 
-*4.* Run in a local webroot folder
+**4.** Run in your local webroot folder:
+
 <textarea id="cloneCmd" class="codetext" rows="7">
 git clone https://github.com/ModelEarth/localsite localsite &&
 git clone https://github.com/ModelEarth/io io &&
@@ -29,7 +30,7 @@ python -m http.server 8887</textarea>
 <!-- Activate GitHub Pages so we can preview your contributions. -->
 
 Run the command above in a local folder called "webroot" or a name of your choice.
-Now you can open our active projects page at: [localhost:8887/io](http://localhost:8887/io/)
+Now you can open our Active Projects page at: [localhost:8887/io](http://localhost:8887/io/)
 
 For further commands, open a new terminal window - the prior is now dedicated to being an http server.
 
@@ -44,7 +45,9 @@ The npx http-server command displays your local site here:
 
 ### Refresh you local repos
 
-Run the following weekly in any repo to pull down recent updates.
+**1.** First go to the forks in your [Github Account](https://github.com/) and click "Sync Fork"
+
+**2.** Run the following weekly in any repo to pull down recent updates.
 Run daily (hourly) if you are editing pages that others might also be editing.
 
 <textarea id="refreshCmd" class="codetext" rows="7">
@@ -56,14 +59,14 @@ cd ../community &&  git pull https://github.com/ModelEarth/community master &&
 cd ../apps && git pull https://github.com/ModelEarth/apps main &&  
 cd ../data-common</textarea>
 
-After pulling down data-common, build your static site, generating ./dist
+After pulling down [data-commons](https://github.com/modelearth/data-commons), build your static site, generating ./dist
 
 	yarn build	
 
 Then visit the following to view:
 <http://localhost:8887/data-commons/dist>
 <http://localhost:8887/data-commons/docs>
-	
+
 That's it! &nbsp;You can stop the steps here. Your updated local site is now visible at: [localhost:8887/io](http://localhost:8887/io/)
 <br>
 
