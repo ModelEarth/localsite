@@ -6,10 +6,10 @@ If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns]
 
 ### Quick setup for contributors
 
-**1.** Fork our <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a> and <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> repos to make contributions. If you are a REACT contributor, also fork <a href="https://github.com/ModelEarth/io" target="_blank">our io repo</a>.  
-Enter your GitHub account to update the cmd below for your forked repos.
+**1.** Fork our <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a> and <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> repos to make contributions.
 
-**2.** Enter Your Github Account (it will get inserted in cmds below):
+**2.** Enter your GitHub account to insert it in cmds below for your forked repos.
+
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
 **3.** Indicate the repos you've forked:
@@ -29,10 +29,14 @@ python -m http.server 8887</textarea>
 
 <!-- Activate GitHub Pages so we can preview your contributions. -->
 
-Run the command above in a local folder called "webroot" or a name of your choice.
 Now you can open our Active Projects page at: [localhost:8887/io](http://localhost:8887/io/)
 
-For further commands, open a new terminal window - the prior is now dedicated to being an http server.
+If you find a broken link, there's probably an additional repo you can pull locally or view at model.earth.
+
+To avoid merge conflicts, before editing click "Sync Fork" on your forks in GitHub, then pull locally using GitHub Desktop - or run the cmd below.
+
+<!--
+To run further commands, open a new terminal window - the prior is now dedicated to being an http server.
 
 Or use an http server that loads URLs without including .html
 
@@ -41,7 +45,7 @@ Or use an http server that loads URLs without including .html
 The npx http-server command displays your local site here:
 [http://127.0.0.1:8080](http://127.0.0.1:8080)
 [http://192.168.1.210:8080](http://192.168.1.210:8080)
-
+-->
 
 ### Refresh you local repos
 
@@ -236,7 +240,7 @@ We sometimes [use Github .submodules](../submodules/) to deploy multiple repos i
 
 <a href="../../../apps/">View Starter Samples</a> - maps, charts, widgets.
 
-Learn more about [JAM Stack Development](https://jamstack.org) - the process of creating fast sites using static pages with CSV files, JSON and APIs.  
+Learn more about [JAM Stack Development](https://jamstack.org) - the process of creating fast sites using static pages with CSV files, JSON&nbsp;and&nbsp;APIs.  
 
 Edit online using [stackedit.io](https://stackedit.io/) and [Dillinger Markdown to HTML](https://dillinger.io/)  
 
