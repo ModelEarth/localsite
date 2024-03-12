@@ -33,7 +33,7 @@ Now you can open our Active Projects page at: [localhost:8887/io](http://localho
 
 If you find a broken link, there's probably an additional repo you can pull locally or view at model.earth.
 
-To avoid merge conflicts, before editing click "Sync Fork" on your forks in GitHub, then pull locally using GitHub Desktop - or run the cmd below.
+To avoid merge conflicts, click "Sync Fork" on your forks in GitHub, then pull locally using GitHub Desktop. Or you can refresh quickly by runing the cmd below after you click "Sync Fork" on your forked repos.
 
 <!--
 To run further commands, open a new terminal window - the prior is now dedicated to being an http server.
