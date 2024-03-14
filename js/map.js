@@ -830,19 +830,6 @@ function initialHighlight(hash) {
     */
 //};
 
-$(document).on("click", "#show_county_colors", function(event) {
-  let hash = getHash();
-  let layerName = hash.state.split(",")[0].toUpperCase() + " Counties";
-  geoOverlays[layerName].eachLayer(function (layer) {  
-    //if(layer.feature.properties.COUNTYFP == '121') { // Fulton County
-      layer.setStyle({fillColor :'blue', fillOpacity:.5 }) 
-      // Or call a function:
-      // layer.setStyle(function...)
-    //}
-  });
-  //alert("done"); // Occurs before layers above appear.
-});
-
 function centerMap(lat,lon,name,map,whichmap) {
     console.log("centerMap " + whichmap);
     $("#sidemapCard").show(); // map2 - show first to maximize time tiles have to see full size of map div.

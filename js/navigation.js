@@ -996,7 +996,19 @@ $(document).ready(function () {
 		}
     });
 
-	
+    $(document).on("click", "#show_county_colors", function(event) {
+      let hash = getHash();
+      let layerName = hash.state.split(",")[0].toUpperCase() + " Counties";
+      geoOverlays[layerName].eachLayer(function (layer) {  
+        if(layer.feature.properties.COUNTYFP == '037' || layer.feature.properties.COUNTYFP == '121') { // Los Angeles or Fulton Counties
+          layer.setStyle({fillColor :'blue', fillOpacity:.5 }) 
+          // Or call a function:
+          // layer.setStyle(function...)
+        }
+      });
+      //alert("done"); // Occurs before layers above appear.
+    });
+
 	$('#hsCatList > div').click(function () {
 		//consoleLog('.menuRectLink click ' + $(this).attr("data-section").toLowerCase());
         $('#hsCatList > div').css('border', 'solid 1px #fff');
