@@ -84,7 +84,7 @@ cd ../data-commons && git pull https://github.com/ModelEarth/data-commons main &
 cd ../data-pipeline && git pull https://github.com/ModelEarth/data-pipeline main &&  
 cd ../community &&  git pull https://github.com/ModelEarth/community master &&  
 cd ../apps && git pull https://github.com/ModelEarth/apps main &&  
-cd ../data-common</textarea>
+cd ../data-commons</textarea>
 
 After pulling down [data-commons](https://github.com/modelearth/data-commons), build your static site, generating ./dist
 
