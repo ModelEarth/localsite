@@ -6,7 +6,7 @@ If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns]
 
 ### Quick setup for contributors
 
-**1.** Fork our <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a> and <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> repos to make contributions.
+**1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a>, <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a> and <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> repos to make contributions.
 
 **2.** Enter your GitHub account to insert it in cmds below for your forked repos.
 
