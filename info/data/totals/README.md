@@ -5,7 +5,7 @@ Update to show actual dollar values in the US EPA [Inflow-Outflow Chart](/io/cha
 
 
 ~~~
-# Format as 1 decimal using Billion, Million, K and scientific notataion.
+# Formats as 1-decimal using Billion, Million, K and scientific notation.
 
 def format_cell(input, format):
     # If format is none or blank, return input as it is
