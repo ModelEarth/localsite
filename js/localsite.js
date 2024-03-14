@@ -6,11 +6,12 @@
 // Define a new object if localsite library does not exist yet.
 var localStart = Date.now(); // A var so waitForVariableNav detects in navigation.js.
 let onlineApp = true;
+let localsiteTitle = "Localsite";
+let defaultState = ""; 
 if (location.host.indexOf('localhost') >= 0) {
   //onlineApp = false; // Set to false during air travel. Also sets local to no state.
+  defaultState = "";  // Set to GA to include additional map layers in top nav.
 }
-let localsiteTitle = "Localsite";
-let defaultState = ""; // Set to GA to include additional map layers in top nav
 consoleLog("start localsite");
 var local_app = local_app || (function(module){
     let _args = {}; // private, also worked as []
@@ -1962,9 +1963,10 @@ addEventListener("load", function(){
 
 
 // Error on storage page: this.replace is not a function
-//String.prototype.toTitleCase = function () {
-//    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-//};
+// So renamed to toTitleCaseFormatFormat. Haven't confirmed.
+String.prototype.toTitleCaseFormat = function () {
+    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+};
 
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);

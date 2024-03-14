@@ -442,16 +442,16 @@ function hashChanged() {
                 if (appTitle) {
                     $("#pageTitle").text(appTitle); // Ex: Parts Manufacturing
                 } else {
-                    ////$(".region_service").text(hash.show.toTitleCase());
-                    $("#pageTitle").text(hash.show.toTitleCase());
+                    ////$(".region_service").text(hash.show.toTitleCaseFormat());
+                    $("#pageTitle").text(hash.show.toTitleCaseFormat());
                 }
                 */
-                showTitle = hash.show.toTitleCase();
+                showTitle = hash.show.toTitleCaseFormat();
             }
 
 
             if (hash.show && local_app.loctitle) {
-                $(".region_service").text(local_app.loctitle + " - " + hash.show.toTitleCase());
+                $(".region_service").text(local_app.loctitle + " - " + hash.show.toTitleCaseFormat());
                 
             } else if (hash.state) {
 
@@ -466,7 +466,7 @@ function hashChanged() {
                         console.log("fetched " + theStateName);
                         $(".region_service").text(theStateName + " Industries");
                         if (showTitle) {
-                            $(".region_service").text(theStateName + " - " + hash.show.toTitleCase());
+                            $(".region_service").text(theStateName + " - " + hash.show.toTitleCaseFormat());
                         }
                     }
 
@@ -515,7 +515,7 @@ function hashChanged() {
             hiddenhash.loctitle = hash.regiontitle;
             $(".regiontitle").text(hash.regiontitle);
             if (hash.show) {
-                $(".region_service").text(hash.regiontitle + " - " + hash.show.toTitleCase());
+                $(".region_service").text(hash.regiontitle + " - " + hash.show.toTitleCaseFormat());
             } else {
                 $(".region_service").text(hash.regiontitle);
             }
@@ -910,7 +910,7 @@ function populateFieldsFromHash() {
 	$("#productCodes").val(hash.hs);
 	if (hash.region) {
 		if (hash.show) {
-			$(".regiontitle").val(hash.region + " - " + hash.show.toTitleCase());
+			$(".regiontitle").val(hash.region + " - " + hash.show.toTitleCaseFormat());
 		} else {
 			$(".regiontitle").val(hash.region);
 		}
@@ -3673,7 +3673,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         showClassInline(".georgia"); // Temp side nav
         showClassInline(".earth"); // Temp side nav
 
-	} else if (defaultState == "GA" && !Array.isArray(param.titleArray) && (location.host.indexOf('localhost') >= 0 && navigator && navigator.brave) || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
+	} else if ((defaultState == "GA" && !Array.isArray(param.titleArray) && (location.host.indexOf('localhost') >= 0 && navigator && navigator.brave))   || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
 		// The localsite repo is open to use by any state or country.
 		// Georgia Economic Development has been a primary contributor.
 		// Show locally for Brave Browser only - insert before:  ) || false
@@ -3696,16 +3696,16 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
 			showClassInline(".acct");
 			showClassInline(".garesource");
-		} else if (hash.state == "GA") {
-            //showClassInline(".garesource");
-        }
+		}
 		showClassInline(".georgia");
 		if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
 			showClassInline(".earth");
 		}
 		$('#headerOffset').css('display', 'block'); // Show under site's Drupal header
-
-		earthFooter = true;
+        if (location.host.indexOf('localhost') >= 0) {
+            earthFooter = true;
+        }
+		
 
 	} else if (!Array.isArray(param.titleArray) && (param.startTitle == "Neighborhood.org" || location.host.indexOf('neighborhood.org') >= 0)) {
 		showLeftIcon = true;
@@ -3742,7 +3742,9 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 		console.log(".earth display");
 		earthFooter = true;
 	}
-
+    if (localStorage.state == "GA") {
+        showClassInline(".garesource");
+    }
 	if (document.title) {
  		document.title = localsiteTitle + " - " + document.title;
  	} else {

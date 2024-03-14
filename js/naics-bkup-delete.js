@@ -846,7 +846,7 @@ function topRatesInFips(dataSet, dataNames, fips, params) {
         params.show = params.go;
     }
     if (params.show) {
-        gotext = params.show.replace(/_/g," ").toTitleCase();
+        gotext = params.show.replace(/_/g," ").toTitleCaseFormat();
         if (gotext == "Smart") {
             gotext = "EV Ecosystem";
         } else if (gotext == "Ppe") {

@@ -2,6 +2,8 @@
 
 # Dive Into Data Commons
 
+We're using [Observable Data Loaders](/data-pipeline/timelines/observable/) to pull from the Google API.
+
 Join us in integrating tools and data with [Google Data Commons](https://datacommons.org).
 
 We'll be using the Google Data Commons API to pull international data for our industry impact timelines.
