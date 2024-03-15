@@ -91,7 +91,9 @@ First install hub and ask it to authenticate you through your browser:
 Your browser will open a page in GitHub.com
 After granting access, you'll be redirected to a page displaying an authorization token to copy.
 
-Then run a command to submit a pull request (or submit through the GitHub website):
+**3.** Use GitHub Desktop and click to "Commit" changes so you can review. Then click "Push origin" in the upper right. (It's easy to forget the "Push origin" step.)
+
+**4.**  Then run a command to submit a pull request (or submit through the GitHub website):
 
 	hub pull-request -b modelearth:data-pipeline -h [Your GitHub Account]:data-pipeline -m "Fix typo in README" -m "This pull request fixes a typo in the README file."
 
