@@ -35,41 +35,6 @@ If you find a broken link, there's probably an additional repo you can pull loca
 
 To avoid merge conflicts, click "Sync Fork" on your forks in GitHub, then pull locally using GitHub Desktop. Or you can refresh quickly by runing the cmd below after you click "Sync Fork" on your forked repos.
 
-**5.** Cmd for fetching upsteam then pushing your local changes into your fork:
-
-<textarea id="pullRequestCmd" class="codetext" rows="3">
-git remote add upstream https://github.com/modelearth/data-pipeline &&
-git fetch upstream && git checkout main && git merge upstream/main &&
-git push origin main # Push the changes to your forked repository
-</textarea>
-
-**6.** After uploading changes to your fork, submit a pull request on the GitHub website, or run:
-
-First install hub and ask it to authenticate you through your browser:
-
-	brew install hub && hub browse
-
-Your browser will open a page in GitHub.com
-After granting access, you'll be redirected to a page displaying an authorization token to copy.
-
-Then run a command to submit a pull request (or submit through the GitHub website):
-
-	hub pull-request -b modelearth:data-pipeline -h [Your GitHub Account]:data-pipeline -m "Fix typo in README" -m "This pull request fixes a typo in the README file."
-
-The 1st quote above is for a short description. The 2nd is for extra details.
-
-<!--
-To run further commands, open a new terminal window - the prior is now dedicated to being an http server.
-
-Or use an http server that loads URLs without including .html
-
-	npx http-server
-
-The npx http-server command displays your local site here:
-[http://127.0.0.1:8080](http://127.0.0.1:8080)
-[http://192.168.1.210:8080](http://192.168.1.210:8080)
--->
-
 ### Refresh you local repos
 
 **1.** First go to the forks in your [Github Account](https://github.com/) and click "Sync Fork"
@@ -95,6 +60,56 @@ Then visit the following to view:
 <http://localhost:8887/data-commons/docs>
 
 That's it! &nbsp;You can stop the steps here. Your updated local site is now visible at: [localhost:8887/io](http://localhost:8887/io/)
+<br>
+
+
+## Deployment: How to Send a Pull Request
+
+We typically use GitHub.com and GitHub Desktop to deploy changes.
+
+1. Update your forks by clicking "Sync" for each in GitHub.com.
+2. Use the Update command above to pull locally. If a conflict occurs, make a backup of your local folder, reclone and move your change files into the local clone.
+3. Commit and push your local changes up to your fork.
+4. Then go to our fork in GitHub.com and click "Pull Request" to submit to the main parent repo.
+
+Alternative using commands:
+
+**1.** Fetch our main upsteam repo to sync up, then moves your local changes into your fork:
+
+<textarea id="pullRequestCmd" class="codetext" rows="3">
+git remote add upstream https://github.com/modelearth/data-pipeline &&
+git fetch upstream && git checkout main && git merge upstream/main &&
+git push origin main # Push the changes to your forked repository
+</textarea>
+
+**2.** The submit a pull request in the GitHub website, or run:
+
+First install hub and ask it to authenticate you through your browser:
+
+	brew install hub && hub browse
+
+Your browser will open a page in GitHub.com
+After granting access, you'll be redirected to a page displaying an authorization token to copy.
+
+Then run a command to submit a pull request (or submit through the GitHub website):
+
+	hub pull-request -b modelearth:data-pipeline -h [Your GitHub Account]:data-pipeline -m "Fix typo in README" -m "This pull request fixes a typo in the README file."
+
+The 1st quote above is for a short description. The 2nd is for extra details.
+
+<!--
+To run further commands, open a new terminal window - the prior is now dedicated to being an http server.
+
+Or use an http server that loads URLs without including .html
+
+	npx http-server
+
+The npx http-server command displays your local site here:
+[http://127.0.0.1:8080](http://127.0.0.1:8080)
+[http://192.168.1.210:8080](http://192.168.1.210:8080)
+-->
+<br>
+---
 <br>
 
 # Detailed steps for deploying static websites
