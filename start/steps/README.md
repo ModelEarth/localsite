@@ -79,8 +79,7 @@ Alternative using commands:
 <textarea id="pullRequestCmd" class="codetext" rows="3">
 git remote add upstream https://github.com/modelearth/data-pipeline &&
 git fetch upstream && git checkout main && git merge upstream/main &&
-git push origin main # Push the changes to your forked repository
-</textarea>
+git push origin main # Push the changes to your forked repository</textarea>
 
 **2.** The submit a pull request in the GitHub website, or run:
 

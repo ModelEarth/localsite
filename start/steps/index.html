@@ -13,6 +13,7 @@
 <script>
 // About localStorage
 // https://blog.logrocket.com/localstorage-javascript-complete-guide/
+var checkboxIds = ["localsiteForked", "ioForked", "data-commonsForked", "data-pipelineForked", "communityForked", "appsForked"];
 function updateGitCmds() {
     // Get the value of the git account input field
     var gitAccount = document.getElementById("gitAccount").value;
@@ -20,14 +21,12 @@ function updateGitCmds() {
     if (gitAccount == "") { 
       gitAccount = "[YOUR GITHUB ACCOUNT]";
     }
-    // For these checkbox IDs
-    var checkboxIds = ["localsiteForked", "ioForked", "data-commonsForked", "data-pipelineForked", "communityForked", "appsForked"];
 
     // Loop through each checkbox
     let lineIndex = 0;
     let checkForks = [];
     checkboxIds.forEach(function(checkboxId) {
-        var checkbox = document.getElementById(checkboxId);
+        let checkbox = document.getElementById(checkboxId);
         let repoName = checkboxId.replace("Forked","");
         let branch = "main";
         var updatedLine = "git clone https://github.com/modelearth/" + repoName + " " + repoName + " &&";
@@ -103,6 +102,25 @@ waitForElm('#gitAccount').then((elm) => {
     });
   }
   updateGitCmds(); // Insert GitHub name into cmds
+
+  // Check default boxes if no account and no boxes checked yet
+  if (document.getElementById("gitAccount").value == "") {
+    checkboxFound = false;
+    checkboxIds.forEach(function(checkboxId) {
+      let checkbox = document.getElementById(checkboxId);
+      if (checkbox.checked) {
+          // If checkbox exists, check it
+          checkboxFound = true;
+      }
+      //alert(document.getElementById("gitAccount").value);
+    });
+    if (!checkboxFound) {
+      
+      $("#localsiteForked").prop( "checked", true );
+      $("#data-commonsForked").prop( "checked", true );
+      $("#data-pipelineForked").prop( "checked", true );
+    }
+  }
 });
 </script>
 
