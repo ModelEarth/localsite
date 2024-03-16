@@ -59,10 +59,13 @@ document.addEventListener('hashChangeEvent', function (elem) {
 //let industryTitleFile = local_app.community_data_root() + "us/state/" + stateAbbr + "/industries_state" + stateID + "_naics6_state_all.tsv";
 let industryTitleFile = "/localsite/info/naics/lookup/6-digit_2012_Codes.csv"; // Source: https://www.census.gov/eos/www/naics/downloadables/downloadables.html
 function getIndustryLocFileString(catsize) {
-    return local_app.community_data_root() + "industries/naics/US/country/US-2021-Q1-naics-" + catsize + "-digits.csv";
+    //return local_app.community_data_root() + "industries/naics/US/country/US-2021-Q1-naics-" + catsize + "-digits.csv"; // Removed
+    return local_app.community_data_root() + "industries/naics/US/country/US-census-naics" + catsize + "-2021.csv";
+    //return local_app.community_data_root() + "industries/naics/US/country/US-census-naics" + catsize + "-2021.csv";
 }
 // Copied from v2 - Not yet implemented
-let industryZipFile = getIndustryZipPath(hash.zip);
+// Need to place in a function with let hash = getHash();
+//let industryZipFile = getIndustryZipPath(hash.zip); // BUGBUG
 function getIndustryZipPath(zip) {
     if (zip == undefined) {
         return;
@@ -441,14 +444,14 @@ function getNaics_setHiddenHash2(go) {
     // Problem, naics in URL is not updated after initial load.
     console.log("Start hiddenhash.naics")
 
-
+    //alert("deactivated naics") // Killed it
     hiddenhash.naics = cat_filter.join(); // Overrides the existing naics
-    //alert("hiddenhash.naics1 " + hiddenhash.naics)
+
+    console.log("hiddenhash.naics in getNaics_setHiddenHash2 " + hiddenhash.naics);
+
     //console.log("hiddenhash.naics before delete " + hiddenhash.naics)
 
     //delete hash.naics; // Since show value invokes new hiddenhash
-
-    console.log("hiddenhash.naics " + hiddenhash.naics)
 
     updateHash({'naics':''})
 
@@ -462,7 +465,6 @@ function getNaics_setHiddenHash2(go) {
     }
     
     if (showtitle) {
-
         local_app.showtitle = showtitle;
         //alert($(".locationTabText").val())
         //$(".regiontitle").text($(".locationTabText").val() + " - " + showtitle);
@@ -916,7 +918,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
     let catcount = (hash.catcount && typeof hash.catcount !== undefined) ? hash.catcount : 40;
     let gotext = "";
     if (hash.show) {
-        gotext = hash.show.replace(/_/g," ").toTitleCase();
+        gotext = hash.show.replace(/_/g," ").toTitleCaseFormat();
         if (gotext == "Smart") {
             gotext = "EV Ecosystem";
         } else if (gotext == "Ppe") {
@@ -1890,18 +1892,21 @@ function getKeyByValue(object, value) {
 }
 
 function applyIO(naics) {
+    // Built from useeio-widgets/src/widgets/config.ts
+    // Minified file resides at io/build/lib/useeio_widgets.js
+    //naics = {}; // Kill it
     let hash = getHash(); // Includes hiddenhash
     var config = useeio.urlConfig();
-    var modelID = config.get().model || 'USEEIOv2.0';
+    var modelID = config.get().model || 'USEEIOv2.0.1-411'; // Previously USEEIOv2.0
 
     // Waiting for widgets to be updated for state data by Wes's team at the EPA.
     // Test here:
     // http://localhost:8887/localsite/info/#show=vehicles&geoview=country&state=GA
-    if (1==2 && location.host.indexOf('localhost') >= 0) {
+    if (location.host.indexOf('localhost') >= 0) {
         if (hash.state && (hash.state=="GA" || hash.state=="ME" || hash.state=="MN" || hash.state=="OR" || hash.state=="WA")) {
-            naics = ""; // TEMP. With transition to 73 Sectors the Naics are not in the models.
-            modelID = hash.state + "EEIOv1.0"
-            alert("modelID " + modelID);
+            // TO DO - ACTIVATE when folder has content
+            //naics = ""; // TEMP. With transition to 73 Sectors the Naics are not in the models.
+            //modelID = hash.state + "EEIOv1.0-s-20"
         }
     }
     console.log("applyIO heatmap with naics: " + naics);
@@ -1909,9 +1914,12 @@ function applyIO(naics) {
     var naicsCodes;
     if (naics) {
         naicsCodes = naics.split(',');
-        hiddenhash.naics = naics; // No effect
+        //alert("deactivated naics2")
+        hiddenhash.naics = naics; // No effect // Killed it
+
         //hiddenhash.naics = naicsCodes; // Causes split error in bubble chart.
     }
+    //hiddenhash.naics = {}; // Kill it
 
     if (!hash.state && !param.state) {
         //console.log("Show national by clearing hiddenhash.naics.")
@@ -1953,8 +1961,15 @@ function applyIO(naics) {
         model: model,
         selector: '#sector-list',
     });
+    
+    //alert("hiddenhash.naics " + hiddenhash.naics);
+    //hiddenhash.naics = {}; // Kill it
+    if (typeof sectorList.config != "undefined") {
+        //sectorList.config.naics = {}; // Kill it
+    }
     console.log("sectorList:");
     console.log(sectorList);
+
     config.withDefaults({
         view: ["mosaic"],
         count: 50,
@@ -1973,8 +1988,9 @@ function applyIO(naics) {
 // New 73 Sectors
 getEpaSectors();
 function getEpaSectors() {
-    let sectorsJsonFile = "/io/build/api/GAEEIOv1.0/sectors.json"; // 146/2 = 73
-    //let sectorsJsonFile = "/io/build/api/USEEIOv2.0/sectors.json"; // 411 sectors
+    // TO DO - This GA folder became empty. Can we now use all 50 states locally.
+    //let sectorsJsonFile = "/io/build/api/GAEEIOv1.0-s-20/sectors.json"; // 146/2 = 73
+    let sectorsJsonFile = "/io/build/api/USEEIOv2.0.1-411/sectors.json"; // 411 sectors
     let promises = [
         d3.json(sectorsJsonFile, function(d) {
             // Not reached, so commenting out. But the above line is needed.
