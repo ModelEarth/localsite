@@ -9,7 +9,9 @@ let onlineApp = true;
 let localsiteTitle = "Localsite";
 let defaultState = ""; 
 if (location.host.indexOf('localhost') >= 0) {
-  //onlineApp = false; // Set to false during air travel. Also sets local to no state.
+  // Set onlineApp to false during air travel. Also sets local to no state.
+  // Requires community-data locally
+  //onlineApp = false; 
   defaultState = "";  // Set to GA to include additional map layers in top nav.
 }
 consoleLog("start localsite");
@@ -91,9 +93,9 @@ var local_app = local_app || (function(module){
             return (theroot);
         },
         community_data_root : function() { // General US states and eventually some international
-            let theroot = location.protocol + '//' + location.host + '/community-data/';
-            if (location.host.indexOf('localhost') < 0) {
-              theroot = "https://model.earth/community-data/"; 
+            let theroot = "https://model.earth/community-data/";
+            if (location.host.indexOf('localhost') >= 0 && !onlineApp) {
+              theroot = location.protocol + '//' + location.host + '/community-data/';
             }
             return (theroot);
         },
