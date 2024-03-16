@@ -2453,10 +2453,9 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
     d3.text(pagePath).then(function(data) {
       // Path is replaced further down page. Reactivate after adding menu.
       let pencil = "<div class='markdownEye' style='position:absolute;font-size:28px;right:0px;top:0px;text-decoration:none;opacity:.7'><a href='" + pagePath + "' style='color:#555'>…</a></div>";
-      if(location.host.indexOf('localhost') < 0) {
+      //if(location.host.indexOf('localhost') < 0) {
         pencil = "";
-      }
-
+      //}
       // CUSTOM About YAML metadata converter: https://github.com/showdownjs/showdown/issues/260
 
       // Also try adding simpleLineBreaks http://demo.showdownjs.com/
