@@ -14,19 +14,6 @@ function loadEarthScape(my) {
     });
 }
 
-function loadEarthScape2(my) {
-    loadScript(theroot + 'js/d3.v5.min.js', function(results) {
-        waitForVariable('customD3loaded', function() {
-            d3.csv(my.dataset).then(function(data) {
-                console.log("File loaded " + my.dataset);
-                $(document).ready(function () {
-                    earthscape_TableDisplay2(my,data); // For table3
-                });
-            });
-        });
-    });
-}
-
 // Tabulator grid below diagram
 function earthscape_TableDisplay(my,data) {
     console.log("Python file data:");
