@@ -107,6 +107,11 @@ var local_app = local_app || (function(module){
             }
             return (theroot);
         },
+        topojson_root : function() { // General US states and eventually some international
+            // These repos will typically reside on github, so no localhost.
+            let theroot = "https://model.earth";
+            return (theroot);
+        },
         custom_data_root : function() { // Unique US states - will use javascript, domain, cookies and json.
             let theroot = location.protocol + '//' + location.host + '/georgia-data/';
             if (location.host.indexOf('localhost') < 0) {
