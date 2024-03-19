@@ -1,5 +1,5 @@
 [Starter Samples](../../../community/start/)
-# Local Site Install 
+# Local Site Install
 
 You can use [Localsite Pages](../) to create websites and stories with free GitHub hosting.  
 If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns](https://twitter.com/LorenHeyns).
@@ -14,15 +14,16 @@ If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns]
 
 **3.** Indicate the repos you've forked:
 <!-- Also add to checkboxIds array -->
-<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">data-commons  &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="communityForked" type="checkbox"  onclick="updateGitCmds()">community &nbsp;&nbsp; <input id="appsForked" type="checkbox" onclick="updateGitCmds()">apps
+<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">data-commons  &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="earthscapeForked" type="checkbox"  onclick="updateGitCmds()">earthscape  &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="communityForked" type="checkbox"  onclick="updateGitCmds()">community &nbsp;&nbsp; <input id="appsForked" type="checkbox" onclick="updateGitCmds()">apps
 
 **4.** Run in your local webroot folder:
 
-<textarea id="cloneCmd" class="codetext" rows="7">
+<textarea id="cloneCmd" class="codetext" rows="8">
 git clone https://github.com/ModelEarth/localsite localsite &&
-git clone https://github.com/ModelEarth/io io &&
 git clone https://github.com/ModelEarth/data-commons data-commons &&
 git clone https://github.com/ModelEarth/data-pipeline data-pipeline &&
+git clone https://github.com/ModelEarth/earthscape earthscape &&
+git clone https://github.com/ModelEarth/io io &&
 git clone https://github.com/ModelEarth/community community &&
 git clone https://github.com/ModelEarth/apps apps &&
 python -m http.server 8887</textarea>
@@ -42,11 +43,12 @@ To avoid merge conflicts, click "Sync Fork" on your forks in GitHub, then pull l
 **2.** Run the following weekly in any repo to pull down recent updates.
 Run daily (hourly) if you are editing pages that others might also be editing.
 
-<textarea id="refreshCmd" class="codetext" rows="7">
+<textarea id="refreshCmd" class="codetext" rows="8">
 cd ../localsite && git pull https://github.com/ModelEarth/localsite main &&  
-cd ../io && git pull https://github.com/ModelEarth/io main &&  
 cd ../data-commons && git pull https://github.com/ModelEarth/data-commons main && 
 cd ../data-pipeline && git pull https://github.com/ModelEarth/data-pipeline main &&  
+cd ../earthscape && git pull https://github.com/ModelEarth/earthscape main &&  
+cd ../io && git pull https://github.com/ModelEarth/io main &&  
 cd ../community &&  git pull https://github.com/ModelEarth/community master &&  
 cd ../apps && git pull https://github.com/ModelEarth/apps main &&  
 cd ../data-commons</textarea>
