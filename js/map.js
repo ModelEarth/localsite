@@ -3944,5 +3944,3 @@ dataParameters.forEach(function(ele) {
 //console.timeEnd("Processing time: ");
 
 console.log('end of localsite/js/map.js');
-
-
