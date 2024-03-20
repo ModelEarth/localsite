@@ -2342,7 +2342,7 @@ function waitForSubObject(theObject, theSubObject, callback) { // To confirm: De
   }, 300);
 }
 
-function waitForVariable(variable, callback) { // Declare variable using var since let will not be detected.
+function waitForVariable(variable, callback) { // Declare variable using var since "let" will not be detected.
   var interval = setInterval(function() {
     if (window[variable]) {
       clearInterval(interval);
