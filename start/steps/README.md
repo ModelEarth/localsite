@@ -6,6 +6,10 @@ If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns]
 
 ### Quick setup for contributors
 
+Run in your webroot folder to start a local http server. (Or run in step 4 below.)
+
+	python -m http.server 8887
+
 **1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a>, <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a>, <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> and <a href="https://github.com/ModelEarth/earthscape" target="_blank">earthscape</a> repos to make contributions.
 
 **2.** Enter your GitHub account to insert it in cmds below for your forked repos.
