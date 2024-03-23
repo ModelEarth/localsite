@@ -3,45 +3,9 @@
 
 Update to show actual dollar values in the US EPA [Inflow-Outflow Chart](/io/charts/).
 
-
-~~~
-# Formats as 1-decimal using Billion, Million, K and scientific notation.
-
-def format_cell(input, format):
-    # If format is none or blank, return input as it is
-    if format == 'none' or format == '':
-        return input
-
-    # Format as scientific notation
-    if format == 'scientific':
-        return format(input, '.1e')
-
-    # Format as easy
-    if input >= 1e9:
-        # Round to billions
-        return f"{input / 1e9:.1f} Billion"
-    elif input >= 1e6:
-        # Round to millions
-        return f"{input / 1e6:.1f} Million"
-    elif input >= 1e3:
-        # Round to thousands
-        return f"{input / 1e3:.1f} K"
-    elif input >= 100:
-        # Round to one decimal
-        return f"{input:.1f}"
-    else:
-        # Format with scientific notation with one digit after decimal
-        return format(input, '.1e')
-
-# Test cases
-print(format_cell(42262000000, 'easy'))  # Output: "42.3 Billion"
-print(format_cell(9500000, 'easy'))      # Output: "9.5 Million"
-print(format_cell(50000, 'easy'))        # Output: "50.0 K"
-print(format_cell(99.9, 'easy'))         # Output: "99.9"
-print(format_cell(0.0005, 'easy'))       # Output: "5.0e-4"
-~~~
-
 ## Samples of Merging Input-Output JSON Data for Totals
+
+[List of Samples](/useeio.js/test/) 
 
 1. [New Commodity Chart](/useeio.js/test/example_tabulator.html) from Micheal ([Fork without COR error](https://github.com/modelearth/useeio.js) [Github](https://github.com/USEPA/useeio.js/blob/dev/test/example_tabulator.html)) - Two JSON files are combined in Javascript and displayed with Tabulator. Javascript multiplies the total commodity output `q` and the `jobs` indicator values per 1 USD output from&nbsp;[matrix&nbsp;`D`](../../../../io/about/matrix/) - Update to show matrix D data grid.<br><br>**Occasional CORS Issue:** Resolved by updating the API endpoint and model in config.js<br><!--<span style="color:red">The link above does not work due to a CORS restriction on the API: 'https://smmtool.app.cloud.gov/api/USEEIOv2.0.1-411/matrix/q' from origin 'http://localhost:8887' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.</span>-->
 
