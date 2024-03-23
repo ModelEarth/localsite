@@ -36,11 +36,11 @@ python -m http.server 8887</textarea>
 
 Now you can open our Active Projects page at: [localhost:8887/io](http://localhost:8887/io/)
 
-If you find a broken link, there's probably an additional repo you can pull locally or view at model.earth.
-
-To avoid merge conflicts, click "Sync Fork" on your forks in GitHub, then pull locally using GitHub Desktop. Or you can refresh quickly by runing the cmd below after you click "Sync Fork" on your forked repos.
+If you encounter a broken link locally, view the page at [model.earth](https://model.earth/) or clone one of the [additional repos](https://github.com/modelearth/).
 
 ### Refresh you local repos
+
+To avoid merge conflicts, click "Sync Fork" on your forks in GitHub, then pull locally using GitHub Desktop. Or you can pull locally quickly by runing the cmd below after you clicked "Sync Fork" on your forked repos. (Or use the "Alternative Sync" command below.)
 
 **1.** First go to the forks in your [Github Account](https://github.com/) and click "Sync Fork"
 
@@ -78,7 +78,7 @@ We typically use GitHub.com and GitHub Desktop to deploy changes.
 3. Commit and push your local changes up to your fork.
 4. Then go to our fork in GitHub.com and click "Pull Request" to submit to the main parent repo.
 
-Alternative using commands:
+Alternative Sync using commands:
 
 **1.** Fetch our main upsteam repo to sync up, then moves your local changes into your fork:
 
