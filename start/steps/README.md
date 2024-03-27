@@ -18,8 +18,8 @@ npm install http-server -g<br><br>
 host the data folder on port 8080, allowing CORS<br>
 http-server ./data -p 8080 --cors<br><br>
 
-Would the data folder be:<br>
-<a href="https://github.com/ModelEarth/OpenFootprint/tree/main/impacts/2020">/OpenFootprint/impacts/2020/</a>
+Would the ./data folder be:<br>
+<a href="https://github.com/ModelEarth/OpenFootprint/tree/main/impacts/2020">./OpenFootprint/impacts/2020/</a>
 </div>
 
 **1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a>, <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a>, <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> and <a href="https://github.com/ModelEarth/earthscape" target="_blank">earthscape</a> repos to make contributions.
