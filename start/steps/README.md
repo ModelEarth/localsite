@@ -38,6 +38,21 @@ Now you can open our Active Projects page at: [localhost:8887/io](http://localho
 
 If you encounter a broken link locally, view the page at [model.earth](https://model.earth/) or clone one of the [additional repos](https://github.com/modelearth/).
 
+### Quick way to start your web server
+
+To simply type "localsite" in your terminal, add a shortcut command.
+
+On a Mac: Add to your .bash_profile file. Change /webroot to your webroot path.
+
+	alias localsite="python3 -m http.server 8887 -d /webroot"
+
+On a PC: Save a localsite.bat file in a directory in your system's PATH environment variables, such as C:\Windows\System32.
+
+	@echo off
+	python -m http.server 8887 -d \Site
+
+TO DO: Add how can we run the above when our computer restarts.
+
 ### Refresh you local repos
 
 To avoid merge conflicts, click "Sync Fork" on your forks in GitHub, then pull locally using GitHub Desktop. Or you can pull locally quickly by runing the cmd below after you clicked "Sync Fork" on your forked repos. (Or use the "Alternative Sync" command below.)
@@ -45,7 +60,7 @@ To avoid merge conflicts, click "Sync Fork" on your forks in GitHub, then pull l
 **1.** First go to the forks in your [Github Account](https://github.com/) and click "Sync Fork"
 
 **2.** Run the following weekly in any repo to pull down recent updates.
-Run daily (hourly) if you are editing pages that others might also be editing.
+Run before editing pages that others might also be editing, or pull down within Github Desktop.
 
 <textarea id="refreshCmd" class="codetext" rows="8">
 cd ../localsite && git pull https://github.com/ModelEarth/localsite main &&  
