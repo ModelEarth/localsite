@@ -1,11 +1,9 @@
 # Install Data Commons Lite
 
-You'll be running a local copy of the [datacommons.org](https://datacommons.org) website, but without local data.
+You can run a local copy of the [datacommons.org](https://datacommons.org) website, but without local data.
 
-Please update these steps by forking and editing the [localsite repo](../../../start/steps/).
-These steps were created prior to 2021, so they may be outdated.
-
-Clone the Google Data Commons "[website](https://github.com/datacommonsorg/website/)" repo and run commands within your cloned folder.  
+Fork and clone the Google Data Commons repo:  
+[github.com/datacommonsorg/website](https://github.com/datacommonsorg/website/)
 
 In the [Data Commons Developer Guide](https://github.com/datacommonsorg/website/blob/master/docs/developer_guide.md) page, scroll down to "Develop with Flask (simple/lite)". Get your gcloud connection working using the lite steps.  
 
@@ -181,7 +179,7 @@ the [Developer Guide](https://github.com/datacommonsorg/website/blob/master/docs
 Note that the development build is not optimized.
 To create a production build, use: 
 
-	npm run build.
+	npm run build
 
 <!--
 You'll briefly see the DataCommons.org header when refreshing, then a "Failed to compile" occurs with a long list starting with the following:  
@@ -199,8 +197,7 @@ Chaning to the following did not allow browser to launch
 
 -->
 
-The covid19-dashboard site the worked here at port 8080  
-http://localhost:8080/dashboard/?dashboardId=socialWellness
+The covid19-dashboard site [ran at port 8080](http://localhost:8080/dashboard/?dashboardId=socialWellness)
 
 
 # Deploy to gcloud
@@ -217,7 +214,7 @@ If you only wish to deploy the default application and not use the covid-19 scri
 
 $GOOGLE_CLOUD_PROJECT is the project ID, same as QUOTA\_PROJECT\_ID
 
-### Deploy to App Engine.
+### Deploy to App Engine
 	gcloud app deploy app.yaml
 
 

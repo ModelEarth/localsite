@@ -12,7 +12,7 @@ Run in your webroot folder to start a local http server. (Or run in step 4 below
 
 <div class="local" style="display:hidden; background-color:#cdc; padding:20px; margin-bottom:20px">
 <b>Local Note</b><br>
-npm to run an http server - from the <a href="https://github.com/usepa/useeio.js">useeio.js repo</a> instructions:<br>
+npm to run an http server (from <a href="https://github.com/usepa/useeio.js">useeio.js repo</a> instructions):<br>
 npm install http-server -g<br><br>
 
 host the data folder on port 8080, allowing CORS<br>
