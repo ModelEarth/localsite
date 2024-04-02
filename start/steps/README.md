@@ -52,7 +52,7 @@ If you encounter a broken link locally, view the page at [model.earth](https://m
 
 ### Quick way to start your web server
 
-To simply type "localsite" in your terminal, add a shortcut command.
+To simply type "localsite" in your terminal, add a shortcut command:
 
 On a Mac: Add to your .bash_profile file. Change /webroot to your webroot path.
 
@@ -63,7 +63,7 @@ On a PC: Save a localsite.bat file in a directory in your system's PATH environm
 	@echo off
 	python -m http.server 8887 -d \Site
 
-TO DO: Add how can we run the above when our computer restarts.
+QUESTION: How can we run the above automatically when our computer's restart?
 
 ### Refresh you local repos
 
