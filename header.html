@@ -40,6 +40,33 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
 <div style="clear:both"></div>
 
 <div class="earth" style="display:none">
+
+    <div class="local-block impactIconsX" style="display:none;">
+        <b><a href="/localsite/info/">IMPACTS</a></b>
+        <!-- to do: check if indicators match USEEIO 2.0 -->
+
+        <!-- background:rgba(177, 177, 177, 0.5); -->
+        <div style="clear:both">
+            <a href="/localsite/info/#set=air&indicators=GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS" class="impactIcon_Air" onclick="goHash({'set':'air','indicators':'GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS'});return false;"><div style="float:right"><!--<i class="material-icons" style="font-size:20px;font-weight:bolder;line-height:28px;float:left">&#xE5D3;</i><i class="material-icons" style="font-size:28px;float:left">&#xE409;</i>--></div><input class="impactCheck_Air" type="checkbox" style="display:none" checked> Air</a>
+        </div>
+
+        <div style="clear:both">
+            <a href="/localsite/info/#set=water&indicators=WATR,ACID,EUTR,ETOX" class="impactIcon_Water" onclickX="goHash({'set':'water','indicators':'WATR,ACID,EUTR,ETOX'});return false;"><input class="impactCheck_Water" type="checkbox" style="display:none" checked> Water</a>
+        </div>
+
+        <div style="clear:both">
+            <a href="/localsite/info/#set=land&indicators=LAND,MNRL,PEST,METL,CRHW,CMSW,FMSW,CCDD" class="impactIcon_Land" onclickX="goHash({'set':'land','indicators':'LAND,MNRL,PEST,METL,CRHW,CMSW,FMSW,CCDD'});return false;"><input class="impactCheck_Land" type="checkbox" style="display:none" checked> Land</a>
+        </div>
+
+        <!--<a href="" class="showMobile showMobileFull" style="clear:both;margin:0px;padding:0px;border:0px;display:none"></a>-->
+
+        <a href="/localsite/info/#set=energy&indicators=ENRG,NNRG,RNRG" class="impactIcon_Energy" onclickX="goHash({'set':'energy','indicators':'ENRG,NNRG,RNRG'});return false;"><input class="impactCheck_Energy" type="checkbox" style="display:none"> Energy</a>
+
+        <a href="/localsite/info/#set=health&indicators=HTOX,HCAN,HNCN,HTOX,HRSP" class="impactIcon_Health" onclickX="goHash({'set':'health','indicators':'HTOX,HCAN,HNCN,HTOX,HRSP'});return false;"><input class="impactCheck_Health" type="checkbox" style="display:none"> Health</a>
+
+        <a href="/localsite/info/#set=prosperity&indicators=VADD,JOBS" class="impactIcon_Prosperity" onclickX="goHash({'set':'prosperity','indicators':'VADD,JOBS'});return false;"><input class="impactCheck_Prosperity" type="checkbox" style="display:none" checked> Prosperity</a><br>
+    </div>
+
     <b><a href="/community">MODEL</a></b>
     <a href="/apps/">Location Models</a>
     <a href="/localsite/info/">Industry Comparisons</a>
