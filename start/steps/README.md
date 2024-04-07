@@ -10,18 +10,6 @@ Run in your webroot folder to start a local http server. (Or run in step 4 below
 
 	python -m http.server 8887
 
-<div class="local" style="display:hidden; background-color:#cdc; padding:20px; margin-bottom:20px">
-<b>Local Note</b><br>
-npm to run an http server (from <a href="https://github.com/usepa/useeio.js">useeio.js repo</a> instructions):<br>
-npm install http-server -g<br><br>
-
-host the data folder on port 8080, allowing CORS<br>
-http-server ./data -p 8080 --cors<br><br>
-
-Would the ./data folder be:<br>
-<a href="https://github.com/ModelEarth/OpenFootprint/tree/main/impacts/2020">./OpenFootprint/impacts/2020/</a>
-</div>
-
 **1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a>, <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a>, <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> and <a href="https://github.com/ModelEarth/earthscape" target="_blank">earthscape</a> repos to make contributions.
 
 **2.** Enter your GitHub account to insert it in cmds below for your forked repos.
