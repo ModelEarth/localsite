@@ -10,7 +10,7 @@ Run in your webroot folder to start a local http server. (Or run in step 4 below
 
 	python -m http.server 8887
 
-**1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a>, <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a>, <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> and <a href="https://github.com/ModelEarth/earthscape" target="_blank">earthscape</a> repos to make contributions.
+**1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a>, <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a>, <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> and <a href="https://github.com/ModelEarth/projects" target="_blank">projects</a> repos to make contributions.
 
 **2.** Enter your GitHub account to insert it in cmds below for your forked repos.
 
@@ -18,7 +18,7 @@ Run in your webroot folder to start a local http server. (Or run in step 4 below
 
 **3.** Indicate the repos you've forked:
 <!-- Also add to checkboxIds array -->
-<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">data-commons  &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="earthscapeForked" type="checkbox"  onclick="updateGitCmds()">earthscape  &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="communityForked" type="checkbox"  onclick="updateGitCmds()">community &nbsp;&nbsp; <input id="appsForked" type="checkbox" onclick="updateGitCmds()">apps
+<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">data-commons  &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="projectsForked" type="checkbox"  onclick="updateGitCmds()">projects &nbsp;&nbsp; <input id="requestsForked" type="checkbox"  onclick="updateGitCmds()">requests &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="communityForked" type="checkbox"  onclick="updateGitCmds()">community &nbsp;&nbsp; <input id="appsForked" type="checkbox" onclick="updateGitCmds()">apps
 
 **4.** Run in your local webroot folder:
 
@@ -26,7 +26,8 @@ Run in your webroot folder to start a local http server. (Or run in step 4 below
 git clone https://github.com/ModelEarth/localsite localsite &&
 git clone https://github.com/ModelEarth/data-commons data-commons &&
 git clone https://github.com/ModelEarth/data-pipeline data-pipeline &&
-git clone https://github.com/ModelEarth/earthscape earthscape &&
+git clone https://github.com/ModelEarth/projects projects &&
+git clone https://github.com/ModelEarth/requests requests &&
 git clone https://github.com/ModelEarth/io io &&
 git clone https://github.com/ModelEarth/community community &&
 git clone https://github.com/ModelEarth/apps apps &&
@@ -34,7 +35,7 @@ python -m http.server 8887</textarea>
 
 <!-- Activate GitHub Pages so we can preview your contributions. -->
 
-Now you can open our Active Projects page at: [localhost:8887/io](http://localhost:8887/io/)
+Now you can open our Projects page at: [localhost:8887/projects](http://localhost:8887/projects/)
 
 If you encounter a broken link locally, view the page at [model.earth](https://model.earth/) or clone one of the [additional repos](https://github.com/modelearth/).
 
@@ -66,7 +67,8 @@ Run before editing pages that others might also be editing, or pull down within 
 cd ../localsite && git pull https://github.com/ModelEarth/localsite main &&  
 cd ../data-commons && git pull https://github.com/ModelEarth/data-commons main && 
 cd ../data-pipeline && git pull https://github.com/ModelEarth/data-pipeline main &&  
-cd ../earthscape && git pull https://github.com/ModelEarth/earthscape main &&  
+cd ../projects && git pull https://github.com/ModelEarth/projects main &&  
+cd ../requests && git pull https://github.com/ModelEarth/requests main &&  
 cd ../io && git pull https://github.com/ModelEarth/io main &&  
 cd ../community &&  git pull https://github.com/ModelEarth/community master &&  
 cd ../apps && git pull https://github.com/ModelEarth/apps main &&  
