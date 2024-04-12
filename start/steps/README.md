@@ -27,7 +27,7 @@ Also fork <a href="https://github.com/ModelEarth/requests" target="_blank">reque
 
 **4.** Run in your local webroot folder:
 
-<textarea id="cloneCmd" class="codetext" rows="8">
+<textarea id="cloneCmd" class="codetext" rows="6">
 git clone https://github.com/ModelEarth/localsite localsite &&
 git clone https://github.com/ModelEarth/io io &&
 git clone https://github.com/ModelEarth/data-commons data-commons &&
@@ -65,7 +65,7 @@ To avoid merge conflicts, click "Sync Fork" on your forks in GitHub, then pull l
 **2.** Run the following weekly in any repo to pull down recent updates.
 Run before editing pages that others might also be editing, or pull down within Github Desktop.
 
-<textarea id="refreshCmd" class="codetext" rows="8">
+<textarea id="refreshCmd" class="codetext" rows="6">
 cd ../localsite && git pull https://github.com/ModelEarth/localsite main &&  
 cd ../data-commons && git pull https://github.com/ModelEarth/data-commons main && 
 cd ../data-pipeline && git pull https://github.com/ModelEarth/data-pipeline main &&  

@@ -2,7 +2,8 @@
 
 1. Place your content within a README.md file in a local folder inside your webroot. 
 2. Copy the current index.html page using View Page Source, or just copy the localsite.js include tag.
-3. Add parameters for locations (state and counties) and impact sets (air, water, land, energy, health, prosperity). [View&nbsp;localsite&nbsp;parameter&nbsp;options](../)
+3. Add parameters for locations (state and counties) and impact sets (air, water, land, energy, health, prosperity).
+[Localsite Parameters](../) - add maps and visualizations
 
 ____
 
@@ -17,10 +18,9 @@ View our [Active Projects](../../projects)
 
 ## <span class="num">1</span><span class="txt">Start a Local Website</span>
 
-&bullet; <a href="../../localsite/start/steps/">Local Site Install</a> - For our Volunteer Team
-&bullet; <a href="../../localsite/#parameters">Localsite Parameters</a> - Customize pages
-&bullet; <a href="/apps/">Our Apps Folder</a> - Custom JQuery Pages
+<a href="../../localsite/start/steps/">Local Site Install</a> - For our coding team
 <!--
+&bullet; <a href="/apps/">Our Apps Folder</a> - Customize JQuery pages
 &bullet; <a href="../challenge/">Sustainable Communities Web Challenge</a><br>
 &bullet; <a href="../challenge/how/">How to Create a Local Site Page</a><br>
 --> 
@@ -49,7 +49,8 @@ US State Environmentally Extended Input-Output
 [USEEIO API](https://github.com/usepa/useeio_api/)
 [USEEIO Python and R Examples](../../community/resources/useeio)
 
-The API is NOT used directly for websites.  Instead, static json output of the API is loaded from [io/build/api](https://github.com/ModelEarth/io/tree/main/build/api)  
+The API is NOT used directly for websites.
+Instead, a static .json version of the API is loaded from files in [model.earth/io/build/api](https://github.com/ModelEarth/io/tree/main/build/api) and our [OpenFootprint](http://model.earth/OpenFootprint) repo.
 
 
 ## <span class="num">7</span><span class="txt">JAM Stack Resources</span>
