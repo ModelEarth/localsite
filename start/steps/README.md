@@ -6,32 +6,34 @@ If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns]
 
 ### Quick setup for contributors
 
-Run in your webroot folder to start a local http server. (Or run in step 4 below.)
+Run in your webroot folder to start a local http server.
 
 	python -m http.server 8887
 
-**1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a>, <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a>, <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> and <a href="https://github.com/ModelEarth/projects" target="_blank">projects</a> repos to make contributions.
+**1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a> and <a href="https://github.com/ModelEarth/io" target="_blank">io</a> repos to preview your contributions using Github Pages.
 
-**2.** Enter your GitHub account to insert it in cmds below for your forked repos.
+**2.** Enter your GitHub account to insert within in cmds below.
 
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
 **3.** Indicate the repos you've forked:
 <!-- Also add to checkboxIds array -->
-<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">data-commons  &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="projectsForked" type="checkbox"  onclick="updateGitCmds()">projects &nbsp;&nbsp; <input id="requestsForked" type="checkbox"  onclick="updateGitCmds()">requests &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="communityForked" type="checkbox"  onclick="updateGitCmds()">community &nbsp;&nbsp; <input id="appsForked" type="checkbox" onclick="updateGitCmds()">apps
+<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">data-commons &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="projectsForked" type="checkbox"  onclick="updateGitCmds()">projects &nbsp;&nbsp; <input id="requestsForked" type="checkbox"  onclick="updateGitCmds()">requests
+
+Also fork <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a> if you are a DemocracyLab Observable Framework data visualization volunteer.  
+Also fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> if you are contributing python to data prep and machine learning projects.  
+Also fork <a href="https://github.com/ModelEarth/projects" target="_blank">projects</a> if you are contributing to the Open WebUI interface and related python additions.
+Also fork <a href="https://github.com/ModelEarth/requests" target="_blank">requests</a> if you are adding to our image and video [storyboard generation](/data-pipeline/research/stream).
 
 **4.** Run in your local webroot folder:
 
 <textarea id="cloneCmd" class="codetext" rows="8">
 git clone https://github.com/ModelEarth/localsite localsite &&
+git clone https://github.com/ModelEarth/io io &&
 git clone https://github.com/ModelEarth/data-commons data-commons &&
 git clone https://github.com/ModelEarth/data-pipeline data-pipeline &&
 git clone https://github.com/ModelEarth/projects projects &&
-git clone https://github.com/ModelEarth/requests requests &&
-git clone https://github.com/ModelEarth/io io &&
-git clone https://github.com/ModelEarth/community community &&
-git clone https://github.com/ModelEarth/apps apps &&
-python -m http.server 8887</textarea>
+git clone https://github.com/ModelEarth/requests requests</textarea>
 
 <!-- Activate GitHub Pages so we can preview your contributions. -->
 
@@ -69,9 +71,7 @@ cd ../data-commons && git pull https://github.com/ModelEarth/data-commons main &
 cd ../data-pipeline && git pull https://github.com/ModelEarth/data-pipeline main &&  
 cd ../projects && git pull https://github.com/ModelEarth/projects main &&  
 cd ../requests && git pull https://github.com/ModelEarth/requests main &&  
-cd ../io && git pull https://github.com/ModelEarth/io main &&  
-cd ../community &&  git pull https://github.com/ModelEarth/community master &&  
-cd ../apps && git pull https://github.com/ModelEarth/apps main &&  
+cd ../io && git pull https://github.com/ModelEarth/io main
 cd ../data-commons</textarea>
 
 After pulling down [data-commons](https://github.com/modelearth/data-commons), build your static site, generating ./dist
@@ -143,7 +143,7 @@ The following steps are elaborated on after this summary.
 
 1. [Activate a local webroot](#webroot) on your local computer for [http://localhost:8887](http://localhost:8887/)
 2. Fork the [localsite repo](https://github.com/modelearth/localsite) and turn on [GitHub Pages](#github-pages).  
-After a few minutes, you can view your fork at [[your account].github.io/localsite](https://modelearth.github.io/apps)  
+After a few minutes, you can view your fork at [[your account].github.io/localsite](https://modelearth.github.io/localsite)  
 3. [Clone the forked repos](#clone) into your local webroot folder.
 4. Deploy your updates
 5. [Fetch upstream](#fetch-upstream) changes to your forked repos.
@@ -200,7 +200,7 @@ A static page should now be visible at [http://localhost:8887/localsite/](http:/
 
 Also clone the <a href='https://github.com/modelearth/io/'>io repo</a> into the same webroot to include the input-output widgets. [Learn more](../../../io/charts/)    
 
-Also clone the <a href='https://github.com/modelearth/apps/'>apps repo</a> if you are making a custom page.  
+If you are making a custom page, also clone the <a href='https://github.com/modelearth/apps/'>apps repo</a>.
 
 To redirect into a repo, you can place an index.html file in your webroot with the following redirect:  
 
