@@ -3,7 +3,7 @@
 1. Place your content within a README.md file in a local folder inside your webroot. 
 2. Copy the current index.html page using View Page Source, or just copy the localsite.js include tag.
 3. Add parameters for locations (state and counties) and impact sets (air, water, land, energy, health, prosperity).
-[Localsite Parameters](../) - add maps and visualizations
+[Localsite Parameters](../) - add maps and visualizations. [Embed sample](/io/communities/) for communities
 
 ____
 
@@ -101,6 +101,10 @@ Responsible sourcing allows manufacturers to...
 
 [Join our Model.earth Meetups](/io/coders/)
 Thursdays at noon ET. &nbsp;And 10pm ET on Monday, Wednesday and Sunday. (NY/Atlanta Time)
+
+[Use our Lifecycle Tools for Research and Teaching](/io/learn/)
+Explore [the matrix](/io/about/matrix/) and [tinker using Javascript](/useeio.js/footprint/)
+
 <!-- 
 Expensive European Exiobase
 https://simapro.com/products/exiobase-database/-->
