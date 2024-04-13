@@ -30,7 +30,7 @@ Model.earth [Data Pipeline](../../localsite/info/data) and our <a href="/data-co
 [Industry Data Prep](../../data-pipeline/timelines/training/naics/) for our machine learning [RealityStream](../../RealityStream/)
 
 ## <span class="num">3</span><span class="txt">Input-Output Widgets</span>
-<a href="../../io/charts/">Impact Widgets</a> - Displayed based on localsite parameters
+<a href="../../io/charts/">Impact Widgets</a> - Displayed based on [localsite parameters](../) 
 Data from the US Environmental Protection Agency (EPA) and Google Data Commons
 
 ## <span class="num">4</span><span class="txt">Chart Starter Ideas</span>
@@ -97,13 +97,13 @@ Responsible sourcing allows manufacturers to...
 [IMPLAN Impact Analysis](https://implanhelp.zendesk.com/hc/en-us/articles/360039284273-Environmental-Data) - 8 broad categories using USEEIO model data  
 [Challenge.gov/toolkit](https://www.challenge.gov/toolkit/) - Web Challenges created by US Government Agencies
 
-## <span class="num">9</span><span class="txt">Volunteer Team</span>
+## <span class="num">9</span><span class="txt">Collaboration and Teaching</span>
 
 [Join our Model.earth Meetups](/io/coders/)
 Thursdays at noon ET. &nbsp;And 10pm ET on Monday, Wednesday and Sunday. (NY/Atlanta Time)
 
 [Use our Lifecycle Tools for Research and Teaching](/io/learn/)
-Explore [the matrix](/io/about/matrix/) and [tinker using Javascript](/useeio.js/footprint/)
+Explore [the matrix](/io/about/matrix/) and tinker using [Open Footprint Javascript](/useeio.js/footprint/)
 
 <!-- 
 Expensive European Exiobase
