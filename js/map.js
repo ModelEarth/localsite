@@ -747,9 +747,7 @@ function loadMap1(calledBy, show, dp_incoming) {
   // INIT - geo fetches the county for filtering.
   hash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
   if (!hash.state && hash.geo) { // Wait for geo load when no state to center.
-    alert("here");
     loadGeos(hash.geo,0,function(results) {
-      alert("there");
       loadDataset('map1','map2', dp, basemaps1, basemaps2, 1, function(results) {
         initialHighlight(hash);
       });

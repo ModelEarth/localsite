@@ -2,8 +2,7 @@
 
 1. Place your content within a README.md file in a local folder inside your webroot. 
 2. Copy the current index.html page using View Page Source, or just copy the localsite.js include tag.
-3. Add parameters for locations (state and counties) and impact sets (air, water, land, energy, health, prosperity).
-[Localsite parameters](../) for embedding maps and visualizations [for local communities](/io/communities/) and [international goals](/data-commons/dist)
+3. [Add Localsite parameters](../) for locations (state and counties) and impact sets (air, water, land, energy, health, prosperity) to embed maps and visualizations [for local communities](/io/communities/) and [international goals](/data-commons/dist).
 
 ____
 

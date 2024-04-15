@@ -15,7 +15,7 @@ if (location.host.indexOf('localhost') >= 0) {
   defaultState = "";  // Set to GA to include additional map layers in top nav.
 }
 consoleLog("start localsite");
-var local_app = local_app || (function(module){
+var local_app = local_app || (function(module) {
     let _args = {}; // private, also worked as []
     let localsite_repo;
     return {
@@ -100,9 +100,10 @@ var local_app = local_app || (function(module){
             return (theroot);
         },
         modelearth_root : function() { // General US states and eventually some international
-            // These repos will typically reside on github, so no localhost.
-            let theroot = "https://model.earth"; // Probably will also remove slash from the ends of others.
-            if (location.host.indexOf('localhost') >= 0) {
+            let theroot = "https://model.earth";
+            // TO DO: Check if localsite.js include div contains "https://model.earth" (non-relative)
+            
+            if (location.host.indexOf('localhost') >= 0 || location.host.indexOf('127.0.0.1') >= 0) {
               theroot = "";
             }
             return (theroot);
@@ -1665,6 +1666,7 @@ function extend () {
 };
 
 function loadTabulator() {
+  console.log("Bug: Gets called when tabulator not yet needed by nav.")
   // Tabulator
   if (typeof Tabulator === 'undefined') {
     //includeCSS3('https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css',theroot);
@@ -2196,7 +2198,7 @@ function showSearchFilter() {
         
       if (document.getElementById("filterFieldContent") == null) { 
         //alert("load filter.html")
-        let filterFile = "/localsite/map/filter.html";
+        let filterFile = local_app.modelearth_root() + "/localsite/map/filter.html";
         $("#filterFieldsHolder").load(filterFile, function( response, status, xhr ) {
 
         }); // End $("#filters").load

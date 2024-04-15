@@ -508,9 +508,9 @@ function hashChanged() {
         }
     }
 
-    
-    // Not sure if we need this
+    // Updates updateSelectedTableRows to check counties in tabulator
     if (hash.geo != priorHash.geo) {
+        let geoUncheck = [];
         if (hash.geo && hash.geo.length > 4) { 
             $(".state-view").hide();
             $(".county-view").show();
@@ -530,15 +530,15 @@ function hashChanged() {
             $(".mainColumn1").show();
         }
 
-        let clearall = false;
-        if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
-            //clearall = true;
-        }
-        if($("#geomap").is(':visible')){
+        if($("#geomap").is(':visible')) {
             if (hash.geoview != "country") {
-                //alert("updateSelectedTableRows 2"); // Might need this delay.
-                updateSelectedTableRows(hash.geo, clearall, 0);
+                if(location.host.indexOf('localhost') >= 0) {
+                    alert("localhost: geoDeselect work in progress")
+                    //updateSelectedTableRows(hash.geo, geoDeselect, 0);
+                }
             }
+            // hash.geoview = county, country, etc
+            renderMapShapes("geomap", hash, hash.geoview, 1); // Allow shape just clicked to be highlighted. Triggered by hash change.
         }
 
         // TEST
@@ -967,16 +967,38 @@ $(document).ready(function () {
     });
 
     $(document).on("click", "#show_county_colors", function(event) {
-      let hash = getHash();
-      let layerName = hash.state.split(",")[0].toUpperCase() + " Counties";
-      geoOverlays[layerName].eachLayer(function (layer) {  
-        if(layer.feature.properties.COUNTYFP == '037' || layer.feature.properties.COUNTYFP == '121') { // Los Angeles or Fulton Counties
-          layer.setStyle({fillColor :'blue', fillOpacity:.5 }) 
-          // Or call a function:
-          // layer.setStyle(function...)
+        let hash = getHash();
+        let layerName = "";
+        if (hash.state) {
+            layerName = hash.state.split(",")[0].toUpperCase() + " Counties";
+        } else {
+            console.log("State needed")
         }
-      });
-      //alert("done"); // Occurs before layers above appear.
+        d3.csv("/community/start/maps/counties/topo/GA_county_regions.csv").then(function(detail_data) {
+            // Similar to aside
+            let dp = {
+              numColumns: ["county_num","economic_region","wia_region","io_region"], // Omit "name" since not number.
+              valueColumn: "io_region",
+              //scaleType: "scaleQuantile",
+              scaleType: "scaleOrdinal",
+            }
+            dp.name = "Regions"; // For top of legend. Differs from name column.
+            dp.data = readCsvData(detail_data, dp.numColumns, dp.valueColumn); // This automatically includes all columns, even those not listed in numColumns.
+            dp.scale = getScale(dp.data, dp.scaleType, dp.valueColumn); // Was used by addLegend. Returns a domain and range
+            console.log("dp.scale");
+            console.log(dp.scale);
+        });
+
+        geoOverlays[layerName].eachLayer(function (layer) {  
+            if(layer.feature.properties.COUNTYFP == '037' || layer.feature.properties.COUNTYFP == '121') { // Los Angeles or Fulton Counties
+              // Instead, we'll just make the border:3
+              layer.setStyle({fillColor :'blue', fillOpacity:.5 }) 
+              alert("blue")
+              // Or call a function:
+              // layer.setStyle(function...)
+            }
+        });
+        //alert("done"); // Occurs before layers above appear.
     });
 
     $('#hsCatList > div').click(function () {
@@ -1204,7 +1226,7 @@ $(document).ready(function () {
         let search = $('.selected_col:checked').map(function() {return this.id;}).get().join(',');
         // TODO: set search to empty array if all search boxes are checked.
         if(!hash.show && location.href.indexOf('/localsite/info/') < 0) {
-            // TODO: Remove geoview
+            updateHash({"geoview":""});
             window.location = "/localsite/info/" + location.hash;
             return;
         }
@@ -1343,6 +1365,52 @@ $(document).ready(function () {
     });
 });
 
+function readCsvData(_data, columnsNum, valueCol) {
+  if (typeof columnsNum !== "undefined") {
+    _data.forEach( function (row) {
+      //row = removeWhiteSpaces(row);
+      convertToNumber(row, columnsNum);
+    });
+  }
+  console.log(_data);
+  return _data;
+}
+function convertToNumber(d, _columnsNum) {
+  for (var perm in d) {
+    if (_columnsNum.indexOf(perm) > -1)
+      if (Object.prototype.hasOwnProperty.call(d, perm)) {
+        d[perm] = +d[perm];
+      }
+    }  
+  return d;
+} 
+function getScale(data, scaleType, valueCol) {
+  // Also see: http://d3indepth.com/scales/
+  var scale;
+  if (scaleType === "scaleThreshold") {
+    var min = d3.min(data, function(d) { return d[valueCol]; });
+    var max = d3.max(data, function(d) { return d[valueCol]; });
+    var d = (max-min)/7;
+    scale = d3.scaleThreshold()
+      .domain([min+1*d,min+2*d,min+3*d,min+4*d,min+5*d,min+6*d])
+      .range(['#ffffe0','#ffd59b','#ffa474','#f47461','#db4551','#b81b34','#8b0000']);
+  } else if (scaleType === "scaleQuantize") {
+    scale = d3.scaleQuantize()
+      .domain(d3.extent(data, function(d) { return d[valueCol]; }))
+      .range(['#ffffe0','#ffd59b','#ffa474','#f47461','#db4551','#b81b34','#8b0000']);
+  } else if (scaleType === "scaleQuantile") {
+    scale = d3.scaleQuantile()
+      .domain(data.map(function(d) { return d[valueCol]; }).sort(function(a, b){return a-b}))
+      .range(['#ffffe0','#ffd59b','#ffa474','#f47461','#db4551','#b81b34','#8b0000']);            
+  } else if (scaleType === "scaleOrdinal") {
+    scale = d3.scaleOrdinal()
+      //.domain(data.map(function(d) { return d[valueCol]; }))
+      .domain(data.map(function(d) { return d[valueCol]; }).sort(function(a, b){return a-b}))
+      .range(d3.schemePaired);
+  }
+  return scale;
+}
+
 function productList(startRange, endRange, text) {
     // Displays Harmonized System (HS) subcategories
     // To Do: Lazyload file when initially requested - when #catSearch is clicked.
@@ -1461,6 +1529,8 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
     }
     $("#state_select").val(stateAbbr); // Used for lat lon fetch
 
+    loadScript(local_app.topojson_root() + '/localsite/js/topojson-client.min.js', function(results) {
+   
     waitForElm('#' + whichmap).then((elm) => {
 
         $("#geoPicker").show();
@@ -1989,21 +2059,46 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
             /* Rollover effect */
             function highlightFeature(e){
               var layer = e.target;
+              
+              // Adds 3px border
+              // Add blue by increasing fillOpacity
+              // Avoiding toggling fillOpacity. Using just border so choropleth opacity is not modified.
               layer.setStyle({
                 weight: 3,
                 color: '#665',
                 dashArray: '',
-                fillOpacity: .7})
-                if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                fillOpacityX: .7}
+              )
 
-                  layer.bringToFront();
-                }
+              if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+              }
+              
               // Send text to side box
               info.update(layer.feature.properties);
+
             }
             // Rollout map shape (county)
             function resetHighlight(e){
+              // Bug - Unselects recent colors, 
+              // colors would need to reside in 
+              //geoOverlays[layerName].resetStyle(e.target);
+
+              // Alternative to restoring color
+              // Bug - This deselects color
+              var layer = e.target;
+              layer.setStyle({
+                weight: 1,
+                color: 'rgb(51, 136, 255)',
+                fillOpacityX: 0.05}
+              )
+
+              info.update(); // Used with either approach above.
+            }
+
+            function resetHighlightX(e){
                 // Restores color prior to rollover
+                /*
                 if (geoOverlays[layerName]) {
                   //console.log("Rollout resetHighlight e.target ");
                   //console.log(e.target);
@@ -2012,6 +2107,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                 } else {
                     console.log("Found NO layerName: " + layerName);
                 }
+                */
             }
 
             // CLICK SHAPE ON MAP
@@ -2125,6 +2221,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
           }
         }
   }); // waitforElm # whichmap
+  });
   });
   });
 }
@@ -2762,7 +2859,7 @@ function showTabulatorList(element, attempts) {
                 });
 
                 geotable.on("rowSelected", function(row){
-                    //alert(row._row.data.id);
+                    console.log("rowSelected " + row._row.data.id);
                     if (!currentRowIDs.includes(row._row.data.id)) {
                      currentRowIDs.push(row._row.data.id);
                     }
@@ -2772,6 +2869,7 @@ function showTabulatorList(element, attempts) {
                     //} else {
                     if (hash.geo != currentRowIDs.toString()) {
                         hash.geo = currentRowIDs.toString();
+                        console.log("goHash rowSelected")
                         goHash({'geo':hash.geo});
                     }
                 })
@@ -2779,6 +2877,7 @@ function showTabulatorList(element, attempts) {
                     currentRowIDs = currentRowIDs.filter(item => item !== row._row.data.id);
                     if (hash.geo != currentRowIDs.toString()) {
                         hash.geo = currentRowIDs.toString();
+                        console.log("rowDeselected hash.geo " + hash.geo);
                         goHash({'geo':hash.geo});
                     }
                 })
@@ -2805,7 +2904,7 @@ function showTabulatorList(element, attempts) {
       }
     }
 }
-function updateSelectedTableRows(geo, clear, attempts) {
+function updateSelectedTableRows(geo, geoDeselect, attempts) {
     let hash = getHash();
     if (!hash.state) {
         console.log("ALERT - A state value is needed in the URL")
@@ -2814,9 +2913,6 @@ function updateSelectedTableRows(geo, clear, attempts) {
             //alert("geotable.getRows === function")
             // #tabulator-geotable
             //geotable.selectRow(geotable.getRows().filter(row => row.getData().name.includes('Ba')));
-            if (clear) {
-                geotable.deselectRow(); // All
-            }
             if (geo) {
                 $.each(geo.split(','), function(index, value) {
                     geotable.selectRow(geotable.getRows().filter(row => row.getData().id == value));
@@ -2830,15 +2926,18 @@ function updateSelectedTableRows(geo, clear, attempts) {
             $.each(geotable.getSelectedRows(), function(index, value) {
                 // TODO - Group by state
                 county_names.push(value._row.data.name.split(",")[0].replace(" County",""));
+                //if (geoDeselect.length && ) {
+
+                //}
             });
-            console.log("county_names " + county_names.toString());
+            console.log("county_names from geotable{} set by current tabulator: " + county_names.toString());
             $(".counties_title").text(county_names.toString().replaceAll(",",", "));
         } else {
           attempts = attempts + 1;
           if (attempts < 200) {
             // To do: Add a loading image after a coouple seconds. 2000 waits about 300 seconds.
             setTimeout( function() {
-              updateSelectedTableRows(geo,clear,attempts);
+              updateSelectedTableRows(geo,geoDeselect,attempts);
             }, 20 );
           } else {
             alert("geotable.getRows not available after " + attempts + " attempts.")
@@ -2857,12 +2956,18 @@ function updateMapColors(whichmap) {
         });
         //alert("layerName " + layerName);
 
-        geoOverlays[layerName].eachLayer(function(layer) {
-            var location = layer.feature.properties.COUNTYFP; // Assuming 'name' property in GeoJSON
-            var index = sortedData.indexOf(location);
-            var colorIntensity = index >= 0 ? (index / sortedData.length) * 360 : 0; // Adjust color intensity based on position
-            layer.setStyle({ fillColor: "hsl(" + colorIntensity + ", 100%, 50%)" });
-        });
+        if(location.host.indexOf('localhost') >= 0) {
+            // Add color to this log
+            console.log("To debug: Cannot read properties of undefined (reading 'eachLayer')")
+            // Do we need to wait for geoOverlays[layerName]?
+            geoOverlays[layerName].eachLayer(function(layer) {
+                var location = layer.feature.properties.COUNTYFP; // Assuming 'name' property in GeoJSON
+                var index = sortedData.indexOf(location);
+                var colorIntensity = index >= 0 ? (index / sortedData.length) * 360 : 0; // Adjust color intensity based on position
+                // This is making the rollover red
+                //layer.setStyle({ fillColor: "hsl(" + colorIntensity + ", 100%, 50%)" });
+            });
+        }
     });
 }
 
@@ -3364,7 +3469,7 @@ function styleShape(feature) { // Called FOR EACH topojson row
   let hash = getHash(); // To do: pass in as parameter
   //console.log("feature: ", feature)
 
-  var fillColor = 'rgb(51, 136, 255)'; // 
+  var fillColor = 'rgb(51, 136, 255)'; // blue for borders
   // For hover '#665';
   
   // REGION COLORS: See community/start/map/counties.html for colored region sample.
@@ -3466,12 +3571,12 @@ var modelpath = climbpath;
 if (modelpath == "./") {
     //modelpath = "";
 }
-var modelroot = ""; // For links that start with /
+//var modelroot = ""; // For links that start with /
 
 if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('neighborhood.org') < 0) { // When not localhost or other site that has a fork of io and community.
     // To do: allow "Input-Output Map" link in footer to remain relative.
-    modelpath = "https://model.earth/" + modelpath; // Avoid - gets applied to #headerSiteTitle and hamburger menu
-    modelroot = "https://model.earth";
+    modelpath = "https://model.earth/" + modelpath; // Avoid - use local_app.modelearth_root() instead - Check if/why used for #headerSiteTitle and hamburger menu
+    //modelroot = "https://model.earth"; // For embeds
 }
 console.log("modelpath " + modelpath);
 
@@ -3618,6 +3723,32 @@ function showNavColumn() {
         }
     }
 }
+function iNav(set) {
+    let hash = getHashOnly();
+    hash.set = set;
+    if (set=="air") {
+        hash.indicators = "GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS";
+    } else if (set=="water") {
+        hash.indicators = "WATR,ACID,EUTR,ETOX";
+    } else if (set=="land") {
+        hash.indicators = "LAND,MNRL,PEST,METL,CRHW,CMSW,FMSW,CCDD";
+    } else if (set=="energy") {
+        hash.indicators = "ENRG,NNRG,RNRG";
+    } else if (set=="health") {
+        hash.indicators = "HTOX,HCAN,HNCN,HTOX,HRSP";
+    } else if (set=="prosperity") {
+        hash.indicators = "VADD,JOBS";
+    }
+    delete hash.geoview;
+    let hashString = decodeURIComponent($.param(hash)); // decode to display commas in URL
+    if (location.href.indexOf('/info') == -1) {
+        alert("123")
+        //updateHash({"geoview":""}); // Close location filter before redirect.
+        location.href = local_app.modelearth_root() + "/localsite/info/#" + hashString;
+    } else {
+        goHash({"set":set,"indicators":hash.indicators});
+    }
+}
 function applyNavigation() { // Called by localsite.js so local_app path is available.
 
     // To do: fetch the existing background-image.
@@ -3740,8 +3871,8 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
             param.titleArray = ["model","earth"]
             localsiteTitle = "Model Earth";
         }
-        param.headerLogoSmall = "<img src='/localsite/img/logo/earth/model-earth.png' style='width:34px; margin-right:2px'>";
-        changeFavicon(modelpath + "../localsite/img/logo/earth/model-earth.png")
+        param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/earth/model-earth.png' style='width:34px; margin-right:2px'>";
+        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/earth/model-earth.png")
         showClassInline(".earth");
         console.log(".earth display");
         earthFooter = true;
@@ -3888,12 +4019,12 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
                 */
 
                 if (param.header) {
-                    headerFile = modelroot + param.header;
+                    headerFile = local_app.modelearth_root() + param.header;
                 } else if (param.headerFile) {
                     modelpath = ""; // Use the current repo when custom headerFile provided. Allows for site to reside within repo.
                     headerFile = param.headerFile;
                 } else {
-                    headerFile = modelroot + "/localsite/header.html";
+                    headerFile = local_app.modelearth_root() + "/localsite/header.html";
                 }
 
                 //if (earthFooter && param.showSideTabs != "false") { // Sites includieng modelearth and neighborhood
@@ -3977,7 +4108,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
                             $("#local-header img[src]").each(function() {
                                 if($(this).attr("src").toLowerCase().indexOf("http") < 0) {
                                     if($(this).attr("src").indexOf("/") == 0) { // Starts with slash
-                                        $(this).attr("src", modelroot + $(this).attr('src'));
+                                        $(this).attr("src", local_app.modelearth_root() + $(this).attr('src'));
                                     } else {
                                     $(this).attr("src", modelpath + $(this).attr('src'));
                                 }
@@ -4772,7 +4903,7 @@ function showClassInline(theclass) {
 function imagineLocation() {
     if (location.href.indexOf('/info') == -1) {
         updateHash({"geoview":""}); // Prevents location filter from remaining open after redirect.
-        location.href = "/localsite/info/" + location.hash;
+        location.href = local_app.modelearth_root() + "/localsite/info/" + location.hash;
         return;
     }
     updateHash({"imgview":"state","geoview":"","appview":""}); // Should this reside in hideAdvanced()?
@@ -5236,75 +5367,71 @@ function filterLocationChange() {
 function openMapLocationFilter() {
     //alert("openMapLocationFilter");
     let hash = getHash();
-    loadScript(theroot + 'js/navigation.js', function(results) {
-        if (!hash.geoview) { // && hash.sidetab != "locale"
-            let currentStates = [];
-            if(hash.geo && !hash.state) {
-                let geos = hash.geo.split(",");
-                for(var i = 0 ; i < geos.length ; i++) {
-                    currentStates.push(getKeyByValue(localObject.us_stateIDs, Number(geos[i].replace("US","").substring(0,2))));
-                }
-            }
 
-            /*
-            if (currentStates.length > 0) { // Multiple states, use first one.
-                goHash({"geoview":"state","state":currentStates[0]});
-            } else {
-                goHash({"geoview":"state"});
+    if (!hash.geoview) { // && hash.sidetab != "locale"
+        let currentStates = [];
+        if(hash.geo && !hash.state) {
+            let geos = hash.geo.split(",");
+            for(var i = 0 ; i < geos.length ; i++) {
+                currentStates.push(getKeyByValue(localObject.us_stateIDs, Number(geos[i].replace("US","").substring(0,2))));
             }
-            */
-        }
-        ///$("#geoPicker").show();
-        $("#filterLocations").prependTo($("#locationFilterHolder")); // Move back from sidetabs
-        $("#geomap").appendTo($("#geomapHolder")); // Move back from sidetabs
-        // Here we show the interior, but not #locationFilterHolder.
-        $("#filterLocations").show();$("#imagineBar").show();
-        $(".locationTabText").text("Locations");
-        $("#topPanel").hide();
-        $("#showLocations").show();
-        $("#hideLocations").hide();
-
-        $("#hero_holder").hide();
-        if (typeof state_select_holder != "undefined") {
-            state_select_holder.appendChild(state_select); // For apps hero
         }
 
-        if (hash.geo) {
-            let clearall = false;
-            if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
-                clearall = true;
-            }
-            if (hash.geoview != "country") {
-                //if (loadGeoTable != false) { // Prevents loading twice on init
-                
-                // not needed, added hash = GetHash() to fix actual problem.
-                //waitForElm('#tabulator-geotable .tabulator-table > .tabulator-row').then((elm) => {
-                    updateSelectedTableRows(hash.geo, clearall, 0);
-                //});
-            }
-        }
-        if (!hash.appview) {
-            waitForElm('#filterClickLocation').then((elm) => {
-                if ($("#locationFilterHolder").is(':visible')) {
-                    $("#filterClickLocation").addClass("filterClickActive");
-                }
-            });
-        }
-        //loadScript(theroot + 'js/map.js', function(results) { // Load list before map
-            //console.log("Call renderMapShapes from navigation.js")
-            //renderMapShapes("geomap", hash, "", 1);// Called once map div is visible for tiles.
-        //});
-        if ($("#filterLocations").length) {
-            $('html,body').animate({
-                scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
-            });
+        /*
+        if (currentStates.length > 0) { // Multiple states, use first one.
+            goHash({"geoview":"state","state":currentStates[0]});
         } else {
-            console.log("ALERT #filterLocations not available yet.")
+            goHash({"geoview":"state"});
         }
-        if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
-            $("#header.nav-up").show();
+        */
+    }
+    ///$("#geoPicker").show();
+    $("#filterLocations").prependTo($("#locationFilterHolder")); // Move back from sidetabs
+    $("#geomap").appendTo($("#geomapHolder")); // Move back from sidetabs
+    // Here we show the interior, but not #locationFilterHolder.
+    $("#filterLocations").show();$("#imagineBar").show();
+    $(".locationTabText").text("Locations");
+    $("#topPanel").hide();
+    $("#showLocations").show();
+    $("#hideLocations").hide();
+
+    $("#hero_holder").hide();
+    if (typeof state_select_holder != "undefined") {
+        state_select_holder.appendChild(state_select); // For apps hero
+    }
+
+    if (hash.geo) {
+        let geoDeselect = "";
+        if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
+            geoDeselect = hash.geo
+            delete hash.geo;
         }
-    });
+        if (hash.geoview != "country") {
+            updateSelectedTableRows(hash.geo, geoDeselect, 0);
+            renderMapShapes("geomap", hash, hash.geoview, 1); // Allow shape just clicked to be highlighted. Triggered by hash change.
+        }
+    }
+    if (!hash.appview) {
+        waitForElm('#filterClickLocation').then((elm) => {
+            if ($("#locationFilterHolder").is(':visible')) {
+                $("#filterClickLocation").addClass("filterClickActive");
+            }
+        });
+    }
+    //loadScript(theroot + 'js/map.js', function(results) { // Load list before map
+        //console.log("Call renderMapShapes from navigation.js")
+        //renderMapShapes("geomap", hash, "", 1);// Called once map div is visible for tiles.
+    //});
+    if ($("#filterLocations").length) {
+        $('html,body').animate({
+            scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
+        });
+    } else {
+        console.log("ALERT #filterLocations not available yet.")
+    }
+    if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
+        $("#header.nav-up").show();
+    }
 }
 function closeLocationFilter() {
     $(".locationTabText").text($(".locationTabText").attr("title"));
