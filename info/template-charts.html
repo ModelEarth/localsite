@@ -42,19 +42,7 @@ function showIndustryList() {
 	<hr>
 </div>
 
-<!-- v2 -->
-<div id="industryTableHolder" style="display:none;" class="localonly content contentpadding">
-	<div id="tabulator-sectortable-intro">72 Sectors (upcoming) - Visible only on localhost</div>
-	<div id="tabulator-sectortable" style="display: inline-block !important;"></div><br>
-	<div id="tabulator-sectortable-count" style="display: inline-block !important;"></div>
-	<br><br>
-
-	<div id="tabulator-industrytable-intro">Industries (upcoming) - Visible only on localhost - FIPS and NAICS case sensitive</div>
-    <div id="tabulator-industrytable" style="display: inline-block !important;"></div>
-    <div id="tabulator-industrytable-count" style="display: inline-block !important;"></div>
-</div>
-
-<div id="industryListHolder" style="display:none; border-bottom:1px solid #ccc; padding-top:0; padding-bottom:0">
+<div id="industryListHolder" style="display:none; padding-top:0; padding-bottom:0">
 <section id="industries">
 <div id="top-content-columns" class="contentX contentpadding noprint" style="margin-top:20px; padding-top:0; padding-bottom:0">
 
@@ -529,8 +517,6 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 
 	<br><br><br>
 	
-
-	
 </div>
 
 <!-- MOSAIC HEATMAP -->
@@ -784,6 +770,20 @@ document.getElementById('showValues').onclick = function() {
     -webkit-box-shadow: 0 0 1px rgba(255 255 255 .5);
 }
 </style>
+
+
+<!-- v2 -->
+<div id="industryTableHolder" style="display:none;" class="localonly content contentpadding">
+	<div id="tabulator-sectortable-intro">72 Sectors (upcoming) - Visible only on localhost</div>
+	<div id="tabulator-sectortable" style="display: inline-block !important;"></div><br>
+	<div id="tabulator-sectortable-count" style="display: inline-block !important;"></div>
+	<br><br>
+
+	<div id="tabulator-industrytable-intro">Industries (upcoming) - Visible only on localhost - FIPS and NAICS case sensitive</div>
+    <div id="tabulator-industrytable" style="display: inline-block !important;"></div>
+    <div id="tabulator-industrytable-count" style="display: inline-block !important;"></div>
+</div>
+
 
 <!-- /INFO TEMPLATE -->
 </div>

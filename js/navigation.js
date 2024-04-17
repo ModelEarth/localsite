@@ -3728,6 +3728,39 @@ function showNavColumn() {
         }
     }
 }
+function toggleDiv(theClass) {
+    const divsToToggle = document.querySelectorAll(theClass);
+    const elements = document.querySelectorAll(theClass);
+    let elementDisplay = "none";
+    for (let i = 0; i < elements.length; i++) { // Allows for multoiple instances of class or id
+        if (elements[i].style.display === 'none') {
+          elementDisplay = "block";
+        }
+    }
+    divsToToggle.forEach((div) => {
+        div.style.display = elementDisplay;
+    });
+
+    //const toggleBtn = thisDiv;
+    //const toggleContent = toggleBtn.nextElementSibling;
+    //event.target.nextElementSibling.style.display = 'block';
+
+    //alert("toggle2");
+
+    /*
+    const toggleContainer = document.querySelector('.toggle-container');
+
+    toggleContainer.addEventListener('click', (event) => {
+      alert("toggleContainer click");
+      if (event.target.classList.contains('toggle-btn')) {
+        const toggleBtn = event.target;
+        const toggleContent = toggleBtn.nextElementSibling;
+
+        toggleContent.style.display = toggleContent.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+    */
+}
 function iNav(set) {
     let hash = getHashOnly();
     hash.set = set;
