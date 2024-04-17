@@ -2346,15 +2346,26 @@ function waitForSubObject(theObject, theSubObject, callback) { // To confirm: De
   }, 300);
 }
 
+// To Do, add object
+if(typeof waitingForVarSince == 'undefined') {
+  var waitingForVarSince = {};
+}
 function waitForVariable(variable, callback) { // Declare variable using var since "let" will not be detected.
   var interval = setInterval(function() {
+    if(!waitingForVarSince['variable']) {
+      waitingForVarSince['variable'] = Date.now();
+    }
+    if (Date.now() - waitingForVarSince['variable'] > 6000) { // 60 seconds
+      consoleLog('waitForVariable waiting ' + variable + ' exceeded 1 minute.');
+      return;
+    }
     if (window[variable]) {
       clearInterval(interval);
       consoleLog('waitForVariable found ' + variable);
       callback();
       return;
     }
-    consoleLog('waitForVariable waiting ' + variable);
+    consoleLog('waitForVariable waiting ' + variable + ' ' + waitingForVarSince['variable']);
   }, 100);
 }
 

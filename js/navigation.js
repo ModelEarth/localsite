@@ -1531,8 +1531,10 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
     loadScript(local_app.topojson_root() + '/localsite/js/topojson-client.min.js', function(results) {
     console.log("topoJsonReady loaded from " + local_app.topojson_root());
-    waitForVariable('topoJsonReady', function () {
-    console.log("topoJsonReady " + topoJsonReady);
+    //waitForVariable('topoJsonReady', function () {
+    //console.log("topoJsonReady " + topoJsonReady);
+    //window.topojson = require('topojson-client');
+    //topojson = topojson-client;
     waitForElm('#' + whichmap).then((elm) => {
 
         $("#geoPicker").show();
@@ -2223,7 +2225,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
           }
         }
   }); // waitforElm # whichmap
-  }); // waitforVar
+  //}); // waitforVar
   });
   });
   });
