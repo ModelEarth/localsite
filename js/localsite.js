@@ -2355,7 +2355,7 @@ function waitForVariable(variable, callback) { // Declare variable using var sin
       return;
     }
     consoleLog('waitForVariable waiting ' + variable);
-  }, 80);
+  }, 100);
 }
 
 // TO DO: Optimize by checking just the nodes in the mutations

@@ -1530,7 +1530,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
     $("#state_select").val(stateAbbr); // Used for lat lon fetch
 
     loadScript(local_app.topojson_root() + '/localsite/js/topojson-client.min.js', function(results) {
-   
+    console.log("topoJsonReady loaded from " + local_app.topojson_root());
+    waitForVariable('topoJsonReady', function () {
+    console.log("topoJsonReady " + topoJsonReady);
     waitForElm('#' + whichmap).then((elm) => {
 
         $("#geoPicker").show();
@@ -2221,6 +2223,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
           }
         }
   }); // waitforElm # whichmap
+  }); // waitforVar
   });
   });
   });
