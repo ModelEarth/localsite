@@ -67,6 +67,7 @@ var local_app = local_app || (function(module) {
             }
 
             let hostnameAndPort = extractHostnameAndPort(myScript.src);
+            console.log("location.host " + location.host);
             let theroot = location.protocol + '//' + location.host + '/localsite/';
 
             if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map, and ga-layers.json
@@ -80,6 +81,7 @@ var local_app = local_app || (function(module) {
             }
             
             if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+              console.log("hostnameAndPort " + hostnameAndPort);
               theroot = hostnameAndPort + "/localsite/";
               //consoleLog("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src));
               //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));

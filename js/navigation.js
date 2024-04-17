@@ -3742,7 +3742,6 @@ function iNav(set) {
     delete hash.geoview;
     let hashString = decodeURIComponent($.param(hash)); // decode to display commas in URL
     if (location.href.indexOf('/info') == -1) {
-        alert("123")
         //updateHash({"geoview":""}); // Close location filter before redirect.
         location.href = local_app.modelearth_root() + "/localsite/info/#" + hashString;
     } else {

@@ -459,12 +459,17 @@ summary::-webkit-details-marker {
 .displayOnload {
   display:block !important; /* hidden until css loaded */
 }
-.content {
+.content, #observablehq-center {
   max-width: 1100px;
   margin:0 auto;
   font-size: 15px;
   line-height: 1.55;
   /* position: relative; */  /* overlapped top filters */
+}
+#observablehq-toc nav {
+  margin-top: 148px; /* when showsearch */
+  margin-top: 100px;
+  padding-top: 18px;
 }
 @media (min-width: 1800px) {
 	.content {
@@ -472,7 +477,7 @@ summary::-webkit-details-marker {
 	  font-size: 18px;
 	}
 }
-.contentpadding {
+.contentpadding, #observablehq-center {
   padding-top: 25px;
   padding-left: 50px; /* also used 64, 50 */
   padding-left: 60px; /* to avoid overlapping upper left menu */
