@@ -113,6 +113,9 @@ var local_app = local_app || (function(module) {
         topojson_root : function() { // General US states and eventually some international
             // These repos will typically reside on github, so no localhost.
             let theroot = "https://model.earth";
+            if (!onlineApp) {
+              theroot = "";
+            }
             return (theroot);
         },
         custom_data_root : function() { // Unique US states - will use javascript, domain, cookies and json.
@@ -2537,7 +2540,18 @@ function loadIntoDiv(pageFolder,divID,thediv,html,attempts,callback) {
     //alert(pagePath);
 
     // To do: might apply to html parameter above rather than DOM.
-    $("#" + divID + " a[href]").each(function() {
+    let element = document.getElementById(divID);
+
+    // Get all the anchor (a) elements with 'href' attribute inside the element
+    let links = element.querySelectorAll('a[href]');
+
+    // Loop through the links and perform your desired actions
+
+
+    /* DELETE
+    for (var i = 0; i < links.length; i++) {
+    // Replaced this JQuery version
+    //$("#" + divID + " a[href]").each(function() {
 
       //if (pagePath.indexOf('../') >= 0) { // If .md file is not in the current directory
       //$("#" + divID + " a[href]").each(function() {
@@ -2554,7 +2568,25 @@ function loadIntoDiv(pageFolder,divID,thediv,html,attempts,callback) {
       else {
           //console.log("Showdown link update3 none: " + pageFolder + " plus " + $(this).attr('href'));
       }
-    })
+    }
+    */
+
+    links.forEach(function(currentElement) {
+      // Check if the link is a relative link
+      if (currentElement.getAttribute("href").toLowerCase().indexOf("http") < 0) {
+        // Update the href attribute with the pageFolder
+        currentElement.setAttribute("href", pageFolder + currentElement.getAttribute('href'));
+        console.log("Showdown link update: " + pageFolder + " plus " + currentElement.getAttribute('href'));
+      }
+      // Check if the link is not a full URL
+      else if (!/^http/.test(currentElement.getAttribute("href"))) {
+        console.log("ALERT Adjust: " + currentElement.getAttribute('href'));
+        // Update the href attribute with the pageFolder
+        currentElement.setAttribute("href", pageFolder + currentElement.getAttribute('href'));
+        console.log("Showdown link update2: " + pageFolder + " plus " + currentElement.getAttribute('href'));
+      }
+    });
+
     if(callback) callback();
   });
   /*
@@ -2837,7 +2869,7 @@ function initSitelook() {
             $(".sitemode").val(Cookies.get('sitemode'));
         }
         if (Cookies.get('sitesource')) {
-            $(".sitesource").val(Cookies.get('sitesource'));
+            $("#sitesource").val(Cookies.get('sitesource'));
         }
         if (Cookies.get('sitebasemap')) {
             $(".sitebasemap").val(Cookies.get('sitebasemap'));

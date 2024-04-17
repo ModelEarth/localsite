@@ -4456,11 +4456,11 @@ $(document).on("change", ".sitemode", function(event) {
     }
     //event.stopPropagation();
 });
-$(document).on("change", ".sitesource", function(event) {
+$(document).on("change", "#sitesource", function(event) {
     // Options: Overview or Directory
-    sitesource = $(".sitesource").val();
-    Cookies.set('sitesource', $(".sitesource").val());
-    setSitesource($(".sitesource").val());
+    sitesource = $("#sitesource").val();
+    Cookies.set('sitesource', $("#sitesource").val());
+    setSitesource($("#sitesource").val());
     //event.stopPropagation();
 });
 $(document).on("change", "#sitelook", function(event) { // Style: default, coi, gc
@@ -4481,7 +4481,7 @@ $(document).on("change", ".sitebasemap", function(event) {
 function setSitesource(sitesource) {
     console.log("setSitesource inactive");
     /*
-    if ($(".sitesource").val() == "directory") {
+    if ($("#sitesource").val() == "directory") {
         //$('.navTopHolder').hide();
         $('.navTopInner').hide();
         if (!embedded()) { // Settings would become hidden if embedded.
