@@ -4496,12 +4496,23 @@ $(document).on("change", "#sitesource", function(event) {
     setSitesource($("#sitesource").val());
     //event.stopPropagation();
 });
-$(document).on("change", "#sitelook", function(event) { // Style: default, coi, gc
+$(document).on("change", "#sitelook", function(event) { // Dark mode
     if (typeof Cookies != 'undefined') {
         Cookies.set('sitelook', $("#sitelook").val());
     }
     setSitelook($("#sitelook").val());
-    //event.stopPropagation();
+});
+$(document).on("change", "#devmode", function(event) { // Public or Dev
+    if (typeof Cookies != 'undefined') {
+        Cookies.set('devmode', $("#devmode").val());
+    }
+    setDevmode($("#devmode").val());
+});
+$(document).on("change", "#modelsite", function(event) {
+    if (typeof Cookies != 'undefined') {
+        Cookies.set('modelsite', $("#modelsite").val());
+    }
+    setModelsite($("#modelsite").val());
 });
 $(document).on("change", ".sitebasemap", function(event) {
     sitebasemap = $(".sitebasemap").val();

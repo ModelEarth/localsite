@@ -2874,6 +2874,12 @@ function initSitelook() {
         if (Cookies.get('sitebasemap')) {
             $(".sitebasemap").val(Cookies.get('sitebasemap'));
         }
+        if (Cookies.get('devmode')) {
+            $("#devmode").val(Cookies.get('devmode'));
+        }
+        if (Cookies.get('modelsite')) {
+            $("#modelsite").val(Cookies.get('modelsite'));
+        }
     }
     
     //if (!$("#sitelook").is(':visible')) {
@@ -2896,7 +2902,6 @@ function initSitelook() {
         $("#sitelook").val(Cookies.get('sitelook'));
     }
 }
-
 function setSitemode(sitemode) {
   // Not copied over from settings.js
 }
@@ -2953,5 +2958,11 @@ function setSitelook(siteLook) {
     }
     //setTimeout(function(){ updateOffsets(); }, 200); // Allows time for css file to load.
     //setTimeout(function(){ updateOffsets(); }, 4000);
+}
+function setDevmode(siteLook) {
+
+}
+function setModelsite(siteLook) {
+
 }
 consoleLog("end localsite");

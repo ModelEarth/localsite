@@ -903,9 +903,13 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 .rightTopItem:hover {
     background-color: #000;
+    border-top-left-radius: 28px;
+    border-bottom-left-radius: 28px;
 }
 .rightTopItem.active {
     background-color: #555;
+    border-top-left-radius: 28px;
+    border-bottom-left-radius: 28px;
 }
 .rightTopItem i {
     width:37.5px;

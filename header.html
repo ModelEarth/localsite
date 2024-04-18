@@ -41,7 +41,18 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
 
 <style>
 .menuset > div {
-    border-bottom:1px solid #ccc
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+.menuTopic {
+    padding-left: 25px;
+}
+.menuSub {
+    background-color:rgb(197, 197, 197);
+    margin-left: 25px;
+}
+.dark .menuSub {
+    background-color:#555;
 }
 </style>
 <div class="earth menuset" style="display:none">
@@ -69,7 +80,6 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
         <a href="/data-commons/dist/transit">19. Fast Reliable Transit</a>
         <a href="/data-commons/dist/internet">20. High Speed Internet</a>
         <a href="/data-commons/dist/space">21. More Livable Zones</a>
-        <br>
     </div>
     </div>
 
@@ -80,14 +90,16 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
         <!-- to do: add a unique id when copying nav menu to right nav, otherwide "Violating node" errors occur - low priority, okay to ignore. -->
 
         <!-- background:rgba(177, 177, 177, 0.5); -->
-        <div style="clear:both">
-            <i class="material-icons local-block" onclick="iNav('air');toggleDiv('.airSub');return false;" style="font-size:26px;float:left;cursor:pointer;display:none;">&#xE409;</i>
-            <a href="" class="impactIcon_Air" onclick="iNav('air');return false;"><div style="float:right; display:none; padding-right:8px"><i class="material-icons" style="font-size:22px;font-weight:bolder;line-height:28px;float:left">&#xE5D3;</i></div><input class="impactCheck_Air" type="checkbox" style="display:none" checked> Air</a>
-            <div class="airSub" style="display:none;background-color:rgb(197, 197, 197);">
+        <div style="clear:both;">
+            <div class="menuTopic">
+                <i class="material-icons local-block" onclick="iNav('air');toggleDiv('.airSub');return false;" style="font-size:26px;float:left;cursor:pointer;display:none;">&#xE409;</i>
+                <a href="" class="impactIcon_Air" onclick="iNav('air');return false;"><div style="float:right; display:none; padding-right:8px"><i class="material-icons" style="font-size:22px;font-weight:bolder;line-height:28px;float:left">&#xE5D3;</i></div><input class="impactCheck_Air" type="checkbox" style="display:none" checked> Air</a>
+            </div>
+            <div class="airSub menuSub" style="display:none;">
                 <input class="impactCheck_GHG" type="checkbox" style="float:left" checked> 
                 <a href="/localsite/info/#indicators=GHG&set=air">Green House Gas</a>
                 <input class="impactCheck_HAPS" type="checkbox" style="float:left" checked> 
-                <a href="/localsite/info/#indicators=HAPS&set=air">Hazardous Air Pollutants</a>
+                <a href="/localsite/info/#indicators=HAPS&set=air">Hazardous Pollutants</a>
                 <input class="impactCheck_HRSP" type="checkbox" style="float:left" checked> 
                 <a href="/localsite/info/#indicators=HRSP&set=air">Respiratory Effects</a>
                 <input class="impactCheck_SMOG" type="checkbox" style="float:left" checked> 
@@ -96,21 +108,26 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
             </div>
         </div>
 
-        <div style="clear:both">
+        <div style="clear:both" class="menuTopic">
             <a href="" class="impactIcon_Water" onclick="iNav('water');return false;"><input class="impactCheck_Water" type="checkbox" style="display:none" checked> Water</a>
         </div>
 
-        <div style="clear:both">
+        <div style="clear:both" class="menuTopic">
             <a href="/localsite/info/#set=land&indicators=LAND,MNRL,PEST,METL,CRHW,CMSW,FMSW,CCDD" class="impactIcon_Land" onclick="iNav('land');return false;"><input class="impactCheck_Land" type="checkbox" style="display:none" checked> Land</a>
         </div>
 
         <!--<a href="" class="showMobile showMobileFull" style="clear:both;margin:0px;padding:0px;border:0px;display:none"></a>-->
 
-        <a href="/localsite/info/#set=energy&indicators=ENRG,NNRG,RNRG" class="impactIcon_Energy" onclick="iNav('energy');return false;"><input class="impactCheck_Energy" type="checkbox" style="display:none"> Energy</a>
-
-        <a href="/localsite/info/#set=health&indicators=HTOX,HCAN,HNCN,HTOX,HRSP" class="impactIcon_Health" onclick="iNav('health');return false;"><input class="impactCheck_Health" type="checkbox" style="display:none"> Health</a>
-
-        <a href="/localsite/info/#set=prosperity&indicators=VADD,JOBS" class="impactIcon_Prosperity" onclick="iNav('prosperity');return false;"><input class="impactCheck_Prosperity" type="checkbox" style="display:none" checked> Prosperity</a><br>
+        <div style="clear:both" class="menuTopic">
+            <a href="/localsite/info/#set=energy&indicators=ENRG,NNRG,RNRG" class="impactIcon_Energy" onclick="iNav('energy');return false;"><input class="impactCheck_Energy" type="checkbox" style="display:none"> Energy</a>
+        </div>
+        <div style="clear:both" class="menuTopic">
+            <a href="/localsite/info/#set=health&indicators=HTOX,HCAN,HNCN,HTOX,HRSP" class="impactIcon_Health" onclick="iNav('health');return false;"><input class="impactCheck_Health" type="checkbox" style="display:none"> Health</a>
+        </div>
+        <div style="clear:both" class="menuTopic">
+            <a href="/localsite/info/#set=prosperity&indicators=VADD,JOBS" class="impactIcon_Prosperity" onclick="iNav('prosperity');return false;"><input class="impactCheck_Prosperity" type="checkbox" style="display:none" checked> Prosperity</a>
+        </div>
+        
         </div>
     </div>
 
