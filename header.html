@@ -51,7 +51,7 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
     background-color:rgb(197, 197, 197);
     margin-left: 25px;
 }
-.dark .menuSub {
+.dark .menuSub, #sectionsPanel .menuSub {
     background-color:#555;
 }
 </style>
@@ -104,7 +104,8 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
                 <a href="/localsite/info/#indicators=HRSP&set=air">Respiratory Effects</a>
                 <input class="impactCheck_SMOG" type="checkbox" style="float:left" checked> 
                 <a href="/localsite/info/#indicators=SMOG&set=air">Smog Formation</a>
-                
+                <input class="impactCheck_OZON" type="checkbox" style="float:left" checked> 
+                <a href="/localsite/info/#indicators=OZON&set=air">Ozone Depletion</a>
             </div>
         </div>
 
@@ -127,7 +128,7 @@ Could use these state shapes: https://github.com/coryetzkorn/state-svg-defs
         <div style="clear:both" class="menuTopic">
             <a href="/localsite/info/#set=prosperity&indicators=VADD,JOBS" class="impactIcon_Prosperity" onclick="iNav('prosperity');return false;"><input class="impactCheck_Prosperity" type="checkbox" style="display:none" checked> Prosperity</a>
         </div>
-        
+
         </div>
     </div>
 
