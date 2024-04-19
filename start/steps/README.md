@@ -12,7 +12,7 @@ Run in your webroot folder to start a local http server.
 
 **1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a> and <a href="https://github.com/ModelEarth/io" target="_blank">io</a> repos to preview your contributions using Github Pages.
 
-**2.** Enter your GitHub account to insert within in cmds below.
+**2.** Enter your GitHub account to insert it within the install cmd below.
 
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
