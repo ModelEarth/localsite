@@ -7,7 +7,7 @@
 var localStart = Date.now(); // A var so waitForVariableNav detects in navigation.js.
 let onlineApp = true;
 let localsiteTitle = "Localsite";
-let defaultState = ""; 
+let defaultState = "";
 if (location.host.indexOf('localhost') >= 0) {
   // Set onlineApp to false during air travel. Also sets local to no state.
   // Requires community-data locally
@@ -412,7 +412,7 @@ function loadScript(url, callback)
 
   //alert(urlID)
   if (loadFile && !document.getElementById(urlID)) { // Prevents multiple loads.
-      consoleLog("loadScript seeking: " + url + " via urlID: " + urlID);
+      consoleLog("loadScript seeking " + url + " via urlID: " + urlID);
       var script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = url;
@@ -1045,7 +1045,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       includeCSS3(theroot + 'css/map.css',theroot); // Before naics.js so #industries can be overwritten.
 
       // TODO - Try limiting to param.display == "everything"
-      includeCSS3(theroot + 'css/naics.css',theroot);
+      //includeCSS3(theroot + 'css/naics.css',theroot);
       
       // customD3loaded
       if (param.preloadmap != "false" && (param.showheader == "true" || param.shownav == "true" || param.display == "map" || param.display == "everything")) {
@@ -1055,11 +1055,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           //}
         });
       }
-
-      //includeCSS3(theroot + 'css/bootstrap.darkly.min.css',theroot);
-
       if (param.display == "everything") {
-
+        loadTabulator();
+        includeCSS3(theroot + 'css/naics.css',theroot);
         loadScript(theroot + '../io/build/lib/useeio_widgets.js', function(results) {
           loadScript(theroot + 'js/d3.v5.min.js', function(results) {
             waitForVariable('customD3loaded', function() {
@@ -1069,21 +1067,11 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             });
           });
         });
-      }
-
-      loadTabulator();
-      
-      if (param.display == "everything") {
         includeCSS3(theroot + '../io/build/widgets.css',theroot);
         includeCSS3(theroot + '../io/build/iochart.css',theroot);
       }
-      
       loadSearchFilterCss();
-
       includeCSS3(theroot + 'css/leaflet.icon-material.css',theroot);
-      
-      //loadScript(theroot + 'js/table-sort.js', function(results) {}); // For county grid column sort
-
     }
     if (param.geoview || param.appview) {
       loadMapAndMapFilters();
@@ -1469,9 +1457,9 @@ function loadGeos(geo, attempts, callback) {
   }
 }
 
-var mycount = 0;
 function includeCSS3(url,theroot) {
-    let urlID = getUrlID3(url,theroot);
+    console.log("includeCSS3 url: " + url);
+    let urlID = getUrlID3(url,theroot); // AVOID using theroot parameter. It can be eliminated.
     if (!document.getElementById(urlID)) { // Prevents multiple loads.
         var link  = document.createElement('link');
         link.id   = urlID;
@@ -1524,23 +1512,22 @@ function getUrlID3(url,theroot) {
   }
 
   // Remove domain and port from url
-  url = "/" + url.replace(/^[a-z]{4,5}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1'); // http or https
-
+  // url = "/" +   BUG: Added double // as in //localsite/css/dev.css
+  url = url.replace(/^[a-z]{4,5}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1'); // http or https
+  if (url.indexOf("//") == -1 && url[0] != "/") { // Not https:// and not already starting with /
+    url = "/" + url;
+  }
   //url = theroot + url;
 
   // Retain domain if not local. Prevents two external IDs from matching.
   let domain = getDomain(url);
-  mycount++;
-
-  let myfeedback = "";
-  //if (domain != getDomain(theroot)) {
   if (domain) {
     // No changes to url
-    if (100==100) {
-      myfeedback = ("Count: " + mycount + "\nurl: " + url + "\nDomain: " + domain + "\ntheroot: " + theroot + "\nDomain of theroot: " + getDomain(theroot));
-    }
+    console.log("getUrlID3 no change to url since domain: " + url + " Domain: " + domain);
   } else {
-    
+    // url = url.replace("/localsite/../localsite/","/localsite/"); // hack for /localsite/../localsite/css/tabulator.min.css
+              
+    console.log("getUrlID3 url: " + url);
     // Remove front folder for each ../
     
       if (100==100) {
@@ -1579,7 +1566,6 @@ function getUrlID3(url,theroot) {
               //alert(url.replace(beginning[0],""));
               //alert(url);
 
-              url = url.replace("/localsite/../localsite/","/localsite/"); // hack for /localsite/../localsite/css/tabulator.min.css
               url = keepfolders + url.replace(beginning[0],"").replace(new RegExp('../', 'g'),""); // All instances of ../
               //alert(url);
               console.log("beginningFolder.length " + beginningFolder.length + " for " + startingUrl  + " leads to urlID " + url);
@@ -1597,11 +1583,7 @@ function getUrlID3(url,theroot) {
     //urlID = urlID.substring(0,urlID.indexOf('?')); // Remove parameter so ?v=1 is not included in id.
   }
 
-  urlID = urlID.replace(/^.*\/\/[^\/]+/, ''); 
-
-  if (100==100) {
-    //alert(myfeedback + "\nResulting urlID: " + urlID);
-  }
+  urlID = urlID.replace(/^.*\/\/[^\/]+/, '');
 
   //console.log("urlID after adjustment: " + urlID);
   return urlID;
@@ -1671,14 +1653,17 @@ function extend () {
 };
 
 function loadTabulator() {
-  console.log("Bug: Gets called when tabulator not yet needed by nav.")
-  // Tabulator
   if (typeof Tabulator === 'undefined') {
-    //includeCSS3('https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css',theroot);
-    // Also loads tabulator.min.css.map originally from https://unpkg.com/tabulator-tables@5.3.0/dist/css/tabulator.min.css.map
-    includeCSS3(theroot + '../localsite/css/tabulator.min.css',theroot);
-    includeCSS3(theroot + '../localsite/css/base-tabulator.css',theroot);
-    loadScript(theroot + 'js/tabulator.min.js', function(results) {});
+    includeCSS3(theroot + 'css/tabulator.min.css',theroot);
+    includeCSS3(theroot + 'css/base-tabulator.css',theroot);
+    
+    // BUGBUG - Tabulator v6.2.0 error at http://localhost:8887/localsite/info/#geoview=country
+    // Uncaught RangeError: Maximum call stack size exceeded
+    //loadScript(theroot + 'js/tabulator.min.js', function(results) {});
+
+    // HACK - using 5.5.2 until above resolved
+    //alert("tabulator552")
+    loadScript(theroot + 'js/tabulator552.min.js', function(results) {});
   }
 }
 
@@ -2359,7 +2344,8 @@ function waitForVariable(variable, callback) { // Declare variable using var sin
       waitingForVarSince['variable'] = Date.now();
     }
     if (Date.now() - waitingForVarSince['variable'] > 6000) { // 60 seconds
-      consoleLog('waitForVariable waiting ' + variable + ' exceeded 1 minute.');
+      clearInterval(interval);
+      consoleLog('waitForVariable waiting ' + variable + ' exceeded 1 minute.' + (Date.now() - waitingForVarSince['variable']));
       return;
     }
     if (window[variable]) {
@@ -2834,73 +2820,39 @@ function initSitelook() {
     let sitemode;
     let sitesource;
     let sitelook;
-    if(typeof Cookies != 'undefined') {
-        //sitemode = Cookies.get('sitemode');
-        sitesource = Cookies.get('sitesource');
-        sitelook = Cookies.get('sitelook');
+    let devmode;
+    let modelsite;
 
-        /*
-        if (param["sitemode"]) { // From URL
-            sitemode = param["sitemode"]; 
-            Cookies.set('sitemode', sitemode);
-            $(".sitemode").val(sitemode);
-        //} else if (params["sitemode"]) { // From index.html
-        //   sitemode = params["sitemode"];
-        //    $(".sitemode").val(sitemode);
-        //    console.log("Set sitemode from index.html: " + sitemode);
-        } else {
-            setSitemode(sitemode);
+    if(typeof Cookies != 'undefined') {
+        if (Cookies.get('sitelook')) {
+          $("#sitelook").val(Cookies.get('sitelook'));
+          sitelook = Cookies.get('sitelook');
         }
-        */
-    }
-    /*
-    $(".moduleIntroHolder").append($(".moduleIntro"));
-
-    if ($(".insertFilters").length > 0) {
-        $(".insertFilters").append($(".filterHolder"));
-        //$("#contractors-table").hide();
-        //$("#contractors-table").prepend($(".k-grid-pager"));
-        $(".showFiltersButton").hide();
-    }
-    */
-
-    if(typeof Cookies != 'undefined') {
         if (Cookies.get('sitemode')) {
             $(".sitemode").val(Cookies.get('sitemode'));
         }
         if (Cookies.get('sitesource')) {
             $("#sitesource").val(Cookies.get('sitesource'));
+            sitesource = Cookies.get('sitesource');
         }
         if (Cookies.get('sitebasemap')) {
             $(".sitebasemap").val(Cookies.get('sitebasemap'));
         }
         if (Cookies.get('devmode')) {
             $("#devmode").val(Cookies.get('devmode'));
+            devmode = Cookies.get('devmode');
         }
         if (Cookies.get('modelsite')) {
             $("#modelsite").val(Cookies.get('modelsite'));
+            modelsite = Cookies.get('modelsite');
         }
     }
-    
-    //if (!$("#sitelook").is(':visible')) {
-    //    sitelook = "default"; // For now, filterPanel background is always an image.
-    //}
-
     if (param["sitelook"]) { // From URL
         sitelook = param["sitelook"]; 
-        //Cookies.set('sitelook', sitelook);
-    //} else if (params["sitelook"]) { // From widget
-    //    sitelook = params["sitelook"]; 
-        // Prevent video from appearing when going to menu. Cookies probably need to be specific to domain.
-        //Cookies.set('sitelook', sitelook);
-    } else if (typeof Cookies != 'undefined' && Cookies.get('sitelook')) {
-        sitelook = Cookies.get('sitelook');
     }
-    
     setSitelook(sitelook);
-    if (typeof Cookies != 'undefined') {
-        $("#sitelook").val(Cookies.get('sitelook'));
-    }
+    setDevmode(devmode);
+    setModelsite(modelsite);
 }
 function setSitemode(sitemode) {
   // Not copied over from settings.js
@@ -2959,10 +2911,16 @@ function setSitelook(siteLook) {
     //setTimeout(function(){ updateOffsets(); }, 200); // Allows time for css file to load.
     //setTimeout(function(){ updateOffsets(); }, 4000);
 }
-function setDevmode(siteLook) {
-
+function setDevmode(devmode) {
+  if (devmode == "dev") {
+    includeCSS3('/localsite/css/dev.css');
+  } else {
+    removeElement('/localsite/css/dev.css');
+  }
 }
-function setModelsite(siteLook) {
-
+function setModelsite(modelsite) {
+  if (modelsite != "") {
+    console.log("To do: setModelsite");
+  }
 }
 consoleLog("end localsite");

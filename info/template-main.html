@@ -297,22 +297,24 @@
             </div></div>
             <div class="setDiv"></div>
 
-            <div class="setLeft">Model Site</div>
-            <div class="setOverflow"><div class="setRight">
-                <select id="modelsite">
-                  <option value="model.earth" selected>Model Earth</option>
-                  <option value="model.africa">Model Africa</option>
-                  <option value="model.europe">Model Europe</option>
-                  <option value="model.canada">Model Canada</option>
-                  <option value="model.china">Model China</option>
-                  <option value="model.india">Model India</option>
-                  <option value="model.usa">Model USA</option>
-                  <option value="model.georgia">Model Georgia</option>
-                  <option value="model.maine">Model Maine</option>
-                  <option value="neighborhood.org">Neighborhood</option>
-                </select>
-            </div></div>
-            <div class="setDiv"></div>
+            <div class="dev" style="display:none">
+              <div class="setLeft">Model Site</div>
+              <div class="setOverflow"><div class="setRight">
+                  <select id="modelsite">
+                    <option value="model.earth" selected>Model Earth</option>
+                    <option value="model.africa">Model Africa</option>
+                    <option value="model.europe">Model Europe</option>
+                    <option value="model.canada">Model Canada</option>
+                    <option value="model.china">Model China</option>
+                    <option value="model.india">Model India</option>
+                    <option value="model.usa">Model USA</option>
+                    <option value="model.georgia">Model Georgia</option>
+                    <option value="model.maine">Model Maine</option>
+                    <option value="neighborhood.org">Neighborhood</option>
+                  </select>
+              </div></div>
+              <div class="setDiv"></div>
+            </div>
 
             <div class="user-10" style="display:none">
               <div class="sitesourceHolder" style="display:none">
@@ -1201,8 +1203,6 @@ document.addEventListener('mousedown', function(e) {
                       background-color: #000;
                     }
                   </style>
-
-                  <!-- Tabulator: Latest version -->
                   
                   <div id="tabulator-statetable" style="min-width:510px"></div>
                   <div id="tabulator-geotable" style="min-width:510px;overflowX:visible"></div>

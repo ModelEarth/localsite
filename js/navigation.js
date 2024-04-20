@@ -1490,7 +1490,8 @@ function productList(startRange, endRange, text) {
 }
 function renderMapShapes(whichmap, hash, geoview, attempts) {
   console.log("renderMapShapes() state: " + hash.state + " attempts: " + attempts);
-  loadScript(local_app.topojson_root() + '/localsite/js/topojson-client.min.js', function(results) {
+  // local_app.topojson_root() + 
+  loadScript('/localsite/js/topojson-client.min.js', function(results) {
     renderMapShapeAfterPromise(whichmap, hash, attempts);
   });
 }
@@ -1529,7 +1530,8 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
     }
     $("#state_select").val(stateAbbr); // Used for lat lon fetch
 
-    loadScript(local_app.topojson_root() + '/localsite/js/topojson-client.min.js', function(results) {
+    // local_app.topojson_root() + 
+    loadScript('/localsite/js/topojson-client.min.js', function(results) {
     console.log("topoJsonReady loaded from " + local_app.topojson_root());
     //waitForVariable('topoJsonReady', function () {
     //console.log("topoJsonReady " + topoJsonReady);
@@ -1543,7 +1545,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
           // Oddly, this is needed when using 3-keys to reload: Cmd-shift-R
           $("#filterLocations").show();$("#locationFilterHolder").show();$("#imagineBar").show(); 
 
-          console.log("Caution: #" + whichmap + " not visible. May effect tile loading.");
+          consoleLog("Caution: #" + whichmap + " not visible. May effect tile loading.");
           //return; // Prevents incomplete tiles
         }
 
@@ -2461,10 +2463,11 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                 $(".output_table").html(""); // Clear prior state
             }
 
-            consoleLog("loadStateCounties tabulator for 2 character state: " + theState);
-
+            
             //Load in contents of CSV file for Tabulator (separate from map county shapes)
             if (theState && theState.length == 2) {
+                consoleLog("loadStateCounties tabulator for state: " + theState);
+
                 let csvFilePath = local_app.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv";
                 if (hash.geoview == "zip") {
                     csvFilePath = local_app.community_data_root() + "us/zipcodes/zipcodes6.csv";
@@ -2745,6 +2748,8 @@ function showTabulatorList(element, attempts) {
                 columns:element.columns,
                 selectable:true,
             });
+
+            /* temp to see if prevents 30 second down "Maximum call stack size exceeded"
             statetable.on("rowSelected", function(row){
                 //alert(row._row.data.id);
                 if (!currentRowIDs.includes(row._row.data.id)) {
@@ -2788,7 +2793,8 @@ function showTabulatorList(element, attempts) {
                     goHash({'geo':hash.geo});
                 }
             })
-             
+            */
+
          }); // End wait for element #tabulator-statetable
         } // End typeof stateImpact != 'undefined'
 
