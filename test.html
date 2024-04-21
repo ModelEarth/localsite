@@ -1,38 +1,50 @@
 
 <!DOCTYPE html>
-<html>
-  <head>
-    
-  </head>
-  <body>
-    <button onclick="getGeolocation()">
-      Get my coordinates!
-    </button>
-    <div id="demo"></div>
+<html lang="en-us">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html;">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+<title>Location Projects</title>
 
-    <script>
-      const demo = document.getElementById('demo');
-      function error(err) {
-          demo.innerHTML = `Failed to locate. Error: ${err.message}`;
-      }
+<script type="text/javascript" src="/localsite/js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
+<script type="text/javascript" src="/localsite/js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
+<script type="text/javascript" src="/localsite/js/localsite.js?showheader=true&showsearch=true"></script>
 
-      function success(pos) {
-          demo.innerHTML = 'Located.';
-          alert(`${pos.coords.latitude}, ${pos.coords.longitude}`);
-      }
+</head>
 
-      function getGeolocation() {
-          if (navigator.geolocation) {
-              demo.innerHTML = 'Locating…';
-              navigator.geolocation.getCurrentPosition(success, error);
-          } else { 
-              demo.innerHTML = 'Geolocation is not supported by this browser.';
-          }
+<body>
+<button onclick="getGeolocation()">
+  Get my coordinates!
+</button>
+<div id="demo"></div>
+
+<script>
+  const demo = document.getElementById('demo');
+  function error(err) {
+      demo.innerHTML = `Failed to locate. Error: ${err.message}`;
+  }
+
+  function success(pos) {
+      demo.innerHTML = 'Located.';
+      alert(`${pos.coords.latitude}, ${pos.coords.longitude}`);
+
+      // https://seeclickfix.com/open311/v2/docs
+      //https://seeclickfix.com/open311/v2/requests.json?lat=41.307153&long=-72.925791 //https://seeclickfix.com/open311/v2/services.json?lat=41.307153&long=-72.925791
+  }
+
+  function getGeolocation() {
+      if (navigator.geolocation) {
+          demo.innerHTML = 'Locating…';
+          navigator.geolocation.getCurrentPosition(success, error);
+      } else { 
+          demo.innerHTML = 'Geolocation is not supported by this browser.';
       }
-   </script>
+  }
+</script>
    
-  </body>
-</html>
+
 
 
 
@@ -86,3 +98,53 @@ function getCoords() {
 getCoords().then(coords => alert(coords))
 */
 </script>
+
+
+<div id="requests"></div>
+
+<script>
+function displayRequests(latitude, longitude) {
+    const url = `https://seeclickfix.com/open311/v2/requests.json?lat=${latitude}&long=${longitude}`;
+    
+    d3.json(url)
+        .then(data => {
+            const requestsDiv = document.getElementById('requests');
+            
+            data.forEach(item => {
+                const requestDiv = document.createElement('div');
+                requestDiv.innerHTML = `
+                    <p>Description: ${item.description}</p>
+                    <p>Address: ${item.address}</p>
+                    <p>Latitude: ${item.lat}</p>
+                    <p>Longitude: ${item.long}</p>
+                    <p>Service Request ID: ${item.service_request_id}</p>
+                    <p>Requested Datetime: ${item.requested_datetime}</p>
+                    <p>Service Code: ${item.service_code}</p>
+                    <p>Status: ${item.status}</p>
+                    <p>Zipcode: ${item.zipcode}</p>
+                    <p>Updated Datetime: ${item.updated_datetime}</p>
+                    <p>Agency Responsible: ${item.agency_responsible}</p>
+                    <p>Service Name: ${item.service_name}</p>
+                    <p>Media URL: ${item.media_url}</p>
+                    <p>Expected Datetime: ${item.expected_datetime}</p>
+                    <p>Address ID: ${item.address_id}</p>
+                    <p>Service Notice: ${item.service_notice}</p>
+                    <p>Status Notes: ${item.status_notes}</p>
+                    <hr>
+                `;
+                requestsDiv.appendChild(requestDiv);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+}
+
+// Example usage:
+const latitude = 41.307153;
+const longitude = -72.925791;
+displayRequests(latitude, longitude);
+</script>
+
+</body>
+</html>
