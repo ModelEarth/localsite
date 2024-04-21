@@ -12,7 +12,7 @@
 	clear: both;
 }
 .layerSection.openMenu {
-	min-width: 200px; /* So hideMenuNav() is not triggered too often by a narrow div */
+	min-width: 160px; /* So hideMenuNav() is not triggered too often by a narrow div */
 }
 .layerSectionClick {
     padding: 6px 8px 0px 12px;
@@ -135,7 +135,7 @@
 }
 
 .sideMenuColumnNarrow .layerSectionTitle {
-	width: 180px; /* required for background color to be visible */
+	width: 160px; /* required for background color to be visible */
 	color: #fff;
 	background-color: #333;
 	margin-top: -8px;
@@ -144,6 +144,9 @@
 	padding-bottom: 8px;
 	padding-right: 8px;
 	border-bottom: 1px solid #fff;
+	border-top-right-radius: 2px;
+ 	border-top-right-radius: 22px;
+	border-bottom-right-radius: 22px;
 }
 .openMenu {
 	margin-bottom: 12px;

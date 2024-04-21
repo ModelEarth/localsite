@@ -8,7 +8,7 @@ The&nbsp;[localsite&nbsp;repo](https://github.com/modelearth/localsite/) provide
 
 [Model.Earth](https://model.earth)  
 [Local Webroot Setup](https://model.earth/localsite/start/)  
-[Current Project Areas](https://model.earth/community/projects/)
+[Current Project Areas](https://model.earth/projects/)
 
 ## Embed Datascapes
 
