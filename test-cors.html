@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/x-icon" href="../../img/logo/favicon.png" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Display Requests</title>
+</head>
+<body>
+
+<h1>Requests</h1>
+
+<a href="https://cors-anywhere.herokuapp.com/">Turn on your temporary for CORS passthrough</a><br><br>
+
+<div id="requests"></div>
+
+<script>
+function displayRequests(latitude, longitude) {
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Use your own proxy if available
+    const url = `${proxyUrl}https://seeclickfix.com/open311/v2/requests.json?lat=${latitude}&long=${longitude}`;
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
+            const requestsDiv = document.getElementById('requests');
+            
+            data.forEach(item => {
+                const requestDiv = document.createElement('div');
+                requestDiv.innerHTML = `
+                    <p>Description: ${item.description}</p>
+                    <p>Address: ${item.address}</p>
+                    <p>Latitude: ${item.lat}</p>
+                    <p>Longitude: ${item.long}</p>
+                    <p>Service Request ID: ${item.service_request_id}</p>
+                    <p>Requested Datetime: ${item.requested_datetime}</p>
+                    <p>Service Code: ${item.service_code}</p>
+                    <p>Status: ${item.status}</p>
+                    <p>Zipcode: ${item.zipcode}</p>
+                    <p>Updated Datetime: ${item.updated_datetime}</p>
+                    <p>Agency Responsible: ${item.agency_responsible}</p>
+                    <p>Service Name: ${item.service_name}</p>
+                    <p>Media URL: ${item.media_url}</p>
+                    <p>Expected Datetime: ${item.expected_datetime}</p>
+                    <p>Address ID: ${item.address_id}</p>
+                    <p>Service Notice: ${item.service_notice}</p>
+                    <p>Status Notes: ${item.status_notes}</p>
+                    <hr>
+                `;
+                requestsDiv.appendChild(requestDiv);
+            });
+        } else if (xhr.readyState === 4) {
+            console.error('Error fetching data. Status:', xhr.status);
+        }
+    };
+    
+    xhr.send();
+}
+
+// Example usage:
+const latitude = 41.307153;
+const longitude = -72.925791;
+displayRequests(latitude, longitude);
+</script>
+
+</body>
+</html>

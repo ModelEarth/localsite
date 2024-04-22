@@ -15,10 +15,21 @@
 </head>
 
 <body>
+
+<div class="content contentpadding">
 <button onclick="getGeolocation()">
   Get my coordinates!
 </button>
 <div id="demo"></div>
+<br>
+
+<a href="test-cors.html">Display using CORS passthrough</a><br>
+<a href="/io/template/feed/">Display using direct API call</a> - To develop using bearer or passthrough<br><br>
+
+<a href="https://www.civicservice.civicplus.help/hc/en-us/articles/360043963693-SeeClickFix-Integration-Polling-Schedule">SeeClickFix Integration Polling Schedule</a>
+
+</div>
+
 
 <script>
   const demo = document.getElementById('demo');
@@ -31,7 +42,8 @@
       alert(`${pos.coords.latitude}, ${pos.coords.longitude}`);
 
       // https://seeclickfix.com/open311/v2/docs
-      //https://seeclickfix.com/open311/v2/requests.json?lat=41.307153&long=-72.925791 //https://seeclickfix.com/open311/v2/services.json?lat=41.307153&long=-72.925791
+      // https://seeclickfix.com/open311/v2/requests.json?lat=41.307153&long=-72.925791
+      // https://seeclickfix.com/open311/v2/services.json?lat=41.307153&long=-72.925791
   }
 
   function getGeolocation() {
