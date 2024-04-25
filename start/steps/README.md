@@ -1,22 +1,42 @@
 [Starter Samples](../)
 # Local Site Install
 
-You can use [Localsite Pages](../) to create websites and stories with free GitHub hosting.  
+You can use [Localsite Pages](../) to create websites and [storyboards](/requests) with free GitHub hosting.  
 If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns](https://twitter.com/LorenHeyns).
 
-### Quick setup for contributors
+## Turn on your Webroot Server
 
-Run in your webroot folder to start a local http server.
+**OPTION 1:** Run in your webroot folder to start a local http server.
 
+	python3 -m venv env &&
+	source env/bin/activate &&
 	python -m http.server 8887
 
-**1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a> and <a href="https://github.com/ModelEarth/io" target="_blank">io</a> repos to preview your contributions using Github Pages.
+The terminal is now dedicated to being your webroot for [http://localhost:8887](http://localhost:8887)
+To run further commands, open a new terminal window.
 
-**2.** Enter your GitHub account to insert it within the install cmd below.
+**OPTION 2:** Requires installing a local cert
+
+Another option is the npx http-server which loads URLs without including .html
+(Since Observable's build to dist removes .html in links.)
+
+	npx http-server
+
+The npx http-server command displays your local site here:
+[http://127.0.0.1:8080](http://127.0.0.1:8080)
+
+Issue: This site can’t provide a secure connection
+Solution: You'll need to [install a cert](https://stackoverflow.com/questions/35127383/npm-http-server-with-ssl) on your local machine.
+
+## Fork and Clone our Main Repos
+
+**Step 1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a> and <a href="https://github.com/ModelEarth/io" target="_blank">io</a> repos to preview your contributions using Github Pages.
+
+**Step 2.** Enter your GitHub account to insert it within the install cmd below.
 
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
-**3.** Indicate the repos you've forked:
+**Step 3.** Indicate the repos you've forked:
 <!-- Also add to checkboxIds array -->
 <input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">data-commons &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="projectsForked" type="checkbox"  onclick="updateGitCmds()">projects &nbsp;&nbsp; <input id="requestsForked" type="checkbox"  onclick="updateGitCmds()">requests
 
@@ -25,7 +45,7 @@ Also fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">
 Also fork <a href="https://github.com/ModelEarth/projects" target="_blank">projects</a> if you are contributing to the Open WebUI interface and related python additions.
 Also fork <a href="https://github.com/ModelEarth/requests" target="_blank">requests</a> if you are adding to our image and video [storyboard generation](/data-pipeline/research/stream).
 
-**4.** Run in your local webroot folder:
+**Step 4.** Run in your local webroot folder:
 
 <textarea id="cloneCmd" class="codetext" rows="6">
 git clone https://github.com/ModelEarth/localsite localsite &&
@@ -39,9 +59,9 @@ git clone https://github.com/ModelEarth/requests requests</textarea>
 
 Now you can open our Projects page at: [localhost:8887/projects](http://localhost:8887/projects/)
 
-If you encounter a broken link locally, view the page at [model.earth](https://model.earth/) or clone one of the [additional repos](https://github.com/modelearth/).
+If you encounter a broken link locally, view the page at [model.earth](https://model.earth/) or clone one of the [additional modelearth repos](https://github.com/ModelEarth?tab=repositories).
 
-### Quick way to start your web server
+## Shortcut Command for starting your Webroot Server
 
 To simply type "localsite" in your terminal, add a shortcut command:
 
@@ -56,7 +76,9 @@ On a PC: Save a localsite.bat file in a directory in your system's PATH environm
 
 QUESTION: How can we run the above automatically when our computer's restart?
 
-### Refresh you local repos
+Our dream is that someday every computer is simply a webroot - downloading shared modules as needed within  virutual environment. Always use a virutual environment when running Python on your local machine.
+
+## Refresh you local repos
 
 To avoid merge conflicts, click "Sync Fork" on your forks in GitHub, then pull locally using GitHub Desktop. Or you can pull locally quickly by runing the cmd below after you clicked "Sync Fork" on your forked repos. (Or use the "Alternative Sync" command below.)
 
@@ -120,18 +142,6 @@ After granting access, you'll be redirected to a page displaying an authorizatio
 	hub pull-request -b modelearth:data-pipeline -h [Your GitHub Account]:data-pipeline -m "Fix typo in README" -m "This pull request fixes a typo in the README file."
 
 The 1st quote above is for a short description. The 2nd is for extra details.
-
-<!--
-To run further commands, open a new terminal window - the prior is now dedicated to being an http server.
-
-Or use an http server that loads URLs without including .html
-
-	npx http-server
-
-The npx http-server command displays your local site here:
-[http://127.0.0.1:8080](http://127.0.0.1:8080)
-[http://192.168.1.210:8080](http://192.168.1.210:8080)
--->
 
 <br>
 ---

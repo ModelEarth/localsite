@@ -212,7 +212,7 @@ If you only wish to deploy the default application and not use the covid-19 scri
 ### Set the project on gcloud.
 	gcloud config set project $GOOGLE_CLOUD_PROJECT
 
-$GOOGLE_CLOUD_PROJECT is the project ID, same as QUOTA\_PROJECT\_ID
+$GOOGLE\_CLOUD\_PROJECT is the project ID, same as QUOTA\_PROJECT\_ID
 
 ### Deploy to App Engine
 	gcloud app deploy app.yaml
