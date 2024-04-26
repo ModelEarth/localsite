@@ -56,6 +56,8 @@ document.addEventListener('hashChangeEvent', function (elem) {
 
 // For v2
 // BUGBUG - Use a small file with just two columns
+// Used in old version, but it contains 2,4,6 naics
+// https://github.com/ModelEarth/community-data/blob/master/us/id_lists/industry_id_list.csv
 //let industryTitleFile = local_app.community_data_root() + "us/state/" + stateAbbr + "/industries_state" + stateID + "_naics6_state_all.tsv";
 let industryTitleFile = "/localsite/info/naics/lookup/6-digit_2012_Codes.csv"; // Source: https://www.census.gov/eos/www/naics/downloadables/downloadables.html
 function getIndustryLocFileString(catsize) {
