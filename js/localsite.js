@@ -2913,7 +2913,7 @@ function setSitelook(siteLook) {
 }
 function setDevmode(devmode) {
   if (devmode == "dev") {
-    includeCSS3('/localsite/css/dev.css');
+    includeCSS3(local_app.localsite_root() + 'css/dev.css');
   } else {
     removeElement('/localsite/css/dev.css');
   }
