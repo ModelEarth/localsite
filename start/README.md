@@ -17,7 +17,7 @@ View our [Active Projects](../../projects)
 
 ## <span class="num">1</span><span class="txt">Start a Local Website</span>
 
-<a href="../../localsite/start/steps/">Local Site Install</a> - For our coding team
+<a href="../../localsite/start/steps/">Site Install</a> - For our coding team, states, communities and [International Timelines](../../data-commons/).
 <!--
 &bullet; <a href="/apps/">Our Apps Folder</a> - Customize JQuery pages
 &bullet; <a href="../challenge/">Sustainable Communities Web Challenge</a><br>
