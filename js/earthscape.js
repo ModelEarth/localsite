@@ -43,7 +43,6 @@ function loadEarthScape2(my) {
             }
         });
     });
-
 }
 
 // Tabulator grid below diagram

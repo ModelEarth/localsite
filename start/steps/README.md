@@ -1,5 +1,6 @@
+<section id="steps"></section>
 [Starter Samples](../)
-# Local Site Install
+# Site Install
 
 You can use [Localsite Pages](../) to create websites and [storyboards](/requests) with free GitHub hosting.  
 If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns](https://twitter.com/LorenHeyns).
@@ -20,6 +21,8 @@ To run further commands, open a new terminal window.
 Another option is the npx http-server which loads URLs without including .html
 (Since Observable's build to dist removes .html in links.)
 
+	python3 -m venv env &&
+	source env/bin/activate &&
 	npx http-server
 
 The npx http-server command displays your local site here:

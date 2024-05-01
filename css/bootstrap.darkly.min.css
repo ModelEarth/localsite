@@ -24,10 +24,10 @@ hr {
 html, body, #fullcolumn, 
 */
 .litePanel, #header, #footer, .headerbar, #sidecolumn, #rightcolumn {
-    background-color: rgba(0, 0, 0, .5);
-    background-colorX: #333;
+    background-colorX: rgba(0, 0, 0, .5);
+    background-color: #444;
     color: #fff;
-    line-height: 1;
+    line-heightX: 1;
 }
 /*
 #fullcolumn {

@@ -625,7 +625,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
     padding-bottom: 500px; /* Allows for footer */
-    padding-top: 30px;
+    padding-top: 38px;
 }
 .sidecolumnLeftScroll::-webkit-scrollbar {
   display: none;

@@ -1706,21 +1706,19 @@ function showList(dp,map) {
         }
 
         if (element.photo1) {
-          if (location.host.indexOf('localhost') >= 0) {
-            //output += "<img style='width:100%;max-width:200px;float:right' src='" + element.photo1 + "'>";
+          //output += "<img style='width:100%;max-width:200px;float:right' src='" + element.photo1 + "'>";
 
-            output += "Local Image Test<img style='width:100%;max-width:200px;float:right' class='swiper-lazy' data-src='" + element.photo1 + "'>";
+          output += "<div class='listThumb' style='max-width:200px;float:right'><a href='" + element.photo1 + "'><img style='width:100%;border-radius:12px;' loading='lazy' src='" + element.photo1 + "'></a></div>";
 
-            // unique data-id used by buildSwiperSlider to init multiple sliders.
-            // Might not need id
-            //Reactivete these 3 lines
-            //output += "<div class='swiper-container' id='swiper" + count + "' data-id='swiper" + count + "'><div class='swiper-wrapper'><div class='swiper-slide'>";
-            //output += "<img style='width:100%;max-width:800px' class='swiper-lazy' data-src='" + element.photo1 + "'>";
-            //output += "</div></div></div>";
-          }
+          // unique data-id used by buildSwiperSlider to init multiple sliders.
+          // Might not need id
+          //Reactivete these 3 lines
+          //output += "<div class='swiper-container' id='swiper" + count + "' data-id='swiper" + count + "'><div class='swiper-wrapper'><div class='swiper-slide'>";
+          //output += "<img style='width:100%;max-width:800px' class='swiper-lazy' data-src='" + element.photo1 + "'>";
+          //output += "</div></div></div>";
         }
 
-        output += "<div class='showItemMenu' style='float:right'>&mldr;</div>";
+        output += "<div class='showItemMenu' style='position:absolute;right:14px;top:16px'>&mldr;</div>";
 
         //console.log("dp.valueColumn 1 " + element[dp.valueColumn]); // Works, but many recyclers have blank Category value.
         //console.log("dp.valueColumn 3 " + element["category"]); // Lowercase required (basing on recyclers)
@@ -1977,10 +1975,7 @@ function showList(dp,map) {
 
         output += "</div>"; // End Lower
         output += "</div>"; // End overflow:auto
-        output += "</div>"; // End detail
-        
-        // Here display:none is used when listings are excluded. Do we use script to show these, or simply re-run the list?
-        
+        output += "<div style='clear:both'></div></div>"; // Clea align:right .listThumb and end detail.
       }
     }
   });

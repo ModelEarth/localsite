@@ -9,7 +9,7 @@ ____
 <br>
 # Website Setup and Dev
 
-View our [Active Projects](../../projects)
+View our [Active Projects](../../projects) and [Moonshots](../../community/projects)
 
 <div class="showGit">
 <a href="https://model.earth/community/start/">View current GitHub page as a web page</a>
