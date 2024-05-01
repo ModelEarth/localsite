@@ -875,7 +875,6 @@ function centerMap(lat,lon,name,map,whichmap) {
     $(".go_local").show();
 }
 function showDetail() {
-    
     //let locname = $(this).attr("name").replace(/ AND /g," & ").replace(/_/g," ");
     //alert("click detail This: " + $(this).attr("name"));
     //alert("click detail: " + locname);
@@ -910,15 +909,12 @@ function showDetail() {
     }
 }
 $(document).on("click", "#listcolumnList .detail, #detaillist .detail", function(event) { // Provides close-up using map2
-    console.log("detail click");
-
+    console.log("detail click updates hash. hashChangedMap() hides other names.");
     let hash = getHash();
     let locnameUrl = $(this).attr("name").replace(/ & /g," AND ").replace(/ /g,"_");
     let m = $(this).attr("m"); // iFrame
     goHash({"show":hash.show,"name":locnameUrl,"m":m});
-
-    //showDetail(this);
-    //event.stopPropagation();
+    event.stopPropagation();
 });
 $(document).on("click", ".showItemMenu", function(event) { 
   $("#listingMenu").show();
@@ -3802,6 +3798,7 @@ function hashChangedMap() {
     } else {
       waitForElm('#detaillist').then((elm) => {
         console.log("Limit to details matching name.");
+        $("#changeHublistHeight").hide();
         $("#detaillist .detail").hide(); // Hide all
         let thename = hash.name.replace(/_/g,' ').replace(/ AND /g,' & ');
         $("#detaillist > [name=\"" + thename + "\"]").show();

@@ -424,7 +424,7 @@
   padding-right: 20px;
 }
 #hublist, #tableSide {
-  max-heightX: 450px; /* 750px; */
+  max-height: 500px; /* For button */
 }
 .hublistFull {
   max-height: none !important;
