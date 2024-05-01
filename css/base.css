@@ -1616,3 +1616,33 @@ input:checked + .slider:before {
 #readmeDiv tr:last-child td, .mdTable tr:last-child td {
   border-bottom: 0px solid #ddd;
 }
+.large-list {
+  font-size: 18px;
+}
+.large-list h1 {
+  font-weight: 700;
+  font-family: Inter,-apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+}
+.large-list h2 {
+  position: relative;
+  font-weight: 400;
+}
+.large-list .num {
+  position: absolute;
+  font-size: 17px;
+  background-color: #999;
+  color: #fff;
+  padding-top: 4px;
+  padding-left: 8px;
+  width: 25px;
+  height: 25px;
+  line-height: 16px;
+  margin-right: 8px;
+  left: 0px;
+  bottom: 12px;
+  border-radius: 13px;
+  display: block;
+}
+.large-list .txt {
+  margin-left: 33px;
+}
