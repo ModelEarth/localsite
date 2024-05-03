@@ -1713,7 +1713,7 @@ function extractHostnameAndPort(url) {
 var selected_array=[];
 var omit_array=[];
 function formatRow(key,value,level,item) {
-
+  consoleLog("formatRow: " + key + " " + value);
   var addHtml = '';
   
   if (key == 'color') {
@@ -1784,7 +1784,7 @@ function formatRow(key,value,level,item) {
       //consoleLog(value.length);
 
       //consoleLog("isArray: " + key + " " + value + " " + value.length);
-      console.log(value)
+      consoleLog("isArray" + key + ": " + value);
       if (value.length > 0) {
 
         for (c in value) { // FOR EACH PROJECT
@@ -1810,7 +1810,7 @@ function formatRow(key,value,level,item) {
                   addHtml += formatRow(d,value[c][d],level);
                 } else if (typeof value[c][d] == "object" ) {
                 //} else if (isObject(value[c][d]) || isArray(value[c][d])) {
-                  if (value[c][d].length > 1) {
+                  if (value[c][d] && value[c][d].length > 1) {
                     addHtml += formatRow(d,value[c][d],level); // 2021
                   }
                 } else if (typeof value[c][d] != "undefined") {
@@ -1901,7 +1901,7 @@ function formatRow(key,value,level,item) {
     } else if (key.toLowerCase().includes("timestamp")) {
       addHtml += "<div class='level" + level + "'>" +  new Date(value) + "</div>\n";
   } else {
-      //consoleLog("Last: " + key + " " + value);
+      consoleLog("Last: " + key + " " + value);
       addHtml += "<div class='level" + level + "'>" + value + "</div>\n";
   }
   addHtml += "</div>\n";

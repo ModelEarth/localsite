@@ -41,6 +41,9 @@
 .showApps.active > .material-icons {
   color: #eee;
 }
+#mapFilters {
+  height: 52px;
+}
 @media (prefers-color-scheme: dark) {
   #filterFieldsHolder {
     /* background-color: #333; */
