@@ -1709,13 +1709,30 @@ function extractHostnameAndPort(url) {
     return hostname;
 }
 
+function safeStringify(obj, replacer = null, spaces = 2) {
+    const seen = new WeakSet();
+    return JSON.stringify(obj, function(key, value) {
+        if (typeof value === 'object' && value !== null) {
+            if (seen.has(value)) {
+                return '[Circular]';
+            }
+            seen.add(value);
+        }
+        if (replacer && typeof replacer === 'function') {
+            return replacer.call(this, key, value);
+        }
+        return value;
+    }, spaces);
+}
+
 // Convert json to html
 var selected_array=[];
 var omit_array=[];
+
 function formatRow(key,value,level,item) {
+  // Is item parameter in use by Community-Forecasting pages?
   consoleLog("formatRow: " + key + " " + value);
   var addHtml = '';
-  
   if (key == 'color') {
     // JQuery uses this attribute to set the bar color where class level1 immediately above this div.
     addHtml += "<div class='colorHolder' currentlevel='" + level + "' currentitem='" + item + "' color='" + value + "'></div>"
@@ -1733,101 +1750,70 @@ function formatRow(key,value,level,item) {
   //  level=2;
   //  addHtml += "<div class='hidden titlecell level1' style='width:100%'>" + key + "</div><div style='clear:both' class='hidden level" + level + "'>"
   //} else {
-    addHtml += "<div class='hidden titlecell level" + level + "'>" + key + "</div><div class='hidden rightcell level" + level + "'>"
+    if (level==1 || level==2) {
+      if(key) { // Avoids large left margin for Nasa level1
+        //if(value && value.length > 0) { // Hides blank for nutrition
+        if(value) { // Hides blank for nutrition
+          addHtml += "<div class='level" + level + " keyonly titlecell'><b>" + key + "</b></div>";
+        }
+      }
+    } else {
+      if(key) { // Level 0 won't have a key
+        var indentIcon = ""
+        if (typeof value != "string" && typeof value != "number") {
+          for (var i = 4; i <= level; i++) {
+              indentIcon = indentIcon + "-";
+          }
+        }
+        addHtml += "<span class='hidden titlecell level" + level + "' style='float:left'>" + indentIcon + " " + key + "</span>";
+      }
+    }
+
+      //addHtml += "<div class='hidden rightcell level" + level + "'>"
+
   //}  
   //if (value.length == 0) {
   //    addHtml += "<div class='level" + level + "'>&nbsp;</div>\n";
   //    consoleLog("Blank: " + key + " " + value);
   //} else 
   if (isObject(value)) {
-      for (c in value) {
 
-        consoleLog("isObject: " + key + " " + value);
+      addHtml += "<div style='clear:both'></div>";
+      for (c in value) {
+        //consoleLog("isObject: " + key + " " + value);
         
         //if (json.data[a].constructor === Array && selected_array.includes(a) )  {
         if (isObject(value[c])) {
-
-          consoleLog("This code is reached for location: " + key + " " + value);
-          //if (value[c].length > 1){
-            for (d in value[c]){  
-              //d = String(d);
-              if (isObject(value[c][d])) {
-                 //addHtml += "OBJECT FOUND"; 
-                 //addHtml += formatRow(d,value[c],level);
-                  for (e in value[c][d]){
-                    if (isObject(value[c][d][e])) {
-                      for (f in value[c][d][e]){
-
-                        addHtml += "<div class='level" + level + "'>" + f + ":: " + value[c][d][e][f] + "</div>\n";
-                      }
-                    } else {
-                      //addHtml += "WORD";
-                      addHtml += "<div class='level" + level + "'>" + d + "</div>\n"; // : " + value[c][d] + "
-                      
-
-                      for (e in value[c][d]){
-                        addHtml += formatRow(e,value[c][d][e],level);
-
-                      //     addHtml += "<div class='level" + level + "'>" + e + ": " + "</div>\n"; // value[c][d][e] 
-                          
-                      //     // works
-                      //     //for (f in value[c][d][e]){
-                      //     //  addHtml += "<div class='level" + level + "'>" + f + ":: " + value[c][d][e] + "</div>\n";
-                      //     //}
-                          
-                      }
-                    }
-                  }
-              // Hack, this seems wrong...
-              } else if (typeof value[c].d == "undefined") {
-                consoleLog("ERROR");
-                addHtml += "ERROR"; // When object's value is an object
-              } else if (value[c][d] && isObject(value[c][d])) {
-                for (e in value[c][d]){
-                    //addHtml += "<div class='level" + level + "'>" + e + ":: " + value[c][d][e] + "</div>\n";
-                    addHtml += formatRow(e,value[c][d][e],level);
-                  }
-              } else if (value[c][d]) {
-                
-                  //addHtml += "<div class='level" + level + "'>" + d + "::: " + value[c][d] + "</div>\n";
-                  //"---- " + 
-                  addHtml += formatRow(d,value[c][d],level);
-                
-              }
-            }
-          //}
-
-      } else {
-        addHtml += formatRow(c,value[c],level);
-          //addHtml += "<div class='level'>" + c + ":::: " + value[c] + "</div>\n";
+          // Entaglement is removed by parsing back to an object after Stringifing to a string
+          addHtml += formatRow(c,JSON.parse(safeStringify(value[c])),level);
+        } else {
+          addHtml += formatRow(c,value[c],level);
         }
-      }       
-     
-    
-    /*if (Object.keys(value).length >1){
-      consoleLog(b);
-    }*/
+      }
 
-      // value.constructor === Array
-
-  } else if (isArray(value)) { // was b.   && selected_array.includes(key)  seems to prevent overload for DiffBot. Need to identify why.
+  } else if (isArray(value)) {
       //consoleLog(value.length);
 
       //consoleLog("isArray: " + key + " " + value + " " + value.length);
       consoleLog("isArray" + key + ": " + value);
       if (value.length > 0) {
 
+        // Surrounding All
+        addHtml += "<div style='overflow:auto; bottom:10px; padding-top:10px'>";
+            
         for (c in value) { // FOR EACH PROJECT
           curLine=""            
           //consoleLog(value[c],b,c); //c is 0,1,2 index
           
           if (isObject(value[c])) {
-            addHtml += "<div style='background:#999;color:#fff;padding:4px; clear:both'>" + (+c+1) + "</div>\n";
+            addHtml += "<div class='objectcell' style='float:left;margin-right:10px;margin-bottom:10px'>"; // Around one
+            addHtml += "<div style='background:#999;color:#fff;padding:4px;min-width:255px'>" + (+c+1) + "</div>\n";
+            //addHtml += "<div style='border-bottom:1px solid #ccc;clear:both'>" + (+c+1) + "</div>\n";
 
             for (d in value[c]) { // Projects metatags
               console.log(d)
               console.log(value[c])
-
+              
               /*
               if (!value[c][d] || typeof value[c][d] == "undefined") {
                   addHtml += formatRow(d,"",level);
@@ -1849,28 +1835,9 @@ function formatRow(key,value,level,item) {
                   addHtml += formatRow(d,value[c][d],level);
                   //addHtml += "<div class='level" + level + "'>" + value[c][d] + "</div>\n";
                 }
-
-
-                /*
-                if (isObject(value[c][d])) {
-                  //addHtml += "<b>Add something else here</b>\n";
-                  for (e in value[c][d]) {
-                    //if (isObject(value[c][d][e]) || isArray(value[c][d][e])) {
-                    //if (e !== null && e !== undefined) { // 
-                      
-                      // BUGBUG - Uncomment after preventoing error here: http://localhost:8887/community/resources/diffbot/?zip=91945
-                      //addHtml += formatRow(e,value[c][d][e],level);
-
-                      //addHtml += "TEST"
-                      addHtml += "<div class='level" + level + "'>TEST: " + e + "</div>\n";
-
-                    //}
-                    //addHtml += "<div class='level5'>" + e + ": " + value[c][d][e] + "</div>\n";
-                  }
-                }
-                */
-
+              
             }
+            addHtml += "</div>";
 
           } else if (isArray(value[c])) {
               for (d in value[c]) {
@@ -1886,35 +1853,12 @@ function formatRow(key,value,level,item) {
               //  addHtml += "<b>Add something here</b>\n";
               // }
               
-            
-
-
-          /*
-          } else if (isArray(value[c])) {
-            for (d in value[c]) {
-              if (isObject(value[c][d])) {
-                //addHtml += "<b>Add something else here</b>\n";
-                for (e in value[c][d]){
-                  addHtml += formatRow(e,value[c][d][e],level);
-                  //addHtml += "<div class='level5'>" + e + ": " + value[c][d][e] + "</div>\n";
-                }
-              } else {
-                //consoleLog("Found: " + value[c][d]); // Returns error since not object
-                consoleLog("Found: " + d);
-                //addHtml += formatRow(d,d,level); // BUG
-                addHtml += "<div class='level4'>" + d + "</div>\n";
-              }
-
-              //addHtml += "<div class='level" + level + "'>" + value[c] + "</div>\n";
-            }
-            */
           } else {
               // For much of first level single names.
               addHtml += "<div class='level" + level + "'>" + value[c] + "</div>\n";
           }
         }    
-                        
-        
+        addHtml += "</div>"; // End surrounding
           
     } else {
       consoleLog("Array of 0: " + key + " " + value);
@@ -1928,15 +1872,13 @@ function formatRow(key,value,level,item) {
       addHtml += "<a href='" + uriLink + "'>" + value + "</a>"
   } else if (key == "logo") {
       addHtml += "<img src='" + value + "' class='rightlogo'><br>"
-    } else if (key.toLowerCase().includes("timestamp")) {
+  } else if (key.toLowerCase().includes("timestamp")) {
       addHtml += "<div class='level" + level + "'>" +  new Date(value) + "</div>\n";
   } else {
       consoleLog("Last: " + key + " " + value);
-      addHtml += "<div class='level" + level + "'>" + value + "</div>\n";
+      addHtml += "<div class='level" + level + " valueonly'>" + value + "</div>\n";
   }
-  addHtml += "</div>\n";
-
-    //result.innerHTML = result.innerHTML + addHtml;
+  //addHtml += "</div>\n";
 
   addHtml += "<div style='border-bottom:#ccc solid 1px; clear:both'></div>" // Last one hidden by css in base.css
 
