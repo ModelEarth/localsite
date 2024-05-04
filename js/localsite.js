@@ -1747,25 +1747,55 @@ function formatRow(key,value,level,item) {
         //if (json.data[a].constructor === Array && selected_array.includes(a) )  {
         if (isObject(value[c])) {
 
-          // NEVER REACHED?
           consoleLog("This code is reached for location: " + key + " " + value);
-          if (value[c].length > 1){
-
+          //if (value[c].length > 1){
             for (d in value[c]){  
-                
+              //d = String(d);
               if (isObject(value[c][d])) {
-                //addHtml += "<b>Add something else here</b>\n";
-                for (e in value[c][d]){
-                  //addHtml += "<div class='level" + level + "'>" + e + ":: " + value[c][d][e] + "</div>\n";
-                  addHtml += formatRow(e,"-- " + value[c][d][e],level);
-                }
-              } else {
-                //addHtml += "<div class='level" + level + "'>" + d + "::: " + value[c][d] + "</div>\n";
-                addHtml += formatRow(d,"---- " + value[c][d],level);
-              }
+                 //addHtml += "OBJECT FOUND"; 
+                 //addHtml += formatRow(d,value[c],level);
+                  for (e in value[c][d]){
+                    if (isObject(value[c][d][e])) {
+                      for (f in value[c][d][e]){
 
+                        addHtml += "<div class='level" + level + "'>" + f + ":: " + value[c][d][e][f] + "</div>\n";
+                      }
+                    } else {
+                      //addHtml += "WORD";
+                      addHtml += "<div class='level" + level + "'>" + d + "</div>\n"; // : " + value[c][d] + "
+                      
+
+                      for (e in value[c][d]){
+                        addHtml += formatRow(e,value[c][d][e],level);
+
+                      //     addHtml += "<div class='level" + level + "'>" + e + ": " + "</div>\n"; // value[c][d][e] 
+                          
+                      //     // works
+                      //     //for (f in value[c][d][e]){
+                      //     //  addHtml += "<div class='level" + level + "'>" + f + ":: " + value[c][d][e] + "</div>\n";
+                      //     //}
+                          
+                      }
+                    }
+                  }
+              // Hack, this seems wrong...
+              } else if (typeof value[c].d == "undefined") {
+                consoleLog("ERROR");
+                addHtml += "ERROR"; // When object's value is an object
+              } else if (value[c][d] && isObject(value[c][d])) {
+                for (e in value[c][d]){
+                    //addHtml += "<div class='level" + level + "'>" + e + ":: " + value[c][d][e] + "</div>\n";
+                    addHtml += formatRow(e,value[c][d][e],level);
+                  }
+              } else if (value[c][d]) {
+                
+                  //addHtml += "<div class='level" + level + "'>" + d + "::: " + value[c][d] + "</div>\n";
+                  //"---- " + 
+                  addHtml += formatRow(d,value[c][d],level);
+                
+              }
             }
-          }
+          //}
 
       } else {
         addHtml += formatRow(c,value[c],level);
