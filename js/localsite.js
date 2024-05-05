@@ -1730,7 +1730,8 @@ var selected_array=[];
 var omit_array=[];
 
 function formatRow(key,value,level,item) {
-  // Is item parameter in use by Community-Forecasting pages?
+  // item parameter in use by Community-Forecasting pages comunity/zip/leaflet
+
   consoleLog("formatRow: " + key + " " + value);
   var addHtml = '';
   if (key == 'color') {
@@ -1792,75 +1793,81 @@ function formatRow(key,value,level,item) {
       }
 
   } else if (isArray(value)) {
-      //consoleLog(value.length);
+    consoleLog("formatRow Array value length: " + value.length);
 
-      //consoleLog("isArray: " + key + " " + value + " " + value.length);
-      consoleLog("isArray" + key + ": " + value);
-      if (value.length > 0) {
+    //consoleLog("isArray: " + key + " " + value + " " + value.length);
 
-        // Surrounding All
-        addHtml += "<div style='overflow:auto; bottom:10px; padding-top:10px'>";
-            
-        for (c in value) { // FOR EACH PROJECT
-          curLine=""            
-          //consoleLog(value[c],b,c); //c is 0,1,2 index
+    if (value.length > 0) {
+
+      if (value.length > 20) { // TO DO: Add a parameter for exceeding 20.
+        value = value.slice(0, 10);
+      }
+      // Surrounding All
+      addHtml += "<div style='overflow:auto; bottom:10px; padding-top:10px'>";
           
-          if (isObject(value[c])) {
-            addHtml += "<div class='objectcell' style='float:left;margin-right:10px;margin-bottom:10px'>"; // Around one
-            addHtml += "<div style='background:#999;color:#fff;padding:4px;min-width:255px'>" + (+c+1) + "</div>\n";
-            //addHtml += "<div style='border-bottom:1px solid #ccc;clear:both'>" + (+c+1) + "</div>\n";
-
-            for (d in value[c]) { // Projects metatags
-              console.log(d)
-              console.log(value[c])
-              
-              /*
-              if (!value[c][d] || typeof value[c][d] == "undefined") {
-                  addHtml += formatRow(d,"",level);
-                } else if (typeof value[c][d] == "string") {
-                  addHtml += formatRow(d,value[c][d],level);
-              */
-                if (typeof value[c] == "undefined") {
-                  addHtml += formatRow(d,"",level);
-                } else if (typeof value[c][d] == "string" || typeof value[c][d] == "number") {
-                  addHtml += formatRow(d,value[c][d],level);
-                } else if (typeof value[c][d] == "object" ) {
-                //} else if (isObject(value[c][d]) || isArray(value[c][d])) {
-                  if (value[c][d] && value[c][d].length > 1) {
-                    addHtml += formatRow(d,value[c][d],level); // 2021
-                  }
-                } else if (typeof value[c][d] != "undefined") {
-                  addHtml += formatRow(d, value[c][d],level);
-                } else {
-                  addHtml += formatRow(d,value[c][d],level);
-                  //addHtml += "<div class='level" + level + "'>" + value[c][d] + "</div>\n";
-                }
-              
-            }
-            addHtml += "</div>";
-
-          } else if (isArray(value[c])) {
-              for (d in value[c]) {
-                consoleLog("Found Array: " + value[c][d])
-                addHtml += formatRow(d,value[c][d],level);
-                //addHtml += "<div class='level4'>" + d + ":: " + value[c][d] + "</div>\n";
-              
-              }
-              // if (value[c].constructor === Array && selected_array.includes(c) )  {
-              //  addHtml += "<b>Add loop here</b>\n";
-              // }
-              // if (isArray(value[c][d])) {
-              //  addHtml += "<b>Add something here</b>\n";
-              // }
-              
-          } else {
-              // For much of first level single names.
-              addHtml += "<div class='level" + level + "'>" + value[c] + "</div>\n";
+      for (c in value) { // FOR EACH PROJECT          
+        //consoleLog(value[c],b,c); //c is 0,1,2 index
+        
+        if (isObject(value[c])) {
+          addHtml += "<div class='objectcell' style='float:left;margin-right:10px;margin-bottom:10px'>"; // Around one
+          var barTitle = (+c+1);
+          if (value[c]["summary"]) {
+            barTitle = value[c]["summary"];
           }
-        }    
-        addHtml += "</div>"; // End surrounding
-          
-    } else {
+          addHtml += "<div style='background:#999;color:#fff;padding:4px;padding-left:10px;min-width:255px'>" + barTitle + "</div>\n";
+          //addHtml += "<div style='border-bottom:1px solid #ccc;clear:both'>" + (+c+1) + "</div>\n";
+
+          for (d in value[c]) { // Projects metatags
+            console.log(d)
+            console.log(value[c])
+            
+            /*
+            if (!value[c][d] || typeof value[c][d] == "undefined") {
+                addHtml += formatRow(d,"",level);
+              } else if (typeof value[c][d] == "string") {
+                addHtml += formatRow(d,value[c][d],level);
+            */
+              if (typeof value[c] == "undefined") {
+                addHtml += formatRow(d,"",level);
+              } else if (typeof value[c][d] == "string" || typeof value[c][d] == "number") {
+                addHtml += formatRow(d,value[c][d],level);
+              } else if (typeof value[c][d] == "object" ) {
+              //} else if (isObject(value[c][d]) || isArray(value[c][d])) {
+                if (value[c][d] && value[c][d].length > 1) {
+                  addHtml += formatRow(d,value[c][d],level); // 2021
+                }
+              } else if (typeof value[c][d] != "undefined") {
+                addHtml += formatRow(d, value[c][d],level);
+              } else {
+                addHtml += formatRow(d,value[c][d],level);
+                //addHtml += "<div class='level" + level + "'>" + value[c][d] + "</div>\n";
+              }
+            
+          }
+          addHtml += "</div>";
+
+        } else if (isArray(value[c])) {
+            for (d in value[c]) {
+              consoleLog("Found Array: " + value[c][d])
+              addHtml += formatRow(d,value[c][d],level);
+              //addHtml += "<div class='level4'>" + d + ":: " + value[c][d] + "</div>\n";
+            
+            }
+            // if (value[c].constructor === Array && selected_array.includes(c) )  {
+            //  addHtml += "<b>Add loop here</b>\n";
+            // }
+            // if (isArray(value[c][d])) {
+            //  addHtml += "<b>Add something here</b>\n";
+            // }
+            
+        } else {
+            // For much of first level single names.
+            addHtml += "<div class='level" + level + "'>" + value[c] + "</div>\n";
+        }
+      }    
+      addHtml += "</div>"; // End surrounding
+        
+    } else { // String
       consoleLog("Array of 0: " + key + " " + value);
       //addHtml += formatRow(c,value[c],level);
       addHtml += "<div class='level" + level + "'>" + value + "&nbsp;</div>\n";
