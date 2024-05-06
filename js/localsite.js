@@ -1731,55 +1731,89 @@ var omit_array=[];
 
 function formatRow(key,value,level,item) {
   // item parameter in use by Community-Forecasting pages comunity/zip/leaflet
-
-  consoleLog("formatRow: " + key + " " + value);
-  var addHtml = '';
-  if (key == 'color') {
-    // JQuery uses this attribute to set the bar color where class level1 immediately above this div.
+  level = level + 1;
+  var addHtml = "";
+  if (level==1 && value && value.length >= 20) {
+    const rowmax = 10;
+    addHtml += value.length + " rows reduced to " + rowmax;
+    value = value.slice(0, rowmax);
+  }
+  //consoleLog("level " + level + " formatRow: " + key + " " + value);
+  
+  if (key == 'color') { // JQuery uses .colorHolder to set the bar color for class level1 immediately above this div in Community-Forecasting.
     addHtml += "<div class='colorHolder' currentlevel='" + level + "' currentitem='" + item + "' color='" + value + "'></div>"
   }
 
+  // Reactivate after investigating
   if (level==1 && selected_array.length > 0 && !selected_array.includes(key) )  {
-    return addHtml;
+    //return addHtml + "</div>";
   }
   if (level==1 && omit_array.length > 0 && omit_array.includes(key) )  {
-    return addHtml;
+    //return addHtml + "</div>";
   }
 
-  level = level + 1;
   //if (level==1) { // Span rightcell
   //  level=2;
   //  addHtml += "<div class='hidden titlecell level1' style='width:100%'>" + key + "</div><div style='clear:both' class='hidden level" + level + "'>"
   //} else {
-    if (level==1 || level==2) {
-      if(key) { // Avoids large left margin for Nasa level1
-        //if(value && value.length > 0) { // Hides blank for nutrition
-        if(value) { // Hides blank for nutrition
-          addHtml += "<div class='level" + level + " keyonly titlecell'><b>" + key + "</b></div>";
-        }
-      }
-    } else {
-      if(key) { // Level 0 won't have a key
-        var indentIcon = ""
-        if (typeof value != "string" && typeof value != "number") {
-          for (var i = 4; i <= level; i++) {
-              indentIcon = indentIcon + "-";
-          }
-        }
-        addHtml += "<span class='hidden titlecell level" + level + "' style='float:left'>" + indentIcon + " " + key + "</span>";
+  if (level==1 || level==2) {
+    if(key) { // Avoids large left margin for Nasa level1
+      //if(value && value.length > 0) { // Hides blank for nutrition
+      if(value) { // Hides blank for nutrition
+        // level" + level + " 
+        addHtml += "<div class='keyonly titlecell celltop'><b>" + key + "</b></div>";
       }
     }
+  } else {
+    if(key) { // Level 0 won't have a key
+      var indentIcon = ""
+      if (typeof value != "string" && typeof value != "number") {
+        for (var i = 4; i <= level; i++) {
+            //indentIcon = indentIcon + "-";
+        }
+      }
+      //addHtml += "<div style='clear:both'></div>";
+      addHtml += "<span class='hidden titlecell celltop level" + level + "' style='float:left'>" + indentIcon + " " + key + "</span>";
+    }
+  }
 
-      //addHtml += "<div class='hidden rightcell level" + level + "'>"
-
-  //}  
-  //if (value.length == 0) {
-  //    addHtml += "<div class='level" + level + "'>&nbsp;</div>\n";
-  //    consoleLog("Blank: " + key + " " + value);
-  //} else 
   if (isObject(value)) {
 
-      addHtml += "<div style='clear:both'></div>";
+      var insertStyle = "";
+      if (Object.keys(value).length == 1) { // Could we use this to avoid return in GDC hierarchy?
+        
+        // Did not seem to have an effect here
+        //addHtml += "<div style='clear:both'></div>";
+      } else {
+        if (level >= 4) {
+          //insertStyle += "border:1px solid #ccc;";
+        }
+      }
+      var barTitle = "";
+      var validTitles = "title,name,summary,facetId,code,type,link_type"; // link_type is for civictechlinks
+      // Convert the validTitles string into an array
+      var validTitlesArray = validTitles.split(',');
+
+      // Check if a title key exists in the value object
+      for (var i = 0; i < validTitlesArray.length; i++) {
+          var keyName = validTitlesArray[i];
+          if (value.hasOwnProperty(keyName)) {
+              barTitle = value[keyName];
+              delete value[keyName];
+              break;
+          }
+      }
+      if (barTitle && Object.keys(value).length >= 8) {
+        barTitle = barTitle + " (" + Object.keys(value).length + " rows)";
+        insertStyle += "padding-top:0px;";
+      }
+      if (barTitle) {
+        addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell objectcell-lines' style='" + insertStyle + "'>"; // Around rows
+        addHtml += "<div keyname='" + keyName + "' class='barTitle child-count-" + Object.keys(value).length + "'>" + barTitle + "</div>\n";
+      } else {
+        addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell' style='" + insertStyle + "'>"; // Around rows
+      
+      }
       for (c in value) {
         //consoleLog("isObject: " + key + " " + value);
         
@@ -1787,92 +1821,49 @@ function formatRow(key,value,level,item) {
         if (isObject(value[c])) {
           // Entaglement is removed by parsing back to an object after Stringifing to a string
           addHtml += formatRow(c,JSON.parse(safeStringify(value[c])),level);
+        } else if (value[c] == "") {
+          // Key without a value. In some circumstance we may show these.
+          //addHtml += formatRow(c,"",level);
         } else {
           addHtml += formatRow(c,value[c],level);
         }
+        addHtml += "<div class='objectcell-line' style='clear:both'></div>";
       }
+      addHtml += "</div>";
 
   } else if (isArray(value)) {
+
     consoleLog("formatRow Array value length: " + value.length);
 
     //consoleLog("isArray: " + key + " " + value + " " + value.length);
 
     if (value.length > 0) {
-
-      if (value.length > 20) { // TO DO: Add a parameter for exceeding 20.
-        value = value.slice(0, 10);
-      }
       // Surrounding All
-      addHtml += "<div style='overflow:auto; bottom:10px; padding-top:10px'>";
-          
-      for (c in value) { // FOR EACH PROJECT          
+      // Level 1 - An array of objects
+      addHtml += "<div class='celltop' style='overflow:auto; bottom:10px; padding-top:10px'>";
+      value.forEach(item => { // For each row in array
         //consoleLog(value[c],b,c); //c is 0,1,2 index
         
-        if (isObject(value[c])) {
-          addHtml += "<div class='objectcell' style='float:left;margin-right:10px;margin-bottom:10px'>"; // Around one
-          var barTitle = (+c+1);
-          if (value[c]["summary"]) {
-            barTitle = value[c]["summary"];
-          }
-          addHtml += "<div style='background:#999;color:#fff;padding:4px;padding-left:10px;min-width:255px'>" + barTitle + "</div>\n";
-          //addHtml += "<div style='border-bottom:1px solid #ccc;clear:both'>" + (+c+1) + "</div>\n";
+        //addHtml += formatRow(c,value[c],level);
 
-          for (d in value[c]) { // Projects metatags
-            console.log(d)
-            console.log(value[c])
-            
-            /*
-            if (!value[c][d] || typeof value[c][d] == "undefined") {
-                addHtml += formatRow(d,"",level);
-              } else if (typeof value[c][d] == "string") {
-                addHtml += formatRow(d,value[c][d],level);
-            */
-              if (typeof value[c] == "undefined") {
-                addHtml += formatRow(d,"",level);
-              } else if (typeof value[c][d] == "string" || typeof value[c][d] == "number") {
-                addHtml += formatRow(d,value[c][d],level);
-              } else if (typeof value[c][d] == "object" ) {
-              //} else if (isObject(value[c][d]) || isArray(value[c][d])) {
-                if (value[c][d] && value[c][d].length > 1) {
-                  addHtml += formatRow(d,value[c][d],level); // 2021
-                }
-              } else if (typeof value[c][d] != "undefined") {
-                addHtml += formatRow(d, value[c][d],level);
-              } else {
-                addHtml += formatRow(d,value[c][d],level);
-                //addHtml += "<div class='level" + level + "'>" + value[c][d] + "</div>\n";
-              }
-            
-          }
-          addHtml += "</div>";
+        //consoleLog("Array's object row");
+        //consoleLog(item);
+        addHtml += formatRow("",item,level);
 
-        } else if (isArray(value[c])) {
-            for (d in value[c]) {
-              consoleLog("Found Array: " + value[c][d])
-              addHtml += formatRow(d,value[c][d],level);
-              //addHtml += "<div class='level4'>" + d + ":: " + value[c][d] + "</div>\n";
-            
-            }
-            // if (value[c].constructor === Array && selected_array.includes(c) )  {
-            //  addHtml += "<b>Add loop here</b>\n";
-            // }
-            // if (isArray(value[c][d])) {
-            //  addHtml += "<b>Add something here</b>\n";
-            // }
-            
-        } else {
-            // For much of first level single names.
-            addHtml += "<div class='level" + level + "'>" + value[c] + "</div>\n";
-        }
-      }    
+        // REMOVED HERE.
+      });   
       addHtml += "</div>"; // End surrounding
         
-    } else { // String
+    } else { // Array value is a string
+
       consoleLog("Array of 0: " + key + " " + value);
       //addHtml += formatRow(c,value[c],level);
       addHtml += "<div class='level" + level + "'>" + value + "&nbsp;</div>\n";
+
     }
-  } else if (key == "url" || key == "hdurl") { // hdurl from NASA
+  } else if (key == "hdurl") { // hdurl from NASA
+      addHtml += "<a href='" + value + "'><img class='valueimg' loading='lazy' src='" + value + "'></a>"
+  } else if (key == "url") { // hdurl from NASA
       addHtml += "<a href='" + value + "'>" + value + "</a>"
   } else if (key.indexOf("Uri")>=0 && value) {
       uriLink = (value.indexOf("http")==0) ? value : "https://" + value; // Brittle
@@ -1883,12 +1874,13 @@ function formatRow(key,value,level,item) {
       addHtml += "<div class='level" + level + "'>" +  new Date(value) + "</div>\n";
   } else {
       consoleLog("Last: " + key + " " + value);
-      addHtml += "<div class='level" + level + " valueonly'>" + value + "</div>\n";
+      // level" + level + " 
+      addHtml += "<div class='valueonly celltop'>" + value + "</div>\n";
   }
   //addHtml += "</div>\n";
 
-  addHtml += "<div style='border-bottom:#ccc solid 1px; clear:both'></div>" // Last one hidden by css in base.css
-
+  // Avoid, place on .objectcell instead
+  //addHtml += "<div style='margin-top:5px;border-bottom:#ccc solid 1px;'></div>" // Last one hidden by css in base.css
   return addHtml;
 }
 isObject = function(a) {

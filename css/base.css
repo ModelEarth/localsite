@@ -1471,23 +1471,69 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 
 
 /* json to html display */
+.valueonly {
+  padding-top: 5px;
+  min-width: 80px;
+}
 .titlecell {
-  padding: 5px 12px 0 0;
+  padding: 5px 12px 0 5px;
   float:left;
   clear:both;
   min-width: 180px;
   font-weight: 500;
 }
-.objectcell .titlecell {
-  min-width: 100px;
+.floating-object {
+  float:left;
+  margin-right:10px;
+  margin-bottom:10px;
 }
-.objectcell .level2.titlecell {
+.objectcell .titlecell {
+  /* too narrow for usda */
+  min-widthX: 140px;
+}
+.objectcell .rowlevel2.titlecell {
   min-width: 150px;
 }
-.objectcell .level3.titlecell {
-  width: 140px;
+.objectcell .rowlevel3.titlecell, .objectcell .rowlevel4.titlecell {
   overflow: hidden; /* for usda */
 }
+.rowlevel7.objectcell {
+  float: left;
+}
+.rowlevel3.objectcell > div, .rowlevel4.objectcell > div, .rowlevel5.objectcell > div, .rowlevel7.objectcell > div, .rowlevel8.objectcell.div  {
+  border-bottomX:1px solid #ccc;
+}
+.objectcell-lines > .objectcell-line { /* immediate child only */
+  border-bottom:1px solid #ccc;
+}
+.celltop {
+  border-topX:1px solid #ccc;
+  margin-top: 4px;
+}
+.barTitle {
+  background:#999;
+  color:#fff;
+  padding:4px;
+  padding-left:10px;
+  min-width:255px;
+}
+.valueimg {
+  width: 100%;
+  max-width: 600px;
+}
+.rowlevel3.celltop {
+  border: 0px;
+}
+.rowlevel2 > .barTitle, .rowlevel3 > .barTitle {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+/*
+.objectcell.objectcell.objectcell .barTitle {
+  background:none;
+  font-weight: bold;
+}
+*/
 .rightcell {
   margin-top:5px;
   overflow: auto;
@@ -1512,24 +1558,25 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .json_to_html_table .rightcell:first-of-type {
   border-top: 0px #fff solid;
 }
-.level2 {
+.rowlevel2 {
   margin-bottom:10px;
-  margin-top:10px;
   cursor: pointer;
 }
-.level2.keyonly {
+.rowlevel2.keyonly {
   font-size: 18px;
   float: left;
 }
 .valueonly {
+  padding-right: 5px;
   overflow: auto;
 }
-.level2.valueonly {
+.rowlevel2.valueonly {
   font-size: 16px;
   overflow: auto;
 }
-.level2 div:last-of-type {
+.rowlevel2 div:last-of-type {
   border-bottom: 0px #fff solid !important;
+  /* Add a shadow here that using a negative margin to get hidden by next .bartitle */
 }
 .two-wide {
   overflow: hidden;
