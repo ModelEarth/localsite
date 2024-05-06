@@ -306,19 +306,26 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
    return target2;
 }
 function getHash() {
-    return (mix(getHashOnly(),hiddenhash)); // Includes hiddenhash
+  return (mix(getHashOnly(),hiddenhash)); // Includes hiddenhash
 }
 function getHashOnly() {
-    return (function (a) {
-      if (a == "") return {};
-      var b = {};
-      for (var i = 0; i < a.length; ++i) {
-          var p = a[i].split('=');
-          if (p.length != 2) continue;
-          b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
-      }
-      return b;
-    })(window.location.hash.substr(1).split('&'));
+  return (function (pairs) {
+    if (pairs == "") return {};
+    var result = {};
+    pairs.forEach(function(pair) {
+      // Split the pair on "=" to get key and value
+      var keyValue = pair.split('=');
+      var key = keyValue[0];
+      var value = keyValue.slice(1).join('=');
+
+      // Replace "%26" with "&" in the value
+      value = value.replace(/%26/g, '&');
+
+      // Set the key-value pair in the result object
+      result[key] = value;
+    });
+    return result;
+  })(window.location.hash.substr(1).split('&'));
 }
 function updateHash(addToHash, addToExisting, removeFromHash) { // Avoids triggering hash change event. Also called by goHash, which does trigger hash change event.
     let hash = {}; // Limited to this function
