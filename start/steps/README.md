@@ -116,9 +116,9 @@ That's it! &nbsp;You can stop the steps here. Your updated local site is now vis
 We typically use GitHub.com and GitHub Desktop to deploy changes.
 
 1. Update your forks by clicking "Sync" for each in GitHub.com.
-2. Use the Update command above to pull locally. If a conflict occurs, make a backup of your local folder, reclone and move your change files into the local clone.
+2. Pull with GitHub Desktip or use the "git pull" command above. If a conflict occurs, rename your local folder, pull a fresh copy and move your changed files into the local clone. This allows you to visually compare your updates in Github Desktop before commiting.
 3. Commit and push your local changes up to your fork.
-4. Then go to our fork in GitHub.com and click "Pull Request" to submit to the main parent repo.
+4. Then go to our fork in GitHub.com and click "Pull Request" to submit changes to the main parent repo.
 
 Alternative Sync using commands:
 
@@ -129,7 +129,7 @@ git remote add upstream https://github.com/modelearth/data-pipeline &&
 git fetch upstream && git checkout main && git merge upstream/main &&
 git push origin main # Push the changes to your forked repository</textarea>
 
-**2.** The submit a pull request in the GitHub website, or run:
+**2.** Then submit a pull request in the GitHub website, or run:
 
 First install hub and ask it to authenticate you through your browser:
 
