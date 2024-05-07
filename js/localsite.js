@@ -1818,6 +1818,7 @@ function formatRow(key,value,level,item) {
         addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell objectcell-lines' style='" + insertStyle + "'>"; // Around rows
         addHtml += "<div keyname='" + keyName + "' class='barTitle child-count-" + Object.keys(value).length + "'>" + barTitle + "</div>\n";
       } else {
+        addHtml += "<!--Child count " + Object.keys(value).length + "-->";
         addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell' style='" + insertStyle + "'>"; // Around rows
       
       }
