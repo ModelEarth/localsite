@@ -2800,6 +2800,7 @@ function initSitelook() {
     let sitesource;
     let sitelook;
     let devmode;
+    let globecenter;
     let modelsite;
 
     if(typeof Cookies != 'undefined') {
@@ -2821,6 +2822,10 @@ function initSitelook() {
             $("#devmode").val(Cookies.get('devmode'));
             devmode = Cookies.get('devmode');
         }
+        if (Cookies.get('globecenter')) {
+            $("#globecenter").val(Cookies.get('globecenter'));
+            globecenter = Cookies.get('globecenter');
+        }
         if (Cookies.get('modelsite')) {
             $("#modelsite").val(Cookies.get('modelsite'));
             modelsite = Cookies.get('modelsite');
@@ -2832,6 +2837,7 @@ function initSitelook() {
     setSitelook(sitelook);
     setDevmode(devmode);
     setModelsite(modelsite);
+    setGlobecenter(globecenter);
 }
 function setSitemode(sitemode) {
   // Not copied over from settings.js
@@ -2897,6 +2903,40 @@ function setDevmode(devmode) {
     removeElement('/localsite/css/dev.css');
   }
 }
+function setGlobecenter(globecenter) {
+  if (globecenter == "me") {
+    getGeolocation();
+    $("#globeLatitude").val(localStorage.latitude);
+    $("#globeLongitude").val(localStorage.longitude);
+  } else {
+    $("#globeLatitude").val($("#globecenter option:selected").attr("lat"));
+    $("#globeLongitude").val($("#globecenter option:selected").attr("lon"));
+    localStorage.latitude = $("#globecenter option:selected").attr("lat");
+    localStorage.longitude = $("#globecenter option:selected").attr("lon");
+  }
+  //updateHash({"geoview":"earth"});
+}
+//const mycoords = document.getElementById('mycoords');
+function geoError(err) {
+    //mycoords.innerHTML = `Failed to locate. Error: ${err.message}`;
+}
+function geoSuccess(pos) {
+    //mycoords.innerHTML = (`${pos.coords.latitude}, ${pos.coords.longitude}`);
+    //displayRequests(pos.coords.latitude, pos.coords.longitude);
+    localStorage.latitude = pos.coords.latitude.toFixed(3);
+    localStorage.longitude = pos.coords.longitude.toFixed(3);
+    $("#globeLatitude").val(localStorage.latitude);
+    $("#globeLongitude").val(localStorage.longitude);
+}
+function getGeolocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
+    } else {
+        alert("Geolocation is not supported by this browser.");
+        //mycoords.innerHTML = 'Geolocation is not supported by this browser.';
+    }
+}
+
 function setModelsite(modelsite) {
   if (modelsite != "") {
     console.log("To do: setModelsite");

@@ -122,7 +122,7 @@ We typically use GitHub.com and GitHub Desktop to deploy changes.
 
 Alternative Sync using commands:
 
-**1.** Fetch our main upsteam repo to sync up, then moves your local changes into your fork:
+**1.** Fetch our main upsteam repo to sync up, then move your local changes into your fork:
 
 <textarea id="pullRequestCmd" class="codetext" rows="3">
 git remote add upstream https://github.com/modelearth/data-pipeline &&

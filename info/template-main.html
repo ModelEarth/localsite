@@ -278,7 +278,7 @@
               </div>
             </div>
 
-          <div class="setLeft">Style</div>
+          <div class="setLeft">Light/Dark</div>
             <div class="setOverflow"><div class="setRight">
                 <select id="sitelook">
                   <option value="default" selected>Default</option>
@@ -342,6 +342,25 @@
                 <div class="setDiv"></div>
             </div>
             
+            <div class="setLeft"><div>Center Earth</div></div>
+            <div class="setOverflow"><div class="setRight">
+                  <select id="globecenter">
+                    <option value="me">My Location</option>
+                    <option value="atlantic" lat="0" lon="-25" selected>Atlantic Ocean</option>
+                    <option value="pacific" lat="0" lon="-160">Pacific Ocean</option>
+                    <option value="indian" lat="0" lon="80">Indian Ocean</option>
+                    <option value="arctic" lat="90" lon="0">Arctic Ocean</option>
+                    <option value="antarctic" lat="-90" lon="0">Antarctica</option>
+                  </select>
+            </div></div>
+            <div style="float:left">
+                    <input id="globeLatitude" class="dark mylat filterClick mobileWide textInput" placeholder="Latitude" type="text" style="width:90px; margin-top:0px; margin-right: 5px" />
+            </div>
+            <div style="float:left">
+                    <input id="globeLongitude" class="dark mylon filterClick mobileWide textInput" placeholder="Longitude" type="text" style="width:90px; margin-top:0px;" />
+            </div>
+            <div class="setDiv"></div>
+
             <div class="local" style="display:none">
               <div class="setLeft"><div>Basemap</div></div>
               <div class="setOverflow">
@@ -382,24 +401,7 @@
           </div>
           <div class="setDiv"></div>
 
-          <div style="displayX:none">
-                <div class="setLeft">My Latitude</div>
-                <div class="setOverflow"><div class="setRight">
-                  
-                    <input class="mylat filterClick mobileWide textInput" placeholder="Latitude" type="text" style="width: 120px; margin-top: 0px" />
 
-                </div></div>
-                <div class="setDiv"></div>
-            </div>
-            <div style="displayX:none">
-                <div class="setLeft">My Longitude</div>
-                <div class="setOverflow"><div class="setRight">
-                  
-                    <input class="mylon filterClick mobileWide textInput" placeholder="Longitude" type="text" style="width: 120px; margin-top: 0px" />
-
-                </div></div>
-                <div class="setDiv"></div>
-            </div>
           -->
 
             <!-- Multilayer Checkboxes -->

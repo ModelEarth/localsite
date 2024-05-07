@@ -149,10 +149,13 @@
     float: left;
     z-index: 1;
 }
-.dark .filterClick {
+.dark .filterClick, .dark.filterClick {
   background-color: #555;
   color: #fff;
   border: #555 solid 0px;
+}
+.dark .filterClick::placeholder, .dark.filterClick::placeholder {
+  color: #bbb;
 }
 input.filterClick[type="text"] { 
     outline: none; /* prevents jagged edge when clicking to use search field. */

@@ -691,12 +691,14 @@ function hashChanged() {
             }
         });
         if (hash.geoview == "earth") {
-            showGlobalMap("https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
+            let latLonZoom = "-115.84,31.09";
+            if (localStorage.latitude && localStorage.longitude) {
+                latLonZoom = localStorage.longitude + "," + localStorage.latitude + ",1037";
+            }
+            showGlobalMap(`https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=${latLonZoom}`);
         } else if (hash.geoview) {
             loadGeomap = true;
-
             // if ((priorHash.sidetab == "locale" && hash.sidetab != "locale") || (priorHash.locpop  && !hash.locpop)) {
-            
                 // Closing sidetab or locpop, move geomap back to holder.
                 $("#filterLocations").prependTo($("#locationFilterHolder")); // Move back from sidetabs
                 $("#geomap").appendTo($("#geomapHolder")); // Move back from sidetabs
@@ -706,7 +708,6 @@ function hashChanged() {
                     loadGeomap = true;
                 }
             //}
-
         } else {
             //alert("#filterLocations hide")
             $("#filterLocations").hide();
@@ -4514,6 +4515,12 @@ $(document).on("change", "#devmode", function(event) { // Public or Dev
     }
     setDevmode($("#devmode").val());
 });
+$(document).on("change", "#globecenter", function(event) { // Public or Dev
+    if (typeof Cookies != 'undefined') {
+        Cookies.set('globecenter', $("#globecenter").val());
+    }
+    setGlobecenter($("#globecenter").val());
+});
 $(document).on("change", "#modelsite", function(event) {
     if (typeof Cookies != 'undefined') {
         Cookies.set('modelsite', $("#modelsite").val());
@@ -4597,7 +4604,11 @@ $(document).on("click", ".showEarth", function(event) {
         $("#hero_holder").hide();
         // Add a setting to choose map: Temperatures or just wind
         // Big blue: https://earth.nullschool.net/#current/wind/surface/level/orthographic=-35.06,40.67,511
-        showGlobalMap("https://earth.nullschool.net/#current/wind/surface/level/overlay=temp/orthographic=-72.24,46.06,511"); //   /loc=-81.021,33.630
+        let latLonZoom = "-72.24,46.06,511";
+        if (localStorage.latitude && localStorage.longitude) {
+            latLonZoom = localStorage.longitude + "," + localStorage.latitude + ",511";
+        }
+        showGlobalMap(`https://earth.nullschool.net/#current/wind/surface/level/overlay=temp/orthographic=${latLonZoom}`);
     }
     event.stopPropagation();
 });
