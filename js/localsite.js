@@ -1869,7 +1869,7 @@ function formatRow(key,value,level,item) {
       addHtml += "<div class='level" + level + "'>" + value + "&nbsp;</div>\n";
 
     }
-  } else if (key == "hdurl") { // hdurl from NASA
+  } else if (key == "hdurl" || key == "image_full") { // hdurl from NASA, image_full SeeClickFix
       addHtml += "<a href='" + value + "'><img class='valueimg' loading='lazy' src='" + value + "'></a>"
   } else if (key == "url" || key == "link") { // url from NASA, link from RSS
       addHtml += "<a href='" + value + "'>" + value + "</a>"
