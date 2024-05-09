@@ -1871,7 +1871,7 @@ function formatRow(key,value,level,item) {
     }
   } else if (key == "hdurl") { // hdurl from NASA
       addHtml += "<a href='" + value + "'><img class='valueimg' loading='lazy' src='" + value + "'></a>"
-  } else if (key == "url") { // hdurl from NASA
+  } else if (key == "url" || key == "link") { // url from NASA, link from RSS
       addHtml += "<a href='" + value + "'>" + value + "</a>"
   } else if (key.indexOf("Uri")>=0 && value) {
       uriLink = (value.indexOf("http")==0) ? value : "https://" + value; // Brittle
