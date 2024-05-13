@@ -477,6 +477,11 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	left:0;
 	bottom:0;
 }
+@media (max-width: 500px) {
+	.navcolumn {
+		width: 100%;
+	}
+}
 .listcolumn {
     position: fixed;
     width:380px;
@@ -563,6 +568,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
  	opacity: .7;
  	cursor: pointer;
 }
+
 /*
 @media (min-width: 600px) and (max-width: 1100px) {
 	#showNavColumn {
@@ -731,9 +737,6 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 
 @media (max-width: 800px) {
-    .content {
-      padding: 30px 30px 30px 40px;
-    }
     #navcolumn {
       display: none;
       z-index: 1000;

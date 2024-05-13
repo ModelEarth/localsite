@@ -967,6 +967,19 @@ $(document).ready(function () {
         }
     });
 
+    
+    $(document).on("click", "#headerLogoholder", function(event) {
+        const headerbarWidth = $("#headerbar").width();
+        if (headerbarWidth && headerbarWidth <= 600) {
+            if ($("#navcolumn").is(':hidden')) {
+                showNavColumn();
+            } else {
+                hideNavColumn();
+            }
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    });
     $(document).on("click", "#show_county_colors", function(event) {
         let hash = getHash();
         let layerName = "";
@@ -3735,6 +3748,16 @@ function showNavColumn() {
         }
     }
 }
+function hideNavColumn() {
+    $("#sideIcons").show();
+    $("#navcolumn").hide();
+    $("#showNavColumn").show();$("#showSideInBar").hide();
+    $('body').removeClass('bodyLeftMargin');
+    $('body').removeClass('bodyLeftMarginFull');
+    if (!$('body').hasClass('bodyRightMargin')) {
+        $('body').removeClass('mobileView');
+    }
+}
 function toggleDiv(theClass) {
     const divsToToggle = document.querySelectorAll(theClass);
     const elements = document.querySelectorAll(theClass);
@@ -3984,7 +4007,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
                 //prependTo = "body"; // Might not have worked intermintantly for the following prepend here: http://localhost:8887/recycling/
             }
             // min-height added since ds.ai html cropping to short side
-            $(prependTo).prepend("<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv noprint sidecolumnLeft liteDiv' style='display:none; min-height:300px'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement); //  listColumnElement will be blank if already applied above.
+            $(prependTo).prepend("<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv noprint sidecolumnLeft liteDiv' style='display:none; min-height:300px'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat' style='display:none'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement); //  listColumnElement will be blank if already applied above.
         } else {
             // TODO - change to fixed when side reaches top of page
             console.log("navigation.js report: navcolumn already exists")
@@ -3996,13 +4019,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
             if ($("#navcolumn").is(':hidden')) {
                 showNavColumn();
             } else {
-                $("#navcolumn").hide();
-                $("#showNavColumn").show();$("#showSideInBar").hide();
-                $('body').removeClass('bodyLeftMargin');
-                $('body').removeClass('bodyLeftMarginFull');
-                if (!$('body').hasClass('bodyRightMargin')) {
-                    $('body').removeClass('mobileView');
-                }
+                hideNavColumn();
             }
             let headerFixedHeight = $("#headerLarge").height();
             $('#cloneLeft').css("top",headerFixedHeight + "px");

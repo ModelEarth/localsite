@@ -11,7 +11,7 @@ let defaultState = "";
 if (location.host.indexOf('localhost') >= 0) {
   // Set onlineApp to false during air travel. Also sets local to no state.
   // Requires community-data locally
-  //onlineApp = false; 
+  //onlineApp = false; // During airplane mode
   defaultState = "";  // Set to GA to include additional map layers in top nav.
 }
 consoleLog("start localsite");

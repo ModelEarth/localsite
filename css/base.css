@@ -479,8 +479,7 @@ summary::-webkit-details-marker {
 }
 .contentpadding, #observablehq-center {
   padding-top: 25px;
-  padding-left: 50px; /* also used 64, 50 */
-  padding-left: 60px; /* to avoid overlapping upper left menu */
+  padding-left: 64px; /* avoids overlapping left icon menu */
   padding-right: 40px;
   padding-bottom: 45px;
 }
@@ -555,6 +554,11 @@ summary::-webkit-details-marker {
 }
 .content ul li {
   margin-left: -10px;
+}
+@media (max-width: 800px) {
+    .content {
+      padding: 30px 30px 30px 64px;
+    }
 }
 @media (max-width: 1400px) {
   .contentwide {
@@ -1315,19 +1319,27 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .upperIcons {
   margin-right: 18px;
 }
+@media (min-width: 300px) {
+  #headerLogoholder {
+    min-widthX: 200px;
+  }
+}
 @media (max-width: 600px) {
   .upperIcons {
     margin-right: 8px;
   }
   #headerLogoholder {
-    padding-left: 59px;
+    padding-leftX: 59px;
+  }
+  #showNavColumn {
+    display: none !important;
   }
 }
 @media (max-width: 300px) {
   #headerLocTitleHolder {
     display: none;
   }
-  .headerLogoDesktop {
+  .headerLogoDesktop, #headerLogoholder {
     display: none;
   }
 }

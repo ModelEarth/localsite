@@ -995,7 +995,6 @@ function showList(dp,map) {
   isObject = function(a) {
       return (!!a) && (a.constructor === Object);
   }
-
   if (dp.listTitle) {
     $(".listTitle").html(dp.listTitle);
     $(".listTitle").show();
