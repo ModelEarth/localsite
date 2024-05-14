@@ -1211,15 +1211,17 @@ $(document).ready(function () {
     });
     $(document).on("click", "body", function(event) {
         if ($("#navcolumn").is(":visible") && window.innerWidth < 1200) { 
-            $('#navcolumn').hide();
+            $("#navcolumn").hide();
             $("#showNavColumn").show();$("#showSideInBar").hide();
             $("#sideIcons").show();
             $('body').removeClass('bodyLeftMargin');
+            $('body').removeClass('bodyLeftMarginList');
             $('body').removeClass('bodyLeftMarginFull');
             $('body').removeClass('bodyLeftMarginNone'); // For DS side over hero
             if (!$('body').hasClass('bodyRightMargin')) {
                 $('body').removeClass('mobileView');
             }
+            $('#listcolumn').addClass('listcolumnOnly');
         }
     });
 
@@ -4026,9 +4028,12 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         });
         $(document).on("click", ".hideSideList", function(event) {
             hideSide("list");
+            event.stopPropagation();
+            event.preventDefault();
         });
         $(document).on("click", ".hideSide", function(event) {
             hideSide("");
+            console.log(".hideSide click");
         });
 
         $(document).on("click", ".showNavColumn, #navcolumn", function(event) {

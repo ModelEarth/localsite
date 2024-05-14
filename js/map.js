@@ -2187,6 +2187,8 @@ $(document).on("click", ".showList", function(event) {
   }
   showListBodyMargin();
   $(".showList").hide();
+  event.stopPropagation();
+  event.preventDefault(); // Prevents #navcolumn from being hidden.
 });
 function showListBodyMargin() {
   if ($("#fullcolumn > .datascape").is(":visible")) { // When NOT embedded
