@@ -331,7 +331,11 @@ h6 {
   margin-top: 10px;
   margin-bottom: 0px;
 }
-
+@media (max-width: 400px) {
+  h1 {
+    margin-top: 0px;
+  }
+}
 
 
 .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
@@ -1498,6 +1502,10 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   float:left;
   margin-right:10px;
   margin-bottom:10px;
+}
+.floating-object.rowlevel2 {
+  padding-bottom: 10px;
+  border-bottom:1px solid #ccc;
 }
 .objectcell .titlecell {
   /* too narrow for usda */
