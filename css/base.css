@@ -1527,7 +1527,6 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   border-bottom:1px solid #ccc;
 }
 .celltop {
-  border-topX:1px solid #ccc;
   margin-top: 4px;
 }
 .barTitle {

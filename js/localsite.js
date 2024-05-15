@@ -1735,6 +1735,7 @@ function safeStringify(obj, replacer = null, spaces = 2) {
 // Convert json to html
 var selected_array=[];
 var omit_array=[];
+var fetchedPreviewCount = 0;
 
 function formatRow(key,value,level,item) {
   // item parameter in use by Community-Forecasting pages comunity/zip/leaflet
@@ -1884,8 +1885,26 @@ function formatRow(key,value,level,item) {
       addHtml += "<div class='level" + level + "'>" +  new Date(value) + "</div>\n";
   } else {
       consoleLog("Last: " + key + " " + value);
-      // level" + level + " 
-      addHtml += "<div class='valueonly celltop'>" + value + "</div>\n";
+      addHtml += "<div class='valueonly celltop'>";
+      if (key == "description") {
+        // || key == "website" // Most of these in feed=epd lack images, and there are 5 per listing (50 total with 10 rows)
+        let urlPattern = /http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+/;
+        let match = value.match(urlPattern);
+        let postText = value;
+        if (match) {
+          postText = value.replace(match[0], '');
+        } 
+        addHtml += postText;
+        if (match) {
+          fetchedPreviewCount++;
+          let divID = "fetchedPreview-" + Date.now() + "-" + fetchedPreviewCount;
+          addHtml += "<div id='" + divID + "' style='max-width:500px'><a href='" + match[0] + "'>" + match[0] + "</a></div>\n"; // If content is not fetched, the first URL found is shown.
+          getSitePreview(match[0], divID);
+        }
+      } else {
+        addHtml += value;
+      }
+      addHtml += "</div>\n"; // close div containing value
   }
   //addHtml += "</div>\n";
 
@@ -1941,6 +1960,39 @@ addEventListener("load", function(){
   }, false);
 });
 
+// USES CORS PROXY
+function getSitePreview(url, divID) {
+    let proxyUrl = 'https://cors-anywhere.herokuapp.com/' + url; // Replace with your CORS proxy URL
+    $.ajax({
+        url: proxyUrl,
+        type: 'GET',
+        dataType: 'html',
+        success: function(data) {
+            var doc = new DOMParser().parseFromString(data, 'text/html');
+            var titleElement = doc.querySelector('title');
+            var title = titleElement ? titleElement.textContent : 'No title found';
+            
+            var imageElement = doc.querySelector('meta[property="og:image"]');
+            var image = imageElement ? imageElement.getAttribute('content') : '';
+
+            var descriptionElement = doc.querySelector('meta[name="description"]');
+            var description = descriptionElement ? descriptionElement.getAttribute('content') : '<a href="' + url + '"">' + url + '</a>'; // URL can be added here
+
+            var html = '<div>';
+            html += '<h3>' + title + '</h3>';
+            html += '<p>' + description + '</p>';
+            if (image) {
+                html += '<img src="' + image + '" style="width:100%">';
+            }
+            html += '</div>';
+            
+            $('#' + divID).html(html);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching link preview:', error);
+        }
+    });
+}
 
 // Error on storage page: this.replace is not a function
 // So renamed to toTitleCaseFormatFormat. Haven't confirmed.
