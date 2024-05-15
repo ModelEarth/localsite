@@ -3822,6 +3822,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
 
     // To do: fetch the existing background-image.
     
+    let modelsite = Cookies.get('modelsite');
     let hash = getHash();
     const changeFavicon = link => { // var for Safari
       let $favicon = document.querySelector('link[rel="icon"]')
@@ -3877,7 +3878,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         showClassInline(".georgia"); // Temp side nav
         showClassInline(".earth"); // Temp side nav
 
-    } else if ((defaultState == "GA" && !Array.isArray(param.titleArray) && (location.host.indexOf('localhost') >= 0 && navigator && navigator.brave))   || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
+    } else if ((modelsite=="model.georgia" && location.host.indexOf('localhost') >= 0) || (defaultState == "GA" && !Array.isArray(param.titleArray) && (location.host.indexOf('localhost') >= 0 && navigator && navigator.brave))   || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
         // The localsite repo is open to use by any state or country.
         // Georgia Economic Development has been a primary contributor.
         // Show locally for Brave Browser only - insert before:  ) || false
