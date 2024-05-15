@@ -1742,7 +1742,7 @@ function formatRow(key,value,level,item) {
   var addHtml = "";
   if (level==1 && value && value.length >= 20) {
     const rowmax = 10;
-    addHtml += value.length + " rows reduced to " + rowmax;
+    addHtml += value.length + " rows, showing " + rowmax;
     value = value.slice(0, rowmax);
   }
   //consoleLog("level " + level + " formatRow: " + key + " " + value);
@@ -1830,8 +1830,10 @@ function formatRow(key,value,level,item) {
           // Entaglement is removed by parsing back to an object after Stringifing to a string
           addHtml += formatRow(c,JSON.parse(safeStringify(value[c])),level);
         } else if (value[c] == "") {
-          // Key without a value. In some circumstance we may show these.
-          //addHtml += formatRow(c,"",level);
+          // Key without a value. In some circumstance we show these.
+          if (c == "index") { // We insert "0" for first record in USEEIO Impact Flow which has index=0
+            addHtml += formatRow(c,"0",level);
+          }
         } else {
           addHtml += formatRow(c,value[c],level);
         }
