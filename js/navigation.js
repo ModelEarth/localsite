@@ -333,7 +333,8 @@ function hashChanged() {
                     //$("#tabulator-geocredit").show();
                 //}
             }
-        } else if (hash.geoview == "earth" || hash.geoview == "countries") {
+            // hash.geoview == "earth" || 
+        } else if (hash.geoview == "countries") {
             let element = {};
             element.scope = "countries";
             element.key = "Country Code";
@@ -533,8 +534,7 @@ function hashChanged() {
         if($("#geomap").is(':visible')) {
             if (hash.geoview != "country") {
                 if(location.host.indexOf('localhost') >= 0) {
-                    alert("localhost: geoDeselect work in progress")
-                    //updateSelectedTableRows(hash.geo, geoDeselect, 0);
+                    updateSelectedTableRows(hash.geo, geoDeselect, 0);
                 }
             }
             // hash.geoview = county, country, etc
@@ -1632,7 +1632,6 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
           //url = local_app.modelearth_root() + "/topojson/countries/us-states/GA-13-georgia-counties.json";
           // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
         } else { // ALL COUNTRIES
-        //} else if (hash.geoview == "earth") {
           url = local_app.modelearth_root() + "/topojson/world-countries-sans-antarctica.json";
           topoObjName = "topoob.objects.countries1";
         }
@@ -2932,6 +2931,8 @@ function showTabulatorList(element, attempts) {
     }
 }
 function updateSelectedTableRows(geo, geoDeselect, attempts) {
+    alert("updateSelectedTableRows")
+                    
     let hash = getHash();
     if (!hash.state) {
         console.log("ALERT - A state value is needed in the URL")
@@ -4615,7 +4616,11 @@ $(document).on("click", ".closeSideTabs", function(event) {
     event.stopPropagation();
 });
 $(document).on("click", ".showEarth", function(event) {
-    if ($("#nullschoolHeader").is(':visible')) {
+    showEarth("show");
+    event.stopPropagation();
+});
+function showEarth(show) {
+    if ($("#nullschoolHeader").is(':visible') && show != "show") {
         $("#nullschoolHeader").hide();
         //$("#globalMapHolder").show();
         $("#hero_holder").show();
@@ -4633,8 +4638,7 @@ $(document).on("click", ".showEarth", function(event) {
         }
         showGlobalMap(`https://earth.nullschool.net/#current/wind/surface/level/overlay=temp/orthographic=${latLonZoom}`);
     }
-    event.stopPropagation();
-});
+}
 $(document).click(function(event) { // Hide open menus
     if($("#menuHolder").css('display') !== 'none') {
         $("#menuHolder").hide(); // Since menu motion may freeze when going to another page.

@@ -29,14 +29,18 @@ function updateGitCmds() {
         let checkbox = document.getElementById(checkboxId);
         let repoName = checkboxId.replace("Forked","");
         let branch = "main";
-        var updatedLine = "git clone https://github.com/modelearth/" + repoName + " " + repoName + " &&";
+        var updatedLine = "git clone https://github.com/modelearth/" + repoName + " " + repoName; //  + " &&"
         //var updatedLineRefresh = "git pull https://github.com/modelearth/" + repoName + " " + branch + " &&";
-        var updatedLineRefresh = "cd ../" + repoName + " && git pull https://github.com/modelearth/" + repoName + " &&";
+        var climbout = "cd ../";
+        if (repoName == "localsite") { // Except for first one
+          climbout = "cd ";
+        }
+        var updatedLineRefresh = climbout + repoName + " && git pull https://github.com/modelearth/" + repoName; // + " &&"
         if (checkbox.checked) {
             // If checkbox is checked, construct the updated line
-            updatedLine = "git clone https://github.com/" + gitAccount + "/" + repoName + " " + repoName + " &&";
+            updatedLine = "git clone https://github.com/" + gitAccount + "/" + repoName + " " + repoName; //  + " &&"
             //updatedLineRefresh = "git pull https://github.com/" + gitAccount + "/" + repoName + " " + branch + " &&";
-            updatedLineRefresh = "cd ../" + repoName + " && git pull https://github.com/" + gitAccount + "/" + repoName + " &&";
+            updatedLineRefresh = climbout + repoName + " && git pull https://github.com/" + gitAccount + "/" + repoName; //  + " &&"
             checkForks.push(checkboxId);
         }
         // Get the current values of the textareas
@@ -134,6 +138,9 @@ waitForElm('#gitAccount').then((elm) => {
 
 <script>
   loadMarkdown("README.md", "readmeDiv", "_parent");
+  waitForVariable('steps', function () {
+    $(window). scrollTop(0); // Fixes unexplainable loading in mid-page
+  });
 </script>
 
 </body>

@@ -1,8 +1,8 @@
 [
 {
-	"section-user": "My Impact",
-	"section": "My Impact",
-	"title": "My Impact",
+	"section-user": "My Planner",
+	"section": "My Planner",
+	"title": "Menus",
 	"icon": "/localsite/img/icon/scope/overview.png",
 	"link": "#scope=ind"
 },
@@ -24,27 +24,27 @@
 },
 {
 	"section": "Household",
-	"title": "Household",
+	"title": "Family",
 	"icon": "/localsite/img/icon/scope/household.png"
 },
 {
 	"section": "Work",
-	"title": "Work",
+	"title": "Schedule",
 	"icon": "/localsite/img/icon/scope/work.png"
 },
 {
 	"section": "Travel",
-	"title": "Travel",
+	"title": "Destinations",
 	"icon": "/localsite/img/icon/scope/travel.png"
 },
 {
 	"section": "Food",
-	"title": "Food",
+	"title": "Nutrition",
 	"icon": "/localsite/img/icon/scope/food.png"
 },
 {
 	"section": "Shopping",
-	"title": "Shopping",
+	"title": "Grocery List",
 	"icon": "/localsite/img/icon/scope/shopping.png"
 }
 ]

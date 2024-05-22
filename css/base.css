@@ -17,6 +17,9 @@ Used in localsite, modelearth, io, neighborhood, trees
   background-image: linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(-45deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(45deg, transparent 95%, rgba(0,0,0,0.1) 75%), linear-gradient(-45deg, transparent 95%, rgba(0,0,0,0.1) 75%);
   background-size: 3px 3px;
 }
+.dark .local, .dark .localonly {
+  background-image: linear-gradient(45deg, rgba(250,250,250,0.1) 25%, transparent 25%), linear-gradient(-45deg, rgba(250,250,250,0.1) 25%, transparent 25%), linear-gradient(45deg, transparent 95%, rgba(250,250,250,0.1) 75%), linear-gradient(-45deg, transparent 95%, rgba(250,250,250,0.1) 75%);
+}
 .localonly {padding:20px; }
 svg{max-width:none;} /* Fix for embedding material icon map points in Drupal */
 
@@ -1689,7 +1692,7 @@ input:checked + .slider:before {
 #readmeDiv tr, .mdTable tr {
   text-align: left;
 }
-#readmeDiv td, #readmeDiv tr, .mdTable td, .mdTable th {
+#readmeDiv td, #readmeDiv th, .mdTable td, .mdTable th {
   text-align: left;
   padding-right: 20px;
 }

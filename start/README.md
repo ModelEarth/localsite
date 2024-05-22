@@ -24,6 +24,8 @@ View our [Active Projects](../../projects) and [Moonshots](../../community/proje
 &bullet; <a href="../challenge/how/">How to Create a Local Site Page</a><br>
 --> 
 
+<a href="../../localsite/start/steps/" class="btn btn-success">Start Site Install</a>
+
 ## <span class="num">2</span><span class="txt">Integrate Datasets</span>
 Model.earth [Data Pipeline](../../localsite/info/data) and our <a href="/data-commons/dist/">Observable Data Commons</a>
 [Industry Data Prep](../../data-pipeline/timelines/training/naics/) for our machine learning [RealityStream](../../RealityStream/)

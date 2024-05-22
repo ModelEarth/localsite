@@ -7,7 +7,7 @@
 }
 .layerSection {
 	min-width:  32px;
-	min-height: 40px;
+	min-height: 46px;
 	color: #333;
 	clear: both;
 }
@@ -125,16 +125,21 @@
 	min-width: 38px;
 	max-width: 38px; 
 }
-.sideMenuColumnNarrow	.layerSection {
+.sideMenuColumnNarrow .layerSection {
 	white-space: nowrap;
 	overflow: visible;
 	float: left; /* For ideMenuNav(id) */
 }
-.sideMenuColumnNarrow	.layerSectionTitle {
+.sideMenuColumnWide .layerSectionTitle:hover {
+	background-color: #eee;
+	border-radius: 10px;
+}
+.sideMenuColumnNarrow .layerSectionTitle {
 	display: none;
 }
 
 .sideMenuColumnNarrow .layerSectionTitle {
+	font-size: 1.2em;
 	width: 160px; /* required for background color to be visible */
 	color: #fff;
 	background-color: #333;
@@ -143,7 +148,6 @@
 	padding-top: 8px;
 	padding-bottom: 8px;
 	padding-right: 8px;
-	border-bottom: 1px solid #fff;
 	border-top-right-radius: 2px;
  	border-top-right-radius: 22px;
 	border-bottom-right-radius: 22px;
@@ -151,6 +155,7 @@
 .openMenu {
 	margin-bottom: 12px;
 }
+
 @media (max-width: 1400px) {
 	.sideMenuColumnWide .layerCbRow { /* Allow submenu to be hidden on resize without using javascript */
 		display: none !important;
@@ -160,9 +165,9 @@
 	}
 	.sideMenuColumn {
 		z-index: 1;
-		min-width: 38px;
-		max-width: 38px;
-		width: 38px;
+		min-width: 56px;
+		max-width: 56px;
+		width: 56px;
 		overflow: visible;
 	}
 	.layerSection {
@@ -181,7 +186,9 @@
 	}
 	.layerSectionIcon {
 		float: initial;
-		min-height: 20px;
+		min-height: 22px;
+		margin-top: 4px;
+		margin-left: 6px;
 	}
 	.layerSectionClick {
 		min-width: auto;
@@ -773,8 +780,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     border: 0px !important;
 }
 .dark #rightTopMenu select {
-	color: #ddd;
-	background-color: #aaa;
+	color: #eee !important;
 }
 .menuExpanded {
     min-height: 200px;
@@ -887,7 +893,8 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .rightTopMenuInner { /* lives outside .moduleJS when full header displayed */
     min-width: 110px;
     font-family: 'Open Sans', 'Helvetica Neue', HelveticaNeue, calibri, arial, sans-serif;
-    max-width: 157px;
+    padding-left: 8px;
+    max-width: 165px;
 }
 .rightTopMenuInner i {
     color: #ddd !important;

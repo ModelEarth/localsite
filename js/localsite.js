@@ -1716,283 +1716,6 @@ function extractHostnameAndPort(url) {
     return hostname;
 }
 
-function safeStringify(obj, replacer = null, spaces = 2) {
-    const seen = new WeakSet();
-    return JSON.stringify(obj, function(key, value) {
-        if (typeof value === 'object' && value !== null) {
-            if (seen.has(value)) {
-                return '[Circular]';
-            }
-            seen.add(value);
-        }
-        if (replacer && typeof replacer === 'function') {
-            return replacer.call(this, key, value);
-        }
-        return value;
-    }, spaces);
-}
-
-// Convert json to html
-var selected_array=[];
-var omit_array=[];
-var fetchedPreviewCount = 0;
-
-function formatRow(key,value,level,item) {
-  // item parameter in use by Community-Forecasting pages comunity/zip/leaflet
-  level = level + 1;
-  var addHtml = "";
-  if (level==1 && value && value.length >= 20) {
-    const rowmax = 10;
-    addHtml += value.length + " rows, showing " + rowmax;
-    value = value.slice(0, rowmax);
-  }
-  //consoleLog("level " + level + " formatRow: " + key + " " + value);
-  
-  if (key == 'color') { // JQuery uses .colorHolder to set the bar color for class level1 immediately above this div in Community-Forecasting.
-    addHtml += "<div class='colorHolder' currentlevel='" + level + "' currentitem='" + item + "' color='" + value + "'></div>"
-  }
-
-  // Reactivate after investigating
-  if (level==1 && selected_array.length > 0 && !selected_array.includes(key) )  {
-    //return addHtml + "</div>";
-  }
-  if (level==1 && omit_array.length > 0 && omit_array.includes(key) )  {
-    //return addHtml + "</div>";
-  }
-
-  //if (level==1) { // Span rightcell
-  //  level=2;
-  //  addHtml += "<div class='hidden titlecell level1' style='width:100%'>" + key + "</div><div style='clear:both' class='hidden level" + level + "'>"
-  //} else {
-  if (level==1 || level==2) {
-    if(key) { // Avoids large left margin for Nasa level1
-      //if(value && value.length > 0) { // Hides blank for nutrition
-      if(value) { // Hides blank for nutrition
-        // level" + level + " 
-        addHtml += "<div class='keyonly titlecell celltop'><b>" + key + "</b></div>";
-      }
-    }
-  } else {
-    if(key) { // Level 0 won't have a key
-      var indentIcon = ""
-      if (typeof value != "string" && typeof value != "number") {
-        for (var i = 4; i <= level; i++) {
-            //indentIcon = indentIcon + "-";
-        }
-      }
-      //addHtml += "<div style='clear:both'></div>";
-      addHtml += "<span class='hidden titlecell celltop level" + level + "' style='float:left'>" + indentIcon + " " + key + "</span>";
-    }
-  }
-
-  if (isObject(value)) {
-
-      var insertStyle = "";
-      if (Object.keys(value).length == 1) { // Could we use this to avoid return in GDC hierarchy?
-        
-        // Did not seem to have an effect here
-        //addHtml += "<div style='clear:both'></div>";
-      } else {
-        if (level >= 4) {
-          //insertStyle += "border:1px solid #ccc;";
-        }
-      }
-      var barTitle = "";
-      var validTitles = "title,name,summary,facetId,code,type,link_type"; // link_type is for civictechlinks
-      // Convert the validTitles string into an array
-      var validTitlesArray = validTitles.split(',');
-
-      // Check if a title key exists in the value object
-      for (var i = 0; i < validTitlesArray.length; i++) {
-          var keyName = validTitlesArray[i];
-          if (value.hasOwnProperty(keyName)) {
-              barTitle = value[keyName];
-              delete value[keyName];
-              break;
-          }
-      }
-      if (barTitle && Object.keys(value).length >= 8) {
-        barTitle = barTitle + " (" + Object.keys(value).length + " rows)";
-        insertStyle += "padding-top:0px;";
-      }
-      if (barTitle) {
-        addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell objectcell-lines' style='" + insertStyle + "'>"; // Around rows
-        addHtml += "<div keyname='" + keyName + "' class='barTitle child-count-" + Object.keys(value).length + "'>" + barTitle + "</div>\n";
-      } else {
-        addHtml += "<!--Child count " + Object.keys(value).length + "-->";
-        addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell' style='" + insertStyle + "'>"; // Around rows
-      
-      }
-      for (c in value) {
-        //consoleLog("isObject: " + key + " " + value);
-        
-        //if (json.data[a].constructor === Array && selected_array.includes(a) )  {
-        if (isObject(value[c])) {
-          // Entaglement is removed by parsing back to an object after Stringifing to a string
-          addHtml += formatRow(c,JSON.parse(safeStringify(value[c])),level);
-        } else if (value[c] == "") {
-          // Key without a value. In some circumstance we show these.
-          if (c == "index") { // We insert "0" for first record in USEEIO Impact Flow which has index=0
-            addHtml += formatRow(c,"0",level);
-          }
-        } else {
-          addHtml += formatRow(c,value[c],level);
-        }
-        addHtml += "<div class='objectcell-line' style='clear:both'></div>";
-      }
-      addHtml += "</div>";
-
-  } else if (isArray(value)) {
-
-    consoleLog("formatRow Array value length: " + value.length);
-
-    //consoleLog("isArray: " + key + " " + value + " " + value.length);
-
-    if (value.length > 0) {
-      // Surrounding All
-      // Level 1 - An array of objects
-      addHtml += "<div class='celltop' style='overflow:auto; bottom:10px; padding-top:10px'>";
-      value.forEach(item => { // For each row in array
-        //consoleLog(value[c],b,c); //c is 0,1,2 index
-        
-        //addHtml += formatRow(c,value[c],level);
-
-        //consoleLog("Array's object row");
-        //consoleLog(item);
-        addHtml += formatRow("",item,level);
-
-        // REMOVED HERE.
-      });   
-      addHtml += "</div>"; // End surrounding
-        
-    } else { // Array value is a string
-
-      consoleLog("Array of 0: " + key + " " + value);
-      //addHtml += formatRow(c,value[c],level);
-      addHtml += "<div class='level" + level + "'>" + value + "&nbsp;</div>\n";
-
-    }
-  } else if (key == "hdurl" || key == "image_full") { // hdurl from NASA, image_full SeeClickFix
-      addHtml += "<a href='" + value + "'><img class='valueimg' loading='lazy' src='" + value + "'></a>"
-  } else if (key == "url" || key == "link") { // url from NASA, link from RSS
-      addHtml += "<a href='" + value + "'>" + value + "</a>"
-  } else if (key.indexOf("Uri")>=0 && value) {
-      uriLink = (value.indexOf("http")==0) ? value : "https://" + value; // Brittle
-      addHtml += "<a href='" + uriLink + "'>" + value + "</a>"
-  } else if (key == "logo") {
-      addHtml += "<img src='" + value + "' class='rightlogo'><br>"
-  } else if (key.toLowerCase().includes("timestamp")) {
-      addHtml += "<div class='level" + level + "'>" +  new Date(value) + "</div>\n";
-  } else {
-      consoleLog("Last: " + key + " " + value);
-      addHtml += "<div class='valueonly celltop'>";
-      if (key == "description") {
-        // || key == "website" // Most of these in feed=epd lack images, and there are 5 per listing (50 total with 10 rows)
-        let urlPattern = /http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+/;
-        let match = value.match(urlPattern);
-        let postText = value;
-        if (match) {
-          postText = value.replace(match[0], '');
-        } 
-        addHtml += postText;
-        if (match) {
-          fetchedPreviewCount++;
-          let divID = "fetchedPreview-" + Date.now() + "-" + fetchedPreviewCount;
-          addHtml += "<div id='" + divID + "' style='max-width:500px'><a href='" + match[0] + "'>" + match[0] + "</a></div>\n"; // If content is not fetched, the first URL found is shown.
-          getSitePreview(match[0], divID);
-        }
-      } else {
-        addHtml += value;
-      }
-      addHtml += "</div>\n"; // close div containing value
-  }
-  //addHtml += "</div>\n";
-
-  // Avoid, place on .objectcell instead
-  //addHtml += "<div style='margin-top:5px;border-bottom:#ccc solid 1px;'></div>" // Last one hidden by css in base.css
-  return addHtml;
-}
-isObject = function(a) {
-    return (!!a) && (a.constructor === Object);
-};
-function isArray(obj){
-  //return !!obj && obj.constructor === Array;
-  //return Array.isArray(obj);
-  //if (obj.toString.indexOf("[") != 0) {
-  if (typeof obj == "string") {
-    //return false; // no effect
-  }
-  //return $.isArray(obj);
-  return Array.isArray(obj);
-}
-Object.size = function(obj) {
-    return Object.keys(obj).length;
-}
-function inIframe() {
-    try {
-        return window.self !== window.top;
-    } catch (e) {
-        return true;
-    }
-}
-
-addEventListener("load", function(){
-  var getParentAnchor = function (element) {
-    while (element !== null && element.tagName !== undefined) {
-      if (element.tagName.toUpperCase() === "A") {
-        return element;
-      }
-      element = element.parentNode;
-    }
-    return null;
-  };
-  document.querySelector("body").addEventListener('click', function(e) {
-    $(".hideOnBodyClick").hide();
-    var anchor = getParentAnchor(e.target);
-    if(anchor !== null) {
-      //$('#log_display').hide();
-      if (document.getElementById("log_display")) {
-        if (document.getElementById("log_display").length >= 0) {
-          document.getElementById("log_display").style.display = 'none';
-        }
-      }
-    }
-  }, false);
-});
-
-// USES CORS PROXY
-function getSitePreview(url, divID) {
-    let proxyUrl = 'https://cors-anywhere.herokuapp.com/' + url; // Replace with your CORS proxy URL
-    $.ajax({
-        url: proxyUrl,
-        type: 'GET',
-        dataType: 'html',
-        success: function(data) {
-            var doc = new DOMParser().parseFromString(data, 'text/html');
-            var titleElement = doc.querySelector('title');
-            var title = titleElement ? titleElement.textContent : 'No title found';
-            
-            var imageElement = doc.querySelector('meta[property="og:image"]');
-            var image = imageElement ? imageElement.getAttribute('content') : '';
-
-            var descriptionElement = doc.querySelector('meta[name="description"]');
-            var description = descriptionElement ? descriptionElement.getAttribute('content') : '<a href="' + url + '"">' + url + '</a>'; // URL can be added here
-
-            var html = '<div>';
-            html += '<h3>' + title + '</h3>';
-            html += '<p>' + description + '</p>';
-            if (image) {
-                html += '<img src="' + image + '" style="width:100%">';
-            }
-            html += '</div>';
-            
-            $('#' + divID).html(html);
-        },
-        error: function(xhr, status, error) {
-            console.error('Error fetching link preview:', error);
-        }
-    });
-}
 
 // Error on storage page: this.replace is not a function
 // So renamed to toTitleCaseFormatFormat. Haven't confirmed.
@@ -2003,189 +1726,70 @@ String.prototype.toTitleCaseFormat = function () {
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
 }
-
 function getState(stateCode) {
   switch (stateCode)
   {
-      case "AL":
-          return "Alabama";
-
-      case "AK":
-          return "Alaska";
-
-      case "AS":
-          return "American Samoa";
-
-      case "AZ":
-          return "Arizona";
-
-      case "AR":
-          return "Arkansas";
-
-      case "CA":
-          return "California";
-
-      case "CO":
-          return "Colorado";
-
-      case "CT":
-          return "Connecticut";
-
-      case "DE":
-          return "Delaware";
-
-      case "DC":
-          return "District Of Columbia";
-
-      case "FM":
-          return "Federated States Of Micronesia";
-
-      case "FL":
-          return "Florida";
-
-      case "GA":
-          return "Georgia";
-
-      case "GU":
-          return "Guam";
-
-      case "HI":
-          return "Hawaii";
-
-      case "ID":
-          return "Idaho";
-
-      case "IL":
-          return "Illinois";
-
-      case "IN":
-          return "Indiana";
-
-      case "IA":
-          return "Iowa";
-
-      case "KS":
-          return "Kansas";
-
-      case "KY":
-          return "Kentucky";
-
-      case "LA":
-          return "Louisiana";
-
-      case "ME":
-          return "Maine";
-
-      case "MH":
-          return "Marshall Islands";
-
-      case "MD":
-          return "Maryland";
-
-      case "MA":
-          return "Massachusetts";
-
-      case "MI":
-          return "Michigan";
-
-      case "MN":
-          return "Minnesota";
-
-      case "MS":
-          return "Mississippi";
-
-      case "MO":
-          return "Missouri";
-
-      case "MT":
-          return "Montana";
-
-      case "NE":
-          return "Nebraska";
-
-      case "NV":
-          return "Nevada";
-
-      case "NH":
-          return "New Hampshire";
-
-      case "NJ":
-          return "New Jersey";
-
-      case "NM":
-          return "New Mexico";
-
-      case "NY":
-          return "New York";
-
-      case "NC":
-          return "North Carolina";
-
-      case "ND":
-          return "North Dakota";
-
-      case "MP":
-          return "Northern Mariana Islands";
-
-      case "OH":
-          return "Ohio";
-
-      case "OK":
-          return "Oklahoma";
-
-      case "OR":
-          return "Oregon";
-
-      case "PW":
-          return "Palau";
-
-      case "PA":
-          return "Pennsylvania";
-
-      case "PR":
-          return "Puerto Rico";
-
-      case "RI":
-          return "Rhode Island";
-
-      case "SC":
-          return "South Carolina";
-
-      case "SD":
-          return "South Dakota";
-
-      case "TN":
-          return "Tennessee";
-
-      case "TX":
-          return "Texas";
-
-      case "UT":
-          return "Utah";
-
-      case "VT":
-          return "Vermont";
-
-      case "VI":
-          return "Virgin Islands";
-
-      case "VA":
-          return "Virginia";
-
-      case "WA":
-          return "Washington";
-
-      case "WV":
-          return "West Virginia";
-
-      case "WI":
-          return "Wisconsin";
-
-      case "WY":
-          return "Wyoming";
+      case "AL": return "Alabama";
+      case "AK": return "Alaska";
+      case "AS": return "American Samoa";
+      case "AZ": return "Arizona";
+      case "AR": return "Arkansas";
+      case "CA": return "California";
+      case "CO": return "Colorado";
+      case "CT": return "Connecticut";
+      case "DE": return "Delaware";
+      case "DC": return "District Of Columbia";
+      case "FM": return "Federated States Of Micronesia";
+      case "FL": return "Florida";
+      case "GA": return "Georgia";
+      case "GU": return "Guam";
+      case "HI": return "Hawaii";
+      case "ID": return "Idaho";
+      case "IL": return "Illinois";
+      case "IN": return "Indiana";
+      case "IA": return "Iowa";
+      case "KS": return "Kansas";
+      case "KY": return "Kentucky";
+      case "LA": return "Louisiana";
+      case "ME": return "Maine";
+      case "MH": return "Marshall Islands";
+      case "MD": return "Maryland";
+      case "MA": return "Massachusetts";
+      case "MI": return "Michigan";
+      case "MN": return "Minnesota";
+      case "MS": return "Mississippi";
+      case "MO": return "Missouri";
+      case "MT": return "Montana";
+      case "NE": return "Nebraska";
+      case "NV": return "Nevada";
+      case "NH": return "New Hampshire";
+      case "NJ": return "New Jersey";
+      case "NM": return "New Mexico";
+      case "NY": return "New York";
+      case "NC": return "North Carolina";
+      case "ND": return "North Dakota";
+      case "MP": return "Northern Mariana Islands";
+      case "OH": return "Ohio";
+      case "OK": return "Oklahoma";
+      case "OR": return "Oregon";
+      case "PW": return "Palau";
+      case "PA": return "Pennsylvania";
+      case "PR": return "Puerto Rico";
+      case "RI": return "Rhode Island";
+      case "SC": return "South Carolina";
+      case "SD": return "South Dakota";
+      case "TN": return "Tennessee";
+      case "TX": return "Texas";
+      case "UT": return "Utah";
+      case "VT": return "Vermont";
+      case "VI": return "Virgin Islands";
+      case "VA": return "Virginia";
+      case "WA": return "Washington";
+      case "WV": return "West Virginia";
+      case "WI": return "Wisconsin";
+      case "WY": return "Wyoming";
   }
 }
-
 
 function showSearchFilter() {
   let loadFilters = false;
@@ -2996,4 +2600,283 @@ function setModelsite(modelsite) {
     console.log("To do: setModelsite");
   }
 }
+
+function safeStringify(obj, replacer = null, spaces = 2) {
+    const seen = new WeakSet();
+    return JSON.stringify(obj, function(key, value) {
+        if (typeof value === 'object' && value !== null) {
+            if (seen.has(value)) {
+                return '[Circular]';
+            }
+            seen.add(value);
+        }
+        if (replacer && typeof replacer === 'function') {
+            return replacer.call(this, key, value);
+        }
+        return value;
+    }, spaces);
+}
+
+// Convert json to html
+var selected_array=[];
+var omit_array=[];
+var fetchedPreviewCount = 0;
+
+function formatRow(key,value,level,item) {
+  // item parameter in use by Community-Forecasting pages comunity/zip/leaflet
+  level = level + 1;
+  var addHtml = "";
+  if (level==1 && value && value.length >= 20) {
+    const rowmax = 10;
+    addHtml += value.length + " rows, showing " + rowmax;
+    value = value.slice(0, rowmax);
+  }
+  //consoleLog("level " + level + " formatRow: " + key + " " + value);
+  
+  if (key == 'color') { // JQuery uses .colorHolder to set the bar color for class level1 immediately above this div in Community-Forecasting.
+    addHtml += "<div class='colorHolder' currentlevel='" + level + "' currentitem='" + item + "' color='" + value + "'></div>"
+  }
+
+  // Reactivate after investigating
+  if (level==1 && selected_array.length > 0 && !selected_array.includes(key) )  {
+    //return addHtml + "</div>";
+  }
+  if (level==1 && omit_array.length > 0 && omit_array.includes(key) )  {
+    //return addHtml + "</div>";
+  }
+
+  //if (level==1) { // Span rightcell
+  //  level=2;
+  //  addHtml += "<div class='hidden titlecell level1' style='width:100%'>" + key + "</div><div style='clear:both' class='hidden level" + level + "'>"
+  //} else {
+  if (level==1 || level==2) {
+    if(key) { // Avoids large left margin for Nasa level1
+      //if(value && value.length > 0) { // Hides blank for nutrition
+      if(value) { // Hides blank for nutrition
+        // level" + level + " 
+        addHtml += "<div class='keyonly titlecell celltop'><b>" + key + "</b></div>";
+      }
+    }
+  } else {
+    if(key) { // Level 0 won't have a key
+      var indentIcon = ""
+      if (typeof value != "string" && typeof value != "number") {
+        for (var i = 4; i <= level; i++) {
+            //indentIcon = indentIcon + "-";
+        }
+      }
+      //addHtml += "<div style='clear:both'></div>";
+      addHtml += "<span class='hidden titlecell celltop level" + level + "' style='float:left'>" + indentIcon + " " + key + "</span>";
+    }
+  }
+
+  if (isObject(value)) {
+
+      var insertStyle = "";
+      if (Object.keys(value).length == 1) { // Could we use this to avoid return in GDC hierarchy?
+        
+        // Did not seem to have an effect here
+        //addHtml += "<div style='clear:both'></div>";
+      } else {
+        if (level >= 4) {
+          //insertStyle += "border:1px solid #ccc;";
+        }
+      }
+      var barTitle = "";
+      var validTitles = "title,name,summary,facetId,code,type,link_type"; // link_type is for civictechlinks
+      // Convert the validTitles string into an array
+      var validTitlesArray = validTitles.split(',');
+
+      // Check if a title key exists in the value object
+      for (var i = 0; i < validTitlesArray.length; i++) {
+          var keyName = validTitlesArray[i];
+          if (value.hasOwnProperty(keyName)) {
+              barTitle = value[keyName];
+              delete value[keyName];
+              break;
+          }
+      }
+      if (barTitle && Object.keys(value).length >= 8) {
+        barTitle = barTitle + " (" + Object.keys(value).length + " rows)";
+        insertStyle += "padding-top:0px;";
+      }
+      if (barTitle) {
+        addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell objectcell-lines' style='" + insertStyle + "'>"; // Around rows
+        addHtml += "<div keyname='" + keyName + "' class='barTitle child-count-" + Object.keys(value).length + "'>" + barTitle + "</div>\n";
+      } else {
+        addHtml += "<!--Child count " + Object.keys(value).length + "-->";
+        addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell' style='" + insertStyle + "'>"; // Around rows
+      
+      }
+      for (c in value) {
+        //consoleLog("isObject: " + key + " " + value);
+        
+        //if (json.data[a].constructor === Array && selected_array.includes(a) )  {
+        if (isObject(value[c])) {
+          // Entaglement is removed by parsing back to an object after Stringifing to a string
+          addHtml += formatRow(c,JSON.parse(safeStringify(value[c])),level);
+        } else if (value[c] == "") {
+          // Key without a value. In some circumstance we show these.
+          if (c == "index") { // We insert "0" for first record in USEEIO Impact Flow which has index=0
+            addHtml += formatRow(c,"0",level);
+          }
+        } else {
+          addHtml += formatRow(c,value[c],level);
+        }
+        addHtml += "<div class='objectcell-line' style='clear:both'></div>";
+      }
+      addHtml += "</div>";
+
+  } else if (isArray(value)) {
+
+    consoleLog("formatRow Array value length: " + value.length);
+
+    //consoleLog("isArray: " + key + " " + value + " " + value.length);
+
+    if (value.length > 0) {
+      // Surrounding All
+      // Level 1 - An array of objects
+      addHtml += "<div class='celltop' style='overflow:auto; bottom:10px; padding-top:10px'>";
+      value.forEach(item => { // For each row in array
+        //consoleLog(value[c],b,c); //c is 0,1,2 index
+        
+        //addHtml += formatRow(c,value[c],level);
+
+        //consoleLog("Array's object row");
+        //consoleLog(item);
+        addHtml += formatRow("",item,level);
+
+        // REMOVED HERE.
+      });   
+      addHtml += "</div>"; // End surrounding
+        
+    } else { // Array value is a string
+
+      consoleLog("Array of 0: " + key + " " + value);
+      //addHtml += formatRow(c,value[c],level);
+      addHtml += "<div class='level" + level + "'>" + value + "&nbsp;</div>\n";
+
+    }
+  } else if (key == "hdurl" || key == "image_full") { // hdurl from NASA, image_full SeeClickFix
+      addHtml += "<a href='" + value + "'><img class='valueimg' loading='lazy' src='" + value + "'></a>"
+  } else if (key == "url" || key == "link") { // url from NASA, link from RSS
+      addHtml += "<a href='" + value + "'>" + value + "</a>"
+  } else if (key.indexOf("Uri")>=0 && value) {
+      uriLink = (value.indexOf("http")==0) ? value : "https://" + value; // Brittle
+      addHtml += "<a href='" + uriLink + "'>" + value + "</a>"
+  } else if (key == "logo") {
+      addHtml += "<img src='" + value + "' class='rightlogo'><br>"
+  } else if (key.toLowerCase().includes("timestamp")) {
+      addHtml += "<div class='level" + level + "'>" +  new Date(value) + "</div>\n";
+  } else {
+      consoleLog("Last: " + key + " " + value);
+      addHtml += "<div class='valueonly celltop'>";
+      if (key == "description") {
+        // || key == "website" // Most of these in feed=epd lack images, and there are 5 per listing (50 total with 10 rows)
+        let urlPattern = /http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+/;
+        let match = value.match(urlPattern);
+        let postText = value;
+        if (match) {
+          postText = value.replace(match[0], '');
+        } 
+        addHtml += postText;
+        if (match) {
+          fetchedPreviewCount++;
+          let divID = "fetchedPreview-" + Date.now() + "-" + fetchedPreviewCount;
+          addHtml += "<div id='" + divID + "' style='max-width:500px'><a href='" + match[0] + "'>" + match[0] + "</a></div>\n"; // If content is not fetched, the first URL found is shown.
+          getSitePreview(match[0], divID);
+        }
+      } else {
+        addHtml += value;
+      }
+      addHtml += "</div>\n"; // close div containing value
+  }
+  //addHtml += "</div>\n";
+
+  // Avoid, place on .objectcell instead
+  //addHtml += "<div style='margin-top:5px;border-bottom:#ccc solid 1px;'></div>" // Last one hidden by css in base.css
+  return addHtml;
+}
+isObject = function(a) {
+    return (!!a) && (a.constructor === Object);
+};
+function isArray(obj){
+  //return !!obj && obj.constructor === Array;
+  //return Array.isArray(obj);
+  //if (obj.toString.indexOf("[") != 0) {
+  if (typeof obj == "string") {
+    //return false; // no effect
+  }
+  //return $.isArray(obj);
+  return Array.isArray(obj);
+}
+Object.size = function(obj) {
+    return Object.keys(obj).length;
+}
+function inIframe() {
+    try {
+        return window.self !== window.top;
+    } catch (e) {
+        return true;
+    }
+}
+
+addEventListener("load", function(){
+  var getParentAnchor = function (element) {
+    while (element !== null && element.tagName !== undefined) {
+      if (element.tagName.toUpperCase() === "A") {
+        return element;
+      }
+      element = element.parentNode;
+    }
+    return null;
+  };
+  document.querySelector("body").addEventListener('click', function(e) {
+    $(".hideOnBodyClick").hide();
+    var anchor = getParentAnchor(e.target);
+    if(anchor !== null) {
+      //$('#log_display').hide();
+      if (document.getElementById("log_display")) {
+        if (document.getElementById("log_display").length >= 0) {
+          document.getElementById("log_display").style.display = 'none';
+        }
+      }
+    }
+  }, false);
+});
+
+// USES CORS PROXY
+function getSitePreview(url, divID) {
+    let proxyUrl = 'https://cors-anywhere.herokuapp.com/' + url; // Replace with your CORS proxy URL
+    $.ajax({
+        url: proxyUrl,
+        type: 'GET',
+        dataType: 'html',
+        success: function(data) {
+            var doc = new DOMParser().parseFromString(data, 'text/html');
+            var titleElement = doc.querySelector('title');
+            var title = titleElement ? titleElement.textContent : 'No title found';
+            
+            var imageElement = doc.querySelector('meta[property="og:image"]');
+            var image = imageElement ? imageElement.getAttribute('content') : '';
+
+            var descriptionElement = doc.querySelector('meta[name="description"]');
+            var description = descriptionElement ? descriptionElement.getAttribute('content') : '<a href="' + url + '"">' + url + '</a>'; // URL can be added here
+
+            var html = '<div>';
+            html += '<h3>' + title + '</h3>';
+            html += '<p>' + description + '</p>';
+            if (image) {
+                html += '<img src="' + image + '" style="width:100%">';
+            }
+            html += '</div>';
+            
+            $('#' + divID).html(html);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching link preview:', error);
+        }
+    });
+}
+
 consoleLog("end localsite");

@@ -230,11 +230,10 @@ function showSubmenu(id) { //onmouseclick
 }
 // For narrow nav
 function showMenuNav(id) { //onmouseenter
-    if ($(".sideMenuColumn").width() < 50) { // Only do rollover popout when side column is narrow.
+    if ($(".sideMenuColumn").width() <= 64) { // Only do rollover popout when side column is narrow.
         //console.log("showMenuNav " + id);
         $(".sideMenuColumn").addClass("sideMenuColumnNarrow"); // Adds black background
         $(".sideMenuColumn").removeClass("sideMenuColumnWide");
-        //return; // TEMP
         $("#" + id + " .layerSectionTitle").show();
     } else {
         $(".sideMenuColumn").addClass("sideMenuColumnWide");
@@ -248,7 +247,7 @@ function hideMenuNav(id) { //onmouseleave
 
     // BUGBUG - Need to check parent .sideMenuColumn since multiple instances may reside on page.
     // http://localhost:8887/localsite/partner-menu.html
-    if ($(".sideMenuColumn").width() < 50) { // Only hide when side is narrow.
+    if ($(".sideMenuColumn").width() <= 64) { // Only hide when side is narrow.
         //console.log("hideMenuNav " + id);
         // Check parent has narrow class
         const sideMenuColumnNarrow = $("#" + id + " .layerSectionTitle").closest(".sideMenuColumnNarrow");  

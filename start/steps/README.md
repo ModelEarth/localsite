@@ -5,37 +5,24 @@
 You can use [Localsite Pages](../) to create websites and [storyboards](/requests) with free GitHub hosting.  
 If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns](https://twitter.com/LorenHeyns).
 
-## Turn on your Webroot Server
+## Start your local webroot
 
-**OPTION 1:** Run in your webroot folder to start a local http server.
+Run in a folder called "webroot" to start your local websites:
 
-	python3 -m venv env &&
-	source env/bin/activate &&
+	python3 -m venv env
+	source env/bin/activate
 	python -m http.server 8887
 
 The terminal is now dedicated to being your webroot for [http://localhost:8887](http://localhost:8887)
 To run further commands, open a new terminal window.
 
-**OPTION 2:** Requires installing a local cert
+**OPTION 2:** npx http-server, which [requires installing a local cert](../http-server) (Not recommended until we document.)
 
-Another option is the npx http-server which loads URLs without including .html
-(Since Observable's build to dist removes .html in links.)
-
-	python3 -m venv env &&
-	source env/bin/activate &&
-	npx http-server
-
-The npx http-server command displays your local site here:
-[http://127.0.0.1:8080](http://127.0.0.1:8080)
-
-Issue: This site can’t provide a secure connection
-Solution: You'll need to [install a cert](https://stackoverflow.com/questions/35127383/npm-http-server-with-ssl) on your local machine.
-
-## Fork and Clone our Main Repos
+## Pull down repos
 
 **Step 1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a> and <a href="https://github.com/ModelEarth/io" target="_blank">io</a> repos to preview your contributions using Github Pages.
 
-**Step 2.** Enter your GitHub account to insert it within the install cmd below.
+**Step 2.** Enter your GitHub account to include in the install cmd below.
 
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
@@ -64,22 +51,54 @@ Now you can open our Projects page at: [localhost:8887/projects](http://localhos
 
 If you encounter a broken link locally, view the page at [model.earth](https://model.earth/) or clone one of the [additional modelearth repos](https://github.com/ModelEarth?tab=repositories).
 
-## Shortcut Command for starting your Webroot Server
+After pulling down [data-commons](https://github.com/modelearth/data-commons), build your static site to update the "dist" folder:
+
+	cd data-commons
+	yarn build	
+
+Visit the following to view built: <http://localhost:8887/data-commons/dist> and source <http://localhost:8887/data-commons/docs>
+
+Before you make edits, pull down recent updates within Github Desktop.
+Or run the following occasionally (daily or weekly) in your webroot.
+
+<textarea id="refreshCmd" class="codetext" rows="7">
+cd localsite && git pull https://github.com/ModelEarth/localsite main  
+cd ../data-commons && git pull https://github.com/ModelEarth/data-commons main 
+cd ../data-pipeline && git pull https://github.com/ModelEarth/data-pipeline main  
+cd ../projects && git pull https://github.com/ModelEarth/projects main  
+cd ../requests && git pull https://github.com/ModelEarth/requests main  
+cd ../io && git pull https://github.com/ModelEarth/io main
+cd ../</textarea>
+
+That's it! &nbsp;You can stop the steps here. Your updated local site is now visible at: [localhost:8887/io](http://localhost:8887/io/)
+
+
+## "localsite" shortcut to start your webroot
 
 To simply type "localsite" in your terminal, add a shortcut command:
 
 On a Mac: Add to your .bash_profile file. Change /webroot to your webroot path.
 
+Previously:
+
 	alias localsite="python3 -m http.server 8887 -d /webroot"
+
+To Test:
+
+	alias localsite="python3 -m venv env && source env/bin/activate && http.server 8887 -d /webroot"
 
 On a PC: Save a localsite.bat file in a directory in your system's PATH environment variables, such as C:\Windows\System32.
 
+TO DO: Might need to alter lines 2 and 3 for a PC:
+
 	@echo off
-	python -m http.server 8887 -d \Site
+	python3 -m venv env
+	source env/bin/activate
+	python -m http.server 8887 -d \webroot
 
 QUESTION: How can we run the above automatically when our computer's restart?
 
-Our dream is that someday every computer is simply a webroot - downloading shared modules as needed within  virutual environment. Always use a virutual environment when running Python on your local machine.
+Our dream is that someday every computer has a simply and secure webroot for interacting locally with modular AI. Always launch a virutual environment when running code on your local machine.
 
 ## Refresh you local repos
 
@@ -87,28 +106,7 @@ To avoid merge conflicts, click "Sync Fork" on your forks in GitHub, then pull l
 
 **1.** First go to the forks in your [Github Account](https://github.com/) and click "Sync Fork"
 
-**2.** Run the following weekly in any repo to pull down recent updates.
-Run before editing pages that others might also be editing, or pull down within Github Desktop.
 
-<textarea id="refreshCmd" class="codetext" rows="6">
-cd ../localsite && git pull https://github.com/ModelEarth/localsite main &&  
-cd ../data-commons && git pull https://github.com/ModelEarth/data-commons main && 
-cd ../data-pipeline && git pull https://github.com/ModelEarth/data-pipeline main &&  
-cd ../projects && git pull https://github.com/ModelEarth/projects main &&  
-cd ../requests && git pull https://github.com/ModelEarth/requests main &&  
-cd ../io && git pull https://github.com/ModelEarth/io main
-cd ../data-commons</textarea>
-
-After pulling down [data-commons](https://github.com/modelearth/data-commons), build your static site, generating ./dist
-
-	yarn build	
-
-Then visit the following to view:
-<http://localhost:8887/data-commons/dist>
-<http://localhost:8887/data-commons/docs>
-
-That's it! &nbsp;You can stop the steps here. Your updated local site is now visible at: [localhost:8887/io](http://localhost:8887/io/)
-<br>
 
 
 ## Deployment: How to Send a Pull Request
@@ -326,9 +324,3 @@ Edit online using [stackedit.io](https://stackedit.io/) and [Dillinger Markdown 
 <br>
 
 [Edit the page above in Github](https://github.com/modelearth/localsite/blob/master/start/README.md) - [Edit in StackEdit](https://stackedit.io/app#providerId=githubWorkspace&owner=localsite&repo=localsite&branch=) - Click folder icon in upper right within StackEdit. ([Direct links are not yet available in StackEdit](https://community.stackedit.io/t/open-file-from-github-using-a-link/495))
-
-
-
-
-
-
