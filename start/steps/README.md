@@ -102,11 +102,7 @@ Our dream is that someday every computer has a simply and secure webroot for int
 
 ## Refresh you local repos
 
-To avoid merge conflicts, click "Sync Fork" on your forks in GitHub, then pull locally using GitHub Desktop. Or you can pull locally quickly by runing the cmd below after you clicked "Sync Fork" on your forked repos. (Or use the "Alternative Sync" command below.)
-
-**1.** First go to the forks in your [Github Account](https://github.com/) and click "Sync Fork"
-
-
+To avoid merge conflicts, click "Sync Fork" on the forks in your [Github Account](https://github.com/), then pull locally using GitHub Desktop or the cmds above. Or you can use the Alternative Sync commands below.
 
 
 ## Deployment: How to Send a Pull Request

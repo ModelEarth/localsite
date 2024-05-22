@@ -3879,7 +3879,8 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         showClassInline(".georgia"); // Temp side nav
         showClassInline(".earth"); // Temp side nav
 
-    } else if ((modelsite=="model.georgia" && location.host.indexOf('localhost') >= 0) || (defaultState == "GA" && !Array.isArray(param.titleArray) && (location.host.indexOf('localhost') >= 0 && navigator && navigator.brave))   || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
+    // Skips pages with custom site titles in param.titleArray
+    } else if ((modelsite=="model.georgia" && location.host.indexOf('localhost') >= 0 && !Array.isArray(param.titleArray)) || (defaultState == "GA" && !Array.isArray(param.titleArray) && location.host.indexOf('localhost') >= 0 && navigator && navigator.brave)   || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
         // The localsite repo is open to use by any state or country.
         // Georgia Economic Development has been a primary contributor.
         // Show locally for Brave Browser only - insert before:  ) || false
@@ -3905,10 +3906,12 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         }
         showClassInline(".georgia");
         if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
-            showClassInline(".earth");
+            // To activate when filter are ready
+            //showClassInline(".earth");
         }
         $('#headerOffset').css('display', 'block'); // Show under site's Drupal header
         if (location.host.indexOf('localhost') >= 0) {
+            showClassInline(".earth");
             earthFooter = true;
         }
         
