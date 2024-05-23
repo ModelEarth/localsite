@@ -854,12 +854,13 @@ function showSideTabs() {
 }
 function populateFieldsFromHash() {
     let hash = getHash();
-    $("#keywordsTB").val(hash.q);
+    waitForElm('#keywordsTB').then((elm) => {
+        $("#keywordsTB").val(hash.q);
+    });
     waitForElm('#mainCatList').then((elm) => {
-        consoleLog("#mainCatList ready for use with cat: " + hash.cat);
-        //$('.catList > div').removeClass('catListSelected');
         if (hash.cat) {
             var catString = hash.cat.replace(/_/g, ' ');
+            consoleLog("#catSearch val: " + catString);
             $("#catSearch").val(catString);
             $('.catList > div').filter(function(){
                 return $(this).text() === catString
@@ -3262,7 +3263,6 @@ $(document).ready(function () {
     $(".showApps").removeClass("filterClickActive");
     //updateHash({'appview':''});
     if (catString == "All_Categories") {
-        hash.cat = "";
         catString = "";
     } else {
         console.log("catList triggers update. cat: " + catString);

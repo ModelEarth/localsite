@@ -1977,21 +1977,22 @@ if(typeof waitingForVarSince == 'undefined') {
 }
 function waitForVariable(variable, callback) { // Declare variable using var since "let" will not be detected.
   var interval = setInterval(function() {
-    if(!waitingForVarSince['variable']) {
-      waitingForVarSince['variable'] = Date.now();
+    if(!waitingForVarSince[variable]) {
+      waitingForVarSince[variable] = Date.now();
     }
-    if (Date.now() - waitingForVarSince['variable'] > 6000) { // 60 seconds
+    if (Date.now() - waitingForVarSince[variable] > 6000) { // 60 seconds
       clearInterval(interval);
-      consoleLog('waitForVariable waiting ' + variable + ' exceeded 1 minute.' + (Date.now() - waitingForVarSince['variable']));
+      consoleLog('waitForVariable "' + variable + '" exceeded 1 minute. ' + (Date.now() - waitingForVarSince[variable])/1000);
       return;
     }
     if (window[variable]) {
+      waitingForVarSince[variable] = null;
       clearInterval(interval);
-      consoleLog('waitForVariable found ' + variable);
+      consoleLog('waitForVariable found: ' + variable);
       callback();
       return;
     }
-    consoleLog('waitForVariable waiting ' + variable + ' ' + waitingForVarSince['variable']);
+    consoleLog('waitForVariable "' + variable + '" since ' + waitingForVarSince[variable]);
   }, 100);
 }
 
@@ -2014,7 +2015,7 @@ function waitForElm(selector) {
     });
 }
 function waitForElmKickoff(selector, resolve) {
-  consoleLog("waitForElm waiting " + selector);
+  consoleLog("waitForElm waiting for " + selector);
   const observer = new MutationObserver(mutations => {
       if (document.querySelector(selector)) {
           resolve(document.querySelector(selector));

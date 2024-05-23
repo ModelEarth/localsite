@@ -342,7 +342,7 @@
                 <div class="setDiv"></div>
             </div>
             
-            <div class="setLeft"><div>Center Earth</div></div>
+            <div class="setLeft"><div>Map Center</div></div>
             <div class="setOverflow"><div class="setRight">
                   <select id="globecenter">
                     <option value="me">My Location</option>
@@ -1728,16 +1728,17 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 <section class="data-section" id="data" style="overflow:auto">
 <div class="content contentpadding contentpaddingMin litePanel" style="max-width:2000px; padding-bottom:0px">
 
+  <div class='viewAllLink' style='display:none;float:right'><a class='btn btn-white' onclick='goHash({},["name","loc","m","cat","subcat","q","search"]); return false;' href='#show=" + param["show"] + "'>List All</a></div>
+
   <div class="listTitle"></div>
   <div class='listSpecs'></div>
+
   <div id="flexwrapper">
     
     <div id="hublist" style="position:relative;">
 
       <div id="hublist-padding">
         
-        <div class='viewAllLink' style='display:none;float:right'><a class='btn btn-white' onclick='goHash({},["name","loc","m","cat","subcat","q","search"]); return false;' href='#show=" + param["show"] + "'>List All</a></div>
-
         <div style="display:none" class="layerclass farmfresh">
           
           <div id="legendLingsHolder" style="margin-bottom: 20px">

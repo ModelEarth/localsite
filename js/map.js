@@ -815,6 +815,12 @@ function initialHighlight(hash) {
     }
   }
 }
+function showSubcatList() {
+  $("#viewAllCategories").hide();
+  $("#subcatListUL").show();
+  event.stopPropagation();
+  event.preventDefault();
+}
 //jQuery.fn.scrollTo = function(elem) {
 
     // BUG Reactivate test with http://localhost:8887/localsite/info/#show=ppe&name=Code_the_South
@@ -1060,13 +1066,14 @@ function showList(dp,map) {
         }
         event.stopPropagation();
     });
-
   }
 
   let hash = getHash();
   var allItemsPhrase = "all categories";
-  if ($("#keywordsTB").val()) {
-    keyword = $("#keywordsTB").val().toLowerCase();
+  //if ($("#keywordsTB").val()) {
+  if (hash.q) {
+    //keyword = $("#keywordsTB").val().toLowerCase();
+    keyword = hash.q;
   } else if (hash.subcat) {
     //keyword = hash.subcat;
   } else if (hash.cat) {
@@ -1075,6 +1082,7 @@ function showList(dp,map) {
   if (hash.cat) {
     hash.cat = hash.cat.replace(/\_/g," ");
   }
+
   // Filter by all subcategories
   
   subcatObject["null"] = {};
@@ -1985,7 +1993,8 @@ function showList(dp,map) {
     // At this point we don't yet know if any are null. So "no subcategory" link is appended later.
     if (subcatArray.length > 1) {
       if (!hash.name) { // Omit when looking at listing detail
-        $("#dataList").prepend("<ul id='subcatListUL' style='margin:0px'>" + subcatList + "</ul><br>");
+        $("#dataList").prepend("<a href='#' onClick='showSubcatList(); return false;' id='viewAllCategories'>View All Categories</a>");
+        $("#dataList").prepend("<ul id='subcatListUL' style='margin:0px;display:none'>" + subcatList + "</ul><br>");
         if(hash.cat){
           $("#dataList").prepend("<h3>" + hash.cat.replace(/_/g,' ') + "</h3>");
         }
@@ -3860,12 +3869,13 @@ function hashChangedMap() {
     });
 
   } else if (hash.cat !== priorHash.cat) {
-
     loadMap1("hashChangedMap() in map.js new cat " + hash.cat, hash.show);
   } else if (hash.subcat !== priorHash.subcat) {
     loadMap1("hashChangedMap() in map.js new subcat " + hash.subcat, hash.show);
   } else if (hash.details !== priorHash.details) {
     loadMap1("hashChangedMap() in map.js new details = " + hash.details, hash.show);
+  } else if (hash.q !== priorHash.q) {
+    loadMap1("hashChangedMap() in map.js new search q = " + hash.q, hash.show);
   }
   if (hash.m != priorHash.m) {
     // For 360 iFrame
