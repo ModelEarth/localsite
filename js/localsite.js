@@ -1980,9 +1980,9 @@ function waitForVariable(variable, callback) { // Declare variable using var sin
     if(!waitingForVarSince[variable]) {
       waitingForVarSince[variable] = Date.now();
     }
-    if (Date.now() - waitingForVarSince[variable] > 6000) { // 60 seconds
+    if (Date.now() - waitingForVarSince[variable] > 20000) { // 20 seconds
       clearInterval(interval);
-      consoleLog('waitForVariable "' + variable + '" exceeded 1 minute. ' + (Date.now() - waitingForVarSince[variable])/1000);
+      consoleLog('waitForVariable "' + variable + '" exceeded 20 seconds. ' + (Date.now() - waitingForVarSince[variable])/1000);
       return;
     }
     if (window[variable]) {
@@ -2562,38 +2562,55 @@ function setDevmode(devmode) {
     removeElement('/localsite/css/dev.css');
   }
 }
-function setGlobecenter(globecenter) {
+function setGlobecenter(globecenter, promptForCurrentPosition) {
+  // Invoked when page loads, and when user changes "Map Center" setting.
   if (globecenter == "me") {
-    getGeolocation();
+    if (promptForCurrentPosition) { // False when page is loading.
+      getGeolocation(); // Updates localStorage.latitude if user grants location permission.
+    }
     $("#globeLatitude").val(localStorage.latitude);
     $("#globeLongitude").val(localStorage.longitude);
-  } else {
+  } else { // Get lat and lon from dropdown menu attributes.
     $("#globeLatitude").val($("#globecenter option:selected").attr("lat"));
     $("#globeLongitude").val($("#globecenter option:selected").attr("lon"));
-    localStorage.latitude = $("#globecenter option:selected").attr("lat");
-    localStorage.longitude = $("#globecenter option:selected").attr("lon");
+    // We avoid setting localStorage.latitude to center of oceans since these are used by SeeClickFix
   }
-  //updateHash({"geoview":"earth"});
+  //alert("Lat: " + $("#globeLongitude").val());
+
+  // Limit to when nullschool already visible.
+  if ($('#nullschoolHeader').is(':visible')) {
+    if ($("#globeLatitude").val() && $("#globeLongitude").val()) {
+        // Add latlon validation
+        let globeZoom = "800"; // "1037";
+
+        // Move these into dropdown attributes
+        if ($("#globeLongitude").val() == "-160") {
+          globeZoom = "300"; // For Pacific
+        } else if ($("#globeLongitude").val() == "80") {
+          globeZoom = "600"; // For India
+        }
+
+        let latLonZoom = $("#globeLongitude").val() + "," + $("#globeLatitude").val() + "," + globeZoom;
+        showGlobalMap(`https://earth.nullschool.net/#current/wind/surface/level/orthographic=${latLonZoom}`);
+    }
+  }
 }
-//const mycoords = document.getElementById('mycoords');
+function getGeolocation() {
+    if (navigator.geolocation) {
+        // Prompts user for permission to provide their current location.
+        navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
+    } else {
+        consoleLog('Geolocation is not supported by this browser.');
+    }
+}
 function geoError(err) {
-    //mycoords.innerHTML = `Failed to locate. Error: ${err.message}`;
+    consoleLog(`Failed to locate. Error: ${err.message}`);
 }
 function geoSuccess(pos) {
-    //mycoords.innerHTML = (`${pos.coords.latitude}, ${pos.coords.longitude}`);
-    //displayRequests(pos.coords.latitude, pos.coords.longitude);
     localStorage.latitude = pos.coords.latitude.toFixed(3);
     localStorage.longitude = pos.coords.longitude.toFixed(3);
     $("#globeLatitude").val(localStorage.latitude);
     $("#globeLongitude").val(localStorage.longitude);
-}
-function getGeolocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
-    } else {
-        alert("Geolocation is not supported by this browser.");
-        //mycoords.innerHTML = 'Geolocation is not supported by this browser.';
-    }
 }
 
 function setModelsite(modelsite) {

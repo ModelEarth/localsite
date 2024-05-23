@@ -691,7 +691,7 @@ function hashChanged() {
             }
         });
         if (hash.geoview == "earth") {
-            let latLonZoom = "-115.84,31.09";
+            let latLonZoom = "-115.84,31.09,1037";
             if (localStorage.latitude && localStorage.longitude) {
                 latLonZoom = localStorage.longitude + "," + localStorage.latitude + ",1037";
             }
@@ -741,6 +741,7 @@ function hideSide(which) {
         if ($("#listcolumnList").text().trim().length > 0) {
             $("#showListInBar").show();
         }
+        $("#showSideInBar").show();
     } else {
         $("#navcolumn").hide();
         $('body').removeClass('bodyLeftMarginFull');
@@ -899,7 +900,9 @@ function populateFieldsFromHash() {
 //$(".showSearch").removeClass("local");
 
 catArray = [];
-$(document).ready(function () {
+
+// TO DO: Wait for other elements in page for several $(document).ready here
+document.addEventListener('DOMContentLoaded', function() { // $(document).ready
 
     // Gets overwritten
     if (param.state) {
@@ -3232,8 +3235,7 @@ function changeCatDelete(catTitle) {
   //});
 }
 
-$(document).ready(function () {
-
+document.addEventListener('DOMContentLoaded', function() { // $(document).ready
     if (param["show"] == "mockup" || param["mockup"] || param["design"]) {
         // Phase out .mock-up and switch to .mockup
     var div = $("<div />", {
@@ -3461,9 +3463,7 @@ function updateRegionService(section) {
 }
 
 // INIT
-
-$(document).ready(function () {
-
+document.addEventListener('DOMContentLoaded', function() { // $(document).ready
     // Wait for localsite.js
     hashChanged(); // Ideally this resides before $(document).ready, but we'll need a copy of waitForVariable here
 
@@ -4392,7 +4392,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
     });
 } // end applyNavigation function
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function() { // $(document).ready
     //alert("word")
     $(document).on("click", ".hideMenu", function(event) {
         $("#menuHolder").show();
@@ -4419,16 +4419,45 @@ $(document).ready(function () {
         event.stopPropagation(); // To keep location filter open when clicking
     });
 });
-$(document).on("click", ".showSections", function(event) {
-    goHash({'sidetab':'sections'});
-    event.stopPropagation();    
-});
-function showSections() {
 
-}
-$(document).on("click", ".showTopics", function(event) {
-    goHash({'sidetab':'topics'});
-    event.stopPropagation();
+// Alternative to $(document).on("click", ".showSections", function(event) {
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('showSections')) {
+        goHash({'sidetab':'sections'});
+        event.stopPropagation();  
+    }
+    if (event.target.classList.contains('showTopics')) {
+        goHash({'sidetab':'topics'});
+        event.stopPropagation();
+    }
+    if (event.target.classList.contains('showLocale')) {
+        goHash({'sidetab':'locale'});
+        event.stopPropagation();
+    }
+    if (event.target.classList.contains('showSettings')) {
+        goHash({'sidetab':'settings'});
+        event.stopPropagation();
+    }
+    if (event.target.classList.contains('showAccount')) {
+        goHash({'sidetab':'account'});
+        event.stopPropagation();
+    }
+    if (event.target.classList.contains('contactUs')) {
+        alert("The Contact Us link is not active.")
+        event.stopPropagation();
+    }
+    if (event.target.classList.contains('shareThis')) {
+        window.location = "https://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4a9818987bca104e";
+        event.stopPropagation();
+    }
+    if (event.target.classList.contains('showSeasons')) {
+        goHash({'sidetab':'seasons'});
+        event.stopPropagation();
+    }
+    if (event.target.classList.contains('showDesktop')) { // Was .showDesktopNav
+        goHash({'sidetab':'desktop'});
+        event.stopPropagation();
+    }
 });
 function showTopics() {
     //closeExpandedMenus(event.currentTarget);
@@ -4443,11 +4472,7 @@ function showTopics() {
     $("#listingsPanel").show();
     $("#sideTabs").show();
 }
-$(document).on("click", ".showLocale", function(event) {
-    //goHash({'geoview':'state','sidetab':'locale'});
-    goHash({'sidetab':'locale'});
-    event.stopPropagation();
-});
+
 function showLocale() {
     //closeExpandedMenus(event.currentTarget);
     $("#filterClickLocation").removeClass("filterClickActive");
@@ -4482,32 +4507,6 @@ function popAdvancedDELETE() {
         $("#draggableSearch").show();
     });
 }
-
-$(document).on("click", ".showSettings", function(event) {
-    goHash({'sidetab':'settings'});
-    event.stopPropagation();
-});
-$(document).on("click", ".showAccount", function(event) {
-    goHash({'sidetab':'account'});
-    event.stopPropagation();
-});
-$('.contactUs').click(function(event) {
-    alert("The Contact Us link is not active.")
-    event.stopPropagation();
-});
-$('.shareThis').click(function(event) {
-    window.location = "https://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4a9818987bca104e";
-    event.stopPropagation();
-});
-
-$(document).on("click", ".showSeasons", function(event) {
-    goHash({'sidetab':'seasons'});
-    event.stopPropagation();
-});
-$(document).on("click", ".showDesktop", function(event) { // Was .showDesktopNav
-    goHash({'sidetab':'desktop'});
-    event.stopPropagation();
-});
 
 // SETTINGS
 $(document).on("change", ".sitemode", function(event) {
@@ -4546,7 +4545,14 @@ $(document).on("change", "#globecenter", function(event) { // Public or Dev
     if (typeof Cookies != 'undefined') {
         Cookies.set('globecenter', $("#globecenter").val());
     }
-    setGlobecenter($("#globecenter").val());
+    if ($("#globecenter").val() == "me") {
+        getGeolocation(); // User gets prompted for location
+        $("#globeLatitude").val(localStorage.latitude);
+        $("#globeLongitude").val(localStorage.longitude);
+        setGlobecenter($("#globecenter").val());
+    } else {
+        setGlobecenter($("#globecenter").val());
+    }
 });
 $(document).on("change", "#modelsite", function(event) {
     if (typeof Cookies != 'undefined') {
