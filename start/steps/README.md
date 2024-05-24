@@ -22,17 +22,17 @@ Or you can use npx http-server, which [requires installing a local cert](../http
 
 If you're not planning to edit, you can simply view the following at [model.earth](http://model.earth).
 
-**Step 1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a> and <a href="https://github.com/ModelEarth/io" target="_blank">io</a> repos to preview your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart). How to [Fork Repos](https://medium.com/@6unpnp/fork-a-github-repository-and-deploy-its-github-pages-site-d55dc53988d) 
+**Step 1.** Fork our <a href="https://github.com/ModelEarth/localsite">localsite</a> and <a href="https://github.com/ModelEarth/io">io</a> repos to preview your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart). How to [Fork Repos](https://medium.com/@6unpnp/fork-a-github-repository-and-deploy-its-github-pages-site-d55dc53988d) 
 
 Fork other repos you plan to edit.   
-Fork <a href="https://github.com/ModelEarth/projects" target="_blank">Active Projects</a> if you're contributing to the [Open WebUI interface](/projects/src/) and related Python and Vite additions.
-Fork <a href="https://github.com/ModelEarth/requests" target="_blank">Requests</a> if you're adding to our image and video [Storyboard Generation](/data-pipeline/research/stream).
-Fork <a href="https://github.com/ModelEarth/realitystream" target="_blank">RealityStream</a> if you're contributing to our Machine Learning visualizations.
-Fork <a href="https://github.com/ModelEarth/feed" target="_blank">Feed Player</a> if you're adding to our Feed Player and Visual Project Manager.
-Fork <a href="https://github.com/ModelEarth/useeio.js" target="_blank">USEEIO.js</a> if you're contributing to our DuckDB and Supabase [Open Footprint](/useeio.js/footprint/) SQL visualizations.  
-Fork <a href="https://github.com/ModelEarth/data-commons" target="_blank">Data-Commons</a> if you're adding Observable Framework D3 data visualizations with the Google Data Commons API.  
-Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">Data-Pipeline</a> if you're contributing python to data prep and machine learning projects.  
-Fork <a href="https://github.com/ModelEarth/earthscape" target="_blank">Earthscape</a> if you're contributing to the [Chatbot UI](/earthscape/app/) and related NextJS React and Supabase for Membership Admin.
+Fork <a href="https://github.com/ModelEarth/projects">Active Projects</a> if you're contributing to the [Open WebUI interface](/projects/src/) and related Python and Vite additions.
+Fork <a href="https://github.com/ModelEarth/requests">Requests</a> if you're adding to our image and video [Storyboard Generation](/data-pipeline/research/stream).
+Fork <a href="https://github.com/ModelEarth/realitystream">RealityStream</a> if you're contributing to our Machine Learning visualizations.
+Fork <a href="https://github.com/ModelEarth/feed">Feed Player</a> if you're adding to our Feed Player and Visual Project Manager.
+Fork <a href="https://github.com/ModelEarth/useeio.js">USEEIO.js</a> if you're contributing to our DuckDB and Supabase [Open Footprint](/useeio.js/footprint/) SQL visualizations.  
+Fork <a href="https://github.com/ModelEarth/data-commons">Data-Commons</a> if you're adding Observable Framework D3 data visualizations with the Google Data Commons API.  
+Fork <a href="https://github.com/ModelEarth/data-pipeline">Data-Pipeline</a> if you're contributing python to data prep and machine learning projects.  
+Fork <a href="https://github.com/ModelEarth/earthscape">Earthscape</a> if you're contributing to the [Chatbot UI](/earthscape/app/) and related NextJS React and Supabase for Membership Admin.
 
 
 
