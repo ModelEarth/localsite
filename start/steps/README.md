@@ -16,59 +16,89 @@ Run in a folder called "webroot" to start your local websites:
 The terminal is now dedicated to being your webroot for [http://localhost:8887](http://localhost:8887)
 To run further commands, open a new terminal window.
 
-**OPTION 2:** npx http-server, which [requires installing a local cert](../http-server) (Not recommended until we document.)
+Or you can use npx http-server, which [requires installing a local cert](../http-server).&nbsp; (Not recommended until we document.)
 
-## Pull down repos
+## Pull down repos to contribute.
 
-**Step 1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a> and <a href="https://github.com/ModelEarth/io" target="_blank">io</a> repos to preview your contributions using Github Pages.
+If you're not planning to edit, you can simply view the following at [model.earth](http://model.earth).
 
-**Step 2.** Enter your GitHub account to include in the install cmd below.
+**Step 1.** Fork our <a href="https://github.com/ModelEarth/localsite" target="_blank">localsite</a> and <a href="https://github.com/ModelEarth/io" target="_blank">io</a> repos to preview your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart). How to [Fork Repos](https://medium.com/@6unpnp/fork-a-github-repository-and-deploy-its-github-pages-site-d55dc53988d) 
+
+Fork other repos you plan to edit.   
+Fork <a href="https://github.com/ModelEarth/projects" target="_blank">Active Projects</a> if you're contributing to the [Open WebUI interface](/projects/src/) and related Python and Vite additions.
+Fork <a href="https://github.com/ModelEarth/requests" target="_blank">Requests</a> if you're adding to our image and video [Storyboard Generation](/data-pipeline/research/stream).
+Fork <a href="https://github.com/ModelEarth/realitystream" target="_blank">RealityStream</a> if you're contributing to our Machine Learning visualizations.
+Fork <a href="https://github.com/ModelEarth/feed" target="_blank">Feed Player</a> if you're adding to our Feed Player and Visual Project Manager.
+Fork <a href="https://github.com/ModelEarth/useeio.js" target="_blank">USEEIO.js</a> if you're contributing to our DuckDB and Supabase [Open Footprint](/useeio.js/footprint/) SQL visualizations.  
+Fork <a href="https://github.com/ModelEarth/data-commons" target="_blank">Data-Commons</a> if you're adding Observable Framework D3 data visualizations with the Google Data Commons API.  
+Fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">Data-Pipeline</a> if you're contributing python to data prep and machine learning projects.  
+Fork <a href="https://github.com/ModelEarth/earthscape" target="_blank">Earthscape</a> if you're contributing to the [Chatbot UI](/earthscape/app/) and related NextJS React and Supabase for Membership Admin.
+
+
+
+**Step 2.** Enter your GitHub account to include in the install and update cmds below.
 
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
-**Step 3.** Indicate the repos you've forked:
+**Step 3.** Indicate the repos you're planning to edit and have forked.
+(You can avoid checking localsite and io, unless you're editing those core repos directly.)
 <!-- Also add to checkboxIds array -->
-<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">localsite &nbsp;&nbsp; <input id="ioForked" type="checkbox" onclick="updateGitCmds()">io &nbsp;&nbsp; <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">data-commons &nbsp;&nbsp; <input id="data-pipelineForked" type="checkbox"  onclick="updateGitCmds()">data-pipeline  &nbsp;&nbsp; <input id="projectsForked" type="checkbox"  onclick="updateGitCmds()">projects &nbsp;&nbsp; <input id="requestsForked" type="checkbox"  onclick="updateGitCmds()">requests
 
-Also fork <a href="https://github.com/ModelEarth/data-commons" target="_blank">data-commons</a> if you are a DemocracyLab Observable Framework data visualization volunteer.  
-Also fork <a href="https://github.com/ModelEarth/data-pipeline" target="_blank">data-pipeline</a> if you are contributing python to data prep and machine learning projects.  
-Also fork <a href="https://github.com/ModelEarth/projects" target="_blank">projects</a> if you are contributing to the Open WebUI interface and related python additions.
-Also fork <a href="https://github.com/ModelEarth/requests" target="_blank">requests</a> if you are adding to our image and video [storyboard generation](/data-pipeline/research/stream).
+<div style="float:left;font-size:18px;padding-right:20px">
+<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">Localsite<br>
+<input id="ioForked" type="checkbox" onclick="updateGitCmds()">IO<br>
+<input id="projectsForked" type="checkbox" onclick="updateGitCmds()">Projects<br>
+<input id="requestsForked" type="checkbox" onclick="updateGitCmds()">Requests<br>
+<input id="realitystreamForked" type="checkbox" onclick="updateGitCmds()">RealityStream<br>
+</div>
+<div style="float:left;font-size:18px">
+<input id="feedForked" type="checkbox" onclick="updateGitCmds()">Feed<br>
+<input id="useeio.jsForked" type="checkbox" onclick="updateGitCmds()">USEEIO.js<br>
+<input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">Data-Commons<br> 
+<input id="data-pipelineForked" type="checkbox" onclick="updateGitCmds()">Data-Pipeline<br>
+<input id="earthscapeForked" type="checkbox" onclick="updateGitCmds()">Earthscape<br>
+</div>
+<div style="clear:both"></div><br>
 
-**Step 4.** Run in your local webroot folder:
+**Step 4.** Run in your local webroot folder, or pull down from the links above using [GitHub Desktop](https://desktop.github.com/):
 
-<textarea id="cloneCmd" class="codetext" rows="6">
-git clone https://github.com/ModelEarth/localsite localsite &&
-git clone https://github.com/ModelEarth/io io &&
-git clone https://github.com/ModelEarth/data-commons data-commons &&
-git clone https://github.com/ModelEarth/data-pipeline data-pipeline &&
-git clone https://github.com/ModelEarth/projects projects &&
-git clone https://github.com/ModelEarth/requests requests</textarea>
+<textarea id="cloneCmd" class="codetext" rows="10">
+git clone https://github.com/ModelEarth/localsite localsite
+git clone https://github.com/ModelEarth/io io
+git clone https://github.com/ModelEarth/projects projects
+git clone https://github.com/ModelEarth/requests requests
+git clone https://github.com/ModelEarth/realitystream realitystream
+git clone https://github.com/ModelEarth/feed feed
+git clone https://github.com/ModelEarth/useeio.js useeio.js
+git clone https://github.com/ModelEarth/data-commons data-commons
+git clone https://github.com/ModelEarth/data-pipeline data-pipeline
+git clone https://github.com/ModelEarth/earthscape earthscape</textarea>
 
 <!-- Activate GitHub Pages so we can preview your contributions. -->
 
-Now you can open our Projects page at: [localhost:8887/projects](http://localhost:8887/projects/)
+Now you can view and edit pages locally at:
+[localhost:8887/projects](http://localhost:8887/projects/)
+[localhost:8887/data-commons](http://localhost:8887/data-commons/)
+[localhost:8887/data-pipeline](http://localhost:8887/data-pipeline/)
+[localhost:8887/realitystream](http://localhost:8887/realitystream/)
+[localhost:8887/feed](http://localhost:8887/feed/)
 
 If you encounter a broken link locally, view the page at [model.earth](https://model.earth/) or clone one of the [additional modelearth repos](https://github.com/ModelEarth?tab=repositories).
 
-After pulling down [data-commons](https://github.com/modelearth/data-commons), build your static site to update the "dist" folder:
+## Occasionally update your local files
 
-	cd data-commons
-	yarn build	
+Before you edit, run the following in your local webroot to fetch changes from others.
+Or you can pull down recent updates within Github Desktop.
 
-Visit the following to view built: <http://localhost:8887/data-commons/dist> and source <http://localhost:8887/data-commons/docs>
-
-Before you make edits, pull down recent updates within Github Desktop.
-Or run the following occasionally (daily or weekly) in your webroot.
-
-<textarea id="refreshCmd" class="codetext" rows="7">
-cd localsite && git pull https://github.com/ModelEarth/localsite main  
-cd ../data-commons && git pull https://github.com/ModelEarth/data-commons main 
-cd ../data-pipeline && git pull https://github.com/ModelEarth/data-pipeline main  
-cd ../projects && git pull https://github.com/ModelEarth/projects main  
-cd ../requests && git pull https://github.com/ModelEarth/requests main  
-cd ../io && git pull https://github.com/ModelEarth/io main
-cd ../</textarea>
+<!--
+cd localsite && git pull https://github.com/ModelEarth/localsite main && cd ../
+cd io && git pull https://github.com/ModelEarth/io main && cd ../
+cd data-commons && git pull https://github.com/ModelEarth/data-commons main && cd ../
+cd data-pipeline && git pull https://github.com/ModelEarth/data-pipeline main && cd ../
+cd projects && git pull https://github.com/ModelEarth/projects main && cd ../
+cd requests && git pull https://github.com/ModelEarth/requests main && cd ../
+-->
+<textarea id="refreshCmd" class="codetext" rows="10"></textarea>
 
 That's it! &nbsp;You can stop the steps here. Your updated local site is now visible at: [localhost:8887/io](http://localhost:8887/io/)
 
