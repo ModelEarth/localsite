@@ -1,5 +1,5 @@
 .search-filters-css {
-  display: block !important;
+  displayX: block !important; /* caused space at top of ds earth */
 }
 #filterEmbedHolder {
     display: block !important;
