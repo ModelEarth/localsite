@@ -484,7 +484,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	left:0;
 	bottom:0;
 }
-@media (max-width: 500px) {
+@media (max-width: 600px) {
 	.navcolumn {
 		width: 100%;
 	}

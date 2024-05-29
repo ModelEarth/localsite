@@ -227,9 +227,9 @@ input.filterClick[type="text"] {
     width:100%;
     max-width:400px;
 }
-@media (max-width: 500px) {
+@media (max-width: 800px) {
     #keywordsTB {
-        max-width:130px;
+        max-width:100px;
     }
 }
 #goSearch {
