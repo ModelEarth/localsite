@@ -3601,12 +3601,15 @@ if (modelpath == "./") {
 }
 //var modelroot = ""; // For links that start with /
 
+// 2024 June - Override everything above to allow for other localsite ports not having local files.
+modelpath = local_app.modelearth_root();
+
 if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('neighborhood.org') < 0) { // When not localhost or other site that has a fork of io and community.
     // To do: allow "Input-Output Map" link in footer to remain relative.
-    modelpath = "https://model.earth/" + modelpath; // Avoid - use local_app.modelearth_root() instead - Check if/why used for #headerSiteTitle and hamburger menu
-    //modelroot = "https://model.earth"; // For embeds
+    //modelpath = "https://model.earth/" + modelpath; // Avoid - use local_app.modelearth_root() instead - Check if/why used for #headerSiteTitle and hamburger menu
+    ////modelroot = "https://model.earth"; // For embeds
 }
-console.log("modelpath " + modelpath);
+consoleLog("modelpath " + modelpath);
 
 
 function waitForVariableNav(variable, callback) { // Declare variable using var since let will not be detected.
@@ -4345,7 +4348,8 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         if (param["showfooter"] && param["showfooter"] == "false") {
         } else if (earthFooter || param.footer) {
             var footerClimbpath = "";
-            let footerFile = modelpath + "../localsite/footer.html"; // modelpath remains relative for site desgnated above as having a local copy of io and community.
+            // Had ..
+            let footerFile = modelpath + "/localsite/footer.html"; // modelpath remains relative for site desgnated above as having a local copy of io and community.
             if (param.footer) {
                 footerFile = param.footer; // Custom
 
@@ -4383,8 +4387,8 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
             // Wait for header to load?
 
             let targetColumn = "#navcolumn";
-            $(targetColumn).load( modelpath + "../localsite/nav.html", function( response, status, xhr ) {
-
+            // Had ..
+            $(targetColumn).load( modelpath + "/localsite/nav.html", function( response, status, xhr ) {
                 activateSideColumn();
             });
         }

@@ -2049,7 +2049,7 @@ function showList(dp,map) {
     if (!$("#listcolumn").is(":visible")) { // #listcolumn may already be visible if icon clicked while page is loading.
         $("#showListInBar").show();
     }
-
+    $("#showSideInBar").show(); // Added 2024 May 28
     $(".sidelistHolder").show();
 
     $('.detail').mouseenter(function(event){

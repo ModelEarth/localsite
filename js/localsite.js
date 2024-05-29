@@ -105,7 +105,8 @@ var local_app = local_app || (function(module) {
             let theroot = "https://model.earth";
             // TO DO: Check if localsite.js include div contains "https://model.earth" (non-relative)
             
-            if (location.host.indexOf('localhost') >= 0 || location.host.indexOf('127.0.0.1') >= 0) {
+            // Currently assuming all other ports don't have localsite folder.
+            if ((location.host.indexOf('localhost') >= 0 && location.port == "8887") || location.host.indexOf('127.0.0.1') >= 0) {
               theroot = "";
             }
             return (theroot);
