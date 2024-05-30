@@ -3873,10 +3873,10 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         showLeftIcon = true;
         $(".siteTitleShort").text("Civic Tech Atlanta");
         param.titleArray = ["civic tech","atlanta"]
-        param.headerLogo = "<a href='https://codeforatlanta.org'><img src='/community/img/logo/orgs/civic-tech-atlanta-text.png' style='width:186px;padding-top:8px'></a>";
+        param.headerLogo = "<a href='https://codeforatlanta.org'><img src='" + local_app.modelearth_root() + "/community/img/logo/orgs/civic-tech-atlanta-text.png' style='width:186px;padding-top:8px'></a>";
         
         localsiteTitle = "Civic Tech Atlanta";
-        changeFavicon("/localsite/img/logo/apps/neighborhood.png")
+        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/apps/neighborhood.png")
         showClassInline(".neighborhood");
         earthFooter = true;
         showClassInline(".georgia"); // Temp side nav
@@ -3899,10 +3899,10 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         $(".siteTitleShort").text("Model Georgia");
         param.titleArray = [];
         console.log("local_app.localsite_root() " + local_app.localsite_root()); // https://model.earth was in here: https://map.georgia.org/localsite/map/#show=recyclers
-        param.headerLogo = "<a href='https://georgia.org'><img src='/localsite/img/logo/states/GA.png' style='width:140px;padding-top:4px'></a>";
-        param.headerLogoNoText = "<a href='https://georgia.org'><img src='/localsite/img/logo/states/GA-notext.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
+        param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA.png' style='width:140px;padding-top:4px'></a>";
+        param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA-notext.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
         localsiteTitle = "Georgia.org";
-        changeFavicon("/localsite/img/logo/states/GA-favicon.png");
+        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/states/GA-favicon.png");
         if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
             showClassInline(".acct");
             showClassInline(".garesource");
@@ -3923,17 +3923,17 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         showLeftIcon = true;
         $(".siteTitleShort").text("Neighborhood Modeling");
         param.titleArray = ["neighbor","hood"]
-        param.headerLogoSmall = "<img src='/localsite/img/logo/apps/neighborhood.png' style='width:40px;opacity:0.7'>"
+        param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/apps/neighborhood.png' style='width:40px;opacity:0.7'>"
         localsiteTitle = "Neighborhood.org";
-        changeFavicon("/localsite/img/logo/apps/neighborhood.png")
+        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/apps/neighborhood.png")
         showClassInline(".neighborhood");
         earthFooter = true;
     } else if (!Array.isArray(param.titleArray) && (location.host.indexOf("democracy.lab") >= 0)) {
         showLeftIcon = true;
         $(".siteTitleShort").text("Democracy Lab");
 
-        param.headerLogo = "<img src='/localsite/img/logo/partners/democracy-lab.png' style='width:190px;margin-top:15px'>";
-        param.headerLogoSmall = "<img src='/localsite/img/logo/partners/democracy-lab-icon.jpg' style='width:32px;margin:4px 8px 0 0'>";
+        param.headerLogo = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/partners/democracy-lab.png' style='width:190px;margin-top:15px'>";
+        param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/partners/democracy-lab-icon.jpg' style='width:32px;margin:4px 8px 0 0'>";
         showClassInline(".dlab'");
         earthFooter = true;
     } else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
