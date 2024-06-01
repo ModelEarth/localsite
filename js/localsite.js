@@ -2030,7 +2030,42 @@ function waitForElmKickoff(selector, resolve) {
   });
 }
 
+function loadText(pagePath, divID, target) { // For html and yaml
+  const theDivID = (divID.startsWith('#') || divID.startsWith('.')) ? divID : '#' + divID;
+  waitForElm(theDivID).then((elm) => {
+    const theDiv = document.getElementById(divID);
+    //theDiv.load(pagePath, function( response, status, xhr ) {
+    //  loadIntoDiv(pagePath,theDivID,response,callback);
+    //});
 
+
+    fetch(pagePath)
+        .then(function(response) {
+            // Check if the response is successful
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        })
+        .then(function(data) {
+            // Insert the content into the div
+            theDiv.innerHTML = data;
+
+            // loadIntoDiv(pagePath,theDivID,response,callback);
+
+            // Execute the callback function
+            //callback(data, 'success', null);
+        })
+        .catch(function(error) {
+            // Handle any errors
+            callback(null, 'error', error);
+        });
+
+
+
+  });
+}
 function loadMarkdown(pagePath, divID, target, attempts, callback) {
   if (typeof attempts === 'undefined') {
     attempts = 1;
@@ -2134,22 +2169,20 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
         html = metadata + html;
         */
       }
-      //document.getElementById(divID).innerHTML = html; // Overwrites
 
       // Append rather than overwrite
-      var thediv = document.getElementById(divID);
-      loadIntoDiv(pageFolder,divID,thediv,html,0,callback);
+      
+      loadIntoDiv(pageFolder,divID,html,callback);
 
     });
   });
   });
   //});
 }
-function loadIntoDiv(pageFolder,divID,thediv,html,attempts,callback) {
-  //if (thediv) {
-  // TO DO: Append # if not in divID
-  waitForElm("#" + divID).then((elm) => {
-    //alert("loadIntoDiv attempts: " + attempts);
+function loadIntoDiv(pageFolder,divID,html,callback) {
+  const theDivID = (divID.startsWith('#') || divID.startsWith('.')) ? divID : '#' + divID;
+  waitForElm(theDivID).then((elm) => {
+    const thediv = document.getElementById(divID);
     var newcontent = document.createElement('div');
     newcontent.innerHTML = html;
     while (newcontent.firstChild) {
@@ -2214,19 +2247,6 @@ function loadIntoDiv(pageFolder,divID,thediv,html,attempts,callback) {
 
     if(callback) callback();
   });
-  /*
-  } else { // Try again
-    attempts = attempts + 1;
-    if (attempts < 100) {
-      setTimeout( function() {
-        thediv = document.getElementById(divID);
-        loadIntoDiv(pageFolder,divID,thediv,html,attempts,callback);
-      }, 100 );
-    } else {
-      console.log("ALERT: " + divID + " not available in page for showdown to insert text after " + attempts + " attempts.");
-    }
-  }
-  */
 }
 
 /* Allows map to remove selected shapes when backing up. */
