@@ -625,6 +625,9 @@ summary::-webkit-details-marker {
   float:left;
   margin-bottom: 0px;
 }
+.mobileView .pageColumn {
+  width:100%;
+}
 .full .pageColumn {
   width:100%;
 }
