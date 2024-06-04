@@ -816,7 +816,7 @@ function showSideTabs() {
     consoleLog("showSideTabs() in navigation.js");
     waitForElm('#sideTabs').then((elm) => {
         let hash = getHash();
-        
+
         if (hash.sidetab) {
             $('body').addClass('bodyRightMargin'); // Creates margin on right for fixed sidetabs.
             $('body').addClass('mobileView');
@@ -849,6 +849,7 @@ function showSideTabs() {
         } else {
             $('body').removeClass('bodyRightMargin'); // Creates margin on right for fixed sidetabs.
             $('body').removeClass('mobileView');
+            updateHash({"sidetab":""});
             $("#sideTabs").hide();
         }
     });
@@ -3914,7 +3915,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         }
         $('#headerOffset').css('display', 'block'); // Show under site's Drupal header
         if (location.host.indexOf('localhost') >= 0) {
-            showClassInline(".earth");
+            //showClassInline(".earth"); // Show extra side nav
             earthFooter = true;
         }
         

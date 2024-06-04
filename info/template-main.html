@@ -473,18 +473,19 @@
 
             <div class="local" style="display:none">
               <div style="margin-bottom:5px">Your email address</div>
-              <input id="input123" autocompleteX="off" style="width:100%; min-width:250px" class="mobileWide textInput si-input" type="text" value=""><br><br><br>
-            </div>
-
-            <div class="georgia" style="display:none">
-              <div><a href="https://partner.exploregeorgia.org/login">Partner Resources</a></div><br><br>
+              <input id="input123" autocompleteX="off" style="width:100%; min-width:250px" class="mobileWide textInput si-input" type="text" value=""><br><br>
             </div>
 
             <div class="default" style="display:none">
-              <a class="uIn" href="/resources">Staff Resources</a><br><br>
+              <div class="uIn btn btn-success">Continue</div><br><br>
             </div>
+
+            <div class="georgia" style="display:none">
+              <div><a class="btn btn-success" href="https://partner.exploregeorgia.org/login">Partner Resources</a></div><br><br>
+            </div>
+
             <div class="use-1" style="display:none;">
-              <a class="uOut" style="margin:0 0 20px 0;">Log Out</a>
+              <a class="uOut btn btn-primary" style="margin:0 0 20px 0;">Log Out</a>
             </div>
           </div>
         </div>
@@ -1726,12 +1727,16 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 
 
 <section class="data-section" id="data" style="overflow:auto">
+<div style="border-bottom:1px solid #ccc">
+  <div class="content contentpadding contentpaddingMin litePanel" style="max-width:2000px; padding-bottom:0px">
+
+    <div class='viewAllLink' style='display:none;float:right'><a class='btn btn-white' onclick='goHash({},["name","loc","m","cat","subcat","q","search"]); return false;' href='#show=" + param["show"] + "'>List All</a></div>
+
+    <div class="listTitle"></div>
+    <div class='listSpecs'></div>
+  </div>
+</div>
 <div class="content contentpadding contentpaddingMin litePanel" style="max-width:2000px; padding-bottom:0px">
-
-  <div class='viewAllLink' style='display:none;float:right'><a class='btn btn-white' onclick='goHash({},["name","loc","m","cat","subcat","q","search"]); return false;' href='#show=" + param["show"] + "'>List All</a></div>
-
-  <div class="listTitle"></div>
-  <div class='listSpecs'></div>
 
   <div id="flexwrapper">
     

@@ -842,20 +842,37 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       });
 
       $(document).on("click", ".uOut", function(event) {
-        console.log(".uOut clicked")
-
-        // Keeping it real simple
+        console.log(".uOut clicked");
         Cookies.remove('at_a');
-        window.location = "../"
+        window.location = "/"
         return;
 
         //event.stopPropagation();
       });
       $(document).on("click", ".uIn", function(event) {
-        window.location = "/explore/menu/login/azure/";
-        return;
+        var email = $('#input123').val();
+        if (isValidEmail(email)) {
+          localStorage.email = email;
+          if (isValid(email)) {
+            window.location = "/explore/menu/login/azure/";
+            return;
+          } else {
+            window.location = "/";
+          }
+        } else {
+          alert("email required");
+          $("#input123").focus();
+        }
       });
-      
+      function isValidEmail(email) {
+          var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return emailRegex.test(email);
+      }
+      function isValid(email) {
+          var vDom = ['QGVvcmdpYS5vcmc=', 'QGdhYXJ0cy5vcmc='];
+          var eDom = email.split('@')[1]; for (var i = 0; i < vDom.length; i++) {if (eDom === atob(vDom[i])) {return true;}} return false;
+      }
+
       // Load when body div becomes available, faster than waiting for all DOM .js files to load.
       waitForElm('#bodyloaded').then((elm) => {
        consoleLog("#bodyloaded becomes available");
@@ -1908,6 +1925,7 @@ function showSearchFilter() {
 }
 function closeSideTabs() {
   console.log("closeSideTabs()");
+  updateHash({"sidetab":""});
   $("#sideTabs").hide();
   $("body").removeClass("bodyRightMargin");
   if (!$('body').hasClass('bodyLeftMargin')) {

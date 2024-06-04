@@ -1996,7 +1996,8 @@ function showList(dp,map) {
         $("#dataList").prepend("<a href='#' onClick='showSubcatList(); return false;' id='viewAllCategories'>View All Categories</a>");
         $("#dataList").prepend("<ul id='subcatListUL' style='margin:0px;display:none'>" + subcatList + "</ul><br>");
         if(hash.cat){
-          $("#dataList").prepend("<h3>" + hash.cat.replace(/_/g,' ') + "</h3>");
+          //Already appears above
+          //$("#dataList").prepend("<h3>" + hash.cat.replace(/_/g,' ') + "</h3>");
         }
       }
     }
