@@ -2225,7 +2225,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                 }
                 // National
                 // Hover over map
-                //this._div.innerHTML = "<h4>Zip code</h4>" + (props ? props.zip + '</br>' + props.name + ' ' + props.state + '</br>' : "Select Locations")
+                //this._div.innerHTML = "<h4>Zip code</h4>" + (props ? props.zip + '<br>' + props.name + ' ' + props.state + '<br>' : "Select Locations")
                 
                 // CSS resides in map.css at .leaflet-top > .info
                 if (props && props.COUNTYFP) {
@@ -2239,7 +2239,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
                 // To fix if using state - id is not defined
                 // Also, other state files may need to have primary node renamed to "data"
-                //this._div.innerHTML = "<h4>Zip code</h4>" + (1==1 ? id + '</br>' : "Hover over map")
+                //this._div.innerHTML = "<h4>Zip code</h4>" + (1==1 ? id + '<br>' : "Hover over map")
             }
             if (map) {
               info.addTo(map);
