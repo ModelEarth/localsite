@@ -4,6 +4,7 @@
 
 You can use [Localsite Pages](../) to create websites and [storyboards](/requests) with free GitHub hosting.  
 If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns](https://twitter.com/LorenHeyns).
+[Notes on updating](/io/coders/python/) your local Node/NPM, Python, Conda `jupyter notebook` for .ipynb, and Docker
 
 ## Start your local webroot
 
