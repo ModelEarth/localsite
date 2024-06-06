@@ -85,7 +85,7 @@ Now you can view and edit pages locally at:
 
 If you encounter a broken link locally, view the page at [model.earth](https://model.earth/) or clone one of the [additional modelearth repos](https://github.com/ModelEarth?tab=repositories).
 
-## Occasionally update your local files
+## Occasionally refresh your local files
 
 Before you edit, run the following in your local webroot to fetch changes from others.
 Or you can pull down recent updates within Github Desktop.
