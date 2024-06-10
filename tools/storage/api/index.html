@@ -47,14 +47,6 @@ id is appended below to avoid reloading
 </div>
 
 <script>
-function isValidJSON(str) {
-    try {
-        JSON.parse(str);
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
 $(document).ready(function() {
 	// An object containing API Providers and API Keys as key-value pairs
 	var aPro = {};
@@ -97,7 +89,8 @@ $(document).ready(function() {
 	             '      <option>Groq</option>' +
 	             '      <option>Observable</option>' +
 	             '      <option>Replicate</option>' +
-	             '      <option>Twitter X</option>' +
+	             '      <option>Serp</option>' +
+	             '      <option>X.com</option>' +
 	             '      <!-- Add more API providers here, see list in README file -->' +
 	             /*
 	             '      <option>Amazon Web Services (AWS)</option>' +

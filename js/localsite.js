@@ -2935,5 +2935,12 @@ function getSitePreview(url, divID) {
         }
     });
 }
-
+function isValidJSON(str) {
+    try {
+        JSON.parse(str);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
 consoleLog("end localsite");
