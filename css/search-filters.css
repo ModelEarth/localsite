@@ -1,5 +1,5 @@
 .search-filters-css {
-  displayX: block !important; /* caused space at top of ds earth */
+  display: block !important; /* RETAIN, needed for topics to appear under tab. Retain for now even if causing space at top of ds earth. */
 }
 #filterEmbedHolder {
     display: block !important;
