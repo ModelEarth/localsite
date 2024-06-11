@@ -844,6 +844,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       $(document).on("click", ".uOut", function(event) {
         console.log(".uOut clicked");
         Cookies.remove('at_a');
+        localStorage.removeItem('email');
         window.location = "/"
         return;
 
@@ -854,13 +855,14 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         if (isValidEmail(email)) {
           localStorage.email = email;
           if (isValid(email)) {
+            Cookies.set('golog', window.location.href);
             window.location = "/explore/menu/login/azure/";
             return;
           } else {
             window.location = "/";
           }
         } else {
-          alert("email required");
+          alert("email required"); // TO DO: Display in browser
           $("#input123").focus();
         }
       });
@@ -868,9 +870,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           return emailRegex.test(email);
       }
-      function isValid(email) {
-          var vDom = ['QGVvcmdpYS5vcmc=', 'QGdhYXJ0cy5vcmc='];
-          var eDom = email.split('@')[1]; for (var i = 0; i < vDom.length; i++) {if (eDom === atob(vDom[i])) {return true;}} return false;
+      function isValid(email) { // loc a
+          var vDom=['Z2VvcmdpYS5vcmc=', 'Z2FhcnRzLm9yZw==']; var eDom=email.split('@')[1]; for (var i = 0; i < vDom.length; i++) {if (eDom === atob(vDom[i])) {return true;}} return false;
       }
 
       // Load when body div becomes available, faster than waiting for all DOM .js files to load.
@@ -2303,7 +2304,7 @@ function useSet() {
     }
     loadUse(uAcc); // Place style
 
-    //alert("param.minuse: " + param.minuse);
+    //alert("param.minuse: " + param.minuse + " uAcc: " + uAcc);
     if (param.minuse && param.minuse > uAcc) { // Todo: Detect multiple acccess levels.
         if (uAcc < 5) {
           Cookies.set('golog', window.location.href);
@@ -2491,7 +2492,6 @@ function loadUse(use) {
 
 // End: explore/js/embed.js
 
-
 // Copied from setting.js initElements()
 function initSitelook() {
     let sitemode;
@@ -2536,7 +2536,14 @@ function initSitelook() {
     setDevmode(devmode);
     setModelsite(modelsite);
     setGlobecenter(globecenter);
+    if (localStorage.email) {
+      $("#input123").val(localStorage.email);
+      $(".uIn").hide();$(".uOut").show();
+    } else {
+      $(".uOut").hide();$(".uIn").show();
+    }
 }
+
 function setSitemode(sitemode) {
   // Not copied over from settings.js
 }
@@ -2654,7 +2661,8 @@ function geoSuccess(pos) {
 
 function setModelsite(modelsite) {
   if (modelsite != "") {
-    console.log("To do: setModelsite");
+    console.log("setModelsite() is not currently used.");
+    // Avoid calling refrehsh here since runs when page loads.
   }
 }
 

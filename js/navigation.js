@@ -4203,10 +4203,16 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
                                     //let titleValue = "<span style='float:left'><a href='" + climbpath + "' style='text-decoration:none'>";
                                     let titleValue = "<span style='float:left'><a href='/' style='text-decoration:none'>";
                                     
+                                    let modelsite = Cookies.get('modelsite');
+                                    if (modelsite.length && modelsite != "model.earth") {
+                                        param.titleArray = modelsite.split(".");
+                                    }
+
                                     titleValue += "<span style='color: #777;'>" + param.titleArray[0] + "</span>";
                                     for (var i = 1; i < param.titleArray.length; i++) {
                                         titleValue += "<span id='titleTwo' style='color:#bbb;margin-left:1px'>" + param.titleArray[i] + "</span>";
                                     }
+                                    
                                     titleValue += "</a></span>";
                                     $('#headerSiteTitle').html(titleValue);
                                     let theState = $("#state_select").find(":selected").text();
@@ -4562,6 +4568,9 @@ $(document).on("change", "#globecenter", function(event) { // Public or Dev
 $(document).on("change", "#modelsite", function(event) {
     if (typeof Cookies != 'undefined') {
         Cookies.set('modelsite', $("#modelsite").val());
+
+        // Apply the cookie
+        location.reload();
     }
     setModelsite($("#modelsite").val());
 });
