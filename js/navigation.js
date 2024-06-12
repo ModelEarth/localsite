@@ -4204,7 +4204,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
                                     let titleValue = "<span style='float:left'><a href='/' style='text-decoration:none'>";
                                     
                                     let modelsite = Cookies.get('modelsite');
-                                    if (modelsite.length && modelsite != "model.earth") {
+                                    if (modelsite && modelsite.length && modelsite != "model.earth") {
                                         param.titleArray = modelsite.split(".");
                                     }
 
