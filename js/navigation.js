@@ -3843,7 +3843,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
         document.head.appendChild($favicon)
       }
     }
-    if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio" || location.href.indexOf("/swarm/") >= 0) {
+    if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio" || location.href.indexOf("/swarm/") >= 0 || location.href.toLowerCase().indexOf("lineara") >= 0) {
         localsiteTitle = "DreamStudio";
         $(".siteTitleShort").text("DreamStudio");
         param.titleArray = [];
@@ -3993,7 +3993,8 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
             $("#datascape").addClass("datascapeEmbed");
             $("#fullcolumn > #datascape").removeClass("datascapeEmbed");  // When #datascape is NOT embedded.
             if (!$("#datascape").hasClass("datascapeEmbed")) {
-                $("#datascape").addClass("datascapeTop");
+                // Adds too much space to /earth
+                //$("#datascape").addClass("datascapeTop");
             }
 
             $('body').removeClass('bodyLeftMarginFull'); // Gets added back if navcolumn is displayed.
