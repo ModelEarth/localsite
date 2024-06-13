@@ -3993,8 +3993,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
             $("#datascape").addClass("datascapeEmbed");
             $("#fullcolumn > #datascape").removeClass("datascapeEmbed");  // When #datascape is NOT embedded.
             if (!$("#datascape").hasClass("datascapeEmbed")) {
-                // Adds too much space to /earth
-                //$("#datascape").addClass("datascapeTop");
+                $("#datascape").addClass("datascapeTop");
             }
 
             $('body').removeClass('bodyLeftMarginFull'); // Gets added back if navcolumn is displayed.

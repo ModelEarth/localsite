@@ -1,5 +1,6 @@
 .search-filters-css {
-  /* RETAIN, needed for topics to appear under tab. Retain for now even if causing space at top of ds earth. */
+  /* RETAIN, needed for topics to appear under tab. */
+  /* Retain for now even if causing space at top of ds earth. */
   /* change to display when "Topics" clicked. */
   display: block !important;
 }
