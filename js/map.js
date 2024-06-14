@@ -394,8 +394,9 @@ function loadMap1(calledBy, show, dp_incoming) {
         //dp.addressColumn = "FACILITY_ADDR";
         dp.addressColumn = "facility_addr";
 
-        // BUGBUG ONLY WORKS WHEN LOWERCASE, Column in database does NOT need to be lowercase too.
-        dp.valueColumn = "sic_code_list";
+        // ONLY WORKS WHEN UPPERCASE, Column in database is UPPERCASE
+        // TO DO: convert to lowercase in data object, then compare all as lowercase.
+        dp.valueColumn = "SIC_CODE_LIST"; 
         dp.valueColumnLabel = "SIC Code";
         ////dp.showKeys = "description"; // How would this be used?
 
@@ -1242,7 +1243,8 @@ function showList(dp,map) {
         console.log("Count exceeds 10000");
         return;
     }
-
+    //console.log("elementRaw:");
+    //console.log(elementRaw);
     let showIt = true;
     if (hash.name && elementRaw["name"]) { // Match company name from URL to isolate as profile page.
       //console.log("elementRaw[name] " + elementRaw["name"]);
@@ -1471,6 +1473,11 @@ function showList(dp,map) {
           console.log("catFound in valueColumn");
         }
         if (!foundMatch) {
+          //console.log("Attempt cat search " + hash.cat.toLowerCase() + " in " + dp.catColumn);
+          
+          if (elementRaw[dp.catColumn]) {
+            //console.log("Column exists: " + elementRaw[dp.catColumn]);
+          }
           if (elementRaw[dp.catColumn] && elementRaw[dp.catColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
             foundMatch++; // Cat found in Category
             catFound++;
@@ -2103,7 +2110,7 @@ function showList(dp,map) {
     //  listTitle = $("#catSearch").val();
     //} else
     if (hash.cat) {
-      listTitle = hash.cat.replace(/_/g,' ');
+      listTitle = "Category: " + hash.cat.replace(/_/g,' ') + " <!-- In column " + dp.catColumn + " -->";
     }
     if (hash.subcat) { // Overwrite the title with the subtitle
       if (hash.subcat == "null") {
@@ -2114,7 +2121,7 @@ function showList(dp,map) {
           $(".listSubtitle").html("No subcategory");
         }
       } else {
-        listTitle = hash.subcat;
+        listTitle = "Category: " + hash.subcat;
       }
     }
     //listTitle = "title"; // name;
