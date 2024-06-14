@@ -99,26 +99,23 @@ function hashChanged() {
         //hash.naics = ""; // Since go value invokes hiddenhash
         // Then we call applyIO at end of this hashChanged function
 
+        if (hash.show != "vehicles") {
+            $("#introframe").hide();
+        }
+        if (hash.show != "ppe" || hash.show != "suppliers") {
+            $(".layerclass.ppe").hide();
+        }
+        if (hash.show != "opendata") {
+            $(".layerclass.opendata").hide();
+        }
 
-        //$(document).ready(function() {
-            if (hash.show != "vehicles") {
-                $("#introframe").hide();
-            }
-            if (hash.show != "ppe" || hash.show != "suppliers") {
-                $(".layerclass.ppe").hide();
-            }
-            if (hash.show != "opendata") {
-                $(".layerclass.opendata").hide();
-            }
+        //$("#tableSide").hide();
 
-            //$("#tableSide").hide();
+        if ($("#navcolumn .catList").is(":visible")) {
+            $("#selected_states").hide();
+        }
 
-            if ($("#navcolumn .catList").is(":visible")) {
-                $("#selected_states").hide();
-            }
-
-            $(".layerclass." + hash.show).show();
-        //});
+        $(".layerclass." + hash.show).show();
     }
 
     /*
@@ -903,7 +900,10 @@ function populateFieldsFromHash() {
 catArray = [];
 
 // TO DO: Wait for other elements in page for several $(document).ready here
-document.addEventListener('DOMContentLoaded', function() { // $(document).ready
+$(document).ready(function() {
+
+// Avoid since does not work when localsite.js loads navigation.js.
+//document.addEventListener('DOMContentLoaded', function() { // $(document).ready
 
     // Gets overwritten
     if (param.state) {
@@ -1241,6 +1241,7 @@ document.addEventListener('DOMContentLoaded', function() { // $(document).ready
         }
     }
     $(document).on("click", "#goSearch", function(event) {
+        console.log("goSearch")
         let hash = getHash();
         let searchQuery = $('#keywordsTB').val();
         console.log("Search for " + searchQuery);
@@ -1786,26 +1787,26 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
             // Don't add, breaks /info
             // && $('#' + whichmap).html()
-          //if ($('#' + whichmap) && $('#' + whichmap).html().length == 0) { // Note: Avoid putting loading icon within map div.
-              //alert("set " + whichmap)
+            //if ($('#' + whichmap) && $('#' + whichmap).html().length == 0) { // Note: Avoid putting loading icon within map div.
+                  //alert("set " + whichmap)
 
-         //var container = L.DomUtil.get(map);
-         //alert(container)
-         if (container == null) { // Initialize map
-            //alert("container null")
-            // Line above does not work, so we remove map:
+             //var container = L.DomUtil.get(map);
+             //alert(container)
+             if (container == null) { // Initialize map
+                //alert("container null")
+                // Line above does not work, so we remove map:
 
-            var basemaps1 = {
-          'Satellite' : L.tileLayer(mbUrl, {maxZoom: 25, id: 'mapbox.satellite', attribution: mbAttr}),
-          // OpenStreetMap
-          'Street Map' : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-          }),
-          // OpenStreetMap_BlackAndWhite:
-          'Grey' : L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-              maxZoom: 18, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-          }),
-        }
+                var basemaps1 = {
+              'Satellite' : L.tileLayer(mbUrl, {maxZoom: 25, id: 'mapbox.satellite', attribution: mbAttr}),
+              // OpenStreetMap
+              'Street Map' : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                  maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+              }),
+              // OpenStreetMap_BlackAndWhite:
+              'Grey' : L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+                  maxZoom: 18, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+              }),
+            }
 
 
             container = L.DomUtil.get(whichmap);
@@ -3236,7 +3237,7 @@ function changeCatDelete(catTitle) {
   //});
 }
 
-document.addEventListener('DOMContentLoaded', function() { // $(document).ready
+$(document).ready(function() {
     if (param["show"] == "mockup" || param["mockup"] || param["design"]) {
         // Phase out .mock-up and switch to .mockup
     var div = $("<div />", {
@@ -3464,7 +3465,7 @@ function updateRegionService(section) {
 }
 
 // INIT
-document.addEventListener('DOMContentLoaded', function() { // $(document).ready
+$(document).ready(function() {
     // Wait for localsite.js
     hashChanged(); // Ideally this resides before $(document).ready, but we'll need a copy of waitForVariable here
 
@@ -3823,7 +3824,7 @@ function iNav(set) {
         goHash({"set":set,"indicators":hash.indicators});
     }
 }
-function applyNavigation() { // Called by localsite.js so local_app path is available.
+function applyNavigation() { // Waits for localsite.js 'localStart' variable so local_app path is available.
 
     // To do: fetch the existing background-image.
     
@@ -4403,8 +4404,7 @@ function applyNavigation() { // Called by localsite.js so local_app path is avai
     });
 } // end applyNavigation function
 
-document.addEventListener('DOMContentLoaded', function() { // $(document).ready
-    //alert("word")
+$(document).ready(function () {
     $(document).on("click", ".hideMenu", function(event) {
         $("#menuHolder").show();
         $("#menuHolder").css('margin-right','-250px');
