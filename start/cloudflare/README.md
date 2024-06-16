@@ -68,9 +68,7 @@ https://yourdomain.com/#go=$2
 
 ## Host your Github repos using Cloudflare
 
-### Optionally create a single-password site
-
-Optional: Include the "functions" folder from [charca's repo](https://dev.to/charca/password-protection-for-cloudflare-pages-8ma) to create the secure login.
+Optional: Include the "functions" folder from [charca's repo](https://dev.to/charca/password-protection-for-cloudflare-pages-8ma) to create the secure login single-password site.
 
 <!--
 No longer seeing this route, double-check then delete thiL
@@ -79,16 +77,19 @@ Add a custom domain in cloudflare Pages by clicking "Create a project" at "Accou
 Workers & Pages > Pages tab > Connect to Git
 -->
 
-Workers & Pages > Overview > Create application > Pages tab > Connect to Git
-
 Connect to your repo, which can be a private repo.
-You'll have to install the Cloudflare Pages app into GitHub while logged into the GitHub account where the fork resides.
+(You'll have to install the Cloudflare Pages app into GitHub while logged into the GitHub account where the fork resides.)
 
-Make note of the generated subdomain where the project will be deployed.  It will be [generated subdomain].pages.dev
+1. Add your subdomain (subdomain.yoursite.com) as a custom domain in Cloudflare Pages by clicking: 
 
-Under Environmental variables, add CFP_PASSWORD [your password]
+    Workers & Pages > Overview > Create application > Pages tab > Connect to Git
 
-Lastly, add a subdomain under Custom domains within Cloudflare pages.
+
+2. Make note of the generated subdomain where the project will be deployed.  It will be [generated subdomain].pages.dev
+
+3. Under Environmental variables, add CFP_PASSWORD [your password]
+
+4. Lastly, add a subdomain under Custom domains within Cloudflare pages.
 This will automatically create a CNAME record pointed at [generated subdomain].pages.dev after a few minutes.
 
 Use [submodules](../submodules) to place multiple repos in your parent repo.

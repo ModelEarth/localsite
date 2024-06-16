@@ -8,11 +8,18 @@ If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns]
 
 ## Start your local webroot
 
-Run in a folder called "webroot" to start your local websites:
+Run in a folder called "webroot" to start your local websites on Mac and Linux:
 
 	python3 -m venv env
 	source env/bin/activate
 	python -m http.server 8887
+
+On Windows:
+
+	python -m venv env
+	env\Scripts\activate
+	python -m http.server 8887
+
 
 The terminal is now dedicated to being your webroot for [http://localhost:8887](http://localhost:8887)
 To run further commands, open a new terminal window.

@@ -470,8 +470,11 @@ summary::-webkit-details-marker {
   max-width: 1100px;
   margin:0 auto;
   font-size: 15px;
-  line-height: 1.55;
+  line-height: 1.55em;
   /* position: relative; */  /* overlapped top filters */
+}
+.content pre {
+  line-height: 1.25em; /* prevents gaps in tree chart */
 }
 #observablehq-toc nav {
   margin-top: 148px; /* when showsearch */
@@ -559,9 +562,12 @@ summary::-webkit-details-marker {
 .contentfull {
   max-width: 2000px;
 }
+
+/* caused cropping on /feed 
 .content ul li {
   margin-left: -10px;
 }
+*/
 @media (max-width: 800px) {
     .content {
       padding: 30px 30px 30px 64px;
@@ -802,7 +808,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
     cursor: pointer;
-    margin-right:4px;
+    margin-right:6px;
     margin-bottom:8px;
 }
 .btn:link, .btn:visited, .contentpadding .btn:link, .contentpadding .btn:visited {
@@ -848,6 +854,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   background-color: #b455b4;
   border-color: #b455b4;
 
+  /*
   font: 600 16px/1.8 "Lato", sans-serif !important;
   color: #fff !important;
   background-color: rgb(180, 85, 180);
@@ -856,7 +863,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   display: inline-block;
   padding: 6px 20px 10px 20px !important;
   margin-left: 9px;
-
+  */
 }
 .btn-magenta:hover {
   background-color: purple !important;
@@ -1709,7 +1716,7 @@ input:checked + .slider:before {
   border-bottom: 0px solid #ddd;
 }
 .large-list {
-  font-size: 18px;
+  font-size: 16px;
 }
 .large-list h1 {
   font-weight: 700;
