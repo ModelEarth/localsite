@@ -95,7 +95,7 @@
 }
 @media (min-width: 600px) {
   #filterFieldsMain {
-      /* padding:2px 0 0px 60px; */
+      padding:2px 0 0px 60px; /* Moves filters to right of left icon(s) */
   }
   #locationFilterHolder #filterLocations {
     padding-left: 60px; /* Margin for menu icon */
