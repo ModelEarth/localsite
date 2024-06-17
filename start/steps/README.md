@@ -111,36 +111,62 @@ cd requests && git pull https://github.com/ModelEarth/requests main && cd ../
 That's it! &nbsp;You can stop the steps here. Your updated local site is now visible at: [localhost:8887/io](http://localhost:8887/io/)
 
 
-## "localsite" shortcut to start your webroot
-
-To simply type "localsite" in your terminal, add a shortcut command:
-
-On a Mac: Add to your .bash_profile file. Change /webroot to your webroot path.
-
-Previously:
-
-	alias localsite="python3 -m http.server 8887 -d /webroot"
-
-To Test:
-
-	alias localsite="python3 -m venv env && source env/bin/activate && http.server 8887 -d /webroot"
-
-On a PC: Save a localsite.bat file in a directory in your system's PATH environment variables, such as C:\Windows\System32.
-
-TO DO: Might need to alter lines 2 and 3 for a PC:
-
-	@echo off
-	python3 -m venv env
-	source env/bin/activate
-	python -m http.server 8887 -d \webroot
-
-QUESTION: How can we run the above automatically when our computer's restart?
-
-Our dream is that someday every computer has a simply and secure webroot for interacting locally with modular AI. Always launch a virutual environment when running code on your local machine.
-
 ## Refresh you local repos
 
 To avoid merge conflicts, click "Sync Fork" on the forks in your [Github Account](https://github.com/), then pull locally using GitHub Desktop or the cmds above. Or you can use the Alternative Sync commands below.
+
+
+## "localsite" shortcut to start your webroot
+
+You can create a shortcut "localsite" command
+
+### On a Mac
+
+Add the following to your .bash_profile file.
+Your .bash_profile file resides in /Users/[username]. 
+
+	alias localsite="python3 -m venv env && source env/bin/activate && python3 -m http.server 8887 --directory ~/Documents/webroot"
+
+In the command above, the tilde ~ invokes /Users/[username]  
+Create a folder for your webroot if it does not already exist.  
+Change /Documents/webroot to your webroot path within /Users/[username]  
+
+<!--
+Initially when no -m, clicked deny when immediatley receive the dialogue: Do you want the application “Python.app” to accept incoming network connections? 
+To do: Create "webroot" folder if it does not exist yet.
+-->
+
+To run the above automatically when your Mac restarts, save a file called start_localsite.sh with the following:
+
+	#!/bin/bash
+	source ~/.bash_profile
+	localsite
+
+Run once to make the Script Executable:
+
+	chmod +x ~/start_localsite.sh
+
+Add the script to "Login Items":  
+System Settings > Login Items > "+" button and add the \~/start\_localsite.sh.
+
+### On a PC
+
+Save a localsite.bat file in a directory in your system's PATH environment variables, such as C:\Windows\System32.
+
+	@echo off
+	python3 -m venv env
+	env\Scripts\activate
+	python -m http.server 8887 -d ~/Documents/webroot
+
+To start automatically, save a file called start_localsite.bat in the startup folder.
+(To open the startup folder, press Win + R, type shell:startup, and press Enter.)
+
+	@echo off
+	cd %USERPROFILE%\Documents\webroot
+	python3 -m venv env
+	call env\Scripts\activate
+	python -m http.server 8887 --directory %USERPROFILE%\Documents\webroot
+
 
 
 ## Deployment: How to Send a Pull Request
