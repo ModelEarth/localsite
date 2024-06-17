@@ -980,9 +980,11 @@ function getMapframeUrl(m) {
 let subcatObject = {};
 let subcatArray = [];
 let subcatList = "";
+
 function showList(dp,map) {
   console.log("showList");
   console.log("Call showList for " + dp.dataTitle + " list");
+  let hash = getHash();
   var iconColor, iconColorRGB;
   let count = 0
   let countDisplay = 0;
@@ -1033,43 +1035,38 @@ function showList(dp,map) {
     if (param["search"]) {
       search = param["search"].replace(/\+/g," ").toLowerCase().split(",");
     }
-    let checkCols = "";
-    let checked = "";
-    $.each(dp.search, function( key, value ) {
-      checked = "";
-      if (search.length == 0) {
-        checked = "checked"; // No hash value limiting to specific columns.
-      } else if(jQuery.inArray(value, search) !== -1) {
-        checked = "checked";
-      }
-      checkCols += '<div><input type="checkbox" class="selected_col" name="in" id="' + value + '" ' + checked + '><label for="' + value + '" class="filterCheckboxTitle"> ' + key + '</label></div>';
-    });
-    $("#selected_col_checkboxes").html(checkCols);
-    // Populate from hash
-    //alert("populate")
 
+    if (hash.show !== priorHash.show) {
+      //alert("Render checkboxes " + hash.show + " priorHash.show " + priorHash.show);
+      let checkCols = "";
+      let checked = "";
+      $.each(dp.search, function( key, value ) {
+        checked = "";
+        if (search.length == 0) {
+          checked = "checked"; // No hash value limiting to specific columns.
+        } else if(jQuery.inArray(value.toLowerCase(), search) !== -1) {
+          checked = "checked";
+        }
+        checkCols += '<div><input type="checkbox" class="selected_col" name="in" id="' + value + '" ' + checked + '><label for="' + value + '" class="filterCheckboxTitle"> ' + key + '</label></div>';
+      });
+      $("#selected_col_checkboxes").html(checkCols);
+    }
 
     // BUGBUG - When toggling the activeLayer is added, this will need to be cleared to prevent multiple calls to loadMap1
      
-    $('.selected_col[type=checkbox]').change(function() {
-        //$('#topPanel').hide();
+    //$('.selected_col[type=checkbox]').change(function() {
+    $(document).on('change', '.selected_col[type=checkbox]', function(event) {
         let search = $('.selected_col:checked').map(function() {return this.id;}).get().join(','); 
-        //alert(search)
-        /* delete
-        var hash = getHash(); 
-        if (hash["q"]) {
-          alert(hash["q"])
-        }
-        */
-        if ($("#keywordsTB").val()) {
-          updateHash({"search":search});
-          loadMap1("map.js keywordsTB");
-        }
+        let q = $("#keywordsTB").val();
+        goHash({"search":search,"q":q});
         event.stopPropagation();
+    });
+    $(document).on("click", ".filterBubble", function(event) {
+        console.log('filterBubble click (stopPropagation so other boxes can be checked)')
+        event.stopPropagation(); // To keep location filter open when clicking .selected_col checkboxes
     });
   }
 
-  let hash = getHash();
   var allItemsPhrase = "all categories";
   //if ($("#keywordsTB").val()) {
   if (hash.q) {
@@ -2089,7 +2086,7 @@ function showList(dp,map) {
 
     var locmenu = "<div class='showLocMenu' style='float:right;font-size: 24px;cursor: pointer;'>…</div>";
     locmenu += "<div class='locMenu popMenu filterBubble' style='float:right;display:none'>";
-    locmenu += "<div class='filterBubble'>";
+    locmenu += "<div class='filterBubble greyDiv'>";
     locmenu += "<div id='hideSidemap' class='close-X' style='position:absolute;right:0px;top:8px;padding-right:10px;color:#999'>&#10005; Close Map</div>";
     locmenu += "</div>";
     locmenu += "</div>";
@@ -3838,12 +3835,14 @@ function hashChangedMap() {
       }
     });
   }
+
+  let whatChanged = "";
   if (hash.layers !== priorHash.layers) {
     //applyIO(hiddenhash.naics);
-    loadMap1("hashChangedMap() in map.js layers", hash.show);
+    whatChanged = "hashChangedMap() in map.js layers";
   } else if (hash.show !== priorHash.show) {
     //applyIO(hiddenhash.naics);
-    loadMap1("hash.show hashChangedMap() in map.js", hash.show);
+    whatChanged = "hash.show hashChangedMap() in map.js";
   } else if (hash.state && hash.state !== priorHash.state) {
     // Why are new map points not appearing
 
@@ -3872,21 +3871,28 @@ function hashChangedMap() {
         } else {
           console.log("ERROR #state_select not available in hashChangedMap()2");
         }    
-        loadMap1("hashChangedMap() in map.js new state(s) " + hash.state, hash.show, dp);
+        whatChanged = "hashChangedMap() in map.js new state(s) " + hash.state;
       });
     });
 
   } else if (hash.cat !== priorHash.cat) {
-    loadMap1("hashChangedMap() in map.js new cat " + hash.cat, hash.show);
+    whatChanged = "hashChangedMap() in map.js new cat " + hash.cat;
   } else if (hash.subcat !== priorHash.subcat) {
-    loadMap1("hashChangedMap() in map.js new subcat " + hash.subcat, hash.show);
+    whatChanged = "hashChangedMap() in map.js new subcat " + hash.subcat;
   } else if (hash.details !== priorHash.details) {
-    loadMap1("hashChangedMap() in map.js new details = " + hash.details, hash.show);
+    whatChanged = "hashChangedMap() in map.js new details = " + hash.details;
   } else if (hash.q !== priorHash.q) {
-    loadMap1("hashChangedMap() in map.js new search q = " + hash.q, hash.show);
+    whatChanged = "hashChangedMap() in map.js new search q = " + hash.q;
+  } else if (hash.search !== priorHash.search) {
+    //alert("hash.search: " + hash.search)
+    whatChanged = "hashChangedMap() in map.js new search filters = " + hash.search;
   }
-  if (hash.m != priorHash.m) {
-    // For 360 iFrame
+
+  if (whatChanged.length > 0) {
+    loadMap1(whatChanged, hash.show);
+  }
+  
+  if (hash.m != priorHash.m) { // For 360 iFrame
     //$(".mapframeClass").hide();
     //$("#mapframe").prop("src", "about:blank");
     if (hash.m) {

@@ -468,7 +468,9 @@ summary::-webkit-details-marker {
 }
 .content, #observablehq-center {
   max-width: 1100px;
-  margin:0 auto;
+  margin: 0 auto;
+  padding-left: 18px;
+  padding-right: 18px;
   font-size: 15px;
   line-height: 1.55em;
   /* position: relative; */  /* overlapped top filters */
@@ -1256,7 +1258,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   display: block !important;
 }
 .filterFieldsBodyTop {
-  margin-top: 34px
+  margin-top: 48px
 }
 .bodyLeftMargin .headerbar, .bodyLeftMargin .filterFieldsHolderFixed {
   /* left: 220px; */

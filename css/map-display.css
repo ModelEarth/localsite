@@ -335,3 +335,6 @@ iframe {
 	margin-top: 1px;
 	z-index: 9999;
 }
+.dark .uparrow-grey, .dark .uparrow-white {
+	border-bottom: 10px solid #555;
+}

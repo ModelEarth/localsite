@@ -1253,7 +1253,7 @@ $(document).ready(function() {
             return;
         }
         goHash({"q":searchQuery,"search":search,"geoview":""}); // triggers hash change event.
-        event.stopPropagation();
+        //event.stopPropagation(); // Avoid so search checkboxes are hidden.
     });
 
     $(document).on("click", "#keywordsTB", function(event) {
@@ -4424,10 +4424,6 @@ $(document).ready(function () {
     $(document).on("click", ".hideThumbMenu", function(event) {
         $("#bigThumbPanelHolder").hide();
         $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
-    });
-    $(document).on("click", ".filterBubble", function(event) {
-        console.log('filterBubble click')
-        event.stopPropagation(); // To keep location filter open when clicking
     });
 });
 

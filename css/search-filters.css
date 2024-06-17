@@ -95,7 +95,7 @@
 }
 @media (min-width: 600px) {
   #filterFieldsMain {
-      padding:2px 0 0px 60px;
+      /* padding:2px 0 0px 60px; */
   }
   #locationFilterHolder #filterLocations {
     padding-left: 60px; /* Margin for menu icon */
@@ -159,6 +159,7 @@
   background-color: #555;
   color: #fff;
   border: #555 solid 0px;
+  border-bottom: #555 solid 0px !important; /* to override bootstrap css */
 }
 .dark .filterClick::placeholder, .dark.filterClick::placeholder {
   color: #bbb;
@@ -280,6 +281,10 @@ input.filterClick[type="text"] {
     vertical-align: baseline;
     pointer-events: auto; /* catch click through to keep open location filter */
 }
+.dark .filterBubble {
+  background: #555;
+}
+
 .hideAdvanced {
   pointer-events: auto; /* catch click through to keep open location filter */
   z-index: 1000;
