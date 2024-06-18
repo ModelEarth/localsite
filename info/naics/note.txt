@@ -1,5 +1,3 @@
 # NAICS
 
-[Industry Comparisons](../)  
-
-[Data Pipeline](/data-pipeline/)
+Development for v2 of [Industry Comparisons](../)  

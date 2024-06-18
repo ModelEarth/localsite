@@ -4,11 +4,12 @@
 
 You can use [Localsite Pages](../) to create websites and [storyboards](/requests) with free GitHub hosting.  
 If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns](https://twitter.com/LorenHeyns).
-[Notes on updating](/io/coders/python/) your local Node/NPM, Python, Conda `jupyter notebook` for .ipynb, and Docker
+Our notes on [Node, Python, Docker and Conda](/io/coders/python/).  
+To open local .ipynb files, run `jupyter notebook` after choosing "New Terminal at Folder".
 
 ## Start your local webroot
 
-Run in a folder called "webroot" to start your local websites on Mac and Linux:
+Run in a folder called "webroot" (or any name) to start your local websites on Mac and Linux:
 
 	python3 -m venv env
 	source env/bin/activate
@@ -116,9 +117,9 @@ That's it! &nbsp;You can stop the steps here. Your updated local site is now vis
 To avoid merge conflicts, click "Sync Fork" on the forks in your [Github Account](https://github.com/), then pull locally using GitHub Desktop or the cmds above. Or you can use the Alternative Sync commands below.
 
 
-## "localsite" shortcut to start your webroot
+## Create a "localsite" shortcut command to start your local web server
 
-You can create a shortcut "localsite" command
+Create a "localsite" command. Run it automatically when your machine starts.
 
 ### On a Mac
 
