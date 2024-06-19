@@ -33,14 +33,14 @@
 },
 {
 	"section": "Group Members",
-	"title": "View Group Members",
+	"title": "View Members",
 	"icon": "<span class='material-icons' icon='group'>&#xe7ef</span>",
 	"link": "/core/member/list.aspx?load=1&p=[partnerid]&s=[itemid]",
 	"basetype": "3,4"
 },
 {
 	"section": "Group Members",
-	"title": "Add Group Member",
+	"title": "Add Member",
 	"link": "/account/add?listid=[itemid]&relationAccess=2&p=[itemid]",
 	"basetype": "3,4"
 },
