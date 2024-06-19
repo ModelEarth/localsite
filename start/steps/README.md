@@ -3,7 +3,7 @@
 # Site Install
 
 You can use [Localsite Pages](../) to create websites and [storyboards](/requests) with free GitHub hosting.  
-If you get stuck at any point, feel free to DM Loren at [twitter.com/LorenHeyns](https://twitter.com/LorenHeyns).
+If you get stuck at any point, feel free to DM Loren at [x.com/LorenHeyns](https://x.com/LorenHeyns). Converse with us on [BlueSky](https://bsky.app/profile/modelearth.bsky.social).
 Our notes on [Node, Python, Docker and Conda](/io/coders/python/).  
 To open local .ipynb files, run `jupyter notebook` after choosing "New Terminal at Folder".
 

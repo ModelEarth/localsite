@@ -2085,6 +2085,47 @@ function loadText(pagePath, divID, target) { // For html and yaml
 
   });
 }
+
+
+function forkEditLink(pageURL) {
+    // Base URL to be appended
+    const baseUrl = "https://holocron.so/github/pr/modelearth";
+
+    // Object for non-main branches
+    const nonMainBranches = {"community": "master"};
+
+    // Extract the path after the domain
+    const url = new URL(pageURL);
+    const path = url.pathname;
+
+    // Identify the repository name dynamically
+    const pathSegments = path.split('/');
+    
+    // Assuming the first segment is always empty because path starts with '/'
+    // and the second segment is the repository name
+    const repoName = pathSegments[1];
+
+    // Determine the branch
+    const branch = nonMainBranches[repoName] || "main";
+
+    // The part to be inserted
+    const insertPart = `${branch}/editor/`;
+
+    // Construct the final URL by inserting 'branch/editor/' after the repo name
+    const newPath = `/${repoName}/${insertPart}${pathSegments.slice(2).join('/')}`;
+
+    // Construct the final URL
+    const finalUrl = baseUrl + newPath;
+
+    return finalUrl;
+}
+
+// Get the URL of the current page
+const currentPageURL = window.location.href;
+const newURL = forkEditLink(currentPageURL);
+//alert(newURL);
+
+
 function loadMarkdown(pagePath, divID, target, attempts, callback) {
   if (typeof attempts === 'undefined') {
     attempts = 1;
@@ -2153,17 +2194,25 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
     }
     */
     d3.text(pagePath).then(function(data) {
+
       // Path is replaced further down page. Reactivate after adding menu.
-      let pencil = "<div class='markdownEye' style='position:absolute;font-size:28px;right:0px;top:0px;text-decoration:none;opacity:.7'><a href='" + pagePath + "' style='color:#555'>…</a></div>";
-      //if(location.host.indexOf('localhost') < 0) {
-        pencil = "";
-      //}
+      //let downloadReadme = "<div class='markdownEye' style='position:absolute;z-index:1px;cursor:pointer;font-size:28px;right:0px;top:0px;text-decoration:none;opacity:.7'><a href='" + pagePath + "' style='color:#555'>…</a></div>";
+      //alert(pagePath)
+
+      //let linkEditFork = "https://holocron.so/github/pr/modelearth/data-commons/main/editor/docs/water/index.md";
+
+      let pageURL = window.location.href;
+      let linkEditFork = forkEditLink(pageURL) + pagePath;
+      //alert(linkEditFork);
+
+      let editReadme = "<div class='editInFork' style='position:absolute;z-index:1px;cursor:pointer;font-size:28px;right:0px;top:0px;text-decoration:none;opacity:.7'><a href='" + linkEditFork + "'><i class='material-icons' style='font-size:32px;opacity:0.7;margin-top:-4px'>&#xE3C9;</i></a></div>";
+      
       // CUSTOM About YAML metadata converter: https://github.com/showdownjs/showdown/issues/260
 
       // Also try adding simpleLineBreaks http://demo.showdownjs.com/
 
       var converter = new showdown.Converter({tables:true, metadata:true, simpleLineBreaks: true}),
-      html = pencil + converter.makeHtml(data);
+      html = editReadme + converter.makeHtml(data);
 
       var metadata = converter.getMetadata(true); // returns a string with the raw metadata
       var metadataFormat = converter.getMetadataFormat(); // returns the format of the metadata
