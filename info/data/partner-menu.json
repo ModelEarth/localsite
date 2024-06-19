@@ -4,7 +4,7 @@
 	"section": "Page Admin",
 	"title": "Overview",
 	"link": "/info/[itemid]",
-	"icon": "<span class='material-icons' icon='article'>&#xef42</span>"
+	"icon": "<span class='material-icons'>article</span>"
 },
 {
 	"menulevel": "1",
@@ -34,7 +34,7 @@
 {
 	"section": "Group Members",
 	"title": "View Members",
-	"icon": "<span class='material-icons' icon='group'>&#xe7ef</span>",
+	"icon": "<span class='material-icons'>group</span>",
 	"link": "/core/member/list.aspx?load=1&p=[partnerid]&s=[itemid]",
 	"basetype": "3,4"
 },
@@ -47,7 +47,7 @@
 {
 	"section": "Event Calendar",
 	"title": "View Calendar",
-	"icon": "<span class='material-icons' icon='event'>&#xe878</span>",
+	"icon": "<span class='material-icons'>event</span>",
 	"link": "/calendar?p=[partnerid]",
 	"basetype": "3,4"
 },
@@ -60,7 +60,7 @@
 {
 	"section": "Images and Files",
 	"title": "Images and Files",
-	"icon": "<span class='material-icons' icon='image'>&#xe3f4</span>",
+	"icon": "<span class='material-icons'>image</span>",
 	"link": "/elements/[itemid]"
 },
 {
@@ -71,7 +71,7 @@
 {
 	"section": "Related Pages",
 	"title": "Related Pages",
-	"icon": "<span class='material-icons' icon='lan'>&#xeb2f</span>",
+	"icon": "<span class='material-icons'>lan</span>",
 	"link": "/net/content/related.aspx?s=[itemid]"
 },
 {
