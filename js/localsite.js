@@ -2089,7 +2089,12 @@ function loadText(pagePath, divID, target) { // For html and yaml
 
 function forkEditLink(pageURL) {
     // Base URL to be appended
-    const baseUrl = "https://holocron.so/github/pr/modelearth";
+    const baseUrl = "https://holocron.so/github/pr/";
+
+    // Object for GitHub account based on URL
+    const githubAccounts = {"locations.georgia.org": "georgiadata", "locations.pages.dev": "georgiadata"};
+    const domain = (new URL(window.location.href)).hostname;
+    const repo = githubAccounts[domain] || "modelearth";
 
     // Object for non-main branches
     const nonMainBranches = {"community": "master"};
@@ -2115,7 +2120,7 @@ function forkEditLink(pageURL) {
     const newPath = `/${repoName}/${insertPart}${pathSegments.slice(2).join('/')}`;
 
     // Construct the final URL
-    const finalUrl = baseUrl + newPath;
+    const finalUrl = baseUrl + repo + newPath;
 
     return finalUrl;
 }
