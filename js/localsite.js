@@ -2210,7 +2210,7 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
       let linkEditFork = forkEditLink(pageURL) + pagePath;
       //alert(linkEditFork);
 
-      let editReadme = "<div class='editInFork' style='position:absolute;z-index:1px;cursor:pointer;font-size:28px;right:0px;top:0px;text-decoration:none;opacity:.7'><a href='" + linkEditFork + "'><i class='material-icons' style='font-size:32px;opacity:0.7;margin-top:-4px'>&#xE3C9;</i></a></div>";
+      let editReadme = "<div class='editInFork' style='position:absolute;z-index:1px;cursor:pointer;font-size:22px;right:0;top:0;text-decoration:none;opacity:.7'><a href='" + linkEditFork + "'><i class='material-icons' style='font-size:26px;opacity:0.7;margin-top:-4px'>&#xE3C9;</i></a></div>";
       
       // CUSTOM About YAML metadata converter: https://github.com/showdownjs/showdown/issues/260
 
