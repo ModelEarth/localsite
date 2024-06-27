@@ -2955,7 +2955,7 @@ function showTabulatorList(element, attempts) {
     }
 }
 function updateSelectedTableRows(geo, geoDeselect, attempts) {
-    console.log("updateSelectedTableRows"); // Got called when removing everything from localsite.js include. Occurs 10 times here: http://localhost:8887/locations/#geo=US13251
+    console.log("updateSelectedTableRows"); // Got called when removing everything from localsite.js include. Occurs 10 times here: http://localhost:8887/explore/locations/#geo=US13251
                     
     let hash = getHash();
     if (!hash.state) {
