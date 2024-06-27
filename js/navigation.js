@@ -1529,7 +1529,14 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
     if (hash.state) {
       stateAbbr = hash.state.split(",")[0].toUpperCase();
     }
-    
+
+    let modelsite = Cookies.get('modelsite');
+    if (!stateAbbr && modelsite) {
+        if (modelsite == "model.georgia") { // Add loop if other states added to settings.
+            stateAbbr = "GA";
+        }
+    }
+
     // In addition, the state could also be derived from the county geo value(s).
     var stateCount = typeof hash.state !== "undefined" ? hash.state.split(",").length : 0;
     if (stateCount > 1 && hash.geoview != "country") {
@@ -1641,6 +1648,8 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
           url = local_app.modelearth_root() + "/topojson/world-countries-sans-antarctica.json";
           topoObjName = "topoob.objects.countries1";
         }
+
+        console.log("topojson url " + url); // TEMP
 
         req.open('GET', url, true);
         req.onreadystatechange = handler;
@@ -2712,6 +2721,13 @@ function showTabulatorList(element, attempts) {
     if (element.state) {
         theState = element.state;
     }
+
+    if(typeof param=='undefined'){ var param={}; } // In case navigation.js included before localsite.js
+    if (param.display != "everything") { // Since it's already loaded for "everything" in localsite.js
+        loadTabulator();
+    }
+
+    // This loop could be replaced with a wait for Tabulator
     if (typeof Tabulator !== 'undefined') {
 
         // Convert key-value object to a flat array (like a spreadsheet)
@@ -3920,7 +3936,6 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             earthFooter = true;
         }
         
-
     } else if (!Array.isArray(param.titleArray) && (param.startTitle == "Neighborhood.org" || location.host.indexOf('neighborhood.org') >= 0)) {
         showLeftIcon = true;
         $(".siteTitleShort").text("Neighborhood Modeling");
@@ -4816,18 +4831,27 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
         loadLocalObjectLayers(activeLayer, function() {
 
           waitForElm('#bigThumbPanelHolder').then((elm) => { //Not needed
-            // Setting param.state in navigation.js passes to hash here for menu to use theState:
+            // Setting param.state in navigation.js passes to hash here for menu to use stateAbbr:
             let hash = getHash();
-            let theState = $("#state_select").find(":selected").val();
+
+            let stateAbbr = $("#state_select").find(":selected").val();
             if (param.state) { // Bugbug - might need a way to clear param.state
-                theState = param.state.split(",")[0].toUpperCase();
+                stateAbbr = param.state.split(",")[0].toUpperCase();
             }
             if (hash.state) {
-                theState = hash.state.split(",")[0].toUpperCase();
+                stateAbbr = hash.state.split(",")[0].toUpperCase();
             }
-            if (theState && theState.length > 2) {
-                theState = theState.substring(0,2);
+            if (stateAbbr && stateAbbr.length > 2) {
+                stateAbbr = stateAbbr.substring(0,2);
             }
+
+            let modelsite = Cookies.get('modelsite');
+            if (!stateAbbr && modelsite) {
+                if (modelsite == "model.georgia") { // Add loop if other states added to settings.
+                    stateAbbr = "GA";
+                }
+            }
+
             if ($('#bigThumbMenu').length <= 1) {
                 console.log("Initial load of #bigThumbMenu");
                 var currentAccess = 0;
@@ -4944,7 +4968,7 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
                 $("#honeycombPanel").prepend("<div class='hideThumbMenu close-X' style='display:none; position:absolute; right:0px; top:0px;'><i class='material-icons' style='font-size:32px'>&#xE5CD;</i></div>");
                 $(insertInto).append("<div id='bigThumbMenuInner' class='bigThumbMenuInner'>" + sectionMenu + "</div>");
 
-                if (theState == "GA") {
+                if (stateAbbr == "GA") {
                 // if (hash.state && hash.state.split(",")[0].toUpperCase() == "GA") {
                     $(".geo-US13").show();
                 }
