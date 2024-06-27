@@ -1531,9 +1531,10 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
       stateAbbr = hash.state.split(",")[0].toUpperCase();
     }
 
+    // Occurs twice in page
     let modelsite = Cookies.get('modelsite');
     if (!stateAbbr && modelsite) {
-        if (modelsite == "model.georgia") { // Add loop if other states added to settings.
+        if (modelsite == "model.georgia" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev")) { // Add loop if other states added to settings.
             stateAbbr = "GA";
         }
     }
@@ -4850,9 +4851,10 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
                 stateAbbr = stateAbbr.substring(0,2);
             }
 
+            // Occurs twice in page
             let modelsite = Cookies.get('modelsite');
             if (!stateAbbr && modelsite) {
-                if (modelsite == "model.georgia") { // Add loop if other states added to settings.
+                if (modelsite == "model.georgia" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev")) { // Add loop if other states added to settings.
                     stateAbbr = "GA";
                 }
             }
