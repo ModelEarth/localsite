@@ -701,6 +701,10 @@ function loadMap1(calledBy, show, dp_incoming) {
 
       } else {
         console.log("no show text match for listing map: " + show);
+        $(".displayMapForLoad").hide();
+        $("#list_main").hide();
+        $("#mapInfo").hide();
+        $("#listInfo").hide();
       }
 
   // } // end state GA
@@ -3770,7 +3774,6 @@ function markerRadius(mapZoom,map) {
 }
 
 function hashChangedMap() {
-  //alert("hashChangedMap")
   let hash = getHash();
   if (priorHash.show && hash.show !== priorHash.show) {
     clearListDisplay();
@@ -3780,20 +3783,6 @@ function hashChangedMap() {
   if (hash.show == "undefined") { // To eventually remove
     delete hash.show; // Fix URL bug from indicator select hamburger menu
     updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
-  }
-
-  // For PPE embed, also in map-filters.js. Will likely change
-  //if (!hash.show) {
-  //  // For embed link
-  //  hash.show = param.show;
-  //  hiddenhash.show = param.show;
-  //}
-  if (!hash.state && param.state) {
-    // For embed link
-
-    // Reactivate if needed
-    //hash.state = param.state;
-    //hiddenhash.state = param.state;
   }
 
   if (hash.cat || hash.name) {
