@@ -628,7 +628,7 @@ function hashChanged() {
     if (hash.show != priorHash.show) {
         let show = hash.show;
         if (!hash.show) {
-            show = "industries";
+            //show = "industries";
         }
         //if (activeLayer) {
             $(".bigThumbMenuContent").removeClass("bigThumbActive");
@@ -4831,7 +4831,7 @@ function access(minlevel,alevel) {
 }
 function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
     if (!activeLayer) {
-        activeLayer = "industries";
+        //activeLayer = "industries";
     }
     loadScript(theroot + 'js/navigation.js', function(results) {
         loadLocalObjectLayers(activeLayer, function() {

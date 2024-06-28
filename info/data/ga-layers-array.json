@@ -3,10 +3,10 @@
 		"menulevel": "1",
 		"item": "industries",
 		"rootfolder": "info",
-		"title": "Industries",
-		"tabtitle": "Industries",
-		"mobiletitle": "Industries",
-		"section": "Industries",
+		"title": "All Industries",
+		"tabtitle": "All Industries",
+		"mobiletitle": "All Industries",
+		"section": "All Industries",
 		"provider": "Admin",
 		"image": "/localsite/img/show/industries.jpg",
 		"siteHeaderHeight": "10px",
@@ -87,7 +87,6 @@
 		"title": "Bioeconomy",
 		"tabtitle": "Bioeconomy",
 		"mobiletitle": "Bioeconomy",
-		"sectionX": "Waste-to-energy / Biofuels",
 		"section": "Bioeconomy & Energy",
 		"provider": "Admin",
 		"image": "/localsite/img/show/bioeconomy.jpg",
@@ -99,7 +98,8 @@
 		"topnavaccess": "10",
 		"menuaccess": "0",
 		"directlink": "/localsite/info/#show=bioeconomy",
-		"caption": ""
+		"caption": "",
+		"states": "US"
 	},
 	{
 		"menulevel": "1",

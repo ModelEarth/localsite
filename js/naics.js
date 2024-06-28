@@ -267,7 +267,7 @@ function refreshNaicsWidget(initialLoad) {
         }
 
         // v2
-        if (hash.beta == "true" || location.host.indexOf('localhost') >= 0) {
+        if (hash.beta == "true" || location.href.indexOf('/info/naics/') >= 0) {
 
             $("#industryTableHolder").show();
 
@@ -344,8 +344,7 @@ function getNaics_setHiddenHash2(go) {
     //    cat_filter = param.naics.split(',');
     //}
     //else 
-    if (go){
-
+    if (go) {
         if (go == "opendata") {
             states = "GA";
         } else if (go == "bioeconomy") {
@@ -442,6 +441,12 @@ function getNaics_setHiddenHash2(go) {
         cat_filter = param.naics.split(',');
     }
 
+    if (!go) { // Check the "industries" topic.
+        let checkWhat = "industries"; // Not essential, works without being checked
+        waitForElm(".bigThumbMenuContent[show='" + checkWhat + "']").then((elm) => {
+            $(".bigThumbMenuContent[show='" + checkWhat + "']").addClass("bigThumbActive");
+        });
+    }
     // BUGBUG - Not sure where this sends the naics to the URL hash, which might be good until widget updates are tested.
     // Problem, naics in URL is not updated after initial load.
     console.log("Start hiddenhash.naics")
@@ -2034,14 +2039,13 @@ function showSectorTabulatorList(attempts) {
             ],
             frozenRows:1,
             maxHeight:"500px", // For frozenRows
-            paginationSize:400, // No effect
             columns:[
                 {title:"ID", field:"id", width:100, sorter:"number"},
-                {title:"Index", field:"index", width:70, sorter:"number"},
-                {title:"Name", field:"name", width:300},
-                {title:"Code", field:"code", width:80, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
-                {title:"Location", field:"location", width:80, hozAlign:"right", headerSortStartingDir:"desc" },
-                {title:"Description", field:"description", width:320, hozAlign:"left", headerSortStartingDir:"desc" }
+                {title:"Index", field:"index", width:75, sorter:"number"},
+                {title:"Name", field:"name", minWidth:300},
+                {title:"Code", field:"code", width:70, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
+                {title:"Location", field:"location", width:90, hozAlign:"right", headerSortStartingDir:"desc" },
+                {title:"Description", field:"description", minWidth:320, hozAlign:"left", headerSortStartingDir:"desc" }
             ],
             rowClick:function(e, row) {
                 row.toggleSelect(); //toggle row selected state on row click
@@ -2129,7 +2133,8 @@ function showSectorTabulatorList(attempts) {
       if (attempts < 200) {
         // To do: Add a loading image after a coouple seconds. 2000 waits about 300 seconds.
         setTimeout( function() {
-          showIndustryTabulatorList(attempts);
+          //showIndustryTabulatorList(attempts);
+          showSectorTabulatorList(attempts)
         }, 20 );
       } else {
         alert("Tabulator JS not available for displaying list.")
@@ -2177,13 +2182,13 @@ function showIndustryTabulatorList(attempts) {
             paginationX:true, //enable.
             paginationSizeX:10,
             columns:[
-                {title:"Naics", field:"id", width:80},
-                {title:"Industry", field:"title", width:300},
-                {title:"Payroll", field:"payroll", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
-                {title:"Locations", field:"establishments", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                {title:"Employees", field:"employees", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                {title:"Population", field:"population", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                {title:"Counties", field:"instances", hozAlign:"right", width:120, headerSortStartingDir:"desc", sorter:"number" }
+                {title:"Naics", field:"id", minWidth:80},
+                {title:"Industry", field:"title", minWidth:300},
+                {title:"Payroll", field:"payroll", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
+                {title:"Locations", field:"establishments", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
+                {title:"Employees", field:"employees", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
+                {title:"Population", field:"population", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
+                {title:"Counties", field:"instances", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number" }
             ],
             rowClick:function(e, row) {
                 row.toggleSelect(); //toggle row selected state on row click
@@ -2256,13 +2261,14 @@ function showIndustryTabulatorList(attempts) {
         // Place click-through on checkbox - allows hashchange to update row.
         //$('.tabulator-row input:checkbox').prop('pointer-events', 'none'); // Bug - this only checks visible
         
-        industrytable.on("dataLoaded", function(data){
-            $("#industries_totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
-            let totalcount_div = Object.assign(document.createElement('div'),{id:"industries_totalcount",style:"margin-bottom:10px"})
-            $("#tabulator-industrytable-count").append(totalcount_div);
-            totalcount_div.innerHTML = data.length + " industries";  
-        });
-
+        if (1==2) { // Not in use because we display directly from data (below).
+            industrytable.on("dataLoaded", function(data){
+                $("#industries_totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
+                let totalcount_div = Object.assign(document.createElement('div'),{id:"industries_totalcount",style:"margin-bottom:10px"})
+                $("#tabulator-industrytable-count").append(totalcount_div);
+                totalcount_div.innerHTML = data.length + " industries";  
+            });
+        }
     } else {
       attempts = attempts + 1;
       if (attempts < 200) {
@@ -2308,7 +2314,6 @@ function callPromises(industryLocDataFile) { // From naics2.js
         //fips = ["US13189","US13025","US13171"];
 
         fips = [];
-        
         //let hash = getHash();
         //if (hash.geo) {
         //    fips = hash.geo.replace(/US/g,'').split(","); // Remove US from geo values to create array of fips.
@@ -2317,8 +2322,16 @@ function callPromises(industryLocDataFile) { // From naics2.js
         // Only had 2 in naics2.js.  Other one has dataSet, dataNames, fips, hash // Renders header and processes county values
         topRatesInFipsNew(localObject, fips); // Renders header and processes county values
 
-        console.log("localObject.industries length " + localObject.industries.length);
-        console.log("localObject.industryCounties length " + localObject.industryCounties.length);
+        industriesDetails = "localObject.industries " + industryLocDataFile + "<br>";
+        industriesDetails += "localObject.industries length " + localObject.industries.length + "<br>";
+        industriesDetails += "localObject.industryCounties length " + localObject.industryCounties.length + "<br>";
+        $("#industries_details").append(industriesDetails);
+
+        let industries_details= Object.assign(document.createElement('div'),{id:"industries_details",style:"margin-bottom:10px"})
+        $("#tabulator-industrytable-count").append(industries_details);
+        
+        // Display count directly from data
+        industries_details.innerHTML = localObject.industries.length + " industries"; 
 
         // Returns Logging
         //alert(industries.get("113310"));
