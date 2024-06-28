@@ -1382,7 +1382,11 @@ Displayed by hashChanged() in navigation.js
 
 <div class="displayOnload displayMapForLoad" style="display:none;position:relative;overflow:hidden;">
 
-  <div id="map1" class="displayMapForLoad resizableDiv" style="display:none; width:100%"><img src='/localsite/img/icon/loading.gif' loading='lazy' class='mapLoadingIcon' style='margin:100px 200px 100px 200px; width:120px'><div class="dragHandle"></div></div>
+  <div id="map1" class="displayMapForLoad resizableDiv" style="display:none; width:100%">
+    <!-- MAP LOADING - Root image path not usable when embedding
+    <img src='/localsite/img/icon/loading.gif' loading='lazy' class='mapLoadingIcon' style='margin:100px 200px 100px 200px; width:120px'>
+    -->
+    <div class="dragHandle"></div></div>
   
   <div id="mapList1Holder" style="display:none" class="darkDivText hideMobile">
     <div class="closeParent close-X-sm" style="position:absolute;top:-10px;right:-10px;padding:18px 14px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:32px;pointer-events:auto;">&#xE5CD;</i></div>
