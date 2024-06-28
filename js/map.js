@@ -2127,7 +2127,7 @@ function showList(dp,map) {
     }
     //listTitle = "title"; // name;
 
-    $(".listTitle").html(listTitle);
+    $(".listTitle").html(listTitle); // Title is also set in naics.js
     let inactiveCount = validRowCount - countDisplay;
     if ($("#catSearch").val() || hash.cat || hash.subcat) {
       //searchFor += " - ";

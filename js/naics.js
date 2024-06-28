@@ -436,7 +436,6 @@ function getNaics_setHiddenHash2(go) {
         }
     } else if (param.naics) {
         showtitle = "Local Topics";
-        //
         showtab = "Local Topics";
         cat_filter = param.naics.split(',');
     }
@@ -476,6 +475,7 @@ function getNaics_setHiddenHash2(go) {
         //alert($(".locationTabText").val())
         //$(".regiontitle").text($(".locationTabText").val() + " - " + showtitle);
         $(".regiontitle").text(local_app.loctitle + " - " + showtitle);
+        $(".listTitle").html(showtitle); // Title is also set in map.js
     } else {
         //alert("local_app.loctitle " + local_app.loctitle)
         //$(".regiontitle").text(local_app.loctitle);

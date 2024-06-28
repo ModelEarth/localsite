@@ -503,7 +503,7 @@ label { /* override Drupal */
   padding: 10px;
   background-color: #bbb;
 }
-.listTitle {
+.listTitleStyle {
   font-size: 20px;
   margin:0px;
   margin-bottom: 10px;
@@ -529,7 +529,7 @@ label { /* override Drupal */
   .legendLink {
     float:auto;
   }
-  .listTitle {
+  .listTitleStyle {
     font-size: 26px;
   }
 }
