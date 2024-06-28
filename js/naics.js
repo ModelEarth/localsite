@@ -1565,9 +1565,12 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                                     //setTimeout(() => {
                                         // This may run before naics is available.
                                         hash.naics = naicshash;
-                                        if (hash.state) { // Quick fix because allData note found with waitForVariable in allData. Will later add bubble chart when no state.
+                                        // Quick fix because allData (in io repo) not found with waitForVariable in allData.
+                                        // Will later add bubble chart when no state.
+                                        //if (hash.state) { // Not needed since this is not reached when no state because naics does not yet load for entire US.
+                                            console.log("toggleBubbleHighlights from naics.js for " + hash.state)
                                             toggleBubbleHighlights(hash);
-                                        }
+                                        //}
                                     //},3000);
                                 });
                             });

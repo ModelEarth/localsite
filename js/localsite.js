@@ -177,7 +177,7 @@ if(typeof param != 'undefined') { // From settings in HTML page
 }
 
 if (param.state) {
-  defaultState = param.state; // For /locations/index.html
+  defaultState = param.state; // For /explore/locations/index.html
 }
 // TO DO: Add paramIncludeFile to call once rather than in both function
 function getParamInclude() {
