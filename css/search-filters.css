@@ -84,6 +84,12 @@
 #stateFiltersHolder {
   padding-right: 40px;
 }
+#filterLocations {
+  background-color: #eee;
+}
+.dark #filterLocations {
+  background-color: #555;
+}
 @media (max-width: 600px) {
   #mapFilters {
     padding-left: 20px;
@@ -290,7 +296,7 @@ input.filterClick[type="text"] {
   z-index: 1000;
 }
 #geoListHolder {
-    padding-left: 30px;
+    padding-left: 20px;
     display: flex;
     /* flex-flow: column; */
     height: 530px;

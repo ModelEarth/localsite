@@ -1,24 +1,24 @@
 [
 {
-	"section-user": "My Planner",
-	"section": "My Planner",
+	"section-user": "Planners",
+	"section": "Planners",
 	"title": "Menus",
 	"icon": "/localsite/img/icon/scope/overview.png",
 	"link": "#scope=ind"
 },
 {
-	"section": "Community",
+	"section": "Locations",
 	"title": "City",
 	"icon": "/localsite/img/icon/scope/community.png",
 	"link": "#scope=city"
 },
 {
-	"section": "Community",
+	"section": "Locations",
 	"title": "State",
 	"link": "#scope=state"
 },
 {
-	"section": "Community",
+	"section": "Locations",
 	"title": "Zip",
 	"link": "#scope=zip"
 },

@@ -113,11 +113,11 @@ function loadMap1(calledBy, show, dp_incoming) {
   // Calls loadDataset
   //let hash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement. Includes hiddenhash
   let hash = getHash();
-
+  let showDirectory = true;
   if (!show && param["show"]) {
     show = param["show"];
   }
-  consoleLog('loadMap1 start. CalledBy ' + calledBy + '. Show: ' + show + '. Cat: ' + hash.cat);
+  console.log('loadMap1 start. CalledBy ' + calledBy + '. Show: ' + show + '. Cat: ' + hash.cat);
 
   dp = {}; // Clear prior
   if (dp_incoming) { // Parameters set in page or layer json
@@ -302,12 +302,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.mapInfo = "<a href='https://map.georgia.org/display/products/'>View active version</a>";
         dp.search = {"In Company Name": "Account Name", "In Industries": "Industries Trade"};
 
-  //} else if (theState == "GA") {
-
-  //    if (show == "opendata") {
-
-  // Switch to 2 lines above when other states are added
-  } else if (show == "opendata") {
+      } else if (show == "opendata") {
 
         dp.editLink = "https://docs.google.com/spreadsheets/d/1bvD9meJgMqLywdoiGwe3f93sw1IVI_ZRjWSuCLSebZo/edit?usp=sharing";
         dp.dataTitle = "Georgia Open Data";
@@ -319,14 +314,14 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.valueColumnLabel = "Type";
         dp.mapInfo = "<a href='https://docs.google.com/spreadsheets/d/1bvD9meJgMqLywdoiGwe3f93sw1IVI_ZRjWSuCLSebZo/edit?usp=sharing'>Update Google Sheet</a>.";
         dp.search = {"In Dataset Name": "name", "In Type": "Category1", "In Website URL": "website"};
-        dp.datastates = "GA";    
+        dp.datastates = ["GA"];    
       } else if (show == "360") {
         dp.listTitle = "Birdseye Views";
         dp.dataset =  local_app.custom_data_root() + "360/GeorgiaPowerSites.csv";
         dp.search = {"In Location Name": "name", "In City": "CITY", "In Property URL": "property_link"};
         dp.color = "#ff9819"; // orange - Since there is no type column. An item column is filtered.
         dp.markerType = "google";
-        dp.datastates = "GA";
+        dp.datastates = ["GA"];
       } else if (show == "dmap") {
         dp.listTitle = "Georgia Map";
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRPe-t3GBhimUV6JN62lLmtpZ5XsmLDXPusjOfrJ-_tW7BZlVrvcVT4oLFXtAtRX79WSAgVQe9zK2Ik/pub?gid=0&single=true&output=csv";
@@ -344,7 +339,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.showLabels = "Industry";
         dp.search = {"In Company Name": "recipient_name", "In naics description": "naics description", "In Address" : "address"};
         dp.itemsColumn = "NAICS Description"; // The column being search
-        dp.datastates = "GA";
+        dp.datastates = ["GA"];
       } else if (show == "recyclers") {
         dp.listTitle = "Georgia B2B Recyclers";
         dp.dataTitle = "B2B Recyclers";
@@ -371,7 +366,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.listInfo = "<a href='https://map.georgia.org/recycling/georgia/'>View Recycling Datasets</a>";
         dp.mapInfo = "Add <a href='https://map.georgia.org/recycling/'>B2B&nbsp;Recycler Listings</a> or post comments to submit additions to our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a>.";
         dp.search = {"In Main Category": "Category", "In Materials Accepted": "Materials Accepted", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
-        dp.datastates = "GA";
+        dp.datastates = ["GA"];
       } else if (show == "wastewater") {
         //alert("wastewater4")
         dp.listTitle = "Georgia Wastewater Facilities (2023)";
@@ -407,7 +402,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.markerType = "google";
         dp.color = "#339";
         dp.search = {"In Name": "PERMIT_NAME", "In Address": "facility_addr", "In County Name": "county", "SIC Code": "SIC_CODE_LIST", };
-        dp.datastates = "GA";
+        dp.datastates = ["GA"];
       } else if (show == "landfills") {
         dp.listTitle = "Georgia Landfills (2017)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
@@ -432,7 +427,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.color = "#393";
         dp.latColumn = "latitude"; // Only works when lowercase, despite Google Sheet column being uppercase
         dp.lonColumn = "longitude";
-        dp.datastates = "GA";
+        dp.datastates = ["GA"];
       } else if (show == "solidwaste") {
         dp.listTitle = "Georgia Solid Waste (Oct 2023)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
@@ -453,7 +448,7 @@ function loadMap1(calledBy, show, dp_incoming) {
 
         dp.markerType = "google";
         dp.color = "#933";
-        dp.datastates = "GA";
+        dp.datastates = ["GA"];
       } else if (show == "solidwaste-old") { // This tab can be deleted in Google Sheet
         dp.listTitle = "Georgia Solid Waste (Old)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
@@ -474,7 +469,7 @@ function loadMap1(calledBy, show, dp_incoming) {
 
         dp.markerType = "google";
         dp.color = "#933";
-        dp.datastates = "GA";
+        dp.datastates = ["GA"];
       } else if (show == "cameraready-locations") {
         dp.listTitle = "CameraReady Film Locations";
         dp.dataTitle = "Filming Locations";
@@ -486,7 +481,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.showKeys = "hours_saturday";
         dp.showLabels = "Saturday";
         dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website", "Type": "tag"};
-        dp.datastates = "GA";
+        dp.datastates = ["GA"];
       } else if (show == "cameraready") {
         dp.listTitle = "CameraReady County Liaisons";
         dp.dataTitle = "CameraReady Liaisons";
@@ -496,7 +491,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.markerType = "google";
         dp.filters = {tag:"Liaisons"}; // Supports comma separated values
         dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website", "Type": "tag"};
-        dp.datastates = "GA";
+        dp.datastates = ["GA"];
       } else if (show == "aerospace") {
         dp.listTitle = "Georgia Aerospace Directory";
         dp.dataTitle = "Aerospace Directory";
@@ -531,7 +526,7 @@ function loadMap1(calledBy, show, dp_incoming) {
 
         dp.filters = {type:"aerospace"}; // Supports comma separated values
         dp.search = {"In Main Category": "Category", "In Location Name": "Organization Name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
-        dp.datastates = "GA";
+        dp.datastates = ["GA"];
       } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfillsX")) { // recycling-processors
         // NOT USED - LOOK ABOVE
         if (hash.state == "GA") {
@@ -600,7 +595,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.showWhenStatus = "null"
         // Temp, prior to change from Google API 2 to 3
         //dp.dataset = "https://model.earth/georgia-data/automotive/automotive.csv";
-        dp.datastates = "GA";
+        dp.datastates = ["GA"];
         // Dark green map points indicate electric vehicle parts manufacturing.<br>
         dp.mapInfo = "From 2020 to 2022 Georgia added more than 20 EV-related projects. <a href='https://www.georgiatrend.com/2022/07/29/electric-revolution/'>Learn&nbsp;more</a>";
         // <br>Dark Green: Electric Vehicle (EV) Industry<br>Lite Green: Potential EV Parts Manufacturer<br>Dark Blue: Internal Combustion Engine (ICE)
@@ -700,14 +695,8 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.listLocation = true;
 
       } else {
-        console.log("no show text match for listing map: " + show);
-        $(".displayMapForLoad").hide();
-        $("#list_main").hide();
-        $("#mapInfo").hide();
-        $("#listInfo").hide();
+        showDirectory = false;
       }
-
-  // } // end state GA
 
   if (theState == "CA") {
     //alert("theState " + theState)
@@ -747,27 +736,34 @@ function loadMap1(calledBy, show, dp_incoming) {
       dp.dataset = dp.dataset.replace("[jurisdiction]","US");
     }
   }
-  // Load the map using settings above
 
-  // INIT - geo fetches the county for filtering.
-  hash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
-  if (!hash.state && hash.geo) { // Wait for geo load when no state to center.
-    loadGeos(hash.geo,0,function(results) {
-      loadDataset('map1','map2', dp, basemaps1, basemaps2, 1, function(results) {
-        initialHighlight(hash);
+
+  if (Array.isArray(dp.datastates) && !dp.datastates.includes(theState)) {
+    showDirectory = false;
+  }
+  if (showDirectory) { // Load the map using settings above
+    // INIT - geo fetches the county for filtering.
+    hash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
+    if (!hash.state && hash.geo) { // Wait for geo load when no state to center.
+      loadGeos(hash.geo,0,function(results) {
+        loadDataset('map1','map2', dp, basemaps1, basemaps2, 1, function(results) {
+          initialHighlight(hash);
+        });
       });
-    });
-  } else {
-    if (!hash.state) {
-      $(".locationTabText").text("Locations");
     } else {
-      $("#state_select").val(hash.state.split(",")[0].toUpperCase());
-      $(".locationTabText").text($("#state_select").find(":selected").text());
-      $(".locationTabText").attr("title",$("#state_select").find(":selected").text());
+      if (!hash.state) {
+        $(".locationTabText").text("Locations");
+      } else {
+        $("#state_select").val(hash.state.split(",")[0].toUpperCase());
+        $(".locationTabText").text($("#state_select").find(":selected").text());
+        $(".locationTabText").attr("title",$("#state_select").find(":selected").text());
+      }
+      loadDataset('map1','map2', dp, basemaps1, basemaps2, 1, function(results) {
+        initialHighlight(hash);  
+      });
     }
-    loadDataset('map1','map2', dp, basemaps1, basemaps2, 1, function(results) {
-      initialHighlight(hash);  
-    });
+  } else {
+    hideDirectoryDivs(show);
   }
   // Return to top for mobile users on search.
   if (document.body.clientWidth <= 500) {
@@ -795,6 +791,13 @@ function loadMap1(calledBy, show, dp_incoming) {
 
 } // loadMap1
 
+function hideDirectoryDivs(show) {
+  console.log("no show text match for listing map: " + show);
+  $(".displayMapForLoad").hide();
+  $("#list_main").hide();
+  $("#mapInfo").hide();
+  $("#listInfo").hide();
+}
 function initialHighlight(hash) {
   // When is this called - not for list highlight
   if (hash.name) {
@@ -812,12 +815,6 @@ function initialHighlight(hash) {
     //$("#detaillist").scrollTop(200);
 
     $("#detaillist").scrollTo("#detaillist > [name=\""+locname+"\"]");
-
-  } else {
-    if (!(param["show"] == "suppliers" || param["show"] == "ppe")) {
-        // console.log("Auto select the first location in list")
-        //$("#detaillist > div:first-of-type" ).trigger("click");
-    }
   }
 }
 function showSubcatList() {
@@ -2929,17 +2926,26 @@ function loadDataset(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback
   console.log("TO DO - place prior dataset in object within processOutput() to avoid reloading")
 
   let stateAllowed = true;
+
   if (dp.datastates && hash.state) {
-    if (dp.datastates.split(",").indexOf(hash.state.split(",")[0].toUpperCase()) == -1) {
+
+    let theState = hash.state.toUpperCase();
+    if (Array.isArray(dp.datastates) && !dp.datastates.includes(theState)) {
+
       stateAllowed = false;
       console.log("State of " + hash.state + " not in dp.datastates indicated for " + hash.show);
       // Avoiding so user can retain show and switch to another state.
       //updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
       // TO DO: Show message: "State does not have data for " + hash.show;
+
+      hideDirectoryDivs(hash.show);
+
+      // Might not need these now that hideDirectoryDivs() added
       $("#list_main").hide();
       $("#navcolumnTitle").hide();
       $("#listLeft").hide();
       $("#map1").hide();
+
       return;
     }
   }
@@ -3837,6 +3843,7 @@ function hashChangedMap() {
 
     loadScript(theroot + 'js/map-filters.js', function(results) { // map.js depends on map-filters.js
       waitForElm('#state_select').then((elm) => {
+        // Async, so this occurs while the rest proceeds.
         let dp = {};
         // Copied from map-filters.js
         $("#state_select").val(hash.state.split(",")[0].toUpperCase());
@@ -3859,11 +3866,10 @@ function hashChangedMap() {
             }
         } else {
           console.log("ERROR #state_select not available in hashChangedMap()2");
-        }    
-        whatChanged = "hashChangedMap() in map.js new state(s) " + hash.state;
+        }
       });
     });
-
+    whatChanged = "hashChangedMap() in map.js new state(s) " + hash.state;
   } else if (hash.cat !== priorHash.cat) {
     whatChanged = "hashChangedMap() in map.js new cat " + hash.cat;
   } else if (hash.subcat !== priorHash.subcat) {
