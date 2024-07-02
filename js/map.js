@@ -111,7 +111,6 @@ let dp = {}; // So available on .detail click for popMapPoint() and zoomMapPoint
 // TO DO: Can we avoid calling outside of the localsite repo by files in community, including community/map/starter/embed-map.js 
 function loadMap1(calledBy, show, dp_incoming) {
   // Calls loadDataset
-  //let hash = $.extend(true, {}, getHash()); // Clone/copy object without entanglement. Includes hiddenhash
   let hash = getHash();
   let showDirectory = true;
   if (!show && param["show"]) {
@@ -128,14 +127,9 @@ function loadMap1(calledBy, show, dp_incoming) {
   var basemaps1 = {};
   var basemaps2 = {};
 
-  // Could display a very small loading indicator
-
   let theState;
-  //if (param["state"]) {
-  //  theState = param["state"].toUpperCase();
-  //}
   if (hash.state) {
-    theState = hash.state;
+    theState = hash.state.split(",")[0].toUpperCase()
   }
 
   waitForElm('#state_select').then((elm) => {
@@ -529,7 +523,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.datastates = ["GA"];
       } else if (1==2 && (show == "recycling" || show == "transfer" || show == "recyclers" || show == "inert" || show == "landfillsX")) { // recycling-processors
         // NOT USED - LOOK ABOVE
-        if (hash.state == "GA") {
+        if (theState == "GA") {
           dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
           //dp.googleDocID = "1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY";
           dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1924677788&single=true&output=csv";
@@ -730,8 +724,8 @@ function loadMap1(calledBy, show, dp_incoming) {
   }
 
   if(dp.dataset) {
-    if (hash.state) {
-      dp.dataset = dp.dataset.replace("[jurisdiction]","US-" + hash.state.split(",")[0].toUpperCase());
+    if (theState) {
+      dp.dataset = dp.dataset.replace("[jurisdiction]","US-" + theState);
     } else {
       dp.dataset = dp.dataset.replace("[jurisdiction]","US");
     }
@@ -754,7 +748,7 @@ function loadMap1(calledBy, show, dp_incoming) {
       if (!hash.state) {
         $(".locationTabText").text("Locations");
       } else {
-        $("#state_select").val(hash.state.split(",")[0].toUpperCase());
+        $("#state_select").val(theState);
         $(".locationTabText").text($("#state_select").find(":selected").text());
         $(".locationTabText").attr("title",$("#state_select").find(":selected").text());
       }
@@ -1900,7 +1894,7 @@ function showList(dp,map) {
                 googleMapLink += ', ' + element.county + ' County';
               }
               if (hash.state) {
-                googleMapLink += ', ' + hash.state;
+                googleMapLink += ', ' + hash.state.split(",")[0].toUpperCase();
               }
             }
             if (googleMapLink) {
@@ -2929,11 +2923,11 @@ function loadDataset(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback
 
   if (dp.datastates && hash.state) {
 
-    let theState = hash.state.toUpperCase();
+    let theState = hash.state.split(",")[0].toUpperCase();
     if (Array.isArray(dp.datastates) && !dp.datastates.includes(theState)) {
 
       stateAllowed = false;
-      console.log("State of " + hash.state + " not in dp.datastates indicated for " + hash.show);
+      console.log("State of " + theState + " not in dp.datastates indicated for " + hash.show);
       // Avoiding so user can retain show and switch to another state.
       //updateHash({'show':''}); // Remove from URL hash without invoking hashChanged event.
       // TO DO: Show message: "State does not have data for " + hash.show;
@@ -3068,7 +3062,7 @@ function loadDataset(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback
 
 // Move after processOutput once done creating
 function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) {
-  console.log("renderMap " + whichmap);
+  //alert("renderMap " + whichmap);
   waitForElm('#' + parentDiv + ' #' + whichmap).then((elm) => { // Didn't help with map refresh.
   let hash = $.extend(true, {}, getHash());
   if (whichmap == "map1") {
@@ -3113,7 +3107,6 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       
     }
   }
-  // TODO - Adjust to allow for map1 also
 
   //overlays[dataTitle] = dp.group2; Added a dup checkbox
   //console.log(whichmap + " length: " + $(mapDiv).length);
@@ -3503,7 +3496,7 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
         iconColor = "#548d1a"; // Green. Was "blue"
       }
       
-      console.log("element[dp.valueColumn] " + element[dp.valueColumn] + " iconColor: " + iconColor + " dp.valueColumn: " + dp.valueColumn + " " + name);
+      //console.log("element[dp.valueColumn] " + element[dp.valueColumn] + " iconColor: " + iconColor + " dp.valueColumn: " + dp.valueColumn + " " + name);
       
       if (typeof dp.latColumn == "undefined") {
         dp.latColumn = "latitude";
@@ -3745,7 +3738,6 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
 
 function markerRadius(mapZoom,map) {
   let radiusValue = 1;
-  //alert("mapZoom " + mapZoom);
   let radiusOut = 12;
   if (map.length > 0) {
     mapZoom = map.getZoom();
