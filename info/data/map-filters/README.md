@@ -1,6 +1,6 @@
 # US State Data
 
-### Carbon State Comparison
+### State Carbon Comparison
 
 Data merged for [Carbon Cycle - State Comparison](/apps/carbon/) within apps/js/bc.js
 
