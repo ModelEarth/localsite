@@ -771,7 +771,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
       max-width: 450px;
   }
 }
-#hero-rect h3 {
+#hero-rect h3, #hero-rect select {
   color: #fff;
 }
 #hero-rect a:link, #hero-rect a:visited {

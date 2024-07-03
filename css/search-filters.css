@@ -24,7 +24,6 @@
   border-radius: 20px;
 }
 .dark .hero-bucket #state_select, .dark #hero-rect #state_select {
-  background-color: #333;
   color: #fff;
 }
 .select-menu-arrow-holder {
