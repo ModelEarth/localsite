@@ -33,8 +33,10 @@ If you're not planning to edit, you can simply view the following at [model.eart
 
 **Step 1.** Fork our <a href="https://github.com/ModelEarth/localsite">localsite</a> and <a href="https://github.com/ModelEarth/io">io</a> repos to preview your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart). How to [Fork Repos](https://medium.com/@6unpnp/fork-a-github-repository-and-deploy-its-github-pages-site-d55dc53988d) 
 
-Fork other repos you plan to edit.   
-Fork <a href="https://github.com/ModelEarth/projects">Active Projects</a> if you're contributing to the [Open WebUI interface](/projects/src/) and related Python and Vite additions.
+Fork other repos you plan to edit.  
+<!--
+Fork <a href="https://github.com/ModelEarth/projects">Projects</a> if you're contributing to the [Open WebUI interface](/projects/src/) and related Python and Vite additions.-->
+Use our <a href="/projects/src/">Docker Projects Repo Install</a> for hosting within the [Open WebUI interface](/projects/src/) with Python and Vite.
 Fork <a href="https://github.com/ModelEarth/requests">Requests</a> if you're adding to our image and video [Storyboard Generation](/data-pipeline/research/stream).
 Fork <a href="https://github.com/ModelEarth/realitystream">RealityStream</a> if you're contributing to our Machine Learning visualizations.
 Fork <a href="https://github.com/ModelEarth/feed">Feed Player</a> if you're adding to our Feed Player and Visual Project Manager.
