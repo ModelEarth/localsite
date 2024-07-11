@@ -29,7 +29,10 @@ Or you can use npx http-server, which [requires installing a local cert](../http
 
 ## Pull down repos to contribute.
 
-If you're not planning to edit, you can simply view the following at [model.earth](http://model.earth).
+If you're not planning to edit, you can simply view the content from the repos below at [model.earth](http://model.earth).
+
+To fork the repos you'll be editing, go to [github.com/modelearth](https://github.com/ModelEarth?tab=repositories), choose a repo and click the "Fork" button.  
+Then in your fork, click "Code > Open with Github Desktop".  For repos you won't be editing, you can run the script below to clone.
 
 **Step 1.** Fork our <a href="https://github.com/ModelEarth/localsite">localsite</a> and <a href="https://github.com/ModelEarth/io">io</a> repos to preview your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart). How to [Fork Repos](https://medium.com/@6unpnp/fork-a-github-repository-and-deploy-its-github-pages-site-d55dc53988d) 
 
@@ -52,7 +55,7 @@ Fork <a href="https://github.com/ModelEarth/earthscape">Earthscape</a> if you're
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
 **Step 3.** Indicate the repos you're planning to edit and have forked.
-(You can avoid checking localsite and io, unless you're editing those core repos directly.)
+(You can avoid cloning the fork of localsite and io, unless you're editing those core repos directly.)
 <!-- Also add to checkboxIds array -->
 
 <div style="float:left;font-size:18px;padding-right:20px">
