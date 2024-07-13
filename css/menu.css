@@ -594,7 +594,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     line-height: 28px;
     font-size: 16px;
     bottom:0;
-    z-index:1; /* allows border highlight to overlap adjacent content area. */
+    z-index:200; /* 1 allows border highlight to overlap adjacent content area. At least 101 is needed for OpenWebUI */
 }
 #cloneRight {
 	position:inherit;
@@ -699,6 +699,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 #fullcolumn {
     overflow: auto;
+    scrollbar-width: none;
     position: relative;
     min-height: 100%; /* For short samples page */
     margin-bottomX: 80px;
