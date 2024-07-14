@@ -1138,7 +1138,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   min-height: 34px;
   padding: 0 5px 0 10px;
   padding-top: 4px; /* Firefox */
-  margin-right: 10px;
+  margin-right: 5px;
   margin-bottom: 10px;
 
   padding-right: 28px; /* Applies when text reaches right side */

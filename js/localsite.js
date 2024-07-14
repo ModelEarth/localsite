@@ -2210,7 +2210,7 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
       let linkEditFork = forkEditLink(pageURL) + pagePath;
       //alert(linkEditFork);
 
-      let editReadme = "<div class='editInFork' style='position:absolute;z-index:1;cursor:pointer;font-size:22px;right:0;top:0;text-decoration:none;opacity:.7'><a href='" + linkEditFork + "'><i class='material-icons' style='font-size:26px;opacity:0.7;margin-top:-4px'>&#xE3C9;</i></a></div>";
+      let editReadme = "<div class='editInFork' style='position:absolute;z-index:1;cursor:pointer;right:0;top:0;text-decoration:none;opacity:.7'><a href='" + linkEditFork + "'><i class='material-icons' style='font-size:16px;opacity:0.7;margin-top:-4px'>&#xE3C9;</i></a></div>";
       
       // CUSTOM About YAML metadata converter: https://github.com/showdownjs/showdown/issues/260
 
@@ -2963,6 +2963,27 @@ addEventListener("load", function(){
     }
   }, false);
 });
+
+function objectsMatch(object1, object2) {
+    // Function to filter out keys with null or blank values and sort the keys
+    function filterAndSortKeys(obj) {
+        const filtered = Object.fromEntries(Object.entries(obj).filter(([k, v]) => v !== null && v !== ''));
+        return Object.fromEntries(Object.entries(filtered).sort());
+    }
+
+    // Filter the keys in both objects
+    const filteredObject1 = filterAndSortKeys(object1);
+    const filteredObject2 = filterAndSortKeys(object2);
+
+    if (JSON.stringify(filteredObject1) === JSON.stringify(filteredObject2)) {
+      //alert("objects Match\r\r" + JSON.stringify(filteredObject1) + "\r\robject2:\r\r" + JSON.stringify(filteredObject2));
+    } else {
+      //alert("Objects Don't Match\r\r" + JSON.stringify(filteredObject1) + "\r\robject2:\r\r" + JSON.stringify(filteredObject2));
+    }
+    
+    // Compare the filtered objects
+    return JSON.stringify(filteredObject1) === JSON.stringify(filteredObject2);
+}
 
 // USES CORS PROXY
 function getSitePreview(url, divID) {
