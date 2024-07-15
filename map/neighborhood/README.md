@@ -64,10 +64,7 @@ Phone
 News  
 
 
-[Mapbox Map Sample](map.html) - [from Google Sheet](https://docs.google.com/spreadsheets/d/1odIH33Y71QGplQhjJpkYhZCfN5gYCA6zXALTctSavwE/edit?usp=sharing) 
-  
-
-Here are [5 csv files with recycling datasets](https://github.com/modelearth/localsite/tree/master/map/recycling/ga) that we will display as layers in a Leaflet map.  
+[Mapbox Map Sample](map.html) - [from Google Sheet](https://docs.google.com/spreadsheets/d/1odIH33Y71QGplQhjJpkYhZCfN5gYCA6zXALTctSavwE/edit?usp=sharing)
 
 Here's a [json file for map layers](/localsite/info/data/ga-layers.json).  
 
