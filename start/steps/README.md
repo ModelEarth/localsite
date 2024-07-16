@@ -39,7 +39,7 @@ Then in your fork, click "Code > Open with Github Desktop".  For repos you won't
 Fork other repos you plan to edit.  
 <!--
 Fork <a href="https://github.com/ModelEarth/projects">Projects</a> if you're contributing to the [Open WebUI interface](/projects/src/) and related Python and Vite additions.-->
-Use our <a href="/projects/src/">Docker Projects Repo Install</a> for hosting within the [Open WebUI interface](/projects/src/) with Python and Vite.
+Use our <a href="/projects/location/setup/">Docker Projects Repo Install</a> for hosting within the [Open WebUI interface](/projects/src/) with Python and Vite.
 Fork <a href="https://github.com/ModelEarth/requests">Requests</a> if you're adding to our image and video [Storyboard Generation](/data-pipeline/research/stream).
 Fork <a href="https://github.com/ModelEarth/realitystream">RealityStream</a> if you're contributing to our Machine Learning visualizations.
 Fork <a href="https://github.com/ModelEarth/feed">Feed Player</a> if you're adding to our Feed Player and Visual Project Manager.
