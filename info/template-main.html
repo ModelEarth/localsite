@@ -1183,7 +1183,7 @@ document.addEventListener('mousedown', function(e) {
                 </div>
 
                 <!-- overflow:scroll; caused rect in lower left -->
-                <div class="geoListCounties" style="overflow:auto;"><!-- margin-bottom:45px -->
+                <div class="geoListCounties" style="width: 100%;overflowX:auto;scrollbar-widthX:none;">
                   <!-- Activate or remove
                   <div style="float:right;margin:12px 0px 0 12px">
                     <input id="showValues" type="checkbox" checked> Show values
@@ -1222,8 +1222,8 @@ document.addEventListener('mousedown', function(e) {
                   </div>
                   -->
 
-                  <div id="tabulator-geocredit" style="display:none; margin-top:8px; font-size: 12px">
-                    Dataset displayed by <a href="../../../localsite/info/data/" target="_blank">Tabulator</a><br><br>
+                  <div id="tabulator-geocredit" class="local" style="display:none; margin-top:8px; font-size: 12px">
+                    Source: <a href="/localsite/info/data/map-filters/">State and Country Data</a><br><br>
                   </div>
                 </div>
                 
