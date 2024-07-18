@@ -387,6 +387,5 @@ Edit online using [stackedit.io](https://stackedit.io/) and [Dillinger Markdown 
 [AWS Amplify, and site hosting info](https://model.earth/aws/amplify/) - Azure, Firebase, GitHub Pages, Netlify and more.
 
 ---
-<br>
 
-[Edit the page above in Github](https://github.com/modelearth/localsite/blob/master/start/README.md) - [Edit in StackEdit](https://stackedit.io/app#providerId=githubWorkspace&owner=localsite&repo=localsite&branch=) - Click folder icon in upper right within StackEdit. ([Direct links are not yet available in StackEdit](https://community.stackedit.io/t/open-file-from-github-using-a-link/495))
+[Edit the page above in Github](https://github.com/modelearth/localsite/blob/master/start/README.md)
