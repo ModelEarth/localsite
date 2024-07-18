@@ -30,7 +30,7 @@
 }
 
 .tabulator-selectable:hover { /* rows */
-    background-color: #fafafa !important;
+    background-color: #eee !important;
 }
 .dark .tabulator-selectable:hover { /* rows */
     background-color: #333 !important;
@@ -55,6 +55,9 @@
     height: 6px !important; /* narrower bars */
 }
 
+
+
+
 /* pass clicks through to row so hash change can set checkbox without re-triggering hash change */
 #tabulator-statetable .tabulator-row input[type='checkbox'] {
     pointer-events: none;
@@ -75,7 +78,7 @@
 }
 .tabulator-header .tabulator-col-title {
     font-weight: 400;
-    text-align: right;
+    text-alignX: right;
 }
 .tabulator-header .tabulator-col:first-of-type .tabulator-col-title {
     text-align: left;
