@@ -68,8 +68,6 @@ https://yourdomain.com/#go=$2
 
 ## Host your Github repos using Cloudflare
 
-Optional: Include the "functions" folder from [charca's repo](https://dev.to/charca/password-protection-for-cloudflare-pages-8ma) to create the secure login single-password site.
-
 <!--
 No longer seeing this route, double-check then delete thiL
 Add a custom domain in cloudflare Pages by clicking "Create a project" at "Account Home > Pages"
@@ -91,6 +89,8 @@ Connect to your repo, which can be a private repo.
 
 4. Lastly, add a subdomain under Custom domains within Cloudflare pages.
 This will automatically create a CNAME record pointed at [generated subdomain].pages.dev after a few minutes.
+
+Optional: Include the "functions" folder from [charca's repo](https://dev.to/charca/password-protection-for-cloudflare-pages-8ma) to create the secure login single-password site.
 
 Use [submodules](../submodules) to place multiple repos in your parent repo.
 
@@ -145,7 +145,7 @@ For example, instead of 2001:db8:6a0b:1a01:d423:43b9:13c5:2e8f, enter one of the
 Reference:
 [Create a list in the dashboard](https://developers.cloudflare.com/fundamentals/global-configurations/lists/create-dashboard/)
 
-
+<!--
 ## For Cloudflare Custom Purge
 
 We use Cloudflare's free Content Delivery Network (CDN) to reduce traffic hitting GitHub.
@@ -165,9 +165,6 @@ https://model.earth/localsite/css/base.css
 https://model.earth/localsite/css/map.css
 https://model.earth/localsite/css/naics.css
 https://model.earth/apps/
-https://model.earth/community/challenge/
-https://model.earth/community/challenge/README.md
-https://model.earth/community/challenge/rules.md
-
+-->
 
 
