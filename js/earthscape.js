@@ -142,4 +142,3 @@ function getUrbanDensityForYear(data, year) {
     });
     return result ? result.UrbanDensity : "";
 }
-
