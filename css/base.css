@@ -1228,6 +1228,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   position: absolute;
   top: 50%;
   transform: translate(0%, -50%);
+  min-width: 250px; /* Prevents being too narrow in OpenWebUI */
 }
 
 #headerLocTitle {
