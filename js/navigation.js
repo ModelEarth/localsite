@@ -3,6 +3,7 @@
 // loadLocalObjectLayers(1) - Loads all layers for layer settings. Also loads localObject.layers for later use when showApps clicked. Also adds state hash for layers requiring a state.
 // Works WITHOUT map.js. Loads map.js if hash.show gets populated.
 // renderGeomapShapes() in navigation.js - For #geomap in search filters
+// showTabulatorList() renders country and state lists
 
 if(typeof local_app == 'undefined') { var local_app = {}; console.log("BUG: Move navigation.js after localsite.js"); } // In case navigation.js included before localsite.js
 if(typeof layerControls=='undefined') { var layerControls = {}; } // Object containing one control for each map on page.
@@ -17,6 +18,10 @@ function hashChanged() {
     let loadGeomap = false;
     let hash = getHash(); // Might still include changes to hiddenhash
     console.log("hashChanged() navigation.js");
+    if (hash.geoview == "state" && !hash.state) {
+        goHash({"geoview":"country"});
+        return;
+    }
     populateFieldsFromHash();
     productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 
@@ -121,6 +126,7 @@ function hashChanged() {
 
     let mapCenter = [];
     let zoom = 4; // Wide for entire US
+
     // Before hash.state to utilize initial lat/lon
     if (hash.lat != priorHash.lat || hash.lon != priorHash.lon) {
         //alert("hash.lat " + hash.lat + " priorHash.lat " + priorHash.lat)
@@ -197,7 +203,9 @@ function hashChanged() {
     
     if (hash.geoview != priorHash.geoview) {
         if (hash.geoview) {
-            $("#geoview_select").val(hash.geoview);
+            waitForElm('#geoview_select').then((elm) => {
+                $("#geoview_select").val(hash.geoview);
+            });
             /*
             // Tabulator list is already updated before adjacent geomap is rendered.
             if (hash.geoview == "state" && hash.state) {
@@ -249,9 +257,8 @@ function hashChanged() {
         }
     }
 
-    if (hash.geoview != priorHash.geoview || (priorHash.state && !hash.state)) {
-        //alert("Load geoview")
-        
+    //if (hash.geoview != priorHash.geoview || (priorHash.state && !hash.state)) { // This did not support changing state in the URL.
+    if (hash.geoview != priorHash.geoview || hash.state != priorHash.state) {
         /*
         if (hash.geoview) {
             openMapLocationFilter();
@@ -261,28 +268,31 @@ function hashChanged() {
         // UNBUG - red goes away with 
         //if (hash.geoview == "country" && hash.state) { // Includes with and without hash.state
 
+
         if (hash.geoview == "country") { // Includes with and without hash.state
             // COUNTRY - US and later other countries
             // TO DO - Make selected state(s) a color on country map.
 
-            // BUG this display US map red
+            // BUG this displays the US map with all red shapes - and white for hash.state(s)
 
             let element = {};
             element.scope = "state";
-            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states.json";
+            //element.key = "State";
+            //element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states.json";
+            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states-edited.csv";
             element.columns = [
                 {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                {title:"State", field:"jurisdiction"},
+                {title:"State", field:"id"},
+                {title:"State", field:"StateName"},
                 {title:"Population", field:"population", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
                 {title:"CO<sub>2</sub> per capita", field:"CO2_per_capita", hozAlign:"right", formatter:"money", formatterParams:{precision:false}},
             ];
-            console.log("columns for country, including per capita");
             // Displays tabulator list of states, but USA map shapes turned red. See also "pink" in this page
-            if (hash.geoview == "country") {
+            //if (hash.geoview == "country") {
                 loadObjectData(element, 0);
-            } else if (hash.geoview == "state" && !hash.state) {
-                loadObjectData(element, 0); // Display tabulator list of states.
-            }
+            //} else if (hash.geoview == "state" && !hash.state) {
+            //    loadObjectData(element, 0); // Display tabulator list of states.
+            //}
         } else if (hash.state) {
             console.log("loadStateCounties invoked by geoview change");
             console.log("priorHash.geoview: " + priorHash.geoview + ", hash.geoview: " + hash.geoview);
@@ -303,17 +313,19 @@ function hashChanged() {
             loadObjectData(element, 0);
         } else { // For backing up within apps
         
-            // GOOD - red does not appear with US map here
-
             // Since geoview "earth" does uses an iFrame instead of the geomap display.
             if (typeof relocatedStateMenu != "undefined") {
-                relocatedStateMenu.appendChild(state_select); // For apps hero
+                waitForElm('#state_select').then((elm) => {
+                    relocatedStateMenu.appendChild(state_select); // For apps hero
+                });
             }
             $("#hero_holder").show();
         }
     }
-    if (hash.geoview == "earth") {
-        $("#state_select").hide();
+    if (hash.geoview == "earth" || hash.geoview == "countries") {
+        waitForElm('#state_select').then((elm) => {
+            $("#state_select").hide();
+        });
     } else if (hash.geoview == "country") {
         if (hash.geoview != priorHash.geoview) {
             //alert("country");
@@ -1614,8 +1626,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
           url = local_app.modelearth_root() + "/topojson/world-countries-sans-antarctica.json";
           topoObjName = "topoob.objects.countries1";
         }
-
-        console.log("topojson url " + url); // TEMP
+        //console.log("topojson url " + url); // TEMP
 
         req.open('GET', url, true);
         req.onreadystatechange = handler;
@@ -2115,6 +2126,8 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
             // CLICK SHAPE ON MAP
             function mapFeatureClick(e) {
 
+              
+
               param = loadParams(location.search,location.hash); // param is declared in localsite.js
               var layer = e.target;
               //map.fitBounds(e.target.getBounds()); // Zoom to boundary area clicked
@@ -2132,7 +2145,13 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                 } else {
                   param.geo = fips;
                 }
-                goHash({'geo':param.geo,'regiontitle':''});
+
+                //alert("disabled to avoid double call.")
+                //goHash({'geo':param.geo,'regiontitle':''});
+
+                // Try this
+                goHash({'geo':param.geo});
+
               } else if (layer.feature.properties.name) { // Full state name
                   let hash = getHash();
                   let theStateID = getIDfromStateName(layer.feature.properties.name);
@@ -2430,6 +2449,7 @@ function locClick(which) {
 // Data as values, not objects.
 //let geoCountyTable = []; // Array of arrays
 
+
 function loadStateCounties(attempts) { // To avoid broken tiles, this won't be executed if the #geomap div is not visible.
     consoleLog("loadStateCounties " + attempts);
     loadScript(theroot + 'js/d3.v5.min.js', function(results) {
@@ -2579,6 +2599,24 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
     });
 }
 
+function makeRowValuesNumeric(_data, columnsNum, valueCol) {
+  console.log("makeRowValuesNumeric");
+  console.log(_data);
+  
+  // 'for of' loop is more efficient than forEach. 
+  // Also works on objects. You can call it like this 'for let d of Object.entries(data){ }'
+
+  // Might not need this, try removing
+  if (typeof columnsNum !== "undefined") {
+    _data.forEach( function (row) {
+      //row = removeWhiteSpaces(row);
+      convertToNumber(row, columnsNum);
+    });
+  }
+
+  //console.log(_data); // Careful, this can overwhelm browser
+  return _data;
+}
 function loadObjectData(element, attempts) {
     if (typeof d3 !== 'undefined') {
         if(typeof localObject[element.scope] == 'undefined') {
@@ -2586,12 +2624,11 @@ function loadObjectData(element, attempts) {
         }
 
         // Just load from file the first time
-        if (Object.keys(localObject[element.scope]).length <= 0) { // state, countries
+        if (Object.keys(localObject[element.scope]).length <= 0) { // state, country (us), countries
         //if (1==1) {
             //alert("element.scope " + element.scope + " does not exist yet.");
             if (element.datasource.toLowerCase().endsWith(".csv")) {
                 d3.csv(element.datasource).then(function(data) { // One row per line
-                    // element.scope = countries
                     if (element.key) {
 
                         data.forEach(function(d, i) {
@@ -2600,10 +2637,9 @@ function loadObjectData(element, attempts) {
                         });
 
                     } else {
+                        // 
                         localObject[element.scope] = makeRowValuesNumeric(data, element.numColumns, element.valueColumn);
                     }
-                    console.log("localObject.countries")
-                    console.log(localObject[element.scope])
                     showTabulatorList(element, 0);
                 })
             } else {
@@ -2683,11 +2719,15 @@ function showTabulatorList(element, attempts) {
     let currentRowIDs = [];
     console.log("showTabulatorList scope: " + element.scope + ". Length: " + Object.keys(element).length + ". Attempt: " + attempts);
     let hash = getHash();
-    let theState = hash.state.split(",")[0].toUpperCase();
+    let theState = "";
+    if (hash.state) {
+        // apps/ev has the state hardcoded
+        theState = hash.state.split(",")[0].toUpperCase();
+    }
     if (element.state) {
         theState = element.state;
     }
-
+    
     if(typeof param=='undefined'){ var param={}; } // In case navigation.js included before localsite.js
     if (param.display != "everything") { // Since it's already loaded for "everything" in localsite.js
         loadTabulator();
@@ -2698,30 +2738,34 @@ function showTabulatorList(element, attempts) {
 
         // Convert key-value object to a flat array (like a spreadsheet)
         let dataForTabulator = [];
-        $.each(localObject[element.scope] , function(key,val) { // val is an object     
-          if (element.scope == "state") {
-            if (val["jurisdiction"]) { // 3 in the state json file don't have a jurisdiction value.
-                dataForTabulator.push(val);
-            } else {
-                console.log("No jurisdiction value " + val["name"]);
-            }
-          } else { // countries
-            dataForTabulator.push(val);
-          }
-          //console.log("Scope in Tabulator " + element.scope);
-        });
+        $.each(localObject[element.scope] , function(key,val) { // val is an object
 
-        console.log("dataForTabulator:");
-        console.log(dataForTabulator);
+            // Not used for states (country) now that json replaced with csv file.
+            // Saving in case we have another json ke-value data source later.
+              if (1==2 && element.scope == "state") {
+                if (val["jurisdiction"]) { // 3 in the state json file don't have a jurisdiction value.
+                    dataForTabulator.push(val);
+                } else {
+                    console.log("No jurisdiction value " + val["name"]);
+                }
+              } else { // countries
+
+                dataForTabulator.push(val);
+              }
+              //console.log("Scope in Tabulator " + element.scope);
+        });
 
         // For fixed header, also allows only visible rows to be loaded. See "Row Display Test" below.
         // maxHeight:"100%",
 
         // COUNTRY - LIST OF STATES
-        //if (!hash.state && typeof stateImpact != 'undefined') {
-        if (hash.geoview == "country" || (!theState && onlineApp)) {
-             //alert("load Countries OR USA states list. element.scope: " + element.scope);
 
+        //if (!hash.state && typeof stateImpact != 'undefined') {
+        //alert("theStatewait " + theState);
+        if (hash.geoview == "country" || (!theState && onlineApp)) {
+             //alert("Load USA states list. element.scope: " + element.scope);
+
+             // BUG - element columns are gone when add &state=NY
              console.log("element.columns: ");
              console.log(element.columns);
              //if (element.columns) {
@@ -2734,9 +2778,13 @@ function showTabulatorList(element, attempts) {
                  $("#tabulator-geotable").hide();
                  $("#tabulator-statetable").show();
                  // BUGBUG - TypeError: Cannot read properties of undefined (reading 'slice')
-                 // Not sure why this occurs when there is no state.
-                 // Example http://localhost:8887/apps/ev/#geoview=country
+                 // This occurs when adding a state to the url hash.
+                 // element.columns were gone!
+                 // Example http://localhost:8887/apps/ev/#geoview=country  then add &state=NY
                  
+                 console.log("dataForTabulator");
+                 console.log(dataForTabulator);
+
                  statetable = new Tabulator("#tabulator-statetable", {
                     data:dataForTabulator,    //load row data from array of objects
                     layout:"fitColumns",      //fit columns to width of table
@@ -2752,9 +2800,18 @@ function showTabulatorList(element, attempts) {
                     selectable:true,
                 });
 
-                /* temp to see if prevents 30 second down "Maximum call stack size exceeded"
-                statetable.on("rowSelected", function(row){
-                    //alert(row._row.data.id);
+                // TO DO: 2-char state needs to be added
+                if(hash.state) {
+                    let currentStateIDs = hash.state.split(',');
+                    statetable.on("tableBuilt", function() {
+                        //alert("currentStateIDs " + currentStateIDs)
+                        statetable.selectRow(currentStateIDs);
+                    });
+                }
+
+                statetable.on("rowSelected", function(row) {
+                    //alert("statetable rowSelected " + row._row.data.id);
+                    // Important: The incoming 2-char state is a column called "id"
                     if (!currentRowIDs.includes(row._row.data.id)) {
                      currentRowIDs.push(row._row.data.id);
                     }
@@ -2768,8 +2825,10 @@ function showTabulatorList(element, attempts) {
                     }
                     if (row._row.data["Country Name"] == "United States") {
                         goHash({'geoview':'country'});
-                    } else if(!hash.geo && row._row.data.jurisdiction) {
-                        if(row._row.data.jurisdiction == "Georgia") { // From state checkboxes
+                    } else if(row._row.data.id) {
+                        goHash({'state':row._row.data.id});
+                    } else if(!hash.geo && row._row.data.StateName) { // Or StateName?
+                        if(row._row.data.statename == "Georgia") { // From state checkboxes
                             // Temp, later we'll pull from data file or dropdown.
                             row._row.data.state = "GA";
                         }
@@ -2785,24 +2844,33 @@ function showTabulatorList(element, attempts) {
                             goHash({'geoview':'state','geo':'','statename':'','state':row._row.data.state});
                         }
                     } else {
-                        goHash({'geo':hash.geo});
+                        goHash({'state':filteredArray.toString()});
+                        return;
                     }
 
                 })
                 statetable.on("rowDeselected", function(row){
                     let filteredArray = currentRowIDs.filter(item => item !== row._row.data.id);
-                    if (hash.geo != filteredArray.toString()) {
-                        hash.geo = filteredArray.toString();
-                        goHash({'geo':hash.geo});
+                    if (hash.state != filteredArray.toString()) {
+                        //hash.geo = filteredArray.toString();
+                        goHash({'state':filteredArray.toString()});
+                        return;
                     }
                 })
-                */
+                
+                // Not working yet
+                if(hash.state) {
+                    let currentStates = hash.state.split(',');
+                    statetable.on("tableBuilt", function() {
+                        //alert("try it")
+                        statetable.selectRow(currentStates); // Uses "id" incoming rowData
+                    });
+                }
 
              }); // End wait for element #tabulator-statetable
 
-        } else if (theState) {
+        } else if (theState) { // EACH STATE'S COUNTIES
 
-            // EACH STATE'S COUNTIES
             waitForElm('#tabulator-geotable').then((elm) => {
 
             // 0.1 sec delay - A delay is needed when initially opening Locations tab for tablator rows to be populated from rowData, not sure why.  
@@ -2811,7 +2879,6 @@ function showTabulatorList(element, attempts) {
 
             // Don't use. Never triggered
             //document.addEventListener("#tabulator-geotable", function(event) { // Wait for #tabulator-geotable div availability.
-
 
                 console.log("#tabulator-geotable available. State: " + hash.state + " element.scope: " + element.scope);
 
@@ -2836,6 +2903,7 @@ function showTabulatorList(element, attempts) {
                     rowData = localObject.geo.filter(function(el){return el.state == theState.split(",")[0].toUpperCase();}); // load row data from array of objects
                     columnArray = [
                         {formatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
+                        
                         {title:"County", field:"name", width:170},
                         {title:"Population", field:"pop", width:110, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false}},
                         {title:"Sq Miles", field:"sqmiles", width:90, hozAlign:"right", sorter:"number"},
@@ -2848,8 +2916,8 @@ function showTabulatorList(element, attempts) {
                 }
 
                 // Confirms rowData is available.
-                //console.log("showTabulatorList rowData: ");
-                //console.log(rowData);
+                console.log("showTabulatorList rowData: ");
+                console.log(rowData);
 
                 geotable = new Tabulator("#tabulator-geotable", {
                     data:rowData,
@@ -2878,7 +2946,9 @@ function showTabulatorList(element, attempts) {
                 geotable.on("dataSorted", function(sorters, rows){
                     //sorters - array of the sorters currently applied
                     //rows - array of row components in their new order
-                    updateMapColors("geomap");
+
+                    console.log("REACTIVATE AND TEST")
+                    //updateMapColors("geomap");
                 });
 
                 geotable.on("rowSelected", function(row){
@@ -2905,6 +2975,15 @@ function showTabulatorList(element, attempts) {
                     }
                 })
                 consoleLog("Before Update Map Colors Tabulator list displayed. State: " + theState);
+
+                if(hash.geo) {
+                    let currentGeoIDs = hash.geo.split(',');
+                    geotable.on("tableBuilt", function() {
+                        //alert("currentGeoIDs " + currentGeoIDs)
+                        geotable.selectRow(currentGeoIDs); // Uses "id" of incoming rowData, which is the fips geo value. US01097,US01098
+                    });
+                }
+
             }, 100 );
             }); // End wait for element #tabulator-geotable
         }
@@ -2982,17 +3061,21 @@ function updateMapColors(whichmap) {
         });
         //alert("layerName " + layerName);
 
-        if (1==3 && location.host.indexOf('localhost') >= 0) {
+        if (location.host.indexOf('localhost') >= 0) {
             // Add color to this log
             //alert("To debug: Cannot read properties of undefined (reading 'eachLayer')")
 
-            // Working. If it stops working, check if we need to wait for geoOverlays[layerName]
-            geoOverlays[layerName].eachLayer(function(layer) {
-                var location = layer.feature.properties.COUNTYFP; // Assuming 'name' property in GeoJSON
-                var index = sortedData.indexOf(location);
-                var colorIntensity = index >= 0 ? (index / sortedData.length) * 360 : 0; // Adjust color intensity based on position
-                // Makes the background transparent pink instead of blue. All turn back to blue when clicking.
-                layer.setStyle({ fillColor: "hsl(" + colorIntensity + ", 100%, 50%)" });
+            // Not working, but prevents error in subsequent line
+            waitForVariable('geoOverlays[layerName]', function() {
+
+                // Working. If it stops working, check if we need to wait for geoOverlays[layerName]
+                geoOverlays[layerName].eachLayer(function(layer) {
+                    var location = layer.feature.properties.COUNTYFP; // Assuming 'name' property in GeoJSON
+                    var index = sortedData.indexOf(location);
+                    var colorIntensity = index >= 0 ? (index / sortedData.length) * 360 : 0; // Adjust color intensity based on position
+                    // Makes the background transparent pink instead of blue. All turn back to blue when clicking.
+                    layer.setStyle({ fillColor: "hsl(" + colorIntensity + ", 100%, 50%)" });
+                });
             });
         }
     });
@@ -3847,7 +3930,9 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         if (location.host.indexOf("localhost") >= 0) {
             siteRoot = "/dreamstudio";
         }
-        param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
+        if (!param.headerLogo) {
+            param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
+        }
         param.headerLogoNoText = "<img src='/storyboard/img/logo/ds/favicon.png' style='float:left;width:38px;margin-right:7px'>";
         if (location.href.indexOf("/seasons") >= 0) {
             changeFavicon("/storyboard/img/logo/ds/faveye.png");
@@ -5456,10 +5541,9 @@ function openMapLocationFilter() {
         */
     }
     ///$("#geoPicker").show();
-    $("#filterLocations").prependTo($("#locationFilterHolder")); // Move back from sidetabs
     $("#geomap").appendTo($("#geomapHolder")); // Move back from sidetabs
-    // Here we show the interior, but not #locationFilterHolder.
-    // Jul2 $("#filterLocations").show();$("#imagineBar").show();
+
+
     $(".locationTabText").text("Locations");
     $("#topPanel").hide();
     $("#showLocations").show();
@@ -5489,13 +5573,19 @@ function openMapLocationFilter() {
             }
         });
     }
-    if ($("#filterLocations").length) {
-        $('html,body').animate({
-            scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
-        });
-    } else {
-        console.log("ALERT #filterLocations not available yet.")
-    }
+
+    waitForElm('#filterLocations').then((elm) => {
+        $("#filterLocations").prependTo($("#locationFilterHolder")); // Move back from sidetabs
+        // Here we show the interior, but not #locationFilterHolder.
+        // Jul2 $("#filterLocations").show();$("#imagineBar").show();
+        //if ($("#filterLocations").length) {
+            $('html,body').animate({
+                scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
+            });
+        //} else {
+        //    console.log("ALERT #filterLocations not available yet.")
+        //}
+    });
     if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
         $("#header.nav-up").show();
     }

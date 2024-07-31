@@ -7,7 +7,7 @@ If you get stuck at any point, feel free to DM Loren at [x.com/LorenHeyns](https
 Our notes on [Node, Python, Docker and Conda](/io/coders/python/).  
 To open local .ipynb files, run `jupyter notebook` after choosing "New Terminal at Folder".
 
-## Start your local webroot
+## Start your local webroot http-server
 
 Run in a folder called "webroot" (or any name) to start your local websites on Mac and Linux:
 
@@ -143,7 +143,7 @@ To do: Create "webroot" folder if it does not exist yet.
 
 To run the above automatically when your Mac restarts, save a file called start_localsite.sh with the following:
 
-This is not working. It's opeing XCode. Please share a fix by submitting a Pull Request (PR)
+This is not working. It's opeing XCode. Please share a fix by submitting a Pull Request (PR)<!-- deleted start_localsite.sh-->
 
 	#!/bin/bash
 	source ~/.bash_profile

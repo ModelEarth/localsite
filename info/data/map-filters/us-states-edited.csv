@@ -1,4 +1,4 @@
-State,StateName,clean_energy_commitment,CO2_per_1000_miles,CO2_percent,CO2_emissions,energy_efficency_rank,population,carbon_pollution_reduction_goal_percent,electric_vehicle_goals,CO2_rank,CO2_per_capita,population_percent,clean_energy_target_percent
+id,StateName,clean_energy_commitment,CO2_per_1000_miles,CO2_percent,CO2_emissions,energy_efficency_rank,population,carbon_pollution_reduction_goal_percent,electric_vehicle_goals,CO2_rank,CO2_per_capita,population_percent,clean_energy_target_percent
 AL,Alabama,No,2.1,2.1,108.3,[XX] is ranked 43rd by the American Council for an Energy-Efficient Economy.,4877989,No,No,15,22.202,1.483,[XX] does not have a mandatory renewable energy target.
 AK,Alaska,No,0.1,0.7,34.1,[XX] is ranked 41st (tied with South Carolina) by the American Council for an Energy-Efficient Economy.,740983,No,No,40,46.02,0.225,[XX] does not have a mandatory renewable energy target.
 AS,American Samoa,No,4.7,0.007,0.36,[XX] is not ranked by the American Council for an Energy-Efficient Economy.,55620,No,No,55,6.472,0.0169,[XX] does not have a mandatory renewable energy target.

@@ -44,14 +44,20 @@ function initialWidgetLoad() {
     });
 }
 
+// remove refresh 1 and refresh 3
 
 document.addEventListener('hashChangeEvent', function (elem) {
+    let hash = getHash();
     if (hiddenhash.debug && location.host.indexOf('localhost') >= 0) {
         //alert('Localhost Alert: hashChangeEvent invoked by naics.js'); // Invoked twice by iogrid inflow-outflow chart
     }
     //let hash = loadParams(location.search,location.hash);
-    console.log("naics.js detects hash change");
-    refreshNaicsWidget(false);                    
+    //alert("naics.js detects hash change. New hash:\r\r" + JSON.stringify(hash) + "\r\rPrior hash:" + JSON.stringify(priorHash_naicspage));
+    
+    if (!objectsMatch(hash,priorHash_naicspage)) {
+        //alert("hashChangeEvent " + location.hash)
+        refreshNaicsWidget(false);
+    }            
  }, false);
 
 // For v2
@@ -82,9 +88,9 @@ function refreshNaicsWidget(initialLoad) {
     //alert("refreshNaicsWidget() hiddenhash.naics: " + hiddenhash.naics);
 
     let hash = getHash(); // Includes hiddenhash
-    console.log("refreshNaicsWidget hash.naics: " + hash.naics + " and prior naics: " + priorHash.naics);
+    console.log("refreshNaicsWidget hash.naics: " + hash.naics + " and prior naics: " + priorHash_naicspage.naics);
 
-    if (hash.set != priorHash.set) {
+    if (hash.set != priorHash_naicspage.set) {
         if (!hash.set) {
             $('#pageTitle').hide();
         } else {
@@ -113,11 +119,12 @@ function refreshNaicsWidget(initialLoad) {
     }
 
 
-    // TO DO: Watch only for changes to geo
-    // 
-    if (!initialLoad && hash.geo != priorHash.geo) {
-        console.log("No change for refreshNaicsWidget()");
-        return;
+    // TO DO: Currently watches only for changes to geo
+    if (!initialLoad) {
+        if (hash.geo == priorHash_naicspage.geo) {
+            console.log("No geo change for refreshNaicsWidget()");
+            return;
+        }
     }
 
     if (hash.geo){
@@ -148,19 +155,19 @@ function refreshNaicsWidget(initialLoad) {
     hash = getHash(); // Get new hiddenhash
 
     /*  
-    if (!hash.show || hash.show != priorHash.show) { // GET NAICS BASED ON THEME (recycing, bioeconomy, etc.)
+    if (!hash.show || hash.show != priorHash_naicspage.show) { // GET NAICS BASED ON THEME (recycing, bioeconomy, etc.)
         // Initial load
         //alert("hash.show " + hash.show)
         getNaics_setHiddenHash2(hash.show); // Sets hiddenhash.naics for use by other widgets.
 
         // Get the hash again - hiddenhash.naics is set in getNaics_setHiddenHash2
         hash = getHash(); // Get new hiddenhash
-    } else if (hash.naics != priorHash.naics) { // IF NAICS, AVOID THEME NAICS (from show) 
+    } else if (hash.naics != priorHash_naicspage.naics) { // IF NAICS, AVOID THEME NAICS (from show) 
         //alert("hash.naics " + hash.naics);
-    } else if (hash.state != priorHash.state) {
+    } else if (hash.state != priorHash_naicspage.state) {
         // Not working yet
         //getNaics_setHiddenHash2(hash.show); // Show the state name above naics list.
-    } else if (hash.catsize != priorHash.catsize) {
+    } else if (hash.catsize != priorHash_naicspage.catsize) {
         //getNaics_setHiddenHash2(hash.show);
     }
     */
@@ -168,7 +175,7 @@ function refreshNaicsWidget(initialLoad) {
     let loadNAICS = false;
     // The following will narrow the naics to the current location
     
-    if (hash.regiontitle != priorHash.regiontitle) {
+    if (hash.regiontitle != priorHash_naicspage.regiontitle) {
         if (!hash.regiontitle) {
             if(!hash.geo) {
                 
@@ -183,32 +190,32 @@ function refreshNaicsWidget(initialLoad) {
             //hash.geo = hiddenhash.geo; // Used by naics.js
         }
         loadNAICS = true;
-    } else if (hash.state != priorHash.state) {
+    } else if (hash.state != priorHash_naicspage.state) {
         // Initial load, if there is a state
         console.log("hash.state change call loadIndustryData(hash)")
         // Occurs on INIT
         loadNAICS = true;
-    } else if (hash.show != priorHash.show) {
+    } else if (hash.show != priorHash_naicspage.show) {
         loadNAICS = true;
-    } else if (hash.geo != priorHash.geo) {
+    } else if (hash.geo != priorHash_naicspage.geo) {
         loadNAICS = true;
-    } else if ((hash.naics != priorHash.naics) && hash.naics && hash.naics.indexOf(",") > 0) { // Skip if only one naics
+    } else if ((hash.naics != priorHash_naicspage.naics) && hash.naics && hash.naics.indexOf(",") > 0) { // Skip if only one naics
         loadNAICS = true;
-    } else if (hash.catsize != priorHash.catsize) {
+    } else if (hash.catsize != priorHash_naicspage.catsize) {
         loadNAICS = true;
-    } else if (hash.catsort != priorHash.catsort) {
+    } else if (hash.catsort != priorHash_naicspage.catsort) {
         loadNAICS = true;
-    } else if (hash.x != priorHash.x || hash.y != priorHash.y || hash.z != priorHash.z) {
+    } else if (hash.x != priorHash_naicspage.x || hash.y != priorHash_naicspage.y || hash.z != priorHash_naicspage.z) {
         loadNAICS = true; // Bubblechart axis change.
         //alert("xyz changed")
     } else {
 
-        if (hash.name && hash.name != priorHash.name) {
+        if (hash.name && hash.name != priorHash_naicspage.name) {
             console.log("Exit refreshNaicsWidget - not for name change");
             // BUGBUG - Only return here if no other sector-related hash changes occured.
             return;
         }
-        if (!hash.state && (initialNaicsLoad || priorHash.state)) {
+        if (!hash.state && (initialNaicsLoad || priorHash_naicspage.state)) {
             // initialNaicsLoad prevents calling when clicking Locations tab (geoview=country) or opening upper right.
             if (location.host.indexOf('localhost') >= 0) {
                 //alert("Localhost notice: loadNAICS called for any change - for US when no state");
@@ -218,18 +225,18 @@ function refreshNaicsWidget(initialLoad) {
         }
     }
     /*
-    } else if (hash.indicators != priorHash.indicators) {
+    } else if (hash.indicators != priorHash_naicspage.indicators) {
         // Avoid invoking change to widget since indicators is auto-detected
         //alert("hash.indicators " + hash.indicators);
         // initial
-    } else if (hash.sectors != priorHash.sectors) {
+    } else if (hash.sectors != priorHash_naicspage.sectors) {
         // Avoid invoking change to widget since sectors is auto-detected
     }
     */
 
     console.log("hiddenhash.indicators " + hiddenhash.indicators)
     // hash.naics.indexOf(",") causes error when no hash.naics
-    //if ((hash.naics != priorHash.naics) && hash.naics.indexOf(",") < 0) {
+    //if ((hash.naics != priorHash_naicspage.naics) && hash.naics.indexOf(",") < 0) {
         //if (!hash.indicators) {
             //param.indicators = "ACID,CCDD,CMSW,CRHW,ENRG,ETOX,EUTR,GHG,HAPS,HCAN,HNCN,HRSP,HTOX,JOBS,LAND,MNRL,NNRG,OZON,PEST,RNRG,SMOG,VADD,WATR";
             //hiddenhash.indicators = "ACID,CCDD,CMSW,CRHW,ENRG,ETOX,EUTR,GHG,HAPS,HCAN,HNCN,HRSP,HTOX,JOBS,LAND,MNRL,NNRG,OZON,PEST,RNRG,SMOG,VADD,WATR";
@@ -267,7 +274,7 @@ function refreshNaicsWidget(initialLoad) {
         }
 
         // v2
-        if (hash.beta == "true" || location.href.indexOf('/info/naics/') >= 0) {
+        if (hash.beta == "true" || location.href.indexOf('/info/naics/') >= 0 || location.href.indexOf('localhost') >= 0) {
 
             $("#industryTableHolder").show();
 
@@ -279,7 +286,7 @@ function refreshNaicsWidget(initialLoad) {
             d3.csv(industryLocDataFile).then( function(county_data) {
                 //alert("load it " + hash.catsize);
                 //showIndustryTabulatorList(0);
-                callPromises(industryLocDataFile);
+                callPromises(industryLocDataFile); // Also loads tabulators
             });
         }
         loadIndustryData(hash);
@@ -289,8 +296,8 @@ function refreshNaicsWidget(initialLoad) {
         $("#industryListHolder").hide();
         $("#industryDetail").hide();
     }
-    console.log("naics1 " + loadNAICS + " " + hash.show + " " + priorHash.show);
-    // || hash.show != priorHash.show
+    console.log("naics1 " + loadNAICS + " " + hash.show + " " + priorHash_naicspage.show);
+    // || hash.show != priorHash_naicspage.show
     if (initialPageLoad || loadNAICS) {
         //if (loadNAICS == false) { // Not sure if loadNAICS==false needed, or if applyIO is ever used here.
             //applyIO("");
@@ -305,134 +312,171 @@ function refreshNaicsWidget(initialLoad) {
         }
     }
 
-    //priorHash_naicspage = getHash();
+
+    // This might be reached before naics.hiddenhash is set.
+    // So maybe localStorage should be used for the naics list.
+
+    //alert("Assign priorHash_naicspage")
     priorHash_naicspage = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
 
-    //alert("afterr " + priorHash.naics);
+    //alert("afterr " + priorHash_naicspage.naics);
     // priorHash_naicspage = mix(getHash(),hash); // So we include changes above.
     initialNaicsLoad = false;
 }
 
+function combineArrays(arrays) {
+    // Remove duplicates by converting to a Set and then back to an array
+    let combinedArray = Array.from(new Set(arrays));
+    // Sort the combined array numerically
+    combinedArray.sort((a, b) => a - b);
+    return combinedArray;
+}
 function getNaics_setHiddenHash2(go) {
 
     let showtitle, showtab;
     let cat_filter = [];
     let states = "";
 
-    // NAICS FROM community/projects/biotech
-    let computers = "541511,541512,551114,611310"
-    let bio_input = "113000,321113,113310,32121,32191,562213,322121,322110,"; // Omitted 541620
-    let bio_output = "325211,325991,3256,335991,325120,326190,";
-    let green_energy = "221117,221111,221113,221114,221115,221116,221118,";
-    let fossil_energy = "221112,324110,325110,";
-    let electric = "335910,335911,335912,";
-    let auto_parts = "336390,336211,336340,336370,336320,336360,331221,336111,336330,";
-    let parts = "336412,336413,339110,333111,325211,326112,332211,336370,336390,326199,331110,336320,";
-    let solar = "221114,334313,335999";
-    let combustion_engine = "333613,326220,336350,336310,333618,";
-    let parts_carpets = "325520,314110,313110,313210,"
-    let ppe_suppliers = "622110,621111,325414,339113,423450,"
-    let farmfresh = "311612,311615,311911,311919,311830,311824,311941,311710,311611,115114,311613,311811,311942,311991,311999,311211,311224,311920,"
-    let recycling = "423930,562111,562112,562119,562211,562212,562213,562219,562910,562920,562991,562998,56299"; // All 6-digit NAICS codes under the 5 digit 56299 code are assigned to 562OTH in the USEEIO classification
+    let naicsArrays = {};
 
-    // Not crosswalking. All sectors appear here from 2.0 https://github.com/USEPA/useeior/wiki/Disaggregation-of-Sectors#disaggregation-inputs-for-envfile
-    recycling = recycling + ",562111,562212,562213,562910,562920,562HAZ,562OTH";
-    //alert(recycling)
+    // NAICS FROM community/projects/biotech
+    naicsArrays.computers = [541511,541512,551114,611310]
+    naicsArrays.bio_input = [113000,321113,113310,32121,32191,562213,322121,322110]; // Omitted 541620
+    naicsArrays.bio_output = [325211,325991,3256,335991,325120,326190];
+    naicsArrays.green_energy = [221117,221111,221113,221114,221115,221116,221118];
+    naicsArrays.fossil_energy = [221112,324110,325110];
+    naicsArrays.electric = [335910,335911,335912];
+    naicsArrays.auto_parts = [336390,336211,336340,336370,336320,336360,331221,336111,336330];
+    naicsArrays.parts = [336412,336413,339110,333111,325211,326112,332211,336370,336390,326199,331110,336320];
+    naicsArrays.solar = [221114,334313,335999];
+    naicsArrays.combustion_engine = [333613,326220,336350,336310,333618];
+    naicsArrays.parts_carpets = [325520,314110,313110,313210];
+    naicsArrays.ppe = [622110,621111,325414,339113,423450]; // ppe_suppliers
+    naicsArrays.farmfresh = [311612,311615,311911,311919,311830,311824,311941,311710,311611,115114,311613,311811,311942,311991,311999,311211,311224,311920];
+    naicsArrays.recycling = [423930,562111,562112,562119,562211,562212,562213,562219,562910,562920,562991,562998,56299]; // All 6-digit NAICS codes under the 5 digit 56299 code are assigned to 562OTH in the USEEIO classification
+    
+    // Sectors from 2.0 https://github.com/USEPA/useeior/wiki/Disaggregation-of-Sectors#disaggregation-inputs-for-envfile
+    naicsArrays.recycling = combineArrays([...naicsArrays.recycling,...[562111,562212,562213,562910,562920,"562HAZ","562OTH"]]);
+
+    naicsArrays.bioeconomy = combineArrays([
+        ...naicsArrays.bio_input,
+        ...naicsArrays.bio_output,
+        ...naicsArrays.green_energy,
+        ...naicsArrays.fossil_energy
+    ]);
+    naicsArrays.smart = combineArrays([
+        ...naicsArrays.electric,
+        ...naicsArrays.auto_parts
+    ]);
+    naicsArrays.ev = combineArrays([
+        ...naicsArrays.electric,
+        ...naicsArrays.auto_parts
+    ]);
+    naicsArrays.parts = combineArrays([
+        ...naicsArrays.electric,
+        ...naicsArrays.auto_parts,
+        ...naicsArrays.parts,
+        ...naicsArrays.combustion_engine
+    ]);
+    naicsArrays.vehicles = combineArrays([
+        ...naicsArrays.electric,
+        ...naicsArrays.auto_parts,
+        ...naicsArrays.parts
+    ]);
+    naicsArrays.transfer = [...naicsArrays.recycling]; // Creates a shallow copy to avoid sharing memory.
+    naicsArrays.recyclers = [...naicsArrays.recycling];
+    naicsArrays.inert = [...naicsArrays.recycling];
+    naicsArrays.landfills = [...naicsArrays.recycling];
+
+    // Not yet used
+    localStorage.setItem("naicsArrays", JSON.stringify(naicsArrays));
 
     // Jorge is working on Electricity and waste (sectors 411 to 422)
-    //if (param.naics) {
-    //    cat_filter = param.naics.split(',');
-    //}
-    //else 
+
     if (go) {
+
+        if (naicsArrays[go] && naicsArrays[go].length > 0) {
+            cat_filter = [...naicsArrays[go]];
+        } else if (param.naics) {
+            cat_filter = param.naics.split(',');
+        }
+
         if (go == "opendata") {
             states = "GA";
         } else if (go == "bioeconomy") {
             showtab = "Bioeconomy and Energy";
             showtitle = "Bioeconomy and Energy Industries";
-            cat_filter = (bio_input + bio_output + green_energy + fossil_energy).split(',');
         } else if (go == "farmfresh") {
             showtitle = "Farm Fresh";
-            cat_filter = (farmfresh).split(',');
         } else if (go == "smart") {
             // smart also shows list of data-driven mobility projects
-            cat_filter = (electric + auto_parts).split(',');
+            // electric + auto_parts
         } else if (go == "ev") {
             showtab = "EV Ecosystem";
             showtitle = "EV Related Manufacturing";
-            // smart also shows list of data-driven mobility projects
-            cat_filter = (electric + auto_parts).split(',');
         } else if (go == "parts") {
             showtitle = "Parts Manufacturing";
-            cat_filter = (electric + auto_parts + parts + combustion_engine).split(',');
+            //cat_filter = (electric + auto_parts + parts + combustion_engine).split(',');
         } else if (go == "ppe") {
             showtitle = "Healthcare Industries";
-            cat_filter = (ppe_suppliers).split(',');
+            //cat_filter = (ppe_suppliers).split(',');
             states = "GA";
         } else if (go == "solar") {
             showtab = "Solar";
             showtitle = "Solar Power";
-            cat_filter = (solar).split(',');
         } else if (go == "vehicles") {
             showtab = "Automotive"
             showtitle = "Vehicles and Vehicle Parts";
-            cat_filter = (electric + auto_parts + parts).split(',');
         } else if (go == "recycling") {
             showtab = "Recycling";
             showtitle = "Recycling Processors (B2B)";
-            cat_filter = (recycling).split(',');
             states = "GA";
         } else if (go == "transfer") {
             showtab = "Transfer Stations";
             showtitle = "Recycling Transfer Stations (B2B)";
-            cat_filter = (recycling).split(',');
             states = "GA";
         } else if (go == "recyclers") {
             showtab = "Recyclers";
             showtitle = "Companies that Recycle during Manufacturing";
-            cat_filter = (recycling).split(',');
             states = "GA";
         } else if (go == "inert") {
             showtab = "Inert Waste Landfills";
             showtitle = "Inert Waste Landfills";
-            cat_filter = (recycling).split(',');
             states = "GA";
         } else if (go == "landfills") {
             showtab = "Landfills";
             showtitle = "Landfills";
-            cat_filter = (recycling).split(',');
             states = "GA";
         } else if (go=="manufacturing") {
             showtitle = "Manufacturing";
-            cat_filter=["manufacturing placeholder"];
+            //cat_filter=["manufacturing placeholder"];
         } else if (go=="industries") {
             showtitle = "Local Topics";
             $("#keywordsTB").attr("placeholder","City name..."); // For layers = brigades
         } else if (param.naics) {
             showtitle = go.charAt(0).toUpperCase() + go.substr(1).replace(/\_/g," ");
-            cat_filter = param.naics.split(',');
         } else {
             showtitle = go.charAt(0).toUpperCase() + go.substr(1).replace(/\_/g," ");
         }
 
+        /* DELETE - no longer limiting to 6.
         if (cat_filter.length) {
             cat_filt=[]
-            for(i=0;i<cat_filter.length;i++){
+            for(i=0; i < cat_filter.length; i++){
                 cat_filt.push(cat_filter[i].slice(0,6));
             }
             cat_filter=cat_filt
-            //console.log("cat_filter:");
-            //console.log(cat_filter)
         }
+        if (Array.isArray(cat_filter) && cat_filter.length) {
+            cat_filter = cat_filter.map(cat => cat.slice(0, 6));
+        }
+        */
+        
         if (!showtab) {
             showtab = showtitle;
         }
         if (!showtab) {
             showtab = hash.show.charAt(0).toUpperCase() + hash.show.substr(1).replace(/\_/g," ");
-        }
-
-        if (states.length <= 0) { // All states
-            //$("#selected_states").show();
         }
     } else if (param.naics) {
         showtitle = "Local Topics";
@@ -448,12 +492,12 @@ function getNaics_setHiddenHash2(go) {
     }
     // BUGBUG - Not sure where this sends the naics to the URL hash, which might be good until widget updates are tested.
     // Problem, naics in URL is not updated after initial load.
-    console.log("Start hiddenhash.naics")
+    console.log("Assign hiddenhash.naics")
 
-    //alert("deactivated naics") // Killed it
-    hiddenhash.naics = cat_filter.join(); // Overrides the existing naics
+    hiddenhash.naics = cat_filter.join(','); // Overrides the existing naics
+    //alert("hiddenhash.naics: " + hiddenhash.naics)
 
-    console.log("hiddenhash.naics in getNaics_setHiddenHash2 " + hiddenhash.naics);
+    //alert("hiddenhash.naics in getNaics_setHiddenHash2 " + JSON.stringify(hiddenhash.naics));
 
     //console.log("hiddenhash.naics before delete " + hiddenhash.naics)
 
@@ -531,11 +575,9 @@ function populateTitle(showtitle,showtab) {
 // NOT OPTIMALLY DESIGNED - No need to load all 3 naics datasets for state.
 // Calls promisesReady when completed.
 function loadIndustryData(hash) {
-    //alert("loadIndustryData");
     let stateAbbr;
     if (hash.state && hash.state.length >= 2) {
         stateAbbr = hash.state.split(",")[0].toUpperCase();
-        stateAbbr = stateAbbr.split(",")[0];
     }
     $("#econ_list").html("<img src='" + local_app.localsite_root() + "img/icon/loading.gif' style='margin:40px; width:120px'><br>");
 
@@ -715,6 +757,7 @@ $(document).ready(function() {
                 local_app.showtitle = "Local Topics";
                 $(".regiontitle").text("US Local Topics");
             }
+            alert("refresh 3")
             refreshNaicsWidget(false);
             return; 
 
@@ -787,7 +830,7 @@ function renderIndustryChart(dataObject,values,hash) {
     console.log("whichHaveChanged: ");
     console.log(whichHaveChanged);
 
-    console.log(hash.show + " priorHash_naicspage " + priorHash.show)
+    console.log(hash.show + " priorHash_naicspage " + priorHash_naicspage.show)
     // BUG - this return prevented change to show from reloading
     //if (whichHaveChanged.length == 0 && initialNaicsLoad == false) {
     //    console.log("Cancel naics.js, no hash values have changed.");
@@ -1924,10 +1967,18 @@ function applyIO(naics) {
     var naicsCodes;
     if (naics) {
         naicsCodes = naics.split(',');
-        //alert("deactivated naics2")
-        hiddenhash.naics = naics; // No effect // Killed it
+        
+        // Major delay - occur after prior hash is set
+        hiddenhash.naics = naics;
 
-        //hiddenhash.naics = naicsCodes; // Causes split error in bubble chart.
+        //alert("hiddenhash.naics 2: " + hiddenhash.naics)
+
+        ////hiddenhash.naics = naicsCodes; // Causes split error in bubble chart.
+
+        // HACK - we might use localStorage instead
+        priorHash_naicspage = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
+
+
     }
     //hiddenhash.naics = {}; // Kill it
 
@@ -2040,7 +2091,6 @@ function showSectorTabulatorList(attempts) {
             initialSort:[             //set the initial sort order of the data
                 {column:"index", dir:"asc"},
             ],
-            frozenRows:1,
             maxHeight:"500px", // For frozenRows
             columns:[
                 {title:"ID", field:"id", width:100, sorter:"number"},
@@ -2151,7 +2201,7 @@ var industrytable = {};
 function showIndustryTabulatorList(attempts) {
     let hash = getHash();
     if (typeof Tabulator !== 'undefined') {
-        console.log("showIndustryTabulatorList")
+        console.log("showIndustryTabulatorList");
         // Try this with 5.0. Currently prevents row click from checking box.
         // selectable:true,
 
@@ -2180,7 +2230,6 @@ function showIndustryTabulatorList(attempts) {
             initialSort:[             //set the initial sort order of the data - NOT WORKING
                 {column:"employees", dir:"desc"},
             ],
-            frozenRows:1,
             maxHeight:"480px", // For frozenRows
             paginationX:true, //enable.
             paginationSizeX:10,

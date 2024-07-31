@@ -2581,26 +2581,6 @@ function isNumeric(str) {
   return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
          !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
 }
-/*
-function makeRowValuesNumeric(_data, columnsNum, valueCol) {
-  console.log("makeRowValuesNumeric");
-  console.log(_data);
-  
-  // 'for of' loop is more efficient than forEach. 
-  // Also works on objects. You can call it like this 'for let d of Object.entries(data){ }'
-
-  // Might not need this, try removing
-  if (typeof columnsNum !== "undefined") {
-    _data.forEach( function (row) {
-      //row = removeWhiteSpaces(row);
-      convertToNumber(row, columnsNum);
-    });
-  }
-
-  //console.log(_data); // Careful, this can overwhelm browser
-  return _data;
-}
-*/
 function convertToNumber(d, _columnsNum) {
   for (var perm in d) {
     if (_columnsNum.indexOf(perm) > -1)

@@ -1,9 +1,16 @@
-// Updates originate in GitHub localsite/js/localsite.js
-// To do: dynamically add target _parent to external link when in an iFrame and no existing target.
-// To do: If community folder is not parallel, link to model.earth domain.
+/*******************************************
 
-// Localsite Path Library - A global namespace singleton
-// Define a new object if localsite library does not exist yet.
+LOCALSITE.JS - JAM Stack Data Science Visualization Framework
+Location-based navigation and map filters for LLM integration
+Source: model.earth/localsite/js/localsite.js
+Github: modelearth/localsite
+
+To do: Dynamically add target _parent to external link when in an iFrame and no existing target.
+
+Localsite Path Library - A global namespace singleton
+Define a new object if localsite library does not exist yet.
+*/
+
 var localStart = Date.now(); // A var so waitForVariableNav detects in navigation.js.
 let onlineApp = true;
 let localsiteTitle = "Localsite";
@@ -487,41 +494,6 @@ function extractHostnameAndPort(url) { // TEMP HERE
     return hostname;
 }
 */
-function get_localsite_root3() { // Also in two other places
-  if (localsite_repo3) { // Intensive, so limit to running once.
-    //alert(localsite_repo);
-    return(localsite_repo3);
-  }
-
-  let scripts = document.getElementsByTagName('script'); 
-  let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
-  //let myScript = null;
-  // Now try to find one containging map-embed.js
-  for (var i = 0; i < scripts.length; ++i) {
-      if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
-        myScript = scripts[i];
-      }
-  }
-  let hostnameAndPort = extractHostnameAndPort(myScript.src);
-  //consoleLog("hostnameAndPort: " + hostnameAndPort);
-  let theroot = location.protocol + '//' + location.host + '/localsite/';
-
-  if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
-    //theroot = "https://map.georgia.org/localsite/";
-    theroot = hostnameAndPort + "/localsite/";
-  }
-  if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-    theroot = hostnameAndPort + "/localsite/";
-    //console.log("theroot: " + theroot);
-    //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
-  }
-  if (location.host.indexOf('localhost') >= 0) {
-    // Enable to test embedding without locathost repo in site theroot. Rename your localsite folder.
-    //theroot = "https://model.earth/localsite/";
-  }
-  localsite_repo3 = theroot; // Save to reduce DOM hits
-  return (theroot);
-}
 
 function toggleFullScreen(alsoToggleHeader) {
   if (document.fullscreenElement && !alsoToggleHeader) { // Already fullscreen and not small header
@@ -594,7 +566,43 @@ function toggleFullScreen(alsoToggleHeader) {
   }
 }
 
-var theroot = get_localsite_root3(); // BUGBUG if let: Identifier 'theroot' has already been declared.
+var theroot = get_localsite_root(); // Avoid using let instead of var, or error: Identifier 'theroot' has already been declared.
+function get_localsite_root() { // Also in two other places
+  if (localsite_repo3) { // Intensive, so limit to running once.
+    //alert(localsite_repo);
+    return(localsite_repo3);
+  }
+
+  let scripts = document.getElementsByTagName('script'); 
+  let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
+  //let myScript = null;
+  // Now try to find one containging map-embed.js
+  for (var i = 0; i < scripts.length; ++i) {
+      if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
+        myScript = scripts[i];
+      }
+  }
+  let hostnameAndPort = extractHostnameAndPort(myScript.src);
+  //consoleLog("hostnameAndPort: " + hostnameAndPort);
+  let theroot = location.protocol + '//' + location.host + '/localsite/';
+
+  if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
+    //theroot = "https://map.georgia.org/localsite/";
+    theroot = hostnameAndPort + "/localsite/";
+  }
+  if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+    theroot = hostnameAndPort + "/localsite/";
+    //console.log("theroot: " + theroot);
+    //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
+  }
+  if (location.host.indexOf('localhost') >= 0) {
+    // Enable to test embedding without locathost repo in site theroot. Rename your localsite folder.
+    //theroot = "https://model.earth/localsite/";
+  }
+  localsite_repo3 = theroot; // Save to reduce DOM hits
+  return (theroot);
+}
+
 function clearHash(toClear) {
   let hash = getHashOnly(); // Include all existing
   let clearArray = toClear.split(/\s*,\s*/);
@@ -754,6 +762,7 @@ function loadSearchFilterCss() {
     includeCSS3(theroot + 'css/map-display.css',theroot);
   }
 }
+// || param.display == "d3"
 function loadLeafletAndMapFilters() {
   console.log("loadLeafletAndMapFilters() param.showheader " + param.showheader)
   //if (param.shownav) {
@@ -781,10 +790,8 @@ function loadLeafletAndMapFilters() {
       // Leaflet L.IconMaterial undefined = leaflet.icon-material.js not loaded
       loadScript(theroot + 'js/leaflet.js', function(results) {
         loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Could skip when map does not use material icon colors
-          
           loadScript(theroot + 'js/map.js', function(results) {
           });
-
         });
       });
     });
@@ -2127,7 +2134,7 @@ function forkEditLink(pageURL) {
 
 // Get the URL of the current page
 const currentPageURL = window.location.href;
-const newURL = forkEditLink(currentPageURL);
+//const newURL = forkEditLink(currentPageURL);
 //alert(newURL);
 
 
@@ -2204,14 +2211,15 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
       //let downloadReadme = "<div class='markdownEye' style='position:absolute;z-index:1px;cursor:pointer;font-size:28px;right:0px;top:0px;text-decoration:none;opacity:.7'><a href='" + pagePath + "' style='color:#555'>…</a></div>";
       //alert(pagePath)
 
-      //let linkEditFork = "https://holocron.so/github/pr/modelearth/data-commons/main/editor/docs/water/index.md";
+      /////let linkEditFork = "https://holocron.so/github/pr/modelearth/data-commons/main/editor/docs/water/index.md";
 
       let pageURL = window.location.href;
       let linkEditFork = forkEditLink(pageURL) + pagePath;
-      //alert(linkEditFork);
-
-      let editReadme = "<div class='editInFork' style='position:absolute;z-index:1;cursor:pointer;right:0;top:0;text-decoration:none;opacity:.7'><a href='" + linkEditFork + "'><i class='material-icons' style='font-size:16px;opacity:0.7;margin-top:-4px'>&#xE3C9;</i></a></div>";
+      let editReadme = "<div class='editInFork' style='float:right;z-index:1;cursor:pointer;text-decoration:none;opacity:.7'><a href='" + linkEditFork + "'><i class='material-icons' style='font-size:16px;opacity:0.7;margin-top:-4px'>&#xE3C9;</i></a></div>";
       
+      // TEMP - Holocron may have converted iFrame to broken HTML
+      editReadme = "";
+
       // CUSTOM About YAML metadata converter: https://github.com/showdownjs/showdown/issues/260
 
       // Also try adding simpleLineBreaks http://demo.showdownjs.com/

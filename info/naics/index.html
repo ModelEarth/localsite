@@ -9,26 +9,32 @@
 <title>Industry Data</title>
 <link type="text/css" rel="stylesheet" href="/localsite/css/base.css" id="/localsite/css/base.css" />
 
+<!--
 <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
+-->
 
+<!-- display=everything -->
 <script type="text/javascript" src="/localsite/js/localsite.js?showheader=true&showsearch=true"></script>
 <link type="text/css" rel="stylesheet" href="/localsite/css/naics.css" id="/localsite/css/naics.css" />
 <script type="text/javascript" src="/localsite/js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
 <script type="text/javascript" src="/localsite/js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
 
+<!-- might not need -->
+<script type="text/javascript" src="/localsite/js/d3.v5.min.js" id="/localsite/js/d3.v5.min.js"></script>
+
 <!-- For applyIO in naics.js -->
 <script src="/io/build/lib/useeio_widgets.js" id="/io/build/lib/useeio_widgets.js"></script>
 
+
+
 <script type="text/javascript" src="/localsite/js/naics.js" id="/localsite/js/naics.js"></script>
+
 
 <style>
 #tabulator-industrytable-count {
 	margin-top: 10px;
 	padding-top: 5px;
-}
-#detail_section {
-	displayX: none !important;
 }
 </style>
 
@@ -38,15 +44,19 @@
 
 <script>
 	loadMarkdown("note.txt", "readmeDiv", "_parent");
-	refreshNaicsWidget(true);
+	//refreshNaicsWidget(true);
 </script>
 
 <div id="datascape"></div>
 
-<div class="input-output content contentpadding" style="padding:0px">
+<div class="input-output contentpadding">
 	<br>
 	<div id="readmeDiv"></div>
 	
+	<script>
+	loadTabulator();
+	</script>
+
 	#tabulator-sectortable<br>
 	<div id="tabulator-sectortable"></div>
 	<div id="tabulator-sectortable-count"></div>
