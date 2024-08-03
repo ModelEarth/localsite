@@ -65,6 +65,7 @@ Turn on GitHub Pages for any repo you fork by clicking the Settings icon, then P
 <div style="float:left;font-size:18px;padding-right:20px">
 <input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">Localsite<br>
 <input id="ioForked" type="checkbox" onclick="updateGitCmds()">IO<br>
+<input id="openfootprintForked" type="checkbox" onclick="updateGitCmds()">OpenFootprint<br>
 <input id="projectsForked" type="checkbox" onclick="updateGitCmds()">Projects<br>
 <input id="requestsForked" type="checkbox" onclick="updateGitCmds()">Requests<br>
 <input id="realitystreamForked" type="checkbox" onclick="updateGitCmds()">RealityStream<br>
@@ -72,6 +73,7 @@ Turn on GitHub Pages for any repo you fork by clicking the Settings icon, then P
 <div style="float:left;font-size:18px">
 <input id="feedForked" type="checkbox" onclick="updateGitCmds()">Feed<br>
 <input id="useeio.jsForked" type="checkbox" onclick="updateGitCmds()">USEEIO.js<br>
+<input id="community-dataForked" type="checkbox" onclick="updateGitCmds()">Community-Data<br> 
 <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">Data-Commons<br> 
 <input id="data-pipelineForked" type="checkbox" onclick="updateGitCmds()">Data-Pipeline<br>
 <input id="earthscapeForked" type="checkbox" onclick="updateGitCmds()">Earthscape<br>
@@ -80,14 +82,16 @@ Turn on GitHub Pages for any repo you fork by clicking the Settings icon, then P
 
 **Step 4.** Run in your local webroot folder, or pull down from the links above using [GitHub Desktop](https://desktop.github.com/):
 
-<textarea id="cloneCmd" class="codetext" rows="10">
+<textarea id="cloneCmd" class="codetext" rows="12">
 git clone https://github.com/ModelEarth/localsite localsite
 git clone https://github.com/ModelEarth/io io
+git clone https://github.com/ModelEarth/openfootprint openfootprint
 git clone https://github.com/ModelEarth/projects projects
 git clone https://github.com/ModelEarth/requests requests
 git clone https://github.com/ModelEarth/realitystream realitystream
 git clone https://github.com/ModelEarth/feed feed
 git clone https://github.com/ModelEarth/useeio.js useeio.js
+git clone https://github.com/ModelEarth/community-data community-data
 git clone https://github.com/ModelEarth/data-commons data-commons
 git clone https://github.com/ModelEarth/data-pipeline data-pipeline
 git clone https://github.com/ModelEarth/earthscape earthscape</textarea>
@@ -116,7 +120,7 @@ cd data-pipeline && git pull https://github.com/ModelEarth/data-pipeline main &&
 cd projects && git pull https://github.com/ModelEarth/projects main && cd ../
 cd requests && git pull https://github.com/ModelEarth/requests main && cd ../
 -->
-<textarea id="refreshCmd" class="codetext" rows="10"></textarea>
+<textarea id="refreshCmd" class="codetext" rows="12"></textarea>
 
 That's it! &nbsp;You can stop the steps here. Your updated local site is now visible at: [localhost:8887/io](http://localhost:8887/io/)
 
