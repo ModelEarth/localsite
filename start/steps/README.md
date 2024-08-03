@@ -9,7 +9,12 @@ To open local .ipynb files, run `jupyter notebook` after choosing "New Terminal 
 
 ## Start your local webroot http-server
 
-Run in a folder called "webroot" (or any name) to start your local websites on Mac and Linux:
+Run the following in your webroot folder to start your local site:
+
+	python -m http.server 8887
+
+<!--
+Or run within a virtual environment. On Macs:
 
 	python3 -m venv env
 	source env/bin/activate
@@ -20,7 +25,7 @@ On Windows:
 	python -m venv env
 	env\Scripts\activate
 	python -m http.server 8887
-
+-->
 
 The terminal is now dedicated to being your webroot for [http://localhost:8887](http://localhost:8887)
 To run further commands, open a new terminal window.
