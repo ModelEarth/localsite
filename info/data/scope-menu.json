@@ -1,8 +1,8 @@
 [
 {
-	"section-user": "Planners",
-	"section": "Planners",
-	"title": "Menus",
+	"section-user": "Datascape",
+	"section": "Datascape",
+	"title": "Datascape",
 	"icon": "/localsite/img/icon/scope/overview.png",
 	"link": "#scope=ind"
 },
