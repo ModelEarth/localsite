@@ -250,7 +250,8 @@ function hashChanged() {
 
         //&& hash.geoview == "state"
         if (hash.geoview && hash.geoview == priorHash.geoview) { // Prevents dup loading when hash.geoview != priorHash.geoview below.
-            if (hash.geoview != "earth") {
+            //if (hash.geoview != "earth" && hash.geoview != "countries" && hash.geoview != "country") {
+            if (hash.geoview == "state") { // Might need other way to check we're viewing a state's counties
                 console.log("loadStateCounties invoked by state change");
                 loadStateCounties(0); // Add counties to state boundaries.
             }
@@ -268,7 +269,7 @@ function hashChanged() {
         // UNBUG - red goes away with 
         //if (hash.geoview == "country" && hash.state) { // Includes with and without hash.state
 
-
+        //alert("hash.geoview " + hash.geoview);
         if (hash.geoview == "country") { // Includes with and without hash.state
             // COUNTRY - US and later other countries
             // TO DO - Make selected state(s) a color on country map.
@@ -276,7 +277,10 @@ function hashChanged() {
             // BUG this displays the US map with all red shapes - and white for hash.state(s)
 
             let element = {};
-            element.scope = "state";
+            //element.scope = "state";
+
+            element.scope = "country-us"
+
             //element.key = "State";
             //element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states.json";
             element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states-edited.csv";
@@ -293,7 +297,7 @@ function hashChanged() {
             //} else if (hash.geoview == "state" && !hash.state) {
             //    loadObjectData(element, 0); // Display tabulator list of states.
             //}
-        } else if (hash.state) {
+        } else if (hash.state && hash.geoview == "state") { // hash.geoview && hash.geoview != "country"
             console.log("loadStateCounties invoked by geoview change");
             console.log("priorHash.geoview: " + priorHash.geoview + ", hash.geoview: " + hash.geoview);
             loadStateCounties(0);
@@ -479,7 +483,17 @@ function hashChanged() {
     }
 
     // Updates updateSelectedTableRows to check counties in tabulator
+
     if (hash.geo != priorHash.geo) {
+        
+        if (!hash.state && hash.geo) {
+            // get 2-char state from first hash.geo state number
+            const stateAbbreviationStr = getUniqueStateAbbreviations(hash.geo);
+            if (stateAbbreviationStr) {
+                hash.state = stateAbbreviationStr;
+            }
+            //alert("Got state " + hash.state);
+        }
         let geoUncheck = [];
         if (hash.geo && hash.geo.length > 4) { 
             $(".state-view").hide();
@@ -708,6 +722,35 @@ function hashChanged() {
         //}
     }
 }
+const stateFromCountryAndStateNumber = {
+  "US01": "AL", "US02": "AK", "US04": "AZ", "US05": "AR", "US06": "CA",
+  "US08": "CO", "US09": "CT", "US10": "DE", "US11": "DC", "US12": "FL",
+  "US13": "GA", "US15": "HI", "US16": "ID", "US17": "IL", "US18": "IN",
+  "US19": "IA", "US20": "KS", "US21": "KY", "US22": "LA", "US23": "ME",
+  "US24": "MD", "US25": "MA", "US26": "MI", "US27": "MN", "US28": "MS",
+  "US29": "MO", "US30": "MT", "US31": "NE", "US32": "NV", "US33": "NH",
+  "US34": "NJ", "US35": "NM", "US36": "NY", "US37": "NC", "US38": "ND",
+  "US39": "OH", "US40": "OK", "US41": "OR", "US42": "PA", "US44": "RI",
+  "US45": "SC", "US46": "SD", "US47": "TN", "US48": "TX", "US49": "UT",
+  "US50": "VT", "US51": "VA", "US53": "WA", "US54": "WV", "US55": "WI",
+  "US56": "WY", "US60": "AS", "US66": "GU", "US69": "MP", "US72": "PR",
+  "US78": "VI"
+};
+
+function getUniqueStateAbbreviations(geo) {
+  const fipsCodes = geo.split(',');
+  const stateAbbreviations = new Set();
+
+  fipsCodes.forEach(code => {
+    const countryState = code.slice(0, 4);
+    if (stateFromCountryAndStateNumber[countryState]) {
+      stateAbbreviations.add(stateFromCountryAndStateNumber[countryState]);
+    }
+  });
+
+  return Array.from(stateAbbreviations).join(',');
+}
+
 function hideSide(which) {
     console.log("hideSide " + which);
     if (which == "list") {
@@ -2578,6 +2621,8 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                     }
                     consoleLog(myData.length + " counties loaded.");
                     //console.log(myData);
+
+                    //alert("showTabulatorList 1 loadStateCounties element.scope: " + element.scope + " (geo is counties)")
                     showTabulatorList(element, 0);
                     $(".geoListCounties").show();
                 }, function(error, rows) {
@@ -2618,28 +2663,28 @@ function makeRowValuesNumeric(_data, columnsNum, valueCol) {
   return _data;
 }
 function loadObjectData(element, attempts) {
+    // Calls showTabulatorList - retains prior location data loads in localObject(element.scope)
     if (typeof d3 !== 'undefined') {
+        //alert("loadObjectData element.scope: " + element.scope)
         if(typeof localObject[element.scope] == 'undefined') {
             localObject[element.scope] = {}; // Holds states, countries.
         }
 
         // Just load from file the first time
         if (Object.keys(localObject[element.scope]).length <= 0) { // state, country (us), countries
-        //if (1==1) {
             //alert("element.scope " + element.scope + " does not exist yet.");
             if (element.datasource.toLowerCase().endsWith(".csv")) {
                 d3.csv(element.datasource).then(function(data) { // One row per line
                     if (element.key) {
-
                         data.forEach(function(d, i) {
                           // TO DO - might remove the key from the data
                           localObject[element.scope][d[element.key]] = data[i];
                         });
-
                     } else {
-                        // 
                         localObject[element.scope] = makeRowValuesNumeric(data, element.numColumns, element.valueColumn);
                     }
+                    //alert("showTabulatorList from initial load off loadObjectData element.scope: " + element.scope)
+                    console.log("initial loadObjectData for element.scope: " + element.scope)
                     showTabulatorList(element, 0);
                 })
             } else {
@@ -2690,12 +2735,14 @@ function loadObjectData(element, attempts) {
                         console.log("localObject.state")
                         //console.log(localObject[element.scope])
                         console.log(localObject.state)
+                        //alert("showTabulatorList 3")
                         showTabulatorList(element, 0);
                 });
             }
 
-        } else {
-            console.log("element.scope " + element.scope + " exists.");
+        } else { // Already loaded, reuse
+            console.log("Reuse localObject element.scope: " + element.scope);
+            //alert("showTabulatorList - From existing Object element.scope " + element.scope)
             showTabulatorList(element, 0);
         }
 
@@ -2713,10 +2760,268 @@ function loadObjectData(element, attempts) {
     }
 }
 
+const countryCodes = {
+    "AFG": "AF",
+    "ALB": "AL",
+    "DZA": "DZ",
+    "ASM": "AS",
+    "AND": "AD",
+    "AGO": "AO",
+    "AIA": "AI",
+    "ATA": "AQ",
+    "ATG": "AG",
+    "ARG": "AR",
+    "ARM": "AM",
+    "ABW": "AW",
+    "AUS": "AU",
+    "AUT": "AT",
+    "AZE": "AZ",
+    "BHS": "BS",
+    "BHR": "BH",
+    "BGD": "BD",
+    "BRB": "BB",
+    "BLR": "BY",
+    "BEL": "BE",
+    "BLZ": "BZ",
+    "BEN": "BJ",
+    "BMU": "BM",
+    "BTN": "BT",
+    "BOL": "BO",
+    "BIH": "BA",
+    "BWA": "BW",
+    "BVT": "BV",
+    "BRA": "BR",
+    "IOT": "IO",
+    "BRN": "BN",
+    "BGR": "BG",
+    "BFA": "BF",
+    "BDI": "BI",
+    "CPV": "CV",
+    "KHM": "KH",
+    "CMR": "CM",
+    "CAN": "CA",
+    "CYM": "KY",
+    "CAF": "CF",
+    "TCD": "TD",
+    "CHL": "CL",
+    "CHN": "CN",
+    "CXR": "CX",
+    "CCK": "CC",
+    "COL": "CO",
+    "COM": "KM",
+    "COG": "CG",
+    "COD": "CD",
+    "COK": "CK",
+    "CRI": "CR",
+    "CIV": "CI",
+    "HRV": "HR",
+    "CUB": "CU",
+    "CYP": "CY",
+    "CZE": "CZ",
+    "DNK": "DK",
+    "DJI": "DJ",
+    "DMA": "DM",
+    "DOM": "DO",
+    "ECU": "EC",
+    "EGY": "EG",
+    "SLV": "SV",
+    "GNQ": "GQ",
+    "ERI": "ER",
+    "EST": "EE",
+    "SWZ": "SZ",
+    "ETH": "ET",
+    "FLK": "FK",
+    "FRO": "FO",
+    "FJI": "FJ",
+    "FIN": "FI",
+    "FRA": "FR",
+    "GUF": "GF",
+    "PYF": "PF",
+    "ATF": "TF",
+    "GAB": "GA",
+    "GMB": "GM",
+    "GEO": "GE",
+    "DEU": "DE",
+    "GHA": "GH",
+    "GIB": "GI",
+    "GRC": "GR",
+    "GRL": "GL",
+    "GRD": "GD",
+    "GLP": "GP",
+    "GUM": "GU",
+    "GTM": "GT",
+    "GGY": "GG",
+    "GIN": "GN",
+    "GNB": "GW",
+    "GUY": "GY",
+    "HTI": "HT",
+    "HMD": "HM",
+    "HND": "HN",
+    "HKG": "HK",
+    "HUN": "HU",
+    "ISL": "IS",
+    "IND": "IN",
+    "IDN": "ID",
+    "IRN": "IR",
+    "IRQ": "IQ",
+    "IRL": "IE",
+    "IMN": "IM",
+    "ISR": "IL",
+    "ITA": "IT",
+    "JAM": "JM",
+    "JPN": "JP",
+    "JEY": "JE",
+    "JOR": "JO",
+    "KAZ": "KZ",
+    "KEN": "KE",
+    "KIR": "KI",
+    "PRK": "KP",
+    "KOR": "KR",
+    "KWT": "KW",
+    "KGZ": "KG",
+    "LAO": "LA",
+    "LVA": "LV",
+    "LBN": "LB",
+    "LSO": "LS",
+    "LBR": "LR",
+    "LBY": "LY",
+    "LIE": "LI",
+    "LTU": "LT",
+    "LUX": "LU",
+    "MAC": "MO",
+    "MDG": "MG",
+    "MWI": "MW",
+    "MYS": "MY",
+    "MDV": "MV",
+    "MLI": "ML",
+    "MLT": "MT",
+    "MHL": "MH",
+    "MTQ": "MQ",
+    "MRT": "MR",
+    "MUS": "MU",
+    "MYT": "YT",
+    "MEX": "MX",
+    "FSM": "FM",
+    "MDA": "MD",
+    "MCO": "MC",
+    "MNG": "MN",
+    "MNE": "ME",
+    "MSR": "MS",
+    "MAR": "MA",
+    "MOZ": "MZ",
+    "MMR": "MM",
+    "NAM": "NA",
+    "NRU": "NR",
+    "NPL": "NP",
+    "NLD": "NL",
+    "ANT": "AN",
+    "NCL": "NC",
+    "NZL": "NZ",
+    "NIC": "NI",
+    "NER": "NE",
+    "NGA": "NG",
+    "NIU": "NU",
+    "NFK": "NF",
+    "MNP": "MP",
+    "NOR": "NO",
+    "OMN": "OM",
+    "PAK": "PK",
+    "PLW": "PW",
+    "PAN": "PA",
+    "PNG": "PG",
+    "PRY": "PY",
+    "PER": "PE",
+    "PHL": "PH",
+    "PCN": "PN",
+    "POL": "PL",
+    "PRT": "PT",
+    "PRI": "PR",
+    "QAT": "QA",
+    "MKD": "MK",
+    "ROU": "RO",
+    "RUS": "RU",
+    "RWA": "RW",
+    "REU": "RE",
+    "BLM": "BL",
+    "SHN": "SH",
+    "KNA": "KN",
+    "LCA": "LC",
+    "MAF": "MF",
+    "SPM": "PM",
+    "VCT": "VC",
+    "WSM": "WS",
+    "SMR": "SM",
+    "STP": "ST",
+    "SAU": "SA",
+    "SEN": "SN",
+    "SRB": "RS",
+    "SYC": "SC",
+    "SLE": "SL",
+    "SGP": "SG",
+    "SVK": "SK",
+    "SVN": "SI",
+    "SLB": "SB",
+    "SOM": "SO",
+    "ZAF": "ZA",
+    "SGS": "GS",
+    "SSD": "SS",
+    "ESP": "ES",
+    "LKA": "LK",
+    "SDN": "SD",
+    "SUR": "SR",
+    "SJM": "SJ",
+    "SWZ": "SZ",
+    "SWE": "SE",
+    "CHE": "CH",
+    "SYR": "SY",
+    "TWN": "TW",
+    "TJK": "TJ",
+    "TZA": "TZ",
+    "THA": "TH",
+    "TLS": "TL",
+    "TGO": "TG",
+    "TKL": "TK",
+    "TON": "TO",
+    "TTO": "TT",
+    "TUN": "TN",
+    "TUR": "TR",
+    "TKM": "TM",
+    "TCA": "TC",
+    "TUV": "TV",
+    "UGA": "UG",
+    "UKR": "UA",
+    "ARE": "AE",
+    "GBR": "GB",
+    "USA": "US",
+    "URY": "UY",
+    "UZB": "UZ",
+    "VUT": "VU",
+    "VEN": "VE",
+    "VNM": "VN",
+    "VGB": "VG",
+    "VIR": "VI",
+    "WLF": "WF",
+    "ESH": "EH",
+    "YEM": "YE",
+    "ZMB": "ZM",
+    "ZWE": "ZW"
+};
+
+function convertCountry3to2char(threeCharCode) {
+    if (countryCodes.hasOwnProperty(threeCharCode)) {
+        return countryCodes[threeCharCode];
+    } else {
+        return null; // or you can return an error message
+    }
+}
+
+
+
 var statetable = {};
 var geotable = {};
 function showTabulatorList(element, attempts) {
     let currentRowIDs = [];
+    let currentCountryIDs = [];
     console.log("showTabulatorList scope: " + element.scope + ". Length: " + Object.keys(element).length + ". Attempt: " + attempts);
     let hash = getHash();
     let theState = "";
@@ -2762,30 +3067,38 @@ function showTabulatorList(element, attempts) {
 
         //if (!hash.state && typeof stateImpact != 'undefined') {
         //alert("theStatewait " + theState);
-        if (hash.geoview == "country" || (!theState && onlineApp)) {
-             //alert("Load USA states list. element.scope: " + element.scope);
+        // && hash.geoview != "countries"
+        if (hash.geoview == "country" || (!theState && onlineApp )) {
+             
+            // Showing alert prevents tabulator from loading - it probably runs before a DOM element is available.
+            //alert("Load USA states or countries list. element.scope: " + element.scope);
 
-             // BUG - element columns are gone when add &state=NY
-             console.log("element.columns: ");
-             console.log(element.columns);
-             //if (element.columns) {
-             //   alert(element.columns.length); 
-             //   alert("element.columns.length " + element.columns.length); // Error: Cannot read properties of undefined (reading 'length')
-             //}
-             waitForElm('#tabulator-statetable').then((elm) => {
+            // BUG - element columns are gone when add &state=NY
+            console.log("element.columns: ");
+            console.log(element.columns);
+            //if (element.columns) {
+            //   alert(element.columns.length); 
+            //   alert("element.columns.length " + element.columns.length); // Error: Cannot read properties of undefined (reading 'length')
+            //}
+            waitForElm('#tabulator-statetable').then((elm) => {
                 //alert("element.scope " + element.scope);
                 //alert("element.columns.length inside " + element.columns.length);
-                 $("#tabulator-geotable").hide();
-                 $("#tabulator-statetable").show();
-                 // BUGBUG - TypeError: Cannot read properties of undefined (reading 'slice')
-                 // This occurs when adding a state to the url hash.
-                 // element.columns were gone!
-                 // Example http://localhost:8887/apps/ev/#geoview=country  then add &state=NY
-                 
-                 console.log("dataForTabulator");
-                 console.log(dataForTabulator);
+                $("#tabulator-geotable").hide();
+                $("#tabulator-statetable").show();
+                
+                // BUGBUG - TypeError: Cannot read properties of undefined (reading 'slice')
+                // This occurs when adding a state to the url hash.
+                // element.columns were gone!
+                // Example http://localhost:8887/apps/ev/#geoview=country  then add &state=NY
+                
+                // Called twice when clicking state checkbox. Seems to update map (select state) on second pass only.
+                if(location.host.indexOf('localhost') >= 0) {
+                    //alert("Localhost alert (was called twice when clicking state checkbox.) element.columns " + element.columns);
+                }
+                console.log("dataForTabulator");
+                console.log(dataForTabulator);
 
-                 statetable = new Tabulator("#tabulator-statetable", {
+                statetable = new Tabulator("#tabulator-statetable", {
                     data:dataForTabulator,    //load row data from array of objects
                     layout:"fitColumns",      //fit columns to width of table
                     responsiveLayout:"hide",  //hide columns that dont fit on the table
@@ -2813,20 +3126,39 @@ function showTabulatorList(element, attempts) {
                     //alert("statetable rowSelected " + row._row.data.id);
                     // Important: The incoming 2-char state is a column called "id"
                     if (!currentRowIDs.includes(row._row.data.id)) {
-                     currentRowIDs.push(row._row.data.id);
+                        currentRowIDs.push(row._row.data.id);
                     }
                     //if(hash.geo) {
                         //hash.geo = hash.geo + "," + currentRowIDs.toString();
                     //  hash.geo = hash.geo + "," + row._row.data.id;
                     //} else {
-                    if (hash.geo != currentRowIDs.toString()) {
-                        hash.geo = currentRowIDs.toString();
-                        console.log("Got hash.geo " + hash.geo);
+                    if (!hash.geoview || hash.geoview == "state") { // Clicking on counties for a state
+                        if (hash.geo != currentRowIDs.toString()) {
+                            hash.geo = currentRowIDs.toString();
+                            console.log("Got hash.geo " + hash.geo);
+                        }
+                    } else if (hash.geoview == "countries") {
+                        //alert("row._row.data.id " + row._row.data["Country Code"])
+                        let countryCode = convertCountry3to2char(row._row.data["Country Code"]);
+                        if (countryCode && !currentCountryIDs.includes(countryCode)) {
+                            
+                            currentCountryIDs.push(countryCode);
+                        }
+                        goHash({'country':currentCountryIDs.toString()});
                     }
                     if (row._row.data["Country Name"] == "United States") {
                         goHash({'geoview':'country'});
                     } else if(row._row.data.id) {
-                        goHash({'state':row._row.data.id});
+                        // Prepend new state to existing hash.state.
+                        let statesArray = hash.state.split(',');
+                        if ($.inArray(row._row.data.id, statesArray) === -1) {
+                            if (hash.state) {
+                                hash.state = row._row.data.id + ',' + hash.state;
+                            } else {
+                                hash.state = row._row.data.id;
+                            }
+                        }
+                        goHash({'state':hash.state});
                     } else if(!hash.geo && row._row.data.StateName) { // Or StateName?
                         if(row._row.data.statename == "Georgia") { // From state checkboxes
                             // Temp, later we'll pull from data file or dropdown.
@@ -2844,12 +3176,21 @@ function showTabulatorList(element, attempts) {
                             goHash({'geoview':'state','geo':'','statename':'','state':row._row.data.state});
                         }
                     } else {
+                        //console.log("ALERT: filteredArray wasn't available here.")
+                        let filteredArray = currentRowIDs.filter(item => item !== row._row.data.id);
                         goHash({'state':filteredArray.toString()});
                         return;
                     }
 
                 })
                 statetable.on("rowDeselected", function(row){
+                    let countryCode = convertCountry3to2char(row._row.data["Country Code"]);
+                    let filteredCountryArray = currentCountryIDs.filter(item => item !== countryCode);
+                    if (hash.geoview == "countries") {
+                        goHash({'country':filteredCountryArray.toString()});
+                        return;
+                    }
+
                     let filteredArray = currentRowIDs.filter(item => item !== row._row.data.id);
                     if (hash.state != filteredArray.toString()) {
                         //hash.geo = filteredArray.toString();
@@ -2857,17 +3198,18 @@ function showTabulatorList(element, attempts) {
                         return;
                     }
                 })
-                
-                // Not working yet
-                if(hash.state) {
-                    let currentStates = hash.state.split(',');
-                    statetable.on("tableBuilt", function() {
-                        //alert("try it")
-                        statetable.selectRow(currentStates); // Uses "id" incoming rowData
-                    });
+                if (hash.geoview != "countries") {
+                    // Not working yet
+                    if(hash.state) {
+                        let currentStates = hash.state.split(',');
+                        statetable.on("tableBuilt", function() {
+                            //alert("try it")
+                            statetable.selectRow(currentStates); // Uses "id" incoming rowData
+                        });
+                    }
                 }
 
-             }); // End wait for element #tabulator-statetable
+            }); // End wait for element #tabulator-statetable
 
         } else if (theState) { // EACH STATE'S COUNTIES
 

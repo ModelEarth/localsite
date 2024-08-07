@@ -84,7 +84,7 @@ document.addEventListener('hashChangeEvent', function (elem) {
   hashChangedMap();
 }, false);
 document.addEventListener('hiddenhashChangeEvent', function (elem) {
-  console.log("Doinng nothing: map.js detects hiddenhashChangeEvent, calls hashChangedMap()");
+  console.log("Doing nothing: map.js detects hiddenhashChangeEvent, calls hashChangedMap()");
   // Instead, we'll create a hash change event without changing the hash.
   
   // But needed for io center column red bars (not)
@@ -174,13 +174,20 @@ function loadMap1(calledBy, show, dp_incoming) {
     if (theState) {
       //if (location.host.indexOf('localhost') >= 0) {
         //dp.categories = "farm = Direct from Farm, market = Farmers Markets";
-        dp.categories = {"farm": {"title":"Direct from Farm","color":"#b2df8a"}, "market": {"title":"Farmers Markets","color":"#33a02c"}};
+        dp.categories = {"onfarmmarket": {"title":"Direct from Farm","color":"#b2df8a"}, "farmersmarket": {"title":"Farmers Markets","color":"#33a02c"}};
         // Green colors above
         // #b2df8a, #33a02c 
         dp.valueColumn = "type";
         dp.valueColumnLabel = "Type";
         // https://model.earth/community-data
-        dp.dataset = local_app.community_data_root() + "us/state/" + theState + "/" + theState.toLowerCase() + "-farmfresh.csv";
+        
+        // Delete these files. From before 2022. Used until 2024
+        //dp.dataset = local_app.community_data_root() + "us/state/" + theState + "/" + theState.toLowerCase() + "-farmfresh.csv";
+      
+        dp.dataset = local_app.community_data_root() + "locations/farmfresh/us/" + theState + "/" + theState.toLowerCase() + "-farmfresh.csv";
+
+        // https://model.earth/community-data/locations/farmfresh/us/state/GA/ga-farmfresh.csv
+
       //} else {
       //  // Older data
       //  dp.valueColumn = "Prepared";
@@ -1746,6 +1753,9 @@ function showList(dp,map) {
           if (element.items) {
             output += "<b>Items:</b> " + element.items + "<br>";
           }
+          if (element.tags) { // Farmfresh
+            output += element.tags.replace(/;/g,', ') + "<br><br>";
+          }
           var outaddress = "";
           if (element[dp.addressColumn]) { 
               outaddress +=  element[dp.addressColumn] + "<br>"; 
@@ -1875,6 +1885,11 @@ function showList(dp,map) {
           }
 
           output += "<div style='height:10px'></div>";
+
+          // Reactivate after distance columns removed from FarmFresh
+          if (1==2 && element.distance) {
+            output += "<b>Distance:</b> " + element.distance + " miles<br>";    
+          }
           output += "<div class='detailLinks'>";
             if (element.mapframe) {
                 output += "<a href='#show=360&name=" + name.replace(/'/g,'&#39;') + "&m=" + encodeURIComponent(element.mapframe) + "'>Birdseye View<br>";
@@ -1957,12 +1972,6 @@ function showList(dp,map) {
 
             if (element.county) {
               //output += element.county + " County<br>";
-            }
-
-            
-            if (element.distance) {
-                output += "<b>Distance:</b> " + element.distance + " miles<br>"; 
-              
             }
 
             if (dp.skips) {
