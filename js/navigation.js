@@ -22,6 +22,14 @@ function hashChanged() {
         goHash({"geoview":"country"});
         return;
     }
+    if (hash.country && hash.country != "US" && !hash.geoview) {
+
+        //hash.geoview = "countries"; // This caused top map to be open.
+
+        // Not working
+        //updateHash({"geoview":"countries"});
+        //return;
+    }
     populateFieldsFromHash();
     productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 
@@ -1339,7 +1347,6 @@ $(document).ready(function() {
         $("input[name='in']").prop('checked',true);
     }
     clearButtonClick = function () { // Allow return false to be passed back.
-
         clearFields();
         clearHash("cat,search,q,geo,name"); // Avoids triggering hash change
         //dataObject.geos = null; // Loaded when geo is in hash on init, to avoid time to place hidden checkboxes.

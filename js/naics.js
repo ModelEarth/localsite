@@ -656,11 +656,11 @@ function promisesReady(values) {
                     industryDataState = {
                         'ActualRate': formatIndustryData(values[5],dataObject.subsetKeys_state)
                     }
-                }else if (hash.catsize==4){
+                } else if (hash.catsize==4){
                     industryDataState = {
                         'ActualRate': formatIndustryData(values[6],dataObject.subsetKeys_state)
                     }
-                }else if (hash.catsize==6){
+                } else if (hash.catsize==6){
                     industryDataState = {
                         'ActualRate': formatIndustryData(values[7],dataObject.subsetKeys_state)
                     }
@@ -678,11 +678,11 @@ function promisesReady(values) {
                     industryDataStateApi = {
                         'ActualRate': formatIndustryData(values[5],dataObject.subsetKeys_state_api)
                     }
-                }else if (hash.catsize==4){
+                } else if (hash.catsize==4){
                     industryDataStateApi = {
                         'ActualRate': formatIndustryData(values[6],dataObject.subsetKeys_state_api)
                     }
-                }else if (hash.catsize==6){
+                } else if (hash.catsize==6){
                     industryDataStateApi = {
                         'ActualRate': formatIndustryData(values[7],dataObject.subsetKeys_state_api)
                     }
@@ -854,11 +854,11 @@ function renderIndustryChart(dataObject,values,hash) {
         industryDataState = {
             'ActualRate': formatIndustryData(values[5],dataObject.subsetKeys_state)
         }
-    }else if (hash.catsize==4){
+    } else if (hash.catsize==4){
         industryDataState = {
             'ActualRate': formatIndustryData(values[6],dataObject.subsetKeys_state)
         }
-    }else if (hash.catsize==6){
+    } else if (hash.catsize==6){
         industryDataState = {
             'ActualRate': formatIndustryData(values[7],dataObject.subsetKeys_state)
         }
@@ -870,11 +870,11 @@ function renderIndustryChart(dataObject,values,hash) {
         industryDataStateApi = {
             'ActualRate': formatIndustryData(values[5],dataObject.subsetKeys_state_api)
         }
-    }else if (hash.catsize==4){
+    } else if (hash.catsize==4){
         industryDataStateApi = {
             'ActualRate': formatIndustryData(values[6],dataObject.subsetKeys_state_api)
         }
-    }else if (hash.catsize==6){
+    } else if (hash.catsize==6){
         industryDataStateApi = {
             'ActualRate': formatIndustryData(values[7],dataObject.subsetKeys_state_api)
         }
@@ -990,7 +990,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                 } else {
                     if (hash.catmethod==0){
                         which=hash.catsort+'_reported'
-                    }else if (hash.catmethod==2){
+                    } else if (hash.catmethod==2){
                         which=hash.catsort+'_est3'
                         estimed='estimate_est3'
                     } else { // hash.catmethod==1 or null
@@ -1688,7 +1688,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                                     /*
                                     if (i==fips.length-1){
                                         document.getElementById("industryheader").innerHTML=document.getElementById("industryheader").innerHTML+'<font size="3">'+d["county"]+'</font>'
-                                    }else if (i==0){
+                                    } else if (i==0){
                                         document.getElementById("industryheader").innerHTML=document.getElementById("industryheader").innerHTML+'<font size="3">'+d["county"]+', '+'</font>'
                                     } else {
                                     document.getElementById("industryheader").innerHTML=document.getElementById("industryheader").innerHTML+'<font size="3">'+d["county"]+', '+'</font>'
@@ -2066,7 +2066,7 @@ function getEpaSectors() {
         //alert(epaSectors.get("230302/US"));
         localObject.epaSectors = values[0]; // 73 EPA sectors
 
-        // Remove duplicates using filter() method to remove objects with a "location" equal to "RoUS" 
+        // Remove duplicates using filter() method to remove objects with a "location" equal to "RoUS" (Rest of US)
         localObject.epaSectors = localObject.epaSectors.filter(obj => obj.location !== "RoUS");
 
         console.log("localObject.epaSectors");

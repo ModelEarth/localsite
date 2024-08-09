@@ -174,7 +174,7 @@ function loadMap1(calledBy, show, dp_incoming) {
     if (theState) {
       //if (location.host.indexOf('localhost') >= 0) {
         //dp.categories = "farm = Direct from Farm, market = Farmers Markets";
-        dp.categories = {"onfarmmarket": {"title":"Direct from Farm","color":"#b2df8a"}, "farmersmarket": {"title":"Farmers Markets","color":"#33a02c"}};
+        dp.categories = {"on-farm market": {"title":"Direct from Farm","color":"#b2df8a"}, "farmers market": {"title":"Farmers Markets","color":"#33a02c"}};
         // Green colors above
         // #b2df8a, #33a02c 
         dp.valueColumn = "type";
