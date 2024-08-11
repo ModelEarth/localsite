@@ -2,19 +2,16 @@ Python pull from [Google Data Commons (UN Data)](/data-commons/)
 
 # For Location Map Filters 
 
-We're generating .CSV files for location lists to the right of our [map navigation filters](#geoview=country).
+We're replacing [us-states.json](/localsite/info/data/map-filters/us-states.json) with a new CSV file called [us-states.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) for our [map navigation filters](#geoview=country).
 
-In our [State Filters colab](https://colab.research.google.com/drive/1CsIjLujiiBoGJlIHCBvDZit3QSVg07zR?usp=sharing) - we geneate a state .csv file and send to Github.
+In our [State Filters CoLab](https://colab.research.google.com/drive/1CsIjLujiiBoGJlIHCBvDZit3QSVg07zR?usp=sharing) - we'll geneate a us-states.csv file and send to Github.
 
 **TO DO:** Add info on how to enter a private GitHub token in State Filters CoLab.
-
-We're replacing [us-states.json](/localsite/info/data/map-filters/us-states.json) with a CSV file. (Link coming soon)
 
 <!--
 Not needed since we're pulling from GDC instead:
 Copy population lookups [from this CoLab](https://colab.research.google.com/drive/1wmJ3V9eqD8KbmBiP-hLeSstwOUt5iS2V?usp=sharing) using python libraries.
--->
-<br>
+--><br>
 
 
 # UN Goal Topics
