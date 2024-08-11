@@ -15,6 +15,8 @@ View our [Active Projects](../../projects) and [Moonshots](../../community/proje
 <a href="https://model.earth/community/start/">View current GitHub page as a web page</a>
 </div>
 
+Our helpful cheatsheet for [venv, Node, npm, nvm, Python, pyenv, pip, Conda and Docker](/io/coders/python/)
+
 ## <span class="num">1</span><span class="txt">Start a Local Website</span>
 
 <a href="../../localsite/start/steps/">Site Install</a> - For our coding team, states, communities and [International Timelines](../../data-commons/).
