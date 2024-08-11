@@ -2,9 +2,7 @@ Python pull from [Google Data Commons (UN Data)](/data-commons/)
 
 # For Location Map Filters 
 
-[View state filters (above)](#geoview=country)
-
-We're generating .CSV files displayed using tabulator to the left of filter maps.
+We're generating .CSV files for location lists to the right of our [map navigation filters](#geoview=country).
 
 In our [State Filters colab](https://colab.research.google.com/drive/1CsIjLujiiBoGJlIHCBvDZit3QSVg07zR?usp=sharing) - we geneate a state .csv file and send to Github.
 
