@@ -1,4 +1,4 @@
-// DISPLAYS TWO LEAFLET MAPS
+// DISPLAYS TWO LEAFLET MAPS -- processOutput() calls renderMap() twice
 // 1. ITEM LOCATIONS ON LARGE MAP
 // 2. LOCATION DETAILS ON SIDE MAP
 // Top geomap is displayed by map-filters.js
@@ -1992,7 +1992,7 @@ function showList(dp,map) {
   });
 
   waitForElm('#detaillistHolder').then((elm) => {
-    $("#detaillistHolder").append("<div id='detaillist'>" + output + "</div>");
+    $("#detaillistHolder").append("<div id='detaillist' state='" + hash.state + "'>" + output + "</div>");
     $("#detaillist").append("<div style='height:60px'></div>"); // For space behind absolute buttons at bottom.
 
     if (subcatObject["null"].count > 0) {
@@ -2887,6 +2887,7 @@ var overlays2 = {};
 let map1 = {};
 let map2 = {};
 let priorLayer;
+
 function loadDataset(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback) {
   let hash = getHash();
   loadScript(theroot + 'js/d3.v5.min.js', function(results) { // Used by customD3loaded below
@@ -3115,7 +3116,10 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
     map.setView(mapCenter,zoom);
 
     let layerGroup = L.layerGroup();
-    addIcons(dp,map,whichmap,layerGroup,zoom,markerType); // Adds to both map1 and map2
+    
+    //alert("addIcons")
+    // Wasn't working
+    //addIcons(dp,map,whichmap,layerGroup,zoom,markerType); // Adds to both map1 and map2
 
   } else {
     consoleLog("Initiate map " + mapDiv + " ");
@@ -3205,8 +3209,12 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       // Partially works! - Unchecked on second map.
       //map.removeLayer(overlays[priorLayer]); // Remove overlay but not checkbox. 
 
-      // Only map1 is getting updated.
-      map1.removeLayer(overlays1[priorLayer]);
+      // Ooriginally only map1 was getting updated.
+
+      console.log("BUGBUG - No icons show with, multiple states show without.")
+      // BUGBUG - No icons show with, multiple states show without.
+      //map1.removeLayer(overlays1[priorLayer]);
+
       map2.removeLayer(overlays2[priorLayer]);
     }
     //alert("addOverlay - typeof overlays[dataTitle] " + typeof overlays[dataTitle])
@@ -3223,12 +3231,17 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       //console.log("layerGroup");
       //console.log(layerGroup); // Object contains HTML, including leaflet-popup-text.
       
-      if (typeof overlays[dataTitle] != "object") { // Prevent adding duplicate checkbox
+      //if (typeof overlays[dataTitle] != "object") { // Prevent adding duplicate checkbox
+      if (1==1) { // Works for map2, but map1 is still not populated (and prior now gets deleted)
         layerControls[whichmap].addOverlay(layerGroup, dataTitle); // Add layer checkbox - works
-        addIcons(dp,map,whichmap,layerGroup,zoom,markerType); // Adds to both map1 and map2
+        //if (whichmap == "map1") { // Temp
+          addIcons(dp,map,whichmap,layerGroup,zoom,markerType); // Adds for both map1 and map2
+        //}
         overlays[dataTitle] = layerGroup; // Available to both map1 and map2
       } else {
-        //alert("TODO: highlight mappoint here for existing maps")
+        alert("TODO: highlight mappoint here for existing maps")
+
+        addIcons(dp,map,whichmap,layerGroup,zoom,markerType); // Adds for both map1 and map2
 
         console.log("TO DO: Use the name to fetch the lat and lon from div.")
         //centerMap(element[dp.latColumn], element[dp.lonColumn], name, map, whichmap);
@@ -3448,6 +3461,7 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
   console.log(whichmap + " addIcons dp.color " + dp.color);
   loadScript(theroot + 'js/leaflet.icon-material.js', function(results) { // Might not get used (in time?) for L.IconMaterial. Previously, had to wrap map.js load in localsite.js instead.
   waitForVariable('leafletIconLoaded', function() {
+    //alert("Got leafletIconLoaded in addIcons")
     dp.data.forEach(function(element) {
       uniqueID++;
       // Add a lowercase instance of each column name
@@ -3533,6 +3547,8 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
 
         // Attach the icon to the marker and add to the map
         // If this line returns an error, try setting dp1.latColumn and dp1.latColumn to the names of your latitude and longitude columns.
+        console.log("markerType: google layerGroup: ")
+        //console.log(layerGroup)
         circle = L.marker([element[dp.latColumn], element[dp.lonColumn]], {icon: busIcon}).addTo(layerGroup); // Works, but not in Drupal site.
       } else {
         circle = L.circle([element[dp.latColumn], element[dp.lonColumn]], {
