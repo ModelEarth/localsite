@@ -3057,9 +3057,9 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
   let hash = $.extend(true, {}, getHash());
   if (whichmap == "map1") {
     if (hash.name) { // Viewing a listing so top map becomes a header.
-      $('#' + whichmap).height("250px");
+      //$('#' + whichmap).height("250px");
     } else {
-      $('#' + whichmap).height("85vh");
+      //$('#' + whichmap).height("88vh");
     }
   }
   $('#' + whichmap).show();
@@ -3239,12 +3239,16 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
         //}
         overlays[dataTitle] = layerGroup; // Available to both map1 and map2
       } else {
+
+        // DELETE, not used
+
         alert("TODO: highlight mappoint here for existing maps")
 
         addIcons(dp,map,whichmap,layerGroup,zoom,markerType); // Adds for both map1 and map2
 
         console.log("TO DO: Use the name to fetch the lat and lon from div.")
         //centerMap(element[dp.latColumn], element[dp.lonColumn], name, map, whichmap);
+
       }
       if (overlays) {
         // Checks the box, which displays the layer. (Basically boxes and icons are ready at this point.)
@@ -3662,7 +3666,7 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
         entityName = encodeURIComponent(entityName);
         // Needs to remove m,q,search
         // onclick='goHash({\"show\":\"" + hash.show + "\",\"name\":\"" + entityName + "\"}); return false;' 
-        output += "<a class='btn btn-success' style='margin-top:10px' href=\"#show=" + hash.show + "&name=" + entityName + "\">View Details</a><br>";
+        output += "<a class='btn btn-success' style='margin-top:10px' href=\"#show=" + hash.show + "&name=" + entityName + "&details=true\">View Details</a><br>";
       }
       // ADD POPUP BUBBLES TO MAP POINTS
       if (circle) {

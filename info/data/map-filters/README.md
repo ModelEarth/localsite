@@ -26,6 +26,7 @@ Our [Google Sheet with Goal tabs](https://docs.google.com/spreadsheets/d/1IGyvcM
 
 Goal .csv file output is initially in local notebooks, later in this [UN Goals CoLab](https://colab.research.google.com/drive/1riRnKUGNGkJZOU6qJoznAxjySInQjnFQ?usp=sharing).
 
+Also add to our [Data Commons Timelines CoLab](https://colab.research.google.com/drive/1PF8wojIOHxDCdmadsAdkpHnb-An1ymEh?usp=sharing)
 
 From the sheet columsn, display a clean navigation hierarchy with 3 levels:  
 Goal (Air) > Topic (Emissions) > Subtopic (Methane)
