@@ -20,15 +20,17 @@ Document how to add a private Github token to push from CoLab.
 
 # UN Goal Topics
 
-Abhishek L, Pratyush, Jack  
+TO DO: Update our [UN Goals CoLab](https://colab.research.google.com/drive/1riRnKUGNGkJZOU6qJoznAxjySInQjnFQ?usp=sharing) to pull DCID's from tabs in Google Sheet (below)
 
-Our [Google Sheet with Goal tabs](https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/edit?usp=sharing) for DCID values fed to our Python .csv file generation.
+TO DO: Save .csv files to GitHub. The similar GitHub process [Ivy added in Streamlit](https://model.earth/RealityStream/streamlit) could be helpful.
 
-Goal .csv file output is initially in local notebooks, later in this [UN Goals CoLab](https://colab.research.google.com/drive/1riRnKUGNGkJZOU6qJoznAxjySInQjnFQ?usp=sharing).
+Our [Google Sheet with Goal tabs](https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/edit?usp=sharing) for DCID values fed to our Python .csv file generation. - Pratyush 
 
-Also add to our [Data Commons Timelines CoLab](https://colab.research.google.com/drive/1PF8wojIOHxDCdmadsAdkpHnb-An1ymEh?usp=sharing)
+Abhishek L may also have .ipynb files that generate .csv files locally.
 
-From the sheet columsn, display a clean navigation hierarchy with 3 levels:  
+Also update our [Data Commons Timelines CoLab](https://colab.research.google.com/drive/1PF8wojIOHxDCdmadsAdkpHnb-An1ymEh?usp=sharing)
+
+From the sheet columns, display a clean navigation hierarchy with 3 levels using javascript:  
 Goal (Air) > Topic (Emissions) > Subtopic (Methane)
 
 <br>
