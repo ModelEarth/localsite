@@ -22,7 +22,7 @@ Document how to add a private Github token to push from CoLab.
 
 TO DO: Update our [UN Goals CoLab](https://colab.research.google.com/drive/1riRnKUGNGkJZOU6qJoznAxjySInQjnFQ?usp=sharing) to pull DCID's from our [Google Sheet with Goal tabs](https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/edit?usp=sharing).
 
-TO DO: Save .csv files to GitHub. The similar GitHub process [Ivy added in Streamlit](https://model.earth/RealityStream/streamlit) could be helpful.  Abhishek L may also have .ipynb files that generate .csv files locally.
+TO DO: Save .csv files to GitHub. The similar GitHub process [Ivy added in Streamlit](https://model.earth/RealityStream/streamlit) could be helpful.  Abhishek L may also have .ipynb files that generate .csv files locally. The output .csv could be sent to a fork of [data-commons](https://github.com/ModelEarth/data-commons) in a folder added at data-common/docs/data.
 
 TO DO: Update our [Google Sheet with Goal tabs](https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/edit?usp=sharing) with additional DCID values that we'll pull for our Python .csv file generation. - Pratyush 
 
