@@ -1,9 +1,6 @@
 # Push to GitHub
 
-## Send Data from a CoLab to GitHub
-
-
-## Send Data from a Streamlit App to GitHub
+## Send Data from a CoLab or Streamlit to GitHub
 
 Our Streamlit app can push user-generated model performance reports directly to a designated repository location (output/user_generated_json).
 
