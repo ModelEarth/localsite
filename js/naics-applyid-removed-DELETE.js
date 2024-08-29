@@ -140,7 +140,7 @@ function applyIO(naics) {
      
 
     var config = useeio.urlConfig();
-    var modelID = config.get().model || 'USEEIOv2.0';
+    var modelID = config.get().model || 'USEEIOv2.0.1-411';
     if (param.iomodel) {
         modelID = param.iomodel;
     }

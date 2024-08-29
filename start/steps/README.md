@@ -27,12 +27,15 @@ On Windows:
 	python -m http.server 8887
 -->
 
-The terminal is now dedicated to being your webroot for [http://localhost:8887](http://localhost:8887)
+The terminal is now dedicated to hosting your webroot for [http://localhost:8887](http://localhost:8887)
 To run further commands, open a new terminal window.
 
 Or you can use npx http-server, which [requires installing a local cert](../http-server).&nbsp; (Not recommended until we document.)
 
-## Pull down repos to contribute.
+**VS Code Issue to resolve** (use the http-server above for now): 
+A redirect loop occurs when using VS Code's built-in live server extension. VS Code defaults to port 8000, but the port number might not be a factor. (You can comment our the localsite.js include, but you'll lose other filter functionality.)  &nbsp;Please help resolve.
+
+## Pull down repos to contribute
 
 If you're not planning to edit, you can simply view the content from the repos below at [model.earth](http://model.earth).
 

@@ -2,7 +2,7 @@
 
   #map1 {
     height: 600px;
-    height: 79vh; /* Prevents lower-right icons from being offscreen with .headerbarheight height: 94px */
+    height: 79vh; /* Prevents lower-right icons from being offscreen with .headerbarheight height: 82.5px */
     width: 100%;
     position: relative;
   }

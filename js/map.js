@@ -9,8 +9,6 @@
 
 // INIT
 var dataParameters = []; // Probably can be removed, along with instances below.
-var sideTopOffsetEnabled = true;
-var sideTopOffsetEnabledBig = false;
 
 if(typeof styleObject=='undefined'){ var styleObject={}; } // https://docs.mapbox.com/mapbox-gl-js/style-spec/root/
 console.log("map.js styleObject.layers");
@@ -167,14 +165,14 @@ function loadMap1(calledBy, show, dp_incoming) {
 
   if (show == "farmfresh") { // In naics.js we also default to GA for this one topic // && theState
     if (!theState) {
-      theState = "GA"; // Since there is not a national dataset for map.
+      theState = "NY"; // Since there is not yet a national dataset for map. Using NY for shorter topics menu.
       updateHash({"state":theState});
     }
     dp.listTitle = "USDA Farm Produce";
     if (theState) {
       //if (location.host.indexOf('localhost') >= 0) {
         //dp.categories = "farm = Direct from Farm, market = Farmers Markets";
-        dp.categories = {"on-farm market": {"title":"Direct from Farm","color":"#b2df8a"}, "farmers market": {"title":"Farmers Markets","color":"#33a02c"}};
+        dp.categories = {"on-farm-market": {"title":"Direct from Farm","color":"#b2df8a"}, "farmers-market": {"title":"Farmers Markets","color":"#33a02c"}};
         // Green colors above
         // #b2df8a, #33a02c 
         dp.valueColumn = "type";
@@ -315,7 +313,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.valueColumnLabel = "Type";
         dp.mapInfo = "<a href='https://docs.google.com/spreadsheets/d/1bvD9meJgMqLywdoiGwe3f93sw1IVI_ZRjWSuCLSebZo/edit?usp=sharing'>Update Google Sheet</a>.";
         dp.search = {"In Dataset Name": "name", "In Type": "Category1", "In Website URL": "website"};
-        dp.datastates = ["GA"];    
+        dp.datastates = ["GA"];
       } else if (show == "360") {
         dp.listTitle = "Birdseye Views";
         dp.dataset =  local_app.custom_data_root() + "360/GeorgiaPowerSites.csv";
@@ -369,7 +367,6 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.search = {"In Main Category": "Category", "In Materials Accepted": "Materials Accepted", "In Location Name": "organization name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
         dp.datastates = ["GA"];
       } else if (show == "wastewater") {
-        //alert("wastewater4")
         dp.listTitle = "Georgia Wastewater Facilities (2023)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
         dp.mapInfo = "View&nbsp;<a href='/recycling/georgia/'>Solid Waste and Recycling&nbsp;Datasets</a>.";
@@ -738,8 +735,8 @@ function loadMap1(calledBy, show, dp_incoming) {
     }
   }
 
-
-  if (Array.isArray(dp.datastates) && !dp.datastates.includes(theState)) {
+  // theState may be null - then the map could use the dp.datastates value
+  if (Array.isArray(dp.datastates) && theState && !dp.datastates.includes(theState)) {
     showDirectory = false;
   }
   if (showDirectory) { // Load the map using settings above
@@ -2293,6 +2290,8 @@ function renderCatList(catList,cat) {
             }
           }
           catNavSide += "<div title='" + key + "'><div style='background:" + catList[key].color + ";' class='legendDot'></div><div style='overflow:hidden'>" + catTitle;
+          
+          // Add the count beside each category.
           if (catList[key].count || dp.categories) {
             // The number of occurances of the category
             if (show == "solidwaste" || show == "wastewater") {
@@ -2302,6 +2301,7 @@ function renderCatList(catList,cat) {
               catNavSide += "<span class='local'>&nbsp;(" + catList[key].count + ")</span>";
             }
           }
+
           catNavSide += "</div></div>"
         }
       }
@@ -2605,54 +2605,7 @@ function removeWhiteSpaces (str) {
 }
 
 
-var revealHeader = true;
-$('.sidecolumnLeft a').click(function(event) {
-  revealHeader = false;
-  /*
-  setTimeout(function(){ 
-    var y = $(window).scrollTop();  //your current y position on the page
-    //$(window).scrollTop(y-50); // Adjust for fixed header.
 
-  }, 10);
-  */
-});
-
-
-// FIXED MAP POSITION ON SCROLL
-function elementScrolled(elem) { // scrolled into view
-  var docViewTop = $(window).scrollTop();
-  var docViewBottom = docViewTop + $(window).height();
-  var elemTop = $(elem).offset().top;
-  return ((elemTop <= docViewBottom) && (elemTop >= docViewTop));
-}
-function bottomReached(elem) { // bottom scrolled into view
-  if(!$(elem).length) {
-    console.log("Element for bottomReached does not exist: " + elem);
-    return 0;
-  }
-  var docViewTop = $(window).scrollTop();
-  var docViewBottom = docViewTop + $(window).height();
-  var hangover = -10; // Extend into the next section, so map remains visible. // Was 10
-  //var elemTop = $(elem).offset().top;
-  var elemBottom = $(elem).offset().top + $(elem).height() + hangover - docViewBottom;
-  //console.log('offset: ' + $(elem).offset().top + ' height:' + $(elem).height() + ' docViewBottom:' + docViewBottom + ' elemBottom: ' + elemBottom);
-  //console.log('bottomReached elemBottom: ' + elemBottom);
-  return (elemBottom < 0);
-}
-function topReached(elem) { // top scrolled out view
-  if(!$(elem).length) {
-    //console.log("Element for topReached does not exist: " + elem);
-    return 0;
-  }
-  var docViewTop = $(window).scrollTop();
-  //var docViewBottom = docViewTop + $(window).height();
-  var pretop = 80; // Extend into the next section, so map remains visible.
-  //var elemTop = $(elem).offset().top;
-  var elemTop = $(elem).offset().top - docViewTop - pretop;
-  //console.log('offset: ' + $(elem).offset().top + ' height:' + $(elem).height() + ' docViewBottom:' + docViewBottom + ' elemBottom: ' + elemBottom);
-  //console.log('topReached elemTop: ' + elemTop);
-  return (elemTop < 0);
-}
 
 
  // Anchors corresponding to menu items
@@ -2665,154 +2618,7 @@ var scrollItems = menuItems.map(function(){
 var topMenuHeight = 150;
 */
 
-var mapFixed = false;
-var previousScrollTop = $(window).scrollTop();
-$(window).scroll(function() {
-  if (revealHeader == false) {
-    $("#headerLarge").addClass("headerLargeHide"); $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
-    $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
-    $("body").addClass("filterFieldsBodyTop");
-    if (param.showheader != "false") {
-      $('.showMenuSmNav').show(); 
-    }
-    $('#filterFieldsHolder').hide();
-    $('.headerOffset').hide();
-    $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower");
-    $('#headerbar').hide();
-    if (sideTopOffsetEnabled) {
-      //$('.sidecolumnLeft').css("top","54px");
-    }
-    //$('#showNavColumn').css("top","7px");
-
-    if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
-      $('#headerLarge').hide();
-    }
-    
-    revealHeader = true; // For next manual scroll
-  } else if ($(window).scrollTop() > previousScrollTop) { // Scrolling Up
-    if ($('#headerbar').is(':visible')) {
-      if ($(window).scrollTop() > previousScrollTop + 20) { // Scrolling Up fast
-        // Switch to smaller header
-
-        $("#headerLarge").addClass("headerLargeHide");
-        $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower");
-        //alert("headerbar hide");
-        if (!$("#filterFieldsHolder").is(':visible')) { // Move to top if no small top bar
-          $(".pagecolumn").addClass("pagecolumnToTop");
-        }
-
-        $('.headerbar').hide();
-        $('.headerOffset').hide();
-        $('#logoholderbar').show();
-
-        // BUGBUG - occuring on initial reload when page is a little from top.
-        //$('#logoholderside').show();
-
-        if (!$("#filterFieldsHolder").hasClass("filterFieldsHidden")) {
-          $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
-          $("body").addClass("filterFieldsBodyTop");
-
-          //if (param.showheader != "false") {
-          if (param.showfilters == "true") {
-            $('.showMenuSmNav').show(); 
-          }
-          $('.headerOffset').hide();
-          $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower");
-          $('#headerbar').hide(); // Not working
-          $('#headerbar').addClass("headerbarhide");
-        }
-        if (sideTopOffsetEnabled) {
-          //$('.sidecolumnLeft').css("top","54px");
-        }
-        //alert("#headerbar hide")
-        //$('#showNavColumn').css("top","7px");
-        if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
-          $('#headerLarge').hide();
-        }
-      }
-    }
-  } else { // Scrolling Down
-    if ($(window).scrollTop() < (previousScrollTop - 20)) { // Reveal #headerLarge if scrolling down fast
-      $("#headerLarge").removeClass("headerLargeHide"); $('.bothSideIcons').addClass('sideIconsLower');
-      $(".pagecolumn").addClass("pagecolumnLower");$(".pagecolumn").removeClass("pagecolumnToTop");$('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
-      //$('#filterFieldsHolder').show();
-      $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
-      $("body").removeClass("filterFieldsBodyTop");
-      if ($("#headerbar").length) {
-        if (param.showheader != "false") {
-          $('.headerOffset').show();
-          $('.bothSideIcons').addClass('sideIconsLower');$(".pagecolumn").addClass("pagecolumnLower");$(".pagecolumn").removeClass("pagecolumnToTop");
-          $('#headerbar').show();
-          $('#headerbar').removeClass("headerbarhide");
-          $('#local-header').show();
-          $('.showMenuSmNav').hide();
-        }
-        if (sideTopOffsetEnabledBig) {
-          let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px
-          //$('.sidecolumnLeft').css("top",headerFixedHeight + "px");
-        } else {
-          //$('.sidecolumnLeft').css("top","0px");
-        }
-      }
-      $('#headerLarge').show();
-    } else if ($(window).scrollTop() == 0) { // At top
-      $("#headerLarge").removeClass("headerLargeHide"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
-      // We avoid hiding #filterFieldsHolder here since we retain it if already open.
-      $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
-      $("body").removeClass("filterFieldsBodyTop");
-      if ($("#headerbar").length) {
-        if (param.showheader != "false") {
-          $('.headerOffset').show();
-          $('.bothSideIcons').addClass('sideIconsLower');$(".pagecolumn").addClass("pagecolumnLower");$(".pagecolumn").removeClass("pagecolumnToTop");
-          $('#headerbar').show();
-          $('#headerbar').removeClass("headerbarhide");
-          $('#local-header').show();
-          $('.showMenuSmNav').hide();
-        }
-        if (sideTopOffsetEnabledBig) {
-          let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px
-          //$('.sidecolumnLeft').css("top",headerFixedHeight + "px");
-        } else {
-          //$('.sidecolumnLeft').css("top","0px");
-        }
-      }
-      $('#headerLarge').show();
-    }
-  }
-  previousScrollTop = $(window).scrollTop();
-
-  lockSidemap(mapFixed);
-  
-});
-function lockSidemap() {
-  // Detect when #hublist is scrolled into view and add class mapHolderFixed.
-  // Include mapHolderBottom when at bottom.
-  if (bottomReached('#hublist')) {
-    if (mapFixed==true) { // Only unstick when crossing thresehold to minimize interaction with DOM.
-      console.log('bottomReached unfix');
-      $('#mapHolderInner').removeClass('mapHolderFixed');
-      $("#mapHolderInner").css("max-width","none");
-      $('#mapHolderInner').addClass('mapHolderBottom');
-      // Needs to be at bottom of dev
-      mapFixed = false;
-    }
-  } else if (topReached('#hublist')) {
-    if (mapFixed==false) {
-      let mapHolderInner = $('#mapHolderInner').width();
-      //alert(mapHolderInner)
-      console.log('topReached - fixed side map position');
-      $('#mapHolderInner').addClass('mapHolderFixed');
-      $("#mapHolderInner").css("max-width",mapHolderInner);
-      $('#mapHolderInner').removeClass('mapHolderBottom');
-      //alert("fixed position")
-      mapFixed = true;
-    }
-  } else if(!topReached('#hublist') && mapFixed == true) { // Not top reached (scrolling down)
-    console.log('Scrolling down unfix');
-    $('#mapHolderInner').removeClass('mapHolderFixed');
-    mapFixed = false;
-  }
-}
+// hubList etc. moved to navigation.js
 
 $(document).on("click", "#iZoomButton", function(event) {
   $( "#iZoom" ).prop("checked", !$( "#iZoom" ).prop("checked")); // Toggle on/off

@@ -526,10 +526,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	flex: 1;
 }
 .pagecolumn {
-	top:54px;
-}
-.pagecolumnLower {
-	top:94px;
+	/* top:54px; */
 }
 .pagecolumnToTop {
 	top:0px;
@@ -549,8 +546,14 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
   top:0px;
   z-index:10000;
 }
+.pagecolumnLow {
+	top: 58px;
+}
+.pagecolumnLower { /* same as #local-header */
+	top:82.5px;
+}
 .sideIconsLower {
-  top:92px;
+  top:82.5px;
 }
 @media (max-width: 600px) {
 	.pagecolumnLower {

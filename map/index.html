@@ -7,7 +7,7 @@
 <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 
 <script type="text/javascript" src="../js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
-<script type="text/javascript" src="../js/localsite.js?display=map&showheader=true&showfooter=true&showsearch=true"></script>
+<script type="text/javascript" src="../js/localsite.js?display=map&showheader=true&showfooter=true&showsearch=true&shortheader=true"></script>
 
 <script>
 function initialMapPageLoad() {
@@ -15,7 +15,7 @@ function initialMapPageLoad() {
 	if (!hash.show && !hash.appview && !hash.geoview) {
 		// Show topic menu on inital load when no map requested.
 		loadScript(theroot + 'js/map-filters.js', function(results) {
-			goHash({"appview":"topics"}); // Allows priorhash to be set for subsequent click of Locations tab.
+			goHash({"show":"farmfresh","appview":"topics"}); // Allows priorhash to be set for subsequent click of Locations tab.
 		});
 	}
 }

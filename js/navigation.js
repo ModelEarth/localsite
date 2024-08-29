@@ -4408,7 +4408,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         }
     });
     waitForElm('#datascape').then((elm) => {
-        let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSideList close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='sideListSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listInfo' class='listInfo content'></div></div>\r";
+        let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLow pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSideList close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='sideListSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listInfo' class='listInfo content'></div></div>\r";
         if(document.getElementById("datascape") != null || document.getElementById("datascape1") != null) {
             $("#datascape").addClass("datascape");
             $("#datascape").addClass("datascapeEmbed");
@@ -4439,7 +4439,10 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                 //prependTo = "body"; // Might not have worked intermintantly for the following prepend here: http://localhost:8887/recycling/
             }
             // min-height added since ds.ai html cropping to short side
-            $(prependTo).prepend("<div id='navcolumn' class='navcolumn pagecolumn pagecolumnLower greyDiv noprint sidecolumnLeft liteDiv' style='display:none; min-height:300px'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat' style='display:none'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement); //  listColumnElement will be blank if already applied above.
+
+            // REMOVED pagecolumnLower class from initial load
+            // TO DO: Remove pagecolumnLow when there is no top nav. It provides a minimum of 60px when taller header is hidden.
+            $(prependTo).prepend("<div id='navcolumn' class='navcolumn pagecolumn greyDiv noprint sidecolumnLeft pagecolumnLow liteDiv' style='display:none; min-height:300px'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat' style='display:none'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement); //  listColumnElement will be blank if already applied above.
         } else {
             // TODO - change to fixed when side reaches top of page
             console.log("navigation.js report: navcolumn already exists")
@@ -5597,6 +5600,7 @@ function activateSideColumn() {
 }
 
 // INIT
+showHeaderBar();
 
 //if (param.geoview == "state") {
 //  loadScript(theroot + 'js/map.js', function(results) {
@@ -5956,4 +5960,218 @@ function closeLocationFilter() {
         relocatedStateMenu.appendChild(state_select); // For apps hero
     }
     $("#hero_holder").show();
+}
+
+// LOCK HEADER TO TOP ON FAST SCROLL
+
+// Previously in map.js
+
+var mapFixed = false;
+var previousScrollTop = $(window).scrollTop();
+var revealHeader = true;
+$('.sidecolumnLeft a').click(function(event) {
+  revealHeader = false;
+  /*
+  setTimeout(function(){ 
+    var y = $(window).scrollTop();  //your current y position on the page
+    //$(window).scrollTop(y-50); // Adjust for fixed header.
+
+  }, 10);
+  */
+});
+
+//$('#headerbar').addClass("headerbarhide");
+
+if (1==1) {
+$(window).scroll(function() {
+  if (revealHeader == false) {
+    $("#headerLarge").addClass("headerLargeHide"); $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
+    $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
+    $("body").addClass("filterFieldsBodyTop");
+    if (param.showheader != "false") {
+      $('.showMenuSmNav').show(); 
+    }
+    $('#filterFieldsHolder').hide();
+    $('.headerOffset').hide();
+    $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower");
+    $('#headerbar').hide();
+    if (sideTopOffsetEnabled) {
+      //$('.sidecolumnLeft').css("top","54px");
+    }
+    //$('#showNavColumn').css("top","7px");
+
+    if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
+      $('#headerLarge').hide();
+    }
+    
+    revealHeader = true; // For next manual scroll
+  } else if ($(window).scrollTop() > previousScrollTop) { // Scrolling Up
+    if ($('#headerbar').is(':visible')) {
+      if ($(window).scrollTop() > previousScrollTop + 20) { // Scrolling Up fast
+        // Switch to smaller header
+
+        $("#headerLarge").addClass("headerLargeHide");
+        $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower");
+        //alert("headerbar hide");
+        if (!$("#filterFieldsHolder").is(':visible')) { // Move to top if no small top bar
+          $(".pagecolumn").addClass("pagecolumnToTop");
+        }
+
+        $('.headerbar').hide();
+        $('.headerOffset').hide();
+        $('#logoholderbar').show();
+
+        // BUGBUG - occuring on initial reload when page is a little from top.
+        //$('#logoholderside').show();
+
+        if (!$("#filterFieldsHolder").hasClass("filterFieldsHidden")) {
+          $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
+          $("body").addClass("filterFieldsBodyTop");
+
+          //if (param.showheader != "false") {
+          if (param.showfilters == "true") {
+            $('.showMenuSmNav').show(); 
+          }
+          $('.headerOffset').hide();
+          $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower");
+          $('#headerbar').hide(); // Not working
+          $('#headerbar').addClass("headerbarhide");
+        }
+        if (sideTopOffsetEnabled) {
+          //$('.sidecolumnLeft').css("top","54px");
+        }
+        //alert("#headerbar hide")
+        //$('#showNavColumn').css("top","7px");
+        if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
+          $('#headerLarge').hide();
+        }
+      }
+    }
+  } else { // Scrolling Down
+    if ($(window).scrollTop() < (previousScrollTop - 20)) { // Reveal #headerLarge if scrolling down fast
+      $("#headerLarge").removeClass("headerLargeHide"); $('.bothSideIcons').addClass('sideIconsLower');
+      $(".pagecolumn").addClass("pagecolumnLower");$(".pagecolumn").removeClass("pagecolumnToTop");$('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
+      //$('#filterFieldsHolder').show();
+      $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
+      $("body").removeClass("filterFieldsBodyTop");
+      if ($("#headerbar").length) {
+        if (param.showheader != "false") {
+          $('.headerOffset').show();
+          $('.bothSideIcons').addClass('sideIconsLower');$(".pagecolumn").addClass("pagecolumnLower");$(".pagecolumn").removeClass("pagecolumnToTop");
+          $('#headerbar').show();
+          $('#headerbar').removeClass("headerbarhide");
+          if (param.shortheader != "true") {
+            $('#local-header').show();
+          } else {
+            //$('#local-header-short').show();
+          }
+          $('.showMenuSmNav').hide();
+        }
+        if (sideTopOffsetEnabledBig) {
+          let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px
+          //$('.sidecolumnLeft').css("top",headerFixedHeight + "px");
+        } else {
+          //$('.sidecolumnLeft').css("top","0px");
+        }
+      }
+      $('#headerLarge').show();
+    } else if ($(window).scrollTop() == 0) { // At top
+      $("#headerLarge").removeClass("headerLargeHide"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
+      // We avoid hiding #filterFieldsHolder here since we retain it if already open.
+      $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
+      $("body").removeClass("filterFieldsBodyTop");
+      if ($("#headerbar").length) {
+        if (param.showheader != "false") {
+          $('.headerOffset').show();
+          $('.bothSideIcons').addClass('sideIconsLower');$(".pagecolumn").addClass("pagecolumnLower");$(".pagecolumn").removeClass("pagecolumnToTop");
+          $('#headerbar').show();
+          $('#headerbar').removeClass("headerbarhide");
+          if (param.shortheader != "true") {
+            $('#local-header').show();
+          }
+          $('.showMenuSmNav').hide();
+        }
+        if (sideTopOffsetEnabledBig) {
+          let headerFixedHeight = $("#headerbar").height(); // #headerLarge was too big at 150px
+          //$('.sidecolumnLeft').css("top",headerFixedHeight + "px");
+        } else {
+          //$('.sidecolumnLeft').css("top","0px");
+        }
+      }
+      $('#headerLarge').show();
+    }
+  }
+  previousScrollTop = $(window).scrollTop();
+
+  lockSidemap(mapFixed);
+  
+});
+}
+
+function lockSidemap() {
+  // Detect when #hublist is scrolled into view and add class mapHolderFixed.
+  // Include mapHolderBottom when at bottom.
+  if (bottomReached('#hublist')) {
+    if (mapFixed==true) { // Only unstick when crossing thresehold to minimize interaction with DOM.
+      console.log('bottomReached unfix');
+      $('#mapHolderInner').removeClass('mapHolderFixed');
+      $("#mapHolderInner").css("max-width","none");
+      $('#mapHolderInner').addClass('mapHolderBottom');
+      // Needs to be at bottom of dev
+      mapFixed = false;
+    }
+  } else if (topReached('#hublist')) {
+    if (mapFixed==false) {
+      let mapHolderInner = $('#mapHolderInner').width();
+      //alert(mapHolderInner)
+      console.log('topReached - fixed side map position');
+      $('#mapHolderInner').addClass('mapHolderFixed');
+      $("#mapHolderInner").css("max-width",mapHolderInner);
+      $('#mapHolderInner').removeClass('mapHolderBottom');
+      //alert("fixed position")
+      mapFixed = true;
+    }
+  } else if(!topReached('#hublist') && mapFixed == true) { // Not top reached (scrolling down)
+    console.log('Scrolling down unfix');
+    $('#mapHolderInner').removeClass('mapHolderFixed');
+    mapFixed = false;
+  }
+}
+
+// FIXED MAP POSITION ON SCROLL
+var sideTopOffsetEnabled = true;
+var sideTopOffsetEnabledBig = false;
+function elementScrolled(elem) { // scrolled into view
+  var docViewTop = $(window).scrollTop();
+  var docViewBottom = docViewTop + $(window).height();
+  var elemTop = $(elem).offset().top;
+  return ((elemTop <= docViewBottom) && (elemTop >= docViewTop));
+}
+function bottomReached(elem) { // bottom scrolled into view
+  if(!$(elem).length) {
+    console.log("Element for bottomReached does not exist: " + elem);
+    return 0;
+  }
+  var docViewTop = $(window).scrollTop();
+  var docViewBottom = docViewTop + $(window).height();
+  var hangover = -10; // Extend into the next section, so map remains visible. // Was 10
+  //var elemTop = $(elem).offset().top;
+  var elemBottom = $(elem).offset().top + $(elem).height() + hangover - docViewBottom;
+  //console.log('offset: ' + $(elem).offset().top + ' height:' + $(elem).height() + ' docViewBottom:' + docViewBottom + ' elemBottom: ' + elemBottom);
+  //console.log('bottomReached elemBottom: ' + elemBottom);
+  return (elemBottom < 0);
+}
+function topReached(elem) { // top scrolled out view
+  if(!$(elem).length) {
+    //console.log("Element for topReached does not exist: " + elem);
+    return 0;
+  }
+  var docViewTop = $(window).scrollTop();
+  //var docViewBottom = docViewTop + $(window).height();
+  var pretop = 80; // Extend into the next section, so map remains visible.
+  //var elemTop = $(elem).offset().top;
+  var elemTop = $(elem).offset().top - docViewTop - pretop;
+  //console.log('offset: ' + $(elem).offset().top + ' height:' + $(elem).height() + ' docViewBottom:' + docViewBottom + ' elemBottom: ' + elemBottom);
+  //console.log('topReached elemTop: ' + elemTop);
+  return (elemTop < 0);
 }

@@ -572,7 +572,7 @@ summary::-webkit-details-marker {
 */
 @media (max-width: 800px) {
     .content {
-      padding: 30px 30px 30px 64px;
+      padding: 15px 30px 30px 64px;
     }
 }
 @media (max-width: 1400px) {
@@ -1314,13 +1314,13 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   background-color: #ddd;
 }
 .headerbarheight {
-  height:94px;
+  /* height:82.5px; */
 }
 .headeroffset { /* Does not include bar */
-  height:94px;
+  height:82.5px;
 }
 #local-header {
-  min-height:94px; 
+  min-height:82.5px;
 }
 @media (max-width: 600px) {
   #headerIcons {

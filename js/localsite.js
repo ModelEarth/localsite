@@ -83,7 +83,7 @@ var local_app = local_app || (function(module) {
               
               // This could be breaking top links to Location and Good & Services.
               // But reactivating after smart-mobility page tried to get js/jquery.min.js from geogia.org
-              // Re-omitting because js/jquery.min.js still used geogia.org on first load, once. (not 100% sure if old page was cachec)
+              // Re-omitting because js/jquery.min.js still used geogia.org on first load, once. (not 100% sure if old page was cached)
               //theroot = hostnameAndPort + "/localsite/";
             }
             
@@ -731,7 +731,9 @@ function loadLocalTemplate() {
             $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
           });
         }
-        showHeaderBar();
+        if (param.shortheader != "true") {
+          //showHeaderBar();
+        }
       });
 
       if (location.host.indexOf('model') >= 0) {
@@ -742,16 +744,26 @@ function loadLocalTemplate() {
   });
 }
 function hideHeaderBar() {
-  //$('#headerbar').addClass("headerbarhide");
+  // what$('#headerbar').addClass("headerbarhide");
   $('#local-header').hide();
   $('#headerbar').hide();
   $('.bothSideIcons').removeClass('sideIconsLower');
 }
 function showHeaderBar() {
-  //$('.headerOffset').show(); 
-  $('#headerbar').show();
-  $('#headerbar').removeClass("headerbarhide");
-  $('#local-header').show();
+  waitForElm('#headerbar').then((elm) => {
+    console.log("showHeaderBar")
+    //$('.headerOffset').show(); 
+    $('#headerbar').show();
+    $('#headerbar').removeClass("headerbarhide");
+    $('.bothSideIcons').addClass('sideIconsLower');
+    $(".pagecolumn").addClass("pagecolumnLower"); // Didn't seem to be working
+    waitForElm('#navcolumn').then((elm) => {
+      $("#navcolumn").addClass("pagecolumnLower");
+    });
+    if (param.shortheader != "true") {
+      $('#local-header').show();
+    }
+  });
 }
 
 function loadSearchFilterCss() {
@@ -766,6 +778,10 @@ function loadSearchFilterCss() {
 function loadLeafletAndMapFilters() {
   console.log("loadLeafletAndMapFilters() param.showheader " + param.showheader)
   //if (param.shownav) {
+
+  // URL ? value does not currently override include.
+  //alert("param.showheader " + param.showheader);
+
   if (param.showheader != "false" || param.showsearch == "true") {
     loadScript(theroot + 'js/navigation.js', function(results) {
       //$(document).ready(function () {
@@ -777,7 +793,10 @@ function loadLeafletAndMapFilters() {
         $("body").prepend("<div id='local-header' class='flexheader noprint' style='display:none'></div>\r");
         waitForElm('#local-header').then((elm) => {
           $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
-          $("#local-header").show();
+          if (param.shortheader != "true") {
+            // Inital page load
+            $('#local-header').show();
+          }
         });
 
       });
@@ -906,8 +925,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         }
 
         if(param.showheader == "true") {
-          // border:1px solid #555; 
-          $('body').prepend("<div id='sideIcons' class='noprint bothSideIcons sideIconsLower' style='position:fixed;left:0;width:32px'><div id='showNavColumn' class='showNavColumn' style='left:-28px;display:none'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border: 1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
+          // border:1px solid #555;
+          // sideIconsLower
+          $('body').prepend("<div id='sideIcons' class='noprint bothSideIcons' style='position:fixed;left:0;width:32px'><div id='showNavColumn' class='showNavColumn' style='left:-28px;display:none'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border: 1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
         }
 
         if (param.showheader == "true" || param.showsearch == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "map") {
@@ -1070,9 +1090,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
   let fullsite = false;
   // FULL SITE - everything or map
-  if (param.showheader == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "navigation" || param.display == "map") {
+  if (param.showheader == "true" || param.showsearch == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "navigation" || param.display == "map") {
     //alert("added param.show above as test " + param.show)
-    if (param.showheader != "false" || param.display == "map") {
+    if (param.showheader != "false" || param.showsearch == "true" || param.display == "map") {
 
       fullsite = true;
       includeCSS3(theroot + 'css/map.css',theroot); // Before naics.js so #industries can be overwritten.

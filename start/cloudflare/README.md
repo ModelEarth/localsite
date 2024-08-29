@@ -19,6 +19,7 @@ These are in the walk-through when adding a new site:
 - Always Use HTTPS - On  
 - Brotli compression - On (the default)  
 
+DNSSEC - Cloudflare recommends turning on. DNS > Settings
 
 ### Go to "Speed > Optimization"  
 
