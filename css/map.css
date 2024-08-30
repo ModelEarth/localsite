@@ -1,407 +1,414 @@
 /* /tools and /map/hubs */ 
 
-  #map1 {
-    height: 600px;
-    height: 79vh; /* Prevents lower-right icons from being offscreen with .headerbarheight height: 82.5px */
-    width: 100%;
-    position: relative;
-  }
+#map1 {
+  height: 600px;
+  height: 79vh; /* Prevents lower-right icons from being offscreen with .headerbarheight height: 82.5px */
+  width: 100%;
+  position: relative;
+}
+.sidelistHolder {
+  position: absolute;
+  top: 35px;
+  left: 64px;
+  width: 335px;
+  max-height: 85%;
+  background-color: #666;
+  color: #fff;
+  z-index: 700;
+  border-radius: 20px;
+  padding: 30px 26px 12px 30px;
+  background-color: rgba(33,33,33,0.8) !important;
+}
+@media (max-width: 1200px) {
   .sidelistHolder {
-    position: absolute;
-    top: 35px;
-    left: 64px;
-    width: 335px;
-    max-height: 85%;
-    background-color: #666;
-    color: #fff;
-    z-index: 700;
-    border-radius: 20px;
-    padding: 30px 26px 12px 30px;
-    background-color: rgba(33,33,33,0.8) !important;
+    position: initial;
+    width: 100%;
+    border-radius: 0px;
   }
-  @media (max-width: 1200px) {
-    .sidelistHolder {
-      position: initial;
-      width: 100%;
-      border-radius: 0px;
-    }
-  }
-  .sidelistHeader {
-    font-size: 24px;
-    margin-bottom: 12px;
-  }
-  .sidelistText {
-    font-size: 14px;
-  }
-  .sidelist a:link, .sidelist a:visited {
-    color: #66CF79;
-    text-decoration: none;
-  }
-  .sidelist a:link:hover, .sidelist a:visited:hover {
-    text-decoration: underline;
-  }
-  .sidelist .detailTitle {
-    font-weight: 800;
-    overflow: auto;
-    font-size: 16px;
-    margin-top: -4px;
-    padding-bottom: 4px;
-  }
-  .sidelist .detailLinks {
-    display: none;
-  }
-  .sidelist .detail {
-    border-radius: 10px;
-    padding: 12px 10px 8px 15px;
-    margin-bottom: 2px;
-    position: relative;
-    border-bottom: 1px solid #777;
-    margin: 4px;
-    background-color: #ddd;
-  }
-  .sidelist .detailTitle {
-    line-height: 1.28em;
-  }
-  .sidelist .detail:hover {
-    background-color: #eee;
-  }
-  .sidelistDark .detail {
-    background-color: #666;
-  }
-  .sidelistDark .detail:hover {
-    background-color: #333;
-  }
-  .sidelist .detailLocation {
-    font-size:14px;
-  }
-  .always-show-scroll {
-    overflow-y: scroll;
-    overflow-x: hidden;
-  }
-  .always-show-scroll::-webkit-scrollbar {
-    background-color: #666;
-    border-left: 1px solid #777;
-    border-radius: 10px;
-    width: 16px;
-  }
-  /* Thumb (scrolling part) */
-  .always-show-scroll::-webkit-scrollbar-thumb {
-    background-color: grey;
-    border-radius: 8px;
-    border: 1px solid #aaa;
-    margin-top: 2px;
-    margin-bottom: 2px;
-  }
-  .always-show-scroll::-webkit-scrollbar-thumb:vertical {
-    height: 40px !important;
-    width: 10px;
-    margin: 4px;
-  }
+}
+.sidelistHeader {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+.sidelistText {
+  font-size: 14px;
+}
+.sidelist a:link, .sidelist a:visited {
+  color: #66CF79;
+  text-decoration: none;
+}
+.sidelist a:link:hover, .sidelist a:visited:hover {
+  text-decoration: underline;
+}
+.sidelist .detailTitle {
+  font-weight: 800;
+  overflow: auto;
+  font-size: 16px;
+  margin-top: -4px;
+  padding-bottom: 4px;
+}
+.sidelist .detailLinks {
+  display: none;
+}
+.sidelist .detail {
+  border-radius: 10px;
+  padding: 12px 10px 8px 15px;
+  margin-bottom: 2px;
+  position: relative;
+  border-bottom: 1px solid #777;
+  margin: 4px;
+  background-color: #ddd;
+}
+.sidelist .detailTitle {
+  line-height: 1.28em;
+}
+.sidelist .detail:hover {
+  background-color: #eee;
+}
+.sidelistDark .detail {
+  background-color: #666;
+}
+.sidelistDark .detail:hover {
+  background-color: #333;
+}
+.sidelist .detailLocation {
+  font-size:14px;
+}
+.always-show-scroll {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.always-show-scroll::-webkit-scrollbar {
+  background-color: #666;
+  border-left: 1px solid #777;
+  border-radius: 10px;
+  width: 16px;
+}
+/* Thumb (scrolling part) */
+.always-show-scroll::-webkit-scrollbar-thumb {
+  background-color: grey;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+.always-show-scroll::-webkit-scrollbar-thumb:vertical {
+  height: 40px !important;
+  width: 10px;
+  margin: 4px;
+}
 
 
-  .leaflet-touch .leaflet-bar {
-     border:none;
-     margin-left:30px;
-  }
-  .leaflet-touch .leaflet-bar a, .earthZoom .leaflet-bar a {
-    width:38px !important;
-    height:38px !important;
-    font-size: 26px !important;
-    color: #fff !important;
-    background-color: #555 !important;
-    border: 0px !important;
-    border-radius: 6px !important;
-    margin-left: 4px;
-    padding: 0 10px;
-    text-decoration: none;
-  }
-  .leaflet-control-zoom-in {
-    margin-bottom:6px;
-    border:#bbb 2px solid !important;
-    line-height: 34px !important;
-  }
-  .leaflet-control-zoom-out {
-    border:#bbb 2px solid !important;
-    line-height: 32px !important;
-  }
-  .leaflet-top > .info {
-    background-color: rgba(33, 33, 33, 0.5);
-    color: #fff;
-    padding: 10px;
-    text-align: center;
-    min-width: 130px;
-  }
-  .leaflet-top > .info. b {
-    color: #fff !important;
-  }
-  #legendHolder {
-    position: absolute;
-    background-color:rgba(33,33,33,0.5);
-    background-color:rgba(255,255,255,0.85);
-    color:#fff !important;
-    bottom:0;
-    right:0;
-    font-size: 14px;
-    z-index: 1000;
-    z-index: 500; /* allows credits to cover bottom */
-    overflow: scroll;
-  }
-  #allLegends div svg {
-    overflow: visible;
-    
-  }
-  .leaflet-control-container > div:first-child.leaflet-left { /* zoom control position */
-    left: auto;
-    right: 20px;
-  }
-  .leaflet-control-container > div:first-child.leaflet-top { /* zoom control position */
-    top: auto;
-    bottom: 20px;
-    z-index: auto;
-  }
-  /* Layers */
-  /*
-  .leaflet-control-container > div:nth-child(2).leaflet-right {
-    left: 10px;
-  }
-  .leaflet-control-container > div:nth-child(2).leaflet-top {
-    bottom: 20px;
-  }
-  */
-  .leaflet-control-container > div:nth-child(4) {
-    display: none;
-  }
+.leaflet-touch .leaflet-bar {
+   border:none;
+   margin-left:30px;
+}
+.leaflet-touch .leaflet-bar a, .earthZoom .leaflet-bar a {
+  width:38px !important;
+  height:38px !important;
+  font-size: 26px !important;
+  color: #fff !important;
+  background-color: #555 !important;
+  border: 0px !important;
+  border-radius: 6px !important;
+  margin-left: 4px;
+  padding: 0 10px;
+  text-decoration: none;
+}
+.leaflet-control-zoom-in {
+  margin-bottom:6px;
+  border:#bbb 2px solid !important;
+  line-height: 34px !important;
+}
+.leaflet-control-zoom-out {
+  border:#bbb 2px solid !important;
+  line-height: 32px !important;
+}
+.leaflet-top > .info {
+  background-color: rgba(33, 33, 33, 0.5);
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+  min-width: 130px;
+}
+.leaflet-top > .info. b {
+  color: #fff !important;
+}
+#legendHolder {
+  position: absolute;
+  background-color:rgba(33,33,33,0.5);
+  background-color:rgba(255,255,255,0.85);
+  color:#fff !important;
+  bottom:0;
+  right:0;
+  font-size: 14px;
+  z-index: 1000;
+  z-index: 500; /* allows credits to cover bottom */
+  overflow: scroll;
+}
+#allLegends div svg {
+  overflow: visible;
+  
+}
+.leaflet-control-container > div:first-child.leaflet-left { /* zoom control position */
+  left: auto;
+  right: 20px;
+}
+.leaflet-control-container > div:first-child.leaflet-top { /* zoom control position */
+  top: auto;
+  bottom: 20px;
+  z-index: auto;
+}
+/* Layers */
+/*
+.leaflet-control-container > div:nth-child(2).leaflet-right {
+  left: 10px;
+}
+.leaflet-control-container > div:nth-child(2).leaflet-top {
+  bottom: 20px;
+}
+*/
+.leaflet-control-container > div:nth-child(4) {
+  display: none;
+}
 
-  #map1 .leaflet-popup {
-    /* bottom: 17px !important; */  /* Apply when map points used for "google" material icons */
-    /* Need to move map down more when popup is near top.  Default is -7px. */
+#map1 .leaflet-popup {
+  /* bottom: 17px !important; */  /* Apply when map points used for "google" material icons */
+  /* Need to move map down more when popup is near top.  Default is -7px. */
+}
+#floatingButtons {
+  display:none;
+  height:40px;
+  width:100%;
+  position:fixed;
+  bottom:0;
+  background-color:#777;
+  z-index:9999;
+}
+#flexwrapper {
+  padding-topX: 40px;
+}
+#flexwrapper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+#hublist {
+  overflow: auto; /* For scroll. Allows Expand button to remain at bottom */
+  width:56%;
+}
+#mapHolder {
+  padding-left: 20px;
+  width: 44%;
+  min-width: 300px;
+  z-index: 10; /* to exceed right column in external site */
+  position: relative;
+  float:right;
+}
+.detail {
+  cursor: pointer
+}
+#detaillist .detail {
+  position: relative;
+  padding: 12px 10px 4px 10px;
+  border: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  border-radius: 20px;
+}
+#detaillist .detail:hover {
+  background-color: rgb(250, 250, 250, 0.3);
+  border: 1px solid #fff;
+  cursor:pointer;
+}
+#detaillist .detailActive {
+  borderX: 1px solid rgb(204, 204, 204);
+  background-color: rgb(250, 250, 250);
+  paddingX: 12px;
+}
+#detaillist .detailActive:hover {
+  background-color: rgb(250, 250, 250);
+}
+#detaillist .listThumb {
+  margin-left: 15px;
+}
+.dark #detaillist .detail {
+  border: 1px solid #444;
+}
+.dark #detaillist .detail:hover {
+  background-color: rgb(99,99,99, 0.3);
+  border: 1px solid #bbb;
+}
+.detailBullet {
+  width:12px;
+  height:12px;
+  margin-right:6px;
+  float:left;
+}
+#listcolumnList .detailActiveHold {
+  background-color: #333;
+  color: #eee;
+}
+#detaillist > div {
+  margin-bottom:20px;
+}
+#detaillist .detailCurrent {
+  paddingX: 0px;
+}
+#detaillist .detailCurrent:hover {
+  background-color: none;
+  cursor: auto;
+}
+#detaillist .detailTitle {
+  font-size:20px;
+  line-height: 32px;
+  font-weight:400;
+  color:#333;
+}
+.dark #detaillist .detailTitle {
+  color:#eee;
+}
+.popMenu {
+  border:1px solid #ccc;
+  padding: 5px 0 5px 0;
+  z-index: 10;
+  background: #fff;
+  position: absolute;
+  top:0px;
+  right:0px;
+}
+#listingMenu {
+  color: rgb(51, 51, 51);
+  margin-top: 10px;
+}
+#listingMenu > div {
+  padding: 6px 30px 6px 30px;
+}
+#listingMenu > div:hover {
+  background: #eee;
+}
+.showItemMenu {
+  font-size: 24px;
+  line-height: 12px;
+  text-align: center;
+  cursor: pointer;
+  background-color: rgb(210, 210, 210, 0.6);
+  border-radius: 13px;
+  width: 25px;
+  height: 25px;
+}
+.dark .showItemMenu {
+  background-color: rgb(99, 99, 99, 0.6);
+}
+.showItemMenu:hover {
+  cursor: pointer;
+}
+
+.mapHolderBottom {
+  position: absolute;
+  bottom: 11px;
+  width: 100%;
+}
+.mapHolderFixed {
+  position: fixed;
+  z-index: 1;
+  top: 95px;
+  bottom: auto;
+  width: 100%;
+}
+.bodyLeftMarginList .mapHolderFixed, .bodyRightMargin .mapHolderFixed { /* prevent fixed position when narrow */
+  position: static;
+}
+.bodyLeftMarginList .mapHolderBottom, .bodyRightMargin .mapHolderBottom { /* prevent fixed position when narrow */
+  position: static;
+}
+/*
+@media (min-width: 1400px) {
+  .mapHolderFixed {
+    min-width: 600px;
   }
-  #floatingButtons {
-    display:none;
-    height:40px;
-    width:100%;
-    position:fixed;
-    bottom:0;
-    background-color:#777;
-    z-index:9999;
+}
+@media (max-width: 1300px) {
+  .mapHolderFixed {
+    width: 450px;
+  }
+}
+@media (max-width: 1200px) {
+  .mapHolderFixed {
+    width: 380px;
+  }
+}
+*/
+
+#sidemapbar {
+  position: relative;
+  color: #555;
+  font-size: 16px;
+  min-height: 32px;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  background-color: #fff;
+}
+#sidemapMessage {
+  padding: 10px;
+  font-size: 12px;
+}
+
+@media (max-width: 800px) {
+
+  .padding {
+    padding: 20px;
   }
   #flexwrapper {
-    padding-topX: 40px;
-  }
-  #flexwrapper {
-    display: flex;
-    justify-content: space-between;
-    position: relative;
+    display: block;
+    box-sizing: border-box;
   }
   #hublist {
-    overflow: auto; /* For scroll. Allows Expand button to remain at bottom */
-    width:56%;
+    width:auto;
+  }
+  .padding-left {
+    padding-left: 30px;
   }
   #mapHolder {
-    padding-left: 20px;
-    width: 44%;
-    min-width: 300px;
-    z-index: 10; /* to exceed right column in external site */
+    float: none;
+    width: auto;
+    margin-top: 70px;
+    margin-bottom: 30px;
+    padding: 0px;
+  }
+  #mapHolderInner {
     position: relative;
-    float:right;
+    width: auto;
   }
-  .detail {
-    cursor: pointer
-  }
-  #detaillist .detail {
-    position: relative;
-    padding: 12px 10px 4px 10px;
-    border: 1px solid #eee;
-    border-bottom: 1px solid #eee;
-    border-radius: 20px;
-  }
-  #detaillist .detail:hover {
-    background-color: rgb(250, 250, 250, 0.3);
-    border: 1px solid #fff;
-    cursor:pointer;
-  }
-  #detaillist .detailActive {
-    borderX: 1px solid rgb(204, 204, 204);
-    background-color: rgb(250, 250, 250);
-    paddingX: 12px;
-  }
-  #detaillist .detailActive:hover {
-    background-color: rgb(250, 250, 250);
-  }
-  #detaillist .listThumb {
-    margin-left: 15px;
-  }
-  .dark #detaillist .detail {
-    border: 1px solid #444;
-  }
-  .dark #detaillist .detail:hover {
-    background-color: rgb(99,99,99, 0.3);
-    border: 1px solid #bbb;
-  }
-  .detailBullet {
-    width:12px;
-    height:12px;
-    margin-right:6px;
-    float:left;
-  }
-  #listcolumnList .detailActiveHold {
-    background-color: #333;
-    color: #eee;
-  }
-  #detaillist > div {
-    margin-bottom:20px;
-  }
-  #detaillist .detailCurrent {
-    paddingX: 0px;
-  }
-  #detaillist .detailCurrent:hover {
-    background-color: none;
-    cursor: auto;
-  }
-  #detaillist .detailTitle {
-    font-size:20px;
-    line-height: 32px;
-    font-weight:400;
-    color:#333;
-  }
-  .dark #detaillist .detailTitle {
-    color:#eee;
-  }
-  .popMenu {
-    border:1px solid #ccc;
-    padding: 5px 0 5px 0;
-    z-index: 10;
-    background: #fff;
-    position: absolute;
-    top:0px;
-    right:0px;
-  }
-  #listingMenu {
-    color: rgb(51, 51, 51);
-    margin-top: 10px;
-  }
-  #listingMenu > div {
-    padding: 6px 30px 6px 30px;
-  }
-  #listingMenu > div:hover {
-    background: #eee;
-  }
-  .showItemMenu {
-    font-size: 24px;
-    line-height: 12px;
-    text-align: center;
-    cursor: pointer;
-    background-color: rgb(210, 210, 210, 0.6);
-    border-radius: 13px;
-    width: 25px;
-    height: 25px;
-  }
-  .dark .showItemMenu {
-    background-color: rgb(99, 99, 99, 0.6);
-  }
-  .showItemMenu:hover {
-    cursor: pointer;
+  .mapHolderCard {
+    heightX:400px;
+    margin-right: 30px;
+    borderX: 0px solid #fff;
   }
 
-  .mapHolderBottom {
-    position: absolute;
-    bottom: 11px;
-    width: 100%;
-  }
-  .mapHolderFixed {
-    position: fixed;
-    z-index: 1;
-    top: 95px;
-    bottom: auto;
-    width: 100%;
-  }
-  .bodyLeftMarginList .mapHolderFixed, .bodyRightMargin .mapHolderFixed { /* prevent fixed position when narrow */
-    position: static;
-  }
-  .bodyLeftMarginList .mapHolderBottom, .bodyRightMargin .mapHolderBottom { /* prevent fixed position when narrow */
-    position: static;
-  }
-  /*
-  @media (min-width: 1400px) {
-    .mapHolderFixed {
-      min-width: 600px;
-    }
-  }
-  @media (max-width: 1300px) {
-    .mapHolderFixed {
-      width: 450px;
-    }
-  }
-  @media (max-width: 1200px) {
-    .mapHolderFixed {
-      width: 380px;
-    }
-  }
-  */
-
-  #sidemapbar {
-    position: relative;
-    color: #555;
-    font-size: 16px;
-    min-height: 32px;
-    border-top-left-radius: 18px;
-    border-top-right-radius: 18px;
-    background-color: #fff;
-  }
-  #sidemapMessage {
-    padding: 10px;
-    font-size: 12px;
+  #hublist {
+    margin-left: auto;
+    margin-right: auto;
   }
 
-  @media (max-width: 800px) {
-
-    .padding {
-      padding: 20px;
-    }
-    #flexwrapper {
-      display: block;
-      box-sizing: border-box;
-    }
-    #hublist {
-      width:auto;
-    }
-    .padding-left {
-      padding-left: 30px;
-    }
-    #mapHolder {
-      float: none;
-      width: auto;
-      margin-top: 70px;
-      margin-bottom: 30px;
-      padding: 0px;
-    }
-    #mapHolderInner {
-      position: relative;
-      width: auto;
-    }
-    .mapHolderCard {
-      heightX:400px;
-      margin-right: 30px;
-      borderX: 0px solid #fff;
-    }
-
-    #hublist {
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    #floatingButtons {
-      display:block;
-    }
+  #floatingButtons {
+    display:block;
   }
-  @media (max-width: 500px) {
-    h1 {
-      font-size: 30px; 
-      font-weight: 400;
-    }
+}
+@media (max-width: 500px) {
+  h1 {
+    font-size: 30px; 
+    font-weight: 400;
   }
-
-
+}
+.mobileView #hublist {
+  overflow: inherit;
+}
+.mobileView #flexwrapper {
+  display: block;
+}
+.mobileView #mapHolder {
+  min-width: 100%;
+}
 .sidemapCard {
   displayX: none; /* Also reactivate in dual-map. */
 }
@@ -531,6 +538,7 @@ label { /* override Drupal */
   }
   .listTitleStyle {
     font-size: 26px;
+    line-height: 31px;
   }
 }
 #mapInfo {
