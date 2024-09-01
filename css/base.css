@@ -54,6 +54,12 @@ body {
   color: #eee;
   background-color: #333;
 }
+.notdark {
+  color: #333;
+}
+.notdark select {
+  color: #333 !important;
+}
 .bodyIconMargin {
   margin-left: 64px;
 }
