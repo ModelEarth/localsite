@@ -16,8 +16,8 @@
 
 2. **Retrieve Colab Token Secret**
 
-	`from google.colab import userdata
-	`token = userdata.get('YOUR_COLAB_TOKEN_SECRET_NAME')
+		from google.colab import userdata
+		token = userdata.get('YOUR_COLAB_TOKEN_SECRET_NAME')
 
 3. **Set Up User Information**:
 
