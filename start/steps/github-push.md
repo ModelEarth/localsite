@@ -11,9 +11,11 @@
 ### Step 2: Install Git and Set Up User Information
 
 **Install Git**:
+
 		!apt-get install git
 
 **Retrieve Colab Token Secret**:
+
 		from google.colab import userdata
 		token = userdata.get('YOUR_COLAB_TOKEN_SECRET_NAME')
 
@@ -32,16 +34,20 @@
 
 **Specify the Repository URL**:  
 	Construct the repository URL with your GitHub token for authentication:
+
 		repo_url = f"https://{token}@github.com/{USERNAME}/{REPO_NAME}.git"
 
 Clone the repo
+
 		!git clone {repo_url}`
 
 ### Step 4: Move Files to Repo and Move CWD
+
 		!mv YOUR_FILE.CSV YOUR_REPO_PATH
 		%cd YOUR_REPO_PATH
 
 ### Step 5: Add, Commit, and Push Changes
+
 		!git add YOUR_FILE.CSV`
 		!git commit -m "YOUR_MESSAGE"`
 		!git push {repo_url}`
