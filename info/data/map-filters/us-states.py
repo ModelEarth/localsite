@@ -1,7 +1,7 @@
 import json
 import csv
 
-# Adds 2-char abbrec=viation and save us-states.csv
+# Adds 2-char abbreviation and save us-states.csv
 
 # JSON state data from us-states.json
 data = {
