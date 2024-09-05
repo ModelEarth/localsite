@@ -121,11 +121,12 @@ $(document).ready(function() {
 	             '  </div>' +
 	             '  <div style="overflow:auto; min-width:300px">' +
 	             '    <label for="apiKey' + index + '">API Key</label><br>' +
-	             '    <input type="text" class="textInput" id="apiKey' + index + '" style="min-width:300px;width:100%;max-width:540px; margin-bottom:10px">' +
+	             '    <input type="text" class="textInput" id="apiKey' + index + '" style="min-width:140px;max-width:140px;width:100%; margin-bottom:10px">' +
 	             '  </div>' +
 	             '</div>';
 	  return html;
 	}
+	// Above was: min-width:300px;max-width:540px;
 
 	// Apply key-value pairs from the local storage object to the panels
 	function populateRepeatingSections() {
