@@ -313,14 +313,16 @@ function hashChanged() {
             // COUNTRIES
             let element = {};
             element.scope = "countries";
-            element.key = "Country Code";
+            element.key = "Country";
             //element.datasource = "https://model.earth/country-data/population/population-total.csv";
-            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/country-populations.csv";
+            //element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/country-populations.csv";
+            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/countries.csv";
             element.columns = [
                     {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                    {title:"Country Name", field:"Country Name"},
-                    {title:"2010", field:"2010", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
-                    {title:"2020", field:"2020", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}}
+                    {title:"Country Name", field:"CountryName"},
+                    {title:"Population", field:"Population", hozAlign:"right", headerSortStartingDir:"desc", formatterParams:{precision:false}},
+                    {title:"CO2", field:"CO2", hozAlign:"right", headerSortStartingDir:"desc", formatterParams:{precision:false}},
+                    {title:"SqMiles", field:"SqMiles", hozAlign:"right", headerSortStartingDir:"desc"}
                 ];
             loadObjectData(element, 0);
         } else { // For backing up within apps
@@ -2237,6 +2239,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                       } else {
                         hash.state = theStateID;
                       }
+                      //alert("go hash.state " + hash.state)
                       goHash({'state':hash.state,'geoview':'state'});
                 }
               }
@@ -2677,7 +2680,7 @@ function loadObjectData(element, attempts) {
             localObject[element.scope] = {}; // Holds states, countries.
         }
 
-        // Just load from file the first time
+        // Only fetch from a file when page is loaded, otherwise recall from localObject.
         if (Object.keys(localObject[element.scope]).length <= 0) { // state, country (us), countries
             //alert("element.scope " + element.scope + " does not exist yet.");
             if (element.datasource.toLowerCase().endsWith(".csv")) {
@@ -3023,7 +3026,6 @@ function convertCountry3to2char(threeCharCode) {
 }
 
 
-
 var statetable = {};
 var geotable = {};
 function showTabulatorList(element, attempts) {
@@ -3061,26 +3063,27 @@ function showTabulatorList(element, attempts) {
                     console.log("No jurisdiction value " + val["name"]);
                 }
               } else { // countries
-
                 dataForTabulator.push(val);
               }
               //console.log("Scope in Tabulator " + element.scope);
         });
 
+        console.log("dataForTabulator: ");
+        console.log(dataForTabulator);
+
         // For fixed header, also allows only visible rows to be loaded. See "Row Display Test" below.
         // maxHeight:"100%",
 
         // COUNTRY - LIST OF STATES
+        // COUNTRIES - MAP OF WORLD
 
-        //if (!hash.state && typeof stateImpact != 'undefined') {
-        //alert("theStatewait " + theState);
-        // && hash.geoview != "countries"
+        // Both states and countries
         if (hash.geoview == "country" || (!theState && onlineApp )) {
              
             // Showing alert prevents tabulator from loading - it probably runs before a DOM element is available.
             //alert("Load USA states or countries list. element.scope: " + element.scope);
 
-            // BUG - element columns are gone when add &state=NY
+            // BUG - element columns are gone when adding &state=NY
             console.log("element.columns: ");
             console.log(element.columns);
             //if (element.columns) {
@@ -3146,14 +3149,15 @@ function showTabulatorList(element, attempts) {
                         }
                     } else if (hash.geoview == "countries") {
                         //alert("row._row.data.id " + row._row.data["Country Code"])
-                        let countryCode = convertCountry3to2char(row._row.data["Country Code"]);
+                        //let countryCode = convertCountry3to2char(row._row.data["Country Code"]);
+                        
+                        let countryCode = row._row.data["Country"];
                         if (countryCode && !currentCountryIDs.includes(countryCode)) {
-                            
                             currentCountryIDs.push(countryCode);
                         }
                         goHash({'country':currentCountryIDs.toString()});
                     }
-                    if (row._row.data["Country Name"] == "United States") {
+                    if (row._row.data["CountryName"] == "United States") {
                         goHash({'geoview':'country'});
                     } else if(row._row.data.id) {
                         // Prepend new state to existing hash.state.
@@ -3190,8 +3194,8 @@ function showTabulatorList(element, attempts) {
                     }
 
                 })
-                statetable.on("rowDeselected", function(row){
-                    let countryCode = convertCountry3to2char(row._row.data["Country Code"]);
+                statetable.on("rowDeselected", function(row) {
+                    let countryCode = row._row.data["Country"];
                     let filteredCountryArray = currentCountryIDs.filter(item => item !== countryCode);
                     if (hash.geoview == "countries") {
                         goHash({'country':filteredCountryArray.toString()});
