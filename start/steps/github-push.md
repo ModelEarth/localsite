@@ -33,13 +33,13 @@
 ### Step 3: Specify Target Repo url and Clone 
 
 **Specify the Repository URL**:  
-	Construct the repository URL with your GitHub token for authentication:
+	Construct the repository URL with your GitHub token for authentication. This variable needs to be in the same code block with user information variables.
 
 		repo_url = f"https://{token}@github.com/{USERNAME}/{REPO_NAME}.git"
 
 Clone the repo
 
-		!git clone {repo_url}`
+		!git clone {repo_url}
 
 ### Step 4: Move Files to Repo and Move CWD
 
@@ -48,9 +48,9 @@ Clone the repo
 
 ### Step 5: Add, Commit, and Push Changes
 
-		!git add YOUR_FILE.CSV`
-		!git commit -m "YOUR_MESSAGE"`
-		!git push {repo_url}`
+		!git add YOUR_FILE.CSV
+		!git commit -m "YOUR_MESSAGE"
+		!git push {repo_url}
 
 
 # Send Data from Streamlit to GitHub
