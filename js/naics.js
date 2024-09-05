@@ -1,7 +1,6 @@
 // Displays list of industries to identify local areas of impact
 // View at https://model.earth/localsite/info/#state=NY
 
-
 let initialNaicsLoad = true;
 if (typeof dataObject == 'undefined') {
     var dataObject = {};
@@ -589,10 +588,6 @@ function loadIndustryData(hash) {
 
     console.log("naics stateAbbr: " + stateAbbr)
 
-    if (hash.show == "farmfresh" && !stateAbbr) {
-        //stateAbbr = "GA"; // Temp hack - Now occurs in map.js instead.
-    }
-
     if(!stateAbbr) {
         //delete hiddenhash.naics;
         //delete hash.naics;
@@ -799,10 +794,6 @@ function renderIndustryChart(dataObject,values,hash) {
     if (hash.state) {
         stateAbbr = hash.state.split(",")[0].toUpperCase();
         dataObject.stateshown=stateID[stateAbbr.toUpperCase()];
-    } else {
-        // TEMP BUGBUG - until national NAICS generated
-        //stateAbbr = "GA";
-        //dataObject.stateshown="GA";
     }
     if(!hash.catsort){
         hash.catsort = "payann";
@@ -1279,15 +1270,18 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                 if (hash.state) {
                     stateAbbr = hash.state.split(",")[0].toUpperCase();
                 } else {
-                    stateAbbr = "GA"; // Temp HACK to show US
+                    if (hash.beta != "true") {
+                        stateAbbr = "GA"; // Temp HACK to show US
+                    }
                 }
                 if (hash.catsort=="payann"){
                     totalLabel = "Total Payroll ($)";
                 }
                 let thestate = $("#state_select").find(":selected").text();
 
+                //alert("stateAbbr: " + stateAbbr);
                 if (stateAbbr) {
-                //alert("stateAbbr2: " + stateAbbr);
+                
                 //BUGBUG - Contains all the counties in the US
                 d3.csv(local_app.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {
                     d3.csv(local_app.community_data_root() + "us/state/" + stateAbbr + "/" + stateAbbr + "counties.csv").then( function(latdata) {
@@ -1952,23 +1946,21 @@ function applyIO(naics) {
     //naics = {}; // Kill it
     let hash = getHash(); // Includes hiddenhash
     var config = useeio.urlConfig();
-    var modelID = config.get().model || 'USEEIOv2.0.1-411'; // Previously USEEIOv2.0
-
-    // For testing new models added to OpenFootprint in 2024
-    if (location.host.indexOf('localhost') >= 0) {
-        if (hash.state) {
+    let theModel = 'USEEIOv2.0.1-411'; // Previously USEEIOv2.0
+    if (hash.beta == "true") {
+        if (hash.state) { // Prior to 2024 states were GA, ME, MN, OR, WA
             let thestate = hash.state.split(",")[0].toUpperCase();
+            theModel = thestate + "EEIOv1.0-s-20"
 
-            // Initially GA, ME, MN, OR, WA
+            naics = ""; // TEMP. 
 
-            // TO DO - ACTIVATE with OpenFootprint folder.
-            //naics = ""; // TEMP. With transition to 73 Sectors the Naics are not in the models.
-            //modelID = thestate + "EEIOv1.0-s-20"
-
-            //alert("thestate " + thestate);
+            // With transition to 73 Sectors the Naics are not in the models.
+            alert("BETA BUG - With transition to 73 Sectors the NAICS are not in the models. Try testing in io/charts. theModel " + theModel + " - ApplyIO heatmap with naics: " + naics);
         }
     }
-    //alert("modelID " + modelID + " - ApplyIO heatmap with naics: " + naics);
+    var modelID = config.get().model || theModel;
+
+    consoleLog("modelID " + modelID + " - ApplyIO heatmap with naics: " + naics);
     
     var naicsCodes;
     if (naics) {
@@ -2007,11 +1999,14 @@ function applyIO(naics) {
     if (param.iomodel) {
         modelID = param.iomodel;
     }
+    let endpoint = "/io/build/api";
+    if (hash.beta == "true") {
+        endpoint = "/OpenFootprint/impacts/2020";
+    }
     var model = useeio.model({
-        endpoint: '/io/build/api',
+        endpoint: endpoint,
         model: modelID,
-        asJsonFiles: true,
-
+        asJsonFiles: true
     });
     var ioGrid = useeio.ioGrid({
         model: model,
