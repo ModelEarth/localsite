@@ -701,7 +701,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	color: #fff;
 }
 #fullcolumn {
-    overflow: auto;
+    /* overflow: auto; */ /* Caused address auto-complet to be covered by footer. */
     scrollbar-width: none;
     position: relative;
     min-height: 100%; /* For short samples page */
