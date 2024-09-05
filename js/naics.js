@@ -1,5 +1,7 @@
 // Displays list of industries to identify local areas of impact
 // View at https://model.earth/localsite/info/#state=NY
+
+
 let initialNaicsLoad = true;
 if (typeof dataObject == 'undefined') {
     var dataObject = {};
@@ -118,11 +120,12 @@ function refreshNaicsWidget(initialLoad) {
         }
     }
 
-
-    // TO DO: Currently watches only for changes to geo
+    // Exit if no change to: county (geo) or state.
     if (!initialLoad) {
-        if (hash.geo == priorHash_naicspage.geo) {
+        if (!(hash.geo != priorHash_naicspage.geo || hash.state != priorHash_naicspage.state)) {
             console.log("No geo change for refreshNaicsWidget()");
+            priorHash_naicspage = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
+            initialNaicsLoad = false;
             return;
         }
     }
@@ -191,9 +194,9 @@ function refreshNaicsWidget(initialLoad) {
         }
         loadNAICS = true;
     } else if (hash.state != priorHash_naicspage.state) {
-        // Initial load, if there is a state
-        console.log("hash.state change call loadIndustryData(hash)")
-        // Occurs on INIT
+        // Occurs on INIT if there is a state, and when changing the state.
+        //alert("hash.state change call loadIndustryData(hash). hash.state " + hash.state);
+        // Also supports when user has switched from state back to national.
         loadNAICS = true;
     } else if (hash.show != priorHash_naicspage.show) {
         loadNAICS = true;
@@ -209,7 +212,6 @@ function refreshNaicsWidget(initialLoad) {
         loadNAICS = true; // Bubblechart axis change.
         //alert("xyz changed")
     } else {
-
         if (hash.name && hash.name != priorHash_naicspage.name) {
             console.log("Exit refreshNaicsWidget - not for name change");
             // BUGBUG - Only return here if no other sector-related hash changes occured.
@@ -594,12 +596,12 @@ function loadIndustryData(hash) {
     if(!stateAbbr) {
         //delete hiddenhash.naics;
         //delete hash.naics;
-        applyIO("");
+
+        //alert("no state") // applyIO will update to US industry charts
+        applyIO(""); // Loads "Supply Chain Inflow-Outflow" for entire US.
 
         //console.log("ALERT - Hid bubble chart until we send it 73 sectors")
         //$("#bubble-graph-id").hide();
-
-        //alert("no state")
         //renderIndustryChart(dataObject,values,hash);
             
     } else {
@@ -1952,17 +1954,21 @@ function applyIO(naics) {
     var config = useeio.urlConfig();
     var modelID = config.get().model || 'USEEIOv2.0.1-411'; // Previously USEEIOv2.0
 
-    // Waiting for widgets to be updated for state data by Wes's team at the EPA.
-    // Test here:
-    // http://localhost:8887/localsite/info/#show=vehicles&geoview=country&state=GA
+    // For testing new models added to OpenFootprint in 2024
     if (location.host.indexOf('localhost') >= 0) {
-        if (hash.state && (hash.state=="GA" || hash.state=="ME" || hash.state=="MN" || hash.state=="OR" || hash.state=="WA")) {
-            // TO DO - ACTIVATE when folder has content
+        if (hash.state) {
+            let thestate = hash.state.split(",")[0].toUpperCase();
+
+            // Initially GA, ME, MN, OR, WA
+
+            // TO DO - ACTIVATE with OpenFootprint folder.
             //naics = ""; // TEMP. With transition to 73 Sectors the Naics are not in the models.
-            //modelID = hash.state + "EEIOv1.0-s-20"
+            //modelID = thestate + "EEIOv1.0-s-20"
+
+            //alert("thestate " + thestate);
         }
     }
-    console.log("applyIO heatmap with naics: " + naics);
+    //alert("modelID " + modelID + " - ApplyIO heatmap with naics: " + naics);
     
     var naicsCodes;
     if (naics) {
@@ -1996,7 +2002,6 @@ function applyIO(naics) {
     }
 
     var indicatorCodes = indicators.split(',');
-
 
 
     if (param.iomodel) {
