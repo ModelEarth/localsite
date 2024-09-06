@@ -281,8 +281,10 @@ function refreshNaicsWidget(initialLoad) {
 
             let industryLocDataFile = getIndustryLocFileString(hash.catsize);
             if (location.host.indexOf('localhost') >= 0) {
-                // BUGBUG - Occurs everytime state or county changes.
-                $("#tabulator-industrytable-intro").append(" - <a href='" + industryLocDataFile + "''>industryLocDataFile</a>");
+                waitForElm('#tabulator-industrytable-intro').then((elm) => {
+                    // BUGBUG - Occurs everytime state or county changes.
+                    $("#tabulator-industrytable-intro").append(" - <a href='" + industryLocDataFile + "''>" + industryLocDataFile + "</a>");
+                });
             }
             d3.csv(industryLocDataFile).then( function(county_data) {
                 //alert("load it " + hash.catsize);
@@ -2057,6 +2059,9 @@ function getEpaSectors() {
         theModel = thestate + "EEIOv1.0-s-20"
         sectorsJsonFile = "/OpenFootprint/impacts/2020/" + theModel + "/sectors.json"; // 146/2 = 73
     }
+    waitForElm('#tabulator-sectortable-intro').then((elm) => {
+        $("#tabulator-sectortable-intro").text("#tabulator-sectortable - " + sectorsJsonFile)
+    });
     let promises = [
         d3.json(sectorsJsonFile, function(d) {
             // Not reached, so commenting out. But the above line is needed.
