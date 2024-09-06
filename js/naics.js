@@ -1959,7 +1959,7 @@ function applyIO(naics) {
             naics = ""; // TEMP. 
 
             // With transition to 73 Sectors the Naics are not in the models.
-            alert("BETA BUG with transition to 73 Sectors. theModel: " + endpoint + "/" + theModel + " - ApplyIO heatmap with naics: " + naics);
+            alert("BETA BUG with transition to 73 Sectors. Model:\r" + endpoint + "/" + theModel + "\rApplyIO heatmap with naics: " + naics);
         }
     }
     var modelID = config.get().model || theModel;

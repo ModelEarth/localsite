@@ -1228,7 +1228,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   font-weight: 100;
   color: #777;
   letter-spacing: 2px;
-  padding-bottom: 6px;
+  padding-bottom: 5px;
 
   /* Align vertically */
   position: absolute;
