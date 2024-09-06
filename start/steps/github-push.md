@@ -60,3 +60,7 @@ Our Realitystream Streamlit app can push user-generated model performance report
 To configure your credentials, simply copy the example_secrets.toml file to secrets.toml and update it with your own information. The secret is stored under the [.streamlit directory](https://github.com/ModelEarth/RealityStream/tree/main/.streamlit).
 
 When a user runs a model, the report is sent to the specified repository location, and a download option is provided.
+
+# Saving Supabase Key in Google Colab
+
+In the left navigation panel, click on the key icon to input the secret value for your Supabase personal key. Add a new secret, name it 'supabase_key', and paste your key value. Then, grant notebook access to your ExiobaseSupabase Colab.
