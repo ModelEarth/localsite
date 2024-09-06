@@ -1946,6 +1946,10 @@ function applyIO(naics) {
     //naics = {}; // Kill it
     let hash = getHash(); // Includes hiddenhash
     var config = useeio.urlConfig();
+    let endpoint = "/io/build/api";
+    if (hash.beta == "true") {
+        endpoint = "/OpenFootprint/impacts/2020";
+    }
     let theModel = 'USEEIOv2.0.1-411'; // Previously USEEIOv2.0
     if (hash.beta == "true") {
         if (hash.state) { // Prior to 2024 states were GA, ME, MN, OR, WA
@@ -1955,7 +1959,7 @@ function applyIO(naics) {
             naics = ""; // TEMP. 
 
             // With transition to 73 Sectors the Naics are not in the models.
-            alert("BETA BUG - With transition to 73 Sectors the NAICS are not in the models. Try testing in io/charts. theModel " + theModel + " - ApplyIO heatmap with naics: " + naics);
+            alert("BETA BUG with transition to 73 Sectors. theModel: " + endpoint + "/" + theModel + " - ApplyIO heatmap with naics: " + naics);
         }
     }
     var modelID = config.get().model || theModel;
@@ -1998,10 +2002,6 @@ function applyIO(naics) {
 
     if (param.iomodel) {
         modelID = param.iomodel;
-    }
-    let endpoint = "/io/build/api";
-    if (hash.beta == "true") {
-        endpoint = "/OpenFootprint/impacts/2020";
     }
     var model = useeio.model({
         endpoint: endpoint,
@@ -2049,9 +2049,14 @@ function applyIO(naics) {
 // New 73 Sectors
 getEpaSectors();
 function getEpaSectors() {
-    // TO DO - This GA folder became empty. Can we now use all 50 states locally.
-    //let sectorsJsonFile = "/io/build/api/GAEEIOv1.0-s-20/sectors.json"; // 146/2 = 73
+
+    // sectorsJsonFile is not used
     let sectorsJsonFile = "/io/build/api/USEEIOv2.0.1-411/sectors.json"; // 411 sectors
+    if (hash.beta == "true") {
+        let thestate = hash.state.split(",")[0].toUpperCase();
+        theModel = thestate + "EEIOv1.0-s-20"
+        sectorsJsonFile = "/OpenFootprint/impacts/2020/" + theModel + "/sectors.json"; // 146/2 = 73
+    }
     let promises = [
         d3.json(sectorsJsonFile, function(d) {
             // Not reached, so commenting out. But the above line is needed.
