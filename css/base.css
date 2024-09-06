@@ -601,8 +601,8 @@ summary::-webkit-details-marker {
 }
 @media (max-width: 600px) {
   .contentpadding {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 40px;
+    padding-right: 30px;
     min-width: 150px;
   }
 }
@@ -1323,10 +1323,11 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   /* height:82.5px; */
 }
 .headeroffset { /* Does not include bar */
-  height:82.5px;
+  height:79px;
 }
 #local-header {
-  min-height:82.5px;
+  /* min-height:82.5px; */ /* Caused space under current header */
+  min-height:79px;
 }
 @media (max-width: 600px) {
   #headerIcons {
@@ -1735,7 +1736,7 @@ input:checked + .slider:before {
 }
 .large-list h1 {
   font-weight: 700;
-  font-family: Inter,-apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+  font-family: Roboto,Inter,-apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
 }
 .large-list h2 {
   position: relative;

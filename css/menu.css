@@ -550,10 +550,10 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	top: 58px;
 }
 .pagecolumnLower { /* same as #local-header */
-	top:82.5px;
+	top:79px;
 }
 .sideIconsLower {
-  top:82.5px;
+  top:79px;
 }
 @media (max-width: 600px) {
 	.pagecolumnLower {
