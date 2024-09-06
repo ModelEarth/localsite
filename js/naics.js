@@ -1,5 +1,6 @@
 // Displays list of industries to identify local areas of impact
 // View at https://model.earth/localsite/info/#state=NY
+
 let initialNaicsLoad = true;
 if (typeof dataObject == 'undefined') {
     var dataObject = {};
@@ -118,11 +119,12 @@ function refreshNaicsWidget(initialLoad) {
         }
     }
 
-
-    // TO DO: Currently watches only for changes to geo
+    // Exit if no change to: county (geo) or state.
     if (!initialLoad) {
-        if (hash.geo == priorHash_naicspage.geo) {
+        if (!(hash.geo != priorHash_naicspage.geo || hash.state != priorHash_naicspage.state)) {
             console.log("No geo change for refreshNaicsWidget()");
+            priorHash_naicspage = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
+            initialNaicsLoad = false;
             return;
         }
     }
@@ -191,9 +193,9 @@ function refreshNaicsWidget(initialLoad) {
         }
         loadNAICS = true;
     } else if (hash.state != priorHash_naicspage.state) {
-        // Initial load, if there is a state
-        console.log("hash.state change call loadIndustryData(hash)")
-        // Occurs on INIT
+        // Occurs on INIT if there is a state, and when changing the state.
+        //alert("hash.state change call loadIndustryData(hash). hash.state " + hash.state);
+        // Also supports when user has switched from state back to national.
         loadNAICS = true;
     } else if (hash.show != priorHash_naicspage.show) {
         loadNAICS = true;
@@ -209,7 +211,6 @@ function refreshNaicsWidget(initialLoad) {
         loadNAICS = true; // Bubblechart axis change.
         //alert("xyz changed")
     } else {
-
         if (hash.name && hash.name != priorHash_naicspage.name) {
             console.log("Exit refreshNaicsWidget - not for name change");
             // BUGBUG - Only return here if no other sector-related hash changes occured.
@@ -280,8 +281,10 @@ function refreshNaicsWidget(initialLoad) {
 
             let industryLocDataFile = getIndustryLocFileString(hash.catsize);
             if (location.host.indexOf('localhost') >= 0) {
-                // BUGBUG - Occurs everytime state or county changes.
-                $("#tabulator-industrytable-intro").append(" - <a href='" + industryLocDataFile + "''>industryLocDataFile</a>");
+                waitForElm('#tabulator-industrytable-intro').then((elm) => {
+                    // BUGBUG - Occurs everytime state or county changes.
+                    $("#tabulator-industrytable-intro").append(" - <a href='" + industryLocDataFile + "''>" + industryLocDataFile + "</a>");
+                });
             }
             d3.csv(industryLocDataFile).then( function(county_data) {
                 //alert("load it " + hash.catsize);
@@ -587,19 +590,15 @@ function loadIndustryData(hash) {
 
     console.log("naics stateAbbr: " + stateAbbr)
 
-    if (hash.show == "farmfresh" && !stateAbbr) {
-        //stateAbbr = "GA"; // Temp hack - Now occurs in map.js instead.
-    }
-
     if(!stateAbbr) {
         //delete hiddenhash.naics;
         //delete hash.naics;
-        applyIO("");
+
+        //alert("no state") // applyIO will update to US industry charts
+        applyIO(""); // Loads "Supply Chain Inflow-Outflow" for entire US.
 
         //console.log("ALERT - Hid bubble chart until we send it 73 sectors")
         //$("#bubble-graph-id").hide();
-
-        //alert("no state")
         //renderIndustryChart(dataObject,values,hash);
             
     } else {
@@ -797,10 +796,6 @@ function renderIndustryChart(dataObject,values,hash) {
     if (hash.state) {
         stateAbbr = hash.state.split(",")[0].toUpperCase();
         dataObject.stateshown=stateID[stateAbbr.toUpperCase()];
-    } else {
-        // TEMP BUGBUG - until national NAICS generated
-        //stateAbbr = "GA";
-        //dataObject.stateshown="GA";
     }
     if(!hash.catsort){
         hash.catsort = "payann";
@@ -1277,15 +1272,18 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                 if (hash.state) {
                     stateAbbr = hash.state.split(",")[0].toUpperCase();
                 } else {
-                    stateAbbr = "GA"; // Temp HACK to show US
+                    if (hash.beta != "true") {
+                        stateAbbr = "GA"; // Temp HACK to show US
+                    }
                 }
                 if (hash.catsort=="payann"){
                     totalLabel = "Total Payroll ($)";
                 }
                 let thestate = $("#state_select").find(":selected").text();
 
+                //alert("stateAbbr: " + stateAbbr);
                 if (stateAbbr) {
-                //alert("stateAbbr2: " + stateAbbr);
+                
                 //BUGBUG - Contains all the counties in the US
                 d3.csv(local_app.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {
                     d3.csv(local_app.community_data_root() + "us/state/" + stateAbbr + "/" + stateAbbr + "counties.csv").then( function(latdata) {
@@ -1950,19 +1948,25 @@ function applyIO(naics) {
     //naics = {}; // Kill it
     let hash = getHash(); // Includes hiddenhash
     var config = useeio.urlConfig();
-    var modelID = config.get().model || 'USEEIOv2.0.1-411'; // Previously USEEIOv2.0
+    let endpoint = "/io/build/api";
+    if (hash.beta == "true") {
+        endpoint = "/OpenFootprint/impacts/2020";
+    }
+    let theModel = 'USEEIOv2.0.1-411'; // Previously USEEIOv2.0
+    if (hash.beta == "true") {
+        if (hash.state) { // Prior to 2024 states were GA, ME, MN, OR, WA
+            let thestate = hash.state.split(",")[0].toUpperCase();
+            theModel = thestate + "EEIOv1.0-s-20"
 
-    // Waiting for widgets to be updated for state data by Wes's team at the EPA.
-    // Test here:
-    // http://localhost:8887/localsite/info/#show=vehicles&geoview=country&state=GA
-    if (location.host.indexOf('localhost') >= 0) {
-        if (hash.state && (hash.state=="GA" || hash.state=="ME" || hash.state=="MN" || hash.state=="OR" || hash.state=="WA")) {
-            // TO DO - ACTIVATE when folder has content
-            //naics = ""; // TEMP. With transition to 73 Sectors the Naics are not in the models.
-            //modelID = hash.state + "EEIOv1.0-s-20"
+            naics = ""; // TEMP. 
+
+            // With transition to 73 Sectors the Naics are not in the models.
+            alert("BETA BUG with transition to 73 Sectors. Model:\r" + endpoint + "/" + theModel + "\rApplyIO heatmap with naics: " + naics);
         }
     }
-    console.log("applyIO heatmap with naics: " + naics);
+    var modelID = config.get().model || theModel;
+
+    consoleLog("modelID " + modelID + " - ApplyIO heatmap with naics: " + naics);
     
     var naicsCodes;
     if (naics) {
@@ -1998,15 +2002,13 @@ function applyIO(naics) {
     var indicatorCodes = indicators.split(',');
 
 
-
     if (param.iomodel) {
         modelID = param.iomodel;
     }
     var model = useeio.model({
-        endpoint: '/io/build/api',
+        endpoint: endpoint,
         model: modelID,
-        asJsonFiles: true,
-
+        asJsonFiles: true
     });
     var ioGrid = useeio.ioGrid({
         model: model,
@@ -2049,9 +2051,17 @@ function applyIO(naics) {
 // New 73 Sectors
 getEpaSectors();
 function getEpaSectors() {
-    // TO DO - This GA folder became empty. Can we now use all 50 states locally.
-    //let sectorsJsonFile = "/io/build/api/GAEEIOv1.0-s-20/sectors.json"; // 146/2 = 73
+    let hash = getHash();
+    // sectorsJsonFile is not used
     let sectorsJsonFile = "/io/build/api/USEEIOv2.0.1-411/sectors.json"; // 411 sectors
+    if (hash.beta == "true") {
+        let thestate = hash.state.split(",")[0].toUpperCase();
+        theModel = thestate + "EEIOv1.0-s-20"
+        sectorsJsonFile = "/OpenFootprint/impacts/2020/" + theModel + "/sectors.json"; // 146/2 = 73
+    }
+    waitForElm('#tabulator-sectortable-intro').then((elm) => {
+        $("#tabulator-sectortable-intro").text("#tabulator-sectortable - " + sectorsJsonFile)
+    });
     let promises = [
         d3.json(sectorsJsonFile, function(d) {
             // Not reached, so commenting out. But the above line is needed.
