@@ -2049,7 +2049,7 @@ function applyIO(naics) {
 // New 73 Sectors
 getEpaSectors();
 function getEpaSectors() {
-
+    let hash = getHash();
     // sectorsJsonFile is not used
     let sectorsJsonFile = "/io/build/api/USEEIOv2.0.1-411/sectors.json"; // 411 sectors
     if (hash.beta == "true") {
