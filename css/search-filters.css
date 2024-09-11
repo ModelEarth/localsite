@@ -81,12 +81,13 @@
   content: url("/localsite/img/icon/hamburger-lite.png");
 }
 #filterFieldsMain {
-    min-height:57px;
+    min-height:54px;
     overflowX: hidden;
     position: relative;
 }
 #stateFiltersHolder {
   padding-right: 40px;
+  max-height: 52px;
 }
 #filterLocations {
   background-color: #eee;
@@ -304,9 +305,9 @@ input.filterClick[type="text"] {
   z-index: 1000;
 }
 #geoListHolder {
-    padding-left: 20px;
-    display: flex;
-    /* flex-flow: column; */
+    displayX: flex;
+    overflow: hidden;
+    padding-right: 20px;
     height: 530px;
     border: 10px solid blue;
 }
@@ -350,6 +351,7 @@ input.filterClick[type="text"] {
   }
   #geoListHolder, .listHolderFooter {
     padding-left: 0px;
+    padding-right: 0px;
   }
   #geomapHolder {
     float: none;
@@ -385,8 +387,8 @@ input.filterClick[type="text"] {
 
 .close-X {
   cursor:pointer;
-  padding:10px 26px 15px 26px;
-  font-size:28px;
+  padding:7px 26px 15px 26px;
+  font-size:23px;
   color:#bbb;
 }
 #honeycombPanel {

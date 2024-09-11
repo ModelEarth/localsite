@@ -115,6 +115,9 @@
   padding: 0 10px;
   text-decoration: none;
 }
+.leaflet-control-layers-overlays label div span, .leaflet-control-layers-selector {
+  pointer-events: auto !important; /* Not working. Passthrough still occurs. Legends still closes with each click. */
+}
 .leaflet-control-zoom-in {
   margin-bottom:6px;
   border:#bbb 2px solid !important;

@@ -12,7 +12,12 @@ Define a new object if localsite library does not exist yet.
 */
 
 var localStart = Date.now(); // A var so waitForVariableNav detects in navigation.js.
-let onlineApp = true;
+
+if(typeof onlineApp == 'undefined') {
+  var onlineApp = true;
+} else {
+  consoleLog("ALERT: Page loads localsite.js more than once.")
+}
 let localsiteTitle = "Localsite";
 let defaultState = "";
 if (location.host.indexOf('localhost') >= 0) {
@@ -946,10 +951,15 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         }
         if (param.display == "everything") {
           let infoFile = theroot + "info/template-charts.html #template-charts"; // Including #template-charts limits to div within page, prevents other includes in page from being loaded.
-          //console.log("Before template Loaded infoFile: " + infoFile);
+          //alert("Before template Loaded infoFile: " + infoFile);
           $("#infoFile").load(infoFile, function( response, status, xhr ) {
-            consoleLog("Info Template Loaded: " + infoFile);
-            $("#industryFilters").appendTo("#append_industryFilters");
+
+            /*
+            waitForElm('#industryFilters').then((elm) => {
+              alert("Info Template Loaded: " + infoFile);
+              $("#industryFilters").appendTo("#append_industryFilters");
+            });
+            */
           });
         }
 
@@ -2623,6 +2633,9 @@ function initSitelook() {
       $(".uIn").hide();$(".uOut").show();
     } else {
       $(".uOut").hide();$(".uIn").show();
+    }
+    if (localStorage.gitrepo) {
+      $("#gitrepo").val(localStorage.gitrepo);
     }
 }
 

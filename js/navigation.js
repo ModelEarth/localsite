@@ -15,13 +15,23 @@ localObject.us_stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,
 // Later: localObject.stateZipsLoaded
 
 function hashChanged() {
+
     let loadGeomap = false;
     let hash = getHash(); // Might still include changes to hiddenhash
     console.log("hashChanged() navigation.js");
-    if (hash.geoview == "state" && !hash.state) {
+    if (hash.geoview == "state" && !hash.state) { // When deleting state in URL
+        $(".region_service").text("");
+        // TO DO - Send states to tabulator somewhere. Might be intermitant.
         goHash({"geoview":"country"});
+
+        //goHash({"geoview":""}); // Until states are sent to tabulator. Didn't help, still no state list whe reopening locations tab.
+
         return;
     }
+    // Was getting called for each state checked. 4th check calls hashChanged() 5 times (1 + 4)
+    // Add timestamp to prevent multiple calls
+    consoleLog("nav hash changed " + JSON.stringify(hash));
+
     if (hash.country && hash.country != "US" && !hash.geoview) {
 
         //hash.geoview = "countries"; // This caused top map to be open.
@@ -381,7 +391,6 @@ function hashChanged() {
             $(".locationTabText").text("United States");
         }
 
-        //alert("hash.regiontitle " + hash.regiontitle);
         if(!hash.regiontitle) {
             //alert("OKAY hash.geo before: " + hash.geo);
             delete hiddenhash.loctitle;
@@ -405,7 +414,6 @@ function hashChanged() {
                 */
                 showTitle = hash.show.toTitleCaseFormat();
             }
-
 
             if (hash.show && local_app.loctitle) {
                 $(".region_service").text(local_app.loctitle + " - " + hash.show.toTitleCaseFormat());
@@ -454,6 +462,8 @@ function hashChanged() {
                 */
             } else {
                 ////$(".region_service").text("Top " + $(".locationTabText").text() + " Industries");
+                $(".region_service").text(""); // Clear prior state
+                consoleLog("Clear prior state")
             }
             if (appTitle) {
 
@@ -1547,17 +1557,35 @@ function renderGeomapShapes(whichmap, hash, geoview, attempts) {
   });
 }
 
+function getStateAbbreviation(stateID) {
+  const stateIDs = localObject.us_stateIDs;
+  for (const [abbreviation, id] of Object.entries(stateIDs)) {
+    if (id.toString() === stateID.toString()) {
+      return abbreviation;
+    }
+  }
+  return null; // Return null if no match is found
+}
+
 //var geojsonLayer; // Hold the prior letter. We can use an array or object instead.
 var geoOverlays = {};
 function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
+  // Called for each state in URL hash. Arrives as hash.state with one state each time.
+  let stateAbbr = "";
+  //alert("hash.state " + hash.state);
+  if (hash.state) {
+      stateAbbr = hash.state.split(",")[0].toUpperCase();
+  }
+  if (stateAbbr == "DC") {
+    console.log("TOPOJSON IS NOT AVAILABLE FOR DC");
+    return
+  }
+
  includeCSS3(theroot + 'css/leaflet.css',theroot);
   loadScript(theroot + 'js/leaflet.js', function(results) {
     waitForVariable('L', function() { // Wait for Leaflet
 
-    let stateAbbr = "";
-    if (hash.state) {
-      stateAbbr = hash.state.split(",")[0].toUpperCase();
-    }
+
 
     // Occurs twice in page
     let modelsite = Cookies.get('modelsite');
@@ -2175,11 +2203,25 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                 */
             }
 
+            function newPrimaryState(stateList, stateAbbr) {
+                // Split the string into an array
+                let states = stateList.split(',');
+
+                // Find the index of the stateAbbr in the array
+                let index = states.indexOf(stateAbbr);
+
+                // If stateAbbr is found, move it to the front
+                if (index !== -1) {
+                    states.splice(index, 1); // Remove the stateAbbr from its current position
+                    states.unshift(stateAbbr); // Add it to the front
+                }
+
+                // Return the reorganized list as a string
+                return states.join(',');
+            }
+
             // CLICK SHAPE ON MAP
             function mapFeatureClick(e) {
-
-              
-
               param = loadParams(location.search,location.hash); // param is declared in localsite.js
               var layer = e.target;
               //map.fitBounds(e.target.getBounds()); // Zoom to boundary area clicked
@@ -2198,11 +2240,12 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                   param.geo = fips;
                 }
 
-                //alert("disabled to avoid double call.")
-                //goHash({'geo':param.geo,'regiontitle':''});
+                let primaryState = getStateAbbreviation(layer.feature.properties.STATEFP);
 
-                // Try this
-                goHash({'geo':param.geo});
+                //alert("param.geo: " + param.geo + " state: " + primaryState);
+                
+                let stateList = newPrimaryState(hash.state, primaryState)
+                goHash({'geo':param.geo, 'state':stateList});
 
               } else if (layer.feature.properties.name) { // Full state name
                   let hash = getHash();
@@ -3077,6 +3120,7 @@ function showTabulatorList(element, attempts) {
         // COUNTRY - LIST OF STATES
         // COUNTRIES - MAP OF WORLD
 
+        consoleLog("LOAD TABULATOR (STATES OR COUNTIES)")
         // Both states and countries
         if (hash.geoview == "country" || (!theState && onlineApp )) {
              
@@ -3126,73 +3170,97 @@ function showTabulatorList(element, attempts) {
                 // TO DO: 2-char state needs to be added
                 if(hash.state) {
                     let currentStateIDs = hash.state.split(',');
+
+                    // Prevent "rowSelected" from being called multiple times initially
+                    statetable.off("rowSelected"); // Temporarily disable the rowSelected event
+
                     statetable.on("tableBuilt", function() {
                         //alert("currentStateIDs " + currentStateIDs)
                         statetable.selectRow(currentStateIDs);
+                        statetable.on("rowSelected", function(row) {
+                            // Handle row selection here
+                        });
                     });
                 }
 
+                let rowSelectedTime = 0;
+                const selectionDelay = 500;  // Wait so rowSelected is only invoked once.
+
+                // BUGBUG - this is getting called for every box check when loading tabulator.
                 statetable.on("rowSelected", function(row) {
-                    //alert("statetable rowSelected " + row._row.data.id);
-                    // Important: The incoming 2-char state is a column called "id"
-                    if (!currentRowIDs.includes(row._row.data.id)) {
-                        currentRowIDs.push(row._row.data.id);
-                    }
-                    //if(hash.geo) {
-                        //hash.geo = hash.geo + "," + currentRowIDs.toString();
-                    //  hash.geo = hash.geo + "," + row._row.data.id;
-                    //} else {
-                    if (!hash.geoview || hash.geoview == "state") { // Clicking on counties for a state
-                        if (hash.geo != currentRowIDs.toString()) {
-                            hash.geo = currentRowIDs.toString();
-                            console.log("Got hash.geo " + hash.geo);
+                    let now = Date.now();
+                    if (now - rowSelectedTime > selectionDelay) {
+
+                        //alert("statetable rowSelected " + row._row.data.id);
+                        // Important: The incoming 2-char state is a column called "id"
+                        if (!currentRowIDs.includes(row._row.data.id)) {
+                            currentRowIDs.push(row._row.data.id);
                         }
-                    } else if (hash.geoview == "countries") {
-                        //alert("row._row.data.id " + row._row.data["Country Code"])
-                        //let countryCode = convertCountry3to2char(row._row.data["Country Code"]);
-                        
-                        let countryCode = row._row.data["Country"];
-                        if (countryCode && !currentCountryIDs.includes(countryCode)) {
-                            currentCountryIDs.push(countryCode);
+                        //if(hash.geo) {
+                            //hash.geo = hash.geo + "," + currentRowIDs.toString();
+                        //  hash.geo = hash.geo + "," + row._row.data.id;
+                        //} else {
+                        if (!hash.geoview || hash.geoview == "state") { // Clicking on counties for a state
+                            if (hash.geo != currentRowIDs.toString()) {
+                                hash.geo = currentRowIDs.toString();
+                                console.log("Got hash.geo " + hash.geo);
+                            }
+                        } else if (hash.geoview == "countries") {
+                            //alert("row._row.data.id " + row._row.data["Country Code"])
+                            //let countryCode = convertCountry3to2char(row._row.data["Country Code"]);
+                            
+                            let countryCode = row._row.data["Country"];
+                            if (countryCode && !currentCountryIDs.includes(countryCode)) {
+                                currentCountryIDs.push(countryCode);
+                            }
+                            goHash({'country':currentCountryIDs.toString()});
                         }
-                        goHash({'country':currentCountryIDs.toString()});
-                    }
-                    if (row._row.data["CountryName"] == "United States") {
-                        goHash({'geoview':'country'});
-                    } else if(row._row.data.id) {
-                        // Prepend new state to existing hash.state.
-                        let statesArray = hash.state.split(',');
-                        if ($.inArray(row._row.data.id, statesArray) === -1) {
+                        if (row._row.data["CountryName"] == "United States") {
+                            goHash({'geoview':'country'});
+                        } else if(row._row.data.id) {
                             if (hash.state) {
-                                hash.state = row._row.data.id + ',' + hash.state;
+                                // Prepend new state to existing hash.state.
+                                let statesArray = hash.state.split(',');
+                                if ($.inArray(row._row.data.id, statesArray) === -1) {
+                                    //if (hash.state) {
+                                        hash.state = row._row.data.id + ',' + hash.state;
+                                    //} else {
+                                    //    hash.state = row._row.data.id;
+                                    //}
+                                }
                             } else {
                                 hash.state = row._row.data.id;
                             }
-                        }
-                        goHash({'state':hash.state});
-                    } else if(!hash.geo && row._row.data.StateName) { // Or StateName?
-                        if(row._row.data.statename == "Georgia") { // From state checkboxes
-                            // Temp, later we'll pull from data file or dropdown.
-                            row._row.data.state = "GA";
-                        }
-                        if (!row._row.data.state) {
-                            // TO DO: Get the 2-char abbrev here from the row._row.data.jurisdiction (statename). Better would be to update the source data to include 2-char state.
-                        }
-                        if (!row._row.data.state) {
-                            console.log('%cTO DO: add state abbreviation to data file. ', 'color: green; background: yellow; font-size: 14px');
-                            // This prevents backing up.
-                            goHash({'geoview':'state','geo':'','statename':row._row.data.jurisdiction});
-                        } else {
-                            console.log('%cTO DO: add support for multiple states. ', 'color: green; background: yellow; font-size: 14px');
-                            goHash({'geoview':'state','geo':'','statename':'','state':row._row.data.state});
-                        }
-                    } else {
-                        //console.log("ALERT: filteredArray wasn't available here.")
-                        let filteredArray = currentRowIDs.filter(item => item !== row._row.data.id);
-                        goHash({'state':filteredArray.toString()});
-                        return;
-                    }
+                            //goHash({'state':hash.state});
 
+                            consoleLog("ALERT state checked - called for everybox checked")
+                            delete hiddenhash.naics;
+                            goHash({'state':hash.state, 'naics':''}); // Clears hiddenhash
+
+                        } else if(!hash.geo && row._row.data.StateName) { // Or StateName?
+                            if(row._row.data.statename == "Georgia") { // From state checkboxes
+                                // Temp, later we'll pull from data file or dropdown.
+                                row._row.data.state = "GA";
+                            }
+                            if (!row._row.data.state) {
+                                // TO DO: Get the 2-char abbrev here from the row._row.data.jurisdiction (statename). Better would be to update the source data to include 2-char state.
+                            }
+                            if (!row._row.data.state) {
+                                console.log('%cTO DO: add state abbreviation to data file. ', 'color: green; background: yellow; font-size: 14px');
+                                // This prevents backing up.
+                                goHash({'geoview':'state','geo':'','statename':row._row.data.jurisdiction});
+                            } else {
+                                console.log('%cTO DO: add support for multiple states. ', 'color: green; background: yellow; font-size: 14px');
+                                goHash({'geoview':'state','geo':'','statename':'','state':row._row.data.state});
+                            }
+                        } else {
+                            //console.log("ALERT: filteredArray wasn't available here.")
+                            let filteredArray = currentRowIDs.filter(item => item !== row._row.data.id);
+                            goHash({'state':filteredArray.toString()});
+                            return;
+                        }
+                        rowSelectedTime = now;  // Update the timestamp after processing
+                    }
                 })
                 statetable.on("rowDeselected", function(row) {
                     let countryCode = row._row.data["Country"];
