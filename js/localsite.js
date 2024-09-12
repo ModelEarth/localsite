@@ -2592,6 +2592,7 @@ function initSitelook() {
     let devmode;
     let globecenter;
     let modelsite;
+    let gitrepo;
 
     if(typeof Cookies != 'undefined') {
         if (Cookies.get('sitelook')) {
@@ -2620,6 +2621,10 @@ function initSitelook() {
             $("#modelsite").val(Cookies.get('modelsite'));
             modelsite = Cookies.get('modelsite');
         }
+        if (Cookies.get('gitrepo')) {
+            $("#gitrepo").val(Cookies.get('gitrepo'));
+            gitrepo = Cookies.get('gitrepo');
+        }
     }
     if (param["sitelook"]) { // From URL
         sitelook = param["sitelook"]; 
@@ -2627,15 +2632,13 @@ function initSitelook() {
     setSitelook(sitelook);
     setDevmode(devmode);
     setModelsite(modelsite);
+    setGitrepo(modelsite);
     setGlobecenter(globecenter);
     if (localStorage.email) {
       $("#input123").val(localStorage.email);
       $(".uIn").hide();$(".uOut").show();
     } else {
       $(".uOut").hide();$(".uIn").show();
-    }
-    if (localStorage.gitrepo) {
-      $("#gitrepo").val(localStorage.gitrepo);
     }
 }
 
@@ -2757,7 +2760,13 @@ function geoSuccess(pos) {
 function setModelsite(modelsite) {
   if (modelsite != "") {
     console.log("setModelsite() is not currently used.");
-    // Avoid calling refrehsh here since runs when page loads.
+    // Avoid calling refresh here since runs when page loads.
+  }
+}
+function setGitrepo(modelsite) {
+  if (gitrepo != "") {
+    console.log("setGitrepo() is not currently used.");
+    // Avoid calling refresh here since runs when page loads.
   }
 }
 

@@ -307,6 +307,7 @@ input.filterClick[type="text"] {
 #geoListHolder {
     displayX: flex;
     overflow: hidden;
+    padding-left: 15px;
     padding-right: 20px;
     height: 530px;
     border: 10px solid blue;

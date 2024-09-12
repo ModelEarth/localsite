@@ -5038,6 +5038,22 @@ $(document).on("change", ".sitebasemap", function(event) {
     //event.stopPropagation();
 });
 
+$(document).on("change", "#githome", function(event) { // Public or Dev
+    if (typeof Cookies != 'undefined') {
+        Cookies.set('githome', $("#githome").val());
+    }
+    if ($("#githome").val() == "globe") {
+        getGeolocation(); // User gets prompted for location
+        $("#globeLatitude").val(localStorage.latitude);
+        $("#globeLongitude").val(localStorage.longitude);
+        showEarth("show");
+        setGlobecenter($("#globecenter").val());
+    } else {
+        showEarth("hide");
+        consoleLog("Show Goals Not yet implemented.")
+    }
+});
+
 function setSitesource(sitesource) {
     console.log("setSitesource inactive");
     /*

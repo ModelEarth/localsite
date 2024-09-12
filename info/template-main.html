@@ -468,11 +468,12 @@
         <div id="accountPanel" class="menuExpanded topMenuOffset" style="display:none">
           <div class="menuExpandedScroll">
             <div style="font-size:16pt; margin-bottom:20px">Account</div>
+            <div style="font-size:.9em;">
+              Input only resides in your local browser.<br><br>
+            </div>
 
-            <!-- fields here instead from recap -->
-
-            <div style="margin-bottom:5px">Your email address</div>
-            <input id="input123" autocompleteX="off" style="width:100%; min-width:250px" class="mobileWide textInput si-input" type="text" value=""><br><br>
+            <div style="margin-bottom:5px;">Your email address</div>
+            <input id="input123" autocompleteX="off" style="width:100%; min-width:250px;max-width:300px;" class="mobileWide textInput si-input" type="text" value=""><br><br>
 
             <div class="uIn btn btn-success" style="margin-bottom:20px;float:left">Continue</div>
 
@@ -488,9 +489,20 @@
 
             <hr style="clear:both"><br>
 
-            <div style="margin-bottom:5px">Github Home Repo</div>
-            <input id="gitrep" autocompleteX="off" style="width:100%; min-width:250px" class="mobileWide textInput si-input" type="text" value=""><br><br>
+            <div style="margin-bottom:5px">Home Page</div>
+            <div class="setOverflow"><div class="setRight">
+                <select id="githome">
+                  <option value="goals" selected>Goals</option>
+                  <option value="globe">Globe</option>
+                  <option value="custom">My Site</option>
+                </select>
+            </div></div>
+            <div style="font-size:.9em;margin-bottom:5px;clear:both">Github Account/Repo</div>
+            <input id="gitrepo" style="width:100%; min-width:250px; max-width:300px;" class="mobileWide textInput si-input" type="text" value=""><br><br>
 
+            <div style="float:left">
+              <a class="btn btn-success" style="margin:0 0 20px 0; min-width:90px;">Save</a>
+            </div>
             <div style="clear:both"></div>
 
           </div>
