@@ -1,4 +1,4 @@
-# Push from Colab to Github
+# Push files from a Colab to Github
 
 ### Step 1: Retreice GitHub Personal Token
 
@@ -51,3 +51,8 @@ Clone the repo
 		!git add YOUR_FILE.CSV
 		!git commit -m "YOUR_MESSAGE"
 		!git push {repo_url}
+
+# Use Personal Supabase Key in Google Colab
+
+In the left navigation panel, click on the key icon to input the secret value for your Supabase personal key. Add a new secret, name it 'supabase_key', and paste your key value. Then, grant notebook access to your ExiobaseSupabase Colab.
+
