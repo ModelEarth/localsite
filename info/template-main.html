@@ -97,6 +97,13 @@
               </div>
 
               -->
+              <div class="local" style="display:none">
+                <div class="showDesktop rightTopItem">
+                    <i class="material-icons menuTopIcon">&#xE1B1;</i>
+                    <span>Home</span>
+                </div>
+              </div>
+
               <div class="hideEmbed">
                   <div class="showSections rightTopItem active" style="padding-top:14px; padding-right:10px">
                       <i class="material-icons menuTopIcon">&#xE5C3;</i>
@@ -157,13 +164,6 @@
               <div class="showSettings rightTopItem">
                   <i class="material-icons menuTopIcon">&#xE8B8;</i>
                   <span>Settings</span>
-              </div>
-
-              <div class="local" style="display:none">
-                <div class="showDesktop rightTopItem">
-                    <i class="material-icons menuTopIcon">&#xE1B1;</i>
-                    <span>Desktop</span>
-                </div>
               </div>
 
               <!--
@@ -458,7 +458,23 @@
         <!-- Desktop Panel -->
         <div id="desktopPanel" class="menuExpanded topMenuOffset" style="display:none; font-size: 18.5px;">
           <div class="menuExpandedScroll always-show-scroll">
-              <div id="desktopDiv" class="menuTitle">Desktop</div>
+
+              <div style="margin-bottom:5px">My Home Page</div>
+              <div class="setOverflow"><div class="setRight">
+                  <select id="githome">
+                    <option value="goals" selected>Goals</option>
+                    <option value="globe">Globe</option>
+                    <option value="custom">My Site</option>
+                  </select>
+              </div></div>
+              <div style="font-size:.9em;margin-bottom:5px;clear:both">Github Account/Repo</div>
+              <input id="gitrepo" style="width:100%; min-width:250px; max-width:300px;" class="mobileWide textInput si-input" type="text" value=""><br><br>
+
+              <div style="float:left">
+                <a class="btn btn-success" style="margin:0 0 20px 0; min-width:90px;">Save</a>
+              </div>
+              <div style="clear:both"></div>
+
               <br><br><br>
           </div>
         </div>
@@ -485,25 +501,6 @@
             <div style="float:left">
               <a class="uOut btn btn-primary" style="margin:0 0 20px 0;">Log Out</a>
             </div>
-
-
-            <hr style="clear:both"><br>
-
-            <div style="margin-bottom:5px">Home Page</div>
-            <div class="setOverflow"><div class="setRight">
-                <select id="githome">
-                  <option value="goals" selected>Goals</option>
-                  <option value="globe">Globe</option>
-                  <option value="custom">My Site</option>
-                </select>
-            </div></div>
-            <div style="font-size:.9em;margin-bottom:5px;clear:both">Github Account/Repo</div>
-            <input id="gitrepo" style="width:100%; min-width:250px; max-width:300px;" class="mobileWide textInput si-input" type="text" value=""><br><br>
-
-            <div style="float:left">
-              <a class="btn btn-success" style="margin:0 0 20px 0; min-width:90px;">Save</a>
-            </div>
-            <div style="clear:both"></div>
 
           </div>
         </div>

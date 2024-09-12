@@ -873,7 +873,7 @@ function showSideTabs() {
             } else if (hash.sidetab == "settings") {
                 $(".showSettings").addClass("active");
                 $(".settingsPanel").show();
-            } else if (hash.sidetab == "desktop") {
+            } else if (hash.sidetab == "home") {
                 $(".showDesktop").addClass("active");
                 $("#desktopPanel").show();
             } else if (hash.sidetab == "account") {
@@ -4945,7 +4945,7 @@ document.addEventListener('click', function(event) {
         event.stopPropagation();
     }
     if (event.target.classList.contains('showDesktop')) { // Was .showDesktopNav
-        goHash({'sidetab':'desktop'});
+        goHash({'sidetab':'home'});
         event.stopPropagation();
     }
 });
