@@ -51,16 +51,3 @@ Clone the repo
 		!git add YOUR_FILE.CSV
 		!git commit -m "YOUR_MESSAGE"
 		!git push {repo_url}
-
-
-# Send Data from Streamlit to GitHub
-
-Our Realitystream Streamlit app can push user-generated model performance reports directly to a designated repository location [/output/user_generated_json](https://github.com/ModelEarth/RealityStream/tree/main/output/user_generated_json). 
-
-To configure your credentials, simply copy the example_secrets.toml file to secrets.toml and update it with your own information. The secret is stored under the [.streamlit directory](https://github.com/ModelEarth/RealityStream/tree/main/.streamlit).
-
-When a user runs a model, the report is sent to the specified repository location, and a download option is provided.
-
-# Use Personal Supabase Key in Google Colab
-
-In the left navigation panel, click on the key icon to input the secret value for your Supabase personal key. Add a new secret, name it 'supabase_key', and paste your key value. Then, grant notebook access to your ExiobaseSupabase Colab.
