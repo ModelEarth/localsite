@@ -459,20 +459,24 @@
         <div id="desktopPanel" class="menuExpanded topMenuOffset" style="display:none; font-size: 18.5px;">
           <div class="menuExpandedScroll always-show-scroll">
 
-              <div style="margin-bottom:5px">My Home Page</div>
+              <div style="margin-bottom:5px">Display</div>
               <div class="setOverflow"><div class="setRight">
-                  <select id="githome">
-                    <option value="custom">My GitHub Site</option>
+                  <select id="mainhero">
+                    <option value="gitrepo">My GitHub Site</option>
                     <option value="goals" selected>Global Timelines</option>
                     <option value="globe">Weather Explorer</option>
                   </select>
               </div></div>
-              <div style="font-size:.9em;margin-bottom:5px;clear:both">Github Account/Repo</div>
-              <input id="gitrepo" style="width:100%; min-width:250px; max-width:300px;" class="mobileWide textInput si-input" type="text" value=""><br><br>
 
-              <div style="float:left">
-                <a class="btn btn-success" style="margin:0 0 20px 0; min-width:90px;">Save</a>
+              <div id="gitrepoHolder">
+                <div style="font-size:.9em;margin-bottom:5px;clear:both">Github Account/Repo</div>
+                <input id="gitrepo" style="width:100%; min-width:250px; max-width:300px;" class="mobileWide textInput si-input" type="text" value=""><br><br>
+
+                <div style="float:left">
+                  <a class="btn btn-success" style="margin:0 0 20px 0; min-width:90px;">Save</a>
+                </div>
               </div>
+
               <div style="clear:both"></div>
 
               <br><br><br>

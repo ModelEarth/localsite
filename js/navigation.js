@@ -5038,19 +5038,27 @@ $(document).on("change", ".sitebasemap", function(event) {
     //event.stopPropagation();
 });
 
-$(document).on("change", "#githome", function(event) { // Public or Dev
+$(document).on("change", "#mainhero", function(event) { // Public or Dev
     if (typeof Cookies != 'undefined') {
-        Cookies.set('githome', $("#githome").val());
+        Cookies.set('mainhero', $("#mainhero").val());
     }
-    if ($("#githome").val() == "globe") {
+    if ($("#mainhero").val() == "globe") {
         getGeolocation(); // User gets prompted for location
         $("#globeLatitude").val(localStorage.latitude);
         $("#globeLongitude").val(localStorage.longitude);
         showEarth("show");
         setGlobecenter($("#globecenter").val());
+        $("#mainHero").hide();
     } else {
-        showEarth("hide");
-        consoleLog("Show Goals Not yet implemented.")
+        $("#globalMapHolder").hide();
+        $("#mainHero").show();
+        console.log("Not yet fully implemented.");
+    }
+
+    if ($("#mainhero").val() == "gitrepo") {
+        $("#gitrepoHolder").show();
+    } else {
+        $("#gitrepoHolder").hide();
     }
 });
 
@@ -5123,7 +5131,11 @@ function showEarth(show) {
     } else {
         includeCSS3('/localsite/css/leaflet.css',''); // For zoom icons
         //$("#globalMapHolder").hide(); // Home page nullschool map.
-        closeSideTabs();
+        $("#globalMapHolder").show();
+
+        // TO DO: Close if mobile
+        //closeSideTabs();
+
         $("#hero_holder").hide();
         // Add a setting to choose map: Temperatures or just wind
         // Big blue: https://earth.nullschool.net/#current/wind/surface/level/orthographic=-35.06,40.67,511
