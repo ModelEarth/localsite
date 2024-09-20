@@ -881,22 +881,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
         //event.stopPropagation();
       });
-      $(document).on("click", ".uIn", function(event) {
-        var email = $('#input123').val();
-        if (isValidEmail(email)) {
-          localStorage.email = email;
-          if (isValid(email)) {
-            Cookies.set('golog', window.location.href);
-            window.location = "/explore/menu/login/azure/";
-            return;
-          } else {
-            window.location = "/";
-          }
-        } else {
-          alert("email required"); // TO DO: Display in browser
-          $("#input123").focus();
-        }
-      });
+
+
       function isValidEmail(email) {
           var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           return emailRegex.test(email);
@@ -904,6 +890,102 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       function isValid(email) { // loc a
           var vDom=['Z2VvcmdpYS5vcmc=', 'Z2FhcnRzLm9yZw==']; var eDom=email.split('@')[1]; for (var i = 0; i < vDom.length; i++) {if (eDom === atob(vDom[i])) {return true;}} return false;
       }
+
+      // The handleEvent(e) function is wrapped inside an Immediately Invoked Function Expression (IIFE), 
+      // so it becomes scoped and cannot be accessed from elsewhere in the code.
+      (function() {
+
+          $(document).on("click", ".uIn", function(event) {
+            handleEmail(event);
+          });
+
+          $(document).on('keypress', function(e) {
+            if (e.which === 13 && $('#input123').is(':focus')) { // Return is key code 13.
+                //alert("return")
+                handleEmail(e);
+                //console.log("Return key pressed in #input123");
+            }
+          });
+
+          function handleEmail(e) {
+              // For both keypress and click events
+              let email = $('#input123').val();
+              if (isValidEmail(email)) {
+                localStorage.email = email;
+
+                if (isValid(email)) {
+                  Cookies.set('golog', window.location.href);
+                  window.location = "/explore/menu/login/azure/";
+                  return;
+                } else {
+                  //window.location = "/";
+                }
+
+                if ($("#getGravatar").is(":checked")) {
+                  // BUGBUG - Redirect above will bypass.
+                  loadScript('http://pajhome.org.uk/crypt/md5/md5.js', function(results) {
+                    let userImg = $.gravatar(email);
+                    if (userImg) {
+                      localStorage.userImg = userImg;
+                      //alert("userImg: " + localStorage.userImg)
+                      $("#gravatarImg").html("<img src='" + localStorage.userImg + "' style='width:100%;max-width:200px;border-radius:30px;'><br><br>")
+                    }
+                  });
+                }
+
+              } else {
+                alert("email required"); // TO DO: Display in browser
+                $("#input123").focus();
+              }
+          }
+      })();
+
+      $.gravatar = function(emailAddress, overrides)
+      { // Requires http://pajhome.org.uk/crypt/md5/md5.js
+          //alert("what up2 " + emailAddress);
+            let options = $.extend({
+                // Defaults are not hardcoded here in case gravatar changes them on their end.
+                // integer size: between 1 and 512, default 80 (in pixels)
+                size: '300',
+                // rating: g (default), pg, r, x
+                rating: '',
+                // url to define a default image (can also be one of: identicon, monsterid, wavatar)
+                image: '',
+                // secure
+                secure: true,
+                // support css on img element
+                classes: ''
+            }, overrides);
+
+            let baseUrl = options.secure ? 'https://secure.gravatar.com/avatar/' : 'http://www.gravatar.com/avatar/';
+
+            return baseUrl +
+                hex_md5(emailAddress) +
+                '.jpg?' +
+                (options.size ? 's=' + options.size + '&' : '') +
+                (options.rating ? 'r=' + options.rating + '&' : '') +
+                (options.image ? 'd=' + encodeURIComponent(options.image) : '');
+
+            return $('<img src="' + baseUrl +
+                hex_md5(emailAddress) +
+                '.jpg?' +
+                (options.size ? 's=' + options.size + '&' : '') +
+                (options.rating ? 'r=' + options.rating + '&' : '') +
+                (options.image ? 'd=' + encodeURIComponent(options.image) : '') +
+                '"' +
+                (options.classes ? ' class="' + options.classes + '"' : '') +
+                ' />').bind('error', function()
+                {
+                    $(this).remove();
+                });
+        
+      };
+
+      (function() {
+    function handleEvent(e) {
+        // Your shared logic for both keypress and click events
+    }
+})();
 
       // Load when body div becomes available, faster than waiting for all DOM .js files to load.
       waitForElm('#bodyloaded').then((elm) => {
@@ -1911,9 +1993,11 @@ function showSearchFilter() {
         */
       });
     }
+
     return;
 
 
+    ///////////////////
 
       // NOT CURRENTLY USED
 
@@ -1959,6 +2043,8 @@ function showSearchFilter() {
       // Hide because map is displayed, causing overlap.
       // Could be adjusted to reside left of search filters.
       //$(".quickMenu").hide();
+
+
   }
 }
 function closeSideTabs() {

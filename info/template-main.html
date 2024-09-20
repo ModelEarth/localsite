@@ -488,12 +488,17 @@
         <div id="accountPanel" class="menuExpanded topMenuOffset" style="display:none">
           <div class="menuExpandedScroll">
             <div style="font-size:16pt; margin-bottom:20px">Account</div>
-            <div style="font-size:.9em;">
-              Input only resides in your local browser.<br><br>
-            </div>
+            
 
-            <div style="margin-bottom:5px;">Your email address</div>
+            <div style="margin-bottom:5px;">Email 
+              <span style="font-size:.9em;">- stored only in browser</span></div>
             <input id="input123" autocompleteX="off" style="width:100%; min-width:250px;max-width:300px;" class="mobileWide textInput si-input" type="text" value=""><br><br>
+
+              <div style="margin-bottom:8px">My Image</div>
+              <input type="checkbox" id="getGravatar" style="margin-right:4px" checked><span style="font-size:.9em;">Display <a href="https://gravatar.com/" target="gravatar">my gravatar.com image</a></span>
+            <br><br>
+
+            <div id="gravatarImg"></div>
 
             <div class="uIn btn btn-success" style="margin-bottom:20px;float:left">Continue</div>
 
