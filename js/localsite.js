@@ -2267,7 +2267,7 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
   } else if (attempts < 300) { // Wait and try again
     setTimeout( function() {
       //consoleLog("try loadMarkdown again")
-      loadMarkdown(pagePath, divID, target, attempts+1, callback); // Do we need , callback here?
+      loadMarkdown(pagePath, divID, target, attempts+1, callback);
     }, 30 );
     return;
   } else {
@@ -2367,9 +2367,16 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
         */
       }
 
-      // Append rather than overwrite
-      
-      loadIntoDiv(pageFolder,divID,html,callback);
+      // Appends rather than overwrites
+      loadIntoDiv(pageFolder,divID,html, function() {
+        // Call the main callback after loadIntoDiv finishes
+        if (typeof callback === 'function') {
+          //alert("valid") // BUGBUG Not reaching
+          setTimeout( function() {
+            callback();
+          }, 30 );
+        }
+      });
 
     });
   });
@@ -3162,4 +3169,49 @@ function isValidJSON(str) {
         return false;
     }
 }
+
+// Might move this into a new format.js file. Used in projects repo.
+function formatBuckets(divID) {
+  document.addEventListener('DOMContentLoaded', function() {
+  waitForElm('#' + divID).then((elm) => {
+
+    // BUGBUG not working yet
+    
+    // Get the target element (either by ID or the entire body)
+    var targetElement = divID === 'body' ? document.body : document.getElementById(divID);
+
+    if (!targetElement) {
+        alert(`Element with ID ${divID} not found.`);
+        return;
+    }
+
+    var content = Array.from(targetElement.childNodes);
+    var currentBucket = null;
+
+    content.forEach(function(node) {
+      alert("123 " + node.tagName)
+        if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'H2') {
+            
+            // Create a new .bucket div when encountering an <h2>
+            currentBucket = document.createElement('div');
+            currentBucket.classList.add('bucket');
+
+            var bucketContent = document.createElement('div');
+            bucketContent.classList.add('bucketcontent');
+
+            // Append the <h2> to the bucket content
+            bucketContent.appendChild(node);
+            currentBucket.appendChild(bucketContent);
+
+            // Append the bucket to the target element
+            targetElement.appendChild(currentBucket);
+        } else if (currentBucket) {
+            // Append non-<h2> elements to the current bucket content
+            currentBucket.querySelector('.bucketcontent').appendChild(node);
+        }
+    });
+  });
+  });
+}
+
 consoleLog("end localsite");
