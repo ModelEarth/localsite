@@ -238,6 +238,13 @@ function hashChanged() {
             $("#hero_holder").show(); // Didn't work, so kept #hero_holder visible.
         }
     }
+    if (hash.scope != priorHash.scope) {
+        if (hash.scope) {
+            waitForElm('#datascope_select').then((elm) => {
+                $("#datascope_select").val(hash.scope);
+            })
+        }
+    }
     if (hash.state != priorHash.state) {
         if (hash.geoview) {
             loadGeomap = true;
@@ -341,6 +348,11 @@ function hashChanged() {
             if (typeof relocatedStateMenu != "undefined") {
                 waitForElm('#state_select').then((elm) => {
                     relocatedStateMenu.appendChild(state_select); // For apps hero
+                });
+            }
+            if (typeof relocatedScopeMenu != "undefined") {
+                waitForElm('#scope_select').then((elm) => {
+                    relocatedScopeMenu.appendChild(scope_select); // For apps hero
                 });
             }
             $("#hero_holder").show();
@@ -1196,7 +1208,11 @@ $(document).ready(function() {
         } else {
             goHash({"geoview":this.value});
         }
-        
+    });
+    $(document).on("change", "#datascope_select", function(event) {
+        //alert("#datascope_select changed")
+
+        goHash({"scope":this.value});
     });
     $('.selected_state').on('change', function() {
         //alert("selected_state " + this.getAttribute("id"))
@@ -1204,6 +1220,10 @@ $(document).ready(function() {
         goHash({'name':'','state':this.getAttribute("id")}); // triggers renderGeomapShapes("geomap", hash); // County select map
     });
     $('#region_select').on('change', function() {
+        if(location.host.indexOf('localhost') >= 0) {
+            alert("localhost: #region_select change")
+        }
+        let hash = getHash();
         //alert($(this).attr("geo"))
         //goHash({'regiontitle':this.value,'lat':this.options[this.selectedIndex].getAttribute('lat'),'lon':this.options[this.selectedIndex].getAttribute('lon'),'geo':this.options[this.selectedIndex].getAttribute('geo')});
         hiddenhash.geo = this.options[this.selectedIndex].getAttribute('geo');
@@ -5038,6 +5058,14 @@ $(document).on("change", ".sitebasemap", function(event) {
     //event.stopPropagation();
 });
 
+waitForElm('#mainHero').then((elm) => {
+    waitForElm('#mapFilters').then((elm) => {
+        $("#datascape").prependTo($("#mainHero"));
+        $("#filterFieldsHolder").show();
+        $("#filterFieldsHolder").addClass("dark");
+        //alert("mainhero")
+    });
+});
 $(document).on("change", "#mainhero", function(event) { // Public or Dev
     if (typeof Cookies != 'undefined') {
         Cookies.set('mainhero', $("#mainhero").val());
@@ -6008,6 +6036,9 @@ function openMapLocationFilter() {
     if (typeof state_select_holder != "undefined") {
         state_select_holder.appendChild(state_select); // For apps hero
     }
+    if (typeof scope_select_holder != "undefined") {
+        scope_select_holder.appendChild(scope_select); // For apps hero
+    }
 
     if (hash.geo) {
         let geoDeselect = "";
@@ -6058,6 +6089,9 @@ function closeLocationFilter() {
 
     if (typeof relocatedStateMenu != "undefined") {
         relocatedStateMenu.appendChild(state_select); // For apps hero
+    }
+    if (typeof relocatedScopeMenu != "undefined") {
+        relocatedScopeMenu.appendChild(scope_select); // For apps hero
     }
     $("#hero_holder").show();
 }

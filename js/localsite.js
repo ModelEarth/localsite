@@ -704,6 +704,9 @@ function loadLocalTemplate() {
         relocatedStateMenu.appendChild(state_select); // For apps hero
         $(".stateFilters").hide();
       }
+      if (typeof relocatedScopeMenu != "undefined") {
+        relocatedScopeMenu.appendChild(datascope_select); // For apps hero
+      }
       waitForElm('#filterClickLocation').then((elm) => {
         if (param.showstates != "false") {
             $("#filterClickLocation").show();

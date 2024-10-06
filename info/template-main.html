@@ -949,6 +949,16 @@ document.addEventListener('mousedown', function(e) {
                 <option value="country">United States</option>
                 <option value="state" selected>State</option><!-- was counties -->
               </select>
+              <select id="datascope_select" class="local" style="float:left; display:none">
+                <option value="none">Granularity...</option>
+                <option value="continent">Countinents</option>
+                <option value="country">Countries</option>
+                <option value="state">States/Territories</option>
+                <option value="county">Counties</option>
+                <option value="zip">Postal Codes</option>
+                <option value="person">People</option>
+                <option value="voxel">Brain Voxels</option>
+              </select>
 
               <b><!--States--></b>
               <div id="state_select_holder" class="earth" style="displayX:none;float:left">
