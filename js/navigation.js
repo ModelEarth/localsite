@@ -4636,7 +4636,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
 
                             waitForElm('#navcolumn').then((elm) => { // #navcolumn is appended by this navigation.js script, so typically not needed.
                                 $("#showNavColumn").show();
-                                if(location.host.indexOf("dreamstudio") >= 0) {
+                                if(location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0) {
                                     $("#sidecolumnContent a").each(function() {
                                       $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
                                     });
@@ -4658,7 +4658,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                                         //console.log("location.href index: " + location.href.indexOf("/dreamstudio/"));
                                         if(location.host.indexOf('localhost') >= 0) {
                                             storiesFile = "/dreamstudio/seasons/episodes.md";
-                                        } else if (location.href.indexOf("dreamstudio") >= 0) {
+                                        } else if (location.href.indexOf("dreamstudio") >= 0 || location.href.indexOf("planet.live") >= 0) {
                                             storiesFile = "/seasons/episodes.md";
                                         }
                                         waitForElm('#storiesDiv').then((elm) => {
