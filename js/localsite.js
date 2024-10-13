@@ -734,7 +734,7 @@ function loadLocalTemplate() {
             });
           });
         }
-        if(location.host.indexOf("dreamstudio") >= 0) {
+        if(location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0) {
           $("#dreamstudio-nav a").each(function() {
             $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
           });
