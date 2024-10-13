@@ -4361,18 +4361,21 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         document.head.appendChild($favicon)
       }
     }
-    if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio" || location.href.indexOf("/swarm/") >= 0 || location.href.toLowerCase().indexOf("lineara") >= 0) {
+    if (location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio" || location.href.indexOf("/swarm/") >= 0 || location.href.toLowerCase().indexOf("lineara") >= 0 || location.href.indexOf("planet.live") >= 0) {
+        param.titleArray = [];
+        let siteRoot = "";
         localsiteTitle = "DreamStudio";
         $(".siteTitleShort").text("DreamStudio");
-        param.titleArray = [];
-        //param.headerLogo = "<a href='https://dreamstudio.com'><img src='https://dreamstudio.com/dreamstudio/img/logo/dreamstudio-text.png' style='height:23px'></a>";
-        
-        let siteRoot = "";
+        if (location.href.indexOf("planet.live") >= 0) {
+            localsiteTitle = "Planet.Live";
+            $(".siteTitleShort").text("Planet.Live");
+        } else {
+            if (!param.headerLogo) {
+                param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
+            }
+        }
         if (location.host.indexOf("localhost") >= 0) {
             siteRoot = "/dreamstudio";
-        }
-        if (!param.headerLogo) {
-            param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
         }
         param.headerLogoNoText = "<img src='/storyboard/img/logo/ds/favicon.png' style='float:left;width:38px;margin-right:7px'>";
         if (location.href.indexOf("/seasons") >= 0) {
