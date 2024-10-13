@@ -39,8 +39,13 @@ A redirect loop occurs when using VS Code's built-in live server extension. VS C
 
 If you're not planning to edit, you can simply view the content from the repos below at [model.earth](http://model.earth).
 
+We generally avoid creating branches. Make your edits in a fork, then send a Pull Request (PR). We love when you edit README.md files to help keep our TO DOs current. Add your first name where you're working and send a PR. Also send Loren an email whenever you submit a Pull Request.
+
 To fork the repos you'll be editing, go to [github.com/modelearth](https://github.com/ModelEarth?tab=repositories), choose a repo and click the "Fork" button.  
 Then in your fork, click "Code > Open with Github Desktop".  For repos you won't be editing, you can run the script below to clone.
+
+Also fork the <a href="https://github.com/ModelEarth/localsite">localsite</a> repo so we can review your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart).  
+Turn on GitHub Pages for any repo you fork by clicking the Settings icon, then Pages.
 
 **Step 1.** Fork one or two repos you plan to edit. How to [Fork Repos](https://medium.com/@6unpnp/fork-a-github-repository-and-deploy-its-github-pages-site-d55dc53988d).  
 <!--
@@ -54,15 +59,12 @@ Fork <a href="https://github.com/ModelEarth/requests">Requests</a> if you're pyt
 Fork <a href="https://github.com/ModelEarth/data-commons">Data-Commons</a> if you're adding Observable Framework D3 data visualizations with the Google Data Commons API.   
 Fork <a href="https://github.com/ModelEarth/data-pipeline">Data-Pipeline</a> if you're contributing python to data prep and machine learning projects.  
 
-Also fork the <a href="https://github.com/ModelEarth/localsite">localsite</a> repo so we can review your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart).  
-Turn on GitHub Pages for any repo you fork by clicking the Settings icon, then Pages.
-
 **Step 2.** Enter your GitHub account to include in the install and update cmds below.
 
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
 **Step 3.** Indicate the repos you're planning to edit and have forked.
-(You can avoid cloning the fork of localsite and io, unless you're editing those core repos directly.)
+
 <!-- Also add to checkboxIds array -->
 
 <div style="float:left;font-size:18px;padding-right:20px">
