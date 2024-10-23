@@ -1,25 +1,16 @@
 # Location Map Filters 
 
 1.) [countries.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) for our [country selection filters](#geoview=countries) and [tabulator sample](/data-pipeline/timelines/training/naics/):  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Data Scale**: Population (in Millions), Land Area (in Thousand Sq Miles),  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-CO2 Emissions (in Thousand Metric Tonnes)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[countries-full.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) has data in its original scale.  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Generated from MapFilters Collab - Abhishek L
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Data Scale**: Population (in Millions), Land Area (in Thousand Sq Miles), CO2 Emissions (in Thousand Metric Tonnes)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[countries-full.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) has data in its original scale.  - Both are generated from MapFilters Collab - Abhishek L
 
 2.) [us-states.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) for our [state selection filters](#geoview=country):  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Data Scale**: Population (in Millions), Land Area (in Thousand Sq Miles),  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-CO2 and Methane Emissions (in Thousand Metric Tonnes)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[us-states-full.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) has data in its original scale.  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Generated from MapFilters Collab - Abhishek L
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Data Scale**: Population (in Millions), Land Area (in Thousand Sq Miles), CO2 and Methane Emissions (in Thousand Metric Tonnes)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[us-states-full.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) has data in its original scale.  - Both are generated from MapFilters Collab - Abhishek L
 
 3.) [us-counties.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) for our [county selection filters](#geoview=state&state=AL):  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Data Scale**: Population (in Thousands), Land Area (in Sq Miles),  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-CO2 and Methane Emissions (in Thousand Metric Tonnes)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[us-counties-full.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) has data in its original scale.  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Generated from MapFilters Collab - Abhishek L
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Data Scale**: Population (in Thousands), Land Area (in Sq Miles), CO2 and Methane Emissions (in Thousand Metric Tonnes)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[us-counties-full.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) has data in its original scale.  - Both are generated from MapFilters Collab - Abhishek L
 
 [MapFilters Collab](https://colab.research.google.com/drive/1riRnKUGNGkJZOU6qJoznAxjySInQjnFQ?usp=sharing):  
 This collab stores the data of the latest available year for Population and Emissions on us-counties, us-states and countries level. - Abhishek L
