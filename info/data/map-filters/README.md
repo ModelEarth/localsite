@@ -1,5 +1,7 @@
 # Location Map Filters 
 
+Generated data is sent to [community-data/locations/datacommons](https://github.com/ModelEarth/community-data/tree/master/locations/datacommons)
+
 1.) [countries.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) for our [country selection filters](#geoview=countries) and [tabulator sample](/data-pipeline/timelines/training/naics/):  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Data Scale**: Population (in Millions), Land Area (in Thousand Sq Miles), CO2 Emissions (in Thousand Metric Tonnes)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[countries-full.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) has data in its original scale.  - Both are generated from MapFilters Colab - Abhishek L
@@ -13,7 +15,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[us-counties-full.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) has data in its original scale.  - Both are generated from MapFilters Colab - Abhishek L
 
 [MapFilters Colab](https://colab.research.google.com/drive/1riRnKUGNGkJZOU6qJoznAxjySInQjnFQ?usp=sharing):  
-This CoLab stores the data of the latest available year for Population and Emissions on us-counties, us-states and countries level. - Abhishek L
+This CoLab stores the data of the latest available year for Population and Emissions (CO2 and Methane) on us-counties, us-states and countries level for use in top nav map filters. - Abhishek L
 
 [StateFilter Colab](https://colab.research.google.com/drive/1CsIjLujiiBoGJlIHCBvDZit3QSVg07zR?usp=sharing):  
 This CoLab stores the historic data of all available years for Population and Emissions on us-counties, us-states and countries level. - Abhishek L
