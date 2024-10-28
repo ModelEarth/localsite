@@ -290,7 +290,7 @@ function refreshNaicsWidget(initialLoad) {
         }
 
         // v2
-        if (hash.beta == "true" || location.href.indexOf('/info/naics/') >= 0 || location.href.indexOf('localhost') >= 0) {
+        if (location.host.indexOf('localhost') >= 0 || hash.beta == "true" || location.href.indexOf('/info/naics/') >= 0 || location.href.indexOf('localhost') >= 0) {
 
             $("#industryTableHolder").show();
 
@@ -1290,7 +1290,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                     stateAbbr = hash.state.split(",")[0].toUpperCase();
                 } else {
                     if (hash.beta != "true") {
-                        stateAbbr = "GA"; // Temp HACK to show US
+                        //stateAbbr = "GA"; // Temp HACK to show US
                     }
                 }
                 if (hash.catsort=="payann"){
@@ -1986,16 +1986,16 @@ function applyIO(naics) {
     let hash = getHash(); // Includes hiddenhash
     var config = useeio.urlConfig();
     let endpoint = "/io/build/api";
-    if (hash.beta == "true") {
+    if (location.host.indexOf('localhost') >= 0 || hash.beta == "true") {
         endpoint = "/OpenFootprint/impacts/2020";
     }
-    let theModel = 'USEEIOv2.0.1-411'; // Previously USEEIOv2.0
-    if (hash.beta == "true") {
+    let theModel = 'USEEIOv2.0.1-411';
+    if (location.host.indexOf('localhost') >= 0 || hash.beta == "true") {
         if (hash.state) { // Prior to 2024 states were GA, ME, MN, OR, WA
             let thestate = hash.state.split(",")[0].toUpperCase();
             theModel = thestate + "EEIOv1.0-s-20"
 
-            naics = ""; // TEMP. 
+            //naics = ""; // TEMP. 
 
             // With transition to 73 Sectors the Naics are not in the models.
             alert("BETA BUG with transition to 73 Sectors. Model:\r" + endpoint + "/" + theModel + "\rApplyIO heatmap with naics: " + naics);
@@ -2091,7 +2091,7 @@ function getEpaSectors() {
     let hash = getHash();
     // sectorsJsonFile is not used
     let sectorsJsonFile = "/io/build/api/USEEIOv2.0.1-411/sectors.json"; // 411 sectors
-    if (hash.beta == "true") {
+    if (location.host.indexOf('localhost') >= 0 || hash.beta == "true") {
         let thestate = hash.state.split(",")[0].toUpperCase();
         theModel = thestate + "EEIOv1.0-s-20"
         sectorsJsonFile = "/OpenFootprint/impacts/2020/" + theModel + "/sectors.json"; // 146/2 = 73
