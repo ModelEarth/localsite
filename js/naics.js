@@ -827,7 +827,7 @@ function renderIndustryChart(dataObject,values,hash) {
     }
 
     // Reduce hash to only those used
-    const filteredKeys = ['show','geo','regiontitle','catsort','catsize','catmethod','catpage','catcount','census_scope','naics','state','hs']; // hs not yet implemented for Harmonized System codes.
+    const filteredKeys = ['state','show','geo','regiontitle','catsort','catsize','catmethod','catpage','catcount','census_scope','naics','state','hs']; // hs not yet implemented for Harmonized System codes.
     hash = filteredKeys.reduce((obj, key) => ({ ...obj, [key]: hash[key] }), {});
 
     console.log("hash reduced within naics.js")
@@ -836,7 +836,7 @@ function renderIndustryChart(dataObject,values,hash) {
     let whichHaveChanged = [];
     for (const key in hash) {
       //if (watchingHash.includes(${key})) {
-      console.log("hash[key] " + key + " " + hash[key] + " " + priorHash_naicspage[key])
+      console.log("hash[key] " + key + ": " + hash[key] + " prior: " + priorHash_naicspage[key])
       if (hash[key] != priorHash_naicspage[key]) {
         whichHaveChanged.push(key)
       }
@@ -1992,13 +1992,14 @@ function applyIO(naics) {
     let theModel = 'USEEIOv2.0.1-411';
     if (location.host.indexOf('localhost') >= 0 || hash.beta == "true") {
         if (hash.state) { // Prior to 2024 states were GA, ME, MN, OR, WA
+        
             let thestate = hash.state.split(",")[0].toUpperCase();
             theModel = thestate + "EEIOv1.0-s-20"
 
             //naics = ""; // TEMP. 
 
             // With transition to 73 Sectors the Naics are not in the models.
-            alert("BETA BUG with transition to 73 Sectors. Model:\r" + endpoint + "/" + theModel + "\rApplyIO heatmap with naics: " + naics);
+            console.log("BETA BUG " + theModel + " with transition to 73 Sectors. Model:\r" + endpoint + "/" + theModel + "\rApplyIO heatmap with naics: " + naics);
         }
     }
     var modelID = config.get().model || theModel;
@@ -2092,9 +2093,13 @@ function getEpaSectors() {
     // sectorsJsonFile is not used
     let sectorsJsonFile = "/io/build/api/USEEIOv2.0.1-411/sectors.json"; // 411 sectors
     if (location.host.indexOf('localhost') >= 0 || hash.beta == "true") {
-        let thestate = hash.state.split(",")[0].toUpperCase();
-        theModel = thestate + "EEIOv1.0-s-20"
-        sectorsJsonFile = "/OpenFootprint/impacts/2020/" + theModel + "/sectors.json"; // 146/2 = 73
+        if (hash.state) {
+            let thestate = hash.state.split(",")[0].toUpperCase();
+            theModel = thestate + "EEIOv1.0-s-20"
+            // if (hash.state == "GA" || hash.state == "ME") {
+            sectorsJsonFile = "/OpenFootprint/impacts/2020/" + theModel + "/sectors.json"; // 146/2 = 73
+            //alert(thestate + " sectorsJsonFile " + sectorsJsonFile);
+        }
     }
     waitForElm('#tabulator-sectortable-intro').then((elm) => {
         $("#tabulator-sectortable-intro").text("#tabulator-sectortable - " + sectorsJsonFile)
@@ -2438,3 +2443,4 @@ function callPromises(industryLocDataFile) { // From naics2.js
         showIndustryTabulatorList(0); 
     }
 }
+console.log("end naics.js")
