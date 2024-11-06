@@ -1,13 +1,13 @@
 # Location Map Filters 
 
-Generated data is sent to [community-data/locations/datacommons](https://github.com/ModelEarth/community-data/tree/master/locations/datacommons)
+Generated historical data is sent to [community-data/locations/datacommons](https://github.com/ModelEarth/community-data/tree/master/locations/datacommons).
 
 1.) [countries.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) for our [country selection filters](#geoview=countries) and [tabulator sample](/data-pipeline/timelines/training/naics/):  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Data Scale**: Population (in Millions), Land Area (in Thousand Sq Miles), CO2 Emissions (in Thousand Metric Tonnes)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[countries-full.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) has data in its original scale.  - Both are generated from MapFilters Colab - Abhishek L
 
 2.) [us-states.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) for our [state selection filters](#geoview=country):  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Data Scale**: Population (in Millions), Land Area (in Thousand Sq Miles), CO2 and Methane Emissions (in Thousand Metric Tonnes)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Data Scale**: Population (in Thousands), Land Area (in Thousand Sq Miles), CO2 and Methane Emissions (in Thousand Metric Tonnes)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[us-states-full.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) has data in its original scale.  - Both are generated from MapFilters Colab - Abhishek L
 
 3.) [us-counties.csv](https://github.com/ModelEarth/localsite/tree/main/info/data/map-filters) for our [county selection filters](#geoview=state&state=AL):  
