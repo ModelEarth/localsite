@@ -1331,7 +1331,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 }
 @media (max-width: 600px) {
   #headerIcons {
-    margin-top:0px;
+    margin-top:4px;
   }
   .headerbarheight {
     height:64px;
