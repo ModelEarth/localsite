@@ -362,7 +362,18 @@ function hashChanged() {
             element.columns = [
                     {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
                     {title:"Country Name", field:"CountryName"},
-                    {title:"Population", field:"Population", hozAlign:"right", headerSortStartingDir:"desc", formatterParams:{precision:false}},
+                    {title:"Population", field:"Population", hozAlign:"right", headerSortStartingDir:"desc", 
+                    formatterParams:{precision:false}}
+
+                    /*
+                    sorter: formatType === "simple" ? function(a, b, aRow, bRow, column, dir, sorterParams) {
+                        let aOutput = aRow.getData().output;
+                        let bOutput = bRow.getData().output;
+                        return aOutput - bOutput; // Sort based on the numeric `output` values
+                      } : undefined
+                    */
+                    
+                    ,
                     {title:"CO2", field:"CO2", hozAlign:"right", headerSortStartingDir:"desc", formatterParams:{precision:false}},
                     {title:"SqMiles", field:"SqMiles", hozAlign:"right", headerSortStartingDir:"desc"}
                 ];
@@ -3214,6 +3225,9 @@ function showTabulatorList(element, attempts) {
                 }
                 console.log("dataForTabulator");
                 console.log(dataForTabulator);
+                dataForTabulator.forEach(item => { // For each object in array
+                    item.Population = formatCell(item.Population * 1000000);
+                });
 
                 statetable = new Tabulator("#tabulator-statetable", {
                     data:dataForTabulator,    //load row data from array of objects
@@ -6476,4 +6490,49 @@ function topReached(elem) { // top scrolled out view
   //console.log('offset: ' + $(elem).offset().top + ' height:' + $(elem).height() + ' docViewBottom:' + docViewBottom + ' elemBottom: ' + elemBottom);
   //console.log('topReached elemTop: ' + elemTop);
   return (elemTop < 0);
+}
+
+function formatCell(input, format) {
+    // If format is none or blank, return input as it is.
+    if (format === 'none' || format === '') {
+        return input;
+    }
+    input = parseFloat(input); // Convert input to a number
+    // Format as scientific notation
+    if (format === 'scientific') {
+        return input.toExponential(1);
+    }
+
+    // Format as easy
+    if (input >= 1e12) {
+        // Round to billions
+        return (input / 1e12).toFixed(3) + ' Trillion';
+    } else if (input >= 1e9) {
+        // Round to billions
+        return (input / 1e9).toFixed(1) + ' Billion';
+    } else if (input >= 1e6) {
+        // Round to millions
+        return (input / 1e6).toFixed(1) + ' Million';
+    } else if (input >= 1000) {
+        // Round to thousands
+        return (input / 1000).toFixed(1) + ' K';
+    } else if (input >= 0) {
+        // Round to one decimal. Remove .0
+        console.log("input:" + input + "-")
+        return input.toFixed(1).replace(/\.0$/, '');
+    } else if (input >= 0.0001) {
+        // Round to one decimal
+        return input.toFixed(4);
+    } else if (input >= -1000) {
+        return (input / 1e3).toFixed(1) + ' K';
+    } else if (input >= -1e9) {
+        // Round to -millions
+        return (input / 1e6).toFixed(1).replace(/\.0$/, '') + ' Million';
+    } else if (input >= -1e12) {
+        // Round to -billions
+        return (input / 1e9).toFixed(1).replace(/\.0$/, '') + ' Billion';
+    } else {
+        // Format with scientific notation with one digit after decimal
+        return input.toExponential(1);
+    }
 }
