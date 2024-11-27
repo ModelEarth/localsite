@@ -367,9 +367,9 @@ function hashChanged() {
 
                     /*
                     sorter: formatType === "simple" ? function(a, b, aRow, bRow, column, dir, sorterParams) {
-                        let aOutput = aRow.getData().output;
-                        let bOutput = bRow.getData().output;
-                        return aOutput - bOutput; // Sort based on the numeric `output` values
+                        let aOutput = aRow.getData().populationSort;
+                        let bOutput = bRow.getData().populationSort;
+                        return aOutput - bOutput; // Sort based on the numeric `populationSort` values
                       } : undefined
                     */
                     
