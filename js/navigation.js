@@ -308,13 +308,38 @@ function hashChanged() {
 
             //element.key = "State";
             //element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states.json";
-            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states-edited.csv";
+            //element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states-edited.csv";
+            // https://github.com/ModelEarth/localsite/blob/main/info/data/map-filters/us-states.csv
+            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states.csv";
             element.columns = [
                 {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                {title:"State", field:"id"},
-                {title:"State", field:"StateName"},
-                {title:"Population", field:"population", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}},
-                {title:"CO<sub>2</sub> per capita", field:"CO2_per_capita", hozAlign:"right", formatter:"money", formatterParams:{precision:false}},
+                {title:"State", field:"State", width:68},
+                {title:"State Name", field:"StateName"},
+                {title:"Population", field:"Population", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}
+                ,formatter: function(cell, formatterParams) {
+                    let value = cell.getValue();
+                    return value > 0 ? `${value} million` : value;
+                }
+                },
+                {title:"CO<sub>2</sub> per capita", field:"CO2", hozAlign:"right", formatter:"money", formatterParams:{precision:false}
+                ,formatter: function(cell, formatterParams) {
+                    let value = cell.getValue();
+                    if (value >= 1) {
+                        return `${Math.round(value)}K`;  // Remove decimals if >= 1
+                    } else if (value > 0) {
+                        return `${value}K`;  // Keep decimals for values between 0 and 1
+                    }
+                    return value;  // No suffix if the value is 0
+                }
+                },
+                {title:"Methane", field:"Methane", hozAlign:"right", formatter:"money", formatterParams:{precision:false},formatter: function(cell, formatterParams) {
+                    let value = cell.getValue();
+                    return value > 0 ? `${value}K` : value;
+                }},
+                {title:"SqMiles", field:"SqMiles", hozAlign:"right", headerSortStartingDir:"desc",formatter: function(cell, formatterParams) {
+                    let value = cell.getValue();
+                    return value > 0 ? `${value}K` : value;
+                }}
             ];
             // Displays tabulator list of states, but USA map shapes turned red. See also "pink" in this page
             //if (hash.geoview == "country") {
@@ -2601,11 +2626,15 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                 consoleLog("loadStateCounties tabulator for state: " + theState);
 
                 let csvFilePath = local_app.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv";
+                
+                // All states in one file
+                csvFilePath = "/localsite/info/data/map-filters/us-counties.csv";
                 if (hash.geoview == "zip") {
                     csvFilePath = local_app.community_data_root() + "us/zipcodes/zipcodes6.csv";
                 } else if (hash.show == "cameraready" && hash.state == "GA") {
                     csvFilePath = "/localsite/info/data/map-filters/state-county-sections-ga.csv";
                 }
+                //alert("csvFilePath " + csvFilePath)
                 d3.csv(csvFilePath).then(function(myData,error) {
                 //d3.csv(csvFilePath, function(myData) {
                 //d3.csv(csvFilePath).then(function(error,myData) {
@@ -2664,13 +2693,26 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
 
                                 //BUGBUG - Also need to check that state was not already added.
                                 let geoElement = {};
-                                geoElement.id = "US" + d.GEOID;
-                                //geoElement.county = d.NAME;
-                                geoElement.name = d.NAME + " County, " + theState;
-                                geoElement.state = theState;
-                                geoElement.sqmiles = d.sq_miles;
-                                geoElement.pop = d.totalpop18;
-                                geoElement.permile = d.perMile;
+
+                                //geoElement.id = "US" + d.GEOID;
+
+                                if (d.FIPS.length == 4) {
+                                    geoElement.id = "US0" + d.FIPS;
+                                } else {
+                                    geoElement.id = "US" + d.FIPS;
+                                }
+                                geoElement.name = d.CountyName + " County, " + theState;
+                                geoElement.pop = d.Population;
+                                geoElement.co2 = d.CO2;
+                                geoElement.methane = d.Methane;
+                                geoElement.sqmiles = d.SqMiles;
+                                
+                                geoElement.county = d.NAME;
+                                geoElement.state = d.State; // theState;
+                                //geoElement.sqmiles = d.sq_miles;
+                                //geoElement.pop = d.totalpop18;
+                                //geoElement.permile = d.perMile;
+                                
 
                                 localObject.geo.push(geoElement); 
                              }
@@ -3165,7 +3207,7 @@ function showTabulatorList(element, attempts) {
                 // element.columns were gone!
                 // Example http://localhost:8887/apps/ev/#geoview=country  then add &state=NY
                 
-                // Called twice when clicking state checkbox. Seems to update map (select state) on second pass only.
+                // Was called twice when clicking state checkbox. Seems to update map (select state) on second pass only.
                 if(location.host.indexOf('localhost') >= 0) {
                     //alert("Localhost alert (was called twice when clicking state checkbox.) element.columns " + element.columns);
                 }
@@ -3206,7 +3248,7 @@ function showTabulatorList(element, attempts) {
                 let rowSelectedTime = 0;
                 const selectionDelay = 500;  // Wait so rowSelected is only invoked once.
 
-                // BUGBUG - this is getting called for every box check when loading tabulator.
+                // Called for every box check when loading tabulator.
                 statetable.on("rowSelected", function(row) {
                     let now = Date.now();
                     if (now - rowSelectedTime > selectionDelay) {
@@ -3344,11 +3386,25 @@ function showTabulatorList(element, attempts) {
                     rowData = localObject.geo.filter(function(el){return el.state == theState.split(",")[0].toUpperCase();}); // load row data from array of objects
                     columnArray = [
                         {formatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                        
+                        // See geoElement.pop etc above
                         {title:"County", field:"name", width:170},
-                        {title:"Population", field:"pop", width:110, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false}},
-                        {title:"Sq Miles", field:"sqmiles", width:90, hozAlign:"right", sorter:"number"},
-                        {title:"Per Mile", field:"permile", width:100, hozAlign:"right", sorter:"number"},
+                        {title:"Population", field:"pop", width:110, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
+                        formatterParams) {
+                            let value = cell.getValue();
+                            return value > 0 ? value % 1 === 0 ? `${value}.00 million` : value.toString().split(".")[1].length === 1 ? `${value}0 million` : `${value} million` : value === 0 ? "0" : "";
+                        }},
+                        {title:"CO2", field:"co2", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                            let value = cell.getValue();
+                            return value > 0 ? `${value}K` : value;
+                        }},
+                        {title:"Methane", field:"methane", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                            let value = cell.getValue();
+                            return value > 0 ? `${value}K` : value;
+                        }},
+                        {title:"Sq Miles", field:"sqmiles", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                            let value = cell.getValue();
+                            return value > 0 ? `${value}K` : value;
+                        }},
                     ];
                 }
                 currentRowIDs = [];
@@ -3358,7 +3414,14 @@ function showTabulatorList(element, attempts) {
 
                 // Confirms rowData is available.
                 console.log("showTabulatorList rowData: ");
+                //alert(JSON.stringify(rowData, null, 2));
                 console.log(rowData);
+
+                // TO DO: Avoid this line to select counties throughout country.
+                // Reduce to the current state
+                rowData = rowData.filter(item => item.state === hash.state);
+                //const rowData2 = rowData.filter(item => item.state.trim().toUpperCase() === "GA");
+                //alert(JSON.stringify(rowData2, null, 2));
 
                 geotable = new Tabulator("#tabulator-geotable", {
                     data:rowData,
@@ -3378,20 +3441,22 @@ function showTabulatorList(element, attempts) {
                     selectable:true,
                     movableRows:true,
                 });
+                
                 /*
-                geotable.on("dataSorting", function(sorters){
+                geotable.on("dataSorting", function(sorters){ // Redundant to dataSorted below. Will delete.
                     alert("dataSorting1");
                     updateMapColors("geomap");
                 });
                 */
+
                 geotable.on("dataSorted", function(sorters, rows){
+                    //alert("dataSorted");
                     //sorters - array of the sorters currently applied
                     //rows - array of row components in their new order
-
-                    console.log("REACTIVATE AND TEST")
-                    //updateMapColors("geomap");
+                    updateMapColors("geomap");
                 });
 
+                /*
                 geotable.on("rowSelected", function(row){
                     console.log("rowSelected " + row._row.data.id);
                     if (!currentRowIDs.includes(row._row.data.id)) {
@@ -3415,6 +3480,98 @@ function showTabulatorList(element, attempts) {
                         goHash({'geo':hash.geo});
                     }
                 })
+                */
+
+                function checkFirstColumnCheckbox(row, check) {
+                    if (typeof row.getCell !== "function") {
+                        console.warn("Invalid row object passed:", row);
+                        return;
+                    }
+
+                    const cell = row.getCell(0); // Access the first column cell
+                    if (!cell) {
+                        console.warn("Cell not found in the first column of the row:", row);
+                        return;
+                    }
+
+                    const cellElement = cell.getElement(); // Access the cell's DOM element
+                    const checkbox = cellElement.querySelector("input[type='checkbox']");
+                    if (checkbox) {
+                        checkbox.checked = check; // Set to true to check, false to uncheck
+                        if(location.host.indexOf('localhost') >= 0) {
+                            alert("Localhost - just used checkFirstColumnCheckbox");
+                        }
+                    } else {
+                        console.warn("Checkbox not found in the first column cell:", cellElement);
+                    }
+                }
+
+                // Attach the checkbox click event to prevent propagation
+                geotable.on("rowClick", function(e, row){
+                    if (e.target.type === 'checkbox') {
+                        if(location.host.indexOf('localhost') >= 0) {
+                            alert("checkbox via rowClick - never gets called so probably okay to delete")
+                        }
+                        // Stop the row click event if the checkbox was directly clicked
+                        e.stopPropagation();
+                        //toggleCheckbox(row);
+                    } else {
+                        //alert("row click")
+                        // Gets called for both row and checkbox click.
+                        
+                        if (row.isSelected()) {
+                            checkFirstColumnCheckbox(row, true); // Pass false to uncheck
+                            //row.deselect();
+                        } else {
+                            checkFirstColumnCheckbox(row, false); // uncheck
+                            //row.select();
+                        }
+                        
+                        //toggleCheckbox(row);
+                    }
+
+                    // rowClick is called at end of sequence, so triggering updateMapColors
+                    updateMapColors("geomap");
+                });
+
+                // Function to toggle checkbox and update row selection
+                function toggleCheckbox(row) {
+                    if (row.isSelected()) {
+                        row.deselect();
+                    } else {
+                        row.select();
+                    }
+                }
+
+                // Row selection handler
+                geotable.on("rowSelected", function(row){
+                    console.log("geotable rowSelected " + row._row.data.id);
+                    if (!currentRowIDs.includes(row._row.data.id)) {
+                        //alert("Add to geo in url hash: " + row._row.data.id)
+                        // Updates geo in url hash
+                        currentRowIDs.push(row._row.data.id);
+                    }
+                    
+                    if (hash.geo != currentRowIDs.toString()) {
+                        hash.geo = currentRowIDs.toString();
+                        //alert("goHash rowSelected " + hash.geo);
+                        //alert("rowSelected currentRowIDs call goHash " + currentRowIDs.toString());
+                        goHash({'geo':hash.geo});
+                    }
+                });
+
+                // Row deselection handler
+                geotable.on("rowDeselected", function(row){
+                    currentRowIDs = currentRowIDs.filter(item => item !== row._row.data.id);
+                    alert("rowDeselected currentRowIDs " + currentRowIDs.toString());
+                    if (hash.geo != currentRowIDs.toString()) {
+                        hash.geo = currentRowIDs.toString();
+                        console.log("rowDeselected hash.geo " + hash.geo);
+                        goHash({'geo':hash.geo});
+                    }
+                });
+
+
                 consoleLog("Before Update Map Colors Tabulator list displayed. State: " + theState);
 
                 if(hash.geo) {
@@ -3449,6 +3606,11 @@ function showTabulatorList(element, attempts) {
     }
 }
 function updateSelectedTableRows(geo, geoDeselect, attempts) {
+
+    // Loop until geotable.getRows is available (about 10 times)
+    // This functions DOES NOT cause bug that redirects off geoview and geo from
+    // Texas link and others: http://localhost:8887/io/communities/
+
     console.log("updateSelectedTableRows"); // Got called when removing everything from localsite.js include. Occurs 10 times here: http://localhost:8887/explore/locations/#geo=US13251
                     
     let hash = getHash();
@@ -3494,7 +3656,7 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
 
 function updateMapColors(whichmap) {
     waitForElm('#' + whichmap + " .leaflet-pane").then((elm) => {
-        console.log("Update #" + whichmap + " colors")
+        //alert("updateMapColors #" + whichmap)
         let hash = getHash();
         let layerName = hash.state.split(",")[0].toUpperCase() + " Counties";
         var sortedData = geotable.getData("active").map(function(row) {
@@ -3506,8 +3668,10 @@ function updateMapColors(whichmap) {
             // Add color to this log
             //alert("To debug: Cannot read properties of undefined (reading 'eachLayer')")
 
-            // Not working, but prevents error in subsequent line
-            waitForVariable('geoOverlays[layerName]', function() {
+            // Prevents error in subsequent line
+            //waitForVariable('geoOverlays[layerName]', function() {
+
+                // Make red
 
                 // Working. If it stops working, check if we need to wait for geoOverlays[layerName]
                 geoOverlays[layerName].eachLayer(function(layer) {
@@ -3517,7 +3681,7 @@ function updateMapColors(whichmap) {
                     // Makes the background transparent pink instead of blue. All turn back to blue when clicking.
                     layer.setStyle({ fillColor: "hsl(" + colorIntensity + ", 100%, 50%)" });
                 });
-            });
+            //});
         }
     });
 }
