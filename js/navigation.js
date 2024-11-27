@@ -2708,7 +2708,8 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                                 geoElement.sqmiles = d.SqMiles;
                                 
                                 geoElement.county = d.NAME;
-                                geoElement.state = d.State; // theState;
+                                geoElement.state = d.State;
+
                                 //geoElement.sqmiles = d.sq_miles;
                                 //geoElement.pop = d.totalpop18;
                                 //geoElement.permile = d.perMile;
@@ -3130,9 +3131,9 @@ function convertCountry3to2char(threeCharCode) {
     }
 }
 
-
 var statetable = {};
 var geotable = {};
+
 function showTabulatorList(element, attempts) {
     let currentRowIDs = [];
     let currentCountryIDs = [];
@@ -3419,7 +3420,7 @@ function showTabulatorList(element, attempts) {
 
                 // TO DO: Avoid this line to select counties throughout country.
                 // Reduce to the current state
-                rowData = rowData.filter(item => item.state === hash.state);
+                rowData = rowData.filter(item => item.state === theState);
                 //const rowData2 = rowData.filter(item => item.state.trim().toUpperCase() === "GA");
                 //alert(JSON.stringify(rowData2, null, 2));
 
