@@ -313,13 +313,22 @@ function hashChanged() {
             element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states.csv";
             element.columns = [
                 {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                {title:"State", field:"State", width:68},
+                /* {title:"State", field:"State", width:68}, */
                 {title:"State Name", field:"StateName"},
                 {title:"Population", field:"Population", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}
                 ,formatter: function(cell, formatterParams) {
                     let value = cell.getValue();
                     return value > 0 ? `${value} million` : value;
-                }
+                },
+
+                /*
+                  sorter: formatType === "simple" ? function(a, b, aRow, bRow, column, dir, sorterParams) {
+                    let aOutput = aRow.getData().populationSort;
+                    let bOutput = bRow.getData().populationSort;
+                    return aOutput - bOutput; // Sort based on the numeric `populationSort` values
+                  } : undefined
+                */
+                
                 },
                 {title:"CO<sub>2</sub> per capita", field:"CO2", hozAlign:"right", formatter:"money", formatterParams:{precision:false}
                 ,formatter: function(cell, formatterParams) {
@@ -364,15 +373,6 @@ function hashChanged() {
                     {title:"Country Name", field:"CountryName"},
                     {title:"Population", field:"Population", hozAlign:"right", headerSortStartingDir:"desc", 
                     formatterParams:{precision:false}}
-
-                    /*
-                    sorter: formatType === "simple" ? function(a, b, aRow, bRow, column, dir, sorterParams) {
-                        let aOutput = aRow.getData().populationSort;
-                        let bOutput = bRow.getData().populationSort;
-                        return aOutput - bOutput; // Sort based on the numeric `populationSort` values
-                      } : undefined
-                    */
-                    
                     ,
                     {title:"CO2", field:"CO2", hozAlign:"right", headerSortStartingDir:"desc", formatterParams:{precision:false}},
                     {title:"SqMiles", field:"SqMiles", hozAlign:"right", headerSortStartingDir:"desc"}
