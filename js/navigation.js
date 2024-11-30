@@ -311,43 +311,53 @@ function hashChanged() {
             //element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states-edited.csv";
             // https://github.com/ModelEarth/localsite/blob/main/info/data/map-filters/us-states.csv
             element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states.csv";
+            let formatType = "simple";
+
+            
             element.columns = [
                 {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
                 /* {title:"State", field:"State", width:68}, */
-                {title:"State Name", field:"StateName"},
-                {title:"Population", field:"Population", hozAlign:"right", headerSortStartingDir:"desc", formatter:"money", formatterParams:{precision:false}
+                {title:"State", field:"StateName"},
+                {title:"Pop", field:"Population", width:80, hozAlign:"right", headerSortStartingDir:"desc", formatterParams:{precision:false}
                 ,formatter: function(cell, formatterParams) {
-                    let value = cell.getValue();
-                    return value > 0 ? `${value} million` : value;
-                },
+                    let value = formatCell(cell.getValue() * 1000);
+                    //return value >= 0 ? `` : value;
+                    return value;
+                }
 
+                // We can skip the sorter since formatCell() is applied above.
                 /*
-                  sorter: formatType === "simple" ? function(a, b, aRow, bRow, column, dir, sorterParams) {
-                    let aOutput = aRow.getData().populationSort;
-                    let bOutput = bRow.getData().populationSort;
-                    return aOutput - bOutput; // Sort based on the numeric `populationSort` values
-                  } : undefined
+                ,
+                sorter: formatType === "simple" ? function(a, b, aRow, bRow, column, dir, sorterParams) {
+                    let aOutput = aRow.getData().PopulationSort;
+                    let bOutput = bRow.getData().PopulationSort;
+                    return aOutput - bOutput; // Sort based on the numeric `PopulationSort` values
+                } : undefined
                 */
-                
+
                 },
-                {title:"CO<sub>2</sub> per capita", field:"CO2", hozAlign:"right", formatter:"money", formatterParams:{precision:false}
+                {title:"CO<sub>2</sub>", field:"CO2", hozAlign:"right", formatter:"money", formatterParams:{precision:false}
                 ,formatter: function(cell, formatterParams) {
-                    let value = cell.getValue();
+                    let value = formatCell(cell.getValue() * 1000);
+                    /*
                     if (value >= 1) {
                         return `${Math.round(value)}K`;  // Remove decimals if >= 1
                     } else if (value > 0) {
                         return `${value}K`;  // Keep decimals for values between 0 and 1
                     }
+                    */
                     return value;  // No suffix if the value is 0
                 }
                 },
                 {title:"Methane", field:"Methane", hozAlign:"right", formatter:"money", formatterParams:{precision:false},formatter: function(cell, formatterParams) {
-                    let value = cell.getValue();
-                    return value > 0 ? `${value}K` : value;
+                    let value = formatCell(cell.getValue() * 1000);
+                    //return value > 0 ? `${value}K` : value;
+                    return value;
                 }},
                 {title:"SqMiles", field:"SqMiles", hozAlign:"right", headerSortStartingDir:"desc",formatter: function(cell, formatterParams) {
-                    let value = cell.getValue();
-                    return value > 0 ? `${value}K` : value;
+                    let value = formatCell(cell.getValue() * 1000);
+                    //return value > 0 ? `${value}K` : value;
+                    return value;
                 }}
             ];
             // Displays tabulator list of states, but USA map shapes turned red. See also "pink" in this page
@@ -370,12 +380,20 @@ function hashChanged() {
             element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/countries.csv";
             element.columns = [
                     {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                    {title:"Country Name", field:"CountryName"},
-                    {title:"Population", field:"Population", hozAlign:"right", headerSortStartingDir:"desc", 
-                    formatterParams:{precision:false}}
-                    ,
-                    {title:"CO2", field:"CO2", hozAlign:"right", headerSortStartingDir:"desc", formatterParams:{precision:false}},
-                    {title:"SqMiles", field:"SqMiles", hozAlign:"right", headerSortStartingDir:"desc"}
+                    {title:"Country Name", field:"CountryName", width:140},
+                    {title:"Pop", field:"Population", width:70, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
+                    formatterParams) {
+                        let value = formatCell(cell.getValue() * 1000);
+                        return value;
+                    }},
+                    {title:"CO2", field:"CO2", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        let value = formatCell(cell.getValue() * 1000);
+                        return value;
+                    }},
+                    {title:"Sq Miles", field:"SqMiles", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        let value = formatCell(cell.getValue() * 1000);
+                        return value;
+                    }},
                 ];
             loadObjectData(element, 0);
         } else { // For backing up within apps
@@ -3171,18 +3189,18 @@ function showTabulatorList(element, attempts) {
         let dataForTabulator = [];
         $.each(localObject[element.scope] , function(key,val) { // val is an object
 
+          if (1==2 && element.scope == "state") {
             // Not used for states (country) now that json replaced with csv file.
             // Saving in case we have another json ke-value data source later.
-              if (1==2 && element.scope == "state") {
-                if (val["jurisdiction"]) { // 3 in the state json file don't have a jurisdiction value.
-                    dataForTabulator.push(val);
-                } else {
-                    console.log("No jurisdiction value " + val["name"]);
-                }
-              } else { // countries
+            if (val["jurisdiction"]) { // 3 in the state json file don't have a jurisdiction value.
                 dataForTabulator.push(val);
-              }
-              //console.log("Scope in Tabulator " + element.scope);
+            } else {
+                console.log("No jurisdiction value " + val["name"]);
+            }
+          } else { // countries
+            dataForTabulator.push(val);
+          }
+          //console.log("Scope in Tabulator " + element.scope);
         });
 
         console.log("dataForTabulator: ");
@@ -3223,11 +3241,14 @@ function showTabulatorList(element, attempts) {
                 if(location.host.indexOf('localhost') >= 0) {
                     //alert("Localhost alert (was called twice when clicking state checkbox.) element.columns " + element.columns);
                 }
+
                 console.log("dataForTabulator");
                 console.log(dataForTabulator);
-                dataForTabulator.forEach(item => { // For each object in array
-                    item.Population = formatCell(item.Population * 1000000);
-                });
+                
+                // Remove rows with blank population
+                dataForTabulator = dataForTabulator
+                  .filter(item => item.Population !== "" && item.Population !== null && item.Population !== undefined) 
+                ;
 
                 statetable = new Tabulator("#tabulator-statetable", {
                     data:dataForTabulator,    //load row data from array of objects
@@ -3402,23 +3423,23 @@ function showTabulatorList(element, attempts) {
                     columnArray = [
                         {formatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
                         // See geoElement.pop etc above
-                        {title:"County", field:"name", width:170},
-                        {title:"Population", field:"pop", width:110, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
+                        {title:"County", field:"name", width:140},
+                        {title:"Pop", field:"pop", width:80, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
                         formatterParams) {
-                            let value = cell.getValue();
-                            return value > 0 ? value % 1 === 0 ? `${value}.00 million` : value.toString().split(".")[1].length === 1 ? `${value}0 million` : `${value} million` : value === 0 ? "0" : "";
+                            let value = formatCell(cell.getValue() * 1000);
+                            return value;
                         }},
                         {title:"CO2", field:"co2", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                            let value = cell.getValue();
-                            return value > 0 ? `${value}K` : value;
+                            let value = formatCell(cell.getValue() * 1000);
+                            return value;
                         }},
                         {title:"Methane", field:"methane", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                            let value = cell.getValue();
-                            return value > 0 ? `${value}K` : value;
+                            let value = formatCell(cell.getValue() * 1000);
+                            return value;
                         }},
                         {title:"Sq Miles", field:"sqmiles", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                            let value = cell.getValue();
-                            return value > 0 ? `${value}K` : value;
+                            let value = formatCell(cell.getValue() * 1000);
+                            return value;
                         }},
                     ];
                 }
