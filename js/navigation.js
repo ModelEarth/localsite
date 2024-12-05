@@ -377,7 +377,7 @@ function hashChanged() {
             element.key = "Country";
             //element.datasource = "https://model.earth/country-data/population/population-total.csv";
             //element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/country-populations.csv";
-            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/countries.csv";
+            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/countries.csv"; // Or use the full version
             // 
             element.columns = [
                     {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
@@ -388,6 +388,10 @@ function hashChanged() {
                         return value;
                     }},
                     {title:"CO2", field:"CO2", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        let value = formatCell(cell.getValue() * 1000);
+                        return value;
+                    }},
+                    {title:"Per Capita", field:"co2percap", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
                         let value = formatCell(cell.getValue() * 1000);
                         return value;
                     }},
@@ -2734,7 +2738,9 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                                 geoElement.name = d.CountyName + " County, " + theState;
                                 geoElement.pop = d.Population;
                                 geoElement.co2 = d.CO2;
+                                geoElement.co2percap = d.CO2/d.Population;
                                 geoElement.methane = d.Methane;
+                                geoElement.methanepercap = d.Methane/d.Population;
                                 geoElement.sqmiles = d.SqMiles;
                                 
                                 geoElement.county = d.NAME;
@@ -3419,7 +3425,7 @@ function showTabulatorList(element, attempts) {
                         {formatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
                         {title:"ZIPCODE", field:"name"}
                     ];
-                } else {
+                } else { // Counties
                     rowData = localObject.geo.filter(function(el){return el.state == theState.split(",")[0].toUpperCase();}); // load row data from array of objects
                     columnArray = [
                         {formatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
@@ -3434,12 +3440,20 @@ function showTabulatorList(element, attempts) {
                             let value = formatCell(cell.getValue() * 1000);
                             return value;
                         }},
+                        {title:"Per Capita", field:"co2percap", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                            let value = formatCell(cell.getValue() * 1000);
+                            return value;
+                        }},
                         {title:"Methane", field:"methane", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
                             let value = formatCell(cell.getValue() * 1000);
                             return value;
                         }},
+                        {title:"Per Capita", field:"methanepercap", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                            let value = formatCell(cell.getValue() * 1000);
+                            return value;
+                        }},
                         {title:"Sq Miles", field:"sqmiles", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                            let value = formatCell(cell.getValue() * 100);
+                            let value = formatCell(cell.getValue());
                             return value;
                         }},
                     ];
@@ -6516,8 +6530,9 @@ function topReached(elem) { // top scrolled out view
 
 function formatCell(input, format) {
     // If format is none or blank, return input as it is.
-    if (format === 'none' || format === '') {
-        return input;
+    if (format === 'none' || format === '' || input === '' || input === 0) { // TO DO : Remove input === 0 after removing 0 from processing. Where is it occurring?
+        return ''
+        //return input;
     }
     input = parseFloat(input); // Convert input to a number
     // Format as scientific notation
@@ -6540,7 +6555,7 @@ function formatCell(input, format) {
         return (input / 1000).toFixed(1) + ' K';
     } else if (input >= 0) {
         // Round to one decimal. Remove .0
-        console.log("input:" + input + "-")
+        //console.log("input:" + input + "-")
         return input.toFixed(1).replace(/\.0$/, '');
     } else if (input >= 0.0001) {
         // Round to one decimal
