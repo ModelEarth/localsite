@@ -8,7 +8,7 @@
 	Click on 'Personal access tokens' (classi) and then '[Generate new token](https://github.com/settings/tokens)'.
 
 **Store the Token in Colab**:  
-	Save this token in the Colab notebook's Secrets section as `YOUR_COLAB_TOKEN_SECRET_NAME`. Ensure that the notebook has access to this secret.
+	Save this token in the Colab notebook's Secrets section as `YOUR_COLAB_TOKEN_SECRET_NAME` or `ModelEarth` in the StatesFilter Colab. Ensure that the notebook has access to this secret.
 
 ### Step 2: Install Git and Set Up User Information
 
