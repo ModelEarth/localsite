@@ -378,12 +378,13 @@ function hashChanged() {
             //element.datasource = "https://model.earth/country-data/population/population-total.csv";
             //element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/country-populations.csv";
             element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/countries.csv";
+            // 
             element.columns = [
                     {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
                     {title:"Country Name", field:"CountryName", width:140},
                     {title:"Pop", field:"Population", width:70, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
                     formatterParams) {
-                        let value = formatCell(cell.getValue() * 1000);
+                        let value = formatCell(cell.getValue() * 1000000);
                         return value;
                     }},
                     {title:"CO2", field:"CO2", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
@@ -3438,7 +3439,7 @@ function showTabulatorList(element, attempts) {
                             return value;
                         }},
                         {title:"Sq Miles", field:"sqmiles", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                            let value = formatCell(cell.getValue() * 1000);
+                            let value = formatCell(cell.getValue() * 100);
                             return value;
                         }},
                     ];
