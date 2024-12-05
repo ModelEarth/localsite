@@ -1,10 +1,12 @@
 # Push files from a Colab to Github
 
-### Step 1: Retreice GitHub Personal Token
+### Step 1: Retrieve GitHub Personal Token
 
 **Create a Personal Access Token**:  
 	Generate a personal access token on GitHub with the necessary `repo` permissions.
-    
+    In your GitHub account, navigate to Settings, then to Developer settings (lower left).
+	Click on 'Personal access tokens' (classi) and then '[Generate new token](https://github.com/settings/tokens)'.
+
 **Store the Token in Colab**:  
 	Save this token in the Colab notebook's Secrets section as `YOUR_COLAB_TOKEN_SECRET_NAME`. Ensure that the notebook has access to this secret.
 
