@@ -372,35 +372,67 @@ function hashChanged() {
             loadStateCounties(0);
         } else if (hash.geoview == "countries") {
             // COUNTRIES
-            let element = {};
-            element.scope = "countries";
-            element.key = "Country";
-            //element.datasource = "https://model.earth/country-data/population/population-total.csv";
-            //element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/country-populations.csv";
-            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/countries.csv"; // Or use the full version
-            // 
-            element.columns = [
-                    {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                    {title:"Country Name", field:"CountryName", width:140},
-                    {title:"Pop", field:"Population", width:70, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
-                    formatterParams) {
-                        let value = formatCell(cell.getValue() * 1000000);
-                        return value;
-                    }},
-                    {title:"CO2", field:"CO2", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                        let value = formatCell(cell.getValue() * 1000);
-                        return value;
-                    }},
-                    {title:"Per Capita", field:"co2percap", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                        let value = formatCell(cell.getValue() * 1000);
-                        return value;
-                    }},
-                    {title:"Sq Miles", field:"SqMiles", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                        let value = formatCell(cell.getValue() * 1000);
-                        return value;
-                    }},
-                ];
-            loadObjectData(element, 0);
+            //const csvFilePath = "https://model.earth/country-data/population/population-total.csv";
+            //const csvFilePath = local_app.modelearth_root() + "/localsite/info/data/map-filters/country-populations.csv";
+                
+            const csvFilePath = local_app.modelearth_root() + "/localsite/info/data/map-filters/countries.csv"; // Or use the full version
+            d3.csv(csvFilePath).then(function(myData) {
+                // Add PerCapita field to each row
+                const processedData = myData.map(row => {
+                    const population = parseFloat(row.Population); // Ensure Population is treated as a number
+                    const co2 = parseFloat(row.CO2); // Ensure CO2 is treated as a number
+                    if (isNaN(population) || isNaN(co2)) {
+                        console.warn(`Invalid data in row:`, row);
+                    }
+
+                    return {
+                        ...row,
+                        co2percap: (population > 0 && co2 > 0) ? co2 / population : null, // Add PerCapita or null
+                    };
+                });
+
+                console.log("processedData");
+                console.log(processedData); // Debug: Check processed data
+
+                const element = {};
+                //element.data = processedData;
+                element.scope = "countries";
+                element.key = "Country";
+                element.columns = [
+                        {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
+                        {title:"Country Name", field:"CountryName", minWidth:140},
+                        {title:"Pop", field:"Population", minWidth:70, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
+                        formatterParams) {
+                            let value = formatCell(cell.getValue() * 1000000);
+                            return value;
+                        }},
+                        {title:"CO2", field:"CO2", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                            if (cell.getValue() === '') {return}
+                            let value = formatCell(cell.getValue() * 1000);
+                            return value;
+                        }},
+                        {title:"Per Capita", field:"co2percap", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                            if (isNaN(cell.getValue())) {return} // || cell.getValue() === 0  Not working for American Samoa: http://localhost:8887/localsite/info/data/map-filters/#geoview=countries
+                            let value = formatCell(cell.getValue() * 1000);
+                            return value;
+                        }},
+                        {title:"Sq Miles", field:"SqMiles", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                            let value = formatCell(cell.getValue() * 1000);
+                            return value;
+                        }},
+                    ];
+                //loadObjectData(element, 0); // Was used with datasource, but abandoned when adding co2percap calc above.
+                if(typeof localObject[element.scope] == 'undefined') {
+                    localObject[element.scope] = {}; // Holds states, countries.
+                }
+                // Only fetch from a file when page is loaded, otherwise recall from localObject.
+                if (Object.keys(localObject[element.scope]).length <= 0) {
+                    localObject[element.scope] = $.extend(true, {}, processedData); // Clone/copy object without entanglement
+                    //console.log("localObject[element.scope]");
+                    //console.log(localObject[element.scope]);
+                }
+                showTabulatorList(element, 0);
+            });
         } else { // For backing up within apps
         
             // Since geoview "earth" does uses an iFrame instead of the geomap display.
@@ -2397,11 +2429,11 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                 // Hover over map
                 //this._div.innerHTML = "<h4>Zip code</h4>" + (props ? props.zip + '<br>' + props.name + ' ' + props.state + '<br>' : "Select Locations")
                 
-                // CSS resides in map.css at .leaflet-top > .info
+                // CSS resides in map.css at .leaflet-top > .info  props.COUNTYFP
                 if (props && props.COUNTYFP) {
                   this._div.innerHTML = "" 
                   + (props ? "<b>" + props.NAME + " County</b><br>" : "Select Locations") 
-                  + (props ? "FIPS 13" + props.COUNTYFP : "")
+                  + (props ? "FIPS " + props.id : "")
                 } else { // US
                   this._div.innerHTML = "" 
                   + (props ? "<b>" + props.name + "</b><br>" : "Select Locations")
@@ -2426,15 +2458,13 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 function updateGeoFilter(geo) {
   $(".geo").prop('checked', false);
   if (geo && geo.length > 0) {
-
     //locationFilterChange("counties");
     let sectors = geo.split(",");
       for(var i = 0 ; i < sectors.length ; i++) {
         $("#" + sectors[i]).prop('checked', true);
       }
-
+    console.log('ALERT: Change to support multiple states as GEO. Current geo: ' + geo)
   }
-  console.log('ALERT: Change to support multiple states as GEO. Current geo: ' + geo)
   if (geo && geo.length > 4) // Then county or multiple states - Bug
   {
       $(".state-view").hide();
@@ -2738,9 +2768,13 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                                 geoElement.name = d.CountyName + " County, " + theState;
                                 geoElement.pop = d.Population;
                                 geoElement.co2 = d.CO2;
-                                geoElement.co2percap = d.CO2/d.Population;
+                                if (d.CO2 && d.Population) {
+                                    geoElement.co2percap = d.CO2/d.Population;
+                                }
                                 geoElement.methane = d.Methane;
-                                geoElement.methanepercap = d.Methane/d.Population;
+                                if (d.Methane && d.Population) {
+                                    geoElement.methanepercap = d.Methane/d.Population;
+                                }
                                 geoElement.sqmiles = d.SqMiles;
                                 
                                 geoElement.county = d.NAME;
@@ -2815,6 +2849,9 @@ function makeRowValuesNumeric(_data, columnsNum, valueCol) {
   return _data;
 }
 function loadObjectData(element, attempts) {
+    // We'll elminate this. Calling showTabulatorList directly instead. 
+    // Need to update for US (country) when adding per capita columns.
+
     // Calls showTabulatorList - retains prior location data loads in localObject(element.scope)
     if (typeof d3 !== 'undefined') {
         //alert("loadObjectData element.scope: " + element.scope)
@@ -3191,7 +3228,6 @@ function showTabulatorList(element, attempts) {
 
     // This loop could be replaced with a wait for Tabulator
     if (typeof Tabulator !== 'undefined') {
-
         // Convert key-value object to a flat array (like a spreadsheet)
         let dataForTabulator = [];
         $.each(localObject[element.scope] , function(key,val) { // val is an object
@@ -3220,7 +3256,7 @@ function showTabulatorList(element, attempts) {
         // COUNTRIES - MAP OF WORLD
 
         consoleLog("LOAD TABULATOR (STATES OR COUNTIES)")
-        // Both states and countries
+        // Both states and country
         if (hash.geoview == "country" || (!theState && onlineApp )) {
              
             // Showing alert prevents tabulator from loading - it probably runs before a DOM element is available.
@@ -3430,29 +3466,33 @@ function showTabulatorList(element, attempts) {
                     columnArray = [
                         {formatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
                         // See geoElement.pop etc above
-                        {title:"County", field:"name", width:140},
-                        {title:"Pop", field:"pop", width:80, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
+                        {title:"County", field:"name", minWidth:140},
+                        {title:"Pop", field:"pop", minWidth:50, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
                         formatterParams) {
                             let value = formatCell(cell.getValue() * 1000);
                             return value;
                         }},
-                        {title:"CO2", field:"co2", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        {title:"CO2", field:"co2", minWidth:80, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                            if (cell.getValue() === '') {return}
                             let value = formatCell(cell.getValue() * 1000);
                             return value;
                         }},
-                        {title:"Per Capita", field:"co2percap", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        {title:"Per Capita", field:"co2percap", minWidth:70, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                            if (isNaN(cell.getValue())) {return}
                             let value = formatCell(cell.getValue() * 1000);
                             return value;
                         }},
-                        {title:"Methane", field:"methane", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        {title:"Methane", field:"methane", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                            if (cell.getValue() === '') {return}
                             let value = formatCell(cell.getValue() * 1000);
                             return value;
                         }},
-                        {title:"Per Capita", field:"methanepercap", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        {title:"Per Capita", field:"methanepercap", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                            if (isNaN(cell.getValue())) {return}
                             let value = formatCell(cell.getValue() * 1000);
                             return value;
                         }},
-                        {title:"Sq Miles", field:"sqmiles", width:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        {title:"Sq Miles", field:"sqmiles", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
                             let value = formatCell(cell.getValue());
                             return value;
                         }},
@@ -6530,9 +6570,8 @@ function topReached(elem) { // top scrolled out view
 
 function formatCell(input, format) {
     // If format is none or blank, return input as it is.
-    if (format === 'none' || format === '' || input === '' || input === 0) { // TO DO : Remove input === 0 after removing 0 from processing. Where is it occurring?
+    if (format === 'none' || format === '' || input === '') {
         return ''
-        //return input;
     }
     input = parseFloat(input); // Convert input to a number
     // Format as scientific notation
