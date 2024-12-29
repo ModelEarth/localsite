@@ -290,7 +290,7 @@ function refreshNaicsWidget(initialLoad) {
         }
 
         // v2
-        if (location.host.indexOf('localhost') >= 0 || hash.beta == "true" || location.href.indexOf('/info/naics/') >= 0 || location.href.indexOf('localhost') >= 0) {
+        if (hash.beta == "true" || location.href.indexOf('/info/naics/') >= 0) {
 
             $("#industryTableHolder").show();
 
@@ -836,7 +836,7 @@ function renderIndustryChart(dataObject,values,hash) {
     let whichHaveChanged = [];
     for (const key in hash) {
       //if (watchingHash.includes(${key})) {
-      console.log("hash[key] " + key + ": " + hash[key] + " prior: " + priorHash_naicspage[key])
+      console.log("hash[key] " + key + " " + hash[key] + " prior: " + priorHash_naicspage[key])
       if (hash[key] != priorHash_naicspage[key]) {
         whichHaveChanged.push(key)
       }
@@ -1621,7 +1621,8 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                         // Problem, this will call a second time if there is a state in hash
 
                         //if (!$.trim( $('#iogrid').html() ).length) { // If empty, otherwise triggered by hash change.
-                            //alert("call applyIO with naics " + naicshash)
+                            
+                            // BUG - HASH GETS CLEARED HERE when SectorList passed to React config
                             applyIO(naicshash);
                         //}
                         
@@ -1986,11 +1987,12 @@ function applyIO(naics) {
     let hash = getHash(); // Includes hiddenhash
     var config = useeio.urlConfig();
     let endpoint = "/io/build/api";
-    if (location.host.indexOf('localhost') >= 0 || hash.beta == "true") {
+    // Change && to || in these two lines to test locally.
+    if (hash.beta == "true") {
         endpoint = "/OpenFootprint/impacts/2020";
     }
     let theModel = 'USEEIOv2.0.1-411';
-    if (location.host.indexOf('localhost') >= 0 || hash.beta == "true") {
+    if (hash.beta == "true") {
         if (hash.state) { // Prior to 2024 states were GA, ME, MN, OR, WA
         
             let thestate = hash.state.split(",")[0].toUpperCase();
@@ -2002,9 +2004,11 @@ function applyIO(naics) {
             console.log("BETA BUG " + theModel + " with transition to 73 Sectors. Model:\r" + endpoint + "/" + theModel + "\rApplyIO heatmap with naics: " + naics);
         }
     }
+    //alert(theModel)
     var modelID = config.get().model || theModel;
 
     consoleLog("modelID " + modelID + " - ApplyIO heatmap with naics: " + naics);
+    //alert("modelID " + modelID + " - ApplyIO heatmap with naics: " + naics);
     
     var naicsCodes;
     if (naics) {
@@ -2065,11 +2069,13 @@ function applyIO(naics) {
     
     //alert("hiddenhash.naics " + hiddenhash.naics);
     //hiddenhash.naics = {}; // Kill it
+
     if (typeof sectorList.config != "undefined") {
         //sectorList.config.naics = {}; // Kill it
     }
     console.log("sectorList - applyIO() impact indicators and sectors for Supply Chain inflow-outflow chart:");
     console.log(sectorList);
+
 
     config.withDefaults({
         view: ["mosaic"],
@@ -2080,10 +2086,27 @@ function applyIO(naics) {
         //sectors: useeio.toBEA(naics),
     })
     // Neither of the above naics attempts works for second state loaded.
-    config.join(sectorList);
+    
+    console.log("sectorList");
+    console.log(sectorList);
 
-    // End Copied from sector_list.html, and changed to use withDefaults
+    if (hash.beta == "true") {
+        if (hash.state && location.host.indexOf('localhost') >= 0) {
+            alert("localhost: sectorList dumps state " + JSON.stringify(sectorList, null, 2));
+        } else if (location.host.indexOf('localhost') >= 0) {
 
+            alert("localhost: sectorList " + JSON.stringify(sectorList, null, 2));
+        }
+        alert("HASH GETS CLEARED by call applyIO with naics " + naicshash)
+        config.join(sectorList); // BUG BUG - Dumps hash state and geoview - Comment out to preserve state, but you'll lose the mosaic heatmap.
+    } else {
+
+        // Displays mosaic - but dumps hash from URL (when hitting reload, or entering via a URL)
+        config.join(sectorList); // BUG BUG - Only works when hash changes in page already loaded.
+
+        // Alternative that preserves state
+        //config.join(); // Doesn't work for passing sectorList
+    }
 }
 
 // New 73 Sectors
@@ -2092,7 +2115,7 @@ function getEpaSectors() {
     let hash = getHash();
     // sectorsJsonFile is not used
     let sectorsJsonFile = "/io/build/api/USEEIOv2.0.1-411/sectors.json"; // 411 sectors
-    if (location.host.indexOf('localhost') >= 0 || hash.beta == "true") {
+    if (hash.beta == "true") {
         if (hash.state) {
             let thestate = hash.state.split(",")[0].toUpperCase();
             theModel = thestate + "EEIOv1.0-s-20"
@@ -2443,4 +2466,28 @@ function callPromises(industryLocDataFile) { // From naics2.js
         showIndustryTabulatorList(0); 
     }
 }
+
+/*
+function getModelFolderName() {
+    let hash = getUrlHash();
+    let theModel = "USEEIOv2.0.1-411";
+    if (hash.state) { // Prior to 2024 states were GA, ME, MN, OR, WA
+        let thestate = hash.state.split(",")[0].toUpperCase();
+        theModel = thestate + "EEIOv1.0-s-20"
+    }
+    return theModel;
+}
+function getEpaModel() {
+    let theModel = getModelFolderName()
+    return useeio.modelOf({
+      //endpoint: 'http://localhost:8887/OpenFootprint/impacts/2020',
+
+      // Relative path avoids CORS error
+      endpoint: '/OpenFootprint/impacts/2020',
+
+      model: theModel,
+      asJsonFiles: true,
+    });
+}
+*/
 console.log("end naics.js")

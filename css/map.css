@@ -104,8 +104,9 @@
    margin-left:30px;
 }
 .leaflet-touch .leaflet-bar a, .earthZoom .leaflet-bar a {
-  width:38px !important;
-  height:38px !important;
+  display: block; /* Allows icons to be stacked */
+  width:36px !important;
+  height:36px !important;
   font-size: 26px !important;
   color: #fff !important;
   background-color: #555 !important;
@@ -179,6 +180,37 @@
   /* bottom: 17px !important; */  /* Apply when map points used for "google" material icons */
   /* Need to move map down more when popup is near top.  Default is -7px. */
 }
+
+/* newer legend Dec 2024 */
+.info.legend {
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    font-size: 12px;
+    line-height: 20px;
+    color: #333;
+    position: absolute;
+    top: 80px;
+    left: 12px;
+    z-index: 1000;
+}
+
+.info.legend h4 {
+    margin: 0 0 10px;
+    font-size: 14px;
+}
+
+.info.legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+    border-radius: 2px;
+}
+
+
 #floatingButtons {
   display:none;
   height:40px;

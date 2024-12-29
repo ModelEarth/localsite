@@ -2091,6 +2091,7 @@ function loadIframe(iframeName, url) {
       //alert("loadIframe" + url)
       $iframe.attr('src',url);
       $("#nullschoolHeader #mainbucket").show();
+      $("#nullschoolHeader #earthZoom").show();
       return false;
   }
   return true;
