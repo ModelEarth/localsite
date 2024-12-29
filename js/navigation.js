@@ -8,6 +8,8 @@
 // showTabulatorList() renders country and state lists
 // updateMapColors() uses values in sorted column to place color scale on map shapes
 
+// TO DO: Unselecting county on map is not unchecking tabulator checkbox
+
 if(typeof local_app == 'undefined') { var local_app = {}; console.log("BUG: Move navigation.js after localsite.js"); } // In case navigation.js included before localsite.js
 if(typeof layerControls=='undefined') { var layerControls = {}; } // Object containing one control for each map on page.
 if(typeof dataObject == 'undefined') { var dataObject = {}; }
@@ -1497,10 +1499,10 @@ $(document).ready(function() {
         //event.stopPropagation();
     });
 
-
-    function replaceAll(str, find, replace) {
-        return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
-    }
+    //DELETE
+    //function replaceAll(str, find, replace) {
+    //    return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+    //}
 });
 
 function readCsvData(_data, columnsNum, valueCol) {
@@ -2216,7 +2218,6 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                   param.geo = fips;
                 }
 
-                alert("param.geo: " + param.geo);
                 let primaryState = getStateAbbreviation(layer.feature.properties.STATEFP);
 
                 //alert("param.geo: " + param.geo + " state: " + primaryState);
@@ -2309,13 +2310,13 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                     const localObjectArray = localObject.geo; // Pass the array directly
                     const idColumn = "id";
                     const idToSearch = 'US' + props.GEOID;
-                    const columnToRetrieve = 'co2';
+                    const columnToRetrieve = 'CO2';
 
                     const value = getValueByIdAndColumn(localObjectArray, idColumn, idToSearch, columnToRetrieve);
                     //value = Number(value) * 1000;
                     //alert(value); // Outputs: '60' (if columnToRetrieve is 'pop') or null if not
 
-                    this._div.innerHTML = this._div.innerHTML + "CO<sup>2</sup> " + formatCell(value);
+                    this._div.innerHTML = this._div.innerHTML + "CO<sub>2</sub> " + formatCell(value);
 
                 } else { // US
                   this._div.innerHTML = "" 
@@ -2334,7 +2335,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                       //console.log(localObject["country-us"]);
 
                       const value = getValueByIdAndColumn(localObjectArray, idColumn, idToSearch, columnToRetrieve);                    
-                      this._div.innerHTML = this._div.innerHTML + "CO<sup>2</sup> " + formatCell(value);
+                      this._div.innerHTML = this._div.innerHTML + "CO<sub>2</sub> " + formatCell(value);
                   }
                 }
 
@@ -3305,7 +3306,7 @@ function showTabulatorList(element, attempts) {
                 // Row deselection handler
                 geotable.on("rowDeselected", function(row){
                     currentRowIDs = currentRowIDs.filter(item => item !== row._row.data.id);
-                    alert("rowDeselected currentRowIDs " + currentRowIDs.toString());
+                    console.log("rowDeselected currentRowIDs " + currentRowIDs.toString());
                     if (hash.geo != currentRowIDs.toString()) {
                         hash.geo = currentRowIDs.toString();
                         console.log("rowDeselected hash.geo " + hash.geo);
@@ -3382,9 +3383,6 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
             });
             console.log("county_names from geotable{} set by current tabulator: " + county_names.toString());
             $(".counties_title").text(county_names.toString().replaceAll(",",", "));
-            if (location.host.indexOf("localhost") >= 0) {
-                alert("Investigate if replaceAll() function in this page is used by line above.")
-            }
         } else {
           attempts = attempts + 1;
           if (attempts < 200) {
@@ -3588,7 +3586,7 @@ function addLegendToMap(minCO2, maxCO2, whichmap) {
 
     labels.push(`<i style="background:hsl(210, 100%, 95%)"></i> No Data`);
 
-    legend.innerHTML = `<h4>CO2 Emissions</h4>` + labels.join('<br>');
+    legend.innerHTML = `<h4>CO<sub>2</sub> Emissions</h4>` + labels.join('<br>');
 
     // Append the legend to the map container
     mapContainer.appendChild(legend);
