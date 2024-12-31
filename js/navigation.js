@@ -321,7 +321,7 @@ function hashChanged() {
             
             element.columns = [
                 {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                /* {title:"State", field:"State", width:68}, */
+                {title:"State", field:"State", width:68},
                 {title:"State", field:"StateName"},
                 {title:"Pop", field:"Population", width:80, hozAlign:"right", headerSortStartingDir:"desc", formatterParams:{precision:false}
                 ,formatter: function(cell, formatterParams) {
@@ -3478,15 +3478,17 @@ function updateMapColors(whichmap) {
             return `hsl(210, 100%, ${lightness}%)`;
         }
 
-        //console.log("localObject.country-us");
-        //console.log(localObject["country-us"]);
+        // From topojson file (differs from file for Tabulator)
+
+        // BUGBUG - When state included with geoview=country
+        // http://localhost:8887/community/start/maps/#geoview=country&state=GA
 
         geoOverlays[layerName].eachLayer(function (layer) {
             const location = layer.feature.properties.COUNTYFP; // Match GeoJSON property
             const stateFP = layer.feature.properties.STATEFP;
             //alert("locationA: " + location)
-            //console.log("layer.feature.properties")
-            //console.log(layer.feature.properties)
+            console.log("layer.feature.properties")
+            console.log(layer.feature.properties)
             let data = [];
             let fullLocation = layer.feature.properties.name; // State name
             if (location) {
