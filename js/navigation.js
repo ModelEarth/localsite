@@ -642,22 +642,27 @@ function hashChanged() {
             $(".mainColumn1").show();
         }
 
-        if($("#geomap").is(':visible')) {
+        //if($("#geomap").is(':visible')) {
             if (hash.geoview != "country") {
-                //if(location.host.indexOf('localhost') >= 0) {
+                let geoDeselect = "";
 
-                    let geoDeselect = "";
-                    if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
-                        geoDeselect = hash.geo
-                        delete hash.geo;
-                    }
-                    updateSelectedTableRows(hash.geo, geoDeselect, 0);
-                //}
+                //alert("priorHash.geo " + priorHash.geo + " hash.geo " + hash.geo);
+                if (priorHash.geo) {
+                    const priorGeoArray = priorHash.geo.split(",");
+                    const hashGeoArray = hash.geo ? hash.geo.split(",") : [];
+
+                    // Find values in priorHash.geo that are not in hash.geo
+                    const geoDeselectArray = priorGeoArray.filter(value => !hashGeoArray.includes(value));
+
+                    // Create a comma-separated string of removed values
+                    geoDeselect = geoDeselectArray.join(",");
+                }
+                updateSelectedTableRows(hash.geo, geoDeselect, 0);
             }
             // Triggered by hash change to hash.geoview (values: county, state, country)
             // Allows location just clicked (in tabulator and on map) to be highlighted. 
             renderGeomapShapes("geomap", hash, hash.geoview, 1); 
-        }
+        //}
 
         // TEST
         //dataObject.stateshown = getStateFips(hash);
@@ -2220,7 +2225,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
                 let primaryState = getStateAbbreviation(layer.feature.properties.STATEFP);
 
-                //alert("param.geo: " + param.geo + " state: " + primaryState);
+                console.log("mapFeatureClick param.geo: " + param.geo + " state: " + primaryState);
                 
                 let stateList = newPrimaryState(hash.state, primaryState)
                 goHash({'geo':param.geo, 'state':stateList});
@@ -3306,11 +3311,11 @@ function showTabulatorList(element, attempts) {
                 // Row deselection handler
                 geotable.on("rowDeselected", function(row){
                     currentRowIDs = currentRowIDs.filter(item => item !== row._row.data.id);
-                    console.log("rowDeselected currentRowIDs " + currentRowIDs.toString());
+                    console.log("rowDeselected. Remaining currentRowIDs: " + currentRowIDs.toString());
                     if (hash.geo != currentRowIDs.toString()) {
+                        // Why is currentRowIDs incorrect? (blank)
                         hash.geo = currentRowIDs.toString();
-                        console.log("rowDeselected hash.geo " + hash.geo);
-                        goHash({'geo':hash.geo});
+                        goHash({'geo':hash.geo}); // Reapplies selections to map (otherwise map reverts to chlorpleth)
                     }
                 });
 
@@ -3366,7 +3371,18 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
             //geotable.selectRow(geotable.getRows().filter(row => row.getData().name.includes('Ba')));
             if (geo) {
                 $.each(geo.split(','), function(index, value) {
-                    geotable.selectRow(geotable.getRows().filter(row => row.getData().id == value));
+                    console.log("geo value: " + value);
+                    //geotable.selectRow(geotable.getRows().filter(row => row.getData().id == value));
+                    geotable.selectRow(value);
+                });
+            }
+            if (geoDeselect) {
+                $.each(geoDeselect.split(','), function(index, value) {
+                    console.log("geoDeselect: " + value);
+                    //geotable.deselectRow(geotable.getRows().filter(row => row.getData().id == value));
+
+                    // Preferable if we have the row's actual ID value
+                    geotable.deselectRow(value); // Pass the row ID directly
                 });
             }
             // Row Display Test - scroll down to see which rows were not initially in DOM.
@@ -3386,7 +3402,7 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
         } else {
           attempts = attempts + 1;
           if (attempts < 200) {
-            // To do: Add a loading image after a coouple seconds. 2000 waits about 300 seconds.
+            // To do: Add a loading image after a couple seconds. 2000 waits about 300 seconds.
             setTimeout( function() {
               updateSelectedTableRows(geo,geoDeselect,attempts);
             }, 20 );
@@ -6129,8 +6145,9 @@ function openMapLocationFilter() {
     if (hash.geo) {
         let geoDeselect = "";
         if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
-            geoDeselect = hash.geo
-            delete hash.geo;
+            //geoDeselect = hash.geo
+            //delete hash.geo;
+            //alert("geoDeselect BUG? " + geoDeselect)
         }
         if (hash.geoview != "country") {
             updateSelectedTableRows(hash.geo, geoDeselect, 0);
