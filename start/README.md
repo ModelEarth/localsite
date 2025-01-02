@@ -1,25 +1,29 @@
-# Single Page Embed
-
-1. Place your content within a README.md file in a local folder inside your webroot. 
-2. Copy the current index.html page using View Page Source, or just copy the localsite.js include tag.
-3. [Add Localsite parameters](../) for locations (state and counties) and impact sets (air, water, land, energy, health, prosperity) to embed maps and visualizations [for local communities](/io/communities/) and [international goals](/data-commons/dist).
-
-____
-
-<br>
-# Website Setup and Dev
-
-View our [Active Projects](../../projects) and [Moonshots](../../community/projects)
-
 <div class="showGit">
 <a href="https://model.earth/community/start/">View current GitHub page as a web page</a>
 </div>
 
-Our helpful cheatsheet for [venv, Node, npm, nvm, Python, pyenv, pip, Conda and Docker](/io/coders/python/)
+View our [Active Projects](../../projects) and [Moonshots](../../community/projects)
 
-## <span class="num">1</span><span class="txt">Start a Local Website</span>
 
-<a href="../../localsite/start/steps/">Site Install</a> - For our coding team, states, communities and [International Timelines](../../data-commons/).
+Helpful tips for [Node, Python, pyenv, Conda and Docker](/io/coders/python/)
+
+
+# Single Page Embed
+
+How to add a new localsite page (in a repo or in your own website):
+
+1. Place your new content within a README.md file in a local folder inside your webroot. 
+2. Copy the current index.html page using View Page Source, or just copy the localsite.js include tag.
+3. [Add Localsite parameters](../) for locations (state and counties) and impact sets (air, water, land, energy, health, prosperity) to embed maps and visualizations [for local communities](/io/communities/) and [international goals](/data-commons/dist).
+
+____
+<br>
+
+# Localsite Setup and Development
+
+## <span class="num">1</span><span class="txt">Run as a Local Website</span>
+
+<a href="../../localsite/start/steps/">Site Install</a> - Contribute to apps for local product comparisons and government optimization
 <!--
 &bullet; <a href="/apps/">Our Apps Folder</a> - Customize JQuery pages
 &bullet; <a href="../challenge/">Sustainable Communities Web Challenge</a><br>
@@ -28,19 +32,22 @@ Our helpful cheatsheet for [venv, Node, npm, nvm, Python, pyenv, pip, Conda and 
 
 <a href="../../localsite/start/steps/" class="btn btn-success">Start Site Install</a>
 
-## <span class="num">2</span><span class="txt">Integrate Datasets</span>
-Model.earth [Data Pipeline](../../localsite/info/data) and our <a href="/data-commons/dist/">Observable Data Commons</a>
-[Industry Data Prep](../../data-pipeline/timelines/training/naics/) for our machine learning [RealityStream](../../RealityStream/)
 
-## <span class="num">3</span><span class="txt">Input-Output Widgets</span>
-<a href="../../io/charts/">Impact Widgets</a> - Displayed based on [localsite parameters](../) 
-Data from the US Environmental Protection Agency (EPA) and Google Data Commons
+## <span class="num">2</span><span class="txt">Input-Output Widgets</span>
+<a href="../../io/charts/">Contribute to Impact Widgets</a> - Display based on [localsite parameters](../) 
+Data from the US EPA and NAICS, Exiobase, Google Data Commons - [Data Pipelines](/data-pipeline/)
+
+
+## <span class="num">3</span><span class="txt">Integrate Machine Learning</span>
+Contribute to our machine learning [RealityStream](../../RealityStream/)
+Integrate Observable with Google in our <a href="/data-commons/docs/data/">Data Commons Timelines</a>
 
 ## <span class="num">4</span><span class="txt">Chart Starter Ideas</span>
 [Chart Starters](../../community/start/charts) - Chord, Sankey, USEEIO Heatmap Mosaic and Input-Output Flow
 
+
 ## <span class="num">5</span><span class="txt">Map Samples</span>
-[Leaflet Map Layers](../../community/start/maps)
+[Leaflet Map Layers](../../community/start/maps#geoview=state&state=CA) with Tabulator grid data views
 
 ## <span class="num">6</span><span class="txt">State EEIO Models</span>
 
@@ -102,8 +109,8 @@ Responsible sourcing allows manufacturers to...
 
 ## <span class="num">9</span><span class="txt">Collaboration and Teaching</span>
 
-[Join our Model.earth Meetups](/io/coders/)
-Thursdays at noon ET. &nbsp;And 10pm ET on Monday, Wednesday and Sunday. (NY/Atlanta Time)
+[Join in our weekly ModelEarth Meetups](/io/coders/)
+
 
 [Use our Lifecycle Tools for Research and Teaching](/io/learn/)
 Explore [the matrix](/io/about/matrix/) and tinker using [Open Footprint Javascript](/useeio.js/footprint/)
