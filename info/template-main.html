@@ -945,19 +945,22 @@ document.addEventListener('mousedown', function(e) {
               <select id="geoview_select" style="float:left">
                 <option value="none">Geoview...</option>
                 <option value="earth">Earth</option>
-                <option value="countries">Countries</option>
-                <option value="country">United States</option>
+                <option value="country">Countries</option>
                 <option value="state" selected>State</option><!-- was counties -->
               </select>
-              <select id="datascope_select" class="local" style="float:left; display:none">
-                <option value="none">Granularity...</option>
+              <select id="datascope_select" class="local" style="float:left;">
+                <option value="none">Scope...</option>
+                <!--
                 <option value="continent">Countinents</option>
+                -->
                 <option value="country">Countries</option>
                 <option value="state">States/Territories</option>
                 <option value="county">Counties</option>
+                <!--
                 <option value="zip">Postal Codes</option>
                 <option value="person">People</option>
                 <option value="voxel">Brain Voxels</option>
+                -->
               </select>
 
               <b><!--States--></b>
@@ -1814,21 +1817,7 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
           <div id="dataList"></div>
           
           <div id="detaillistHolder"></div>
-          <div id="narrowlist" style="display:none"></div>
 
-          <div id="dataListTop" class='exporter products' style="display:none;overflow:auto;margin-bottom:8px">
-
-            <div style='float:left'>
-              Select up to 10 companies when requesting contact info.
-            </div>
-
-            <div id="rightButtons" style="float:right;">
-              <div id="showMap" class="detailbutton" style="display:none; float:left;margin-right:10px">Map</div>
-              <div id="toggleList" class="detailbutton localonly" style="display:none;float:left;margin-right:10px">Toggle</div>
-                <div id="requestInfo" class='orangeButton detailbutton lowerButton' style="float:left;">Request Contact Info</div>
-            </div>
-
-          </div>
       </div>
 
     </div><!-- /hublist -->

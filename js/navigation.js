@@ -247,6 +247,11 @@ function hashChanged() {
         if (hash.scope) {
             waitForElm('#datascope_select').then((elm) => {
                 $("#datascope_select").val(hash.scope);
+                if (hash.scope == "state" || hash.scope == "county" || hash.scope == "zip") {
+                    $("#entityId").show(); // List of states
+                } else {
+                    $("#entityId").hide();
+                }
             })
         }
     }
@@ -1046,10 +1051,10 @@ function populateFieldsFromHash() {
 catArray = [];
 
 // TO DO: Wait for other elements in page for several $(document).ready here
-$(document).ready(function() {
+//$(document).ready(function() {
 
 // Avoid since does not work when localsite.js loads navigation.js.
-//document.addEventListener('DOMContentLoaded', function() { // $(document).ready
+/////document.addEventListener('DOMContentLoaded', function() { // $(document).ready
 
     // Gets overwritten
     if (param.state) {
@@ -1304,8 +1309,6 @@ $(document).ready(function() {
         }
     });
     $(document).on("change", "#datascope_select", function(event) {
-        //alert("#datascope_select changed")
-
         goHash({"scope":this.value});
     });
     $('.selected_state').on('change', function() {
@@ -1508,7 +1511,7 @@ $(document).ready(function() {
     //function replaceAll(str, find, replace) {
     //    return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
     //}
-});
+//});
 
 function readCsvData(_data, columnsNum, valueCol) {
   if (typeof columnsNum !== "undefined") {
