@@ -2631,97 +2631,103 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                     if (hash.geoview == "zip") {
 
                     } else { // Counties
+                        if (localObject.geo.length == 0) { // localObject.geo contains all counties in country, so only load once.
+                            //alert($("#county-table").length());
+                            // No effect
+                            //$("#county-table").empty(); // Clear previous state. geo is retained in URL hash.
+                            //$("#county-table").text("")
+                            //alert($("#county-table").length());
 
-                        //alert($("#county-table").length());
-                        // No effect
-                        //$("#county-table").empty(); // Clear previous state. geo is retained in URL hash.
-                        //$("#county-table").text("")
-                        //alert($("#county-table").length());
+                            // Add a new variable, to make it easier to do a color scale.
+                            // Alternately, you could extract these values with a map function.
+                            let allDifferences = [];
 
-                        // Add a new variable, to make it easier to do a color scale.
-                        // Alternately, you could extract these values with a map function.
-                        let allDifferences = [];
+                            // geo is country, state/province, county
 
-                        // geo is country, state/province, county
+                            let theStateGeo = "US" + ('0' + localObject.us_stateIDs[theState]).slice(-2);
 
-                        let theStateGeo = "US" + ('0' + localObject.us_stateIDs[theState]).slice(-2);
-                        
-                        myData.forEach(function(d, i) {
+                            //alert("theStateGeo: " + theStateGeo + " theState: " + theState);
+                            //console.log("myData");
+                            //console.log(myData);
 
-                            d.difference =  d.US_2007_Demand_$;
+                            // myData contains counties for all states/territories
+                            myData.forEach(function(d, i) {
 
-                            // OBJECTID,STATEFP10,COUNTYFP10,GEOID10,NAME10,NAMELSAD10,totalpop18,Reg_Comm,Acres,sq_miles,Label,lat,lon
-                            //d.name = ;
-                            d.idname = "US" + d.GEOID + "-" + d.NAME + " County, " + theState;
+                                d.difference =  d.US_2007_Demand_$;
 
-                            //d.perMile = Math.round(d.totalpop18 / d.sq_miles).toLocaleString(); // Breaks sort
-                            d.perMile = Math.round(d.totalpop18 / d.sq_miles);
+                                // OBJECTID,STATEFP10,COUNTYFP10,GEOID10,NAME10,NAMELSAD10,totalpop18,Reg_Comm,Acres,sq_miles,Label,lat,lon
+                                //d.name = ;
+                                d.idname = "US" + d.GEOID + "-" + d.NAME + " County, " + theState;
 
-                            //console.log("d.sq_miles " + d.sq_miles);
+                                //d.perMile = Math.round(d.totalpop18 / d.sq_miles).toLocaleString(); // Breaks sort
+                                d.perMile = Math.round(d.totalpop18 / d.sq_miles);
 
-                            //d.sq_miles = Number(Math.round(d.sq_miles).toLocaleString());
+                                //console.log("d.sq_miles " + d.sq_miles);
 
-                            d.sq_miles = Math.round(d.sq_miles).toLocaleString();
+                                //d.sq_miles = Number(Math.round(d.sq_miles).toLocaleString());
 
-                            // Add an array to the empty array with the values of each:
-                            // d.difference, 
-                            // , d.sq_miles
-                            //geoCountyTable.push([d.idname, d.totalpop18, d.perMile]);
+                                d.sq_miles = Math.round(d.sq_miles).toLocaleString();
 
-                            // Save to localObject so counties in multiple states can be selected
-                            if (localObject.stateCountiesLoaded.indexOf(theStateGeo)==-1) { // Just add first time
+                                // Add an array to the empty array with the values of each:
+                                // d.difference, 
+                                // , d.sq_miles
+                                //geoCountyTable.push([d.idname, d.totalpop18, d.perMile]);
 
-                                //BUGBUG - Also need to check that state was not already added.
-                                let geoElement = {};
+                                // Save to localObject so counties in multiple states can be selected
+                                if (localObject.stateCountiesLoaded.indexOf(theStateGeo)==-1) { // Just add first time
 
-                                //geoElement.id = "US" + d.GEOID;
+                                    //BUGBUG - Also need to check that state was not already added.
+                                    let geoElement = {};
 
-                                if (d.FIPS.length == 4) {
-                                    geoElement.id = "US0" + d.FIPS;
-                                } else {
-                                    geoElement.id = "US" + d.FIPS;
-                                }
-                                geoElement.name = d.CountyName + " County, " + theState;
-                                geoElement.pop = d.Population;
-                                geoElement.CO2 = d.CO2;
-                                if (d.CO2 && d.Population) {
-                                    geoElement.co2percap = d.CO2/d.Population;
-                                }
-                                geoElement.methane = d.Methane;
-                                if (d.Methane && d.Population) {
-                                    geoElement.methanepercap = d.Methane/d.Population;
-                                }
-                                geoElement.sqmiles = d.SqMiles;
-                                
-                                geoElement.county = d.NAME;
-                                geoElement.state = d.State;
+                                    //geoElement.id = "US" + d.GEOID;
 
-                                //geoElement.sqmiles = d.sq_miles;
-                                //geoElement.pop = d.totalpop18;
-                                //geoElement.permile = d.perMile;
-                                
-                                // For each county
-                                console.log("geoElement");
-                                console.log(geoElement);
-                                localObject.geo.push(geoElement); 
-                             }
+                                    if (d.FIPS.length == 4) {
+                                        geoElement.id = "US0" + d.FIPS;
+                                    } else {
+                                        geoElement.id = "US" + d.FIPS;
+                                    }
+                                    geoElement.name = d.CountyName + " County, " + d.State;
+                                    geoElement.pop = d.Population;
+                                    geoElement.CO2 = d.CO2;
+                                    if (d.CO2 && d.Population) {
+                                        geoElement.co2percap = d.CO2/d.Population;
+                                    }
+                                    geoElement.methane = d.Methane;
+                                    if (d.Methane && d.Population) {
+                                        geoElement.methanepercap = d.Methane/d.Population;
+                                    }
+                                    geoElement.sqmiles = d.SqMiles;
+                                    
+                                    geoElement.county = d.NAME;
+                                    geoElement.state = d.State;
 
-                            // this is just a convenience, another way would be to use a function to get the values in the d3 scale.
-                            //alert("d.perMile " + d.perMile)
+                                    //geoElement.sqmiles = d.sq_miles;
+                                    //geoElement.pop = d.totalpop18;
+                                    //geoElement.permile = d.perMile;
+                                    
+                                    // For each county
+                                    console.log("geoElement");
+                                    console.log(geoElement);
+                                    localObject.geo.push(geoElement); 
+                                 }
 
-                            // Not working
-                            //allDifferences.push(d.difference);
-                            //allDifferences.push(d.perMile + 0);
-                            allDifferences.push(d.perMile);
-                        });
+                                // this is just a convenience, another way would be to use a function to get the values in the d3 scale.
+                                //alert("d.perMile " + d.perMile)
 
-                        // Track the states that have been added to localObject.geo
-                        if (localObject.stateCountiesLoaded.indexOf(theStateGeo)==-1) {
-                            if (localObject.stateCountiesLoaded.indexOf(theStateGeo)==-1) localObject.stateCountiesLoaded.push(theStateGeo);
-                            //alert(localObject.stateCountiesLoaded)
+                                // Not working
+                                //allDifferences.push(d.difference);
+                                //allDifferences.push(d.perMile + 0);
+                                allDifferences.push(d.perMile);
+                            });
+
+                            // Track the states that have been added to localObject.geo
+                            if (localObject.stateCountiesLoaded.indexOf(theStateGeo)==-1) {
+                                if (localObject.stateCountiesLoaded.indexOf(theStateGeo)==-1) localObject.stateCountiesLoaded.push(theStateGeo);
+                                //alert(localObject.stateCountiesLoaded)
+                            }
+                            //console.log("geoCountyTable");
+                            //console.log(geoCountyTable);
                         }
-                        //console.log("geoCountyTable");
-                        //console.log(geoCountyTable);
                     }
                     consoleLog(myData.length + " counties loaded.");
                     //console.log(myData);
@@ -2774,7 +2780,8 @@ function loadObjectData(element, attempts) {
     if (typeof d3 !== 'undefined') {
         //alert("loadObjectData element.scope: " + element.scope)
         if(typeof localObject[element.scope] == 'undefined') {
-            localObject[element.scope] = {}; // Holds states, countries.
+            // Holds countries, states, counties (geo)
+            localObject[element.scope] = {}; 
         }
 
         // Only fetch from a file when page is loaded, otherwise recall from localObject.
