@@ -36,15 +36,6 @@ function hashChanged() {
     // Was getting called for each state checked. 4th check calls hashChanged() 5 times (1 + 4)
     // Add timestamp to prevent multiple calls
     consoleLog("nav hash changed " + JSON.stringify(hash));
-
-    if (hash.country && hash.country != "US" && !hash.geoview) {
-
-        //hash.geoview = "countries"; // This caused top map to be open.
-
-        // Not working
-        //updateHash({"geoview":"countries"});
-        //return;
-    }
     populateFieldsFromHash();
     productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 
@@ -376,73 +367,79 @@ function hashChanged() {
             //} else if (hash.geoview == "state" && !hash.state) {
             //    loadObjectData(element, 0); // Display tabulator list of states.
             //}
+
         } else if (hash.state && hash.geoview == "state") { // hash.geoview && hash.geoview != "country"
             console.log("loadStateCounties invoked by geoview change");
             console.log("priorHash.geoview: " + priorHash.geoview + ", hash.geoview: " + hash.geoview);
             loadStateCounties(0);
         } else if (hash.geoview == "countries") {
             // COUNTRIES
-            //const csvFilePath = "https://model.earth/country-data/population/population-total.csv";
-            //const csvFilePath = local_app.modelearth_root() + "/localsite/info/data/map-filters/country-populations.csv";
-                
-            const csvFilePath = local_app.modelearth_root() + "/localsite/info/data/map-filters/countries.csv"; // Or use the full version
-            d3.csv(csvFilePath).then(function(myData) {
-                // Add PerCapita field to each row
-                const processedData = myData.map(row => {
-                    const population = parseFloat(row.Population); // Ensure Population is treated as a number
-                    const co2 = parseFloat(row.CO2); // Ensure CO2 is treated as a number
-                    if (isNaN(population) || isNaN(co2)) {
-                        console.warn(`Invalid data in row:`, row);
-                    }
+            // TO DO: Remove countries.csv and other non-full.csv files from python file generation.
+            const csvFilePath = local_app.modelearth_root() + "/localsite/info/data/map-filters/countries-full.csv"; // Or use the full version
+            
+            const element = {};
+            element.scope = "countries";
+            element.key = "Country";
+            element.columns = [
+                    {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
+                    {title:"Country Name", field:"CountryName", minWidth:140},
+                    {title:"Pop", field:"Population", minWidth:70, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
+                    formatterParams) {
+                        let value = formatCell(cell.getValue());
+                        return value;
+                    }},
+                    {title:"CO<sub>2</sub>", field:"CO2", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        if (cell.getValue() === '') {return}
+                        let value = formatCell(cell.getValue());
+                        return value;
+                    }},
+                    {title:"Per Person", field:"co2percap", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        let value = formatCell(cell.getValue());
+                        if (value != '') {value = value+" tons"}
+                        return value;
+                    }},
+                    {title:"Sq Miles", field:"SqMiles", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        let value = formatCell(cell.getValue());
+                        return value;
+                    }},
+                ];
+            if(typeof localObject[element.scope] == 'undefined') {
+                localObject[element.scope] = []; // Holds countries.
+            }
 
-                    return {
-                        ...row,
-                        co2percap: (population > 0 && co2 > 0) ? co2 / population : null, // Add PerCapita or null
-                    };
+            // Fetch just once, otherwise recall from localObject.
+            if (Object.keys(localObject[element.scope]).length <= 0) {
+                d3.csv(csvFilePath).then(function(myData) {
+                    // Add PerCapita field to each row
+                    const processedData = myData.map(row => {
+                        const population = parseFloat(row.Population); // Ensure Population is treated as a number
+                        const co2 = parseFloat(row.CO2); // Ensure CO2 is treated as a number
+                        if (isNaN(population) || isNaN(co2)) {
+                            console.warn(`Invalid data in row:`, row);
+                        }
+                        return {
+                            ...row,
+                            co2percap: (population > 0 && co2 > 0) ? co2/population : '', // Add PerCapita or null
+                        };
+                    });
+
+                    // Either of these work, switch back to the first.
+                    //localObject[element.scope] = [...processedData];
+                    localObject[element.scope] = $.extend(true, [], processedData); // Clone/copy object without entanglement
+
+                    //  Throughout the rest of page, changed:
+                    //  extend(true, {}  to  extend(true, []
+
+                    //const processedData = myData.map(row => {
+                    //    return { ...row }; // Spread operator to include all keys dynamically
+                    //});
+
+                    console.log("localObject[element.scope] ");
+                    console.log(localObject[element.scope]);
+
+                    showTabulatorList(element, 0);
                 });
-
-                console.log("processedData");
-                console.log(processedData); // Debug: Check processed data
-
-                const element = {};
-                //element.data = processedData;
-                element.scope = "countries";
-                element.key = "Country";
-                element.columns = [
-                        {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                        {title:"Country Name", field:"CountryName", minWidth:140},
-                        {title:"Pop", field:"Population", minWidth:70, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
-                        formatterParams) {
-                            let value = formatCell(cell.getValue());
-                            return value;
-                        }},
-                        {title:"CO2", field:"CO2", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                            if (cell.getValue() === '') {return}
-                            let value = formatCell(cell.getValue());
-                            return value;
-                        }},
-                        {title:"Per Capita", field:"co2percap", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                            if (isNaN(cell.getValue())) {return} // || cell.getValue() === 0  Not working for American Samoa: http://localhost:8887/localsite/info/data/map-filters/#geoview=countries
-                            let value = formatCell(cell.getValue());
-                            return value;
-                        }},
-                        {title:"Sq Miles", field:"SqMiles", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                            let value = formatCell(cell.getValue());
-                            return value;
-                        }},
-                    ];
-                //loadObjectData(element, 0); // Was used with datasource, but abandoned when adding co2percap calc above.
-                if(typeof localObject[element.scope] == 'undefined') {
-                    localObject[element.scope] = {}; // Holds states, countries.
-                }
-                // Only fetch from a file when page is loaded, otherwise recall from localObject.
-                if (Object.keys(localObject[element.scope]).length <= 0) {
-                    localObject[element.scope] = $.extend(true, {}, processedData); // Clone/copy object without entanglement
-                    //console.log("localObject[element.scope]");
-                    //console.log(localObject[element.scope]);
-                }
-                showTabulatorList(element, 0);
-            });
+            }
         } else { // For backing up within apps
         
             // Since geoview "earth" does uses an iFrame instead of the geomap display.
@@ -1687,7 +1684,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
       let reversedStr = hash.state.split(",").reverse().join(",");
       console.log("TO DO: Figure out why ony last state is retained on map")
       reversedStr.split(",").forEach(function(state) { // Loop through each state
-        hashclone = $.extend(true, {}, hash); // Clone/copy object without entanglement
+        hashclone = $.extend(true, [], hash); // Clone/copy object without entanglement
         hashclone.state = state.toUpperCase(); // One state at a time
         renderMapShapeAfterPromise(whichmap, hashclone, 0); // Using clone since hash could be modified mid-loop by another widget,
       });
@@ -1783,12 +1780,22 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
             countyTopoTerm = "_parish_20m";
           }
           // Contains topo shape, plus STATEFP and COUNTYFP and GEOID (which combines both)
+          
           url = local_app.modelearth_root() + "/topojson/countries/us-states/" + stateAbbr + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
           topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + countyTopoTerm;
 
+          if(location.host.indexOf('localhost') >= 0) {
+              if (!hash.state) {
+                alert("localhost: Loading ALL US Counties topo - UX not yet fully implemented")
+                // All counties in US
+                url = local_app.modelearth_root() + "/topojson/countries/united-states/us-albers-counties.json";
+                topoObjName = "topoob.objects.collection";
+              }
+          }
           //url = local_app.modelearth_root() + "/topojson/countries/us-states/GA-13-georgia-counties.json";
           // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
         } else { // ALL COUNTRIES
+          layerName = "Countries";
           url = local_app.modelearth_root() + "/topojson/world-countries-sans-antarctica.json";
           topoObjName = "topoob.objects.countries1";
         }
@@ -1906,7 +1913,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                   //}).addTo(map);
                 }
                 
-                // Add 
+                // Add
                 geoOverlays[layerName] = L.geoJson(topodata, {style:styleShape, onEachFeature: onEachFeature}).addTo(map); // Called within addTo(map)
             
                 layerControls[whichmap] = L.control.layers(basemaps1, geoOverlays, {position: 'bottomleft'}).addTo(map); // Push multple layers
@@ -2334,14 +2341,17 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                       //console.log("props");
                       //console.log(props);
 
-                      const localObjectArray = localObject["country-us"];
-                      const idColumn = "StateName";
-                      const idToSearch = props.name;
-                      const columnToRetrieve = 'CO2';
+                      let localObjectArray = localObject["country-us"];
+                      let idColumn = "StateName";
+                      let idToSearch = props.name;
+                      let columnToRetrieve = 'CO2';
                       //console.log("idToSearch " + idToSearch);
                       //console.log("localObject.country-us");
                       //console.log(localObject["country-us"]);
-
+                      if (hash.geoview == "countries") {
+                        localObjectArray = localObject["countries"];
+                        idColumn = "CountryName";
+                      }
                       const value = getValueByIdAndColumn(localObjectArray, idColumn, idToSearch, columnToRetrieve);                    
                       this._div.innerHTML = this._div.innerHTML + "CO<sub>2</sub> " + formatCell(value);
                   }
@@ -2804,7 +2814,7 @@ function loadObjectData(element, attempts) {
             } else {
                 d3.json(element.datasource).then(function(json,error) {
 
-                    stateImpact = $.extend(true, {}, json); // Clone/copy object without entanglement
+                    stateImpact = $.extend(true, [], json); // Clone/copy object without entanglement
 
                       /*
                       if (Array.isArray(json)) { // Other than DifBot - NASA when count included
@@ -2845,7 +2855,7 @@ function loadObjectData(element, attempts) {
                         // To Do: Remove from json:
                         // jurisdiction: "Alabama"
 
-                        localObject[element.scope] = $.extend(true, {}, json); // Clone/copy object without entanglement
+                        localObject[element.scope] = $.extend(true, [], json); // Clone/copy object without entanglement
                         console.log("localObject.state")
                         //console.log(localObject[element.scope])
                         console.log(localObject.state)
@@ -3152,9 +3162,10 @@ function showTabulatorList(element, attempts) {
                             let value = formatCell(cell.getValue());
                             return value;
                         }},
-                        {title:"Per Capita", field:"co2percap", minWidth:70, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        {title:"Per Person", field:"co2percap", minWidth:70, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
                             if (isNaN(cell.getValue())) {return}
                             let value = formatCell(cell.getValue());
+                            if (value != '') {value = value+" tons"}
                             return value;
                         }},
                         {title:"Methane", field:"methane", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
@@ -3461,23 +3472,36 @@ function updateMapColors(whichmap) {
         let hash = getHash();
         let layerName = "States";
         let validRows = [];
+        let colorBy = "CO2";
+        let legendTitle = "CO<sub>2</sub> Emissions"
         if (hash.state) {
             //console.log("localObject.geo")
             //console.log(localObject.geo)
             validRows = localObject.geo.filter(d => !isNaN(Number(d.CO2)));
             layerName = hash.state.split(",")[0].toUpperCase() + " Counties";
+        } else if (hash.geoview == "countries") {
+            validRows = localObject["countries"].filter(d => !isNaN(Number(d.CO2)));
+            layerName = "Countries";
+            colorBy = "co2percap";
+            legendTitle = "CO<sub>2</sub> Per Person"
+            //colorBy = "Population";
         } else {
             //console.log("localObject['country-us']");
             //console.log(localObject["country-us"]);
             validRows = localObject["country-us"].filter(d => !isNaN(Number(d.CO2)));
         }
         // Convert co2 to numbers and filter valid rows
-        const minCO2 = Math.min(...validRows.map(d => Number(d.CO2)));
-        const maxCO2 = Math.max(...validRows.map(d => Number(d.CO2)));
+        const minCO2 = Math.min(...validRows.map(d => Number(d[colorBy])));
+        const maxCO2 = Math.max(...validRows.map(d => Number(d[colorBy])));
 
         // Map a value to a color in the blue range
         function getColor(co2) {
+            console.log("co2: ");
+            console.log(co2);
             const co2Value = Number(co2);
+            console.log("co2Value: ");
+            console.log(co2Value);
+
             console.log("co2Value " + co2Value);
             if (isNaN(co2Value)) {
                 return `hsl(210, 100%, 95%)`; // Lightest blue for missing/invalid co2
@@ -3497,24 +3521,32 @@ function updateMapColors(whichmap) {
             const location = layer.feature.properties.COUNTYFP; // Match GeoJSON property
             const stateFP = layer.feature.properties.STATEFP;
             //alert("locationA: " + location)
-            console.log("layer.feature.properties")
-            console.log(layer.feature.properties)
+            //console.log("layer.feature.properties")
+            //console.log(layer.feature.properties)
             let data = [];
             let fullLocation = layer.feature.properties.name; // State name
+            
             if (location) {
                 fullLocation = "US" + stateFP + location;
                 data = localObject.geo.find(row => row.id === fullLocation);
+            } else if (hash.geoview == "countries") {
+                //console.log("fullLocation: " + fullLocation)
+                if(fullLocation=="United States of America") fullLocation = "United States";
+                if(fullLocation=="Republic of the Congo") fullLocation = "Congo [Republic]";
+                if(fullLocation=="Democratic Republic of the Congo") fullLocation = "Congo [DRC]";
+                if(fullLocation=="United Republic of Tanzania") fullLocation = "Tanzania";
+                data = localObject["countries"].find(row => row.CountryName === fullLocation);
             } else {
                 // For state, using row.name rather than row.id
                 data = localObject["country-us"].find(row => row.StateName === fullLocation);
             }
-            console.log("fullLocation");
-            console.log(fullLocation);
-            
+            //console.log("fullLocation");
+            //console.log(fullLocation);
+
             // BUGBUG - for states, capitalize data.CO2
             if (data) {
                 layer.setStyle({
-                    fillColor: getColor(data.CO2),
+                    fillColor: getColor(data[colorBy]),
                     fillOpacity: 0.7,
                     color: '#000',
                     weight: 1
@@ -3530,59 +3562,10 @@ function updateMapColors(whichmap) {
         });
 
         // Add a legend
-        addLegendToMap(minCO2, maxCO2, whichmap);
+        addLegendToMap(minCO2, maxCO2, whichmap, legendTitle);
     });
 }
-
-// DELETE
-function updateMapColorsX(whichmap) {
-    waitForElm('#' + whichmap + " .leaflet-pane").then((elm) => {
-        let hash = getHash();
-        let layerName = hash.state.split(",")[0].toUpperCase() + " Counties";
-
-        // Calculate min and max CO2 values
-        const minCO2 = Math.min(...localObject.geo.map(d => parseFloat(d.co2)));
-        const maxCO2 = Math.max(...localObject.geo.map(d => parseFloat(d.co2)));
-
-        // Map a value to a color in the blue range
-        function getColor(co2) {
-            const intensity = (parseFloat(co2) - minCO2) / (maxCO2 - minCO2); // Normalize to [0, 1]
-            const blueShade = 240 - (intensity * 120); // Adjust blue hue from 240 (light) to 120 (dark)
-            console.log("co2 " + co2)
-            console.log("blueShade " + blueShade)
-            return `hsl(${blueShade}, 100%, 50%)`;
-        }
-
-        //setTimeout( function() {
-            
-            geoOverlays[layerName].eachLayer(function(layer) {
-                const location = layer.feature.properties.COUNTYFP; // Match GeoJSON property
-                console.log("location: " + location)
-                const fullLocation = "US06" + location;
-                const data = localObject.geo.find(row => row.id === fullLocation);
-                if (data) {
-                    layer.setStyle({
-                        fillColor: getColor(data.co2),
-                        fillOpacity: 0.7,
-                        color: '#000',
-                        weight: 1
-                    });
-                } else {
-                    layer.setStyle({
-                        fillColor: '#ccc', // Default color for missing data
-                        fillOpacity: 0.5,
-                        color: '#000',
-                        weight: 1
-                    });
-                }
-            });
-        //}, 2000 );
-
-        // Add a legend
-        addLegendToMap(minCO2, maxCO2, whichmap);
-    });
-}
-function addLegendToMap(minCO2, maxCO2, whichmap) {
+function addLegendToMap(minCO2, maxCO2, whichmap, legendTitle) {
     // Get the map container
     const mapContainer = document.querySelector(`#${whichmap}`);
     if (!mapContainer) return;
@@ -3614,12 +3597,11 @@ function addLegendToMap(minCO2, maxCO2, whichmap) {
 
     labels.push(`<i style="background:hsl(210, 100%, 95%)"></i> No Data`);
 
-    legend.innerHTML = `<h4>CO<sub>2</sub> Emissions</h4>` + labels.join('<br>');
+    legend.innerHTML = `<h4>` + legendTitle + `</h4>` + labels.join('<br>');
 
     // Append the legend to the map container
     mapContainer.appendChild(legend);
 }
-
 
 // To remove, or use as fallback
 function applyStupidTable(count) {
@@ -4095,24 +4077,6 @@ $(document).ready(function() {
     }
 });
 
-// For stateImpact colors
-//var colorTheStateCarbon = "#fcc"; // pink
-var colorTheCountry = "#ccf" // lite blue
-loadScript(theroot + 'js/d3.v5.min.js', function(results) { // Allows lists to be displayed before maps
-  waitForVariable('customD3loaded', function() {
-  // TODO: Apply the colors after list loaded
-
-    var colorTheStateCarbon = d3.scaleThreshold()
-          .domain(d3.range(2, 10))
-          .range(d3.schemeBlues[9]);
-    /*
-      colorTheCountry = d3.scaleThreshold()
-          .domain(d3.range(2, 1000000))
-          .range(d3.schemeBlues[9]);
-      */
-  });
-});
-
 function styleShape(feature) { // Called FOR EACH topojson row
     console.log("styleShape")
     let hash = getHash(); // To do: pass in as parameter
@@ -4153,7 +4117,7 @@ function styleShape(feature) { // Called FOR EACH topojson row
       // TO DO - Adjust for 2e-7
       theValue = theValue/10000000;
       //fillColor = colorTheCountry(theValue);
-      fillColor = colorTheCountry;
+      //fillColor = colorTheCountry;
       //console.log("fillColor: " + fillColor + "; theValue: " + theValue + " " + feature.properties.name);
       fillOpacity = .5;
     } else if ((hash.geoview == "country" || (hash.geoview == "state" && !hash.state)) && typeof localObject.state != 'undefined') {
