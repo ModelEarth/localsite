@@ -236,8 +236,8 @@ function hashChanged() {
     }
     if (hash.scope != priorHash.scope) {
         if (hash.scope) {
-            waitForElm('#datascope_select').then((elm) => {
-                $("#datascope_select").val(hash.scope);
+            waitForElm('#selectScope').then((elm) => {
+                $("#selectScope").val(hash.scope);
                 if (hash.scope == "state" || hash.scope == "county" || hash.scope == "zip") {
                     $("#entityId").show(); // List of states
                 } else {
@@ -449,8 +449,8 @@ function hashChanged() {
                 });
             }
             if (typeof relocatedScopeMenu != "undefined") {
-                waitForElm('#scope_select').then((elm) => {
-                    relocatedScopeMenu.appendChild(scope_select); // For apps hero
+                waitForElm('#selectScope').then((elm) => {
+                    relocatedScopeMenu.appendChild(selectScope); // For apps hero
                 });
             }
             $("#hero_holder").show();
@@ -1305,7 +1305,7 @@ catArray = [];
             goHash({"geoview":this.value});
         }
     });
-    $(document).on("change", "#datascope_select", function(event) {
+    $(document).on("change", "#selectScope", function(event) {
         goHash({"scope":this.value});
     });
     $('.selected_state').on('change', function() {
@@ -3474,7 +3474,7 @@ function updateMapColors(whichmap) {
         let validRows = [];
         let colorBy = "CO2";
         let legendTitle = "CO<sub>2</sub> Emissions"
-        if (hash.state) {
+        if (hash.state && hash.geoview != "country") {
             //console.log("localObject.geo")
             //console.log(localObject.geo)
             validRows = localObject.geo.filter(d => !isNaN(Number(d.CO2)));
@@ -3499,10 +3499,6 @@ function updateMapColors(whichmap) {
             console.log("co2: ");
             console.log(co2);
             const co2Value = Number(co2);
-            console.log("co2Value: ");
-            console.log(co2Value);
-
-            console.log("co2Value " + co2Value);
             if (isNaN(co2Value)) {
                 return `hsl(210, 100%, 95%)`; // Lightest blue for missing/invalid co2
             }
@@ -3516,7 +3512,6 @@ function updateMapColors(whichmap) {
 
         // BUGBUG - When state included with geoview=country
         // http://localhost:8887/community/start/maps/#geoview=country&state=GA
-
         geoOverlays[layerName].eachLayer(function (layer) {
             const location = layer.feature.properties.COUNTYFP; // Match GeoJSON property
             const stateFP = layer.feature.properties.STATEFP;
@@ -3611,8 +3606,6 @@ function applyStupidTable(count) {
         console.log("Table function available. Count " + count);
         //$("table").stupidtable();
         
-
-
         $("#county-table").stupidtable();
         //$("table2").stupidtable();
     } else if (count <= 100) {
@@ -6114,8 +6107,8 @@ function openMapLocationFilter() {
     if (typeof state_select_holder != "undefined") {
         state_select_holder.appendChild(state_select); // For apps hero
     }
-    if (typeof scope_select_holder != "undefined") {
-        scope_select_holder.appendChild(scope_select); // For apps hero
+    if (typeof select_scope_holder != "undefined") {
+        select_scope_holder.appendChild(selectScope); // For apps hero
     }
 
     if (hash.geo) {
@@ -6170,7 +6163,7 @@ function closeLocationFilter() {
         relocatedStateMenu.appendChild(state_select); // For apps hero
     }
     if (typeof relocatedScopeMenu != "undefined") {
-        relocatedScopeMenu.appendChild(scope_select); // For apps hero
+        relocatedScopeMenu.appendChild(selectScope); // For apps hero
     }
     $("#hero_holder").show();
 }

@@ -705,7 +705,7 @@ function loadLocalTemplate() {
         $(".stateFilters").hide();
       }
       if (typeof relocatedScopeMenu != "undefined") {
-        relocatedScopeMenu.appendChild(datascope_select); // For apps hero
+        relocatedScopeMenu.appendChild(selectScope); // For apps hero
       }
       waitForElm('#filterClickLocation').then((elm) => {
         if (param.showstates != "false") {
@@ -747,6 +747,9 @@ function loadLocalTemplate() {
       if (location.host.indexOf('model') >= 0) {
         $(".showSearch").show();
         $(".showSearch").removeClass("local");
+      }
+      if (param.showyear == "true") {
+        $("#selectYear").show();
       }
     });
   });
