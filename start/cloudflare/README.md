@@ -79,6 +79,8 @@ Workers & Pages > Pages tab > Connect to Git
 Connect to your repo, which can be a private repo.
 (You'll have to install the Cloudflare Pages app into GitHub while logged into the GitHub account where the fork resides.)
 
+**Workers Routes > Manage Workers**
+
 1. Add your subdomain (subdomain.yoursite.com) as a custom domain in Cloudflare Pages by clicking: 
 
     Workers & Pages > Overview > Create application > Pages tab > Connect to Git
@@ -94,6 +96,11 @@ This will automatically create a CNAME record pointed at [generated subdomain].p
 Optional: Include the "functions" folder from [charca's repo](https://dev.to/charca/password-protection-for-cloudflare-pages-8ma) to create the secure login single-password site.
 
 Use [submodules](../submodules) to place multiple repos in your parent repo.
+
+### Check for errors pulling submodules
+
+**Workers Routes > Manage Workers**
+
 
 ## CloudFlare Firewall
 Create a firewall rule to block IP's that attempt to hack a website. Websites check for hack attempts and send an email to admins with information such as the url, IP address, and url history. Since CloudFlare uses a proxy address, the IP address reported by the email is the CloudFlare proxy IP. CloudFlare includes the following header values which can be used to display non-proxied addresses: cf-connecting-ip, cf-connecting-ipv6, and x-forwarded-for. The code that checks for hack attempts checks for these header values and includes them in the email. Use the non-proxied IP addresses to create a firewall rule to block those IPs in CloudFlare. These same non-proxied IPs should be added to the Windows Firewall.

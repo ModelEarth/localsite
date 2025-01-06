@@ -946,20 +946,22 @@ document.addEventListener('mousedown', function(e) {
                 <option value="none">Geoview...</option>
                 <option value="earth">Earth</option>
                 <option value="countries">Countries</option>
-                <option value="country">United States</option>
+                <option value="country">US</option>
                 <option value="state" selected>State</option><!-- was counties -->
               </select>
-              <select id="datascope_select" class="local" style="float:left; display:none">
-                <option value="none">Granularity...</option>
+              <select id="selectScope" class="local" style="float:left;">
+                <option value="none">Scope...</option>
+                <!--
                 <option value="continent">Countinents</option>
+                -->
                 <option value="country">Countries</option>
                 <option value="state">States/Territories</option>
                 <option value="county">Counties</option>
+                <!--
                 <option value="zip">Postal Codes</option>
                 <option value="person">People</option>
                 <option value="voxel">Brain Voxels</option>
-                <option value="water">Water</option>
-
+                -->
               </select>
 
               <b><!--States--></b>
@@ -1056,6 +1058,13 @@ document.addEventListener('mousedown', function(e) {
                 </div>
             </div>
           </div>
+
+          <select id="selectYear" name="state" style="float:right;margin-right:20px;display:none">
+                 <option value="">Year</option>
+                 <option value="2017">2017</option>
+                 <option value="2018">2018</option>
+                 <option value="2019">2019</option>
+          </select>
       </div>
 
         <!-- GOOGLE ADDRESS AUTOCOMPLETE -->
@@ -1257,8 +1266,8 @@ document.addEventListener('mousedown', function(e) {
                   </div>
                   -->
 
-                  <div id="tabulator-geocredit" class="local" style="display:none; margin:0 0 12px 8px; font-size: 12px">
-                    Source: <a href="/localsite/info/data/map-filters/">State and Country Data</a><br><br>
+                  <div id="tabulator-geocredit" style="margin:10px 0 12px 8px; font-size: 12px">
+                    <a href="/localsite/info/data/map-filters/">About location filters</a>
                   </div>
                 </div>
                 
@@ -1341,6 +1350,11 @@ Displayed by hashChanged() in navigation.js
       min-height: 65vh;
       width: 100%;
   }
+  @media (max-width: 600px) {
+    iframe {
+      min-height: 40vh;
+    }
+  }
   #mainbucket {
     position: absolute;
     right: 80px;
@@ -1362,7 +1376,7 @@ Displayed by hashChanged() in navigation.js
 <div id="nullschoolHeader" style="position:relative; display:none">
 
   
-  <div id="earthZoom" class="earthZoom" style="position: absolute; z-index:100; right:20px; bottom:20px">
+  <div id="earthZoom" class="earthZoom" style="display:none; position:absolute; z-index:100; right:20px; bottom:20px">
     <!-- Needs fixing...
     <div id="earthClose" style="padding-left:20px">CLOSE</div>
     -->
@@ -1811,21 +1825,7 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
           <div id="dataList"></div>
           
           <div id="detaillistHolder"></div>
-          <div id="narrowlist" style="display:none"></div>
 
-          <div id="dataListTop" class='exporter products' style="display:none;overflow:auto;margin-bottom:8px">
-
-            <div style='float:left'>
-              Select up to 10 companies when requesting contact info.
-            </div>
-
-            <div id="rightButtons" style="float:right;">
-              <div id="showMap" class="detailbutton" style="display:none; float:left;margin-right:10px">Map</div>
-              <div id="toggleList" class="detailbutton localonly" style="display:none;float:left;margin-right:10px">Toggle</div>
-                <div id="requestInfo" class='orangeButton detailbutton lowerButton' style="float:left;">Request Contact Info</div>
-            </div>
-
-          </div>
       </div>
 
     </div><!-- /hublist -->

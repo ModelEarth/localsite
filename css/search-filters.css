@@ -97,7 +97,7 @@
 }
 @media (max-width: 600px) {
   #mapFilters {
-    padding-left: 20px;
+    padding-left: 10px;
   }
   #stateFiltersHolder {
     padding-left: 12px;
@@ -717,3 +717,16 @@ input.filterClick[type="text"] {
   top: 44px;
   max-width: 600px;
 }
+#mainHero #datascape {
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+}
+#mainHero #filterFieldsHolder {
+  background-color: rgba(33,33,33,0.3);
+}
+#mainHero #filterFieldsHolder > #showNavColumn {
+  color: #fff;
+  background-color: rgba(33,33,33,0.3);
+}
+

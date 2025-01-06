@@ -3172,8 +3172,6 @@ function processOutput(dp,map1,map2,whichmap,whichmap2,basemaps1,basemaps2,callb
 }
 
 
-
-
 /////////////////////////////////////////
 // map helper functions
 /////////////////////////////////////////
