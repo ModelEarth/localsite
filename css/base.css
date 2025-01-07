@@ -1140,6 +1140,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .input-output input[type="text"], .input-output input[type="search"], .input-output select, select {
   font-size: 18px;
   border: 1px solid lightgray;
+  border: 1px solid #444;
   border-radius: 18px;
   min-height: 34px;
   padding: 0 5px 0 10px;
@@ -1151,7 +1152,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   appearance: none; /* Remove default arrow */
   -webkit-appearance: none;
   -moz-appearance: none;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 5px center; /* Custom arrow */
+  background: white url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 5px center; /* Custom arrow */
   background-size: 24px; /* Size of the custom arrow */
 }
 .dark select {
