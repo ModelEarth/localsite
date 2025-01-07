@@ -53,8 +53,11 @@ Fork <a href="/projects/location/setup/">Projects</a> to contribute within our [
 Fork <a href="https://github.com/ModelEarth/earthscape">Earthscape</a> if you're contributing to the our fork of [Chatbot UI](/earthscape/app/) using NextJS React and Supabase for Crew tools.  
 Fork <a href="https://github.com/ModelEarth/data-pipeline">Data-Pipeline</a> if you're contributing Python to data prep.  
 
-We've omitted the Community repo since it's used only for model.earth hosting.  
-The [Home repo](https://github.com/ModelEarth/home) is the [new frontend](../../../home/). It's designed to serve infinite content based on parameters.
+We've omitted the Community repo since it's only used for model.earth hosting. It's not needed for shared component dev.  
+
+The [Home repo](https://github.com/ModelEarth/home) is the [new frontend](../../../home/). It's designed to serve infinite content based on parameters.  
+Fork the home repo and start creating your own custom home page.  
+We manage the home config setting in [Google Sheets](../../../data-commons/docs/data/) (and soon local config files).  
 
 **Step 2.** Enter your GitHub account to include in the install and update cmds below.
 
