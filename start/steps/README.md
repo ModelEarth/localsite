@@ -2,10 +2,8 @@
 [Starter Samples](../)
 # Site Install
 
-You can use [Localsite Pages](../) to create websites and [storyboards](/requests) with free GitHub hosting.  
-If you get stuck at any point, feel free to DM Loren at [x.com/LorenHeyns](https://x.com/LorenHeyns). Converse with us on [BlueSky](https://bsky.app/profile/modelearth.bsky.social).
+You can use [Localsite Pages](../) to create websites <!--and [storyboards](/requests)-->with free GitHub Pages hosting.  
 Our notes on [Node, Python, Docker and Conda](/io/coders/python/).  
-To open local .ipynb files, run `jupyter notebook` after choosing "New Terminal at Folder".
 
 ## Start your local webroot http-server
 
@@ -27,37 +25,39 @@ On Windows:
 	python -m http.server 8887
 -->
 
-The terminal is now dedicated to hosting your webroot for [http://localhost:8887](http://localhost:8887)
+The terminal is now dedicated to hosting your webroot for [http://localhost:8887](http://localhost:8887)  
+[Other server options](../http-server) and [VS Code issue to resolve](../http-server)  
+
 To run further commands, open a new terminal window.
-
-Or you can use npx http-server, which [requires installing a local cert](../http-server).&nbsp; (Not recommended until we document.)
-
-**VS Code Issue to resolve** (use the http-server above for now): 
-A redirect loop occurs when using VS Code's built-in live server extension. VS Code defaults to port 8000, but the port number might not be a factor. (You can comment our the localsite.js include, but you'll lose other filter functionality.)  &nbsp;Please help resolve.
 
 ## Pull down repos to contribute
 
-If you're not planning to edit, you can simply view the content from the repos below at [model.earth](http://model.earth).
+All the repos below are viewable at [model.earth](https://model.earth). Each repo is a subfolder. Example: [model.earth/projects](https://model.earth/projects)
 
 We generally avoid creating branches. Make your edits in a fork, then send a Pull Request (PR). We love when you edit README.md files to help keep our TO DOs current. Add your first name where you're working and send a PR. Also send Loren an email whenever you submit a Pull Request.
 
 To fork the repos you'll be editing, go to [github.com/modelearth](https://github.com/ModelEarth?tab=repositories), choose a repo and click the "Fork" button.  
 Then in your fork, click "Code > Open with Github Desktop".  For repos you won't be editing, you can run the script below to clone.
 
-Also fork the <a href="https://github.com/ModelEarth/localsite">localsite</a> repo so we can review your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart).  
+ 
 Turn on GitHub Pages for any repo you fork by clicking the Settings icon, then Pages.
 
 **Step 1.** Fork one or two repos you plan to edit. How to [Fork Repos](https://medium.com/@6unpnp/fork-a-github-repository-and-deploy-its-github-pages-site-d55dc53988d).  
-<!--
-Fork <a href="https://github.com/ModelEarth/projects">Projects</a> if you're contributing to the [Open WebUI interface](/projects/src/) and related Python and Vite additions.-->
-Fork <a href="/projects/location/setup/">Projects</a> to contribute within our [Open WebUI location projects](/projects/src/) using Python and Vite.  
-Fork <a href="https://github.com/ModelEarth/feed">Feed Player</a> if you're adding to our React Vite visual [Feed viewer](https://model.earth/feed/).  
-Fork [Open Footprint](https://github.com/ModelEarth/OpenFootprint) if you're contributing to our DuckDB and Supabase <a href="https://model.earth/useeio.js/footprint/">USEEIO.js International</a> SQL visualizations.  
+Always fork <a href="https://github.com/ModelEarth/localsite">localsite</a> so we can review your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart).  
+Fork <a href="https://github.com/ModelEarth/data-commons">Data-Commons</a> if you're adding javascript data visualizations with the Google Data Commons API.  
+Fork <a href="https://github.com/ModelEarth/feed">Feed Player</a> if you're adding to our React Vite visual [Feed viewer](https://model.earth/feed/) and memberSense for Discord.  
+Fork [Open Footprint](https://github.com/ModelEarth/OpenFootprint) if you're contributing to our <a href="https://model.earth/useeio.js/footprint/">USEEIO.js International</a> ChartJS and SQL visualizations.  
 Fork <a href="https://github.com/ModelEarth/realitystream">RealityStream</a> if you're contributing python to our Machine Learning visualizations.  
-Fork <a href="https://github.com/ModelEarth/earthscape">Earthscape</a> if you're contributing to the our fork of [Chatbot UI](/earthscape/app/) using NextJS React and Supabase for Membership Admin.  
 Fork <a href="https://github.com/ModelEarth/requests">Requests</a> if you're python adding to our image and video [Storyboard Generation](/data-pipeline/research/stream).  
-Fork <a href="https://github.com/ModelEarth/data-commons">Data-Commons</a> if you're adding Observable Framework D3 data visualizations with the Google Data Commons API.   
-Fork <a href="https://github.com/ModelEarth/data-pipeline">Data-Pipeline</a> if you're contributing python to data prep and machine learning projects.  
+Fork <a href="/projects/location/setup/">Projects</a> to contribute within our [Open WebUI location projects](/projects/src/) using Python and Vite.  
+Fork <a href="https://github.com/ModelEarth/earthscape">Earthscape</a> if you're contributing to the our fork of [Chatbot UI](/earthscape/app/) using NextJS React and Supabase for Crew tools.  
+Fork <a href="https://github.com/ModelEarth/data-pipeline">Data-Pipeline</a> if you're contributing Python to data prep.  
+
+We've omitted the Community repo since it's only used for model.earth hosting. It's not needed for shared component dev.  
+
+The [Home repo](https://github.com/ModelEarth/home) is the [new frontend](../../../home/). It's designed to serve infinite content based on parameters.  
+Fork the home repo and start creating your own custom home page.  
+We manage the home config setting in [Google Sheets](../../../data-commons/docs/data/) (and soon local config files).  
 
 **Step 2.** Enter your GitHub account to include in the install and update cmds below.
 
@@ -85,7 +85,7 @@ Fork <a href="https://github.com/ModelEarth/data-pipeline">Data-Pipeline</a> if 
 </div>
 <div style="clear:both"></div><br>
 
-**Step 4.** Run in your local webroot folder, or pull down from the links above using [GitHub Desktop](https://desktop.github.com/):
+**Step 4.** We recommend using [GitHub Desktop](https://desktop.github.com/) to clone your forks, or you can run the following in your local webroot folder to pull down repos:
 
 <textarea id="cloneCmd" class="codetext" rows="12">
 git clone https://github.com/ModelEarth/localsite localsite
@@ -103,19 +103,23 @@ git clone https://github.com/ModelEarth/earthscape earthscape</textarea>
 
 <!-- Activate GitHub Pages so we can preview your contributions. -->
 
-Now you can view and edit pages locally at:
-[localhost:8887/projects](http://localhost:8887/projects/)
-[localhost:8887/data-commons](http://localhost:8887/data-commons/)
-[localhost:8887/data-pipeline](http://localhost:8887/data-pipeline/)
-[localhost:8887/realitystream](http://localhost:8887/realitystream/)
-[localhost:8887/feed](http://localhost:8887/feed/)
+Now you can view and edit pages locally at links like:
+[localhost:8887/localsite](http://localhost:8887/localsite/)  
+[localhost:8887/data-commons](http://localhost:8887/data-commons/)  
+[localhost:8887/projects](http://localhost:8887/projects/)  
+[localhost:8887/data-pipeline](http://localhost:8887/data-pipeline/)  
+[localhost:8887/realitystream](http://localhost:8887/realitystream/)  
+[localhost:8887/feed](http://localhost:8887/feed/)  
 
 If you encounter a broken link locally, view the page at [model.earth](https://model.earth/) or clone one of the [additional modelearth repos](https://github.com/ModelEarth?tab=repositories).
 
 ## Occasionally refresh your local files
 
-Before you edit, run the following in your local webroot to fetch changes from others.
-Or you can pull down recent updates within Github Desktop.
+<!-- TO DO: Update this link with account entered in textbox on the current page. -->
+Before you edit, sync your forks at [GitHub.com](https://github.com), then pull down recent updates within Github Desktop.   
+
+Or you can run the following in your local webroot to fetch changes from the parent repos. You'll still also need to sync your fork within GitHub.com to avoid conflicts when checking in your local update. (Sync before you edit, and sync often, to avoid merge issues.)
+
 
 <!--
 cd localsite && git pull https://github.com/ModelEarth/localsite main && cd ../
@@ -132,7 +136,7 @@ That's it! &nbsp;You can stop the steps here. Your updated local site is now vis
 
 ## Refresh you local repos
 
-To avoid merge conflicts, click "Sync Fork" on the forks in your [Github Account](https://github.com/), then pull locally using GitHub Desktop or the cmds above. Or you can use the Alternative Sync commands below.
+To avoid merge conflicts, click "Sync Fork" on the forks in your [Github Account](https://github.com/), then pull locally using GitHub Desktop or the cmds above. Or you can use the Alternative Sync commands below. 
 
 
 ## Create a "localsite" shortcut command to start your local web server
