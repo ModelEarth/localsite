@@ -3543,14 +3543,14 @@ function updateMapColors(whichmap) {
                 layer.setStyle({
                     fillColor: getColor(data[colorBy]),
                     fillOpacity: 0.7,
-                    color: '#000',
+                    color: '#77a',
                     weight: 1
                 });
             } else {
                 layer.setStyle({
                     fillColor: '#ccc', // Default color for missing data
                     fillOpacity: 0.5,
-                    color: '#000',
+                    color: '#77a',
                     weight: 1
                 });
             }
@@ -5846,7 +5846,6 @@ function getPageFolder(pagePath) {
 } // End typeof page_scripts which checks if file is loaded twice.
 
 $(document).on("change", "#state_select", function(event) {
-
     console.log("state_select change");
     if (this.value) {
         $("#region_select").val("");
@@ -5858,6 +5857,9 @@ $(document).on("change", "#state_select", function(event) {
         hiddenhash.state = ""; // BugFix - Without this prior state stays in dropdown when choosing no state using top option.
         goHash({'geoview':'country','state':'','geo':''});
     }
+});
+$(document).on("change", "#selectScope", function(event) {
+    goHash({'scope':this.value});
 });
 $(document).on("click", "#filterClickLocation", function(event) {
 
