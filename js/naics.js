@@ -290,21 +290,22 @@ function refreshNaicsWidget(initialLoad) {
         }
 
         // v2
-        if (hash.beta == "true" || location.href.indexOf('/info/naics/') >= 0) {
+        if ((location.host.indexOf('localhost') >= 0 || hash.beta == "true") || location.href.indexOf('/info/naics/') >= 0) {
 
             $("#industryTableHolder").show();
-
+            if (hash.catsize == "6") {
+                //hash.catsize = "2"
+            }
             let industryLocDataFile = getIndustryLocFileString(hash.catsize);
             if (location.host.indexOf('localhost') >= 0) {
                 waitForElm('#tabulator-industrytable-intro').then((elm) => {
-                    // BUGBUG - Occurs everytime state or county changes.
-                    $("#tabulator-industrytable-intro").append(" - <a href='" + industryLocDataFile + "''>" + industryLocDataFile + "</a>");
+                    // Occurs everytime state or county changes.
+                    $("#tabulator-industrytable-datalink").html("<a href='" + industryLocDataFile + "''>" + industryLocDataFile + "</a>");
                 });
             }
             d3.csv(industryLocDataFile).then( function(county_data) {
-                //alert("load it " + hash.catsize);
-                //showIndustryTabulatorList(0);
-                callPromises(industryLocDataFile); // Also loads tabulators
+                // Loads Tabulator via showIndustryTabulatorList()
+                callPromises(industryLocDataFile); 
             });
         }
         loadIndustryData(hash);
@@ -2168,9 +2169,23 @@ function showSectorTabulatorList(attempts) {
             ],
             maxHeight:"500px", // For frozenRows
             columns:[
-                {title:"ID", field:"id", width:100, sorter:"number"},
-                {title:"Index", field:"index", width:75, sorter:"number"},
-                {title:"Name", field:"name", minWidth:300},
+                { 
+                  title: "Commodity", 
+                  field: "name", 
+                  width: "35%",
+                  formatter: function(cell, formatterParams) {
+                    const sector = cell.getRow().getData();
+                    let stateCode = '';
+
+                    if (sector.location.includes('-')) {
+                      stateCode = sector.location.split('-')[1];
+                    }
+                    const demandHash = `demand=${sector.code}/${sector.location}`;
+                    const stateParam = stateCode ? `&state=${stateCode}` : '';
+                    const indexHash = `index=${sector.index}`; // legacy support for old links
+                    return `<a href="/useeio.js/footprint/sector_profile.html#${demandHash}${stateParam}">${sector.name}</a>`;
+                  }
+                },
                 {title:"Code", field:"code", width:70, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
                 {title:"Location", field:"location", width:90, hozAlign:"right", headerSortStartingDir:"desc" },
                 {title:"Description", field:"description", minWidth:320, hozAlign:"left", headerSortStartingDir:"desc" }
@@ -2276,7 +2291,10 @@ var industrytable = {};
 function showIndustryTabulatorList(attempts) {
     let hash = getHash();
     if (typeof Tabulator !== 'undefined') {
-        console.log("showIndustryTabulatorList");
+        console.log("showIndustryTabulatorList localObject.industryCounties.length");
+        console.log("Row count: " + localObject.industryCounties.length) // Almost 40,000
+        console.log(localObject.industryCounties.slice(0, 10));
+
         // Try this with 5.0. Currently prevents row click from checking box.
         // selectable:true,
 
@@ -2293,8 +2311,10 @@ function showIndustryTabulatorList(attempts) {
 
         // ToDo: Replace width on Industry with a cell that fills any excess space.
 
+        // {title:"Population", field:"Population", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
+                
         industrytable = new Tabulator("#tabulator-industrytable", {
-            data:localObject.industries,     //load row data from array of objects
+            data:localObject.industryCounties,     //load row data from array of objects
             layout:"fitColumns",      //fit columns to width of table
             responsiveLayout:"hide",  //hide columns that dont fit on the table
             tooltips:true,            //show tool tips on cells
@@ -2303,19 +2323,18 @@ function showIndustryTabulatorList(attempts) {
             movableColumns:true,      //allow column order to be changed
             resizableRows:true,       //allow row order to be changed
             initialSort:[             //set the initial sort order of the data - NOT WORKING
-                {column:"employees", dir:"desc"},
+                {column:"Employees", dir:"desc"},
             ],
             maxHeight:"480px", // For frozenRows
             paginationX:true, //enable.
             paginationSizeX:10,
             columns:[
-                {title:"Naics", field:"id", minWidth:80},
-                {title:"Industry", field:"title", minWidth:300},
-                {title:"Payroll", field:"payroll", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
-                {title:"Locations", field:"establishments", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                {title:"Employees", field:"employees", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                {title:"Population", field:"population", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                {title:"Counties", field:"instances", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number" }
+                {title:"Naics", field:"Naics", minWidth:60},
+                {title:"Industry", field:"Industry", minWidth:300},
+                {title:"Payroll", field:"Payroll", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
+                {title:"Locations", field:"Establishments", hozAlign:"right", minWidth:80, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
+                {title:"Employees", field:"Employees", hozAlign:"right", minWidth:100, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
+                {title:"County FIPS", field:"Fips", hozAlign:"right", minWidth:100, headerSortStartingDir:"desc", sorter:"number" }
             ],
             rowClick:function(e, row) {
                 row.toggleSelect(); //toggle row selected state on row click
@@ -2427,7 +2446,17 @@ function callPromises(industryLocDataFile) { // From naics2.js
         // TO DO: Append here for multiple states
         localObject.industryCounties = values[1]; // Exceeds 40,000
 
-        // Add titles to 
+        // CGet industry titles using naics 'id' in localObject.industries
+        const industryMap = new Map(localObject.industries.map(ind => [ind.id, ind.title]));
+
+        // Merge titles into county data
+        localObject.industryCounties = localObject.industryCounties
+          .map(county => ({
+            ...county,
+            Industry: industryMap.get(county.Naics) // Match by Naics and add Industry
+          }))
+          //.filter(county => county.Industry); // Remove rows with no Industry match
+          // Uncomment line above once we figure out why some Naics lookups have no titles.
 
         //localObject.locList = makeRowValuesNumeric(data, dp.numColumns, dp.valueColumn);
           
@@ -2458,7 +2487,7 @@ function callPromises(industryLocDataFile) { // From naics2.js
         $("#tabulator-industrytable-count").append(industries_details);
         
         // Display count directly from data
-        industries_details.innerHTML = localObject.industries.length + " industries"; 
+        industries_details.innerHTML = localObject.industryCounties.length + " industries"; 
 
         // Returns Logging
         //alert(industries.get("113310"));
