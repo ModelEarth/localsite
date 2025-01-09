@@ -301,6 +301,7 @@ function refreshNaicsWidget(initialLoad) {
                 waitForElm('#tabulator-industrytable-intro').then((elm) => {
                     // Occurs everytime state or county changes.
                     $("#tabulator-industrytable-datalink").html("<a href='" + industryLocDataFile + "''>" + industryLocDataFile + "</a>");
+                    $("#tabulator-industrytable-realitystream").attr("href", "/RealityStream/#features.path=" + industryLocDataFile);
                 });
             }
             d3.csv(industryLocDataFile).then( function(county_data) {
