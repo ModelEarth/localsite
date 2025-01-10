@@ -2094,7 +2094,7 @@ function applyIO(naics) {
 
     if (hash.beta == "true") {
         if (hash.state && location.host.indexOf('localhost') >= 0) {
-            alert("localhost: sectorList dumps state " + JSON.stringify(sectorList, null, 2));
+            alert("BUG (message on localhost): sectorList React drops state " + JSON.stringify(sectorList, null, 2));
         } else if (location.host.indexOf('localhost') >= 0) {
 
             alert("localhost: sectorList " + JSON.stringify(sectorList, null, 2));
