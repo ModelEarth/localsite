@@ -325,17 +325,29 @@ function getHashOnly() {
   return (function (pairs) {
     if (pairs == "") return {};
     var result = {};
-    pairs.forEach(function(pair) {
+    pairs.forEach(function (pair) {
       // Split the pair on "=" to get key and value
-      var keyValue = pair.split('=');
-      var key = keyValue[0];
-      var value = keyValue.slice(1).join('=');
+      let keyValue = pair.split('=');
+      let key = keyValue[0];
+      let value = keyValue.slice(1).join('=');
 
       // Replace "%26" with "&" in the value
       value = value.replace(/%26/g, '&');
 
-      // Set the key-value pair in the result object
-      result[key] = value;
+      // Handle nested keys with periods
+      let keys = key.split('.');
+      let current = result;
+
+      for (let i = 0; i < keys.length; i++) {
+        if (i === keys.length - 1) {
+          // Last key, set the value
+          current[keys[i]] = value;
+        } else {
+          // Intermediate key, ensure it's an object
+          if (!current[keys[i]]) current[keys[i]] = {};
+          current = current[keys[i]];
+        }
+      }
     });
     return result;
   })(window.location.hash.substr(1).split('&'));
@@ -370,7 +382,9 @@ function updateHash(addToHash, addToExisting, removeFromHash) { // Avoids trigge
     
     hash = mix(newObj,hash); // Gives priority to addToHash
 
-    var hashString = decodeURIComponent($.param(hash)); // decode to display commas in URL
+    //var hashString = decodeURIComponent($.param(hash)); // decode to display commas in URL
+    //const hashString = new URLSearchParams(hash).toString();
+    const hashString = decodeURIComponent(new URLSearchParams(hash).toString()); // decode to display commas and slashes in URL hash values
     var pathname = window.location.pathname.replace(/\/\//g, '\/')
     var queryString = "";
     if (window.location.search) { // Existing, for parameters that are retained as hash changes.
