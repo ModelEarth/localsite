@@ -295,7 +295,20 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 <!-- /INDICATOR SETS -->
 
 
+<!-- v2 -->
+<div id="industryTableHolder" style="display:none;">
+<div class="content contentpadding">
 
+	<div class="local" style="display:none;float:right">
+		<a id="tabulator-industrytable-realitystream" href="/RealityStream/#featurepath=123" class="btn btn-primary">RealityStream</a>
+	</div>
+	<div id="tabulator-industrytable-intro"><b>County Industries</b> (Visible on localhost) <!-- FIPS and NAICS case sensitive--></div>
+	<div id="tabulator-industrytable-datalink"></div>
+	<div style="clear:both"></div>
+    <div id="tabulator-industrytable"></div><br>
+    <div id="tabulator-industrytable-count"></div>
+</div>
+</div>
 
 <!-- INPUT OUTPUT -->
 <!-- See: "For older 3 column IO layout" below -->
@@ -528,7 +541,7 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 }
 ::-webkit-scrollbar-thumb {
    border-radius: 4px;
-   background-color: rgba(0,0,0,.5);
+   background-color: rgba(200,200,200,.5);
    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
 </style>
@@ -769,20 +782,11 @@ document.getElementById('showValues').onclick = function() {
 </style>
 
 <!-- v2 -->
-<div id="industryTableHolder" style="display:none;">
+<div id="sectorTableHolder" style="display:none;">
 <div class="content contentpadding">
 	<div id="tabulator-sectortable-intro">Sectors (upcoming) - Visible only on localhost</div>
 	<div id="tabulator-sectortable"></div><br>
 	<div id="tabulator-sectortable-count"></div>
-	<br><br>
-
-	<div class="local" style="display:none;float:right">
-		<a id="tabulator-industrytable-realitystream" href="/RealityStream/#featurepath=123" class="btn btn-primary">RealityStream</a>
-	</div>
-	<div id="tabulator-industrytable-intro">County Industries (upcoming) - Visible only on localhost - FIPS and NAICS case sensitive</div>
-	<div id="tabulator-industrytable-datalink"></div><br>
-    <div id="tabulator-industrytable"></div><br>
-    <div id="tabulator-industrytable-count"></div>
 </div>
 </div>
 
