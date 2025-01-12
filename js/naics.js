@@ -293,6 +293,7 @@ function refreshNaicsWidget(initialLoad) {
         if ((location.host.indexOf('localhost') >= 0 || hash.beta == "true") || location.href.indexOf('/info/naics/') >= 0) {
 
             $("#industryTableHolder").show();
+            $("#sectorTableHolder").show();
             if (hash.catsize == "6") {
                 //hash.catsize = "2"
             }
@@ -300,7 +301,7 @@ function refreshNaicsWidget(initialLoad) {
             if (location.host.indexOf('localhost') >= 0) {
                 waitForElm('#tabulator-industrytable-intro').then((elm) => {
                     // Occurs everytime state or county changes.
-                    $("#tabulator-industrytable-datalink").html("<a href='" + industryLocDataFile + "''>" + industryLocDataFile + "</a>");
+                    //$("#tabulator-industrytable-datalink").html("<a href='" + industryLocDataFile + "''>" + industryLocDataFile + "</a><br>");
                     $("#tabulator-industrytable-realitystream").attr("href", "/RealityStream/#features.path=" + industryLocDataFile);
                 });
             }
@@ -2094,7 +2095,7 @@ function applyIO(naics) {
 
     if (hash.beta == "true") {
         if (hash.state && location.host.indexOf('localhost') >= 0) {
-            alert("localhost: sectorList dumps state " + JSON.stringify(sectorList, null, 2));
+            alert("BUG (message on localhost): sectorList React drops state " + JSON.stringify(sectorList, null, 2));
         } else if (location.host.indexOf('localhost') >= 0) {
 
             alert("localhost: sectorList " + JSON.stringify(sectorList, null, 2));
