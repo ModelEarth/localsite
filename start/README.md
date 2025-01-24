@@ -21,7 +21,7 @@ ____
 
 # Localsite Setup and Development
 
-## <span class="num">1</span><span class="txt">Run as a Local Website</span>
+## <span class="num">1</span><span class="txt">Site Install - Code globally, run locally</span>
 
 <a href="../../localsite/start/steps/">Site Install</a> - Contribute to apps for local product comparisons and government optimization
 <!--

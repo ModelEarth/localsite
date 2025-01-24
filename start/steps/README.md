@@ -11,6 +11,13 @@ Run the following in your webroot folder to start your local site:
 
 	python -m http.server 8887
 
+To run further commands, open a new terminal window.
+(The first terminal is now dedicated to hosting your webroot.)
+
+Clone the localsite repo by running in your webroot:
+
+	git clone https://github.com/modelearth/localsite localsite
+
 <!--
 Or run within a virtual environment. On Macs:
 
@@ -25,13 +32,14 @@ On Windows:
 	python -m http.server 8887
 -->
 
-The terminal is now dedicated to hosting your webroot for [http://localhost:8887](http://localhost:8887)  
-[Other server options](../http-server) and [VS Code issue to resolve](../http-server)  
+The localsite repo should now be visible at [http://localhost:8887/localsite](http://localhost:8887/localsite)  
+([Other http server options](../http-server) and [VS Code issue to resolve](../http-server).)  
 
-To run further commands, open a new terminal window.
 
-## Pull down repos to contribute
 
+## If you're making edits, pull down 1 or 2 additional repos 
+
+You'll typicaly only need a couple of the repos locally when making edits.  
 All the repos below are viewable at [model.earth](https://model.earth). Each repo is a subfolder. Example: [model.earth/projects](https://model.earth/projects)
 
 We generally avoid creating branches. Make your edits in a fork, then send a Pull Request (PR). We love when you edit README.md files to help keep our TO DOs current. Add your first name where you're working and send a PR. Also send Loren an email whenever you submit a Pull Request.
@@ -92,7 +100,8 @@ We manage the home config setting in [Google Sheets](../../../data-commons/docs/
 </div>
 <div style="clear:both"></div><br>
 
-**Step 4.** We recommend using [GitHub Desktop](https://desktop.github.com/) to clone your forks. And you don't need to pull all the repos.
+**Step 4.** We recommend using [GitHub Desktop](https://desktop.github.com/) to clone your forks.  
+You don't need to pull all the repos - typically just 2 or 3 (including localsite).
 
 As an alternative to GitHub Desktop, you can run some of the following in your local webroot to pull down repos.
 
@@ -129,7 +138,8 @@ If you encounter a broken link locally, view the page at [model.earth](https://m
 ## Occasionally refresh your local files
 
 <!-- TO DO: Update this link with account entered in textbox on the current page. -->
-Before you edit, sync your forks at [GitHub.com](https://github.com), then pull down recent updates within Github Desktop.   
+Before you edit, sync your forks at [GitHub.com](https://github.com),  
+then pull down recent updates within Github Desktop.   
 
 Or you can run the following in your local webroot to fetch changes from the parent repos. You'll still also need to sync your fork within GitHub.com to avoid conflicts when checking in your local update. (Sync before you edit, and sync often, to avoid merge issues.)
 
