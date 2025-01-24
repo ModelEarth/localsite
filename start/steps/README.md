@@ -35,7 +35,9 @@ On Windows:
 The localsite repo should now be visible at [http://localhost:8887/localsite](http://localhost:8887/localsite)  
 ([Other http server options](../http-server) and [VS Code issue to resolve](../http-server).)  
 
+Here's redirect javascript you can place in a new index.html file in your [webroot](http://localhost:8887/):
 
+	<script language="JavaScript">window.location="localsite/"</script>
 
 ## If you're making edits, pull down 1 or 2 additional repos 
 
