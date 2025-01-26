@@ -4448,7 +4448,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         param.headerLogoNoText = "<img src='/storyboard/img/logo/ds/favicon-ds.png' style='float:left;width:38px;margin-right:7px'>";
         if (location.href.indexOf("/seasons") >= 0) {
             changeFavicon("/storyboard/img/logo/ds/favicon-ds.png");
-            param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/faveye.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
+            param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/favicon-ds.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
         } else {
             changeFavicon("/localsite/img/logo/apps/favicon-ds.png");
         }
