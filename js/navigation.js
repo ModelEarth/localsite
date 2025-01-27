@@ -4439,18 +4439,18 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             $(".siteTitleShort").text("Planet.Live");
         } else {
             if (!param.headerLogo) {
-                param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
+                param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/favicon-ds.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
             }
         }
         if (location.host.indexOf("localhost") >= 0) {
             siteRoot = "/dreamstudio";
         }
-        param.headerLogoNoText = "<img src='/storyboard/img/logo/ds/favicon.png' style='float:left;width:38px;margin-right:7px'>";
+        param.headerLogoNoText = "<img src='/storyboard/img/logo/ds/favicon-ds.png' style='float:left;width:38px;margin-right:7px'>";
         if (location.href.indexOf("/seasons") >= 0) {
-            changeFavicon("/storyboard/img/logo/ds/faveye.png");
-            param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/faveye.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
+            changeFavicon("/storyboard/img/logo/ds/favicon-ds.png");
+            param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/favicon-ds.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
         } else {
-            changeFavicon("/localsite/img/logo/apps/dreamstudio.png");
+            changeFavicon("/localsite/img/logo/apps/favicon-ds.png");
         }
         if (location.host.indexOf("dreamstudio") >= 0) {
             //param.headerLogo = param.headerLogo.replace(/\/dreamstudio\//g,"\/");
