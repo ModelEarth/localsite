@@ -4632,6 +4632,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         });
         $(document).on("click", ".hideSide", function(event) {
             hideSide("");
+            $('body').removeClass('bodyLeftMarginNone'); // For DS side over hero
             console.log(".hideSide click");
         });
 
