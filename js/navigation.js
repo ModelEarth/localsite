@@ -643,28 +643,31 @@ function hashChanged() {
         } else {
             $(".mainColumn1").show();
         }
+  
+        if (hash.geoview != "country") {
+            let geoDeselect = "";
 
-        //if($("#geomap").is(':visible')) {
-            if (hash.geoview != "country") {
-                let geoDeselect = "";
+            //alert("priorHash.geo " + priorHash.geo + " hash.geo " + hash.geo);
+            if (priorHash.geo) {
+                const priorGeoArray = priorHash.geo.split(",");
+                const hashGeoArray = hash.geo ? hash.geo.split(",") : [];
 
-                //alert("priorHash.geo " + priorHash.geo + " hash.geo " + hash.geo);
-                if (priorHash.geo) {
-                    const priorGeoArray = priorHash.geo.split(",");
-                    const hashGeoArray = hash.geo ? hash.geo.split(",") : [];
+                // Find values in priorHash.geo that are not in hash.geo
+                const geoDeselectArray = priorGeoArray.filter(value => !hashGeoArray.includes(value));
 
-                    // Find values in priorHash.geo that are not in hash.geo
-                    const geoDeselectArray = priorGeoArray.filter(value => !hashGeoArray.includes(value));
-
-                    // Create a comma-separated string of removed values
-                    geoDeselect = geoDeselectArray.join(",");
-                }
-                updateSelectedTableRows(hash.geo, geoDeselect, 0);
+                // Create a comma-separated string of removed values
+                geoDeselect = geoDeselectArray.join(",");
             }
+            updateSelectedTableRows(hash.geo, geoDeselect, 0);
+        }
+
+        if($("#geomap").is(':visible')) {
             // Triggered by hash change to hash.geoview (values: county, state, country)
             // Allows location just clicked (in tabulator and on map) to be highlighted. 
             renderGeomapShapes("geomap", hash, hash.geoview, 1); 
-        //}
+        //} else {
+            // Clear colored shapes
+        }
 
         // TEST
         //dataObject.stateshown = getStateFips(hash);
@@ -3496,8 +3499,8 @@ function updateMapColors(whichmap) {
 
         // Map a value to a color in the blue range
         function getColor(co2) {
-            console.log("co2: ");
-            console.log(co2);
+            //console.log("co2: ");
+            //console.log(co2);
             const co2Value = Number(co2);
             if (isNaN(co2Value)) {
                 return `hsl(210, 100%, 95%)`; // Lightest blue for missing/invalid co2

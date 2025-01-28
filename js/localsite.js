@@ -1953,8 +1953,6 @@ function showSearchFilter() {
   let loadFilters = false;
   let headerHeight = $("#headerbar").height(); // Not sure why this is 99 rather than 100
   //closeSideTabs(); // Later search will be pulled into side tab.
-
-
   if (!$("#filterFieldsHolder").length) { // Resides in template-main.html. Filter doesn't exist yet, initial map/index.html load.
     //if (!$("#datascape").length) {
     //  $('body').prepend("<div id='datascape'></div>");
@@ -1962,7 +1960,7 @@ function showSearchFilter() {
     //loadLocalTemplate(); // Loaded a second time on community page
     loadSearchFilterCss();
     loadScript(theroot + 'js/navigation.js', function(results) {
-      console.log('DEACTIVATED %cloadLeafletAndMapFilters called by showSearchFilter(). Might cause dup', 'color: red; background: yellow; font-size: 14px');
+      //console.log('DEACTIVATED %cloadLeafletAndMapFilters called by showSearchFilter(). Might cause dup', 'color: red; background: yellow; font-size: 14px');
       //loadLeafletAndMapFilters();
     });
     $('html,body').scrollTop(0);
@@ -2013,59 +2011,9 @@ function showSearchFilter() {
         */
       });
     }
-
-    return;
-
-
-    ///////////////////
-
-      // NOT CURRENTLY USED
-
-
-      //$(".filterFields").hide();
-    
-
-      //$(".moduleBackgroundImage").addClass("moduleBackgroundImageDarken"); // Not needed since filters are not over image.
-      //$(".siteHeaderImage").addClass("siteHeaderImageDarken"); // Not needed since filters are not over image.
-
-      //$('.topButtons').show(); // Avoid showing bar when no layer.
-      $(".layerContent").show(); // For main page, over video.
-
-      //$(".showFilters").hide(); // Avoid hiding because title jumps.
-      //$(".hideFilters").show();
-
-      // Coming soon - Select if searching Georgia.org or Georgia.gov
-      //$(".searchModuleIconLinks").show();
-      $(".hideWhenFilters").hide();
-
-      $(".filterPanelHolder").show();
-      //$(".filterPanelWidget").show();
-      $("#filterPanel").show(); // Don't use "normal", causes overflow:hidden.
-      $(".searchHeader").show();
-      $("#panelHolder").show();
-
-
-      $(".showFiltersClick").hide();
-      $(".hideFiltersClick").show();
-
-      // Would remove active from Overview Map
-      $(".horizontalButtons .layoutTab").removeClass("active");
-      $(".showFiltersButton").addClass("active");
-
-      $(".hideSearch").show();
-      //$(".hideFilters").show(); // X not needed since magnifying glass remains visible now.
-      //$("#hideSearch").show();
-      if ($("#menuHolder").is(':visible')) {
-          $('.hideMetaMenu').trigger("click");
-      }
-      //updateOffsets();
-
-      // Hide because map is displayed, causing overlap.
-      // Could be adjusted to reside left of search filters.
-      //$(".quickMenu").hide();
-
-
+    goHash({"sidetab":""});
   }
+
 }
 function closeSideTabs() {
   console.log("closeSideTabs()");
