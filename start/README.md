@@ -5,7 +5,7 @@
 View our [Active Projects](../../projects) and [Moonshots](../../community/projects)
 
 
-Helpful tips for [Node, Python, pyenv, Conda and Docker](/io/coders/python/)
+Helpful tips for [Node, Python, pyenv, Conda and Docker](https://model.earth/io/coders/python/)
 
 
 # Single Page Embed
