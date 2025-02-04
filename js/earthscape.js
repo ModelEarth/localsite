@@ -323,11 +323,11 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
     });
 
     // For Area Chart
-    const datasets1 = selectedData.map(county => {
+    const datasets1 = selectedData.map(location => {
         return {
-            label: county.county,
+            label: location.name,
             data: years.map(year => {
-                const observation = county.observations.find(obs => obs.date === year);
+                const observation = location.observations.find(obs => obs.date === year);
                 return observation ? observation.value : null;
             }),
             backgroundColor: 'rgba(' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ',0.2)',
@@ -372,7 +372,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
 
     // For Area Chart
     let chartVariableSelect = document.getElementById('chartVariable');
-    let chartTitle = chartVariableSelect.options[chartVariableSelect.selectedIndex].value;
+    let chartTitle = chartVariableSelect.options[chartVariableSelect.selectedIndex].text;
 
     const data1 = {
         labels: years,
