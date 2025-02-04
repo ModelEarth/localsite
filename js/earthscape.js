@@ -577,3 +577,18 @@ function parseCSV(csvText) {
     });
     return rows;
 }
+function toggleDivs() {
+    // Get selected value from radio buttons
+    const selectedValue = document.querySelector('input[name="toogleChartType"]:checked').value;
+    if (selectedValue == "both") {
+        document.getElementById('div1').style.display = 'block';
+        document.getElementById('div2').style.display = 'block';
+        return;
+    }
+    // Hide both divs initially
+    document.getElementById('div1').style.display = 'none';
+    document.getElementById('div2').style.display = 'none';
+
+    // Show the selected div
+    document.getElementById(selectedValue).style.display = 'block';
+}
