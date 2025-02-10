@@ -592,3 +592,57 @@ function toggleDivs() {
     // Show the selected div
     document.getElementById(selectedValue).style.display = 'block';
 }
+//4. Pull Google Data Commons population data 
+async function fetchCountryPopulation(dcid) {
+    if (!dcid) {
+        console.error("No DCID provided for population lookup.");
+        return;
+    }
+
+    const apiUrl = `https://api.datacommons.org/stat/value?place=${dcid}&stat_var=Count_Person`;
+
+    try {
+        const response = await fetch(apiUrl, {
+            headers: { "Content-Type": "application/json" },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Population Data:", data);
+
+        // Check if population value exists
+        if (!data.value) {
+            console.warn(`No population data found for DCID: ${dcid}`);
+            return;
+        }
+
+        const latestPopulation = data.value;
+        console.log(`Population for ${dcid}:`, latestPopulation);
+
+        // Update the UI
+        const populationElement = document.getElementById("populationDisplay");
+        if (populationElement) {
+            populationElement.innerText = `Population: ${latestPopulation.toLocaleString()}`;
+        } else {
+            console.warn("No element with ID 'populationDisplay' found.");
+        }
+    } catch (error) {
+        console.error("Error fetching population data:", error);
+    }
+}
+
+// Ensure the dropdown exists before adding an event listener
+document.addEventListener("DOMContentLoaded", function () {
+    const dcidSelect = document.getElementById("CountrychartVariable");
+    if (dcidSelect) {
+        dcidSelect.addEventListener("change", function () {
+            const selectedDcid = this.value; // Get selected DCID
+            fetchCountryPopulation(selectedDcid); // Fetch population data
+        });
+    } else {
+        console.error("Dropdown element with ID 'chartVariable' not found.");
+    }
+});
