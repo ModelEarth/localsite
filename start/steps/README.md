@@ -3,7 +3,7 @@
 # Site Install
 
 You can use [Localsite Pages](../) to create websites <!--and [storyboards](/requests)-->with free GitHub Pages hosting.  
-Our notes on [Node, Python, Docker and Conda](/io/coders/python/).  
+Our notes on [Node, Python, Docker and Conda](https://model.earth/io/coders/python/).  
 
 ## Start your local webroot http-server
 
@@ -35,7 +35,7 @@ On Windows:
 The localsite repo should now be visible at [http://localhost:8887/localsite](http://localhost:8887/localsite)  
 ([Other http server options](../http-server) and [VS Code issue to resolve](../http-server).)  
 
-Here's redirect javascript you can place in a new index.html file in your [webroot](http://localhost:8887/):
+You can add an index.html file with the following redirect in your [webroot](http://localhost:8887/). Point at the repo you're working in the most.
 
 	<script language="JavaScript">window.location="localsite/"</script>
 
@@ -59,9 +59,9 @@ Fork <a href="https://github.com/ModelEarth/data-commons">Data-Commons</a> if yo
 Fork <a href="https://github.com/ModelEarth/feed">Feed Player</a> if you're adding to our React Vite visual [Feed viewer](https://model.earth/feed/) and memberSense for Discord.  
 Fork [Open Footprint](https://github.com/ModelEarth/OpenFootprint) if you're contributing to our <a href="https://model.earth/useeio.js/footprint/">USEEIO.js International</a> ChartJS and SQL visualizations.  
 Fork <a href="https://github.com/ModelEarth/realitystream">RealityStream</a> if you're contributing python to our Machine Learning visualizations.  
-Fork <a href="https://github.com/ModelEarth/requests">Requests</a> if you're python adding to our image and video [Storyboard Generation](/data-pipeline/research/stream).  
+Fork <a href="https://github.com/ModelEarth/requests">Requests</a> if you're adding python to our image and video [Storyboard Generation](https://model.earth/data-pipeline/research/stream).  
 Fork <a href="https://github.com/datascape/open-webui/actions">OpenWebUI (Datascape fork)</a> to contribute within our [Open WebUI location projects](/projects/location/) using Python and Vite.  
-Fork <a href="https://github.com/ModelEarth/earthscape">Earthscape</a> if you're contributing to the our fork of [Chatbot UI](/earthscape/app/) using NextJS React and Supabase for Crew tools.  
+Fork <a href="https://github.com/ModelEarth/earthscape">Earthscape</a> if you're contributing to the our fork of [Chatbot UI](https://model.earth/earthscape/app/) using NextJS React and Supabase for Crew tools.  
 Fork <a href="https://github.com/ModelEarth/data-pipeline">Data-Pipeline</a> if you're contributing Python to data prep.  
 
 We've omitted the Community repo since it's only used for model.earth hosting. It's not needed for shared component dev.  
@@ -417,6 +417,16 @@ You can point a domain at all the repos in your Github account with the steps be
 
 We sometimes [use Github .submodules](../submodules/) to deploy multiple repos into a single [Cloudflare site](../cloudflare/). A super high traffic site can use Cloudflare's free CDN to avoid exceeding limits in Github.
 
+## Ignore a newly added blank .env file
+
+If you push a new blank .env for keys, add .env to the .gitignore.  
+The use the following to remove future pushes as you add keys.  
+
+	git update-index --assume-unchanged .env
+
+Show it again for deploying changes:
+
+	git update-index --no-assume-unchanged .env
 
 ## Additional Resources
 
