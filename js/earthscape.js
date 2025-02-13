@@ -459,28 +459,23 @@ async function updateDcidSelectFromSheet(scope) {
     if (!scope && hash.scope) {
         scope = hash.scope;
     }
+    // Temp
+    if (scope == "county" && hash.goal == "health") {
+        scope = "country" // Until Google Sheet has counties for health
+        updateHash({"scope":scope}); // Used by refreshTimeline()
 
-    /*
-    // Several Google Sheet tabs were previously hardcoded
+    }
 
-    //loadGoalsDropdown("goals","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=456266073&single=true&output=csv");
-
-    // Copy the sheet URL and modify in this format
-
-    loadGoalsDropdown("water","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=2049347939&single=true&output=csv");
-
-    loadGoalsDropdown("air","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=0&single=true&output=csv");
-
-    loadGoalsDropdown("health", "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=1911215802&single=true&output=csv");
-
-    //loadGoalsDropdown("aquifers","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=484745180&single=true&output=csv");
-
-    //loadGoalsDropdown("conservation","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=374006451&single=true&output=csv");
-
-    //loadGoalsDropdown("population", "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=471398138&single=true&output=csv");
-
-    //loadGoalsDropdown("zipcodeleveldata","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=492624247&single=true&output=csv");
-    */
+    // Temp here, will be in it's own function for choosing current goal view
+    const airTimelinesLink = document.getElementById("airTimelinesLink");
+    const healthTimelinesLink = document.getElementById("healthTimelinesLink");
+    if (hash.goal === "health") {
+      if (healthTimelinesLink) healthTimelinesLink.style.display = "none";
+      if (airTimelinesLink) airTimelinesLink.style.display = "block";
+    } else {
+      if (airTimelinesLink) airTimelinesLink.style.display = "none";
+      if (healthTimelinesLink) healthTimelinesLink.style.display = "block";
+    }
 
     const dcidSelect = document.getElementById('chartVariable');
     if (!dcidSelect) {
@@ -489,9 +484,25 @@ async function updateDcidSelectFromSheet(scope) {
     }
 
     dcidSelect.innerHTML = ''; // Clear existing options
+    // air tab
+    let sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/export?format=csv&gid=0"; // air
+    if (hash.goal == "water") {
+        sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=2049347939&single=true&output=csv"; // water
+    } else if (hash.goal == "health") {
+        sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=1911215802&single=true&output=csv"; // health
+    } 
 
-    // Replace this URL with your specific sheet's export URL
-    const sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/export?format=csv&gid=0";
+    //else if (hash.goal == "population") {
+        // Error: Missing required columns in the CSV data.
+    //    sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=471398138&single=true&output=csv"; // population
+    //}
+
+    //loadGoalsDropdown("aquifers","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=484745180&single=true&output=csv");
+
+    //loadGoalsDropdown("conservation","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=374006451&single=true&output=csv");
+
+    //loadGoalsDropdown("zipcodeleveldata","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=492624247&single=true&output=csv");
+    
 
     const response = await fetch(sheetUrl);
     const csvText = await response.text();
@@ -540,6 +551,12 @@ async function updateDcidSelectFromSheet(scope) {
         return matchFound; // Return true if scope matches
     });
 
+    // TO DO: Apply based on incoming Google Sheet rows
+    if (hash.goal == "health") {
+        updateScopeOptions(["country"]);
+    } else {
+        updateScopeOptions(["country","state","county"]);
+    }
     console.log("Filtered Options:", filteredOptions); // Log the filtered options to verify
 
     // Populate dropdown
@@ -559,6 +576,7 @@ async function updateDcidSelectFromSheet(scope) {
         dcidSelect.value = filteredOptions[0][valueIndex].trim(); // Set to the first option's value
         refreshTimeline();
     } else {
+        alert("No datasets in the Google Sheet for scope \"" + normalizedScope + "\" with the goal \"" + hash.goal + "\"");
         console.warn("No options matched the provided scope:", normalizedScope);
     }
 }

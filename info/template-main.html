@@ -952,18 +952,18 @@ document.addEventListener('mousedown', function(e) {
               </select>
               <div class="local" style="display:none;float:left;">
                 <select id="selectScope">
-                  <option value="none">Scope...</option>
+                  
                   <!--
-                  <option value="continent">Countinents</option>
+                  <option value="">Scope...</option>
                   -->
-                  <option value="country" selected>Countries</option>
-                  <option value="state">States/Territories</option>
-                  <option value="county">Counties</option>
-                  <option value="zip">Zip Code</option>
-                  <!--
-                  <option value="person">People</option>
-                  <option value="voxel">Brain Voxels</option>
-                  -->
+                  <option value="continent" hidden>Scope: By Continent</option>
+                  <option value="country" selected>Scope: By Country</option>
+                  <option value="state">Scope: By State/Territory</option>
+                  <option value="county">Scope: By County</option>
+                  <option value="zip" hidden>Scope: By Zip Code</option>
+                  <option value="person" hidden>Scope: By Person</option>
+                  <option value="voxel" hidden>Scope: By Brain Voxels</option>
+                  
                 </select>
               </div>
               <b><!--States--></b>

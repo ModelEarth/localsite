@@ -397,15 +397,47 @@ function updateHash(addToHash, addToExisting, removeFromHash) { // Avoids trigge
     window.history.pushState("", searchTitle, pathname + queryString);
 }
 function goHash(addToHash,removeFromHash) {
-  consoleLog("goHash ")
-  console.log(addToHash)
+  consoleLog("goHash\n" + JSON.stringify(addToHash, null, 2));
+  // Get and normalize the current hash
+  const currentHash = normalizeHash(window.location.hash);
   updateHash(addToHash,true,removeFromHash); // true = Include all of existing hash
-  triggerHashChangeEvent();
+  // Get and normalize the new hash after updateHash() runs
+  const newHash = normalizeHash(window.location.hash);
+  // Only trigger the event if the normalized hash actually changed
+  if (currentHash !== newHash) {
+    triggerHashChangeEvent();
+  }
 }
 function go(addToHash) {
   consoleLog("go ")
+  // Get and normalize the current hash
+  const currentHash = normalizeHash(window.location.hash);
   updateHash(addToHash,false); // Drop existing
-  triggerHashChangeEvent();
+  // Get and normalize the new hash after updateHash() runs
+  const newHash = normalizeHash(window.location.hash);
+  // Only trigger the event if the normalized hash actually changed
+  if (currentHash !== newHash) {
+    triggerHashChangeEvent();
+  }
+}
+
+// Used only when comparing if hash has changed.
+// Function to normalize the hash by sorting key-value pairs and converting keys to lowercase
+function normalizeHash(hashString) {
+  if (!hashString.startsWith("#")) return "";
+
+  const params = new URLSearchParams(hashString.substring(1));
+  const sortedParams = new URLSearchParams();
+
+  // Normalize keys to lowercase, keep values unchanged, and sort by keys
+  [...params.entries()]
+    .map(([key, value]) => [key.toLowerCase(), value]) // Only lowercase keys
+    .sort()
+    .forEach(([key, value]) => {
+      sortedParams.append(key, value);
+    });
+
+  return sortedParams.toString();
 }
 
 // Used by navigation.js, map.js
@@ -2011,6 +2043,7 @@ function showSearchFilter() {
         */
       });
     }
+    //alert("no sidetab");
     goHash({"sidetab":""});
   }
 
