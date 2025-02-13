@@ -459,6 +459,22 @@ async function updateDcidSelectFromSheet(scope) {
     if (!scope && hash.scope) {
         scope = hash.scope;
     }
+    // Temp
+    if (scope == "county" && hash.goal == "health") {
+        scope = "country" // Until Google Sheet has counties for health
+        updateHash({"scope":scope}); // Used by refreshTimeline()
+    }
+
+    // Temp here, will be in it's own function for choosing current goal view
+    const airTimelinesLink = document.getElementById("airTimelinesLink");
+    const healthTimelinesLink = document.getElementById("healthTimelinesLink");
+    if (hash.goal === "health") {
+      if (healthTimelinesLink) healthTimelinesLink.style.display = "none";
+      if (airTimelinesLink) airTimelinesLink.style.display = "block";
+    } else {
+      if (airTimelinesLink) airTimelinesLink.style.display = "none";
+      if (healthTimelinesLink) healthTimelinesLink.style.display = "block";
+    }
 
     const dcidSelect = document.getElementById('chartVariable');
     if (!dcidSelect) {
