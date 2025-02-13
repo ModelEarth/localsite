@@ -463,6 +463,7 @@ async function updateDcidSelectFromSheet(scope) {
     if (scope == "county" && hash.goal == "health") {
         scope = "country" // Until Google Sheet has counties for health
         updateHash({"scope":scope}); // Used by refreshTimeline()
+
     }
 
     // Temp here, will be in it's own function for choosing current goal view
@@ -550,6 +551,12 @@ async function updateDcidSelectFromSheet(scope) {
         return matchFound; // Return true if scope matches
     });
 
+    // TO DO: Apply based on incoming Google Sheet rows
+    if (hash.goal == "health") {
+        updateScopeOptions(["country"]);
+    } else {
+        updateScopeOptions(["country","state","county"]);
+    }
     console.log("Filtered Options:", filteredOptions); // Log the filtered options to verify
 
     // Populate dropdown

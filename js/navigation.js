@@ -6388,6 +6388,42 @@ function topReached(elem) { // top scrolled out view
   return (elemTop < 0);
 }
 
+function updateScopeOptions(availableScopes) {
+    waitForElm('#selectScope').then((elm) => {
+        $("#selectScope option").each(function () {
+            $(this).prop("hidden", !availableScopes.includes(this.value));
+        });
+    });
+}
+function hideScopeOptions(hideScopes) {
+    // Avoids revealing if option is already hidden
+    waitForElm('#selectScope').then((elm) => {
+        //alert("hideScopeOptions")
+
+        let select = $("#selectScope");
+        let selectedOption = select.find(":selected");
+        let isSelectedHidden = hideScopes.includes(selectedOption.val());
+
+        select.find("option").each(function () {
+            let $option = $(this);
+            if (hideScopes.includes(this.value)) {
+                $option.prop("hidden", true);
+            }
+        });
+
+        // If the selected option was hidden, force-select the first visible one
+        if (isSelectedHidden || !select.find(":selected").length) {
+            let firstVisibleOption = select.find("option:not([hidden])").first();
+            if (firstVisibleOption.length) {
+                select.val(firstVisibleOption.val()); // Properly select without showing a hidden option
+                //alert("New selection: " + firstVisibleOption.val());
+                updateHash({'scope':firstVisibleOption.val()});
+            }
+        }
+
+    });
+}
+
 function formatCell(input, format) {
     // If format is none or blank, return input as it is.
     if (format === 'none' || format === '' || input === '') {
