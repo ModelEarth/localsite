@@ -553,6 +553,7 @@ async function updateDcidSelectFromSheet(scope) {
         dcidSelect.value = filteredOptions[0][valueIndex].trim(); // Set to the first option's value
         refreshTimeline();
     } else {
+        alert("No datasets in the Google Sheet for scope \"" + normalizedScope + "\" with the goal \"" + hash.goal + "\"");
         console.warn("No options matched the provided scope:", normalizedScope);
     }
 }
