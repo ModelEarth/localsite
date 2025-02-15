@@ -577,7 +577,7 @@ label { /* override Drupal */
   }
 }
 #mapInfo {
-  padding: 20px;
+  padding-bottom: 20px;
   background-color: #dcdcdc;
   width: 100%;
   max-width: 100%;
