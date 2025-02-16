@@ -564,7 +564,7 @@ async function updateDcidSelectFromSheet(scope) {
     });
 
     // TO DO: Apply based on incoming Google Sheet rows
-    if (hash.goal == "health") {
+    if (hash.goal == "health" || hash.goal == "water") {
         updateScopeOptions(["country"]);
     } else {
         updateScopeOptions(["country","state","county"]); // TO DO: Zip not yet activated, add to function
