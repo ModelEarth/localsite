@@ -2440,14 +2440,14 @@ function loadIntoDiv(pageFolder,divID,html,callback) {
       if (currentElement.getAttribute("href").toLowerCase().indexOf("http") < 0) {
         // Update the href attribute with the pageFolder
         currentElement.setAttribute("href", pageFolder + currentElement.getAttribute('href'));
-        console.log("Showdown link update: " + pageFolder + " plus " + currentElement.getAttribute('href'));
+        //console.log("Showdown link update: " + pageFolder + " plus " + currentElement.getAttribute('href'));
       }
       // Check if the link is not a full URL
       else if (!/^http/.test(currentElement.getAttribute("href"))) {
         console.log("ALERT Adjust: " + currentElement.getAttribute('href'));
         // Update the href attribute with the pageFolder
         currentElement.setAttribute("href", pageFolder + currentElement.getAttribute('href'));
-        console.log("Showdown link update2: " + pageFolder + " plus " + currentElement.getAttribute('href'));
+        //console.log("Showdown link update2: " + pageFolder + " plus " + currentElement.getAttribute('href'));
       }
     });
 

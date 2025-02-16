@@ -278,8 +278,9 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
 
     // Format data
     const formattedData = [];
+    //alert(JSON.stringify(geoValues)) // TO DO: Only send countries that exist in the dataset.
     for (const geoId in geoValues) {
-        if (timelineData.byVariable[chartVariable].byEntity[geoId]) {
+        if (timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets) { // Avoids error if country (India) is not in water timeline
             formattedData.push({
                 name: geoValues[geoId].name,
                 observations: timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0]['observations']
@@ -299,7 +300,11 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
     // Showing all or top 5 or bottom 5
     let selectedData;
     formattedData.forEach(location => {
-        location.averageValue = location.observations.reduce((sum, obs) => sum + obs.value, 0) / location.observations.length;
+        if(location.length) {
+            location.averageValue = location.observations.reduce((sum, obs) => sum + obs.value, 0) / location.observations.length;
+        } else {
+            console.log("No location for location.averageValue");
+        }
     });
     if (showAll === 'showTop5') {
         selectedData = formattedData.sort((a, b) => b.averageValue - a.averageValue).slice(0, 5);
@@ -453,6 +458,13 @@ function refreshTimeline() {
         //},3000);
     //});
 }
+function updateScopeOptions(availableScopes) {
+    waitForElm('#selectScope').then((elm) => {
+        $("#selectScope option").each(function () {
+            $(this).prop("hidden", !availableScopes.includes(this.value));
+        });
+    });
+}
 async function updateDcidSelectFromSheet(scope) {
 
     let hash = getHash();
@@ -552,10 +564,10 @@ async function updateDcidSelectFromSheet(scope) {
     });
 
     // TO DO: Apply based on incoming Google Sheet rows
-    if (hash.goal == "health") {
+    if (hash.goal == "health" || hash.goal == "water") {
         updateScopeOptions(["country"]);
     } else {
-        updateScopeOptions(["country","state","county"]);
+        updateScopeOptions(["country","state","county"]); // TO DO: Zip not yet activated, add to function
     }
     console.log("Filtered Options:", filteredOptions); // Log the filtered options to verify
 
