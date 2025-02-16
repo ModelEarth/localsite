@@ -238,7 +238,7 @@ function hashChanged() {
         if (hash.scope) {
             waitForElm('#selectScope').then((elm) => {
                 $("#selectScope").val(hash.scope);
-                if (hash.scope == "state" || hash.scope == "county" || hash.scope == "zip") {
+                if (hash.scope == "county" || hash.scope == "zip") {
                     $("#entityId").show(); // List of states
                 } else {
                     $("#entityId").hide();
@@ -6386,14 +6386,6 @@ function topReached(elem) { // top scrolled out view
   //console.log('offset: ' + $(elem).offset().top + ' height:' + $(elem).height() + ' docViewBottom:' + docViewBottom + ' elemBottom: ' + elemBottom);
   //console.log('topReached elemTop: ' + elemTop);
   return (elemTop < 0);
-}
-
-function updateScopeOptions(availableScopes) {
-    waitForElm('#selectScope').then((elm) => {
-        $("#selectScope option").each(function () {
-            $(this).prop("hidden", !availableScopes.includes(this.value));
-        });
-    });
 }
 function hideScopeOptions(hideScopes) {
     // Avoids revealing if option is already hidden
