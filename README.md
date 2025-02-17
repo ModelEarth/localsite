@@ -2,7 +2,7 @@
 
 ## Localsite Nav
 
-The&nbsp;[localsite&nbsp;repo](https://github.com/modelearth/localsite/) provides a static framework for displaying navigation and [maps](map/) from json&nbsp;APIs, Google Sheets, and&nbsp;.CSV&nbsp;files.
+The&nbsp;[localsite&nbsp;repo](https://github.com/modelearth/localsite/) provides a static framework for displaying navigation and maps from json&nbsp;APIs, Google Sheets, and&nbsp;.CSV&nbsp;files.
 
 ## Get Involved
 
