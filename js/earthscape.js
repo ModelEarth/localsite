@@ -446,7 +446,7 @@ function refreshTimeline() {
                         
             let chartVariable = chartVariableSelect.options[chartVariableSelect.selectedIndex].value;
 
-            let showAll = document.querySelector('input[name="countyShow"]:checked').value;
+            let showAll = document.querySelector('input[name="whichLines"]:checked').value;
             if(!showAll) {showAll = 'showTop5';}
 
             let entityIdSelect = document.getElementById('entityId');
