@@ -287,7 +287,24 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             });
         }
     }
+    // Fetch population data for the same scope and entity
+    const populationVariable = "Count_Person"; // DCID for population count
+    const populationUrl = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=${populationVariable}&entity.dcids=${entityId}`;
+    const populationResponse = await fetch(populationUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ "date": "", "select": ["date", "entity", "value", "variable"] })
+    });
+    const populationData = await populationResponse.json();
+    const populationObservations = populationData.byVariable[populationVariable].byEntity[entityId].orderedFacets[0].observations;
 
+    // Merge population data with timeline data
+    const mergedData = formattedData.map(location => {
+        return {
+            ...location,
+            population: populationObservations
+        };
+    });
     // Get unique years
     let yearsSet = new Set();
     formattedData.forEach(location => {
@@ -340,7 +357,18 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             fill: true
         };
     });
-
+     // Add population dataset
+     const populationDataset = {
+        label: 'Population',
+        data: years.map(year => {
+            const observation = populationObservations.find(obs => obs.date === year);
+            return observation ? observation.value : null;
+        }),
+        borderColor: 'rgb(0, 0, 0)', // Black color for population data
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        borderDash: [5, 5] // Dashed line for population data
+    };
+    datasets.push(populationDataset);
     const config = {
         type: 'line',
         data: {
@@ -623,6 +651,7 @@ function toggleDivs() {
     document.getElementById(selectedValue).style.display = 'block';
 }
 //4. Pull Google Data Commons population data 
+/*
 async function fetchCountryPopulation(dcid) {
     if (!dcid) {
         console.error("No DCID provided for population lookup.");
@@ -676,3 +705,4 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Dropdown element with ID 'chartVariable' not found.");
     }
 });
+*/
