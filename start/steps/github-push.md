@@ -2,13 +2,22 @@
 
 ### Step 1: Retrieve GitHub Personal Token
 
-**Create a Personal Access Token**:  
-	Generate a personal access token on GitHub with the necessary `repo` permissions.
-    In your GitHub account, navigate to Settings, then to Developer settings (lower left).
-	Click on 'Personal access tokens' (classi) and then '[Generate new token](https://github.com/settings/tokens)'.
+**Create a fine-grained token for one repo**:  
 
-**Store the Token in Colab**:  
-	Save this token in the Colab notebook's Secrets section as `YOUR_COLAB_TOKEN_SECRET_NAME` or `ModelEarth` in the StatesFilter Colab. Ensure that the notebook has access to this secret.
+Generate a [Fine-Grained Token](https://github.com/settings/personal-access-tokens).
+In your GitHub account, navigate to Settings (for all repos under upper right menu), then to Developer settings (lower left).
+
+**Set 3 permissions for 1 of your repositories**<!--It may not be necessary to set both of these first two-->
+Contents: Read and write
+Deployments: Read and write
+Metadata: Read-only (gets set automatically)
+
+**Store the Token in Colab** 
+Place the token in the Colab step that sends report output to the repo.
+
+Or save the token in the Colab notebook's Secrets section as `YOUR_COLAB_TOKEN_SECRET_NAME` or `ModelEarth` in the StatesFilter Colab.
+
+Ensure that the notebook has access to this secret.
 
 ### Step 2: Install Git and Set Up User Information
 
