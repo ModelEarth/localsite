@@ -1992,7 +1992,7 @@ function applyIO(naics) {
     let endpoint = "/io/build/api";
     // Change && to || in these two lines to test locally.
     if (hash.beta == "true") {
-        endpoint = "/OpenFootprint/impacts/2020";
+        endpoint = "/profile/impacts/2020";
     }
     let theModel = 'USEEIOv2.0.1-411';
     if (hash.beta == "true") {
@@ -2123,7 +2123,7 @@ function getEpaSectors() {
             let thestate = hash.state.split(",")[0].toUpperCase();
             theModel = thestate + "EEIOv1.0-s-20"
             // if (hash.state == "GA" || hash.state == "ME") {
-            sectorsJsonFile = "/OpenFootprint/impacts/2020/" + theModel + "/sectors.json"; // 146/2 = 73
+            sectorsJsonFile = "/profile/impacts/2020/" + theModel + "/sectors.json"; // 146/2 = 73
             //alert(thestate + " sectorsJsonFile " + sectorsJsonFile);
         }
     }
@@ -2511,10 +2511,10 @@ function getModelFolderName() {
 function getEpaModel() {
     let theModel = getModelFolderName()
     return useeio.modelOf({
-      //endpoint: 'http://localhost:8887/OpenFootprint/impacts/2020',
+      //endpoint: 'http://localhost:8887/profile/impacts/2020',
 
       // Relative path avoids CORS error
-      endpoint: '/OpenFootprint/impacts/2020',
+      endpoint: '/profile/impacts/2020',
 
       model: theModel,
       asJsonFiles: true,

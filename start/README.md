@@ -60,7 +60,7 @@ US State Environmentally Extended Input-Output
 [USEEIO Python and R Examples](../../community/resources/useeio)
 
 The API is NOT used directly for websites.
-Instead, a static .json version of the API is loaded from files in [model.earth/io/build/api](https://github.com/ModelEarth/io/tree/main/build/api) and our [OpenFootprint](http://model.earth/OpenFootprint) repo.
+Instead, a static .json version of the API is loaded from files in [model.earth/io/build/api](https://github.com/ModelEarth/io/tree/main/build/api) and our [profile](http://model.earth/profile) repo.
 
 
 ## <span class="num">7</span><span class="txt">JAM Stack Resources</span>
