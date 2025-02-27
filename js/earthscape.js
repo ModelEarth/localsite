@@ -361,56 +361,56 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
     });
 
    // Check if the scope is "country" and the goal is "air"
-const hash = getHash(); 
-if (hash.goal === "air" && scope === "country") {
-    // Fetch population data for the same scope and entity
-    const populationVariable = "Count_Person"; // DCID for population count
-    const populationUrl = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=${populationVariable}&entity.dcids=${entityId}`;
-    const populationResponse = await fetch(populationUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ "date": "", "select": ["date", "entity", "value", "variable"] })
-    });
-    const populationData = await populationResponse.json();
-    const populationObservations = populationData.byVariable[populationVariable].byEntity[entityId].orderedFacets[0].observations;
 
-    // Merge population data with timeline data
-    const mergedData = formattedData.map(location => {
-        return {
-            ...location,
-            population: populationObservations
+    if (hash.goal === "air" && scope === "country") {
+        // Fetch population data for the same scope and entity
+        const populationVariable = "Count_Person"; // DCID for population count
+        const populationUrl = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=${populationVariable}&entity.dcids=${entityId}`;
+        const populationResponse = await fetch(populationUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "date": "", "select": ["date", "entity", "value", "variable"] })
+        });
+        const populationData = await populationResponse.json();
+        const populationObservations = populationData.byVariable[populationVariable].byEntity[entityId].orderedFacets[0].observations;
+
+        // Merge population data with timeline data
+        const mergedData = formattedData.map(location => {
+            return {
+                ...location,
+                population: populationObservations
+            };
+        });
+
+        // Update chart title to "World Population"
+        //chartText = "World Population";
+
+        // Add population dataset with updated label
+        const populationDataset = {
+            label: 'World Population', // Updated label
+            data: years.map(year => {
+                const observation = populationObservations.find(obs => obs.date === year);
+                return observation ? observation.value : null;
+            }),
+            borderColor: 'rgb(0, 0, 0)', // Black color for population data
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            borderDash: [5, 5] // Dashed line for population data
         };
-    });
-
-    // Update chart title to "World Population"
-    //chartText = "World Population";
-
-    // Add population dataset with updated label
-    const populationDataset = {
-        label: 'World Population', // Updated label
-        data: years.map(year => {
-            const observation = populationObservations.find(obs => obs.date === year);
-            return observation ? observation.value : null;
-        }),
-        borderColor: 'rgb(0, 0, 0)', // Black color for population data
-        backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        borderDash: [5, 5] // Dashed line for population data
-    };
-    datasets.push(populationDataset);
-} else {
-    // Add population dataset with default label
-    const populationDataset = {
-        label: 'Population', // Default label
-        data: years.map(year => {
-            const observation = populationObservations.find(obs => obs.date === year);
-            return observation ? observation.value : null;
-        }),
-        borderColor: 'rgb(0, 0, 0)', // Black color for population data
-        backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        borderDash: [5, 5] // Dashed line for population data
-    };
-    datasets.push(populationDataset);
-}
+        datasets.push(populationDataset);
+    } else {
+        // Add population dataset with default label
+        const populationDataset = {
+            label: 'Population', // Default label
+            data: years.map(year => {
+                const observation = populationObservations.find(obs => obs.date === year);
+                return observation ? observation.value : null;
+            }),
+            borderColor: 'rgb(0, 0, 0)', // Black color for population data
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            borderDash: [5, 5] // Dashed line for population data
+        };
+        datasets.push(populationDataset);
+    }
     const config = {
         type: 'line',
         data: {
