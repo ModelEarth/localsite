@@ -148,6 +148,7 @@ let geoValues = {};
 
 async function getTimelineChart(scope, chartVariable, entityId, showAll, chartText) {
     //alert("getTimelineChart chartVariable: " + chartVariable + ", scope: " + scope)
+    let hash = getHash(); // Add hash check at top of function
     geoValues = {}; // Clear prior
 
     let response, data, geoIds;
@@ -489,18 +490,31 @@ if (hash.goal === "air" && scope === "country") {
             }
     }
 
-    // Delete chart if it already exists
-    if (timelineChart instanceof Chart) {
-        timelineChart.destroy();
-    }
-    const ctx = document.getElementById('timelineChart').getContext('2d');
-    timelineChart = new Chart(ctx, config);
+        if (hash.output === "json") {
+        // Output JSON data to the page
+        const jsonOutput = {
+            years: years,
+            datasets: selectedData.map(location => ({
+                name: location.name,
+                observations: location.observations
+            })),
+            chartTitle: chartTitle
+        };
+        document.body.innerHTML = '<pre>' + JSON.stringify(jsonOutput, null, 2) + '</pre>';
+    } else {
+        // Delete chart if it already exists
+        if (timelineChart instanceof Chart) {
+            timelineChart.destroy();
+        }
+        const ctx = document.getElementById('timelineChart').getContext('2d');
+        timelineChart = new Chart(ctx, config);
 
-    if (lineAreaChart instanceof Chart) {
-        lineAreaChart.destroy();
+        if (lineAreaChart instanceof Chart) {
+            lineAreaChart.destroy();
+        }
+        const ctx1 = document.getElementById('lineAreaChart');
+        lineAreaChart = new Chart(ctx1, config1);
     }
-    const ctx1 = document.getElementById('lineAreaChart');
-    lineAreaChart = new Chart(ctx1, config1);
 }
 function refreshTimeline() {
     let hash = getHash();
