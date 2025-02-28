@@ -674,7 +674,54 @@ async function updateDcidSelectFromSheet(scope) {
         alert("No datasets in the Google Sheet for scope \"" + normalizedScope + "\" with the goal \"" + hash.goal + "\"");
         console.warn("No options matched the provided scope:", normalizedScope);
     }
+
+    /* call table function */
+    generateTable(rows);
+
 }
+
+/* Function to generate table, takes the data to be loaded on to the table as an argument, start */
+function generateTable(tableData) {
+    const table = document.createElement("table");
+    //table.setAttribute("border", "1"); // Add border for visibility
+
+    // Create table header via JS
+    const headerRow = document.createElement("tr");
+    tableData[0].forEach((element) => {
+        const headerCell = document.createElement("th");
+        headerCell.textContent = element.replace(/\r/g, "").toUpperCase(); // remove any occurances of the characters \r and capitalize header names.
+        headerCell.className = element.replace(/\r/g, ""); // assigning classname to control CSS
+        headerRow.appendChild(headerCell);
+    });
+    table.appendChild(headerRow);
+
+    // Create table rows for each data entry without the first element of the table data array since it contains the table header and is not required for populating the other rows
+    let newTableData = tableData.slice(1);
+    newTableData.forEach((item) => {
+        const row = document.createElement("tr");
+        item.forEach((elem, index) => {
+            const cell = document.createElement("td");
+            cell.className = "num"+index;
+            if(elem == "" || elem == null || elem == undefined) {
+                cell.textContent = '---'; // replace empty cell data with "---"
+            } else {
+                cell.textContent = elem.replace(/\r/g, "");
+                if(cell.textContent == "") {
+                    cell.textContent = '---'; // replace empty cell data after replacing \r above, with "---"
+                }
+            }
+            row.appendChild(cell);
+        });
+        table.appendChild(row);
+        //console.log(`DATA ROW CONTAINS ${item}`);
+    });
+
+    // Add the constructed table to the container.
+    const container = document.getElementById("table-container");
+    container.appendChild(table);
+}
+/* Function to generate table, end */
+
 // CSV Parsing function to handle quoted commas
 function parseCSV(csvText) {
     // Split rows by newlines
