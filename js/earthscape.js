@@ -718,7 +718,9 @@ function generateTable(tableData) {
 
     // Add the constructed table to the container.
     const container = document.getElementById("table-container");
-    container.appendChild(table);
+    if(location.host.indexOf("dreamstudio") < 0) {
+        container.appendChild(table);
+    }
 }
 /* Function to generate table, end */
 
