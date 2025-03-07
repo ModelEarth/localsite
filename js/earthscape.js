@@ -287,26 +287,9 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 observations: timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0]['observations']
             });
         }
-    }
+    } 
    
-    // Fetch population data for the same scope and entity
-    const populationVariable = "Count_Person"; // DCID for population count
-    const populationUrl = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=${populationVariable}&entity.dcids=${entityId}`;
-    const populationResponse = await fetch(populationUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ "date": "", "select": ["date", "entity", "value", "variable"] })
-    });
-    const populationData = await populationResponse.json();
-    const populationObservations = populationData.byVariable[populationVariable].byEntity[entityId].orderedFacets[0].observations;
-
-    // Merge population data with timeline data
-    const mergedData = formattedData.map(location => {
-        return {
-            ...location,
-            population: populationObservations
-        };
-    });
+         
     // Get unique years
     let yearsSet = new Set();
     formattedData.forEach(location => {
@@ -359,58 +342,12 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             fill: true
         };
     });
+          
+   
+    
+    
+       
 
-   // Check if the scope is "country" and the goal is "air"
-
-    if (hash.goal === "air" && scope === "country") {
-        // Fetch population data for the same scope and entity
-        const populationVariable = "Count_Person"; // DCID for population count
-        const populationUrl = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=${populationVariable}&entity.dcids=${entityId}`;
-        const populationResponse = await fetch(populationUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ "date": "", "select": ["date", "entity", "value", "variable"] })
-        });
-        const populationData = await populationResponse.json();
-        const populationObservations = populationData.byVariable[populationVariable].byEntity[entityId].orderedFacets[0].observations;
-
-        // Merge population data with timeline data
-        const mergedData = formattedData.map(location => {
-            return {
-                ...location,
-                population: populationObservations
-            };
-        });
-
-        // Update chart title to "World Population"
-        //chartText = "World Population";
-
-        // Add population dataset with updated label
-        const populationDataset = {
-            label: 'World Population', // Updated label
-            data: years.map(year => {
-                const observation = populationObservations.find(obs => obs.date === year);
-                return observation ? observation.value : null;
-            }),
-            borderColor: 'rgb(0, 0, 0)', // Black color for population data
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
-            borderDash: [5, 5] // Dashed line for population data
-        };
-        datasets.push(populationDataset);
-    } else {
-        // Add population dataset with default label
-        const populationDataset = {
-            label: 'Population', // Default label
-            data: years.map(year => {
-                const observation = populationObservations.find(obs => obs.date === year);
-                return observation ? observation.value : null;
-            }),
-            borderColor: 'rgb(0, 0, 0)', // Black color for population data
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
-            borderDash: [5, 5] // Dashed line for population data
-        };
-        datasets.push(populationDataset);
-    }
     const config = {
         type: 'line',
         data: {
@@ -506,6 +443,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         if (timelineChart instanceof Chart) {
             timelineChart.destroy();
         }
+        
         const ctx = document.getElementById('timelineChart').getContext('2d');
         timelineChart = new Chart(ctx, config);
 
@@ -514,7 +452,77 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         }
         const ctx1 = document.getElementById('lineAreaChart');
         lineAreaChart = new Chart(ctx1, config1);
+    } 
+    // Fetch population data for the same scope and entity
+    const populationVariable = "Count_Person"; // DCID for population count
+    const populationUrl = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=${populationVariable}&entity.dcids=${entityId}`;
+    const populationResponse = await fetch(populationUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ "date": "", "select": ["date", "entity", "value", "variable"] })
+    });
+    const populationData = await populationResponse.json();
+    const populationObservations = populationData.byVariable[populationVariable].byEntity[entityId].orderedFacets[0].observations;
+    // Function to calculate per capita values
+    function calculatePerCapita(data, populationData) {
+        return data.map(location => {
+            const perCapitaObservations = location.observations.map(obs => {
+                const populationObs = populationData.find(pop => pop.date === obs.date);
+                const population = populationObs ? populationObs.value : 1; // Avoid division by zero
+                return {
+                    date: obs.date,
+                    value: obs.value / population // Calculate per capita
+                };
+            });
+            return {
+                ...location,
+                observations: perCapitaObservations
+            };
+        });
     }
+    
+    // Apply per capita calculation to the formatted data
+    const perCapitaData = calculatePerCapita(formattedData, populationObservations);
+    function generateTablePerCapita(tableData) {
+        const table = document.createElement("table");
+    
+        // Create table header
+        const headerRow = document.createElement("tr");
+        ["Country", "Year", "Per Capita Value"].forEach(header => {
+            const headerCell = document.createElement("th");
+            headerCell.textContent = header;
+            headerRow.appendChild(headerCell);
+        });
+        table.appendChild(headerRow);
+    
+        // Create table rows
+        tableData.forEach(location => {
+            location.observations.forEach(obs => {
+                const row = document.createElement("tr");
+                const countryCell = document.createElement("td");
+                countryCell.textContent = location.name;
+                row.appendChild(countryCell);
+    
+                const yearCell = document.createElement("td");
+                yearCell.textContent = obs.date;
+                row.appendChild(yearCell);
+    
+                const valueCell = document.createElement("td");
+                valueCell.textContent = obs.value.toFixed(4); // Format per capita value
+                row.appendChild(valueCell);
+    
+                table.appendChild(row);
+            });
+        });
+    
+        // Add the table to the container
+        const container = document.getElementById("table-containerPerCapita");
+        container.appendChild(table);
+    }
+    
+    // Call the table generation function with per capita data
+    generateTablePerCapita(perCapitaData);
+    
 }
 function refreshTimeline() {
     let hash = getHash();
@@ -555,7 +563,7 @@ async function updateDcidSelectFromSheet(scope) {
         scope = hash.scope;
     }
     // Temp
-    if (scope == "county" && hash.goal == "health") {
+    if (scope == "country" && hash.goal == "health") {
         scope = "country" // Until Google Sheet has counties for health
         updateHash({"scope":scope}); // Used by refreshTimeline()
 
@@ -681,6 +689,7 @@ async function updateDcidSelectFromSheet(scope) {
 }
 
 /* Function to generate table, takes the data to be loaded on to the table as an argument, start */
+
 function generateTable(tableData) {
     const table = document.createElement("table");
     //table.setAttribute("border", "1"); // Add border for visibility
