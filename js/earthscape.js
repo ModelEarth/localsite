@@ -691,6 +691,15 @@ async function updateDcidSelectFromSheet(scope) {
 /* Function to generate table, takes the data to be loaded on to the table as an argument, start */
 
 function generateTable(tableData) {
+    // check if table already exixts and remove it to generate the required table
+    const tableExist = document.getElementById("table-container");
+    if(tableExist) {
+        const checkTable = tableExist.querySelector(".table");
+        if(checkTable) {
+            checkTable.remove();
+        }
+    }
+
     const table = document.createElement("table");
     //table.setAttribute("border", "1"); // Add border for visibility
 
@@ -728,6 +737,19 @@ function generateTable(tableData) {
     // Add the constructed table to the container.
     const container = document.getElementById("table-container");
     if(location.host.indexOf("dreamstudio") < 0) {
+        //check if it's the health table or the air table and append className accordingly
+        switch(tableData[1][0]) {
+            case "Emissions": 
+                table.className = "air table";
+                break;
+
+            case "Mortality":
+                table.className = "health table";
+                break;
+
+            default:
+                table.className = "col table"
+        }
         container.appendChild(table);
     }
 }
