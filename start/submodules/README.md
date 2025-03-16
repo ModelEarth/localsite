@@ -1,5 +1,7 @@
 # Github Submodules
 
+Quick Tip: In the search bar at the top of Cloudflare.com, enter "Pages" and go to "Workers & Pages"
+
 ### Sync multiple repos to one Cloudflare site
 
 The following will create a .gitmodules file.
@@ -48,7 +50,11 @@ Cloudflare > Workers & Pages > Overview > (Choose your site)
 
 Try this for detached HEAD message in Github Desktop:
 
-git checkout -b io
+	git checkout main
+
+Or
+
+	git checkout -b io
 
 ### Use Tokens for Private Repos
 
