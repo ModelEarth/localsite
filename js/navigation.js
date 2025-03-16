@@ -4446,9 +4446,9 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         if (location.href.indexOf("planet.live") >= 0) {
             localsiteTitle = "Planet.Live";
             $(".siteTitleShort").text("Planet.Live");
-            param.headerLogo = "<a href='" + siteRoot + "/'><img src='https://planet.live/seasons/img/logo/faveye-lg.png' style='float:left;width:38px;margin-right:7px'><img src='/localsite/img/logo/dreamstudio/text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
+            param.headerLogo = "<a href='" + siteRoot + "/'><img src='https://dreamstudio.com/seasons/img/logo/eye/faveye-lg.png' style='float:left;width:38px;margin-right:7px'><img src='/localsite/img/logo/dreamstudio/text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
             
-            param.headerLogoNoText = "<img src='/projects/location/img/planet/faveye.png' style='float:left;width:38px;margin-right:7px'>";
+            param.headerLogoNoText = "<img src='https://dreamstudio.com/seasons/img/logo/eye/faveye-lg.png' style='float:left;width:38px;margin-right:7px'>";
         } else {
             if (!param.headerLogo) {
                 param.headerLogo = "<a href='" + siteRoot + "/'><img src='/localsite/img/logo/dreamstudio/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/localsite/img/logo/dreamstudio/text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
