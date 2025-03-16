@@ -4437,23 +4437,28 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         let siteRoot = "";
         localsiteTitle = "DreamStudio";
         $(".siteTitleShort").text("DreamStudio");
-        if (location.href.indexOf("planet.live") >= 0) {
-            localsiteTitle = "Planet.Live";
-            $(".siteTitleShort").text("Planet.Live");
-        } else {
-            if (!param.headerLogo) {
-                param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/favicon-ds.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
-            }
-        }
+        
         if (location.host.indexOf("localhost") >= 0) {
             siteRoot = "/dreamstudio";
         }
-        param.headerLogoNoText = "<img src='/storyboard/img/logo/ds/favicon-ds.png' style='float:left;width:38px;margin-right:7px'>";
-        if (location.href.indexOf("/seasons") >= 0) {
-            changeFavicon("/storyboard/img/logo/ds/favicon-ds.png");
-            param.headerLogo = "<a href='" + siteRoot + "/'><img src='/storyboard/img/logo/ds/favicon-ds.png' style='float:left;width:38px;margin-right:7px'><img src='/storyboard/img/logo/ds/dreamstudio-text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
+        param.headerLogoNoText = "<img src='/localsite/img/logo/dreamstudio/favicon.png' style='float:left;width:38px;margin-right:7px'>";
+        
+        if (location.href.indexOf("planet.live") >= 0) {
+            localsiteTitle = "Planet.Live";
+            $(".siteTitleShort").text("Planet.Live");
+            param.headerLogo = "<a href='" + siteRoot + "/'><img src='https://planet.live/seasons/img/logo/faveye-lg.png' style='float:left;width:38px;margin-right:7px'><img src='/localsite/img/logo/dreamstudio/text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
+            
+            param.headerLogoNoText = "<img src='/projects/location/img/planet/faveye.png' style='float:left;width:38px;margin-right:7px'>";
         } else {
-            changeFavicon("/localsite/img/logo/apps/favicon-ds.png");
+            if (!param.headerLogo) {
+                param.headerLogo = "<a href='" + siteRoot + "/'><img src='/localsite/img/logo/dreamstudio/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/localsite/img/logo/dreamstudio/text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
+            }
+        }
+        if (location.href.indexOf("/seasons") >= 0) {
+            changeFavicon("/localsite/img/logo/dreamstudio/favicon.png");
+            param.headerLogo = "<a href='" + siteRoot + "/'><img src='/localsite/img/logo/dreamstudio/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/localsite/img/logo/dreamstudio/text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
+        } else {
+            changeFavicon("/localsite/img/logo/dreamstudio/favicon.png");
         }
         if (location.host.indexOf("dreamstudio") >= 0) {
             //param.headerLogo = param.headerLogo.replace(/\/dreamstudio\//g,"\/");
@@ -4466,7 +4471,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         param.headerLogo = "<a href='https://codeforatlanta.org'><img src='" + local_app.modelearth_root() + "/community/img/logo/orgs/civic-tech-atlanta-text.png' style='width:186px;padding-top:8px'></a>";
         
         localsiteTitle = "Civic Tech Atlanta";
-        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/apps/neighborhood.png")
+        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png")
         showClassInline(".neighborhood");
         earthFooter = true;
         showClassInline(".georgia"); // Temp side nav
@@ -4511,9 +4516,9 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         showLeftIcon = true;
         $(".siteTitleShort").text("Neighborhood Modeling");
         param.titleArray = ["neighbor","hood"]
-        param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/apps/neighborhood.png' style='width:40px;opacity:0.7'>"
+        param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png' style='width:40px;opacity:0.7'>"
         localsiteTitle = "Neighborhood.org";
-        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/apps/neighborhood.png")
+        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png")
         showClassInline(".neighborhood");
         earthFooter = true;
     } else if (!Array.isArray(param.titleArray) && (location.host.indexOf("democracy.lab") >= 0)) {
