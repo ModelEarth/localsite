@@ -4541,8 +4541,8 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             param.titleArray = ["model","earth"]
             localsiteTitle = "Model Earth";
         }
-        param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/earth/model-earth.png' style='width:34px; margin-right:2px'>";
-        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/earth/model-earth.png")
+        param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/modelearth/model-earth.png' style='width:34px; margin-right:2px'>";
+        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/modelearth/model-earth.png")
         showClassInline(".earth");
         console.log(".earth display");
         earthFooter = true;
