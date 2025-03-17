@@ -520,7 +520,6 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         container.appendChild(table);
     }
     
-    // Call the table generation function with per capita data
     if (hash.goal !== "health") {
         // Call the table generation function with per capita data
         generateTablePerCapita(perCapitaData);
