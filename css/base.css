@@ -1160,6 +1160,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   color: #fff;
   /* white arrow */
   background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 5px center; /* Custom white arrow */
+  background-color: #888;
 }
 #logospace {
   float:left;
@@ -1764,4 +1765,16 @@ input:checked + .slider:before {
 }
 .large-list .txt {
   margin-left: 33px;
+}
+
+/* Hide vertical lines in Tabulator grid */
+.tabulator .tabulator-row .tabulator-cell {
+    border-right: none !important;
+}
+.dark .tabulator .tabulator-row .tabulator-cell {
+    border-bottom: 1px solid #555;
+}
+/* Hide vertical lines in the column headers */
+.tabulator .tabulator-header .tabulator-col {
+    border-right: none !important;
 }
