@@ -521,7 +521,10 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
     }
     
     // Call the table generation function with per capita data
-    generateTablePerCapita(perCapitaData);
+    if (hash.goal !== "health") {
+        // Call the table generation function with per capita data
+        generateTablePerCapita(perCapitaData);
+    }
     
 }
 function refreshTimeline() {
