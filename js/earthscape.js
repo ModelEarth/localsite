@@ -287,17 +287,78 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 observations: timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0]['observations']
             });
         }
-    } 
-   
-         
+    }  // Fetch population data for the same scope and entity
+    const populationVariable = "Count_Person"; // DCID for population count
+    const populationUrl = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=${populationVariable}&entity.dcids=${entityId}`;
+    const populationResponse = await fetch(populationUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ "date": "", "select": ["date", "entity", "value", "variable"] })
+    });
+    const populationData = await populationResponse.json();
+    const populationObservations = populationData.byVariable[populationVariable].byEntity[entityId].orderedFacets[0].observations;
+
+    // Function to calculate per capita values
+    function calculatePerCapita(data, populationData) {
+        return data.map(location => {
+            const perCapitaObservations = location.observations.map(obs => {
+                const populationObs = populationData.find(pop => pop.date === obs.date);
+                const population = populationObs ? populationObs.value : 1; // Avoid division by zero
+                return {
+                    date: obs.date,
+                    value: obs.value / population // Calculate per capita
+                };
+            });
+            return {
+                ...location,
+                observations: perCapitaObservations
+            };
+        });
+    }// Apply per capita calculation to the formatted data
+    const perCapitaData = calculatePerCapita(formattedData, populationObservations);
     // Get unique years
+    let yearsSet = new Set();
+    perCapitaData.forEach(location => {
+        location.observations.forEach(obs => {
+            yearsSet.add(obs.date);
+        });
+    });
+    const years = [...yearsSet].sort((a, b) => a - b);
+
+    // Prepare datasets for the chart
+    const datasets = perCapitaData.map(location => {
+        return {
+            label: location.name,
+            data: years.map(year => {
+                const observation = location.observations.find(obs => obs.date === year);
+                return observation ? observation.value : null;
+            }),
+            borderColor: 'rgb(' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ')',
+            backgroundColor: 'rgba(0, 0, 0, 0)',
+        };
+    });  /*   
+
+    // Showing all or top 5 or bottom 5
+    let selectedData;
+    perCapitaData.forEach(location => {
+        location.averageValue = location.observations.reduce((sum, obs) => sum + obs.value, 0) / location.observations.length;
+    });
+    if (showAll === 'showTop5') {
+        selectedData = perCapitaData.sort((a, b) => b.averageValue - a.averageValue).slice(0, 5);
+    } else if (showAll === 'showBottom5') {
+        selectedData = perCapitaData.sort((a, b) => a.averageValue - b.averageValue).slice(0, 5);
+    } else {
+        selectedData = perCapitaData;
+    }   */
+     
+    /*// Get unique years
     let yearsSet = new Set();
     formattedData.forEach(location => {
         location.observations.forEach(obs => {
             yearsSet.add(obs.date);
         });
     });
-    const years = [...yearsSet].sort((a, b) => a - b);
+    const years = [...yearsSet].sort((a, b) => a - b);*/
 
     // Showing all or top 5 or bottom 5
     let selectedData;
@@ -316,7 +377,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         selectedData = formattedData;
     }
 
-    // Get datasets
+    /*// Get datasets
     const datasets = selectedData.map(location => {
         return {
             label: location.name,
@@ -327,7 +388,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             borderColor: 'rgb(' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ')',
             backgroundColor: 'rgba(0, 0, 0, 0)',
         };
-    });
+    });*/
 
     // For Area Chart
     const datasets1 = selectedData.map(location => {
@@ -341,13 +402,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             borderColor: 'rgba(0,0,0,0)',
             fill: true
         };
-    });
-          
-   
-    
-    
-       
-
+    });      
     const config = {
         type: 'line',
         data: {
@@ -362,7 +417,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 },
                 title: {
                     display: true,
-                    text: chartText
+                    text:chartText
                 }
             },
             scales: {
@@ -375,7 +430,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 y: {
                     title: {
                         display: true,
-                        text: chartText
+                        text: `${chartText} (Per Capita)` // Update y-axis label//chartText
                     }
                 }
             }
@@ -452,7 +507,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         }
         const ctx1 = document.getElementById('lineAreaChart');
         lineAreaChart = new Chart(ctx1, config1);
-    } 
+    } /*
     // Fetch population data for the same scope and entity
     const populationVariable = "Count_Person"; // DCID for population count
     const populationUrl = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=${populationVariable}&entity.dcids=${entityId}`;
@@ -480,7 +535,8 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             };
         });
     }
-    
+     // Print populationData
+     console.log("Population Data:", populationData);
     // Apply per capita calculation to the formatted data
     const perCapitaData = calculatePerCapita(formattedData, populationObservations);
     function generateTablePerCapita(tableData) {
@@ -523,7 +579,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
     if (hash.goal !== "health") {
         // Call the table generation function with per capita data
         generateTablePerCapita(perCapitaData);
-    }
+    }*/
     
 }
 function refreshTimeline() {
@@ -787,3 +843,5 @@ function toggleDivs() {
     // Show the selected div
     document.getElementById(selectedValue).style.display = 'block';
 }
+//Population data for different scope
+
