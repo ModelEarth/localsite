@@ -732,7 +732,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   font-size: 15px;
   line-height: 1.55;
 }
-.dark code {
+.dark code, .dark .codetext {
   color: #ddd;
   background-color: #111;
 }
@@ -1773,6 +1773,7 @@ input:checked + .slider:before {
 }
 .dark .tabulator .tabulator-row .tabulator-cell {
     border-bottom: 1px solid #555;
+    background-color: #333;
 }
 /* Hide vertical lines in the column headers */
 .tabulator .tabulator-header .tabulator-col {
