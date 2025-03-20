@@ -54,12 +54,6 @@ body {
   color: #eee;
   background-color: #333;
 }
-.notdark {
-  color: #333;
-}
-.notdark select {
-  color: #333 !important;
-}
 .bodyIconMargin {
   margin-left: 64px;
 }
@@ -1162,6 +1156,19 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 5px center; /* Custom white arrow */
   background-color: #888;
 }
+
+.notdark {
+  color: #333;
+}
+.notdark .content a:link, .notdark .content a:visited {
+  color: #0366d6 !important;
+}
+.notdark select {
+  color: #333 !important;
+  background: #fff url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 5px center; /* Custom arrow */
+  
+}
+
 #logospace {
   float:left;
   borderX: 1px solid blue;

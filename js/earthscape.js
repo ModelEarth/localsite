@@ -746,8 +746,11 @@ async function updateDcidSelectFromSheet(scope) {
         console.warn("No options matched the provided scope:", normalizedScope);
     }
 
+    // Commented out since we don't need to show the rows from the Google Sheet.
+    // Maybe the generateTable() function is not needed?
+
     /* call table function */
-    generateTable(rows);
+    //generateTable(rows);
 
 }
 
