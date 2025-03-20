@@ -630,12 +630,15 @@ async function updateDcidSelectFromSheet(scope) {
     // Temp here, will be in it's own function for choosing current goal view
     const airTimelinesLink = document.getElementById("airTimelinesLink");
     const healthTimelinesLink = document.getElementById("healthTimelinesLink");
-    if (hash.goal === "health") {
+    if (hash.goal === "air" || !hash.goal) {
+      if (airTimelinesLink) airTimelinesLink.style.display = "none";
+      if (healthTimelinesLink) healthTimelinesLink.style.display = "block";
+    } else if (hash.goal === "health" ) {
       if (healthTimelinesLink) healthTimelinesLink.style.display = "none";
       if (airTimelinesLink) airTimelinesLink.style.display = "block";
     } else {
       if (airTimelinesLink) airTimelinesLink.style.display = "none";
-      if (healthTimelinesLink) healthTimelinesLink.style.display = "block";
+      if (healthTimelinesLink) healthTimelinesLink.style.display = "none";
     }
 
     const dcidSelect = document.getElementById('chartVariable');
@@ -644,6 +647,7 @@ async function updateDcidSelectFromSheet(scope) {
         return;
     }
 
+    // When getting a Google link for a .csv pull, also uncheck "Restrict access..."
     dcidSelect.innerHTML = ''; // Clear existing options
     // air tab
     let sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/export?format=csv&gid=0"; // air
@@ -651,12 +655,13 @@ async function updateDcidSelectFromSheet(scope) {
         sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=2049347939&single=true&output=csv"; // water
     } else if (hash.goal == "health") {
         sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=1911215802&single=true&output=csv"; // health
-    } 
-
-    //else if (hash.goal == "population") {
-        // Error: Missing required columns in the CSV data.
-    //    sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=471398138&single=true&output=csv"; // population
-    //}
+    } else if (hash.goal == "jobs") {
+        sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTBiwDM6b0i_jnaE37fq_GFxCyigP0OondJk17dMRgE8QFiIMNHabFymizwIUYOAVdxh6nj6ZueBak/pub?gid=1835621753&single=true&output=csv";
+    } else if (hash.goal == "economy") {
+        sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTBiwDM6b0i_jnaE37fq_GFxCyigP0OondJk17dMRgE8QFiIMNHabFymizwIUYOAVdxh6nj6ZueBak/pub?gid=2098911331&single=true&output=csv";
+    } else if (hash.goal == "biodiverse") {
+        sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTBiwDM6b0i_jnaE37fq_GFxCyigP0OondJk17dMRgE8QFiIMNHabFymizwIUYOAVdxh6nj6ZueBak/pub?gid=288814302&single=true&output=csv";
+    }
 
     //loadGoalsDropdown("aquifers","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=484745180&single=true&output=csv");
 
