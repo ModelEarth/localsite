@@ -177,7 +177,7 @@ $(document).ready(function() {
 
 	$(document).on('change', 'select[id^="apiProvider"]', function() { // Changing provider dropdown
 	  var index = $(this).attr('id').match(/\d+/)[0];
-	  alert("Change index " + index);
+	  console.log("Change index " + index);
 	  var key = $(this).val();
 		let value = $("#apiKey" + index).val();
 		if (key == 'Other') {
@@ -269,7 +269,7 @@ $(document).ready(function() {
 	  		aPro = {};
 	  	}
 	  	//aPro[keyName] = value;
-	  	alert("updateByIndex " + index) //index-1
+	  	console.log("updateByIndex " + index) //index-1
 	  	updateByIndex(aPro, index, key, value);
 
 	  	// Replaces spaces with _
