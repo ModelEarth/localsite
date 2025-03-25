@@ -166,38 +166,7 @@ To avoid merge conflicts, click "Sync Fork" on the forks in your [Github Account
 
 ## Create a "localsite" shortcut command to start your local web server
 
-Optional: Create a "localsite" command. Run it automatically when your machine starts.
-
-### On a Mac
-
-Add the following to your .bash_profile file.
-Your .bash_profile file resides in /Users/[username]. 
-
-	alias localsite="python3 -m venv env && source env/bin/activate && python3 -m http.server 8887 --directory ~/Documents/webroot"
-
-In the command above, the tilde ~ invokes /Users/[username]  
-Create a folder for your webroot if it does not already exist.  
-Change /Documents/webroot to your webroot path within /Users/[username]  
-
-<!--
-Initially when no -m, clicked deny when immediatley receive the dialogue: Do you want the application “Python.app” to accept incoming network connections? 
-To do: Create "webroot" folder if it does not exist yet.
--->
-
-To run the above automatically when your Mac restarts, save a file called start_localsite.sh with the following:
-
-This is not working. It's opeing XCode. Please share a fix by submitting a Pull Request (PR)<!-- deleted start_localsite.sh-->
-
-	#!/bin/bash
-	source ~/.bash_profile
-	localsite
-
-Run once to make the Script Executable:
-
-	chmod +x ~/start_localsite.sh
-
-Add the script to "Login Items":  
-System Settings > Login Items > "+" button and add the \~/start\_localsite.sh.
+Optional: Create a "localsite" command so you can quickly start your local web server.
 
 ### On a PC
 
@@ -217,6 +186,38 @@ To start automatically, save a file called start_localsite.bat in the startup fo
 	call env\Scripts\activate
 	python -m http.server 8887 --directory %USERPROFILE%\Documents\webroot
 
+### On a Mac
+
+Add the following to your .bash_profile file.
+Your .bash_profile file resides in /Users/[username]. 
+
+	alias localsite="python3 -m venv env && source env/bin/activate && python3 -m http.server 8887 --directory ~/Documents/webroot"
+
+In the command above, the tilde ~ invokes /Users/[username]  
+Create a folder for your webroot if it does not already exist.  
+Change /Documents/webroot to your webroot path within /Users/[username]  
+
+<!--
+Initially when no -m, clicked deny when immediatley receive the dialogue: Do you want the application “Python.app” to accept incoming network connections? 
+To do: Create "webroot" folder if it does not exist yet.
+-->
+
+#### To run "localsite" when starting a mac
+
+This is not working yet. It's opeing XCode. Please share a fix by submitting a Pull Request (PR)<!-- deleted start_localsite.sh-->
+
+To run the above automatically when your Mac restarts, save a file called start_localsite.sh with the following:
+
+	#!/bin/bash
+	source ~/.bash_profile
+	localsite
+
+Run once to make the Script Executable:
+
+	chmod +x ~/start_localsite.sh
+
+Add the script to "Login Items":  
+System Settings > Login Items > "+" button and add the \~/start\_localsite.sh.
 
 
 ## Deployment: How to Send a Pull Request
