@@ -105,7 +105,7 @@ Responsible sourcing allows manufacturers to...
 [Knoema Infographics](https://knoema.com/infographics) - [Data Coverage Matrix](https://knoema.com/atlas/matrix) - Global models which could be reproduced locally.  
 [World Input-Output Database (WOID)](http://www.wiod.org/otherdb)  
 [IMPLAN Impact Analysis](https://implanhelp.zendesk.com/hc/en-us/articles/360039284273-Environmental-Data) - 8 broad categories using USEEIO model data  
-[Challenge.gov/toolkit](https://www.challenge.gov/toolkit/) - Web Challenges created by US Government Agencies
+[Challenge.gov/toolkit](https://www.challenge.gov) - Web Challenges created by US Government Agencies
 
 ## <span class="num">9</span><span class="txt">Collaboration and Teaching</span>
 
