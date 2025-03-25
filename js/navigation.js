@@ -4442,7 +4442,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             siteRoot = "/dreamstudio";
         }
         param.headerLogoNoText = "<img src='/localsite/img/logo/dreamstudio/favicon.png' style='float:left;width:38px;margin-right:7px'>";
-        if (location.href.indexOf("planet.live") >= 0 || location.href.indexOf("datascape") >= 0) {
+        if (location.href.indexOf("planet.live") >= 0 || location.href.indexOf("datahaus") >= 0) {
             localsiteTitle = "Planet.Live"
             $(".siteTitleShort").text("Planet.Live")
             param.headerLogoSmall = "<img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='width:40px;opacity:0.85'>"
