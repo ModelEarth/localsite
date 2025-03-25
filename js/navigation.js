@@ -5589,9 +5589,10 @@ function showClassInline(theclass) {
     //$(theclass).css('display', 'inline');
 
     // Load when body head becomes available, faster than waiting for all DOM .js files to load.
+    // Append -hide to hide a div for a site.
     waitForElm('head').then((elm) => {
         var div = $("<style />", {
-            html: theclass + ' {display: inline !important}'
+            html: theclass + ' {display: inline !important} ' + theclass + '-hide {display:none}'
         }).appendTo("head");
     });
 
