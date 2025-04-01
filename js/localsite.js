@@ -2816,7 +2816,7 @@ function setOnlinemode(onlinemode) {
   if (onlinemode == "true") {
     onlineApp = true;
     $("#log_display").hide();
-  } else {
+  } else if (onlinemode == "false")  {
     onlineApp = false;
     $("#log_display").show();
   }
