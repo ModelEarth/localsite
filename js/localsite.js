@@ -14,16 +14,14 @@ Define a new object if localsite library does not exist yet.
 var localStart = Date.now(); // A var so waitForVariableNav detects in navigation.js.
 
 if(typeof onlineApp == 'undefined') {
-  var onlineApp = true;
+  // During air travel, set to Offline in Settings. Doing so sets local to no state. Requires community-data locally.
+  var onlineApp = true; // Avoid editing this line.
 } else {
   consoleLog("ALERT: Page loads localsite.js more than once.")
 }
 let localsiteTitle = "Localsite";
 let defaultState = "";
 if (location.host.indexOf('localhost') >= 0) {
-  // Set onlineApp to false during air travel. Also sets local to no state.
-  // Requires community-data locally
-  //onlineApp = false; // During airplane mode
   defaultState = "";  // Set to GA to include additional map layers in top nav.
 }
 consoleLog("start localsite");
@@ -682,10 +680,11 @@ function consoleLog(text,value) {
   } else {
     console.log((Date.now() - localStart)/1000 + ": " + text);
   }
-  //var dsconsole = document.getElementById("log_display textarea");
-  //let dsconsole = document.getElementById("log_display > textarea");
-  let dsconsole = document.getElementById("logText");
+  
+  // Avoiding waitForElm("#logText") here because it would get called numerous times.
+  // Instead, hold in consoleLogHolder until #logText is available.
 
+  let dsconsole = document.getElementById("logText");
   if (dsconsole) { // Once in DOM
     //dsconsole.style.display = 'none'; // hidden
     if (consoleLogHolder.length > 0) { // Called only once to display pre-DOM values
@@ -708,8 +707,9 @@ function consoleLog(text,value) {
       let content = document.createTextNode(thetime + ": " + text + "\n");
       dsconsole.appendChild(content);
     }
-    //dsconsole.scrollTop(dsconsole[0].scrollHeight - dsconsole.height() - 17); // Adjusts for bottom alignment
-    dsconsole.scrollTo({ top: dsconsole.scrollHeight, behavior: 'smooth'});
+
+    // Avoid since this would run many times
+    //dsconsole.scrollTo({ top: dsconsole.scrollHeight, behavior: 'smooth'});
 
   } else {
 
@@ -719,6 +719,7 @@ function consoleLog(text,value) {
       consoleLogHolder += (text + "\n");
     }
   }
+  
 }
 
 function loadLocalTemplate() {
@@ -2685,6 +2686,7 @@ function initSitelook() {
     let sitesource;
     let sitelook;
     let devmode;
+    let onlinemode;
     let globecenter;
     let modelsite;
     let gitrepo;
@@ -2708,6 +2710,10 @@ function initSitelook() {
             $("#devmode").val(Cookies.get('devmode'));
             devmode = Cookies.get('devmode');
         }
+        if (Cookies.get('onlinemode')) {
+            $("#onlinemode").val(Cookies.get('onlinemode'));
+            onlinemode = Cookies.get('onlinemode');
+        }
         if (Cookies.get('globecenter')) {
             $("#globecenter").val(Cookies.get('globecenter'));
             globecenter = Cookies.get('globecenter');
@@ -2728,6 +2734,7 @@ function initSitelook() {
     setDevmode(devmode);
     setModelsite(modelsite);
     setGitrepo(modelsite);
+    setOnlinemode(onlinemode);
     setGlobecenter(globecenter);
     if (localStorage.email) {
       $("#input123").val(localStorage.email);
@@ -2803,6 +2810,15 @@ function setDevmode(devmode) {
     includeCSS3(local_app.localsite_root() + 'css/dev.css');
   } else {
     removeElement('/localsite/css/dev.css');
+  }
+}
+function setOnlinemode(onlinemode) {
+  if (onlinemode == "true") {
+    onlineApp = true;
+    $("#log_display").hide();
+  } else {
+    onlineApp = false;
+    $("#log_display").show();
   }
 }
 function setGlobecenter(globecenter, promptForCurrentPosition) {

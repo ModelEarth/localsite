@@ -343,6 +343,19 @@
                 <div class="setDiv"></div>
             </div>
             
+            <div class="dev" style="display:none">
+            <div class="local" style="display:none">
+                <div class="setLeft">Online/Offline</div>
+                <div class="setOverflow"><div class="setRight">
+                  <select id="onlinemode">
+                    <option value="true">Online</option>
+                    <option value="false">Offline (Air travel)</option>
+                    </select>
+                </div></div>
+                <div class="setDiv"></div>
+            </div>
+            </div>
+
             <div class="setLeft"><div>Map Center</div></div>
             <div class="setOverflow"><div class="setRight">
                   <select id="globecenter">
@@ -664,6 +677,7 @@
           -->
           <a href="/display/exporters/" class="navlink-exporters"><span style="white-space: nowrap; margin-right:3px">Exporters</span></a>
           <a href="/recycling/georgia/" class="navlink-recyclers"><span style="white-space: nowrap; margin-right:3px">Recyclers</span></a>
+          <a href="/io/" class="navlink-io"><span style="white-space: nowrap; margin-right:3px">State Models</span></a>
         </span>
       </div>
 
@@ -1438,7 +1452,8 @@ Displayed by hashChanged() in navigation.js
 
 <!-- ../img/hero/hexagon-pattern.png  -->
 
-<div id="log_display" style="display:none" class="localonlyX"><span style='float:left; font-size:10px'>LOG</span><br><textarea id="logText">LogText</textarea></div>
+<!-- Currently activated by setting Offline (Air Travel) -->
+<div id="log_display" style="display:none"><span style='float:left; font-size:14px'>Offline Log</span><br><textarea id="logText">LogText</textarea></div>
 
 
 <div class="displayOnload displayMapForLoad" style="display:none;position:relative;overflow:hidden;">

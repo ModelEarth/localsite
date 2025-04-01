@@ -2,8 +2,9 @@
 <a href="https://model.earth/community/start/">View current GitHub page as a web page</a>
 </div>
 
-View our [Active Projects](../../projects) and [Moonshots](../../community/projects)
+<h1 style="font-size:32px">Starter Samples</h1>
 
+View our [Active Projects](../../projects) and [Moonshots](../../community/projects)
 
 Helpful tips for [Node, Python, pyenv, Conda and Docker](https://model.earth/io/coders/python/)
 

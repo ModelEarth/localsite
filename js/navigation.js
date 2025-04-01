@@ -5106,7 +5106,13 @@ $(document).on("change", "#devmode", function(event) { // Public or Dev
     }
     setDevmode($("#devmode").val());
 });
-$(document).on("change", "#globecenter", function(event) { // Public or Dev
+$(document).on("change", "#onlinemode", function(event) { // Online or Offline
+    if (typeof Cookies != 'undefined') {
+        Cookies.set('onlinemode', $("#onlinemode").val());
+    }
+    setOnlinemode($("#onlinemode").val());
+});
+$(document).on("change", "#globecenter", function(event) { // Map center
     if (typeof Cookies != 'undefined') {
         Cookies.set('globecenter', $("#globecenter").val());
     }
@@ -6463,4 +6469,7 @@ function formatCell(input, format) {
         // Format with scientific notation with one digit after decimal
         return input.toExponential(1);
     }
+}
+if (!onlineApp) {
+    console.log("You are currently in offline mode.")
 }
