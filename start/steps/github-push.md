@@ -2,10 +2,13 @@
 
 ### Step 1: Retrieve GitHub Personal Token
 
+NOTE: It may take 5 to 10 minutes for your token to become available.
+Tokens with "no expiration date" seem to still expire after a month, so you'll need to regenerate.
+
 **Create a fine-grained token for one repo**:  
 
 Generate a [Fine-Grained Token](https://github.com/settings/personal-access-tokens).
-In your GitHub account, navigate to Settings (for all repos under upper right menu), then to Developer settings (lower left).
+In your GitHub account, navigate to Settings (upper right menu), then to Developer settings (lower left). Under "Personal access tokens" choose Fine-grained tokens.
 
 **Set 3 permissions for 1 of your repositories**<!--It may not be necessary to set both of these first two-->
 Contents: Read and write
