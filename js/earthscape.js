@@ -430,7 +430,8 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 y: {
                     title: {
                         display: true,
-                        text: `${chartText} (Per Capita)` // Update y-axis label//chartText
+                        text: `${chartText}` // Update y-axis label//chartText
+                        //text: `${chartText} (Per Capita)` // Update y-axis label//chartText
                     }
                 }
             }
