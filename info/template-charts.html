@@ -181,6 +181,10 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
                 <div class="impactIcon_Energy" onclick="goHash({'set':'energy','indicators':'ENRG,NNRG,RNRG'});">Energy</div>
                 <div class="impactIcon_Health" onclick="goHash({'set':'health','indicators':'HTOX,HCAN,HNCN,HTOX,HRSP'});">Health</div>
                 <div class="impactIcon_Prosperity" onclick="goHash({'set':'prosperity','indicators':'VADD,JOBS'});">Prosperity</div>
+                <div class="local btn btn-primary" onclick="location.href='/RealityStream/#featurepath=123'; return false;" style="display:none;min-width:133px;font-size:15px;border:none;">
+					RealityStream
+				</div>
+				<!-- <a id="tabulator-industrytable-realitystream" href="/RealityStream/#featurepath=123" class=""> -->
             </div><br>
 
             
@@ -298,10 +302,6 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 <!-- v2 -->
 <div id="industryTableHolder" style="display:none;">
 <div class="content contentpadding">
-
-	<div class="local" style="display:none;float:right">
-		<a id="tabulator-industrytable-realitystream" href="/RealityStream/#featurepath=123" class="btn btn-primary">RealityStream</a>
-	</div>
 	<div id="tabulator-industrytable-intro"><b>County Industries</b> (Visible on localhost) <!-- FIPS and NAICS case sensitive--></div>
 	<div id="tabulator-industrytable-datalink"></div>
 	<div style="clear:both"></div>
