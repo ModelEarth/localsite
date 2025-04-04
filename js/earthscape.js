@@ -276,9 +276,8 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         })
     });
     const timelineData = await response3.json();
-
-    // Format data
-    const formattedData = [];
+   // Format data
+   const formattedData = [];
     //alert(JSON.stringify(geoValues)) // TO DO: Only send countries that exist in the dataset.
     for (const geoId in geoValues) {
         if (timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets) { // Avoids error if country (India) is not in water timeline
@@ -287,8 +286,8 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 observations: timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0]['observations']
             });
         }
-    }  // Fetch population data for the same scope and entity
-    const populationVariable = "Count_Person"; // DCID for population count
+    }// Fetch population data for the same scope and entity
+   /* const populationVariable = "Count_Person"; // DCID for population count
     const populationUrl = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=${populationVariable}&entity.dcids=${entityId}`;
     const populationResponse = await fetch(populationUrl, {
         method: 'POST',
@@ -296,10 +295,10 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         body: JSON.stringify({ "date": "", "select": ["date", "entity", "value", "variable"] })
     });
     const populationData = await populationResponse.json();
-    const populationObservations = populationData.byVariable[populationVariable].byEntity[entityId].orderedFacets[0].observations;
+    const populationObservations = populationData.byVariable[populationVariable].byEntity[entityId].orderedFacets[0].observations;*/
 
     // Function to calculate per capita values
-    function calculatePerCapita(data, populationData) {
+   /* function calculatePerCapita(data, populationData) {
         return data.map(location => {
             const perCapitaObservations = location.observations.map(obs => {
                 const populationObs = populationData.find(pop => pop.date === obs.date);
@@ -336,7 +335,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             borderColor: 'rgb(' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ')',
             backgroundColor: 'rgba(0, 0, 0, 0)',
         };
-    });  /*   
+    });*/  /*   
 
     // Showing all or top 5 or bottom 5
     let selectedData;
@@ -351,14 +350,14 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         selectedData = perCapitaData;
     }   */
      
-    /*// Get unique years
+    // Get unique years
     let yearsSet = new Set();
     formattedData.forEach(location => {
         location.observations.forEach(obs => {
             yearsSet.add(obs.date);
         });
     });
-    const years = [...yearsSet].sort((a, b) => a - b);*/
+    const years = [...yearsSet].sort((a, b) => a - b);
 
     // Showing all or top 5 or bottom 5
     let selectedData;
@@ -377,7 +376,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         selectedData = formattedData;
     }
 
-    /*// Get datasets
+    // Get datasets
     const datasets = selectedData.map(location => {
         return {
             label: location.name,
@@ -388,7 +387,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             borderColor: 'rgb(' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ')',
             backgroundColor: 'rgba(0, 0, 0, 0)',
         };
-    });*/
+    });
 
     // For Area Chart
     const datasets1 = selectedData.map(location => {
@@ -476,7 +475,8 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 stacked: true,
                 title: {
                   display: true,
-                  text: 'County Population'
+                  text: `${chartText}` 
+                 // text:`${chartText} (Per Capita)`// 'County Population'
                 } 
               }
             }
