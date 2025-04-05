@@ -37,6 +37,21 @@
   /* z-index: 1000; Overlapped side shadow */
   background: #dae8eb;
 }
+#local-footer .greybkgd {
+  background: #ccc;
+}
+.dark #local-footer .greybkgd {
+  background: #222;
+}
+#local-footer a:link, #local-footer a:visited, #local-footer a:visited {
+    color: #0366d6;
+}
+#local-footer b a:link, #local-footer b a:visited, #local-footer b a:visited {
+    color: #222;
+}
+.dark #local-footer b a:link, .dark #local-footer b a:visited, .dark #local-footer b a:visited {
+    color: #ccc;
+}
 .dark #local-footer {
   background-color: #555; /* first darken ds logo */
   background-color: #222;
@@ -60,14 +75,15 @@
 }
 </style>
 
-<div class="dreamstudio" style="display:none;background-color:#000 !important;">
-  <div class="content contentpadding" style="padding-bottom:20px;">
+<div class="dreamstudio" style="display:none">
+<div class="greybkgd">
+  <div class="content contentpadding" style="padding-top:40px;padding-bottom:25px;">
 
   <div class="pageColumns">
 
       <div class="pageColumn">
         <div class="pageColumnInside">
-          <div id="headerLogo"><a href="../" style="text-decoration:none"></a><a href="/dreamstudio/"><img src="/localsite/img/logo/dreamstudio/text.png" alt="DreamStudio" style="height:22px; margin-top:9px" class="headerLogoDesktop"></a></div>
+          <div id="headerLogo"><a href="../"><img src="/localsite/img/logo/dreamstudio/text.png" alt="DreamStudio" style="height:22px; margin-top:2px" class="headerLogoDesktop"></a></div>
         </div>
       </div>
       
@@ -105,7 +121,7 @@
         </div>
       </div>
 
-      <div style="clear:both"><br></div>
+      <div style="clear:both"></div>
 
   </div>
 
@@ -113,6 +129,7 @@
 
   <div style="clear:both"></div>
 
+</div>
 </div>
 
 <div class="earth" style="display:none">
@@ -122,7 +139,7 @@
 
       <div class="pageColumn">
         <div class="pageColumnInside">
-            <h2>About1</h2>
+            <h2>About</h2>
             <a href="../projects/about/" target="_parent">About Our Projects</a><br>
             <a href="../projects/" target="_parent">Active Projects</a><br>
             <a href="../io/coders/" target="_parent">Thursdays 7pm ET</a><br>
