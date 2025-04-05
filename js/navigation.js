@@ -4820,9 +4820,6 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                                 changeFavicon(param.favicon);
                             }
 
-                            // WAS LIMITED TO HEADER
-                            //$(document).ready(function() { // Needed for info/index.html page. Fast, but could probably use a timeout delay instead since we are already within the header.html load.
-                            //alert("test2");
                             // Equivalent to checking for #headerbar, but using #localsiteDetails since template pages already have a #headerbar.
                             //waitForElm('#localsiteDetails').then((elm) => {
                             waitForElm('#headerbar').then((elm) => {
