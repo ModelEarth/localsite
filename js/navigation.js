@@ -4928,7 +4928,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         }
         if (param["showfooter"] && param["showfooter"] == "false") {
 
-        } else if (earthFooter || param.footer || location.href.indexOf("dreamstudio") >= 0) {
+        } else if (earthFooter || param.footer || location.href.indexOf("dreamstudio") >= 0 || location.href.indexOf("planet.live") >= 0) {
             var footerClimbpath = "";
             // Had ..
             let footerFile = modelpath + "/localsite/footer.html"; // modelpath remains relative for site desgnated above as having a local copy of io and community.

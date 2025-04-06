@@ -20,6 +20,16 @@
     width: 25%;
   }
 }
+
+@media (min-width: 950px) {
+  #local-footer .dreamstudio .pageColumn {
+    width: 22%;
+  }
+  #local-footer .dreamstudio .pageColumn:first-of-type {
+    width: 30%;
+  }
+}
+
 .mobileView #local-footer .pageColumn {
   width: 50%;
 }
@@ -66,8 +76,9 @@
   color: #fff;
 }
 @media (max-width: 800px) {
-  #local-footer {
-    padding-left: 30px
+  #local-footer div {
+    /* Avoid until adjusted, creates unintended colored edge or top */
+    padding-leftX: 30px
   }
 }
 .bodyLeftMarginFull #local-footer h2 {
@@ -83,7 +94,10 @@
 
       <div class="pageColumn">
         <div class="pageColumnInside">
-          <div id="headerLogo"><a href="../"><img src="/localsite/img/logo/dreamstudio/text.png" alt="DreamStudio" style="height:19px; margin-top:2px" class="headerLogoDesktop"></a></div>
+          <div id="headerLogo"><a href="../"><img src="/localsite/img/logo/dreamstudio/text.png" alt="DreamStudio" style="height:19px; margin-top:2px" class="headerLogoDesktop"></a></div><br>
+          <div style="font-size:13px; clear:both">
+            Collaborative Data Science
+          </div><br>
         </div>
       </div>
       
@@ -123,6 +137,19 @@
       <div style="clear:both"></div>
 
   </div>
+
+  </div>
+
+  <div style="clear:both"></div>
+
+</div>
+</div>
+
+<div class="planetlive" style="display:none">
+<div class="greybkgd">
+  <div class="content contentpadding" style="padding-top:40px;padding-bottom:25px;">
+
+    <a href="../video/">24/7 Starman Loop</a> - From several hours after launch before waving goodbye.
 
   </div>
 
