@@ -4457,6 +4457,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             if (!param.headerLogo) {
                 param.headerLogo = "<a href='" + siteRoot + "/'><img src='/localsite/img/logo/dreamstudio/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/localsite/img/logo/dreamstudio/text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
             }
+            showClassInline(".dreamstudio");
         }
         if (param.icon) {
             changeFavicon(param.icon);
@@ -4468,7 +4469,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         if (location.host.indexOf("dreamstudio") >= 0) {
             //param.headerLogo = param.headerLogo.replace(/\/dreamstudio\//g,"\/");
         }
-        showClassInline(".dreamstudio");
+        
         // modelsite will not always be available
         //alert("modelsite " + modelsite)
         //showClassInline("." + modelsite); // Not working for planet yet
