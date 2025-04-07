@@ -4468,9 +4468,10 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         if (location.host.indexOf("dreamstudio") >= 0) {
             //param.headerLogo = param.headerLogo.replace(/\/dreamstudio\//g,"\/");
         }
-        //showClassInline(".dreamstudio");
+        showClassInline(".dreamstudio");
+        // modelsite will not always be available
         //alert("modelsite " + modelsite)
-        showClassInline("." + modelsite); // Not working for planet yet
+        //showClassInline("." + modelsite); // Not working for planet yet
 
     } else if (location.href.indexOf("atlanta") >= 0) {
         showLeftIcon = true;
