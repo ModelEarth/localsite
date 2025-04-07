@@ -4432,7 +4432,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         document.head.appendChild($favicon)
       }
     }
-    if (modelsite=="dreamstudio" || location.href.indexOf("dreamstudio") >= 0 || param.startTitle == "DreamStudio" || location.href.indexOf("/swarm/") >= 0 || location.href.toLowerCase().indexOf("lineara") >= 0 || location.href.indexOf("planet.live") >= 0) {
+    if (modelsite=="dreamstudio" || modelsite=="planet.live" || location.href.indexOf("dreamstudio.com") >= 0 || param.startTitle == "DreamStudio" || location.href.indexOf("/swarm/") >= 0 || location.href.toLowerCase().indexOf("lineara") >= 0 || location.href.indexOf("planet.live") >= 0) {
         param.titleArray = [];
         let siteRoot = "";
         localsiteTitle = "DreamStudio";
@@ -4442,13 +4442,17 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             siteRoot = "/dreamstudio";
         }
         param.headerLogoNoText = "<img src='/localsite/img/logo/dreamstudio/favicon.png' style='float:left;width:38px;margin-right:7px'>";
-        if (location.href.indexOf("planet.live") >= 0 || location.href.indexOf("datahaus") >= 0) {
+        if (modelsite=="planet.live" || location.href.indexOf("planet.live") >= 0) {
             localsiteTitle = "Planet.Live"
             $(".siteTitleShort").text("Planet.Live")
             param.headerLogoSmall = "<img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='width:40px;opacity:0.85'>"
             param.titleArray = ["planet","live"]
             param.headerLogoNoText = "<img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='float:left;width:38px;margin-right:7px'>";
-            param.headerLogo = "<a href='" + siteRoot + "/'><img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='float:left;width:38px;margin-right:16px'><img src='https://planet.live/video/img/logo/planet-live-text.png' alt='PlanetLive' style='height:16px; margin-top:15px' class='headerLogoDesktop'></a>";
+            //param.headerLogo = "<a href='" + siteRoot + "/'><img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='float:left;width:38px;margin-right:16px'><img src='https://planet.live/video/img/logo/planet-live-text.png' alt='Planet.Live' style='height:16px; margin-top:15px' class='headerLogoDesktop'></a>";
+            param.headerLogo = "<a href='" + siteRoot + "/'><img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='float:left;width:38px;margin-right:16px'><img src='/dreamstudio/img/logo/planet.live/planet.live.png' alt='planet.live' style='height:24px; margin-top:15px' class='headerLogoDesktop'></a>";
+            
+            // Quick fix, need to adjust for period in class name on datah page.
+            showClassInline(".planetlive");
         } else {
             if (!param.headerLogo) {
                 param.headerLogo = "<a href='" + siteRoot + "/'><img src='/localsite/img/logo/dreamstudio/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/localsite/img/logo/dreamstudio/text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
@@ -4464,10 +4468,10 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         if (location.host.indexOf("dreamstudio") >= 0) {
             //param.headerLogo = param.headerLogo.replace(/\/dreamstudio\//g,"\/");
         }
-        showClassInline(".dreamstudio");
-        if (location.href.indexOf("/seasons") >= 0) {
+        //showClassInline(".dreamstudio");
+        //alert("modelsite " + modelsite)
+        showClassInline("." + modelsite); // Not working for planet yet
 
-        }
     } else if (location.href.indexOf("atlanta") >= 0) {
         showLeftIcon = true;
         $(".siteTitleShort").text("Civic Tech Atlanta");
