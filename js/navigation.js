@@ -4449,7 +4449,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             param.titleArray = ["planet","live"]
             param.headerLogoNoText = "<img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='float:left;width:38px;margin-right:7px'>";
             //param.headerLogo = "<a href='" + siteRoot + "/'><img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='float:left;width:38px;margin-right:16px'><img src='https://planet.live/video/img/logo/planet-live-text.png' alt='Planet.Live' style='height:16px; margin-top:15px' class='headerLogoDesktop'></a>";
-            param.headerLogo = "<a href='" + siteRoot + "/'><img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='float:left;width:38px;margin-right:16px'><img src='/dreamstudio/img/logo/planet.live/planet.live.png' alt='planet.live' style='height:24px; margin-top:15px' class='headerLogoDesktop'></a>";
+            param.headerLogo = "<a href='" + siteRoot + "/'><img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='float:left;width:38px;margin-right:16px'><img src='/dreamstudio/img/logo/planetlive/planet.live.png' alt='planet.live' style='height:24px; margin-top:15px' class='headerLogoDesktop'></a>";
             
             // Quick fix, need to adjust for period in class name on datah page.
             showClassInline(".planetlive");
