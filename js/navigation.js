@@ -4445,11 +4445,11 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         if (modelsite=="planet.live" || location.href.indexOf("planet.live") >= 0) {
             localsiteTitle = "Planet.Live"
             $(".siteTitleShort").text("Planet.Live")
-            param.headerLogoSmall = "<img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='width:40px;opacity:0.85'>"
+            param.headerLogoSmall = "<img src='/localsite/img/logo/planetlive/faveye-lg.png' style='width:40px;opacity:0.85'>"
             param.titleArray = ["planet","live"]
-            param.headerLogoNoText = "<img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='float:left;width:38px;margin-right:7px'>";
-            //param.headerLogo = "<a href='" + siteRoot + "/'><img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='float:left;width:38px;margin-right:16px'><img src='https://planet.live/video/img/logo/planet-live-text.png' alt='Planet.Live' style='height:16px; margin-top:15px' class='headerLogoDesktop'></a>";
-            param.headerLogo = "<a href='" + siteRoot + "/'><img src='https://planet.live/seasons/img/logo/eye/faveye-lg.png' style='float:left;width:38px;margin-right:16px'><img src='/img/logo/planetlive/planet.live.png' alt='planet.live' style='height:24px; margin-top:15px' class='headerLogoDesktop'></a>";
+            param.headerLogoNoText = "<img src='/localsite/img/logo/planetlive/faveye-lg.png' style='float:left;width:38px;margin-right:7px'>";
+            //param.headerLogo = "<a href='" + siteRoot + "/'><img src='/localsite/img/logo/planetlive/faveye-lg.png' style='float:left;width:38px;margin-right:16px'><img src='https://planet.live/video/img/logo/planet-live-text.png' alt='Planet.Live' style='height:16px; margin-top:15px' class='headerLogoDesktop'></a>";
+            param.headerLogo = "<a href='" + siteRoot + "/'><img src='/localsite/img/logo/planetlive/faveye-lg.png' style='float:left;width:38px;margin-right:10px'><img src='/localsite/img/logo/planetlive/planet.live.png' alt='planet.live' style='height:24px; margin-top:8px' class='headerLogoDesktop'></a>";
             
             // Quick fix, need to adjust for period in class name on datah page.
             showClassInline(".planetlive");
@@ -4462,7 +4462,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         if (param.icon) {
             changeFavicon(param.icon);
         } else if (location.href.indexOf("planet.live") >= 0 || location.href.indexOf("datahaus") >= 0) {
-            changeFavicon("https://planet.live/seasons/img/logo/eye/faveye-lg.png");
+            changeFavicon("/localsite/img/logo/planetlive/faveye-lg.png");
         } else {
             changeFavicon("/localsite/img/logo/dreamstudio/favicon.png");
         }
