@@ -5216,7 +5216,7 @@ $(document).on("click", ".showSideTabs", function(event) {
     if (hash.sidetab) {
         goHash({'sidetab':''});
     } else {
-        if(location.href.indexOf("/seasons") >= 0 && location.host.indexOf("planet.live") >= 0 && modelsite != planet.live) {
+        if(location.href.indexOf("/seasons") >= 0 && location.host.indexOf("planet.live") >= 0 && modelsite != "planet.live") {
             goHash({'sidetab':'seasons'});
         } else {
             goHash({'sidetab':'sections'});
