@@ -481,7 +481,7 @@ var vis = document.getElementById('vis'),
   <h2 style="clear:both">Browser LocalStorage</h2>
   The following values reside in your browser's localStorage for persistance across site visits:<br><br>
 
-  <div id="displayStorage"></div>
+  <div id="displayStorage" style="overflow-y: scroll;"></div>
   <script>
   // View localStorage values
   for(var i=0, len=localStorage.length; i<len; i++) {
@@ -495,7 +495,7 @@ var vis = document.getElementById('vis'),
   }
   </script>
 
-  <div id="cookieList"></div>
+  <div id="cookieList" style="overflow-y: scroll;"></div>
   <script>
   function listCookies() {
       var theCookies = document.cookie.split(';');

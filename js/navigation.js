@@ -4734,7 +4734,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
 
                                     $("#topicsMenu").prepend(colCloneRight);
 
-                                    if (location.href.indexOf('desktop') >= 0 || location.host.indexOf('dreamstudio') >= 0 || location.href.indexOf('dreamstudio') >= 0 || location.href.indexOf('/swarm/') >= 0 || location.href.indexOf('/LinearA/') >= 0 || location.href.indexOf("planet.live") >= 0) {
+                                    if (location.href.indexOf('desktop') >= 0 || location.host.indexOf('dreamstudio') >= 0 || location.href.indexOf('dreamstudio') >= 0 || location.href.indexOf('/swarm/') >= 0 || location.href.indexOf('/LinearA/') >= 0 || location.href.indexOf("planet.live") >= 0 || modelsite=="planet.live") {
                                         let storiesFile = "https://dreamstudio.com/seasons/episodes.md";
                                         //console.log("location.href index: " + location.href.indexOf("/dreamstudio/"));
                                         if(location.host.indexOf('localhost') >= 0) {
