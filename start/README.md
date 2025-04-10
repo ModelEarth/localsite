@@ -9,7 +9,7 @@ View our [Active Projects](../../projects) and [Moonshots](../../community/proje
 Helpful tips for [Node, Python, pyenv, Conda and Docker](https://model.earth/io/coders/python/)
 
 
-# Single Page Embed
+## Single Page Embed
 
 How to add a new localsite page (in a repo or in your own website):
 
