@@ -627,6 +627,7 @@ summary::-webkit-details-marker {
   overflowX: hidden; /* Allows bottom padding to apply after float:left columns */
   overflowX: scroll; /* Allows large number of naics columns to be viewed */
   margin-right:-30px;
+  padding-bottom: 20px;
 }
 .pageColumn {
   width:33.33%;
@@ -648,6 +649,8 @@ summary::-webkit-details-marker {
   line-height: 1.55;
   border: 1px solid rgba(255,255,255,0);
   font-size: 16px;
+  padding-top: 14px;
+  padding-bottom: 18px;
   /* overflow: hidden; */ /* Covers indicator bar */
 }
 .pageColumns > .pageColumn:last-child {
