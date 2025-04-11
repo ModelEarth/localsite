@@ -191,7 +191,18 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         });
     } else if (scope === "state") {
         // Fetch state data
-        const statesList = ['Florida', 'New Jersey', 'New York State', 'New Mexico', 'Alaska'];
+        const statesList = [
+            'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 
+            'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
+            'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
+            'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
+            'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri',
+            'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
+            'New Mexico', 'New York State', 'North Carolina', 'North Dakota', 'Ohio',
+            'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
+            'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+            'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+          ];
         response = await fetch('https://api.datacommons.org/v2/resolve?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
             method: 'POST',
             headers: {
@@ -225,6 +236,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 state: stateName
             };
         });
+
     } else if (scope === "country") {// Fetch country ISO codes first
         const restResponse = await fetch("https://restcountries.com/v3.1/all");
         const countriesData = await restResponse.json();
@@ -235,6 +247,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         console.log("Selected Countries:", selectedCountries); // Debug log
     
         // Fetch country dcids using ISO codes
+
         response = await fetch('https://api.datacommons.org/v2/resolve?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
             method: 'POST',
             headers: {
