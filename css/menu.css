@@ -698,7 +698,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	}
 }
 .navcolumnClear b a, .navcolumnClear b a:visited {
-	color: #fff;
+	color: #fff !important; /* important to override base.css. Not sure why this later css not given priority. */
 }
 #fullcolumn {
     /* overflow: auto; */ /* Caused address auto-complet to be covered by footer. */
