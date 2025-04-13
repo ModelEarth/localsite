@@ -26,6 +26,9 @@
 .dark .hero-bucket #state_select, .dark #hero-rect #state_select {
   color: #fff;
 }
+#hero-rect #state_select  {
+  background-color: #000;
+}
 .select-menu-arrow-holder {
     position:absolute; right:4px; top:4px;
 }
