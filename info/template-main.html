@@ -79,7 +79,7 @@
 
 
     <style>
-    .showSections {
+    .showResources {
       display: block;
     }
     </style>
@@ -120,10 +120,17 @@
                 </div>
               </div>
 
+              <div class="hideEmbed">
+                  <div class="showResources rightTopItem active" style="padding-top:14px; padding-right:5px">
+                      <i class="material-icons menuTopIcon">&#xE241;</i>
+                      <span>Resources</span>
+                  </div>
+              </div>
+
               <div class="listingsHolder local earth garesource georgia" style="display:none">
                 <div class="hideEmbed">
                     <div class="showTopics rightTopItem" style="padding-top:14px; padding-right:10px">
-                        <i class="material-icons menuTopIcon">&#xE241;</i>
+                        <i class="material-icons menuTopIcon">&#xF79E;</i>
                         <span>Topics</span>
                     </div>
                 </div>
@@ -222,14 +229,14 @@
         <div class="closeSideTabs close-X-sm" style="position:absolute;right:18px;padding:18px 14px 30px 30px;color:#777;z-index:10"><i class="material-icons" style="font-size:32px">&#xE5CD;</i></div>
         -->
 
-        <!-- Topics Panel -->
+        <!-- Sections Panel -->
         <div id="sectionsPanel" class="menuExpanded topMenuOffset">
             <div class="menuExpandedScroll always-show-scroll">
-              <div class="menuTitle" style="display:none">Topics</div>
-              <div id="topicsMenu"></div>
+              <div class="menuTitle" style="display:none">Sections</div>
+              <div id="sectionsMenu"></div>
             </div>
         </div>
-        <!-- /Topics Panel -->
+        <!-- /Sections Panel -->
 
         <!-- Stories Panel -->
         <div id="seasonsPanel" class="menuExpanded topMenuOffset" style="display:none; font-size: 18.5px;">
@@ -239,6 +246,15 @@
           </div>
         </div>
         <!-- /Stories Panel -->
+
+        <!-- Resources Panel -->
+        <div id="resourcesPanel" class="menuExpanded topMenuOffset">
+            <div class="menuExpandedScroll always-show-scroll">
+              <div class="menuTitle">Resources</div>
+              <div id="resourcesMenu"></div>
+            </div>
+        </div>
+        <!-- /Resources Panel -->
 
         <!-- Listings Panel -->
         <div id="listingsPanel" class="menuExpanded topMenuOffset" style="display:none; font-size: 18.5px;">
@@ -252,6 +268,9 @@
         <!-- Locale Panel -->
         <div id="localePanel" class="dark menuExpanded topMenuOffset narrowDiv" style="display:none; font-size: 18.5px;">
           <div id="localePanelScroll" class="menuExpandedScroll always-show-scroll">
+              <div class="menuTitle">Locale</div>
+              Placeholder (local only)<br><br>
+              <a href="#geoview=countries">Location Filter</a>
               <div id="localeDiv"></div>
           </div>
         </div>

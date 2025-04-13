@@ -971,9 +971,11 @@ function showSideTabs() {
             $(".rightTopMenuInner div").removeClass("active");
             $(".menuExpanded").hide(); // Hide any open
             if (hash.sidetab == "sections") {
-                //showSections();
                 $(".showSections").addClass("active");
                 $("#sectionsPanel").show();
+            } else if (hash.sidetab == "resources") {
+                $(".showResources").addClass("active");
+                $("#resourcesPanel").show();
             } else if (hash.sidetab == "seasons") {
                 $(".showSeasons").addClass("active");
                 $("#seasonsPanel").show();
@@ -4727,25 +4729,29 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                                 colCloneLeft.id = "cloneLeft";
                                 $("#cloneLeftTarget").append(colCloneLeft);
 
-                                waitForElm('#topicsMenu').then((elm) => { // From info/template-main.html
+                                waitForElm('#resourcesMenu').then((elm) => { // From info/template-main.html
                                     let colEleRight = document.querySelector('#sidecolumnContent');
                                     let colCloneRight = colEleRight.cloneNode(true)
                                     colCloneRight.id = "cloneRight";
 
-                                    $("#topicsMenu").prepend(colCloneRight);
+                                    $("#sectionsMenu").prepend(colCloneRight);
 
-                                    if (location.href.indexOf('desktop') >= 0 || location.host.indexOf('dreamstudio') >= 0 || location.href.indexOf('dreamstudio') >= 0 || location.href.indexOf('/swarm/') >= 0 || location.href.indexOf('/LinearA/') >= 0 || location.href.indexOf("planet.live") >= 0 || modelsite=="planet.live") {
+                                    if (location.href.indexOf('desktop') >= 0 || modelsite=="dreamstudio" || location.host.indexOf('dreamstudio') >= 0 || location.href.indexOf('dreamstudio') >= 0 || location.href.indexOf('/swarm/') >= 0 || location.href.indexOf('/LinearA/') >= 0 || location.href.indexOf("planet.live") >= 0 || modelsite=="planet.live") {
+                                        let prependFolder = "";
                                         let storiesFile = "https://dreamstudio.com/seasons/episodes.md";
                                         //console.log("location.href index: " + location.href.indexOf("/dreamstudio/"));
                                         if(location.host.indexOf('localhost') >= 0) {
-                                            storiesFile = "/dreamstudio/seasons/episodes.md";
+                                            prependFolder = "/dreamstudio"
+                                            storiesFile = prependFolder + "/seasons/episodes.md";
                                         } else if (location.href.indexOf("dreamstudio") >= 0 || location.href.indexOf("planet.live") >= 0) {
                                             storiesFile = "/seasons/episodes.md";
                                         }
                                         waitForElm('#storiesDiv').then((elm) => {
                                             // TO DO - Lazy load elsewhere, and avoid if already loaded
                                             loadMarkdown(storiesFile, "storiesDiv", "_parent");
-                                            console.log("after storiesFile")
+                                            //alert("after storiesFile")
+                                            let resourcesFile = prependFolder + "/resources.md";
+                                            loadMarkdown(resourcesFile, "resourcesMenu", "_parent");
                                         });
                                     }
                                 });
@@ -5012,11 +5018,15 @@ $(document).ready(function () {
     });
 });
 
-// SInce we may sometimes load before JQuery avoiding $(document).on("click", ".showSections", function(event) { etc.
+// Since we may sometimes load before JQuery avoiding $(document).on("click", ".showSections", function(event) { etc.
 document.addEventListener('click', function(event) {
     if (event.target.classList.contains('showSections')) {
         goHash({'sidetab':'sections'});
-        event.stopPropagation();  
+        event.stopPropagation();
+    }
+    if (event.target.classList.contains('showResources')) {
+        goHash({'sidetab':'resources'});
+        event.stopPropagation();
     }
     if (event.target.classList.contains('showTopics')) {
         goHash({'sidetab':'topics'});
@@ -5213,13 +5223,17 @@ $(document).on("click", ".showTheMenu", function(event) { // Seasons
 
 $(document).on("click", ".showSideTabs", function(event) {
     let hash = getHash();
+    let modelsite = Cookies.get('modelsite');
     if (hash.sidetab) {
         goHash({'sidetab':''});
     } else {
-        if(location.href.indexOf("/seasons") >= 0 && location.host.indexOf("planet.live") >= 0 && modelsite != "planet.live") {
+        // && location.host.indexOf("planet.live") >= 0 && modelsite != "planet.live"
+        if(location.href.indexOf("/seasons") >= 0) {
             goHash({'sidetab':'seasons'});
-        } else {
+        } else if (modelsite == "dreamstudio" || location.host.indexOf("dreamstudio") >= 0) {
             goHash({'sidetab':'sections'});
+        } else {
+            goHash({'sidetab':'resources'});
         }
     }
     event.stopPropagation();
@@ -5735,7 +5749,7 @@ function activateSideColumn() {
         //console.log('fromTop ' + fromTop);
         // Get id of current scroll item
         var cur = scrollItems.map(function(){
-            // scrollItems is the sections fron nav.html, but just return the current one.
+            // scrollItems fron header.html, but just return the current one.
             //console.log('offset().top ' + $(this).offset().top)
             if ($(this).offset().top < fromTop) {
                 //console.log('offset().top < fromTop ' + $(this).offset().top + ' < ' + fromTop);
@@ -5770,7 +5784,7 @@ function activateSideColumn() {
           menuItems.removeClass("active");
           if (currentSection && currentSection.length) {
             if (id.length == 0) {
-                // Page without sections
+                // Page without sections/resources
             } else if (id == "intro") {
                 // To do: Change to highlight the uppermost section.
                 menuItems.filter("[href='..\/tools\/#']").addClass("active");
@@ -6010,7 +6024,11 @@ function showApps(menuDiv) {
             updateHash({"appview":"topics"});
             console.log("call showThumbMenu from navidation.js");
             if (!hash.geoview) {
-                closeExpandedMenus($(".showSections")); // Close all sidetab's prior to opening new tab
+                if (modelsite=="dreamstudio" || location.host.indexOf("dreamstudio") >= 0) {
+                    closeExpandedMenus($(".showSections")); // Close all sidetab's prior to opening new tab
+                } else {
+                    closeExpandedMenus($(".showResources"));
+                }
             }
             $("#topicsPanel").show();
 
