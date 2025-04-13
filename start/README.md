@@ -50,19 +50,24 @@ Integrate Observable with Google in our <a href="/data-commons/docs/data/">Data 
 ## <span class="num">5</span><span class="txt">Map Samples</span>
 [Leaflet Map Layers](../../community/start/maps#geoview=state&state=CA) with Tabulator grid data views
 
-## <span class="num">6</span><span class="txt">State EEIO Models</span>
+## <span class="num">6</span><span class="txt">Country and State IO Models</span>
 
-US State Environmentally Extended Input-Output
+Environmentally Extended Input-Output (EEIO)
 
-[USEEIO React Widgets](../../io/charts)
-[USEEIO Javascript](../../../useeio.js/footprint/)
-[USEEIO Model Components](https://github.com/USEPA/useeior/blob/master/format_specs/Model.md) - RStudio builds the API
+[World Trade Profiles](../../profile/trade/)
+[State Impact Reports](../../useeio.js/footprint/)
+[Inflow-Outflow Widgets](../../io/charts)
+
+<!--
+[USEEIO Model Components](https://github.com/USEPA/useeior/blob/master/format_specs/Model.md) - RStudio
+
+
 [USEEIO API](https://github.com/usepa/useeio_api/)
 [USEEIO Python and R Examples](../../community/resources/useeio)
 
 The API is NOT used directly for websites.
 Instead, a static .json version of the API is loaded from files in [model.earth/io/build/api](https://github.com/ModelEarth/io/tree/main/build/api) and our [profile](http://model.earth/profile) repo.
-
+-->
 
 ## <span class="num">7</span><span class="txt">JAM Stack Resources</span>
 
@@ -98,15 +103,15 @@ There is growing trend across industry to trace the entire supply chain.
 Responsible sourcing allows manufacturers to...
 -->
 
-[Sustainable Materials Management](https://www.epa.gov/smm) - US EPA  
-[EXIOBASE database](https://www.exiobase.eu/) - Registration is free for downloading files  
+[EXIOBASE](https://www.exiobase.eu/) - Environmentally Extended World Trade Data
+[Sustainable Materials Management](https://www.epa.gov/smm) - US EPA
+[Challenge.gov](https://www.challenge.gov) - Web Challenges created by US Government Agencies
 [OpenLCA](https://www.openlca.org/) - Downloadable app for Life Cycle Assessment
 [OECD - Organization for Economic Co-Operation and Development](https://www.oecd.org/sti/ind/measuring-trade-in-value-added.htm) - France
 [Leyla Acaroglu on Life Cycle Assessment](https://medium.com/disruptive-design/a-guide-to-life-cycle-thinking-b762ab49bce3)
 [Knoema Infographics](https://knoema.com/infographics) - [Data Coverage Matrix](https://knoema.com/atlas/matrix) - Global models which could be reproduced locally.  
 [World Input-Output Database (WOID)](http://www.wiod.org/otherdb)  
-[IMPLAN Impact Analysis](https://implanhelp.zendesk.com/hc/en-us/articles/360039284273-Environmental-Data) - 8 broad categories using USEEIO model data  
-[Challenge.gov/toolkit](https://www.challenge.gov) - Web Challenges created by US Government Agencies
+[IMPLAN Impact Analysis](https://implanhelp.zendesk.com/hc/en-us/articles/360039284273-Environmental-Data) - 8 broad categories using USEEIO model data
 
 ## <span class="num">9</span><span class="txt">Collaboration and Teaching</span>
 
@@ -114,7 +119,7 @@ Responsible sourcing allows manufacturers to...
 
 
 [Use our Lifecycle Tools for Research and Teaching](/io/learn/)
-Explore [the matrix](/io/about/matrix/) and tinker using [Open Footprint Javascript](/useeio.js/footprint/)
+Explore [the matrix](/io/about/matrix/) and tinker with our [Open Footprint Javascript](/useeio.js/footprint/)
 
 <!-- 
 Expensive European Exiobase
