@@ -115,7 +115,6 @@ function loadMap1(calledBy, show, dp_incoming) {
     show = param["show"];
   }
   console.log('loadMap1 start. CalledBy ' + calledBy + '. Show: ' + show + '. Cat: ' + hash.cat);
-
   dp = {}; // Clear prior
   if (dp_incoming) { // Parameters set in page or layer json
     dp = dp_incoming;
@@ -129,7 +128,6 @@ function loadMap1(calledBy, show, dp_incoming) {
   if (hash.state) {
     theState = hash.state.split(",")[0].toUpperCase()
   }
-
   waitForElm('#state_select').then((elm) => {
 
     if (theState != "") {
@@ -567,7 +565,8 @@ function loadMap1(calledBy, show, dp_incoming) {
           //dp.lonColumn = "longitude";
           dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
         }
-      } else if (show == "vehicles" || show == "ev") {
+      } else if ((show == "vehicles" || show == "ev") && (theState == "GA" || modelsite == "model.georgia" || location.host.indexOf('georgia.org') >= 0)) {
+        // Google Sheet contains only Georgia, so only load for state GA
         //dp.listTitle = "Motor Vehicle and Motor Vehicle Equipment Manufacturing";
         dp.listTitle = "Parts and Vehicle Manufacturing";
         dp.shortTitle = "EV Parts and Vehicle Manufacturing";
@@ -736,6 +735,8 @@ function loadMap1(calledBy, show, dp_incoming) {
   }
 
   // theState may be null - then the map could use the dp.datastates value
+  // However, let's default to US or world when the state is null
+
   if (Array.isArray(dp.datastates) && theState && !dp.datastates.includes(theState)) {
     showDirectory = false;
   }
@@ -757,6 +758,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         $(".locationTabText").attr("title",$("#state_select").find(":selected").text());
       }
       loadDataset('map1','map2', dp, basemaps1, basemaps2, 1, function(results) {
+        // Doesn't always reach here, even though above is reached.
         initialHighlight(hash);  
       });
     }
@@ -783,7 +785,6 @@ function loadMap1(calledBy, show, dp_incoming) {
 
   // Was getting called here on display/exporters/
   //loadIframe("mainframe","https://earth.nullschool.net/#current/wind/surface/level/orthographic=" +  dp.longitude + "," + dp.latitude + ",1381");
-
 
   console.log("End loadMap1. Cat: " + hash.cat);
 
@@ -3094,7 +3095,7 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
 
 function processOutput(dp,map1,map2,whichmap,whichmap2,basemaps1,basemaps2,callback) {
   consoleLog("processOutput");
-
+      
   if (typeof map1 === 'undefined' || !map1.length) {
     console.log("processOutput: map1 not yet defined or populated. We'll render with renderMap()"); // Ok, so let's define it with renderMap below.
   }
