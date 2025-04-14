@@ -40,7 +40,7 @@ Data from the US EPA and NAICS, Exiobase, Google Data Commons - [Data Pipelines]
 
 
 ## <span class="num">3</span><span class="txt">Integrate Machine Learning</span>
-Contribute to our machine learning [RealityStream](../../RealityStream/)
+Contribute to our machine learning [RealityStream](../../realitystream/)
 Integrate Observable with Google in our <a href="/data-commons/docs/data/">Data Commons Timelines</a>
 
 ## <span class="num">4</span><span class="txt">Chart Starter Ideas</span>
