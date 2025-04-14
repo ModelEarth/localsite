@@ -115,7 +115,7 @@ Responsible sourcing allows manufacturers to...
 
 ## <span class="num">9</span><span class="txt">Collaboration and Teaching</span>
 
-[Join in our weekly ModelEarth Meetups](/io/coders/)
+[Join in our weekly coding meetups](/io/coders/)
 
 
 [Use our Lifecycle Tools for Research and Teaching](/io/learn/)
