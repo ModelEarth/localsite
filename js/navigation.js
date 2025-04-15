@@ -4704,7 +4704,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                     headerFile = local_app.modelearth_root() + "/localsite/header.html";
                 }
 
-                //if (earthFooter && param.showSideTabs != "false") { // Sites includieng modelearth and neighborhood
+                //if (earthFooter && param.showSideTabs != "false") { // Sites including modelearth and neighborhood
                 //  $(".showSideTabs").show(); // Before load headerFile for faster display.
                 //}
                 if (headerFile) {
@@ -5230,10 +5230,8 @@ $(document).on("click", ".showSideTabs", function(event) {
         // && location.host.indexOf("planet.live") >= 0 && modelsite != "planet.live"
         if(location.href.indexOf("/seasons") >= 0) {
             goHash({'sidetab':'seasons'});
-        } else if (modelsite == "dreamstudio" || location.host.indexOf("dreamstudio") >= 0) {
-            goHash({'sidetab':'sections'});
         } else {
-            goHash({'sidetab':'resources'});
+            goHash({'sidetab':'sections'});
         }
     }
     event.stopPropagation();
