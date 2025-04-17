@@ -4523,8 +4523,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             //showClassInline(".earth"); // Show extra side nav
             earthFooter = true;
         }
-        
-    } else if (!Array.isArray(param.titleArray) && (param.startTitle == "Neighborhood.org" || location.host.indexOf('neighborhood.org') >= 0)) {
+    } else if ((modelsite=="neighborhood.org" || param.startTitle == "Neighborhood.org" || location.host.indexOf('neighborhood.org') >= 0)) {
         showLeftIcon = true;
         $(".siteTitleShort").text("Neighborhood Modeling");
         param.titleArray = ["neighbor","hood"]
