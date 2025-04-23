@@ -327,19 +327,41 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
 
     // Showing all or top 5 or bottom 5
     let selectedData;
-    formattedData.forEach(location => {
-        if(location.length) {
-            location.averageValue = location.observations.reduce((sum, obs) => sum + obs.value, 0) / location.observations.length;
-        } else {
-            console.log("No location for location.averageValue");
+    // Create a deep copy to avoid modifying the original array
+    const dataCopy = JSON.parse(JSON.stringify(formattedData));
+    // Get the latest year across all observations
+    let latestYear = '';
+    dataCopy.forEach(location => {
+        if (location.observations && location.observations.length > 0) {
+            location.observations.forEach(obs => {
+                const year = obs.date.split('-')[0]; // Normalize to year only
+                if (year > latestYear) latestYear = year;
+            });
         }
     });
+    console.log(`Latest year identified: ${latestYear}`);
+    // Calculate latest value for each location
+    dataCopy.forEach(location => {
+        if (location.observations && location.observations.length > 0) {
+            // Find the observation for the latest year
+            const latestObs = location.observations.find(obs => obs.date.split('-')[0] === latestYear);
+            location.latestValue = latestObs ? latestObs.value : null;
+        } else {
+            location.latestValue = null;
+        }
+    });
+    // Filter out locations with no valid latest value
+    const validData = dataCopy.filter(location => location.latestValue !== null);
     if (showAll === 'showTop5') {
-        selectedData = formattedData.sort((a, b) => b.averageValue - a.averageValue).slice(0, 5);
+        selectedData = validData
+            .sort((a, b) => b.latestValue - a.latestValue)
+            .slice(0, Math.min(5, validData.length));
     } else if (showAll === 'showBottom5') {
-        selectedData = formattedData.sort((a, b) => a.averageValue - b.averageValue).slice(0, 5);
+        selectedData = validData
+            .sort((a, b) => a.latestValue - b.latestValue)
+            .slice(0, Math.min(5, validData.length));
     } else {
-        selectedData = formattedData;
+        selectedData = dataCopy;
     }
 
     // Get datasets
