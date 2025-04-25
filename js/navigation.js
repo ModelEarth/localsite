@@ -589,12 +589,12 @@ function hashChanged() {
             }
         } else {
             //alert("hash.regiontitle1 " + hash.regiontitle);
-            hiddenhash.loctitle = hash.regiontitle;
-            $(".regiontitle").text(hash.regiontitle);
+            hiddenhash.loctitle = hash.regiontitle.replace(/\+/g," ");
+            $(".regiontitle").text(hash.regiontitle.replace(/\+/g," "));
             if (hash.show) {
-                $(".region_service").text(hash.regiontitle + " - " + hash.show.toTitleCaseFormat());
+                $(".region_service").text(hash.regiontitle.replace(/\+/g," ") + " - " + hash.show.toTitleCaseFormat());
             } else {
-                $(".region_service").text(hash.regiontitle);
+                $(".region_service").text(hash.regiontitle.replace(/\+/g," "));
             }
             $(".locationTabText").text(hash.regiontitle.replace(/\+/g," "));
             local_app.loctitle = hash.regiontitle.replace(/\+/g," ");
@@ -1043,8 +1043,6 @@ function populateFieldsFromHash() {
         }
     }
 }
-// var param = loadParams(location.search,location.hash); // This occurs in localsite.js
-
 
 // INIT
 //$(".showSearch").css("display","inline-block");
@@ -1313,31 +1311,13 @@ catArray = [];
     $(document).on("change", "#selectScope", function(event) {
         goHash({"scope":this.value});
     });
-    $('.selected_state').on('change', function() {
-        //alert("selected_state " + this.getAttribute("id"))
+    //$('.selected_state').on('change', function() {
+    $(document).on("change", ".selected_state", function(event) {
         $("#state_select").val(this.getAttribute("id"));
         goHash({'name':'','state':this.getAttribute("id")}); // triggers renderGeomapShapes("geomap", hash); // County select map
     });
-    $('#region_select').on('change', function() {
-        if(location.host.indexOf('localhost') >= 0) {
-            alert("localhost: #region_select change")
-        }
-        let hash = getHash();
-        //alert($(this).attr("geo"))
-        //goHash({'regiontitle':this.value,'lat':this.options[this.selectedIndex].getAttribute('lat'),'lon':this.options[this.selectedIndex].getAttribute('lon'),'geo':this.options[this.selectedIndex].getAttribute('geo')});
-        hiddenhash.geo = this.options[this.selectedIndex].getAttribute('geo');
-        console.log("hiddenhash.geo " + hiddenhash.geo);
-        delete hash.geo;
-        delete param.geo;
-        try {
-            delete params.geo; // Used by old naics.js
-        } catch(e) {
-            console.log("Remove params.geo after upgrading naics.js " + e);
-        }
-        //params.geo = hiddenhash.geo; // Used by naics.js
-        local_app.latitude = this.options[this.selectedIndex].getAttribute('lat');
-        local_app.longitude = this.options[this.selectedIndex].getAttribute('lon');
-        goHash({'regiontitle':this.value,'geo':''});
+    $(document).on("change", "#region_select", function(event) {
+        regionSelect(this)
     });
 
     /*
@@ -1365,7 +1345,7 @@ catArray = [];
     */
     
     $(document).click(function(event) { // Hide open menus
-        console.log("document click -  Hide open menus")
+        console.log("document click -  Hide open menus (not active)")
         if ( !$(event.target).closest( "#goSearch" ).length ) {
             // BUGBUG - Reactivate after omitting clicks within location selects
             //$(".fieldSelector").hide(); // Avoid since this occurs when typing text in search field.
@@ -1389,6 +1369,37 @@ catArray = [];
         }
     });
 
+    function regionSelect(selectMenu) {
+        if(location.host.indexOf('localhost') >= 0) {
+            //alert("localhost: #region_select change")
+        }
+        let hash = getHash();
+        //alert($(selectMenu).attr("geo"))
+        //goHash({'regiontitle':selectMenu.value,'lat':selectMenu.options[selectMenu.selectedIndex].getAttribute('lat'),'lon':selectMenu.options[selectMenu.selectedIndex].getAttribute('lon'),'geo':selectMenu.options[selectMenu.selectedIndex].getAttribute('geo')});
+        //hiddenhash.geo = selectMenu.options[selectMenu.selectedIndex].getAttribute('geo');
+        //console.log("hiddenhash.geo " + hiddenhash.geo);
+        delete hash.geo;
+        delete param.geo;
+        /*
+        try {
+            delete params.geo; // Used by old naics.js
+        } catch(e) {
+            console.log("Remove params.geo after upgrading naics.js " + e);
+        }
+        */
+
+        //params.geo = hiddenhash.geo; // Used by naics.js
+        local_app.latitude = selectMenu.options[selectMenu.selectedIndex].getAttribute('lat');
+        local_app.longitude = selectMenu.options[selectMenu.selectedIndex].getAttribute('lon');
+
+        // Infinite loop - locks up the browser
+        // BUGBUG: Map quickly gets progressively darker
+        //goHash({'state':hash.state, 'regiontitle':selectMenu.value,'geo':''});
+        console.log("regionSelect goHash disabled due to possible map update loop")
+
+        // Try this instead
+        updateHash({'regiontitle':selectMenu.value,'geo':''});
+    }
     function hideNonListPanels() {
         goHash({"geoview":""});
         $(".fieldSelector").hide(); // Avoid since this occurs when typing text in search field.
@@ -2721,7 +2732,7 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                                     //geoElement.permile = d.perMile;
                                     
                                     // For each county
-                                    console.log("geoElement");
+                                    console.log("geoElement for each county selected. " + geoElement.state);
                                     console.log(geoElement);
                                     localObject.geo.push(geoElement); 
                                  }
