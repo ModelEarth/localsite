@@ -1,6 +1,10 @@
 // EARTHSCAPE
 // A single function that calls multiple visualizations for a dataset
 
+// Declare global chart variables so they can be accessed in resize handler
+let timelineChart;
+let lineAreaChart;
+
 function loadEarthScape(my) {
     loadScript(theroot + 'js/d3.v5.min.js', function (results) {
         waitForVariable('customD3loaded', function () {
@@ -773,3 +777,15 @@ function toggleDivs() {
 }
 //Population data for different scope
 
+// Handle window resize to ensure charts adjust correctly when the window size changes
+// Chart.js automatically handles shrinking, but to handle expansion properly, 
+// we need to manually trigger a resize on each chart instance.
+// Without this, charts may not redraw correctly when window size increases after load.
+window.addEventListener('resize', function() {
+    if (timelineChart instanceof Chart) {
+        timelineChart.resize();
+    }
+    if (lineAreaChart instanceof Chart) {
+        lineAreaChart.resize();
+    }
+});
