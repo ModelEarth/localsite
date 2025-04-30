@@ -3,18 +3,15 @@
 
 Our helpful tips for [Yarn, Node, Python, Docker and Conda](https://model.earth/io/coders/python/).  
 
-## Start your local webroot http-server
+## Start a local web server
 
-Run the following in your webroot folder to start your local site:
+Run the following in a local "webroot" folder to start a local http server on port 8887
 
 	python -m http.server 8887
 
-To run further commands, open a new terminal window.
-(The first terminal is now dedicated to hosting your webroot.)
+To fork the repos you'll be editing, go to [github.com/modelearth](https://github.com/ModelEarth?tab=repositories), choose a repo and click the "Fork" button.  
 
-Clone the localsite repo by running in your webroot:
-
-	git clone https://github.com/modelearth/localsite localsite
+Then in your fork, click "Code > Open with Github Desktop".  For repos you won't be editing, you can run the script below to clone.
 
 <!--
 Or run within a virtual environment. On Macs:
@@ -44,8 +41,7 @@ All the repos below are viewable at [model.earth](https://model.earth). Each rep
 
 We generally avoid creating branches. Make your edits in a fork, then send a Pull Request (PR). We love when you edit README.md files to help keep our TO DOs current. Add your first name where you're working and send a PR. Also send Loren an email whenever you submit a Pull Request.
 
-To fork the repos you'll be editing, go to [github.com/modelearth](https://github.com/ModelEarth?tab=repositories), choose a repo and click the "Fork" button.  
-Then in your fork, click "Code > Open with Github Desktop".  For repos you won't be editing, you can run the script below to clone.
+
 
  
 Turn on GitHub Pages for any repo you fork by clicking the Settings icon, then Pages.
@@ -85,14 +81,31 @@ We manage the home config setting in [Google Sheets](../../../data-commons/docs/
 
 If you encounter a broken link locally, view the page at [model.earth](https://model.earth/) or clone one of the [additional modelearth repos](https://github.com/ModelEarth?tab=repositories).
 
+That's it, you're done with local setup!
+
 
 ## Alternative local setup using CMDs
 
-Enter your GitHub account to include in the install and update cmds below.
+Open a new terminal window in your webroot.
+(The first terminal above is dedicated to hosting your webroot.)
+
+**Step 1.** Fork the [localsite repo](https://github.com/modelearth/localsite/) regardless of whether you'll be editing it.  
+This will allow us to use GitHub Pages to review edits you make to other repos.
+
+
+**Step 2.**  If you are NOT planning to edit the localsite repo, clone it using Github Desktop, or by running this cmd in your webroot.
+
+	git clone https://github.com/modelearth/localsite localsite
+
+**Step 3.** 
+
+You can use GitHub Desktop to clone additional repos you plan to edit.
+
+Or enter your GitHub account to insert in the cmds below.
 
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
-**Step 1.** Indicate the repos you're planning to edit and have already forked.
+Indicate the repos you're planning to edit and have already forked.
 
 <!-- Also add to checkboxIds array -->
 
@@ -118,7 +131,7 @@ Enter your GitHub account to include in the install and update cmds below.
 </div>
 <div style="clear:both"></div><br>
 
-**Step 2.** We recommend using [GitHub Desktop](https://desktop.github.com/) to clone your forks.  
+**Step 4.** We recommend using [GitHub Desktop](https://desktop.github.com/) to clone your forks.  
 You don't need to pull all the repos - typically just 2 or 3 (including localsite).
 
 As an alternative to GitHub Desktop, you can run some of the following in your local webroot to pull down repos.
@@ -448,4 +461,4 @@ Edit online using [stackedit.io](https://stackedit.io/) and [Dillinger Markdown 
 
 ---
 
-[Edit the page above in Github](https://github.com/modelearth/localsite/blob/master/start/README.md)
+[Edit the page above in Github](https://github.com/ModelEarth/localsite/tree/main/start/steps)
