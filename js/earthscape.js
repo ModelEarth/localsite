@@ -1,6 +1,10 @@
 // EARTHSCAPE
 // A single function that calls multiple visualizations for a dataset
 
+// Declare global chart variables so they can be accessed in resize handler
+let timelineChart;
+let lineAreaChart;
+
 function loadEarthScape(my) {
     loadScript(theroot + 'js/d3.v5.min.js', function (results) {
         waitForVariable('customD3loaded', function () {
@@ -398,30 +402,52 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         },
         options: {
             responsive: true,
+            
             plugins: {
                 legend: {
-                    position: 'top',
+                    position: 'bottom', //Better on small screens
+                    labels: {
+                        boxwidth: 12,
+                        font: {
+                            size: 13 // smaller text for legends
+                        }
+                    }
                 },
                 title: {
                     display: true,
-                    text:chartText
+                    text:chartText,
+                    font:{
+                        size: 14
+                    }
                 }
+            },
+            layout: {
+                padding: 5
             },
             scales: {
                 x: {
-                    title: {
-                        display: true,
-                        text: 'Year'
+                  title: {
+                    display: true,
+                    text: 'Year'
+                  },
+                  ticks: {
+                    font: {
+                      size: 12 // smaller font size for better mobile readability
                     }
+                  }
                 },
                 y: {
-                    title: {
-                        display: true,
-                        text: `${chartText}` // Update y-axis label//chartText
-                        //text: `${chartText} (Per Capita)` // Update y-axis label//chartText
+                  title: {
+                    display: true,
+                    text: `${chartText}`
+                  },
+                  ticks: {
+                    font: {
+                      size: 10
                     }
+                  }
                 }
-            }
+              }
         }
     };
 
@@ -437,38 +463,65 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             type: 'line',
             data: data1,
             options: {
-              responsive: true,
-              plugins: {
-                title: {
-                  display: true,
-                  text: (ctx) => chartTitle
+                responsive: true,
+                 // Important for fluid resizing
+                plugins: {
+                  title: {
+                    display: true,
+                    text: (ctx) => chartTitle,
+                    font: {
+                      size: 14 // Slightly smaller for mobile balance
+                    }
+                  },
+                  tooltip: {
+                    mode: 'index'
+                  },
+                  legend: {
+                    position: 'bottom',
+                    labels: {
+                      boxWidth: 12,
+                      font: {
+                        size: 12
+                      }
+                    }
+                  }
                 },
-                tooltip: {
-                  mode: 'index'
+                interaction: {
+                  mode: 'nearest',
+                  axis: 'x',
+                  intersect: false
                 },
-              },
-              interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false
-              },
-            scales: {
-              x: {
-                title: {
-                  display: true,
-                  text: 'Years'
+                layout: {
+                  padding: 10
+                },
+                scales: {
+                  x: {
+                    title: {
+                      display: true,
+                      text: 'Years'
+                    },
+                    ticks: {
+                      font: {
+                        size: 12
+                      }
+                    }
+                  },
+                  y: {
+                    stacked: true,
+                    title: {
+                      display: true,
+                      text: `${chartText}`
+                    },
+                    ticks: {
+                      font: {
+                        size: 12
+                      }
+                    },
+                    
+                  }
                 }
-              },
-              y: {
-                stacked: true,
-                title: {
-                  display: true,
-                  text: `${chartText}` 
-                 // text:`${chartText} (Per Capita)`// 'County Population'
-                } 
               }
-            }
-            }
+              
     }
 
         if (hash.output === "json") {
@@ -773,3 +826,15 @@ function toggleDivs() {
 }
 //Population data for different scope
 
+// Handle window resize to ensure charts adjust correctly when the window size changes
+// Chart.js automatically handles shrinking, but to handle expansion properly, 
+// we need to manually trigger a resize on each chart instance.
+// Without this, charts may not redraw correctly when window size increases after load.
+window.addEventListener('resize', function() {
+    if (timelineChart instanceof Chart) {
+        timelineChart.resize();
+    }
+    if (lineAreaChart instanceof Chart) {
+        lineAreaChart.resize();
+    }
+});
