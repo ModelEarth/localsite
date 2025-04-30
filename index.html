@@ -97,6 +97,50 @@ body {
   height: 100%;
   margin-top: -4px;
 }
+.chart-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 10px 0;
+  height: 300px; 
+}
+
+@media (max-width: 768px) {
+  .chart-wrapper {
+    height: 260px;; /* taller for narrow screens */
+  }
+  select {
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+  #chartVariable,
+  #entityId,
+  .whichLinesHolder,
+  #perCapitaOptions {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  label input[type="radio"] {
+    margin-right: 5px;
+  }
+
+  .chart-controls {
+    display:flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  canvas {
+    width: 100% !important;
+    height: 100% !important; /* Keeps it scaling inside wrapper */
+  }
+}
 </style>
 
 <!--
