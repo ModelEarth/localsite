@@ -1,9 +1,7 @@
-<section id="steps"></section>
 [Starter Samples](../)
 # Site Install
 
-You can use [Localsite Pages](../) to create websites <!--and [storyboards](/requests)-->with free GitHub Pages hosting.  
-Our notes on [Node, Python, Docker and Conda](https://model.earth/io/coders/python/).  
+Our helpful tips for [Yarn, Node, Python, Docker and Conda](https://model.earth/io/coders/python/).  
 
 ## Start your local webroot http-server
 
@@ -52,7 +50,9 @@ Then in your fork, click "Code > Open with Github Desktop".  For repos you won't
  
 Turn on GitHub Pages for any repo you fork by clicking the Settings icon, then Pages.
 
-**Step 1.** Fork one or two repos you plan to edit. How to [Fork Repos](https://medium.com/@6unpnp/fork-a-github-repository-and-deploy-its-github-pages-site-d55dc53988d).  
+### Fork one or two repos you plan to edit
+
+How to [Fork Repos](https://medium.com/@6unpnp/fork-a-github-repository-and-deploy-its-github-pages-site-d55dc53988d).  
 Always fork <a href="https://github.com/ModelEarth/localsite">localsite</a> so we can review your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart).  
 Fork the [Home repo](https://github.com/ModelEarth/home) if you're working on our ["Everybody's Homepage" frontend](../../../home/).  
 Fork <a href="https://github.com/ModelEarth/data-commons">Data-Commons</a> if you're adding data visualizations using the Google Data Commons javascript API.  
@@ -72,11 +72,27 @@ Fork the home repo and start creating your own custom home page.
 We manage the home config setting in [Google Sheets](../../../data-commons/docs/data/) (and soon local config files).  
 -->
 
-**Step 2.** Enter your GitHub account to include in the install and update cmds below.
+<!-- Activate GitHub Pages so we can preview your contributions. -->
+
+### Now you can view and edit pages locally at links like:
+
+[localhost:8887/localsite](http://localhost:8887/localsite/)  
+[localhost:8887/data-commons](http://localhost:8887/data-commons/)  
+[localhost:8887/projects](http://localhost:8887/projects/)  
+[localhost:8887/data-pipeline](http://localhost:8887/data-pipeline/)  
+[localhost:8887/realitystream](http://localhost:8887/realitystream/)  
+[localhost:8887/feed](http://localhost:8887/feed/)  
+
+If you encounter a broken link locally, view the page at [model.earth](https://model.earth/) or clone one of the [additional modelearth repos](https://github.com/ModelEarth?tab=repositories).
+
+
+## Alternative local setup using CMDs
+
+Enter your GitHub account to include in the install and update cmds below.
 
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
-**Step 3.** Indicate the repos you're planning to edit and have already forked.
+**Step 1.** Indicate the repos you're planning to edit and have already forked.
 
 <!-- Also add to checkboxIds array -->
 
@@ -102,7 +118,7 @@ We manage the home config setting in [Google Sheets](../../../data-commons/docs/
 </div>
 <div style="clear:both"></div><br>
 
-**Step 4.** We recommend using [GitHub Desktop](https://desktop.github.com/) to clone your forks.  
+**Step 2.** We recommend using [GitHub Desktop](https://desktop.github.com/) to clone your forks.  
 You don't need to pull all the repos - typically just 2 or 3 (including localsite).
 
 As an alternative to GitHub Desktop, you can run some of the following in your local webroot to pull down repos.
@@ -125,17 +141,6 @@ git clone https://github.com/datascape/open-webui open-webui
 git clone https://github.com/ModelEarth/data-pipeline data-pipeline
 git clone https://github.com/ModelEarth/community-data community-data</textarea>
 
-<!-- Activate GitHub Pages so we can preview your contributions. -->
-
-Now you can view and edit pages locally at links like:
-[localhost:8887/localsite](http://localhost:8887/localsite/)  
-[localhost:8887/data-commons](http://localhost:8887/data-commons/)  
-[localhost:8887/projects](http://localhost:8887/projects/)  
-[localhost:8887/data-pipeline](http://localhost:8887/data-pipeline/)  
-[localhost:8887/realitystream](http://localhost:8887/realitystream/)  
-[localhost:8887/feed](http://localhost:8887/feed/)  
-
-If you encounter a broken link locally, view the page at [model.earth](https://model.earth/) or clone one of the [additional modelearth repos](https://github.com/ModelEarth?tab=repositories).
 
 ## Occasionally refresh your local files
 

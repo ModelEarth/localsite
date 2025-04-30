@@ -4,27 +4,16 @@
 
 <h1 style="font-size:32px">Starter Samples</h1>
 
-View our [Active Projects](../../projects) and [Moonshots](../../community/projects)
+### Localsite Setup and Development
 
-Helpful tips for [Node, Python, pyenv, Conda and Docker](https://model.earth/io/coders/python/)
+[How to add a new localsite page](template).  View our [Active Projects](../../projects) and [Moonshots](../../community/projects).
 
+Helpful tips for [Node, Python, pyenv, Conda and Docker](https://model.earth/io/coders/python/).
 
-## Single Page Embed
-
-How to add a new localsite page (in a repo or in your own website):
-
-1. Place your new content within a README.md file in a local folder inside your webroot. 
-2. Copy the current index.html page using View Page Source, or just copy the localsite.js include tag.
-3. [Add Localsite parameters](../) for locations (state and counties) and impact sets (air, water, land, energy, health, prosperity) to embed maps and visualizations [for local communities](/io/communities/) and [international goals](/data-commons/dist).
-
-____
-<br>
-
-# Localsite Setup and Development
 
 ## <span class="num">1</span><span class="txt">Site Install - Code globally, run locally</span>
 
-<a href="../../localsite/start/steps/">Site Install</a> - Contribute to apps for local product comparisons and government optimization
+<a href="../../localsite/start/steps/">Site Install</a> - Contribute to apps for local industry comparisons and government optimization.
 <!--
 &bullet; <a href="/apps/">Our Apps Folder</a> - Customize JQuery pages
 &bullet; <a href="../challenge/">Sustainable Communities Web Challenge</a><br>
@@ -33,11 +22,9 @@ ____
 
 <a href="../../localsite/start/steps/" class="btn btn-success">Start Site Install</a>
 
-
 ## <span class="num">2</span><span class="txt">Input-Output Widgets</span>
 <a href="../../io/charts/">Contribute to Impact Widgets</a> - Display based on [localsite parameters](../) 
 Data from the US EPA and NAICS, Exiobase, Google Data Commons - [Data Pipelines](/data-pipeline/)
-
 
 ## <span class="num">3</span><span class="txt">Integrate Machine Learning</span>
 Contribute to our machine learning [RealityStream](../../realitystream/)

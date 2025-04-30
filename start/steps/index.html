@@ -136,6 +136,7 @@ waitForElm('#gitAccount').then((elm) => {
 
 <body>
 
+<section id="steps"></section>
 <div class="content contentpadding">
   <div id="readmeDiv"></div>
 </div>
@@ -143,7 +144,12 @@ waitForElm('#gitAccount').then((elm) => {
 <script>
   loadMarkdown("README.md", "readmeDiv", "_parent");
   waitForVariable('steps', function () {
-    $(window). scrollTop(0); // Fixes unexplainable loading in mid-page
+    setTimeout(() => {
+      $(window). scrollTop(0); // Fixes unexplainable loading in mid-page
+    },500);
+    setTimeout(() => {
+      $(window). scrollTop(0); // In case prior occured too soon.
+    },1500);
   });
 </script>
 
