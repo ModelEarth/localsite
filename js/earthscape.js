@@ -149,7 +149,7 @@ function getUrbanDensityForYear(data, year) {
 
 //Timelinechart for scopes country, state, and county 
 let geoValues = {};
-
+const MIN_YEAR = 1900; // Minimum year to filter data
 async function getTimelineChart(scope, chartVariable, entityId, showAll, chartText) {
     //alert("getTimelineChart chartVariable: " + chartVariable + ", scope: " + scope)
     let hash = getHash(); // Add hash check at top of function
@@ -309,7 +309,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
     });
     const timelineData = await response3.json();
    // Format data
-   const formattedData = [];
+    /*const formattedData = [];
     //alert(JSON.stringify(geoValues)) // TO DO: Only send countries that exist in the dataset.
     for (const geoId in geoValues) {
         if (timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets) { // Avoids error if country (India) is not in water timeline
@@ -318,7 +318,24 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 observations: timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0]['observations']
             });
         }
+    }*/
+        // Format data
+        const formattedData = [];
+//alert(JSON.stringify(geoValues)) // TO DO: Only send countries that exist in the dataset.
+for (const geoId in geoValues) {
+    console.log("GeoId:", geoId, "Name:", geoValues[geoId].name);
+    if (timelineData.byVariable[chartVariable]?.byEntity?.[geoId]?.orderedFacets?.[0]?.observations) {
+        const filteredObservations = timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0].observations.filter(obs => {
+            const year = parseInt(obs.date.split('-')[0]);
+            return year >= MIN_YEAR && year <= 2022; // Added the upper year limit
+        });
+        formattedData.push({
+            name: geoValues[geoId].name,
+            observations: filteredObservations
+        });
     }
+}
+    console.log("formattedData:",formattedData)
      
     // Get unique years
     let yearsSet = new Set();
