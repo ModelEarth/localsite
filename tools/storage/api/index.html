@@ -50,7 +50,35 @@ id is appended below to avoid reloading
 </div>
 
 <script>
+$(document).ready(function() {
+    var yamlText = localStorage.getItem('apiKeysYaml');
 
+    if (yamlText) {
+        try {
+            var apiKeys = jsyaml.load(yamlText);
+
+            var firstProvider = Object.keys(apiKeys)[0];
+            var apiKey = apiKeys[firstProvider];
+
+            // ✅ Mapping step
+            var providerMap = {
+                'OpenAI': 'ChatGPT Pro',
+                'AnotherExample': 'Some Other Option'
+            };
+
+            var dropdownValue = providerMap[firstProvider] || firstProvider;
+
+            $('#apiProvider1').val(dropdownValue);
+            $('#apiKey1').val(apiKey);
+
+            console.log('Set provider to:', dropdownValue, 'with key:', apiKey);
+        } catch (e) {
+            console.error('Error parsing YAML from localStorage:', e);
+        }
+    } else {
+        console.log('No apiKeysYaml found in localStorage.');
+    }
+});
 </script>
 
 <style>
