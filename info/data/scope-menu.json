@@ -1,15 +1,8 @@
 [
 {
-	"section-user": "Datascape",
-	"section": "Datascape",
-	"title": "Datascape",
-	"icon": "/localsite/img/icon/scope/overview.png",
-	"link": "#scope=datascape"
-},
-{
 	"section": "Locations",
 	"title": "City",
-	"icon": "/localsite/img/icon/scope/community.png",
+	"icon": "/localsite/img/icon/scope/overview.png",
 	"link": "#scope=city"
 },
 {
@@ -23,28 +16,40 @@
 	"link": "#scope=zip"
 },
 {
+	"section-user": "Individual",
+	"section": "Individual",
+	"title": "Individual",
+	"icon": "/localsite/img/icon/scope/person.png",
+	"link": "#scope=individual"
+},
+{
 	"section": "Household",
 	"title": "Family",
-	"icon": "/localsite/img/icon/scope/household.png"
+	"icon": "/localsite/img/icon/scope/household.png",
+	"link": "#scope=family"
 },
 {
 	"section": "Work",
 	"title": "Schedule",
-	"icon": "/localsite/img/icon/scope/work.png"
+	"icon": "/localsite/img/icon/scope/work.png",
+	"link": "#scope=schedule"
 },
 {
 	"section": "Travel",
 	"title": "Destinations",
-	"icon": "/localsite/img/icon/scope/travel.png"
+	"icon": "/localsite/img/icon/scope/travel.png",
+	"link": "#scope=travel"
 },
 {
 	"section": "Food",
 	"title": "Nutrition",
-	"icon": "/localsite/img/icon/scope/food.png"
+	"icon": "/localsite/img/icon/scope/food.png",
+	"link": "#scope=food"
 },
 {
 	"section": "Shopping",
-	"title": "Grocery List",
-	"icon": "/localsite/img/icon/scope/shopping.png"
+	"title": "Product List",
+	"icon": "/localsite/img/icon/scope/shopping.png",
+	"link": "#scope=products"
 }
 ]
