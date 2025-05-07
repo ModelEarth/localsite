@@ -344,7 +344,8 @@ for (const geoId in geoValues) {
     if (timelineData.byVariable[chartVariable]?.byEntity?.[geoId]?.orderedFacets?.[0]?.observations) {
         const filteredObservations = timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0].observations.filter(obs => {
             const year = parseInt(obs.date.split('-')[0]);
-            return year >= MIN_YEAR && year <= 2022; // Added the upper year limit
+            //return year >= MIN_YEAR && year <= 2022; // Added the upper year limit
+            return year >= MIN_YEAR
         });
         formattedData.push({
             name: geoValues[geoId].name,
