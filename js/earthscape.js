@@ -156,6 +156,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
     geoValues = {}; // Clear prior
     const selectedCountries = []; // top-level
     let response, data, geoIds;
+    let whichPer = document.querySelector('input[name="whichPer"]:checked')?.value || 'totals';
 
     if (scope === "county") {
         // Fetch county data
@@ -308,6 +309,22 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         })
     });
     const timelineData = await response3.json();
+    let populationData = {};
+if (whichPer === 'percapita') {
+  const popUrl = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=Count_Person&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
+
+  const popResponse = await fetch(popUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      "date": "",
+      "select": ["date", "entity", "value", "variable"]
+    })
+  });
+
+  const popJson = await popResponse.json();
+  populationData = popJson.byVariable["Count_Person"].byEntity;
+}
    // Format data
     /*const formattedData = [];
     //alert(JSON.stringify(geoValues)) // TO DO: Only send countries that exist in the dataset.
@@ -331,7 +348,23 @@ for (const geoId in geoValues) {
         });
         formattedData.push({
             name: geoValues[geoId].name,
-            observations: filteredObservations
+            observations: timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0]['observations'].map(obs => {
+                let value = obs.value;
+                if (whichPer === 'percapita') {
+                    let popFacets = populationData[geoId]?.orderedFacets?.[0]?.observations;
+                    if (popFacets) {
+                        let popObs = popFacets.find(p => p.date === obs.date);
+                        if (popObs && popObs.value) {
+                            value = value / popObs.value;
+                        } else {
+                            value = null;
+                        }
+                    } else {
+                        value = null;
+                    }
+                }
+                return { date: obs.date, value: value };
+            })
         });
     }
 }
@@ -432,7 +465,7 @@ for (const geoId in geoValues) {
                 },
                 title: {
                     display: true,
-                    text:chartText,
+                    text:whichPer === 'percapita' ? `${chartText} per person` : chartText,
                     font:{
                         size: 14
                     }
@@ -456,7 +489,7 @@ for (const geoId in geoValues) {
                 y: {
                   title: {
                     display: true,
-                    text: `${chartText}`
+                    text: whichPer === 'percapita' ? `${chartText} per person` : chartText
                   },
                   ticks: {
                     font: {
@@ -485,7 +518,7 @@ for (const geoId in geoValues) {
                 plugins: {
                   title: {
                     display: true,
-                    text: (ctx) => chartTitle,
+                    text: (ctx) => whichPer === 'percapita' ? `${chartText} per person` : chartText,
                     font: {
                       size: 14 // Slightly smaller for mobile balance
                     }
@@ -527,7 +560,8 @@ for (const geoId in geoValues) {
                     stacked: true,
                     title: {
                       display: true,
-                      text: `${chartText}`
+                      text: whichPer === 'percapita' ? `${chartText} per person` : chartText
+
                     },
                     ticks: {
                       font: {
