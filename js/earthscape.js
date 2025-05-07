@@ -149,7 +149,7 @@ function getUrbanDensityForYear(data, year) {
 
 //Timelinechart for scopes country, state, and county 
 let geoValues = {};
-const MIN_YEAR = 1900; // Minimum year to filter data
+const MIN_YEAR = 1960; // Minimum year to filter data
 async function getTimelineChart(scope, chartVariable, entityId, showAll, chartText) {
     //alert("getTimelineChart chartVariable: " + chartVariable + ", scope: " + scope)
     let hash = getHash(); // Add hash check at top of function
@@ -711,6 +711,8 @@ async function updateDcidSelectFromSheet(scope) {
     const scopeIndex = headers.indexOf('Scope');
     const valueIndex = headers.indexOf('DCID'); // Assuming 'Value' is stored in the 'DCID' column
     const textIndex = headers.indexOf('Title'); // Assuming 'Text' is stored in the 'Title' column
+    const startYearIndex = headers.indexOf('StartYear');
+    const endYearIndex = headers.indexOf('EndYear');
 
     if (scopeIndex === -1 || valueIndex === -1 || textIndex === -1) {
         console.error("Missing required columns in the CSV data.");
