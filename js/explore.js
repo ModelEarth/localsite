@@ -6,33 +6,34 @@ function exploreFiles(param) {
         const branch = param.branch; // or whichever branch you want to access
         const subfolder = param.subfolder; // TODO - activate
 
-        // Get the current folder to limit display
-        const url = window.location.origin + window.location.pathname;
-        function parseCurrentURL(param) {
-          
-          const urlObj = new URL(url);
+        if (!param.entirerepo) {
+            // Get the current subfolders to limit display
+            const url = window.location.origin + window.location.pathname;
+            function parseCurrentURL(param) {
+              
+              const urlObj = new URL(url);
 
-          // Extract the GitHub account name from hostname
-          const gitAccount = urlObj.hostname.split('.')[0];
+              // Extract the GitHub account name from hostname
+              const gitAccount = urlObj.hostname.split('.')[0];
 
-          // Break path into parts and filter out empty strings
-          const segments = urlObj.pathname.split('/').filter(Boolean);
+              // Break path into parts and filter out empty strings
+              const segments = urlObj.pathname.split('/').filter(Boolean);
 
-          // Locate "tree" and extract everything after "tree/{branch}"
-          const treeIndex = segments.indexOf('tree');
-          let subfolderArray = segments.slice(treeIndex + 2); // Skip 'tree' and the branch
+              // Locate "tree" and extract everything after "tree/{branch}"
+              const treeIndex = segments.indexOf('tree');
+              let subfolderArray = segments.slice(treeIndex + 2); // Skip 'tree' and the branch
 
-          // Remove final segment if it appears to be a filename (contains '.')
-          if (subfolderArray.length && subfolderArray.at(-1).includes('.')) {
-            subfolderArray.pop();
-          }
+              // Remove final segment if it appears to be a filename (contains '.')
+              if (subfolderArray.length && subfolderArray.at(-1).includes('.')) {
+                subfolderArray.pop();
+              }
 
-          return { gitAccount, subfolderArray };
+              return { gitAccount, subfolderArray };
+            }
+            const { gitAccount, subfolderArray } = parseCurrentURL(url, param);
+            //alert(gitAccount);       // "datascape"
+            //alert("subfolder: " + subfolderArray);   // ["reports", "myreport"]
         }
-        const { gitAccount, subfolderArray } = parseCurrentURL(url, param);
-
-        //alert(gitAccount);       // "datascape"
-        //alert(subfolderArray);   // ["reports", "myreport"]
 
         // Make AJAX request to GitHub API to get list of files
         $.ajax({
