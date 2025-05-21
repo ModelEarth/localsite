@@ -1,12 +1,13 @@
 // Pulls files from a GitHub repo to create galleries and reports
 function exploreFiles(param) {
 
-        const owner = param.owner; // owner_username
-        const repo = param.repo; // repository_name
-        const branch = param.branch; // or whichever branch you want to access
-        const subfolder = param.subfolder; // TODO - activate
+        let owner = param.owner; // owner_username
+        let repo = param.repo; // repository_name
+        let branch = param.branch; // or whichever branch you want to access
+        //let subfolder = param.subfolder; // TODO - activate
 
-        if (!param.entirerepo) {
+        if (!param.repo && window.location.origin.indexOf('github') >= 0) { // Get repo from current path
+            alert("okay")
             // Get the current subfolders to limit display
             const url = window.location.origin + window.location.pathname;
             function parseCurrentURL(param) {
@@ -15,6 +16,8 @@ function exploreFiles(param) {
 
               // Extract the GitHub account name from hostname
               const gitAccount = urlObj.hostname.split('.')[0];
+
+              const repoName = urlObj.pathname.split('.')[0];
 
               // Break path into parts and filter out empty strings
               const segments = urlObj.pathname.split('/').filter(Boolean);
@@ -28,9 +31,12 @@ function exploreFiles(param) {
                 subfolderArray.pop();
               }
 
-              return { gitAccount, subfolderArray };
+              return { gitAccount, repoName, subfolderArray };
             }
-            const { gitAccount, subfolderArray } = parseCurrentURL(url, param);
+            const { gitAccount, repoName, subfolderArray } = parseCurrentURL(url, param);
+            owner = gitAccount;
+            repo = repoName;
+
             //alert(gitAccount);       // "datascape"
             //alert("subfolder: " + subfolderArray);   // ["reports", "myreport"]
         }
