@@ -6,6 +6,7 @@ function exploreFiles(param) {
         const branch = param.branch; // or whichever branch you want to access
         const subfolder = param.subfolder; // TODO - activate
 
+        // Get the current folder to limit display
         const url = window.location.origin + window.location.pathname;
         function parseCurrentURL(param) {
           
@@ -28,7 +29,6 @@ function exploreFiles(param) {
 
           return { gitAccount, subfolderArray };
         }
-
         const { gitAccount, subfolderArray } = parseCurrentURL(url, param);
 
         //alert(gitAccount);       // "datascape"
@@ -61,23 +61,25 @@ function exploreFiles(param) {
                     </div>`;
                     $('#gallery').append(thumbnail);
                 });
-                otherFiles.forEach(function(file) {
-                    // You can use file.path, file.url, file.size, file.type, etc.
-                    const fileURL = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
-                    const createdAt = file.created_at; // Date created
-                    const updatedAt = file.updated_at; // Date updated
+                if (param.showother) {
+                    otherFiles.forEach(function(file) {
+                        // You can use file.path, file.url, file.size, file.type, etc.
+                        const fileURL = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
+                        const createdAt = file.created_at; // Date created
+                        const updatedAt = file.updated_at; // Date updated
 
-                    // Create thumbnail and add to gallery
-                    const fileoutput = `<div class="">
-                        <a href="${fileURL}" alt="${file.path}">${file.path}</a>
+                        // Create thumbnail and add to gallery
+                        const fileoutput = `<div class="">
+                            <a href="${fileURL}" alt="${file.path}">${file.path}</a>
 
-                        <!--
-                        <p>Created: ${createdAt}</p>
-                        <p>Updated: ${updatedAt}</p>
-                        -->
-                    </div>`;
-                    $('#gallery').append(fileoutput);
-                });
+                            <!--
+                            <p>Created: ${createdAt}</p>
+                            <p>Updated: ${updatedAt}</p>
+                            -->
+                        </div>`;
+                        $('#gallery').append(fileoutput);
+                    });
+                }
             },
             error: function(err) {
                 console.error('Error fetching data:', err);
