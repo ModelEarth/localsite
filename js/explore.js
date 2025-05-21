@@ -47,9 +47,9 @@ function exploreFiles(param) {
             }
         }
         if(window.location.origin.indexOf('github') >= 0) {
-            alert("owner " + owner); // "datascape"
-            alert("repo " + repo);
-            alert("branch " + branch)
+            //alert("owner " + owner); // "datascape"
+            //alert("repo " + repo);
+            //alert("branch " + branch)
             //alert("subfolder: " + subfolderArray);   // ["reports", "myreport"]            
         }
         // Make AJAX request to GitHub API to get list of files
