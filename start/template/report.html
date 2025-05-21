@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
+<!-- Make updates in localsite/start/template/report.html -->
 <meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>Localsite Framework - DreamStudio ModelEarth</title>
+<title>RealityStream Report</title>
 <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -28,12 +29,6 @@ loadMarkdown("README.md", "readmeDiv", "_parent");
 <script>
     $(document).ready(function() {
       if(typeof param=='undefined'){ var param={}; }
-      if (window.location.origin.indexOf('github') < 0) {
-        // To view from github when on another domain
-        param.owner = 'datascape'; // owner_username
-        param.repo = 'RealityStream2025'; // repository_name
-        param.branch = 'main'; // or whichever branch you want to access
-      }
       param.showother = true;
       exploreFiles(param); // Resides in localsite/js/explore.js
     });

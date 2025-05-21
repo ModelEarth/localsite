@@ -1,6 +1,13 @@
 // Pulls files from a GitHub repo to create galleries and reports
 function exploreFiles(param) {
 
+        if (param.showother && window.location.origin.indexOf('github') < 0) {
+            // To view from github when on another domain
+            param.owner = 'datascape'; // owner_username
+            param.repo = 'RealityStream2025'; // repository_name
+            param.branch = 'main'; // or whichever branch you want to access
+        }
+
         let owner = param.owner; // owner_username
         let repo = param.repo; // repository_name
         let branch = param.branch; // or whichever branch you want to access
