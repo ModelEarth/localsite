@@ -14,7 +14,7 @@ function exploreFiles(param) {
         //let subfolder = param.subfolder; // TODO - activate
 
         if (!param.repo && window.location.origin.indexOf('github') >= 0) { // Get repo from current path
-            alert("okay")
+            
             // Get the current subfolders to limit display
             const url = window.location.origin + window.location.pathname;
             function parseCurrentURL(param) {
@@ -43,11 +43,16 @@ function exploreFiles(param) {
             const { gitAccount, repoName, subfolderArray } = parseCurrentURL(url, param);
             owner = gitAccount;
             repo = repoName;
-
-            //alert(gitAccount);       // "datascape"
-            //alert("subfolder: " + subfolderArray);   // ["reports", "myreport"]
+            if(!branch) {
+                branch = "main";
+            }
         }
-
+        if(window.location.origin.indexOf('github') >= 0) {
+            alert("owner " + owner); // "datascape"
+            alert("repo " + repo);
+            alert("branch " + branch)
+            //alert("subfolder: " + subfolderArray);   // ["reports", "myreport"]            
+        }
         // Make AJAX request to GitHub API to get list of files
         $.ajax({
             url: `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`,
@@ -73,9 +78,10 @@ function exploreFiles(param) {
                         <p>Updated: ${updatedAt}</p>
                         -->
                     </div>`;
-                    $('#gallery').append(thumbnail);
+                    $('#exploreOutput').append(thumbnail);
                 });
                 if (param.showother) {
+                    $('#exploreOutput').append("<h2>Explore Output</h2>(Under Development)");
                     otherFiles.forEach(function(file) {
                         // You can use file.path, file.url, file.size, file.type, etc.
                         const fileURL = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
@@ -84,14 +90,14 @@ function exploreFiles(param) {
 
                         // Create thumbnail and add to gallery
                         const fileoutput = `<div class="">
-                            <a href="${fileURL}" alt="${file.path}">${file.path}</a>
+                            ${file.path}
 
                             <!--
                             <p>Created: ${createdAt}</p>
                             <p>Updated: ${updatedAt}</p>
                             -->
                         </div>`;
-                        $('#gallery').append(fileoutput);
+                        $('#exploreOutput').append(fileoutput);
                     });
                 }
             },
