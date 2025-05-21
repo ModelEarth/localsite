@@ -24,10 +24,9 @@ function exploreFiles(param) {
               // Extract the GitHub account name from hostname
               const gitAccount = urlObj.hostname.split('.')[0];
 
-              const repoName = urlObj.pathname.split('.')[0];
-
               // Break path into parts and filter out empty strings
               const segments = urlObj.pathname.split('/').filter(Boolean);
+              const repoName = segments[0];
 
               // Locate "tree" and extract everything after "tree/{branch}"
               const treeIndex = segments.indexOf('tree');
