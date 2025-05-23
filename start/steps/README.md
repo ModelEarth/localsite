@@ -1,7 +1,7 @@
 [Starter Samples](../)
 # Site Install
 
-Our helpful tips for [Yarn, Node, Python, Docker and Conda](https://model.earth/io/coders/python/).  
+Our helpful tips for [Yarn, Node, Python, Docker and Conda](../../../io/coders/python/).  
 
 ## Start a local web server
 
