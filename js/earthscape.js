@@ -687,6 +687,14 @@ async function updateDcidSelectFromSheet(scope) {
         updateHash({"scope":scope}); // Used by refreshTimeline()
 
     }
+    // Hide elements with starting with class "scope-"
+    document.querySelectorAll('[class^="scope-"]').forEach(function(el) {
+        el.style.display = 'none';
+    });
+    // Show elements with current scope.
+    document.querySelectorAll('.scope-' + hash.scope).forEach(function(el) {
+        el.style.display = 'inline-block';
+    });
 
     // Temp here, will be in it's own function for choosing current goal view
     const airTimelinesLink = document.getElementById("airTimelinesLink");
@@ -725,8 +733,6 @@ async function updateDcidSelectFromSheet(scope) {
     } else if (hash.goal == "population") {
         sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTBiwDM6b0i_jnaE37fq_GFxCyigP0OondJk17dMRgE8QFiIMNHabFymizwIUYOAVdxh6nj6ZueBak/pub?gid=471398138&single=true&output=csv";
     }
-
-    
 
     //loadGoalsDropdown("aquifers","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=484745180&single=true&output=csv");
 
