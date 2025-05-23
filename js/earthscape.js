@@ -649,24 +649,19 @@ function refreshTimeline() {
     if (hash.scope) {
         scope = hash.scope;
     }
-    //waitForElm('#chartVariable').then((elm) => { // Avoid this since values won't be there yet.
-        //let chartVariable = 'Count_Person';
-        let chartVariableSelect = document.getElementById('chartVariable');
-        //setTimeout(() => { // Hack - wait 3 seconds. Later we'll wait for #chartVariable to have a value.
-                        
-            let chartVariable = chartVariableSelect.options[chartVariableSelect.selectedIndex].value;
+    let chartVariableSelect = document.getElementById('chartVariable');        
+    let chartVariable = chartVariableSelect.options[chartVariableSelect.selectedIndex].value;
 
-            let showAll = document.querySelector('input[name="whichLines"]:checked').value;
-            if(!showAll) {showAll = 'showTop5';}
-
-            let entityIdSelect = document.getElementById('entityId');
-            let entityId = entityIdSelect.options[entityIdSelect.selectedIndex].value;
-            let chartText = document.getElementById('chartVariable').options[document.getElementById('chartVariable').selectedIndex].text;
-
-            //alert(chartVariable + " " + chartText)
-            getTimelineChart(scope, chartVariable, entityId, showAll, chartText);
-        //},3000);
-    //});
+    let showAll = document.querySelector('input[name="whichLines"]:checked').value;
+    if(!showAll) {showAll = 'showTop5'}
+    if(showAll=="showSelected" && scope!="country") { // Since only countries supports "11 countries"
+        showAll = 'showTop5'
+        document.querySelector('input[name="whichLines"][value="showTop5"]').checked = true;
+    } 
+    let entityIdSelect = document.getElementById('entityId');
+    let entityId = entityIdSelect.options[entityIdSelect.selectedIndex].value;
+    let chartText = document.getElementById('chartVariable').options[document.getElementById('chartVariable').selectedIndex].text;
+    getTimelineChart(scope, chartVariable, entityId, showAll, chartText);
 }
 function updateScopeOptions(availableScopes) {
     waitForElm('#selectScope').then((elm) => {
@@ -685,7 +680,6 @@ async function updateDcidSelectFromSheet(scope) {
     if (scope == "country" && hash.goal == "health") {
         scope = "country" // Until Google Sheet has counties for health
         updateHash({"scope":scope}); // Used by refreshTimeline()
-
     }
     // Hide elements with starting with class "scope-"
     document.querySelectorAll('[class^="scope-"]').forEach(function(el) {
