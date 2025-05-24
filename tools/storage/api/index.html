@@ -6,9 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>API Key Form</title>
 
-<script type="text/javascript" src="/localsite/js/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
-<script type="text/javascript" src="local-storage.js" id="/localsite/js/local-storage.js"></script>
-
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" id="/localsite/js/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
 
 <link type="text/css" href="../../../css/base.css" rel="stylesheet" id="/localsite/css/base.css" />
@@ -24,6 +22,17 @@ $(document).ready(function() {
 	// An object containing API Providers and API Keys as key-value pairs
 	var aPro = {};
 	var undoTimer = null;
+	// Track which aPro key each panel corresponds to
+	var panelToKeyMap = {}; // panelIndex -> aProKey
+	
+	function isValidJSON(str) {
+		try {
+			JSON.parse(str);
+			return true;
+		} catch (e) {
+			return false;
+		}
+	}
 	
 	if (isValidJSON(localStorage.getItem('aPro'))) {
 		aPro = JSON.parse(localStorage.getItem('aPro')) || {};
@@ -39,7 +48,9 @@ $(document).ready(function() {
 	  $('#aProOutput').val(JSON.stringify(aPro, null, 2)); // .select()
 	  
 	  if (typeof jsyaml != "undefined") {
-		  let yamlString = jsyaml.dump(aPro);
+		  // Build ordered object based on form panel order
+		  let orderedAPro = buildOrderedAPro();
+		  let yamlString = jsyaml.dump(orderedAPro);
 		  console.log("updateLocalStorage:\n" + yamlString);
 		  if (JSON.stringify(aPro) === "{}" || typeof JSON.stringify(aPro) == "undefined") {
 		  	$('#aProOutputYaml').val("");
@@ -49,6 +60,32 @@ $(document).ready(function() {
 		  	$('#copyBtn').show();
 		  }
 		}
+	}
+	
+	// Build aPro object in the same order as the form panels
+	function buildOrderedAPro() {
+		let orderedObj = {};
+		
+		// Get all panel indices in order
+		let panelIndices = [];
+		$('.repeating-section').each(function() {
+			let panelId = $(this).attr('id');
+			let index = parseInt(panelId.replace('panel', ''));
+			panelIndices.push(index);
+		});
+		
+		// Sort indices numerically
+		panelIndices.sort((a, b) => a - b);
+		
+		// Build ordered object based on panel order
+		panelIndices.forEach(index => {
+			let aProKey = panelToKeyMap[index];
+			if (aProKey && aPro.hasOwnProperty(aProKey)) {
+				orderedObj[aProKey] = aPro[aProKey];
+			}
+		});
+		
+		return orderedObj;
 	}
 
 	const apiKeys = [
@@ -99,31 +136,6 @@ $(document).ready(function() {
 	             '      <option>Serp</option>' +
 	             '      <option>Together AI</option>' +
 	             '      <option>X.com</option>' +
-	             '      <!-- Add more API providers here, see list in README file -->' +
-
-	             /*
-	             '      <option>Amazon Web Services (AWS)</option>' +
-	             '      <option>Dropbox API</option>' +
-	             '      <option>eBay API</option>' +
-	             '      <option>Facebook Graph API</option>' +
-	             '      <option>Google API</option>' +
-	             '      <option>Instagram Graph API</option>' +
-	             '      <option>LinkedIn API</option>' +
-	             '      <option>Mailchimp API</option>' +
-	             '      <option>Microsoft Azure API</option>' +
-	             '      <option>PayPal API</option>' +
-	             '      <option>Reddit API</option>' +
-	             '      <option>Salesforce API</option>' +
-	             '      <option>SendGrid API</option>' +
-	             '      <option>Shopify API</option>' +
-	             '      <option>Slack API</option>' +
-	             '      <option>Spotify Web API</option>' +
-	             '      <option>Stripe API</option>' +
-	             '      <option>Twilio API</option>' +
-	             '      <option>Yelp API</option>' +
-	             '      <option>YouTube API</option>' +
-	             '      <option>Zoom API</option>' +
-	             */
 	             '      <option>Other</option>' +
 	             '    </select><br>' +
 	             '    <input type="text" id="apiProviderOther' + index + '" placeholder="Other Provider" class="textInput" style="display:none; min-width:225px; margin-bottom:10px">' +
@@ -135,31 +147,21 @@ $(document).ready(function() {
 	             '</div>';
 	  return html;
 	}
-	// Above was: min-width:300px;max-width:540px;
 
 	// Apply key-value pairs from the local storage object to the panels
 	function populateRepeatingSections() {
+		// Clear existing mappings
+		panelToKeyMap = {};
+		
 		// Clears form and re-renders panels
 	  $('#formContainer').empty();
 	  let index = 1;
 	  for (var key in aPro) {
-	    //var index = key.match(/\d+/)[0];
-
-	    /*
-	    let appendNumber = key.match(/\d+/);
-			if (appendNumber) {
-			  appendNumber = parseInt(appendNumber) + 1;
-			} else {
-			  // Handle the case when no match is found, e.g., set a default value
-			  appendNumber = "";
-			}
-
-			// Avoiding appending for now
-			appendNumber = "";
-			*/
-
 	    $('#formContainer').append(generateRepeatingSection(index)); // Add blank panel to populate
-	    //$('#apiProvider' + index).val(key.replace(/\d+/, '').replace(/_/g, ' '));
+	    
+	    // Store the mapping between panel and aPro key
+	    panelToKeyMap[index] = key;
+	    
 	    let keyOnly = key.replace(/\s*\(\d+\)$/, ""); // Remove number in parenthesis at end.
 	    if (apiKeys.includes(keyOnly)) {
 		    $('#apiProvider' + index).val(keyOnly);
@@ -169,7 +171,6 @@ $(document).ready(function() {
 		}
 	    
 	    if ($('#apiProvider' + index).val() == 'Other') {
-	    	//$('#apiProviderOther' + index).val(aPro[key]).show();
 	    	$('#apiProviderOther' + index).show();
 	    }
 
@@ -179,14 +180,14 @@ $(document).ready(function() {
 	  }
 	  
 	  if (JSON.stringify(aPro) === "{}") {
-	  	//alert("okay " + JSON.stringify(aPro));
 	  	$('#aProOutput').val("");
 	  	$('#aProOutputYaml').val("");
 	  } else {
-		  $('#aProOutput').val(JSON.stringify(aPro, null, 2)); // .select()
+		  $('#aProOutput').val(JSON.stringify(aPro, null, 2));
 		  if (typeof jsyaml != "undefined") {
-		  	let yamlString = jsyaml.dump(aPro); // TO DO: Remove ticks around YAML displayed in textbox.
-			  $('#aProOutputYaml').text(yamlString);
+		  	let orderedAPro = buildOrderedAPro();
+		  	let yamlString = jsyaml.dump(orderedAPro);
+			  $('#aProOutputYaml').val(yamlString);
 			  $('#copyBtn').show();
 			}
 		}
@@ -195,7 +196,7 @@ $(document).ready(function() {
 	// INIT
 	populateRepeatingSections();
 	if ($('.repeating-section').length == 0) {
-	  $('#formContainer').append(generateRepeatingSection(1)); // Show one panel at init
+	  $('#formContainer').append(generateRepeatingSection(1));
 	}
 
 	$('#addApi').click(function() {
@@ -206,20 +207,56 @@ $(document).ready(function() {
 	$(document).on('change', 'select[id^="apiProvider"]', function() { // Changing provider dropdown
 	  var index = $(this).attr('id').match(/\d+/)[0];
 	  console.log("Change index " + index);
-	  var key = $(this).val();
-		let value = $("#apiKey" + index).val();
-		if (key == 'Other') {
-			key = $("#apiProviderOther" + index).val();
+	  
+	  var oldKey = $(this).data('previous-value'); // Get previous value
+	  var newKey = $(this).val(); // Get new value
+	  var currentApiKey = $("#apiKey" + index).val();
+	  
+	  // If changing from "Other" to a dropdown option, we need to clean up
+	  if ($(this).data('was-other') === true && newKey !== 'Other') {
+	    // Find and delete the old "other" entry from aPro using our mapping
+	    var oldAProKey = panelToKeyMap[index];
+	    if (oldAProKey) {
+	      delete aPro[oldAProKey];
+	      delete panelToKeyMap[index]; // Clear the mapping
+	    }
+	    
+	    // Clear the API key field
+	    $("#apiKey" + index).val('');
+	    currentApiKey = '';
+	    
+	    // Hide the "other" input field
+	    $('#apiProviderOther' + index).hide();
+	  }
+	  
+	  // Update data attributes for next time
+	  $(this).data('previous-value', newKey);
+	  $(this).data('was-other', newKey === 'Other');
+	  
+	  if (newKey == 'Other') {
 	    $('#apiProviderOther' + index).show();
 	  } else {
 	    $('#apiProviderOther' + index).hide();
 	  }
-	  if (value) {
-  		updateApiRow(index,key,value);
-  	}
+	  
+	  // Only update if there's an API key value
+	  if (currentApiKey) {
+	    updateApiRow(index, newKey, currentApiKey);
+	  } else {
+	    // Update storage to reflect the deletion
+	    updateLocalStorage();
+	  }
 	});
 
-	// NEW: Auto-update on blur for API key fields
+	// Initialize data attributes when sections are created
+	$(document).on('focus', 'select[id^="apiProvider"]', function() {
+	  if (!$(this).data('previous-value')) {
+	    $(this).data('previous-value', $(this).val());
+	    $(this).data('was-other', $(this).val() === 'Other');
+	  }
+	});
+
+	// Auto-update on blur for API key fields
 	$(document).on('blur', 'input[id^="apiKey"]', function(e) {
 		// Check if the user clicked on the Update button - if so, avoid double update
 		if (e.relatedTarget && e.relatedTarget.id === 'updateBtn') {
@@ -241,107 +278,118 @@ $(document).ready(function() {
 			
 			if (!value) { // Deleting Row by clearing API Key
 				console.log("Delete apiProvider " + key);
-				// Find the actual key in aPro that matches this provider
-				for (let aProKey in aPro) {
-					if (aProKey.replace(/\s*\(\d+\)$/, "") === key.replace(/\s*\(\d+\)$/, "")) {
-						delete aPro[aProKey];
-						break;
-					}
+				// Use mapping to find the correct key to delete
+				var oldAProKey = panelToKeyMap[index];
+				if (oldAProKey) {
+					delete aPro[oldAProKey];
+					delete panelToKeyMap[index];
 				}
 				$('#panel' + index).remove();
 			} else {
 				updateApiRow(index, key, value);
 			}
 			
-			// Update YAML from form data
-			updateYamlFromForm();
+			updateLocalStorage();
 		}
 	});
 
-	$(document).on('input', 'input[id^="apiKey"]', function() { // Editing apiKey field
+	// Handle typing in API key field
+	$(document).on('input', 'input[id^="apiKey"]', function() {
 	  let index = $(this).attr('id').match(/\d+/)[0];
 	  let key = $("#apiProvider" + index).val();
 	  let value = $(this).val();
+	  
 	  if (key) {
-	    // Get key of nth pair in object
-	    /*
-	    for (let key in aPro) {
-		    if (aPro.hasOwnProperty(key)) {
-		      //count++;
-		    }
-		  }
-		*/
+		if (key == 'Other') {
+			key = $("#apiProviderOther" + index).val();
+		}
+		
 		if (!value) { // Deleting Row by clearing API Key
-			console.log("Delete apiProvider " + $('#apiProvider' + index).val().replace(/ /g, '_'));
-		    delete aPro[$('#apiProvider' + index).val()];
-		    updateLocalStorage();
-		    $('#panel' + index).remove();
+			console.log("Delete apiProvider " + key);
+			// Use mapping to find the correct key to delete
+			var oldAProKey = panelToKeyMap[index];
+			if (oldAProKey) {
+				delete aPro[oldAProKey];
+				delete panelToKeyMap[index];
+			}
+			updateLocalStorage();
+			$('#panel' + index).remove();
 		} else {
-		  	updateApiRow(index,key,value);
+			updateApiRow(index, key, value);
 		}
 	  }
 	});
-	$(document).on('input', 'input[id^="apiProviderOther"]', function() { // Editing Other API name
+
+	// Handle typing in "Other" provider name field
+	$(document).on('input', 'input[id^="apiProviderOther"]', function() {
 		let index = $(this).attr('id').match(/\d+/)[0];
 		let key = $(this).val();
 		let value = $("#apiKey" + index).val();
-		//alert(key)
-		if (!value) { // Deleting Row by clearing API Key
-			//console.log("Delete apiProvider " + $('#apiProvider' + index).val().replace(/ /g, '_'));
-		    //delete aPro[$('#apiProvider' + index).val()];
-		    //updateLocalStorage();
-		    //$('#panel' + index).remove();
-		} else if (key && value) {
-			//alert("key " + key + " value " + value);
-		  	updateApiRow(index,key,value);
+		
+		if (key && value) {
+			updateApiRow(index, key, value);
 		}
 	});
-	function updateApiRow(index,key,value) {
+
+	function updateApiRow(index, key, value) {
 		let apiProviderStr = $('#apiProvider' + index).val();
 		if (apiProviderStr === 'Other') {
 			apiProviderStr = $('#apiProviderOther' + index).val();
 		}
+		
+		if (!apiProviderStr || !value) {
+			return; // Don't update if key or value is empty
+		}
+		
+		// Clean the provider string
 		apiProviderStr = apiProviderStr.replace(/\s*\(\d+\)$/, ""); // Remove number in parenthesis at end.
 		
-	  	let instanceCount = 0;
-	  	let storageCount = 0;
-	  	for (let thekey in aPro) {
-  		  storageCount++;
-		  if (thekey.startsWith(apiProviderStr)) {
-		    instanceCount++;
-		  } else if (storageCount == index) { // The one index currently being updated
-		  	instanceCount++;
-		  }
-		}
-  		let keyName = apiProviderStr;
-  		aProCount = countKeyValuePairs(aPro);
-
-		console.log("index: " + index + "\nprovider: " + key + "\nkeyname: " + keyName + "\nvalue: " + value + "\nprovider instanceCount: " + instanceCount);
+		// Check if we're updating an existing entry
+		var existingAProKey = panelToKeyMap[index];
 		
-	  	if (index > aProCount) { // Add new record - there are more panels than key-value pairs.
-	  		if (instanceCount >= 1) { // Already records
-	  			keyName = keyName + " (" + (instanceCount+1) + ")"; // Increment since adding
-	  			console.log("Add new record keyName " + keyName);
-	  		}
-	  	} else {
-	  		if (instanceCount > 1) { // The existing record uses a paren number
-	  			keyName = keyName + " (" + (instanceCount) + ")";
-	  			console.log("Update keyName " + keyName);
-	  		} else {
-	  			console.log("Update - Only one instanceCount keyName " + keyName);
-	  		}
-	  	}
-
-	  	// In JavaScript, object keys must be unique
-	  	if (typeof aPro == "undefined") { // Since may have been deleted using Clear All.
-	  		aPro = {};
-	  	}
-	  	
-	  	// Set the key-value pair
-	  	aPro[keyName] = value;
-	  	
-	    updateLocalStorage();
+		if (existingAProKey) {
+			// We're updating an existing entry
+			// If the provider name changed, we need to update the key
+			if (existingAProKey !== apiProviderStr && !existingAProKey.startsWith(apiProviderStr + ' (')) {
+				// Provider name changed, delete old entry
+				delete aPro[existingAProKey];
+				
+				// Create new key with proper numbering
+				let finalKey = generateUniqueKey(apiProviderStr);
+				aPro[finalKey] = value;
+				panelToKeyMap[index] = finalKey;
+			} else {
+				// Same provider, just update the value
+				aPro[existingAProKey] = value;
+			}
+		} else {
+			// This is a new entry
+			let finalKey = generateUniqueKey(apiProviderStr);
+			aPro[finalKey] = value;
+			panelToKeyMap[index] = finalKey;
+		}
+		
+		updateLocalStorage();
 	}
+	
+	function generateUniqueKey(baseKey) {
+		// Check if this exact key already exists
+		if (!aPro.hasOwnProperty(baseKey)) {
+			return baseKey;
+		}
+		
+		// Find the next available number
+		let counter = 2;
+		let numberedKey = baseKey + ' (' + counter + ')';
+		
+		while (aPro.hasOwnProperty(numberedKey)) {
+			counter++;
+			numberedKey = baseKey + ' (' + counter + ')';
+		}
+		
+		return numberedKey;
+	}
+
 	function countKeyValuePairs(obj) { // Length of object
 	  let count = 0;
 	  for (let key in obj) {
@@ -351,63 +399,8 @@ $(document).ready(function() {
 	  }
 	  return count;
 	}
-	// Function to update the key and value at a given index
-	function updateByIndex(obj, index, newKey, newValue) {
-	  const keys = Object.keys(obj);
-	  
-	  if (index >= 0 && index < keys.length) {
-	    const oldKey = keys[index];
-	    
-	    // Delete the old key and set the new key-value pair
-	    obj[newKey] = newValue;
-	    delete obj[oldKey];
-	  } else {
-	    console.log("Invalid index");
-	  }
-	}
 
-	// NEW: Function to update YAML from current form data
-	function updateYamlFromForm() {
-		// Build aPro object from current form state
-		let newAPro = {};
-		
-		$('.repeating-section').each(function() {
-			let panelId = $(this).attr('id');
-			let index = panelId.replace('panel', '');
-			
-			let provider = $('#apiProvider' + index).val();
-			let apiKey = $('#apiKey' + index).val();
-			
-			if (provider && apiKey) {
-				if (provider === 'Other') {
-					provider = $('#apiProviderOther' + index).val();
-				}
-				
-				// Handle duplicate provider names by adding numbers
-				let keyName = provider;
-				let counter = 1;
-				let baseKey = keyName;
-				
-				// Check if this key already exists
-				while (newAPro.hasOwnProperty(keyName)) {
-					counter++;
-					keyName = baseKey + ' (' + counter + ')';
-				}
-				
-				if (keyName && apiKey) {
-					newAPro[keyName] = apiKey;
-				}
-			}
-		});
-		
-		// Update aPro and localStorage
-		aPro = newAPro;
-		updateLocalStorage();
-		
-		console.log("Updated aPro from form:", aPro);
-	}
-
-	// NEW: Undo functionality
+	// Undo functionality
 	function saveUndoState() {
 		const undoData = {
 			aPro: JSON.stringify(aPro),
@@ -485,11 +478,6 @@ $(document).ready(function() {
 	        $("#updateBtn").addClass("button-green");
 	    }
 	});
-	
-	// Delayed, wait until clicking off textarea
-	//$(document).on('change', '#aProOutputYaml', function() {
-	//	alert("change")
-	//});
 
 	$('#copyBtn').click(function() {
 	  $('#aProOutputYaml').select();
@@ -513,7 +501,6 @@ $(document).ready(function() {
 	
 	function updateKeyStorage() {
 		$("#updateBtn").removeClass("button-green");
-		//aPro = JSON.parse($('#aProOutput').val()); // From json textbox.
 		if (hasDuplicateKeys($('#aProOutputYaml').val())) {
 			alert("Duplicate provides. Please add (2) after second instance.");
 		} else {
@@ -528,6 +515,7 @@ $(document).ready(function() {
 			}
 		}
 	}
+	
 	function hasDuplicateKeys(yamlString) {
 	    var lines = yamlString.split('\n');
 	    var seenKeys = {};
@@ -574,25 +562,12 @@ $(document).ready(function() {
 	});
 
 	$('#clearAll').click(function() {
-
-		if (1==1) { // Skip confirmation step
-			saveUndoState(); // Save state before clearing
-			localStorage.removeItem('aPro');
+		saveUndoState(); // Save state before clearing
+		localStorage.removeItem('aPro');
 	    aPro = {};
+	    panelToKeyMap = {}; // Clear mappings
 	    populateRepeatingSections();
 	    $('#formContainer').append(generateRepeatingSection(1));
-	    return;
-    }
-
-	  var confirmation = prompt('Are you sure? Enter "YES" to proceed.');
-	  if (confirmation && confirmation.toUpperCase() === 'YES') {
-	    saveUndoState(); // Save state before clearing
-	    localStorage.removeItem('aPro');
-	    aPro = {};
-	    populateRepeatingSections();
-	    $('#formContainer').append(generateRepeatingSection(1));
-	    alert('Your API Keys have been cleared from local storage.');
-	  }
 	});
 	
 });
@@ -609,11 +584,6 @@ $(document).ready(function() {
 	<button id="clearAll" class="button">Clear All</button>
 	<button id="undoBtn" class="button button-undo" style="display: none;">Undo</button>
 
-	<!-- We can probably remove these
-	<button id="copyBtn" class="button">Copy</button>
-	<button id="pasteBtn" class="button">Paste</button>
-	-->
-
 	<div style="clear:both; height:20px"></div>
 	<textarea id="aProOutput" style="display:none"></textarea>
 	<textarea id="aProOutputYaml"></textarea>
@@ -628,38 +598,6 @@ $(document).ready(function() {
 
 	Copy and paste text to transfer your API keys to another browser.
 </div>
-
-<script>
-$(document).ready(function() {
-    var yamlText = localStorage.getItem('apiKeysYaml');
-
-    if (yamlText) {
-        try {
-            var apiKeys = jsyaml.load(yamlText);
-
-            var firstProvider = Object.keys(apiKeys)[0];
-            var apiKey = apiKeys[firstProvider];
-
-            //  Mapping step
-            var providerMap = {
-                'OpenAI': 'ChatGPT Pro',
-                'AnotherExample': 'Some Other Option'
-            };
-
-            var dropdownValue = providerMap[firstProvider] || firstProvider;
-
-            $('#apiProvider1').val(dropdownValue);
-            $('#apiKey1').val(apiKey);
-
-            console.log('Set provider to:', dropdownValue, 'with key:', apiKey);
-        } catch (e) {
-            console.error('Error parsing YAML from localStorage:', e);
-        }
-    } else {
-        console.log('No apiKeysYaml found in localStorage.');
-    }
-});
-</script>
 
 <style>
   .repeating-section {
@@ -713,6 +651,17 @@ $(document).ready(function() {
 	  border-radius: 4px;
 	  font-size: 16px;
 	  line-height: 1.5;
+	}
+	.content {
+	  padding: 20px;
+	  max-width: 800px;
+	  margin: 0 auto;
+	}
+	.textInput {
+	  padding: 8px;
+	  border: 1px solid #ccc;
+	  border-radius: 4px;
+	  font-size: 16px;
 	}
 </style>
 
