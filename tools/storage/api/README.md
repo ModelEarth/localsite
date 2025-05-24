@@ -1,3 +1,13 @@
+
+<!--
+id is appended below to avoid reloading
+-->
+<!--
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" id="/localsite/js/jquery.min.js"></script>
+-->
+
+
+
 <!--
 https://chat.openai.com/c/94f107ae-5e51-4719-b64f-651eaa7f2b27
 https://chat.openai.com/share/82ca2102-1acd-4e94-8581-280365e012e3
