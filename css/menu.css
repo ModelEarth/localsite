@@ -652,7 +652,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 
 .sidecolumnLeft a, #cloneRight a {
     display:block;
-    padding-left: 25px;
+    padding-left: 20px;
     text-decoration: none;
 }
 .catList>div {
@@ -677,7 +677,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	color: #333;
 	font-size: 16px;
 	line-height: 1.8em;
-	padding-left: 25px;
+	padding-left: 20px;
 }
 .sidecolumnLeft a.active {
     border-right: 4px solid #888;
