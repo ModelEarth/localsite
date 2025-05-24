@@ -143,7 +143,7 @@ $(document).ready(function() {
 	             '  <div style="overflow:auto; min-width:300px">' +
 	             '    <label for="apiKey' + index + '">API Key</label><br>' +
 	             '    <div class="api-key-container">' +
-	             '      <input type="password" autocomplete="off" class="textInput" id="apiKey' + index + '" style="min-width:200px;max-width:200px;width:100%; margin-bottom:10px;border-radius:8px; padding-right: 40px;">' +
+	             '      <input type="text" autocomplete="off" class="textInput hiddenInput" id="apiKey' + index + '" style="min-width:200px;max-width:200px;width:100%; margin-bottom:10px;border-radius:8px; padding-right: 40px;">' +
 	             '      <button onclick="toggleVisibility(\'apiKey' + index + '\')" class="eye-toggle-btn" type="button">' +
 	             '        <svg xmlns="http://www.w3.org/2000/svg" class="eye-icon" viewBox="0 0 20 20" fill="currentColor">' +
 	             '          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />' +
@@ -583,10 +583,12 @@ $(document).ready(function() {
 // Toggle visibility function for API key fields
 function toggleVisibility(fieldId) {
     const input = document.getElementById(fieldId);
-    if (input.type === 'text') {
-        input.type = 'password';
+    if (input.className === 'textInput') {
+        //input.type = 'password';
+        input.className = 'textInput hiddenInput';
     } else {
-        input.type = 'text';
+        //input.type = 'text';
+        input.className = 'textInput';
     }
 }
 </script>
@@ -628,7 +630,14 @@ function toggleVisibility(fieldId) {
     display: table;
     clear: both;
   }
-  
+  .hiddenInput {
+	  -webkit-text-security: disc;
+	  text-security: disc;
+	  font-family: text-security-disc; /* Fallback for older browsers */
+	  font-size: 26px !important;
+	  color: #777;
+	}
+
   .api-key-container {
     position: relative;
     display: inline-block;
