@@ -53,11 +53,11 @@ Always fork <a href="https://github.com/ModelEarth/localsite">localsite</a> so w
 Fork the [Home repo](https://github.com/ModelEarth/home) if you're working on our ["Everybody's Homepage" frontend](../../../home/).  
 Fork <a href="https://github.com/ModelEarth/data-commons">Data-Commons</a> if you're adding data visualizations using the Google Data Commons javascript API.  
 Fork <a href="https://github.com/ModelEarth/feed">Feed Player</a> if you're adding to our React Vite visual [Feed viewer](https://model.earth/feed/) and memberSense for Discord.  
-Fork [Open Footprint](https://github.com/ModelEarth/profile) if you're contributing to our <a href="https://model.earth/useeio.js/footprint/">USEEIO.js International</a> ChartJS and SQL visualizations.  
+Fork [useeio.js](https://github.com/ModelEarth/useeio.js) if you're contributing to our <a href="../../../useeio.js/footprint/">State Impact Reports</a> and [Trade Flow](../../../profile/trade/) visualizations.  
 Fork <a href="https://github.com/ModelEarth/realitystream">RealityStream</a> if you're contributing python to our Machine Learning visualizations.  
 Fork <a href="https://github.com/ModelEarth/requests">Requests</a> if you're adding python to our image and video [Storyboard Generation](https://model.earth/data-pipeline/research/stream).  
 Fork <a href="https://github.com/datascape/open-webui/actions">OpenWebUI (Datascape fork)</a> to contribute within our [Open WebUI location projects](/projects/location/) using Python and Vite.  
-Fork <a href="https://github.com/ModelEarth/earthscape">Earthscape</a> if you're contributing to the our fork of [Chatbot UI](https://model.earth/earthscape/app/) using NextJS React and Supabase for Crew tools.  
+Fork <a href="https://github.com/ModelEarth/earthscape">Earthscape</a> if you're contributing to the our fork of [Chatbot UI](https://model.earth/earthscape/app/) using NextJS React and Supabase for team tools.  
 Fork <a href="https://github.com/ModelEarth/data-pipeline">Data-Pipeline</a> if you're contributing Python to data prep.  
 
 We've omitted the Community repo since it's only used for model.earth hosting. It's not needed for shared component dev.  

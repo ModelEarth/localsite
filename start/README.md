@@ -8,7 +8,7 @@
 
 [How to add a new localsite page](template).  View our [Active Projects](../../projects) and [Moonshots](../../community/projects).
 
-Helpful tips for [Node, Python, pyenv, Conda and Docker](https://model.earth/io/coders/python/).
+Helpful tips for [Node, Python, pyenv, Conda and Docker](../../io/coders/python/).
 
 
 ## <span class="num">1</span><span class="txt">Site Install - Code globally, run locally</span>
@@ -106,7 +106,7 @@ Responsible sourcing allows manufacturers to...
 
 
 [Use our Lifecycle Tools for Research and Teaching](/io/learn/)
-Explore [the matrix](/io/about/matrix/) and tinker with our [Open Footprint Javascript](/useeio.js/footprint/)
+Explore [the matrix](/io/about/matrix/) and tinker with our [Footprint Javascript](/useeio.js/footprint/)
 
 <!-- 
 Expensive European Exiobase
