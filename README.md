@@ -6,10 +6,10 @@ The&nbsp;[localsite&nbsp;repo](https://github.com/modelearth/localsite/) provide
 
 ## Get Involved
 
-[DreamStudio](https://dreamstudio.com) Collaborative Data Science
-[Model.Earth](https://model.earth) Environmental Impacts
+[DreamStudio](https://dreamstudio.com) Collaborative Data Science  
+[Model.Earth](https://model.earth) Environmental Impacts  
 [Local Webroot Setup](https://model.earth/localsite/start/)  
-[Current Project Areas](https://model.earth/projects/)
+[Current Project Areas](https://model.earth/projects/)  
 
 ## Embed Datascapes
 
