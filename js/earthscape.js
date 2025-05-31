@@ -946,3 +946,102 @@ function handleCountryListClick() {
         }
     }, 10);
 }
+
+// Parse YAML content from the paramText element
+function parseYamlContent() {
+  const paramTextElement = document.getElementById('paramText');
+  const yamlContent = paramTextElement.textContent || paramTextElement.innerText;
+  return yamlContent;
+}
+
+// Function to convert YAML to URL parameters
+function yamlToUrlParams(yamlStr) {
+  // Simple YAML parser for this specific format
+  const lines = yamlStr.split('\n');
+  const params = {};
+  
+  let currentKey = null;
+  let currentIndent = 0;
+  
+  for (const line of lines) {
+    if (line.trim() === '' || line.trim().startsWith('#')) continue;
+    
+    const indent = line.search(/\S|$/);
+    const colonIndex = line.indexOf(':');
+    
+    if (colonIndex > 0) {
+      const key = line.substring(0, colonIndex).trim();
+      let value = line.substring(colonIndex + 1).trim();
+      
+      if (indent === 0) {
+        // Top level key
+        currentKey = key;
+        if (value) {
+          params[key] = value;
+        } else {
+          params[key] = {};
+        }
+      } else if (indent > currentIndent) {
+        // Sub-key
+        if (!params[currentKey]) {
+          params[currentKey] = {};
+        }
+        
+        if (value) {
+          params[currentKey][key] = value;
+        } else {
+          params[currentKey][key] = {};
+        }
+      }
+      
+      currentIndent = indent;
+    } else if (line.trim().startsWith('-')) {
+      // Handle array items
+      const value = line.trim().substring(1).trim();
+      
+      if (!Array.isArray(params[currentKey])) {
+        params[currentKey] = [];
+      }
+      
+      params[currentKey].push(value);
+    }
+  }
+  
+  // Convert to URL hash format
+  const hashParams = [];
+  
+  for (const [key, value] of Object.entries(params)) {
+    if (typeof value === 'string') {
+      hashParams.push(`${key}=${encodeURIComponent(value)}`);
+    } else if (Array.isArray(value)) {
+      hashParams.push(`${key}=${encodeURIComponent(value.join(','))}`);
+    } else if (typeof value === 'object') {
+      for (const [subKey, subValue] of Object.entries(value)) {
+        if (typeof subValue === 'string') {
+          hashParams.push(`${key}.${subKey}=${encodeURIComponent(subValue)}`);
+        }
+      }
+    }
+  }
+  alert(hashParams.join('&'))
+  return hashParams.join('&');
+}
+
+// Pass forward model parameters in hash
+function goToPage(whatPage) {
+  // Check if the clicked element is a link
+  if (event.target.tagName === 'A') {
+    event.preventDefault();
+    
+    // Get YAML content and convert to URL parameters
+    const yamlContent = parseYamlContent();
+    const urlParams = yamlToUrlParams(yamlContent);
+    
+    // Create the final URL
+    const redirectUrl = whatPage + `#${urlParams}`;
+    
+    // Redirect to the new URL
+    console.log("Redirecting to:", redirectUrl);
+    window.location.href = redirectUrl;
+  }
+}
