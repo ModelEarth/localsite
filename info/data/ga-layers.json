@@ -80,7 +80,7 @@ callback(
 		"topnavaccess": "10",
 		"menuaccess": "0",
 		"directlinkX": "/localsite/map/#show=smart",
-		"directlink": "/io/communities/#state=GA&show=smart",
+		"directlink": "/io/#state=GA&show=smart",
 		"states": "GA"
 	},
 	{

@@ -181,7 +181,7 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
                 <div class="impactIcon_Energy" onclick="goHash({'set':'energy','indicators':'ENRG,NNRG,RNRG'});">Energy</div>
                 <div class="impactIcon_Health" onclick="goHash({'set':'health','indicators':'HTOX,HCAN,HNCN,HTOX,HRSP'});">Health</div>
                 <div class="impactIcon_Prosperity" onclick="goHash({'set':'prosperity','indicators':'VADD,JOBS'});">Prosperity</div>
-                <div class="local btn btn-primary" onclick="location.href='/realitystream/#featurepath=123'; return false;" style="display:none;min-width:133px;font-size:15px;border:none;">
+                <div class="local btn btn-primary" onclick="location.href='/realitystream/#' + window.location.hash.substr(1); return false;" style="display:none;min-width:133px;font-size:15px;border:none;">
 					RealityStream
 				</div>
 				<!-- <a id="tabulator-industrytable-realitystream" href="/realitystream/#featurepath=123" class=""> -->
