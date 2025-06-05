@@ -88,6 +88,7 @@ function exploreFiles(param) {
                     csvFiles.forEach(function(file, index) {
                         // You can use file.path, file.url, file.size, file.type, etc.
                         const fileURL = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
+                        const githubURL = `https://github.com/${owner}/${repo}/tree/${branch}/${file.path}`;
                         const createdAt = file.created_at; // Date created
                         const updatedAt = file.updated_at; // Date updated
 
@@ -106,7 +107,7 @@ function exploreFiles(param) {
                         const fileoutput = `<div style="margin-bottom:30px" class="tableSurround">
                             <div style="font-size:18px;margin-bottom:6px">${my.title}</div>
                             <div id="${my.elementID}"></div>
-                            <div style="font-size:11px">${file.path}</div>
+                            <div style="font-size:11px;margin-top:8px">&nbsp;<a href="${githubURL}">${file.path}</a> | <a href="${fileURL}">raw</a></div>
                             <!--
                             <p>Created: ${createdAt}</p>
                             <p>Updated: ${updatedAt}</p>
