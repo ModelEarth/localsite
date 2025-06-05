@@ -60,7 +60,10 @@ function exploreFiles(param) {
                 // Filter out only image files (you may need to adjust this)
                 // Omiting png since used for arrow images.
                 const imageFiles = data.tree.filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file.path));
-                const otherFiles = data.tree.filter(file => !/\.(jpg|jpeg|png|gif)$/i.test(file.path));
+                const mdFiles = data.tree.filter(file => /\.(md)$/i.test(file.path));
+                const htmlFiles = data.tree.filter(file => /\.(htm|html)$/i.test(file.path));
+                const csvFiles = data.tree.filter(file => /\.(csv)$/i.test(file.path));
+                const otherFiles = data.tree.filter(file => !/\.(jpg|jpeg|png|gif|md|htm|html|csv)$/i.test(file.path));
                 // Now you have the list of image files with their details
                 imageFiles.forEach(function(file) {
                     // You can use file.path, file.url, file.size, file.type, etc.
@@ -79,18 +82,31 @@ function exploreFiles(param) {
                     </div>`;
                     $('#exploreOutput').append(thumbnail);
                 });
-                if (param.showother) {
-                    $('#exploreOutput').append("<h2>Explore Output</h2>(Under Development)");
-                    otherFiles.forEach(function(file) {
+                if (csvFiles) {
+                    //$('#exploreOutput').append("<h2>Reports (CSV Files)</h2>");
+                    $('#exploreOutput').append("<style>.tableSurround{border:1px solid #aaa;border-radius:20px;background:#fff;padding:20px}.dark .tableSurround{background:#313131}</style");
+                    csvFiles.forEach(function(file, index) {
                         // You can use file.path, file.url, file.size, file.type, etc.
                         const fileURL = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
                         const createdAt = file.created_at; // Date created
                         const updatedAt = file.updated_at; // Date updated
 
-                        // Create thumbnail and add to gallery
-                        const fileoutput = `<div class="">
-                            ${file.path}
+                        my = {}; // Drops entanglement
+                        my.dataset = fileURL;
+                        my.elementID = "exploreTable" + (index + 1);
+                        loadEarthScape(my);
 
+                        my.title = file.path
+                          .split('/').pop()           // Get filename after last slash
+                          .split('.').slice(0, -1).join('.') // Remove file extension
+                          .replace(/[_-]/g, ' ')      // Replace underscores and dashes with spaces
+                          .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize first letter of each word
+
+                        // Create thumbnail and add to gallery
+                        const fileoutput = `<div style="margin-bottom:30px" class="tableSurround">
+                            <div style="font-size:18px;margin-bottom:6px">${my.title}</div>
+                            <div id="${my.elementID}"></div>
+                            <div style="font-size:11px">${file.path}</div>
                             <!--
                             <p>Created: ${createdAt}</p>
                             <p>Updated: ${updatedAt}</p>
@@ -99,10 +115,31 @@ function exploreFiles(param) {
                         $('#exploreOutput').append(fileoutput);
                     });
                 }
+                if (param.showother) { // Non image files
+                    if (location.host.indexOf('localhost') >= 0) {
+                        $('#exploreOutput').append("<h2>Explore Output (Localhost)</h2>(Under Development)");
+                        otherFiles.forEach(function(file) {
+                            // You can use file.path, file.url, file.size, file.type, etc.
+                            const fileURL = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
+                            const createdAt = file.created_at; // Date created
+                            const updatedAt = file.updated_at; // Date updated
+
+                            // Create thumbnail and add to gallery
+                            const fileoutput = `<div class="">
+                                ${file.path}
+
+                                <!--
+                                <p>Created: ${createdAt}</p>
+                                <p>Updated: ${updatedAt}</p>
+                                -->
+                            </div>`;
+                            $('#exploreOutput').append(fileoutput);
+                        });
+                    }
+                }
             },
             error: function(err) {
                 console.error('Error fetching data:', err);
             }
         });
-    
 }
