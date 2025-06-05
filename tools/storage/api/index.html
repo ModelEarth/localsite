@@ -143,7 +143,7 @@ $(document).ready(function() {
 	             '  <div style="overflow:auto; min-width:300px">' +
 	             '    <label for="apiKey' + index + '">API Key</label><br>' +
 	             '    <div class="api-key-container">' +
-	             '      <input type="text" autocomplete="off" class="textInput hiddenInput" id="apiKey' + index + '" style="min-width:200px;max-width:200px;width:100%; margin-bottom:10px;border-radius:8px; padding-right: 40px;">' +
+	             '      <input type="text" autocomplete="off" class="textInput hiddenInput" id="apiKey' + index + '" style="min-width:200px;width:100%; margin-bottom:10px;border-radius:8px; padding-right: 40px;">' +
 	             '      <button onclick="toggleVisibility(\'apiKey' + index + '\')" class="eye-toggle-btn" type="button">' +
 	             '        <svg xmlns="http://www.w3.org/2000/svg" class="eye-icon" viewBox="0 0 20 20" fill="currentColor">' +
 	             '          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />' +
@@ -641,6 +641,7 @@ function toggleVisibility(fieldId) {
   .api-key-container {
     position: relative;
     display: inline-block;
+    width: 100%;
   }
   
   .eye-toggle-btn {
@@ -697,7 +698,7 @@ function toggleVisibility(fieldId) {
 	}
 	#aProOutput, #aProOutputYaml {
 	  width: 100%;
-	  max-width: 364px;
+	  max-width: 1000px;
 	  height: auto;
 	  min-height: 10em;
 	  resize: vertical;
