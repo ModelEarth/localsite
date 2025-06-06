@@ -275,7 +275,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         });
 
     } else if (scope === "country") {// Fetch country ISO codes first
-        const restResponse = await fetch("https://restcountries.com/v3.1/all");
+        const restResponse = await fetch("https://restcountries.com/v3.1/all?fields=cca2,name"); // cca3 is also available
         const countriesData = await restResponse.json();
     
         // Get all ISO Alpha-2 codes
@@ -651,6 +651,7 @@ function refreshTimeline() {
     }
     let chartVariableSelect = document.getElementById('chartVariable');        
     let chartVariable = chartVariableSelect.options[chartVariableSelect.selectedIndex].value;
+    updateHash({"scope":scope,"features.dcid":chartVariable}); // Used by refreshTimeline()
 
     let showAll = document.querySelector('input[name="whichLines"]:checked').value;
     if(!showAll) {showAll = 'showTop5'}
