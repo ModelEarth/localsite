@@ -274,6 +274,8 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             };
         });
 
+    } else if (scope === "country") {// Fetch country ISO codes first
+        const restResponse = await fetch("https://restcountries.com/v3.1/all?fields=cca2,name"); // cca3 is also available
     } else if (scope === "country")
         /*{
     // Define country list
@@ -738,12 +740,9 @@ function refreshTimeline() {
     if (hash.scope) {
         scope = hash.scope;
     }
-    //waitForElm('#chartVariable').then((elm) => { // Avoid this since values won't be there yet.
-        //let chartVariable = 'Count_Person';
-        let chartVariableSelect = document.getElementById('chartVariable');
-        //setTimeout(() => { // Hack - wait 3 seconds. Later we'll wait for #chartVariable to have a value.
-                        
-            let chartVariable = chartVariableSelect.options[chartVariableSelect.selectedIndex].value;
+    let chartVariableSelect = document.getElementById('chartVariable');        
+    let chartVariable = chartVariableSelect.options[chartVariableSelect.selectedIndex].value;
+    updateHash({"scope":scope,"features.dcid":chartVariable}); // Used by refreshTimeline()
 
             let showAll = document.querySelector('input[name="whichLines"]:checked').value;
             if(!showAll) {showAll = 'showTop5';}
