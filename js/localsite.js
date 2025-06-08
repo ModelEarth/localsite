@@ -2800,7 +2800,9 @@ function setOnlinemode(onlinemode) {
     $("#log_display").hide();
   } else if (onlinemode == "false")  {
     onlineApp = false;
-    $("#log_display").show();
+    if (Cookies.get('showlog') != "0") {
+      $("#log_display").show();
+    }
   }
 }
 function setGlobecenter(globecenter, promptForCurrentPosition) {

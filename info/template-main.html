@@ -1472,7 +1472,13 @@ Displayed by hashChanged() in navigation.js
 <!-- ../img/hero/hexagon-pattern.png  -->
 
 <!-- Currently activated by setting Offline (Air Travel) -->
-<div id="log_display" style="display:none"><span style='float:left; font-size:14px'>Offline Log</span><br><textarea id="logText">LogText</textarea></div>
+<div id="log_display" style="display:none"><span style='float:left; font-size:18px'>Console Log</span>
+  
+  <div style="float:right">
+    <i class="material-icons show-on-load" style="font-size:28px;cursor:" onclick="$('#log_display').hide();Cookies.set('showlog','0');return false;">&#xE5CD;</i>
+  </div>
+
+  <br><textarea id="logText">LogText</textarea></div>
 
 
 <div class="displayOnload displayMapForLoad" style="display:none;position:relative;overflow:hidden;">
