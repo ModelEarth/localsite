@@ -1,5 +1,7 @@
 # Google secretmanager
 
+For use with [Cloud Run Flask](../../../../cloud/run)
+
 ## Enable Google Cloud Secret Manager API in project
 
 	gcloud services enable secretmanager.googleapis.com --project=your-project-id
