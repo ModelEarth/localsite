@@ -7,7 +7,7 @@
 ## Create the secret with your GitHub token
 data-file=- tells the command to use the token provided, rather than a text file path.
 
-	echo "YOUR_ACTUAL_GITHUB_TOKEN_HERE" | gcloud secrets create github-token-stream2025 \
+	echo "YOUR_ACTUAL_GITHUB_TOKEN_HERE" | gcloud secrets create github-token-name \
 	    --project=your-project-id \
 	    --data-file=-
 
