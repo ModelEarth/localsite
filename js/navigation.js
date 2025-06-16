@@ -4542,6 +4542,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         localsiteTitle = "Neighborhood.org";
         changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png")
         showClassInline(".neighborhood");
+        showClassInline(".earth");
         earthFooter = true;
     } else if (!Array.isArray(param.titleArray) && (location.host.indexOf("democracy.lab") >= 0)) {
         showLeftIcon = true;
