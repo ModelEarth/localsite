@@ -1022,7 +1022,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       // Load when body div becomes available, faster than waiting for all DOM .js files to load.
       waitForElm('#bodyloaded').then((elm) => {
-       consoleLog("#bodyloaded becomes available");
+      consoleLog("#bodyloaded becomes available");
+      waitForElm('#datascape').then((elm) => { // Wait for navigation.js to set
+        let modelsite = Cookies.get('modelsite');
         if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
           var div = $("<div />", {
               html: '<style>.local{display:inline-block !important}.local-block{display:block !important}.localonly{display:block !important}.hidelocal{display:none}</style>'
@@ -1044,9 +1046,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           $('body').prepend("<div id='datascape'></div>");
         }
 
-        if(param.showheader == "true") {
-          // border:1px solid #555;
-          // sideIconsLower
+        if (param.showLeftIcon != false) { // && param.showheader == "true"
           $('body').prepend("<div id='sideIcons' class='noprint bothSideIcons' style='position:fixed;left:0;width:32px'><div id='showNavColumn' class='showNavColumn' style='left:-28px;display:none'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border: 1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
         }
 
@@ -1088,6 +1088,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         if (foundTemplate == false) { // An initial move to the bottom - occurs when the template is not yet available.
           $("#local-footer").appendTo("body");
         }
+      });
       }); // End body ready
 
       $(document).ready(function () {
