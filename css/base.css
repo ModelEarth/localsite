@@ -1332,7 +1332,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   background-color: #ddd;
 }
 .headerbarheight {
-  /* height:82.5px; */
+  min-height:80px;
 }
 .headeroffset { /* Does not include bar */
   height:79px;
