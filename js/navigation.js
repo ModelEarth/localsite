@@ -1394,9 +1394,9 @@ catArray = [];
 
         // Infinite loop - locks up the browser
         // BUGBUG: Map quickly gets progressively darker
+        console.log("regionSelect() goHash was previously disabled due to possible map update loop.")
         //goHash({'state':hash.state, 'regiontitle':selectMenu.value,'geo':''});
-        console.log("regionSelect goHash disabled due to possible map update loop")
-
+        
         // Try this instead
         updateHash({'regiontitle':selectMenu.value,'geo':''});
     }
@@ -3394,7 +3394,7 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
 
     // Loop until geotable.getRows is available (about 10 times)
     // This functions DOES NOT cause bug that redirects off geoview and geo from
-    // Texas link and others: http://localhost:8887/io/communities/
+    // Texas link and others: http://localhost:8887/io/
 
     console.log("updateSelectedTableRows"); // Got called when removing everything from localsite.js include. Occurs 10 times here: http://localhost:8887/explore/locations/#geo=US13251
                     
@@ -4544,14 +4544,20 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         showClassInline(".neighborhood");
         showClassInline(".earth");
         earthFooter = true;
-    } else if (!Array.isArray(param.titleArray) && (location.host.indexOf("democracy.lab") >= 0)) {
-        showLeftIcon = true;
+    } else if (modelsite=="democracylab" || location.host.indexOf("democracylab") >= 0) {
+        showLeftIcon = false;
+        param.showLeftIcon = false;
+        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/democracylab/favicon.png")
         $(".siteTitleShort").text("Democracy Lab");
-
-        param.headerLogo = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/partners/democracy-lab.png' style='width:190px;margin-top:15px'>";
-        param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/partners/democracy-lab-icon.jpg' style='width:32px;margin:4px 8px 0 0'>";
+        param.titleArray = ["democracy","lab"]
+        //param.headerLogo = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/partners/democracylab/democracy-lab.png' style='width:190px;margin-top:15px'>";
+        param.headerLogo = "<a href='/'><img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab.png' style='width:170px;margin-top:10px'></a>";
+        
+        //param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/partners/democracylab/democracy-lab-icon.jpg' style='width:32px;margin:4px 8px 0 0'>";
+        param.headerLogoSmall = "<img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab.png' style='width:120px;margin:4px 8px 0 0'>";
+        //param.headerLogoNoText = "<a href='https://democracylab2.org'><img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
+        
         showClassInline(".dlab'");
-        earthFooter = true;
     } else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
     //} else if (location.host.indexOf('model.earth') >= 0) {
         showLeftIcon = true;
@@ -5134,6 +5140,9 @@ $(document).on("change", "#devmode", function(event) { // Public or Dev
 $(document).on("change", "#onlinemode", function(event) { // Online or Offline
     if (typeof Cookies != 'undefined') {
         Cookies.set('onlinemode', $("#onlinemode").val());
+    }
+    if ($("#onlinemode").val() == "false") {
+        Cookies.set('showlog','1'); // Could be an icon
     }
     setOnlinemode($("#onlinemode").val());
 });
