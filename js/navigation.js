@@ -4536,7 +4536,6 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         }
     } else if ((modelsite=="neighborhood.org" || param.startTitle == "Neighborhood.org" || location.host.indexOf('neighborhood.org') >= 0)) {
         showLeftIcon = true;
-        $(".siteTitleShort").text("Neighborhood Modeling");
         param.titleArray = ["neighbor","hood"]
         param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png' style='width:40px;opacity:0.7'>"
         localsiteTitle = "Neighborhood.org";
@@ -4729,7 +4728,6 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                     //alert("headerFile " + headerFile);
                     waitForElm('#local-header').then((elm) => { 
                     $("#local-header").load(headerFile, function( response, status, xhr ) {
-                        //alert("headerFile loaded");
                         waitForElm('#sidecolumnContent').then((elm) => { // Resides in header.html
                             //alert("got sidecolumnContent");
                             console.log("Doc is ready, header file loaded, place #cloneLeft into #navcolumn")
@@ -4817,33 +4815,38 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                                 // Since deactivated above due to conflict with header logo in app.
                                 $('.neighborhood').css('display', 'block');
                             }
-                            if (param.titleArray && !param.headerLogo) {
-                                if (param.titleArray[1] == undefined) {
-                                    if (param.titleArray[0] != undefined) {
-                                        $('#headerSiteTitle').html(param.titleArray[0]);
-                                    }
-                                } else {
-                                    //let titleValue = "<span style='float:left'><a href='" + climbpath + "' style='text-decoration:none'>";
-                                    let titleValue = "<span style='float:left'><a href='/' style='text-decoration:none'>";
-                                    
-                                    let modelsite = Cookies.get('modelsite');
-                                    if (modelsite && modelsite.length && modelsite != "model.earth") {
-                                        param.titleArray = modelsite.split(".");
-                                    }
+                            waitForElm('#headerSiteTitle').then((elm) => { // Resides in template-main.html
+                                if (param.titleArray && !param.headerLogo) {
+                                    if (param.titleArray[1] == undefined) {
+                                        if (param.titleArray[0] != undefined) {
+                                            $('#headerSiteTitle').html(param.titleArray[0]);
+                                        }
+                                    } else {
+                                        //let titleValue = "<span style='float:left'><a href='" + climbpath + "' style='text-decoration:none'>";
+                                        let titleValue = "<span style='float:left'><a href='/' style='text-decoration:none'>";
+                                        
+                                        let modelsite = Cookies.get('modelsite');
+                                        if (modelsite && modelsite.length && modelsite != "model.earth") {
+                                            param.titleArray = modelsite.split(".");
+                                        }
 
-                                    titleValue += "<span style='color: #777;'>" + param.titleArray[0] + "</span>";
-                                    for (var i = 1; i < param.titleArray.length; i++) {
-                                        titleValue += "<span id='titleTwo' style='color:#bbb;margin-left:1px'>" + param.titleArray[i] + "</span>";
-                                    }
-                                    
-                                    titleValue += "</a></span>";
-                                    $('#headerSiteTitle').html(titleValue);
-                                    let theState = $("#state_select").find(":selected").text();
-                                    if (theState) {
-                                        //$(".locationTabText").text(theState);
+                                        titleValue += "<span style='color: #777;'>" + param.titleArray[0] + "</span>";
+                                        for (var i = 1; i < param.titleArray.length; i++) {
+                                            titleValue += "<span id='titleTwo' style='color:#bbb;margin-left:1px'>" + param.titleArray[i] + "</span>";
+                                        }
+                                        
+                                        titleValue += "</a></span>";
+                                        
+                                            $('#headerSiteTitle').html(titleValue);
+                                        
+
+                                        let theState = $("#state_select").find(":selected").text();
+                                        if (theState) {
+                                            //$(".locationTabText").text(theState);
+                                        }
                                     }
                                 }
-                            }
+                            });
 
                             if (param.favicon) {
                                 changeFavicon(param.favicon);
