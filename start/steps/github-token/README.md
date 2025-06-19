@@ -3,7 +3,7 @@
 ### Step 1: Retrieve GitHub Personal Token
 
 NOTE: It may take 5 to 10 minutes for your token to become available.
-Tokens with "no expiration date" seem to still expire after a month, so you'll need to regenerate.
+We use a 3-month token since the no-expiration tokens have been expiring after 1-month. (2025)
 
 **Create a fine-grained token for one repo**:  
 
