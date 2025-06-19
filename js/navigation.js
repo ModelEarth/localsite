@@ -1510,11 +1510,11 @@ catArray = [];
 
     });
     $('#toggleList').click(function () {
-        if ($('#dataList').css('display') != 'none') {
+        if ($('#mainList').css('display') != 'none') {
             $('#dataGrid').show();
-            $('#dataList').hide();
+            $('#mainList').hide();
         } else {
-            $('#dataList').show();
+            $('#mainList').show();
             $('#dataGrid').hide();
         }
         //event.stopPropagation();
@@ -3772,7 +3772,7 @@ String.prototype.split2 = function(separator) {
 function displayRow(rowArray) {
     // NOT USED?
     // <input name='contact' type='checkbox' value='" + rowArray[0] + "'> 
-    $("#dataList").append( "<div><div><div style='float:right'>Add</div>" + rowArray[0] + "</div><div><b class='exporter'>Export Categories: </b><span class='exporter'> " + rowArray[2] + "</span></div><div>" + rowArray[3] + "</div><div>" + rowArray[4] + "</div><div><b>Product HS Codes: </b>" + rowArray[5] + "</div></div>");
+    $("#mainList").append( "<div><div><div style='float:right'>Add</div>" + rowArray[0] + "</div><div><b class='exporter'>Export Categories: </b><span class='exporter'> " + rowArray[2] + "</span></div><div>" + rowArray[3] + "</div><div>" + rowArray[4] + "</div><div><b>Product HS Codes: </b>" + rowArray[5] + "</div></div>");
     //<div>" + rowArray[6] + "</div><div>" + rowArray[7] + "</div>
 }
 
@@ -3782,14 +3782,14 @@ function displayListX() {
     console.log("displayList");
     var matchCount = 0;
 
-    $("#dataList").html("");
+    $("#mainList").html("");
     for(var i = 0; i < dataSet.length; i++) {
         if (i > 2) {
             //if (entry[0] > (startRange*100) && entry[0] < (endRange*100+99)) {
                 matchCount++;
                 // <input name='contact' type='checkbox' value='" + dataSet[i][0] + "'> 
-                $("#dataList").append( "<div><div style='float:right'>Add<div></div>" + dataSet[i][0] + "</div><div><b class='exporter'>Export Categories: </b><span class='exporter'> " + dataSet[i][2] + "</span></div><div><b>Description: </b>" + dataSet[i][3] + "</div>");
-                $("#dataList").append( "<div><b>Product HS Codes: </b>" + dataSet[i][5] + "</div></div>");
+                $("#mainList").append( "<div><div style='float:right'>Add<div></div>" + dataSet[i][0] + "</div><div><b class='exporter'>Export Categories: </b><span class='exporter'> " + dataSet[i][2] + "</span></div><div><b>Description: </b>" + dataSet[i][3] + "</div>");
+                $("#mainList").append( "<div><b>Product HS Codes: </b>" + dataSet[i][5] + "</div></div>");
                     //<div>" + dataSet[i][6] + "</div><div>" + dataSet[i][7] + "</div>
             //}
         }

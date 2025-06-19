@@ -196,7 +196,7 @@ body {
 	border-radius: 7px;
 	max-height: 14px;
 }
-#dataList {
+#mainList {
 	overflow: auto;
 	position: relative;
 	margin-bottom: 10px;
@@ -210,13 +210,13 @@ body {
 	line-height: 20px;
 	display: none;
 }
-#dataList > div {
+#mainList > div {
 	/* margin-bottom: 30px; */
 }
-#dataList > div > div {
+#mainList > div > div {
 	/* margin-left: 40px; */
 }
-#dataList > div > div > div:first-child {
+#mainList > div > div > div:first-child {
 	margin-left: 0px;
 	font-size: 18px;
 }

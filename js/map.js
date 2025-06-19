@@ -100,7 +100,7 @@ function clearListDisplay() {
   $(".listSpecs").html(""); // Clear
   $(".sideListSpecs").html(""); // Clear
   $("#listcolumnList").html(""); // Clear
-  $("#dataList").html(""); // Clear
+  $("#mainList").html(""); // Clear
   $("#detaillist").html(""); // Clear
 }
 
@@ -853,7 +853,7 @@ function centerMap(lat,lon,name,map,whichmap) {
     
     // Hide all listings, show clicked listing
     //$("#detaillist .detail").hide();
-    //$("#dataList").hide();
+    //$("#mainList").hide();
     //$("#detaillist .detail[name='" + locname +"']").show();
 
     var listingsVisible = $('#detaillist .detail:visible').length;
@@ -1999,11 +1999,11 @@ function showList(dp,map) {
     // At this point we don't yet know if any are null. So "no subcategory" link is appended later.
     if (subcatArray.length > 1) {
       if (!hash.name) { // Omit when looking at listing detail
-        $("#dataList").prepend("<a href='#' onClick='showSubcatList(); return false;' id='viewAllCategories'>View All Categories</a>");
-        $("#dataList").prepend("<ul id='subcatListUL' style='margin:0px;display:none'>" + subcatList + "</ul><br>");
+        $("#mainList").prepend("<a href='#' onClick='showSubcatList(); return false;' id='viewAllCategories'>View All Categories</a>");
+        $("#mainList").prepend("<ul id='subcatListUL' style='margin:0px;display:none'>" + subcatList + "</ul><br>");
         if(hash.cat){
           //Already appears above
-          //$("#dataList").prepend("<h3>" + hash.cat.replace(/_/g,' ') + "</h3>");
+          //$("#mainList").prepend("<h3>" + hash.cat.replace(/_/g,' ') + "</h3>");
         }
       }
     }
@@ -2017,9 +2017,9 @@ function showList(dp,map) {
           spreadsheetLink = " <a href='" + dp.editLink + "'>Google Sheet</a>";
         }
       }
-      $("#dataList").append("<b>Volunteer Project</b><br>" + subcatObject["null"].count + " " + hash.cat.toLowerCase() + " listings need a subcategory.<br><a href='/localsite/info/input/'>Contact us</a> to help update the " + spreadsheetLink + ".<br>");
+      $("#mainList").append("<b>Volunteer Project</b><br>" + subcatObject["null"].count + " " + hash.cat.toLowerCase() + " listings need a subcategory.<br><a href='/localsite/info/input/'>Contact us</a> to help update the " + spreadsheetLink + ".<br>");
       //  Volunteer
-      $("#dataList").append("<br>");
+      $("#mainList").append("<br>");
     }
     console.log("Total " + dp.dataTitle + " " + countDisplay + " of " + count);
 
@@ -2167,15 +2167,15 @@ function showList(dp,map) {
     let showAllLink = " <span class='viewAllLink' style='display:none;'><a onclick='goHash({},[\"name\",\"loc\",\"cat\",\"subcat\"]); return false;' href='#show=" + param["show"] + "'>Show All</a></span>";
     //$(".sidelistText").html(searchFor + viewListLink);
 
-    //$("#dataList").append(showAllLink); // Maybe move elsewhere, not needed with View All button lower down.
+    //$("#mainList").append(showAllLink); // Maybe move elsewhere, not needed with View All button lower down.
     $("#resultsPanel").show();
-    $("#dataList").show();
+    $("#mainList").show();
 
     if (dataMatchCount > 0) {
       $("#hublist .listTitle").show();
     } else {
       $("#hublist .listTitle").hide();
-      $("#dataList").append("No match found in " + count + " records. <a href='' onclick='return clearButtonClick();'>Clear Filters</a><br>");
+      $("#mainList").append("No match found in " + count + " records. <a href='' onclick='return clearButtonClick();'>Clear Filters</a><br>");
         
       // Remove use of dataSet? No available   " + (dataSet.length - 1) + " 
       let noMatch = "<div>No match found in records. <a href='' onclick='return clearButtonClick();'>Clear filters</a>.</div>"
