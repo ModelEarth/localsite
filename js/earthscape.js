@@ -274,53 +274,14 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             };
         });
 
-    } else if (scope === "country") {// Fetch country ISO codes first
+    }/* else if (scope === "country") {// Fetch country ISO codes first
         const restResponse = await fetch("https://restcountries.com/v3.1/all?fields=cca2,name"); // cca3 is also available
-    } else if (scope === "country")
-        /*{
-    // Define country list
-    const countriesList = [
-        'United States', 'Canada', 'Mexico', 'United Kingdom', 'Germany',
-        'France', 'Italy', 'Spain', 'India', 'China', 'Japan', 'Australia'
-    ];
-
-    // Fetch country DCIDs
-    response = await fetch('https://api.datacommons.org/v2/resolve?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            "nodes": countriesList,
-            "property": "<-description{typeOf:Country}->dcid"
-        })
-    });
-    data = await response.json();
-    geoIds = data.entities.map(entity => entity.candidates[0].dcid);
-
-    // Fetch country names
-    const response2 = await fetch('https://api.datacommons.org/v2/node?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            "nodes": geoIds,
-            "property": "->name"
-        })
-    });
-    const data2 = await response2.json();
-
-    Object.keys(data2.data).forEach(geoId => {
-        const countryName = data2.data[geoId].arcs.name.nodes[0]['value'];
-        geoValues[geoId] = {
-            name: countryName,
-            state: countryName // Since countries don’t have states, use country name
-        };
-    });*/
+    } */else if (scope === "country")
+        
         {
         // Fetch country ISO codes first
-        const restResponse = await fetch("https://restcountries.com/v3.1/all");
+        //const restResponse = await fetch("https://restcountries.com/v3.1/all");
+        const restResponse = await fetch("https://restcountries.com/v3.1/all?fields=cca2,name"); // cca3 is also available
         const countriesData = await restResponse.json();
     
         // Get all ISO Alpha-2 codes
@@ -404,17 +365,6 @@ if (whichPer === 'percapita') {
   const popJson = await popResponse.json();
   populationData = popJson.byVariable["Count_Person"].byEntity;
 }
-   // Format data
-    /*const formattedData = [];
-    //alert(JSON.stringify(geoValues)) // TO DO: Only send countries that exist in the dataset.
-    for (const geoId in geoValues) {
-        if (timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets) { // Avoids error if country (India) is not in water timeline
-            formattedData.push({
-                name: geoValues[geoId].name,
-                observations: timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0]['observations']
-            });
-        }
-    }*/
         // Format data
         const formattedData = [];
 //alert(JSON.stringify(geoValues)) // TO DO: Only send countries that exist in the dataset.
@@ -422,23 +372,30 @@ for (const geoId in geoValues) {
     //console.log("GeoId:", geoId, "Name:", geoValues[geoId].name);
     if (timelineData.byVariable[chartVariable]?.byEntity?.[geoId]?.orderedFacets?.[0]?.observations) {
         const isPopulationGoal = getHash().goal === "population";
+        // Replace the observation filtering logic with this:
 const filteredObservations = timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0].observations.filter(obs => {
-    const year = parseInt(obs.date.split('-')[0]);
+    // Handle both ISO dates (YYYY-MM-DD) and simple years (YYYY)
+    const yearPart = obs.date.split('-')[0];
+    const year = parseInt(yearPart);
+    return year >= MIN_YEAR;
     
     // Special handling for population data
     if (isPopulationGoal) {
         return year >= MIN_YEAR;
     }
-    
     return true; // Keep all observations for other goals
+}).map(obs => {
+    // Normalize date format to just the year for population data
+    if (isPopulationGoal) {
+        return {
+            date: obs.date.split('-')[0], // Keep only the year part
+            value: obs.value
+            
+        };
+    }
+    return obs; // Return original for other data
 });
-        /*const filteredObservations = timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0].observations.filter(obs => {
-           const year = parseInt(obs.date.split('-')[0]);
-            console.log("year:",year)  
-            //return year >= MIN_YEAR && year <= 2022; // Added the upper year limit
-            return year >MIN_YEAR
-        });*/
-       
+      
         formattedData.push({
             name: geoValues[geoId].name,
             observations: filteredObservations.map(obs =>{
@@ -466,13 +423,21 @@ const filteredObservations = timelineData.byVariable[chartVariable].byEntity[geo
 console.log("formattedData:",formattedData)
      
     // Get unique years
-    let yearsSet = new Set();
+    /*let yearsSet = new Set();
     formattedData.forEach(location => {
         location.observations.forEach(obs => {
             yearsSet.add(obs.date);
         });
     });
-    const years = [...yearsSet].sort((a, b) => a - b);
+    const years = [...yearsSet].sort((a, b) => a - b);*/
+    // Get unique years
+let yearsSet = new Set();
+formattedData.forEach(location => {
+    location.observations.forEach(obs => {
+        yearsSet.add(obs.date.split('-')[0]); // Always use year part
+    });
+});
+const years = [...yearsSet].sort((a, b) => a - b);
 
     // Showing all or top 5 or bottom 5
     let selectedData;
@@ -503,29 +468,17 @@ dataCopy.forEach(location => {
         location.latestValue = latestObs ? latestObs.value : null;
     } else {
         location.latestValue = null;
+    }// Add 1960 value specifically for population
+    if (getHash().goal === "population") {
+        const obs1960 = location.observations?.find(obs => obs.date === "1960");
+        location.valueIn1960 = obs1960 ? obs1960.value : null;
     }
 });
-/*dataCopy.forEach(location => {
-    if (location.observations && location.observations.length > 0) {
-        // Find the latest observation (last in the array since they're sorted by date)
-        const latestObs = location.observations[location.observations.length - 1];
-        location.latestValue = latestObs ? latestObs.value : null;
-    } else {
-        location.latestValue = null;
-    }
-});*/
-    // Calculate latest value for each location
-    /*dataCopy.forEach(location => {
-        if (location.observations && location.observations.length > 0) {
-            // Find the observation for the latest year
-            const latestObs = location.observations.find(obs => obs.date.split('-')[0] === latestYear);
-            location.latestValue = latestObs ? latestObs.value : null;
-        } else {
-            location.latestValue = null;
-        }
-    });*/
     // Filter out locations with no valid latest value
-    const validData = dataCopy.filter(location => location.latestValue !== null);
+    const validData = dataCopy.filter(location => 
+    getHash().goal === "population" 
+        ? location.valueIn1960 !== null 
+        : location.latestValue !== null);
     console.log("validData:",validData)
     if (showAll === 'showSelected') {
         selectedData = formattedData.filter(location => {
@@ -538,13 +491,22 @@ dataCopy.forEach(location => {
            
         });
     } else if (showAll === 'showTop5') {
-        selectedData = validData
-            .sort((a, b) => b.latestValue - a.latestValue)
-            .slice(0, Math.min(5, validData.length));
+       selectedData = validData
+        .sort((a, b) => 
+            getHash().goal === "population"
+                ? b.valueIn1960 - a.valueIn1960
+                : b.latestValue - a.latestValue
+        )
+        .slice(0, Math.min(5, validData.length));
     } else if (showAll === 'showBottom5') {
         selectedData = validData
-            .sort((a, b) => a.latestValue - b.latestValue)
-            .slice(0, Math.min(5, validData.length));
+        .sort((a, b) => 
+            getHash().goal === "population"
+                ? a.valueIn1960 - b.valueIn1960
+                : a.latestValue - b.latestValue
+        )
+        .slice(0, Math.min(5, validData.length));
+            
     } else {
         selectedData = dataCopy;
     }
@@ -555,9 +517,11 @@ dataCopy.forEach(location => {
         return {
             label: location.name,
             data: years.map(year => {
-                const observation = location.observations.find(obs => obs.date === year);
-                return observation ? observation.value : null;
-            }),
+                const observation = location.observations.find(obs => 
+                obs.date.split('-')[0] === year
+            );
+            return observation ? observation.value : null;
+        }),
             borderColor: 'rgb(' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ')',
             backgroundColor: 'rgba(0, 0, 0, 0)',
         };
