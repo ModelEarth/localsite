@@ -274,7 +274,13 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             };
         });
 
-    } else if (scope === "country") {// Fetch country ISO codes first
+    }/* else if (scope === "country") {// Fetch country ISO codes first
+        const restResponse = await fetch("https://restcountries.com/v3.1/all?fields=cca2,name"); // cca3 is also available
+    } */else if (scope === "country")
+        
+        {
+        // Fetch country ISO codes first
+        //const restResponse = await fetch("https://restcountries.com/v3.1/all");
         const restResponse = await fetch("https://restcountries.com/v3.1/all?fields=cca2,name"); // cca3 is also available
         const countriesData = await restResponse.json();
     
@@ -330,6 +336,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
 
     // Fetch observational data using geoIds list
     const url = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=${chartVariable}&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
+    console.log("url data:",url)
     const response3 = await fetch(url, {
         method: 'POST',
         headers: {
@@ -341,6 +348,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         })
     });
     const timelineData = await response3.json();
+    console.log("timeline obsevational data for country:",timelineData)
     let populationData = {};
 if (whichPer === 'percapita') {
   const popUrl = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=Count_Person&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
@@ -357,31 +365,41 @@ if (whichPer === 'percapita') {
   const popJson = await popResponse.json();
   populationData = popJson.byVariable["Count_Person"].byEntity;
 }
-   // Format data
-    /*const formattedData = [];
-    //alert(JSON.stringify(geoValues)) // TO DO: Only send countries that exist in the dataset.
-    for (const geoId in geoValues) {
-        if (timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets) { // Avoids error if country (India) is not in water timeline
-            formattedData.push({
-                name: geoValues[geoId].name,
-                observations: timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0]['observations']
-            });
-        }
-    }*/
         // Format data
         const formattedData = [];
 //alert(JSON.stringify(geoValues)) // TO DO: Only send countries that exist in the dataset.
 for (const geoId in geoValues) {
     //console.log("GeoId:", geoId, "Name:", geoValues[geoId].name);
     if (timelineData.byVariable[chartVariable]?.byEntity?.[geoId]?.orderedFacets?.[0]?.observations) {
-        const filteredObservations = timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0].observations.filter(obs => {
-            const year = parseInt(obs.date.split('-')[0]);
-            //return year >= MIN_YEAR && year <= 2022; // Added the upper year limit
-            return year >= MIN_YEAR
-        });
+        const isPopulationGoal = getHash().goal === "population";
+        // Replace the observation filtering logic with this:
+const filteredObservations = timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0].observations.filter(obs => {
+    // Handle both ISO dates (YYYY-MM-DD) and simple years (YYYY)
+    const yearPart = obs.date.split('-')[0];
+    const year = parseInt(yearPart);
+    return year >= MIN_YEAR;
+    
+    // Special handling for population data
+    if (isPopulationGoal) {
+        return year >= MIN_YEAR;
+    }
+    return true; // Keep all observations for other goals
+}).map(obs => {
+    // Normalize date format to just the year for population data
+    if (isPopulationGoal) {
+        return {
+            date: obs.date.split('-')[0], // Keep only the year part
+            value: obs.value
+            
+        };
+    }
+    return obs; // Return original for other data
+});
+      
         formattedData.push({
             name: geoValues[geoId].name,
-            observations: timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0]['observations'].map(obs => {
+            observations: filteredObservations.map(obs =>{
+            //timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0]['observations'].map(obs => {
                 let value = obs.value;
                 if (whichPer === 'percapita') {
                     let popFacets = populationData[geoId]?.orderedFacets?.[0]?.observations;
@@ -401,16 +419,25 @@ for (const geoId in geoValues) {
         });
     }
 }
-    console.log("formattedData:",formattedData)
+  
+console.log("formattedData:",formattedData)
      
     // Get unique years
-    let yearsSet = new Set();
+    /*let yearsSet = new Set();
     formattedData.forEach(location => {
         location.observations.forEach(obs => {
             yearsSet.add(obs.date);
         });
     });
-    const years = [...yearsSet].sort((a, b) => a - b);
+    const years = [...yearsSet].sort((a, b) => a - b);*/
+    // Get unique years
+let yearsSet = new Set();
+formattedData.forEach(location => {
+    location.observations.forEach(obs => {
+        yearsSet.add(obs.date.split('-')[0]); // Always use year part
+    });
+});
+const years = [...yearsSet].sort((a, b) => a - b);
 
     // Showing all or top 5 or bottom 5
     let selectedData;
@@ -428,45 +455,73 @@ for (const geoId in geoValues) {
     });
     console.log(`Latest year identified: ${latestYear}`);
     // Calculate latest value for each location
-    dataCopy.forEach(location => {
-        if (location.observations && location.observations.length > 0) {
-            // Find the observation for the latest year
-            const latestObs = location.observations.find(obs => obs.date.split('-')[0] === latestYear);
-            location.latestValue = latestObs ? latestObs.value : null;
-        } else {
-            location.latestValue = null;
-        }
-    });
+    // Calculate latest value for each location
+dataCopy.forEach(location => {
+    if (location.observations && location.observations.length > 0) {
+        // Create a sorted copy of observations by date
+        const sortedObservations = [...location.observations].sort((a, b) => 
+            new Date(a.date) - new Date(b.date)
+        );
+        
+        // Get the latest observation (last in sorted array)
+        const latestObs = sortedObservations[sortedObservations.length - 1];
+        location.latestValue = latestObs ? latestObs.value : null;
+    } else {
+        location.latestValue = null;
+    }// Add 1960 value specifically for population
+    if (getHash().goal === "population") {
+        const obs1960 = location.observations?.find(obs => obs.date === "1960");
+        location.valueIn1960 = obs1960 ? obs1960.value : null;
+    }
+});
     // Filter out locations with no valid latest value
-    const validData = dataCopy.filter(location => location.latestValue !== null);
+    const validData = dataCopy.filter(location => 
+    getHash().goal === "population" 
+        ? location.valueIn1960 !== null 
+        : location.latestValue !== null);
+    console.log("validData:",validData)
     if (showAll === 'showSelected') {
         selectedData = formattedData.filter(location => {
             const geoId = Object.keys(geoValues).find(id => geoValues[id].name === location.name);
             if (!geoId) return false;
             const countryCode = geoId.includes('country/') ? geoId.replace('country/', '') : geoId;
             //console.log(`Checking ${location.name}, geoId: ${geoId}, code: ${countryCode}`); // Debug
-            return selectedCountries3Char.includes(countryCode);
+            console.log("Filtered Countries:", selectedData);
+           return selectedCountries3Char.includes(countryCode);
+           
         });
     } else if (showAll === 'showTop5') {
-        selectedData = validData
-            .sort((a, b) => b.latestValue - a.latestValue)
-            .slice(0, Math.min(5, validData.length));
+       selectedData = validData
+        .sort((a, b) => 
+            getHash().goal === "population"
+                ? b.valueIn1960 - a.valueIn1960
+                : b.latestValue - a.latestValue
+        )
+        .slice(0, Math.min(5, validData.length));
     } else if (showAll === 'showBottom5') {
         selectedData = validData
-            .sort((a, b) => a.latestValue - b.latestValue)
-            .slice(0, Math.min(5, validData.length));
+        .sort((a, b) => 
+            getHash().goal === "population"
+                ? a.valueIn1960 - b.valueIn1960
+                : a.latestValue - b.latestValue
+        )
+        .slice(0, Math.min(5, validData.length));
+            
     } else {
         selectedData = dataCopy;
     }
+     console.log("Filtered Countries:", selectedData);
 
     // Get datasets
     const datasets = selectedData.map(location => {
         return {
             label: location.name,
             data: years.map(year => {
-                const observation = location.observations.find(obs => obs.date === year);
-                return observation ? observation.value : null;
-            }),
+                const observation = location.observations.find(obs => 
+                obs.date.split('-')[0] === year
+            );
+            return observation ? observation.value : null;
+        }),
             borderColor: 'rgb(' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ')',
             backgroundColor: 'rgba(0, 0, 0, 0)',
         };
@@ -653,16 +708,17 @@ function refreshTimeline() {
     let chartVariable = chartVariableSelect.options[chartVariableSelect.selectedIndex].value;
     updateHash({"scope":scope,"features.dcid":chartVariable}); // Used by refreshTimeline()
 
-    let showAll = document.querySelector('input[name="whichLines"]:checked').value;
-    if(!showAll) {showAll = 'showTop5'}
-    if(showAll=="showSelected" && scope!="country") { // Since only countries supports "11 countries"
-        showAll = 'showTop5'
-        document.querySelector('input[name="whichLines"][value="showTop5"]').checked = true;
-    } 
-    let entityIdSelect = document.getElementById('entityId');
-    let entityId = entityIdSelect.options[entityIdSelect.selectedIndex].value;
-    let chartText = document.getElementById('chartVariable').options[document.getElementById('chartVariable').selectedIndex].text;
-    getTimelineChart(scope, chartVariable, entityId, showAll, chartText);
+            let showAll = document.querySelector('input[name="whichLines"]:checked').value;
+            if(!showAll) {showAll = 'showTop5';}
+
+            let entityIdSelect = document.getElementById('entityId');
+            let entityId = entityIdSelect.options[entityIdSelect.selectedIndex].value;
+            let chartText = document.getElementById('chartVariable').options[document.getElementById('chartVariable').selectedIndex].text;
+
+            //alert(chartVariable + " " + chartText)
+            getTimelineChart(scope, chartVariable, entityId, showAll, chartText);
+        //},3000);
+    //});
 }
 function updateScopeOptions(availableScopes) {
     waitForElm('#selectScope').then((elm) => {
@@ -681,15 +737,8 @@ async function updateDcidSelectFromSheet(scope) {
     if (scope == "country" && hash.goal == "health") {
         scope = "country" // Until Google Sheet has counties for health
         updateHash({"scope":scope}); // Used by refreshTimeline()
+
     }
-    // Hide elements with starting with class "scope-"
-    document.querySelectorAll('[class^="scope-"]').forEach(function(el) {
-        el.style.display = 'none';
-    });
-    // Show elements with current scope.
-    document.querySelectorAll('.scope-' + hash.scope).forEach(function(el) {
-        el.style.display = 'inline-block';
-    });
 
     // Temp here, will be in it's own function for choosing current goal view
     const airTimelinesLink = document.getElementById("airTimelinesLink");
@@ -728,6 +777,8 @@ async function updateDcidSelectFromSheet(scope) {
     } else if (hash.goal == "population") {
         sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTBiwDM6b0i_jnaE37fq_GFxCyigP0OondJk17dMRgE8QFiIMNHabFymizwIUYOAVdxh6nj6ZueBak/pub?gid=471398138&single=true&output=csv";
     }
+
+    
 
     //loadGoalsDropdown("aquifers","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=484745180&single=true&output=csv");
 
@@ -926,13 +977,11 @@ function toggleDivs() {
 // we need to manually trigger a resize on each chart instance.
 // Without this, charts may not redraw correctly when window size increases after load.
 window.addEventListener('resize', function() {
-    if (typeof timelineChart !== 'undefined') {
-        if (timelineChart instanceof Chart) {
-            timelineChart.resize();
-        }
-        if (lineAreaChart instanceof Chart) {
-            lineAreaChart.resize();
-        }
+    if (timelineChart instanceof Chart) {
+        timelineChart.resize();
+    }
+    if (lineAreaChart instanceof Chart) {
+        lineAreaChart.resize();
     }
 });
 function handleCountryListClick() {
