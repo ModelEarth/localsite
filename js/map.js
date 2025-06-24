@@ -466,6 +466,17 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.markerType = "google";
         dp.color = "#933";
         dp.datastates = ["GA"];
+      } else if (show == "cities") {
+        dp.shortTitle = "GDEcD Team Map"; // In side nav
+        dp.listTitle = "GDEcD Team Map";
+        dp.dataTitle = "GDEcD Team Map";
+        dp.datatype = "csv";
+        dp.dataset = "/display/team/map/cities.csv";
+        dp.markerType = "google";
+        dp.nameColumn = "city";
+        dp.search = {"In City": "City", "In County Name": "County"};
+        dp.datastates = ["GA"];
+        dp.mapInfo = "Georgia Department of Economic Development Cities";
       } else if (show == "cameraready-locations") {
         dp.listTitle = "CameraReady Film Locations";
         dp.dataTitle = "Filming Locations";
@@ -1226,6 +1237,11 @@ function showList(dp,map) {
     }
   }
 
+  if (hash.name) {
+    // WORK IN PROGRESS
+    //alert("detailLink hide")
+    $(".detailLink").hide();
+  }
   if (dp.valueColumn) { // Avoids showing "Category" twice since catergory is already in default details.
     avoidRepeating.push(dp.valueColumn);
   }
@@ -1730,7 +1746,8 @@ function showList(dp,map) {
         //console.log("dp.valueColumn 1 " + element[dp.valueColumn]); // Works, but many recyclers have blank Category value.
         //console.log("dp.valueColumn 3 " + element["category"]); // Lowercase required (basing on recyclers)
 
-        output += "<div style='padding-bottom:4px;float:left'><div class='detailBullet' style='background:" + bulletColor + "'></div></div>";
+        let nameLetter = name ? name[0] : "";
+        output += "<div style='padding-bottom:4px;float:left'><div class='detailBullet' style='background:" + bulletColor + "'>" + nameLetter + "</div></div>";
 
         //output += "<div style='position:relative'><div style='float:left;min-width:28px;margin-top:2px'><input name='contact' type='checkbox' value='" + name + "'></div><div style='overflow:auto'><div>" + name + "</div>";
         
@@ -1765,7 +1782,7 @@ function showList(dp,map) {
             }
 
             // Assumes that if sheet also has these columns, they are not in the address row. (Farmfresh)
-            if (element.city) {
+            if (element.city && name != element.city) {
               outaddress += element.city;
             }
             if (element.state || element.zip) {
@@ -1778,7 +1795,9 @@ function showList(dp,map) {
               outaddress += element.zip;
             }
             if (element.city || element.state || element.zip) {
-              outaddress += "<br>";
+              if (outaddress) {
+                outaddress += "<br>";
+              }
             }
             
           }
@@ -1916,14 +1935,14 @@ function showList(dp,map) {
             if (googleMapLink) {
                 output += '<a href="' + googleMapLink + '" target="_blank">Google Map</a>';
             }
-            
-            if (hash.details != "true") {
-              if (hash.name) {
-                output += " | <a href='" + window.location + "&details=true'>Details</a>";
-              } else {
-                output += " | <a href='" + window.location + "&name=" + name.replace(/ & /g,' AND ').replace(/ /g,"+") + "&details=true'>Details</a>";
-              }
+
+            let pathJoiner = window.location.href.includes("#") ? "&" : "#";
+            if (hash.name) {
+              output += " | <a class='detailLink' href='" + window.location + pathJoiner + "details=true'>Details</a>";
+            } else {
+              output += " | <a class='detailLink' href='" + window.location + pathJoiner + "name=" + name.replace(/ & /g,' AND ').replace(/ /g,"+") + "&details=true'>Details</a>";
             }
+            
             if (dp.editLink) {
               if (googleMapLink) {
                 output += " | "
@@ -3388,8 +3407,14 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
         if (element.address) {
           output += element.address + "<br>";
         } else {
-          if (element.city) {
+          if (element.city && name != element.city) {
             output += element.city;
+          }
+          if (element.county) {
+            if (element.city && name != element.city) {
+              output += ", ";
+            }
+            output += element.county + " County";
           }
           if (element.state || element.zip) {
             output += ", ";

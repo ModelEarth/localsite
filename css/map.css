@@ -274,9 +274,15 @@
   border: 1px solid #bbb;
 }
 .detailBullet {
-  width:12px;
-  height:12px;
-  margin-right:6px;
+  color:#fff;
+  font-weight:800;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  width:32px;
+  height:32px;
+  margin-right:10px;
   float:left;
 }
 #listcolumnList .detailActiveHold {
