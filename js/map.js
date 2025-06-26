@@ -948,7 +948,13 @@ $(document).on("click", "#hideSideMap", function(event) {
   $("#hublist").addClass("hublistWide");
   $(".showSideMap").show();
 });
+$(document).on("click", ".viewonmap", function(event) {
+  //alert("viewonmap click");
+  $("#sidemapCard").show();
+  $("#hublist").removeClass("hublistWide")
+});
 $(document).on("click", ".showSideMap", function(event) {
+  //alert("showSideMap")
   $("#sidemapCard").show();
   $("#hublist").removeClass("hublistWide")
 });
@@ -1080,6 +1086,11 @@ function showList(dp,map) {
     $(document).on("click", ".filterBubble", function(event) {
         console.log('filterBubble click (stopPropagation so other boxes can be checked)')
         event.stopPropagation(); // To keep location filter open when clicking .selected_col checkboxes
+    });
+    $(document).on("click", ".viewonmap", function(event) {
+        //alert(".viewOnMap click");
+        $("#sidemapCard").show();
+        $("#hublist").removeClass("hublistWide")
     });
   }
 
@@ -2100,7 +2111,7 @@ function showList(dp,map) {
 
     var imenu = "<div style='display:none'>";
     imenu += "<div id='listingMenu' class='popMenu filterBubble'>";
-    imenu += "<div>View On Map</div>";
+    imenu += "<div class'viewOnMap'>View On Map</div>";
     imenu += "<div class='localonly mock-up' style='display:none'>Supplier Impact</div>";
     imenu += "<div class='localonly mock-up' style='display:none'>Production Impact</div>";
     imenu += "<div class='localonly mock-up' style='display:none'>Add to Collections</div>";

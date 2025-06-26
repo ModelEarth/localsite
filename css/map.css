@@ -477,7 +477,7 @@
   max-height: 500px; /* For button */
 }
 .hublistWide {
-  width: 100%;
+  width: 100% !important;
 }
 .hublistFull {
   max-height: none !important;
