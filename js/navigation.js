@@ -4544,8 +4544,14 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         showClassInline(".earth");
         earthFooter = true;
     } else if (modelsite=="democracylab" || location.host.indexOf("democracylab") >= 0) {
-        showLeftIcon = false;
+        if (location.host.indexOf('localhost') >= 0) {
+            showLeftIcon = true;
+            earthFooter = true;
+        } else {
+            showLeftIcon = false;
+        }
         param.showLeftIcon = false;
+        localsiteTitle = "DemocracyLab 2.0";
         changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/democracylab/favicon.png")
         $(".siteTitleShort").text("Democracy Lab");
         param.titleArray = ["democracy","lab"]
@@ -4555,13 +4561,17 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         //param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/partners/democracylab/democracy-lab-icon.jpg' style='width:32px;margin:4px 8px 0 0'>";
         param.headerLogoSmall = "<img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab.png' style='width:120px;margin:4px 8px 0 0'>";
         //param.headerLogoNoText = "<a href='https://democracylab2.org'><img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
-        
-        showClassInline(".dlab'");
+        showClassInline(".dlab");
+    } else if (modelsite=="membercommons" || location.host.indexOf("membercommons.org") >= 0) {
+        $(".siteTitleShort").text("MemberCommons");
+        param.titleArray = ["Member","Commons"];
+        param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png' style='width:40px;opacity:0.7'>"
+        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png")
     } else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
     //} else if (location.host.indexOf('model.earth') >= 0) {
         showLeftIcon = true;
         $(".siteTitleShort").text("Model Earth");
-        param.titleArray = ["model","earth"]
+        param.titleArray = ["model","earth"];
         localsiteTitle = "Model Earth";
         param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/modelearth/model-earth.png' style='width:34px; margin-right:2px'>";
         changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/modelearth/model-earth.png")
@@ -4826,10 +4836,9 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                                         let titleValue = "<span style='float:left'><a href='/' style='text-decoration:none'>";
                                         
                                         let modelsite = Cookies.get('modelsite');
-                                        if (modelsite && modelsite.length && modelsite != "model.earth") {
+                                        if (!param.titleArray && modelsite && modelsite.length && modelsite != "model.earth") {
                                             param.titleArray = modelsite.split(".");
                                         }
-
                                         titleValue += "<span style='color: #777;'>" + param.titleArray[0] + "</span>";
                                         for (var i = 1; i < param.titleArray.length; i++) {
                                             titleValue += "<span id='titleTwo' style='color:#bbb;margin-left:1px'>" + param.titleArray[i] + "</span>";
@@ -5631,11 +5640,15 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 
 function showClassInline(theclass) {
 
-    //$(theclass).css('display', 'inline');
+    
 
     // Load when body head becomes available, faster than waiting for all DOM .js files to load.
     // Append -hide to hide a div for a site.
     waitForElm('head').then((elm) => {
+        //alert("showClassInline " + theclass)
+        //$(theclass).css('display', 'inline');
+        //$(".dlab").css('display', 'inline');
+
         var div = $("<style />", {
             html: theclass + ' {display: inline !important} ' + theclass + '-hide {display:none}'
         }).appendTo("head");
