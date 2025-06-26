@@ -943,10 +943,15 @@ $(document).on("click", ".showLocMenu", function(event) {
   $(".locMenu").show();
   //event.stopPropagation();
 });
-$('#hideSideMap').click(function () {
+$(document).on("click", "#hideSideMap", function(event) {
   $("#sidemapCard").hide(); // map2
+  $("#hublist").addClass("hublistWide");
+  $(".showSideMap").show();
 });
-
+$(document).on("click", ".showSideMap", function(event) {
+  $("#sidemapCard").show();
+  $("#hublist").removeClass("hublistWide")
+});
 function shortenMapframe(mapframeLong) {
   let mapframeUrl = "";
   if (mapframeLong && mapframeLong.length) {
@@ -3632,6 +3637,7 @@ function hashChangedMap() {
   //alert("priorHash.cat: " + priorHash.cat + " " + hash.cat);
   //alert("hash.name " + hash.name + " priorHash.name " + priorHash.name)
 
+  $("#sidemapCard").show();
   if (hash.name !== priorHash.name) {
     if (!hash.name) { // Reveal list
       $("#detaillist .detail").show(); // Show all

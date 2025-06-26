@@ -4563,6 +4563,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         //param.headerLogoNoText = "<a href='https://democracylab2.org'><img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
         showClassInline(".dlab");
     } else if (modelsite=="membercommons" || location.host.indexOf("membercommons.org") >= 0) {
+        localsiteTitle = "MemberCommons";
         $(".siteTitleShort").text("MemberCommons");
         param.titleArray = ["Member","Commons"];
         param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png' style='width:40px;opacity:0.7'>"

@@ -192,7 +192,7 @@ body {
 }
 @media (max-width: 1400px) {
   #hublist {
-    width: 100%;
+    widthX: 100%; /* Messed with #mapHolder in map.css */
     padding-right: 0px;
   }
   .bodyLeftMarginFull #mapHolder {
