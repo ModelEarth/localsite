@@ -4567,6 +4567,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         param.titleArray = ["Member","Commons"];
         param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png' style='width:40px;opacity:0.7'>"
         changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png")
+        showClassInline(".membercommons");
     } else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
     //} else if (location.host.indexOf('model.earth') >= 0) {
         showLeftIcon = true;
