@@ -4555,12 +4555,12 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/democracylab/favicon.png")
         $(".siteTitleShort").text("Democracy Lab");
         param.titleArray = ["democracy","lab"]
-        //param.headerLogo = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/partners/democracylab/democracy-lab.png' style='width:190px;margin-top:15px'>";
-        param.headerLogo = "<a href='/'><img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab.png' style='width:170px;margin-top:10px'></a>";
+        //param.headerLogo = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/partners/democracylab/democracy-lab-2.png' style='width:190px;margin-top:15px'>";
+        param.headerLogo = "<a href='/'><img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab-2.png' style='width:170px;margin-top:10px'></a>";
         
         //param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/partners/democracylab/democracy-lab-icon.jpg' style='width:32px;margin:4px 8px 0 0'>";
-        param.headerLogoSmall = "<img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab.png' style='width:120px;margin:4px 8px 0 0'>";
-        //param.headerLogoNoText = "<a href='https://democracylab2.org'><img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
+        param.headerLogoSmall = "<img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab-2.png' style='width:120px;margin:4px 8px 0 0'>";
+        //param.headerLogoNoText = "<a href='https://democracylab2.org'><img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab-2.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
         showClassInline(".dlab");
     } else if (modelsite=="membercommons" || location.host.indexOf("membercommons.org") >= 0) {
         localsiteTitle = "MemberCommons";
