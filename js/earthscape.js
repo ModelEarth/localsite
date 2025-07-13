@@ -763,7 +763,7 @@ async function updateDcidSelectFromSheet(scope) {
     // When getting a Google link for a .csv pull, also uncheck "Restrict access..."
     dcidSelect.innerHTML = ''; // Clear existing options
     // air tab
-    let sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/export?format=csv&gid=0"; // air
+    let sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/edit?gid=0#gid=0"; // air
     if (hash.goal == "water") {
         sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=2049347939&single=true&output=csv"; // water
     } else if (hash.goal == "health") {
