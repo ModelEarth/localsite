@@ -51,7 +51,8 @@ Turn on GitHub Pages for any repo you fork by clicking the Settings icon, then P
 How to [Fork Repos](https://medium.com/@6unpnp/fork-a-github-repository-and-deploy-its-github-pages-site-d55dc53988d).  
 Always fork <a href="https://github.com/ModelEarth/localsite">localsite</a> so we can review your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart).  
 Fork the [home repo](https://github.com/ModelEarth/home) if you're working on our ["Everybody's Homepage" frontend](../../../home/).  
-Fork <a href="https://github.com/ModelEarth/data-commons">data-commons</a> if you're adding data visualizations using the Google Data Commons javascript API.  
+Fork the [profile repo](https://github.com/ModelEarth/home) if you're working with [Exiobase Trade Flow](/profile/trade), [SuiteCRM](/profile/crm) or [Project Preference Ratings](/profile/preferences/). 
+Fork <a href="https://github.com/ModelEarth/data-commons">data-commons</a> if you're adding [data visualizations](/data-commons/docs/data/) using the Google Data Commons javascript API.  
 Fork <a href="https://github.com/ModelEarth/feed">feed player</a> if you're adding to our React Vite visual [Feed viewer](https://model.earth/feed/) and memberSense for Discord.  
 Fork [useeio.js](https://github.com/ModelEarth/useeio.js) if you're contributing to our <a href="../../../useeio.js/footprint/">State Impact Reports</a> and [Trade Flow](../../../profile/trade/) visualizations.  
 Fork <a href="https://github.com/ModelEarth/realitystream">realitystream</a> if you're contributing python to our Machine Learning visualizations.  
@@ -61,6 +62,10 @@ Fork <a href="https://github.com/ModelEarth/earthscape">earthscape</a> if you're
 Fork <a href="https://github.com/ModelEarth/data-pipeline">data-pipeline</a> if you're contributing Python to data prep.  
 
 We've omitted the Community repo since it's only used for model.earth hosting. It's not needed for shared component dev.  
+
+Newest: These reside in the localsite github account:
+Fork <a href="https://github.com/localsite/membercommons">membercommons</a> if you're contributing to Gemini+Rust+AzurePostgreSQL.  
+Fork <a href="https://github.com/localsite/membermap">membermap</a> if you're contributing to javascript listing UI tools. 
 
 <!--
 It's designed to serve infinite content based on parameters.  
