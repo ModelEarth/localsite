@@ -330,6 +330,40 @@ function getHashOnly() {
       let value = keyValue.slice(1).join('=');
       // Replace "%26" with "&" in the value
       value = value.replace(/%26/g, '&');
+      
+      // Handle nested object structure for any dotted keys
+      if (key.includes('.')) {
+        let keys = key.split('.');
+        let current = result;
+        
+        // Navigate/create the nested structure
+        for (let i = 0; i < keys.length - 1; i++) {
+          if (!current[keys[i]]) {
+            current[keys[i]] = {};
+          }
+          current = current[keys[i]];
+        }
+        
+        // Set the final value
+        current[keys[keys.length - 1]] = value;
+      } else {
+        result[key] = value;
+      }
+    });
+    return result;
+  })(window.location.hash.substr(1).split('&'));
+}
+function getHashOnlyX() {
+  return (function (pairs) {
+    if (pairs == "") return {};
+    var result = {};
+    pairs.forEach(function (pair) {
+      // Split the pair on "=" to get key and value
+      let keyValue = pair.split('=');
+      let key = keyValue[0];
+      let value = keyValue.slice(1).join('=');
+      // Replace "%26" with "&" in the value
+      value = value.replace(/%26/g, '&');
       result[key] = value;
     });
     return result;
