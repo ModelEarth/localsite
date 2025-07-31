@@ -3255,8 +3255,6 @@ function formatBuckets(divID) {
   });
 }
 
-<<<<<<< HEAD
-=======
 // AnythingLLM left side navigation header adjustment
 // NOTE: Commented out since flexMain container now handles layout automatically
 /*
@@ -3300,5 +3298,4 @@ function adjustAnythingLLMNavigation() {
 document.addEventListener('DOMContentLoaded', adjustAnythingLLMNavigation);
 */
 
->>>>>>> 05dab35 (Simplify AnythingLLM navigation to use flexMain container)
 consoleLog("end localsite");
