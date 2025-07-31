@@ -2,6 +2,14 @@
 Originates at https://modelearth.github.io/localsite/css/base.css 
 Used in localsite, modelearth, io, neighborhood, trees
 */
+
+/* AnythingLLM specific override - fit within flexMain container */
+.flexMain #root.h-screen {
+  position: relative !important;
+  /* Use flexMain container height instead of viewport, prevents footer overlap */
+  height: 100% !important;
+  min-height: auto !important;
+}
 @font-face {
   font-family:'Amaze';font-weight:300;
   src:url("/localsite/css/fonts/ember.woff2") format("woff2"), url("/localsite/css/fonts/ember.woff") format("woff")

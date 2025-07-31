@@ -3255,4 +3255,50 @@ function formatBuckets(divID) {
   });
 }
 
+<<<<<<< HEAD
+=======
+// AnythingLLM left side navigation header adjustment
+// NOTE: Commented out since flexMain container now handles layout automatically
+/*
+function adjustAnythingLLMNavigation() {
+  if (!document.getElementById('root') || !document.getElementById('root').classList.contains('h-screen')) {
+    return; // Only apply to AnythingLLM instances
+  }
+  
+  const headerbar = document.getElementById('headerbar');
+  const localHeader = document.getElementById('local-header');
+  
+  function updateHeaderState() {
+    const isHeaderbarVisible = headerbar && !headerbar.classList.contains('headerbarhide') && headerbar.style.display !== 'none';
+    const isLocalHeaderVisible = localHeader && localHeader.style.display !== 'none';
+    const hasDoubleHeader = isHeaderbarVisible && isLocalHeaderVisible;
+    
+    if (hasDoubleHeader) {
+      document.body.classList.add('double-header');
+    } else {
+      document.body.classList.remove('double-header');
+    }
+  }
+  
+  // Initial check
+  updateHeaderState();
+  
+  // Monitor header changes
+  if (headerbar) {
+    const observer = new MutationObserver(updateHeaderState);
+    observer.observe(headerbar, { 
+      attributes: true, 
+      attributeFilter: ['class', 'style'] 
+    });
+  }
+  
+  // Monitor scroll events that might affect header visibility
+  window.addEventListener('scroll', updateHeaderState);
+}
+
+// Initialize AnythingLLM navigation adjustments when DOM is ready
+document.addEventListener('DOMContentLoaded', adjustAnythingLLMNavigation);
+*/
+
+>>>>>>> 05dab35 (Simplify AnythingLLM navigation to use flexMain container)
 consoleLog("end localsite");
