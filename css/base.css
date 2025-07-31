@@ -241,7 +241,7 @@ textarea {
   border-radius: 6px;
 }
 /* Lighter: #4091dd */
-p {
+.content p {
   margin-top: 0px;
   margin-bottom: 16px;
   /*
