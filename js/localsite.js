@@ -3256,13 +3256,13 @@ function formatBuckets(divID) {
 }
 
 // AnythingLLM left side navigation header adjustment
-// NOTE: Commented out since flexMain container now handles layout automatically
-/*
+// Monitors header visibility and adjusts top positioning while keeping content within flexMain
 function adjustAnythingLLMNavigation() {
   if (!document.getElementById('root') || !document.getElementById('root').classList.contains('h-screen')) {
     return; // Only apply to AnythingLLM instances
   }
   
+  const root = document.getElementById('root');
   const headerbar = document.getElementById('headerbar');
   const localHeader = document.getElementById('local-header');
   
@@ -3271,10 +3271,22 @@ function adjustAnythingLLMNavigation() {
     const isLocalHeaderVisible = localHeader && localHeader.style.display !== 'none';
     const hasDoubleHeader = isHeaderbarVisible && isLocalHeaderVisible;
     
+    // Add body class for CSS targeting
     if (hasDoubleHeader) {
       document.body.classList.add('double-header');
     } else {
       document.body.classList.remove('double-header');
+    }
+    
+    // Apply top offset directly to #root while keeping within flexMain
+    if (hasDoubleHeader) {
+      // Double header: offset by ~140px on desktop, ~128px on mobile  
+      const offset = window.innerWidth <= 600 ? '128px' : '140px';
+      root.style.paddingTop = offset;
+    } else {
+      // Single header: offset by ~80px on desktop, ~64px on mobile
+      const offset = window.innerWidth <= 600 ? '64px' : '80px';
+      root.style.paddingTop = offset;
     }
   }
   
@@ -3292,10 +3304,12 @@ function adjustAnythingLLMNavigation() {
   
   // Monitor scroll events that might affect header visibility
   window.addEventListener('scroll', updateHeaderState);
+  
+  // Monitor window resize for responsive offset adjustments
+  window.addEventListener('resize', updateHeaderState);
 }
 
 // Initialize AnythingLLM navigation adjustments when DOM is ready
 document.addEventListener('DOMContentLoaded', adjustAnythingLLMNavigation);
-*/
 
 consoleLog("end localsite");
