@@ -3278,16 +3278,28 @@ function adjustAnythingLLMNavigation() {
       document.body.classList.remove('double-header');
     }
     
-    // Apply top offset directly to #root while keeping within flexMain
-    if (hasDoubleHeader) {
-      // Double header: offset by ~140px on desktop, ~128px on mobile  
-      const offset = window.innerWidth <= 600 ? '128px' : '140px';
-      root.style.paddingTop = offset;
-    } else {
-      // Single header: offset by ~80px on desktop, ~64px on mobile
-      const offset = window.innerWidth <= 600 ? '64px' : '80px';
-      root.style.paddingTop = offset;
+    // Apply top offset to the entire sidebar container, not just the inner parts
+    const sidebarContainer = root.querySelector('div[style*="width: 292px"], div[style*="width:292px"]'); // AnythingLLM sidebar outer container
+    
+    if (sidebarContainer) {
+      // Ensure the sidebar container has proper positioning
+      sidebarContainer.style.position = 'relative';
+      sidebarContainer.style.zIndex = '10';
+      
+      if (hasDoubleHeader) {
+        // Double header: offset entire sidebar by ~140px on desktop, ~128px on mobile  
+        const offset = window.innerWidth <= 600 ? '128px' : '140px';
+        sidebarContainer.style.paddingTop = offset;
+      } else {
+        // Single header: offset entire sidebar by ~80px on desktop, ~64px on mobile
+        const offset = window.innerWidth <= 600 ? '64px' : '80px';
+        sidebarContainer.style.paddingTop = offset;
+      }
     }
+    
+    // Reset any padding from root to keep main content in normal position
+    root.style.paddingTop = '';
+    root.style.marginTop = '';
   }
   
   // Initial check

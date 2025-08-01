@@ -3,10 +3,10 @@ Originates at https://modelearth.github.io/localsite/css/base.css
 Used in localsite, modelearth, io, neighborhood, trees
 */
 
-/* AnythingLLM specific override - fit within flexMain container */
-.flexMain #root.h-screen {
+/* AnythingLLM specific override - fit within flexmain container */
+.flexmain #root.h-screen {
   position: relative !important;
-  /* Use flexMain container height instead of viewport, prevents footer overlap */
+  /* Use flexmain container height instead of viewport, prevents footer overlap */
   height: 100% !important;
   min-height: auto !important;
 }
