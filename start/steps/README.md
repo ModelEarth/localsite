@@ -10,6 +10,8 @@ Our helpful tips for [Yarn, Node, Python, Docker and Conda](../../../io/coders/p
 
 Or fork our [PartnerTools webroot](https://github.com/modelearth/webroot) with Azure Postgresql integration. Includes our team repo as a submodule.
 
+Or fork our [MaterialScience webroot](https://github.com/ModelEarth/MaterialScience) to work with Multi-Region Input-Output (MRIO) using 721 factors across global trade industries.
+
 And/or just grab a couple repos and start your own webroot...
 
 ## Start a local webroot
