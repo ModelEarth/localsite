@@ -353,41 +353,23 @@ function getHashOnly() {
     return result;
   })(window.location.hash.substr(1).split('&'));
 }
-function getHashOnlyX() {
-  return (function (pairs) {
-    if (pairs == "") return {};
-    var result = {};
-    pairs.forEach(function (pair) {
-      // Split the pair on "=" to get key and value
-      let keyValue = pair.split('=');
-      let key = keyValue[0];
-      let value = keyValue.slice(1).join('=');
-      // Replace "%26" with "&" in the value
-      value = value.replace(/%26/g, '&');
-      result[key] = value;
-    });
-    return result;
-  })(window.location.hash.substr(1).split('&'));
-}
-// Avoids triggering hash change event. Also called by goHash, which does trigger hash change event.
+
+// Avoids triggering hash change event. 
+// Also called by goHash, which does trigger hash change event.
+
 function updateHash(addToHash, addToExisting, removeFromHash) {
+    //alert("updateHash object: " + JSON.stringify(addToHash))
     let hash = {}; // Limited to this function
     if (addToExisting != false) {
       hash = getHashOnly(); // Include all existing. Excludes hiddenhash.
     }
     console.log(addToHash)
-
     const newObj = {}; // For removal of blank keys in addToHash
     Object.entries(addToHash).forEach(([k, v]) => {
-      if (v === Object(v)) {
-        newObj[k] = removeEmpty(v);
-        delete hash[k];
-        delete hiddenhash[k];
-      } else if (v != null) {
+      if (v != null) {
         newObj[k] = addToHash[k];
       }
     });
-
     // Secondary way to remove, using a string
     if (removeFromHash) {
       if (typeof removeFromHash == "string") {
@@ -398,11 +380,23 @@ function updateHash(addToHash, addToExisting, removeFromHash) {
           delete hiddenhash[removeFromHash[i]];
       }
     }
-
     hash = mix(newObj,hash); // Gives priority to addToHash
-
-    const hashString = decodeURIComponent(new URLSearchParams(hash).toString()); // decode to display commas and slashes in URL hash values
-    var pathname = window.location.pathname.replace(/\/\//g, '\/')
+    
+    // Flatten nested objects for URLSearchParams
+    const flatHash = {};
+    Object.entries(hash).forEach(([key, value]) => {
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+            // Flatten nested object properties
+            Object.entries(value).forEach(([subKey, subValue]) => {
+                flatHash[`${key}.${subKey}`] = subValue;
+            });
+        } else {
+            flatHash[key] = value;
+        }
+    });
+    
+    const hashString = decodeURIComponent(new URLSearchParams(flatHash).toString()); // decode to display commas and slashes in URL hash values
+    var pathname = window.location.pathname.replace(/\/\/+/g, '\/')
     var queryString = "";
     if (window.location.search) { // Existing, for parameters that are retained as hash changes.
       queryString += window.location.search; // Contains question mark (?)
@@ -411,6 +405,7 @@ function updateHash(addToHash, addToExisting, removeFromHash) {
       queryString += "#" + hashString;
     }
     let searchTitle = 'Page ' + hashString;
+    //alert(queryString)
     window.history.pushState("", searchTitle, pathname + queryString);
 }
 function goHash(addToHash,removeFromHash) {
@@ -2061,7 +2056,7 @@ function showSearchFilter() {
         */
       });
     }
-    goHash({"sidetab":""}); // Hide sidetab when showSearchFilter
+    //goHash({"sidetab":""}); // Hide sidetab when showSearchFilter
   }
 
 }
