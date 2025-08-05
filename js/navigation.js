@@ -999,7 +999,7 @@ function showSideTabs() {
         } else {
             $('body').removeClass('bodyRightMargin'); // Creates margin on right for fixed sidetabs.
             $('body').removeClass('mobileView');
-            updateHash({"sidetab":""});
+            //updateHash({"sidetab":""}); // Commented out since we're checking the hash above.
             $("#sideTabs").hide();
         }
     });
@@ -5177,10 +5177,12 @@ $(document).on("change", "#modelsite", function(event) {
     if (typeof Cookies != 'undefined') {
         Cookies.set('modelsite', $("#modelsite").val());
 
+        closeSideTabs();
         // Apply the cookie
         location.reload();
     }
-    setModelsite($("#modelsite").val());
+    // Not currently used
+    //setModelsite($("#modelsite").val());
 });
 $(document).on("change", ".sitebasemap", function(event) {
     sitebasemap = $(".sitebasemap").val();
