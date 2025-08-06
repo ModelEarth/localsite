@@ -3,8 +3,8 @@ function exploreFiles(param) {
 
         if (param.showother && window.location.origin.indexOf('github') < 0) {
             // To view from github when on another domain
-            param.owner = 'datascape'; // owner_username
-            param.repo = 'RealityStream2025'; // repository_name
+            param.owner = 'modelearth'; // owner_username
+            param.repo = 'reports'; // repository_name
             param.branch = 'main'; // or whichever branch you want to access
         }
 
