@@ -6,7 +6,9 @@ Our helpful tips for [Yarn, Node, Python, Docker and Conda](../../../io/coders/p
 
 ## ModelEarth webroot with Claude Code CLI
 
-**Recommended:** [Activate your modelearth webroot](https://model.earth/modelearth) using Claude Code CLI (includes Anything LLM) - [runs on port 3001](http://localhost:3001/projects/)
+[Overview of 4 webroot](../../../codechat/) options and RAG process.
+
+**Recommended:** [Activate your modelearth webroot](https://model.earth/modelearth) using Claude Code CLI and Anything LLM. &ndash; [Runs on port 3001](http://localhost:3001/projects/)
 
 Or fork our [PartnerTools webroot](https://github.com/modelearth/webroot) with Azure Postgresql integration. Includes our team repo as a submodule.
 
