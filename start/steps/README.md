@@ -6,13 +6,11 @@ Our helpful tips for [Yarn, Node, Python, Docker and Conda](../../../io/coders/p
 
 ## ModelEarth webroot with Claude Code CLI
 
-[Overview of 4 webroot](../../../codechat/) options and RAG process.
+[Overview of webroot](../../../codechat/) and RAG process.
 
-**Recommended:** [Activate your modelearth webroot](https://model.earth/modelearth) using Claude Code CLI and Anything LLM. &ndash; [Runs on port 3001](http://localhost:3001/projects/)
+**Recommended:** [Activate your webroot](https://model.earth/webroot) using Claude Code CLI. &ndash; [Runs on port 8887](http://localhost:8887/projects/)
 
-Or fork our [PartnerTools webroot](https://github.com/modelearth/webroot) with Azure Postgresql integration. Includes our team repo as a submodule.
-
-Or fork our [MaterialScience webroot](https://github.com/ModelEarth/MaterialScience) to work with Multi-Region Input-Output (MRIO) using 721 factors across global trade industries.
+The bottom of the webroot setup as additional steps for pulling in MRIO repos to work with Multi-Region Input-Output (MRIO) using 721 factors across global trade industries.
 
 And/or just grab a couple repos and start your own webroot...
 
