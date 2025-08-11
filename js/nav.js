@@ -402,29 +402,29 @@ class StandaloneNavigation {
                     
                     <div class="nav-section">
                         <div class="nav-item">
-                            <button class="nav-link ${this.options.currentPage === 'admin' ? 'active' : ''}" data-section="admin" data-href="${adminPath}">
+                            <button class="nav-link ${this.options.currentPage === 'admin' ? 'active' : ''}" data-section="admin" data-href="${teamPath}admin">
                                 <i class="nav-icon" data-feather="tool"></i>
                                 <span class="nav-text">Admin Dashboard</span>
                                 <i class="nav-arrow" data-feather="chevron-right"></i>
                             </button>
                             <div class="subnav">
-                                <a href="${adminPath}../projects/" class="subnav-link">
+                                <a href="${teamPath}projects/" class="subnav-link">
                                     <i class="subnav-icon" data-feather="users"></i>
                                     <span>Meetup Integration</span>
                                 </a>
-                                <a href="${adminPath}server/" class="subnav-link">
+                                <a href="${teamPath}admin/server/" class="subnav-link">
                                     <i class="subnav-icon" data-feather="zap"></i>
                                     <span>Configure Server</span>
                                 </a>
-                                <a href="${adminPath}sql/panel/" class="subnav-link">
+                                <a href="${teamPath}admin/sql/panel/" class="subnav-link">
                                     <i class="subnav-icon" data-feather="database"></i>
                                     <span>Database Admin</span>
                                 </a>
-                                <a href="${adminPath}import-data.html" class="subnav-link">
+                                <a href="${teamPath}admin/import-data.html" class="subnav-link">
                                     <i class="subnav-icon" data-feather="upload"></i>
                                     <span>Data Import</span>
                                 </a>
-                                <a href="${adminPath}log-output/" class="subnav-link">
+                                <a href="${teamPath}admin/log-output/" class="subnav-link">
                                     <i class="subnav-icon" data-feather="monitor"></i>
                                     <span>Log Monitor</span>
                                 </a>
