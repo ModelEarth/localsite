@@ -2267,6 +2267,62 @@ const currentPageURL = window.location.href;
 //const newURL = forkEditLink(currentPageURL);
 //alert(newURL);
 
+function escapeUnderscoresOutsideCodeBlocks(markdown) {
+  // Split the markdown into lines for processing
+  const lines = markdown.split('\n');
+  const processedLines = [];
+  
+  let inCodeFence = false;
+  let codeBlockType = null;
+  
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    
+    // Check for code fences (```bash, ```javascript, etc.)
+    if (line.trim().startsWith('```')) {
+      inCodeFence = !inCodeFence;
+      if (inCodeFence) {
+        codeBlockType = line.trim().substring(3);
+      } else {
+        codeBlockType = null;
+      }
+      processedLines.push(line);
+      continue;
+    }
+    
+    // Check for tab-indented code blocks (4 spaces or tab at start)
+    const isTabIndented = line.match(/^(\t|    )/);
+    
+    // If we're in a code block or this line is tab-indented, don't process underscores
+    if (inCodeFence || isTabIndented) {
+      processedLines.push(line);
+      continue;
+    }
+    
+    // Process inline code spans (`code`) by temporarily replacing them
+    // Match pairs of backticks with content between them (including empty)
+    const inlineCodeRegex = /`[^`]*`/g;
+    const inlineCodeBlocks = [];
+    let tempLine = line.replace(inlineCodeRegex, (match) => {
+      const placeholder = `XYZINLINECODEXYZ${inlineCodeBlocks.length}XYZENDXYZ`;
+      inlineCodeBlocks.push(match);
+      return placeholder;
+    });
+    
+    // Now escape underscores in the remaining text (not already escaped)
+    tempLine = tempLine.replace(/(?<!\\)_/g, '\\_');
+    
+    // Restore inline code blocks
+    inlineCodeBlocks.forEach((codeBlock, index) => {
+      const placeholder = `XYZINLINECODEXYZ${index}XYZENDXYZ`;
+      tempLine = tempLine.split(placeholder).join(codeBlock);
+    });
+    
+    processedLines.push(tempLine);
+  }
+  
+  return processedLines.join('\n');
+}
 
 function loadMarkdown(pagePath, divID, target, attempts, callback) {
   if (typeof attempts === 'undefined') {
@@ -2353,6 +2409,9 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
       // CUSTOM About YAML metadata converter: https://github.com/showdownjs/showdown/issues/260
 
       // Also try adding simpleLineBreaks http://demo.showdownjs.com/
+
+      // Escape underscores outside of code blocks in the markdown data
+      data = escapeUnderscoresOutsideCodeBlocks(data);
 
       var converter = new showdown.Converter({tables:true, metadata:true, simpleLineBreaks: true}),
       html = editReadme + converter.makeHtml(data);
