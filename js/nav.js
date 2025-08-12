@@ -388,7 +388,7 @@ class StandaloneNavigation {
                         <div class="nav-item">
                             <button class="nav-link" data-section="realitystream" data-href="${rootPath}realitystream/">
                                 <i class="nav-icon" data-feather="activity"></i>
-                                <span class="nav-text">RealityStream</span>
+                                <span class="nav-text">Data Stream</span>
                                 <i class="nav-arrow" data-feather="chevron-right"></i>
                             </button>
                             <div class="subnav">
@@ -1105,6 +1105,11 @@ class StandaloneNavigation {
     }
 }
 
+const navParam = getNavParam();
+//const testParam = getNavParam('https://example.com?features.path=dashboard&user.name=john#features.story=onboarding&user.age=25&features.path=old-dashboard');
+//console.log(JSON.stringify(testParam, null, 2));
+//alert(testParam.features.story);
+
 // Static property for singleton pattern
 StandaloneNavigation.instance = null;
 
@@ -1113,6 +1118,11 @@ let standaloneNav;
 
 // Initialize navigation function
 function initializeStandaloneNav() {
+    //let hash = getHash();
+    const defaultToGeo = (navParam.list == "geo" || window.location.hostname.includes('geo') || window.location.hostname.includes('location'));
+    if (defaultToGeo) {
+        return; // Return for maps with Add City Visit
+    }
     console.log('[StandaloneNav] initializeStandaloneNav called, existing instance:', !!StandaloneNavigation.instance);
     
     // Clean up existing instance if it exists
@@ -1213,6 +1223,45 @@ function initializeStandaloneNav() {
     setTimeout(() => {
         standaloneNav.restoreState();
     }, 100);
+}
+
+
+function getNavParam(url = window.location.href) {
+  const urlObj = new URL(url);
+  const quickNavParam = {};
+  
+  // Helper function to set nested object properties using dot notation
+  function setNestedProperty(obj, path, value) {
+    const keys = path.split('.');
+    let current = obj;
+    
+    // Navigate to the parent object, creating nested objects as needed
+    for (let i = 0; i < keys.length - 1; i++) {
+      const key = keys[i];
+      if (!(key in current) || typeof current[key] !== 'object' || current[key] === null) {
+        current[key] = {};
+      }
+      current = current[key];
+    }
+    
+    // Set the final property
+    const finalKey = keys[keys.length - 1];
+    current[finalKey] = value;
+  }
+  
+  // Parse hash parameters first (lower priority)
+  const hashParams = new URLSearchParams(urlObj.hash.substring(1));
+  for (const [key, value] of hashParams.entries()) {
+    setNestedProperty(quickNavParam, key, value);
+  }
+  
+  // Parse query parameters second (higher priority - will override hash params)
+  const queryParams = urlObj.searchParams;
+  for (const [key, value] of queryParams.entries()) {
+    setNestedProperty(quickNavParam, key, value);
+  }
+  
+  return quickNavParam;
 }
 
 // Initialize when DOM is ready
