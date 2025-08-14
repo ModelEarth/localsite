@@ -3265,49 +3265,6 @@ function isValidJSON(str) {
     }
 }
 
-// Might move this into a new format.js file. Used in projects repo.
-function formatBuckets(divID) {
-  document.addEventListener('DOMContentLoaded', function() {
-  waitForElm('#' + divID).then((elm) => {
-
-    // BUGBUG not working yet
-    
-    // Get the target element (either by ID or the entire body)
-    var targetElement = divID === 'body' ? document.body : document.getElementById(divID);
-
-    if (!targetElement) {
-        alert(`Element with ID ${divID} not found.`);
-        return;
-    }
-
-    var content = Array.from(targetElement.childNodes);
-    var currentBucket = null;
-
-    content.forEach(function(node) {
-        if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'H2') {
-            
-            // Create a new .bucket div when encountering an <h2>
-            currentBucket = document.createElement('div');
-            currentBucket.classList.add('bucket');
-
-            var bucketContent = document.createElement('div');
-            bucketContent.classList.add('bucketcontent');
-
-            // Append the <h2> to the bucket content
-            bucketContent.appendChild(node);
-            currentBucket.appendChild(bucketContent);
-
-            // Append the bucket to the target element
-            targetElement.appendChild(currentBucket);
-        } else if (currentBucket) {
-            // Append non-<h2> elements to the current bucket content
-            currentBucket.querySelector('.bucketcontent').appendChild(node);
-        }
-    });
-  });
-  });
-}
-
 // AnythingLLM left side navigation header adjustment
 // Monitors header visibility and adjusts top positioning while keeping content within flexMain
 function adjustAnythingLLMNavigation() {
