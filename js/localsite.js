@@ -3284,7 +3284,6 @@ function formatBuckets(divID) {
     var currentBucket = null;
 
     content.forEach(function(node) {
-      alert("123 " + node.tagName)
         if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'H2') {
             
             // Create a new .bucket div when encountering an <h2>
