@@ -2324,6 +2324,64 @@ function escapeUnderscoresOutsideCodeBlocks(markdown) {
   return processedLines.join('\n');
 }
 
+function formatBuckets(htmlText) {
+  // Create a temporary div to work with the HTML
+  var tempDiv = document.createElement('div');
+  tempDiv.innerHTML = htmlText;
+  
+  // Convert to array of child nodes for easier processing
+  var nodes = Array.from(tempDiv.childNodes);
+  
+  // Clear the temp div to rebuild it
+  tempDiv.innerHTML = '';
+  
+  var currentBucket = null;
+  var currentBucketContent = null;
+  
+  // Process each node sequentially
+  nodes.forEach(function(node) {
+    if (node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === 'h2') {
+      // Close previous bucket if it exists
+      if (currentBucket && currentBucketContent) {
+        currentBucket.appendChild(currentBucketContent);
+        tempDiv.appendChild(currentBucket);
+      }
+      
+      // Start new bucket
+      currentBucket = document.createElement('div');
+      currentBucket.className = 'bucket';
+      
+      // Add h2 to the bucket
+      currentBucket.appendChild(node);
+      
+      // Create new bucketcontent div
+      currentBucketContent = document.createElement('div');
+      currentBucketContent.className = 'bucketcontent';
+    } else if (currentBucket && currentBucketContent) {
+      // Add content to current bucket
+      if (node.nodeType === Node.ELEMENT_NODE || 
+          (node.nodeType === Node.TEXT_NODE && node.textContent.trim())) {
+        currentBucketContent.appendChild(node);
+      }
+    } else {
+      // Content before first h2 - add directly to tempDiv
+      if (node.nodeType === Node.ELEMENT_NODE || 
+          (node.nodeType === Node.TEXT_NODE && node.textContent.trim())) {
+        tempDiv.appendChild(node);
+      }
+    }
+  });
+  
+  // Close final bucket if it exists
+  if (currentBucket && currentBucketContent) {
+    currentBucket.appendChild(currentBucketContent);
+    tempDiv.appendChild(currentBucket);
+  }
+  
+  // Return the processed HTML
+  return tempDiv.innerHTML;
+}
+
 function loadMarkdown(pagePath, divID, target, attempts, callback) {
   if (typeof attempts === 'undefined') {
     attempts = 1;
@@ -2440,6 +2498,11 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
         */
       }
 
+      // Apply formatBuckets when on localhost
+      if (location.host.indexOf('localhost') >= 0) {
+        html = formatBuckets(html);
+      }
+
       // Appends rather than overwrites
       loadIntoDiv(pageFolder,divID,html, function() {
         // Call the main callback after loadIntoDiv finishes
@@ -2521,6 +2584,7 @@ function loadIntoDiv(pageFolder,divID,html,callback) {
         //console.log("Showdown link update2: " + pageFolder + " plus " + currentElement.getAttribute('href'));
       }
     });
+
 
     if(callback) callback();
   });
@@ -3264,6 +3328,7 @@ function isValidJSON(str) {
         return false;
     }
 }
+
 
 // AnythingLLM left side navigation header adjustment
 // Monitors header visibility and adjusts top positioning while keeping content within flexMain
