@@ -629,7 +629,7 @@ function toggleFullScreen(alsoToggleHeader) {
   }
 }
 
-var theroot = get_localsite_root(); // Avoid using let instead of var, or error: Identifier 'theroot' has already been declared.
+var theroot = get_localsite_root(); // Try using let instead of var to find other declarations.
 function get_localsite_root() { // Also in two other places
   if (localsite_repo3) { // Intensive, so limit to running once.
     //alert(localsite_repo);
