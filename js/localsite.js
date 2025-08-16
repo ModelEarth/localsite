@@ -2309,8 +2309,39 @@ function escapeUnderscoresOutsideCodeBlocks(markdown) {
       return placeholder;
     });
     
+    // Process HTML elements by temporarily replacing them
+    // Match HTML tags with attributes that might contain underscores
+    const htmlElementRegex = /<(a|img|pre|code|script|style|link|meta)[^>]*>.*?<\/\1>|<(a|img|pre|code|script|style|link|meta|br|hr|input)[^>]*\/?>/gi;
+    const htmlElements = [];
+    tempLine = tempLine.replace(htmlElementRegex, (match) => {
+      const placeholder = `XYZHTMLELEMENTXYZ${htmlElements.length}XYZENDXYZ`;
+      htmlElements.push(match);
+      return placeholder;
+    });
+    
+    // Also handle HTML attributes specifically (href, src, etc.) that might span lines or be standalone
+    const attributeRegex = /\b(href|src|action|data-[a-z-]+|class|id|style|alt|title)\s*=\s*(['"]?)([^'">\s]*)\2/gi;
+    const attributes = [];
+    tempLine = tempLine.replace(attributeRegex, (match) => {
+      const placeholder = `XYZATTRIBUTEXYZ${attributes.length}XYZENDXYZ`;
+      attributes.push(match);
+      return placeholder;
+    });
+    
     // Now escape underscores in the remaining text (not already escaped)
     tempLine = tempLine.replace(/(?<!\\)_/g, '\\_');
+    
+    // Restore attributes
+    attributes.forEach((attribute, index) => {
+      const placeholder = `XYZATTRIBUTEXYZ${index}XYZENDXYZ`;
+      tempLine = tempLine.split(placeholder).join(attribute);
+    });
+    
+    // Restore HTML elements
+    htmlElements.forEach((htmlElement, index) => {
+      const placeholder = `XYZHTMLELEMENTXYZ${index}XYZENDXYZ`;
+      tempLine = tempLine.split(placeholder).join(htmlElement);
+    });
     
     // Restore inline code blocks
     inlineCodeBlocks.forEach((codeBlock, index) => {
