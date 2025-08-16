@@ -316,6 +316,10 @@ class StandaloneNavigation {
                                     <i class="subnav-icon" data-feather="globe"></i>
                                     <span>Model.Earth Projects</span>
                                 </a>
+                                <a href="${rootPath}projects/hub/" class="subnav-link">
+                                    <i class="subnav-icon" data-feather="globe"></i>
+                                    <span>Our Project Hub</span>
+                                </a>
                                 <a href="${teamPath}/projects/#list=democracylab" class="subnav-link">
                                     <i class="subnav-icon" data-feather="code"></i>
                                     <span>Democracy Lab Projects</span>
