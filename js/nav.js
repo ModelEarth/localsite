@@ -240,7 +240,13 @@ class StandaloneNavigation {
             adminPath = basePath ? `${basePath}/../team/admin/` : '../team/admin/';
             teamPath = basePath ? `${basePath}/../team/` : '../team/';
             // Favicon is in localsite repo
-            logoPath = basePath ? `${basePath}${basePath.endsWith('/') ? '' : '/'}img/logo/neighborhood/favicon.png` : 'img/logo/neighborhood/favicon.png';
+            // Calculate additional ../ needed based on current URL depth
+            const currentPath = window.location.pathname;
+            const pathSegments = currentPath.split('/').filter(segment => segment && !segment.endsWith('.html'));
+            const extraLevels = Math.max(0, pathSegments.length - 1); // Subtract 1 for the base repo level
+            const additionalDotDots = '../'.repeat(extraLevels);
+            
+            logoPath = basePath ? `${basePath}/../team/img/logo/neighborhood/favicon.png` : `${additionalDotDots}../team/img/logo/neighborhood/favicon.png`;
         }
         
         // Debug logging
