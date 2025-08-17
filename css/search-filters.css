@@ -48,7 +48,7 @@
 }
 @media (prefers-color-scheme: dark) {
   #filterFieldsHolder {
-    /* background-color: #333; */
+    background-color: #333;
   }
 }
 .filterFieldsHolderFixed {

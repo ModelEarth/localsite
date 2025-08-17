@@ -6033,7 +6033,11 @@ $(document).on("click", ".showApps, .hideApps", function(event) {
 
 function showApps(menuDiv) {
     loadScript(theroot + 'js/navigation.js', function(results) {
-
+        let modelsite;
+        if (Cookies.get('modelsite')) {
+            //$("#modelsite").val(Cookies.get('modelsite'));
+            modelsite = Cookies.get('modelsite');
+        }
         let hash = getHash();
         console.log('showApps in ' + menuDiv);
         $("#filterClickLocation").removeClass("filterClickActive"); // But leave open
@@ -6062,6 +6066,7 @@ function showApps(menuDiv) {
             updateHash({"appview":"topics"});
             console.log("call showThumbMenu from navidation.js");
             if (!hash.geoview) {
+
                 if (modelsite=="dreamstudio" || location.host.indexOf("dreamstudio") >= 0) {
                     closeExpandedMenus($(".showSections")); // Close all sidetab's prior to opening new tab
                 } else {
@@ -6094,6 +6099,9 @@ function showApps(menuDiv) {
                 });
             });
         }
+
+        
+
     });
 }
 function closeAppsMenu() {

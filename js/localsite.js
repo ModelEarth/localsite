@@ -2913,7 +2913,6 @@ function setSitemode(sitemode) {
   // Not copied over from settings.js
 }
 function setSitelook(siteLook) {
-    
     //let root = "/explore/"; // TEMP
     //let root = "/localsite/";
     if (!siteLook) {
@@ -2923,7 +2922,8 @@ function setSitelook(siteLook) {
       siteLook = "dark"
     }
     consoleLog("setSiteLook: " + siteLook);
-    
+    $("#sitelook").val(siteLook);
+
     // Force the brower to reload by changing version number. Avoid on localhost for in-browser editing. If else.
     var forceReload = (location.host.indexOf('localhost') >= 0 ? "" : "?v=3");
     $("body").removeClass("dark");
