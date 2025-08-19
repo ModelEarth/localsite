@@ -1,5 +1,4 @@
 // Standalone Navigation System - JavaScript
-// Optimized version with memory leak fixes and performance improvements
 
 class StandaloneNavigation {
     constructor(options = {}) {
@@ -272,23 +271,25 @@ class StandaloneNavigation {
         
         const navHTML = `
             <div class="sidebar ${initialClasses}" id="standalone-sidebar">
+                <!--
                 <div class="sidebar-header" ${isExternalSite ? 'style="display: none;"' : ''}>
                     <div class="logo">
                         <a href="${rootPath}"><img id="sidebar-logo" src="${logoPath}" alt="Up" /></a>
                     </div>
                     <span class="logo-text">PartnerTools</span>
                 </div>
-                
+                -->
+
                 <div class="nav-menu">
                     <div class="nav-section">
                         <div class="nav-item">
                             <button class="nav-link" data-section="home" data-href="${teamPath}#home">
                                 <i class="nav-icon" data-feather="home"></i>
-                                <span class="nav-text">Home</span>
+                                <span class="nav-text">Welcome</span>
                                 <i class="nav-arrow" data-feather="chevron-right"></i>
                             </button>
                             <div class="subnav">
-                                <a href="${teamPath}#home/welcome" class="subnav-link">
+                                <a href="${teamPath}#home" class="subnav-link">
                                     <i class="subnav-icon" data-feather="smile"></i>
                                     <span>Welcome</span>
                                 </a>
@@ -296,15 +297,17 @@ class StandaloneNavigation {
                                     <i class="subnav-icon" data-feather="book"></i>
                                     <span>Getting Started</span>
                                 </a>
-                                <a href="${rootPath}projects" class="subnav-link">
+                                <div style="display:none" class="earth">
+                                <a href="${rootPath}projects" style="display:none" class="subnav-link earth">
                                     <i class="subnav-icon" data-feather="bar-chart-2"></i>
                                     <span>Active Projects</span>
                                 </a>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="nav-section">
+                    <div class="nav-section earth" style="display:none">
                         <div class="nav-item">
                             <button class="nav-link" data-section="projects" data-href="${teamPath}#projects">
                                 <i class="nav-icon" data-feather="folder"></i>
@@ -342,11 +345,11 @@ class StandaloneNavigation {
                         </div>
                     </div>
 
-                    <div class="nav-section">
+                    <div class="nav-section earth" style="display:none">
                         <div class="nav-item">
                             <button class="nav-link" data-section="people" data-href="${teamPath}#people">
                                 <i class="nav-icon" data-feather="users"></i>
-                                <span class="nav-text">People & Teams</span>
+                                <span class="nav-text">People & Places</span>
                                 <i class="nav-arrow" data-feather="chevron-right"></i>
                             </button>
                             <div class="subnav">
@@ -370,7 +373,7 @@ class StandaloneNavigation {
                         </div>
                     </div>
 
-                    <div class="nav-section">
+                    <div class="nav-section earth" style="display:none">
                         <div class="nav-item">
                             <button class="nav-link" data-section="account" data-href="${teamPath}#account">
                                 <i class="nav-icon" data-feather="settings"></i>
@@ -396,17 +399,38 @@ class StandaloneNavigation {
 
                     <div class="nav-section">
                         <div class="nav-item">
-                            <button class="nav-link" data-section="realitystream" data-href="${rootPath}realitystream/">
+                            <button class="nav-link" data-section="realitystream" data-href="${teamPath}projects/#list=all">
                                 <i class="nav-icon" data-feather="activity"></i>
-                                <span class="nav-text">Data Stream</span>
+                                <span class="nav-text">Data Insights</span>
                                 <i class="nav-arrow" data-feather="chevron-right"></i>
                             </button>
                             <div class="subnav">
+                                <div style="display:none" class="geo">
+                                <a href="${teamPath}projects/#list=geo" class="subnav-link">
+                                    <i class="subnav-icon" data-feather="heart"></i>
+                                    <span>City Visits</span>
+                                </a>
+                                </div>
+                                <div style="display:none" class="geo">
+                                <a href="${teamPath}projects/#list=film-scouting" class="subnav-link">
+                                    <i class="subnav-icon" data-feather="users"></i>
+                                    <span>Film Scouting</span>
+                                </a>
+                                </div>
+                                <div style="display:none" class="earth">
+                                <a href="${rootPath}localsite/info/" class="subnav-link">
+                                    <i class="subnav-icon" data-feather="trending-up"></i>
+                                    <span>Industry Comparisons</span>
+                                </a>
+                                </div>
+                                <div style="display:none" class="earth">
                                 <a href="${rootPath}realitystream/models/" class="subnav-link">
                                     <i class="subnav-icon" data-feather="trending-up"></i>
                                     <span>Forecasting Models</span>
                                 </a>
+                                </div>
                             </div>
+                            
                         </div>
                     </div>
                     
@@ -414,7 +438,7 @@ class StandaloneNavigation {
                         <div class="nav-item">
                             <button class="nav-link ${this.options.currentPage === 'admin' ? 'active' : ''}" data-section="admin" data-href="${teamPath}admin">
                                 <i class="nav-icon" data-feather="tool"></i>
-                                <span class="nav-text">Admin Dashboard</span>
+                                <span class="nav-text">Partner Tools</span>
                                 <i class="nav-arrow" data-feather="chevron-right"></i>
                             </button>
                             <div class="subnav">
@@ -1131,7 +1155,7 @@ function initializeStandaloneNav() {
     //let hash = getHash();
     const defaultToGeo = (navParam.list == "geo" || window.location.hostname.includes('geo') || window.location.hostname.includes('location'));
     if (defaultToGeo) {
-        return; // Return for maps with Add City Visit
+        //return; // Return for maps with Add City Visit
     }
     console.log('[StandaloneNav] initializeStandaloneNav called, existing instance:', !!StandaloneNavigation.instance);
     

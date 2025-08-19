@@ -4524,6 +4524,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             showClassInline(".acct");
             showClassInline(".garesource");
         }
+        showClassInline(".geo");
         showClassInline(".georgia");
         if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
             // To activate when filter are ready
