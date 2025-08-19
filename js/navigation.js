@@ -1796,23 +1796,22 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
             countyTopoTerm = "_parish_20m";
           }
           // Contains topo shape, plus STATEFP and COUNTYFP and GEOID (which combines both)
-          
-          url = local_app.modelearth_root() + "/topojson/countries/us-states/" + stateAbbr + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
+          url = local_app.topojson_root() + "/topojson/countries/us-states/" + stateAbbr + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
           topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + countyTopoTerm;
 
           if(location.host.indexOf('localhost') >= 0) {
               if (!hash.state) {
                 alert("localhost: Loading ALL US Counties topo - UX not yet fully implemented")
                 // All counties in US
-                url = local_app.modelearth_root() + "/topojson/countries/united-states/us-albers-counties.json";
+                url = local_app.topojson_root() + "/topojson/countries/united-states/us-albers-counties.json";
                 topoObjName = "topoob.objects.collection";
               }
           }
-          //url = local_app.modelearth_root() + "/topojson/countries/us-states/GA-13-georgia-counties.json";
+          //url = local_app.topojson_root_root() + "/topojson/countries/us-states/GA-13-georgia-counties.json";
           // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
         } else { // ALL COUNTRIES
           layerName = "Countries";
-          url = local_app.modelearth_root() + "/topojson/world-countries-sans-antarctica.json";
+          url = local_app.topojson_root() + "/topojson/world-countries-sans-antarctica.json";
           topoObjName = "topoob.objects.countries1";
         }
         //console.log("topojson url " + url); // TEMP
@@ -4516,8 +4515,8 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         $(".siteTitleShort").text("Model Georgia");
         param.titleArray = [];
         console.log("local_app.localsite_root() " + local_app.localsite_root()); // https://model.earth was in here: https://map.georgia.org/localsite/map/#show=recyclers
-        param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA.png' style='width:140px;padding-top:4px'></a>";
-        param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA-notext.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
+        param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA.png' style='width:160px;margin-top:0px'></a>";
+        param.headerLogoNoText = "<a href='https://georgia.org' style='margin-top:-1px'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA-icon.png' style='width:52px;padding:0px;margin:0px'></a>";
         localsiteTitle = "Georgia.org";
         changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/states/GA-favicon.png");
         if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
