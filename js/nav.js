@@ -406,15 +406,27 @@ class StandaloneNavigation {
                             </button>
                             <div class="subnav">
                                 <div style="display:none" class="geo">
-                                <a href="${teamPath}projects/#list=geo" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="heart"></i>
-                                    <span>City Visits</span>
-                                </a>
-                                </div>
-                                <div style="display:none" class="geo">
                                 <a href="${teamPath}projects/#list=film-scouting" class="subnav-link">
                                     <i class="subnav-icon" data-feather="users"></i>
                                     <span>Film Scouting</span>
+                                </a>
+                                </div>
+                                <div style="display:none" class="geo">
+                                <a href="${teamPath}projects/#list=geo" class="subnav-link">
+                                    <i class="subnav-icon" data-feather="heart"></i>
+                                    <span>Location Visits</span>
+                                </a>
+                                </div>
+                                <div style="display:none" class="geo">
+                                <a href="${teamPath}projects/map/#list=cities" class="subnav-link">
+                                    <i class="subnav-icon" data-feather="heart"></i>
+                                    <span>Location Visits (Map)</span>
+                                </a>
+                                </div>
+                                <div style="display:none" class="geo">
+                                <a href="${rootPath}localsite/info/#state=GA" class="subnav-link">
+                                    <i class="subnav-icon" data-feather="trending-up"></i>
+                                    <span>Industry Comparisons</span>
                                 </a>
                                 </div>
                                 <div style="display:none" class="earth">

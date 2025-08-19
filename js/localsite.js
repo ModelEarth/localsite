@@ -1995,6 +1995,10 @@ function getState(stateCode) {
 }
 
 function showSearchFilter() {
+  if ($("#filterFieldsHolder").is(':visible') ) {
+    $("#filterFieldsHolder").hide();
+    return;
+  }
   let loadFilters = false;
   let headerHeight = $("#headerbar").height(); // Not sure why this is 99 rather than 100
   //closeSideTabs(); // Later search will be pulled into side tab.
