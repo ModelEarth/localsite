@@ -4520,7 +4520,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA-notext.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
         localsiteTitle = "Georgia.org";
         changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/states/GA-favicon.png");
-        if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
+        if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
             showClassInline(".acct");
             showClassInline(".garesource");
         }
