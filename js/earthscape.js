@@ -989,19 +989,3 @@ function toggleDivs() {
     // Show the selected div
     document.getElementById(selectedValue).style.display = 'block';
 }
-//Population data for different scope
-
-function handleCountryListClick() {
-    // Store current hash before opening country selection
-    const currentHash = window.location.hash;
-    
-    // Set up an interval to check when we return from country selection
-    const checkReturnInterval = setInterval(() => {
-        if (window.location.hash !== currentHash && 
-            !window.location.hash.includes('geoview=countries')) {
-            // We've returned from country selection
-            clearInterval(checkReturnInterval);
-            refreshTimeline();
-        }
-    }, 10);
-}
