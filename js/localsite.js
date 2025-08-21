@@ -2534,9 +2534,9 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
       }
 
       // Apply formatBuckets when on localhost
-      if (location.host.indexOf('localhost') >= 0) {
+      //if (location.host.indexOf('localhost') >= 0) { // Might limit to specific pages instead
         html = formatBuckets(html);
-      }
+      //}
 
       // Appends rather than overwrites
       loadIntoDiv(pageFolder,divID,html, function() {
