@@ -2913,6 +2913,24 @@ function initSitelook() {
     }
 }
 
+// TO DO: Adjust to override sitemode setting - flashes briefly currently.
+function applyColorSchemeClass() {
+  document.addEventListener("DOMContentLoaded", () => {
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  });
+}
+
+// Run on load
+applyColorSchemeClass();
+
+// Update automatically if user changes their system preference
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyColorSchemeClass);
+
+
 function setSitemode(sitemode) {
   // Not copied over from settings.js
 }
