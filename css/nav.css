@@ -27,24 +27,60 @@
     --bg-tertiary: #555;
     --text-secondary: #aaa;
 }
-/* App Container */
-.app-container {
+
+
+body {
     display: flex;
-    min-height: 100vh;
+    flex-direction: column;
 }
 
-/* Sidebar Styles */
+header, footer {
+    heightX: 60px; /* Example height */
+    flex-shrink: 0;
+}
+
+.app-container {
+    flex: 1 !important; /* Take remaining space between header and footer */
+    display: flex;
+    position: relative; /* Useful for overlay positioning */
+    overflow: hidden;
+}
+
+
+/* App Container */
+.app-containerX {
+    display: flex;
+}
+
 .sidebar {
     width: var(--sidebar-width);
     background: var(--bg-secondary);
     border-right: 1px solid var(--border-light);
+
+    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-sm);
+
     display: flex;
     flex-direction: column;
+
+    position: sticky;
+    top: 0; /* Sticky relative to header */
+    align-self: flex-start;
+    height: calc(100vh - var(--header-height, 0px));
+
+}
+
+/* Sidebar Styles */
+.sidebarX {
+    flex-direction: column;
     position: fixed;
-    height: 100vh;
     z-index: 1000;
     transition: var(--transition-smooth);
     box-shadow: var(--shadow-sm);
+}
+
+.sidebar-footer {
+    margin-top: auto; /* Push to bottom */
 }
 
 .sidebar.collapsed {
