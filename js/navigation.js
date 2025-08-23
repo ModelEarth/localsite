@@ -4601,7 +4601,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
     }
     // Load when body div becomes available, faster than waiting for all DOM .js files to load.
     waitForElm('#bodyloaded').then((elm) => {
-        $("body").wrapInner( "<div id='fullcolumn' style='display:flex'></div>"); // Creates space for navcolumn
+        $("body").wrapInner( "<div id='fullcolumn' style='displayXXX:flex'></div>"); // Creates space for navcolumn
         
         
         $("body").addClass("flexbody"); // For footer to stick at bottom on short pages

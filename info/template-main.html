@@ -604,132 +604,134 @@
 </div>
 <!-- /SIDETABS -->
 
-<!-- HEADER BAR -->
-<div id="headerbar" class="headerbar headerbarheight headerbarhide" style="display:none;position:fixed;overflow:visible;z-index:1002;pointer-events:auto;">
+<div id="localsiteheader">
+  <!-- HEADER BAR (Moved by localsite.js) -->
+  <div id="headerbar" class="headerbar headerbarheight headerbarhide" style="display:none;position:fixed;overflow:visible;z-index:1002;pointer-events:auto;">
 
-  <div id="headerLogoholder" class="contentpadding" style="padding-top:0px; padding-bottom:0px; float:left;">
-    <div id="logospace" class="headerbarheight">
-      <div id="logoholder">
-        
-        <div id="headerLogo">
-        </div>
-        
-        <div id="headerLocTitleHolder">
-          <span id="headerSiteTitle"></span>
+    <div id="headerLogoholder" class="contentpadding" style="padding-top:0px; padding-bottom:0px; float:left;">
+      <div id="logospace" class="headerbarheight">
+        <div id="logoholder">
           
-          <a href="../community/tools" class="logolink">
-          <span id="headerLocTitle"></span>
-          </a>
+          <div id="headerLogo">
+          </div>
+          
+          <div id="headerLocTitleHolder">
+            <span id="headerSiteTitle"></span>
+            
+            <a href="../community/tools" class="logolink">
+            <span id="headerLocTitle"></span>
+            </a>
+          </div>
+
         </div>
+      </div>    
+    </div>
 
-      </div>
-    </div>    
-  </div>
-
-  <div style="float:left; border-left:1px solid #ccc;">
-    <style>
-      .topstack {
-        float:left;
-        
-        padding-right: 10px;
-        padding:18px;
-        border-right:1px solid #ccc;
-      }
-      .topsm {
-        font-size: 11px;
-        float: left;
-      }
-      .toplg {
-        clear:both;
-        font-size: 17px;
-        color: #686868;
-      }
-      .arrow_down_sm {
-          width: 0;
-          height: 0;
-          border-left: 4px solid transparent;
-          border-right: 4px solid transparent;
-          border-top: 4px solid #999;
-          margin: 4px;
+    <div style="float:left; border-left:1px solid #ccc;">
+      <style>
+        .topstack {
+          float:left;
+          
+          padding-right: 10px;
+          padding:18px;
+          border-right:1px solid #ccc;
+        }
+        .topsm {
+          font-size: 11px;
           float: left;
-          pointer-events: auto;
-      }
+        }
+        .toplg {
+          clear:both;
+          font-size: 17px;
+          color: #686868;
+        }
+        .arrow_down_sm {
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid #999;
+            margin: 4px;
+            float: left;
+            pointer-events: auto;
+        }
 
-    </style>
-    <!-- Cool top menu option: GitHub Desktop style -->
-    <div class="localX" style="display:none">
-      <div class="hideMobile">
-        <div class="topstack">
-          <div class="topsm">Locations</div><div class="arrow_down_sm"></div>
-          <div class="toplg">3 counties in Arizona</div>
-        </div>
+      </style>
+      <!-- Cool top menu option: GitHub Desktop style -->
+      <div class="localX" style="display:none">
+        <div class="hideMobile">
+          <div class="topstack">
+            <div class="topsm">Locations</div><div class="arrow_down_sm"></div>
+            <div class="toplg">3 counties in Arizona</div>
+          </div>
 
-        <div class="topstack">
-          <div class="topsm">Goods & Services</div><div class="arrow_down_sm"></div>
-          <div class="toplg">Recycling Industries</div>
-        </div>
+          <div class="topstack">
+            <div class="topsm">Goods & Services</div><div class="arrow_down_sm"></div>
+            <div class="toplg">Recycling Industries</div>
+          </div>
 
-        <div class="topstack">
-          <div class="topsm">Project Teams</div><div class="arrow_down_sm"></div>
-          <div class="toplg">React Developers</div>
+          <div class="topstack">
+            <div class="topsm">Project Teams</div><div class="arrow_down_sm"></div>
+            <div class="toplg">React Developers</div>
+          </div>
         </div>
       </div>
     </div>
+
+    <div id="upIconTray" class="upperIcons noprint navLinks" style="float:right;">
+
+      <div id="upIconTrayText" class="hideMobile" style="float:left; padding:32px 10px 0 0">
+        <div id="dreamstudio-nav" class="dreamstudio" style="display:none">
+          <span class="hideMobile" style="float:left">
+            <a href="/dreamstudio/home/" class="navlink-about"><span style="white-space: nowrap; margin-right:6px">About</span></a> 
+            <!--
+            <a href="/dreamstudio/studio/" class="navlink-studio"><span style="white-space: nowrap; margin-right:3px">Studio</span></a>
+            -->
+            <a href="/dreamstudio/earth/" class="navlink-earth"><span style="white-space: nowrap; margin-right:3px">Earth</span></a> 
+            <a href="/dreamstudio/seasons/" class="navlink-stories"><span style="white-space: nowrap">Seasons</span></a>  
+            <a href="/dreamstudio/swarm/" class="navlink-swarm"><span style="white-space: nowrap">Swarm</span></a>  
+            <a href="/community/projects/" class="navlink-moonshots" target="me"><span style="white-space: nowrap">Moonshots</span></a>
+          </span>
+        </div>
+
+        <div id="dlab-nav" class="dlab" style="display:none">
+          <span class="hideMobile" style="float:left">
+            <a href="/profile/project/commons/" class="navlink-prototype" target="me"><span style="white-space: nowrap">Prototype</span></a>
+
+            <a href="/profile/preferences/" class="navlink-preferences" target="me"><span style="white-space: nowrap">Preferences</span></a>
+
+            <a href="/profile/crm/" class="navlink-crm" target="me"><span style="white-space: nowrap">Partner Tools</span></a>
+          </span>
+        </div>
+
+        <div class="georgia" style="display:none">
+          <span id="intranet-nav" class="hideMobile" style="float:left">
+            <a href="/io/" class="navlink-io"><span style="white-space: nowrap; margin-right:3px">State Models</span></a>
+            <a href="/explore/locations/" class="navlink-locations"><span style="white-space: nowrap; margin-right:6px">Locations</span></a>
+            <!--
+            <a href="/localsite/info/#geoview=state&state=GA" class="navlink-industries"><span style="white-space: nowrap; margin-right:6px">Industries</span></a>
+            -->
+            <a href="/display/exporters/" class="navlink-exporters"><span style="white-space: nowrap; margin-right:3px">Exporters</span></a>
+            <a href="/recycling/georgia/" class="navlink-recyclers"><span style="white-space: nowrap; margin-right:3px">Recyclers</span></a>
+          </span>
+        </div>
+
+      </div>
+
+      <div id="headerIcons">
+        <div class="earth dreamstudio planetlive garesource" style="display:none">
+          <div id="showSideTabs" class="showSideTabs" style="padding:6px 0px 10px 10px; margin-right:10px; min-height:64px">
+            <i class="material-icons show-on-load" style="font-size:40px;font-weight:550" data="apps">&#xE5C3;</i>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
-
-  <div id="upIconTray" class="upperIcons noprint navLinks" style="float:right;">
-
-    <div id="upIconTrayText" class="hideMobile" style="float:left; padding:32px 10px 0 0">
-      <div id="dreamstudio-nav" class="dreamstudio" style="display:none">
-        <span class="hideMobile" style="float:left">
-          <a href="/dreamstudio/home/" class="navlink-about"><span style="white-space: nowrap; margin-right:6px">About</span></a> 
-          <!--
-          <a href="/dreamstudio/studio/" class="navlink-studio"><span style="white-space: nowrap; margin-right:3px">Studio</span></a>
-          -->
-          <a href="/dreamstudio/earth/" class="navlink-earth"><span style="white-space: nowrap; margin-right:3px">Earth</span></a> 
-          <a href="/dreamstudio/seasons/" class="navlink-stories"><span style="white-space: nowrap">Seasons</span></a>  
-          <a href="/dreamstudio/swarm/" class="navlink-swarm"><span style="white-space: nowrap">Swarm</span></a>  
-          <a href="/community/projects/" class="navlink-moonshots" target="me"><span style="white-space: nowrap">Moonshots</span></a>
-        </span>
-      </div>
-
-      <div id="dlab-nav" class="dlab" style="display:none">
-        <span class="hideMobile" style="float:left">
-          <a href="/profile/project/commons/" class="navlink-prototype" target="me"><span style="white-space: nowrap">Prototype</span></a>
-
-          <a href="/profile/preferences/" class="navlink-preferences" target="me"><span style="white-space: nowrap">Preferences</span></a>
-
-          <a href="/profile/crm/" class="navlink-crm" target="me"><span style="white-space: nowrap">Partner Tools</span></a>
-        </span>
-      </div>
-
-      <div class="georgia" style="display:none">
-        <span id="intranet-nav" class="hideMobile" style="float:left">
-          <a href="/io/" class="navlink-io"><span style="white-space: nowrap; margin-right:3px">State Models</span></a>
-          <a href="/explore/locations/" class="navlink-locations"><span style="white-space: nowrap; margin-right:6px">Locations</span></a>
-          <!--
-          <a href="/localsite/info/#geoview=state&state=GA" class="navlink-industries"><span style="white-space: nowrap; margin-right:6px">Industries</span></a>
-          -->
-          <a href="/display/exporters/" class="navlink-exporters"><span style="white-space: nowrap; margin-right:3px">Exporters</span></a>
-          <a href="/recycling/georgia/" class="navlink-recyclers"><span style="white-space: nowrap; margin-right:3px">Recyclers</span></a>
-        </span>
-      </div>
-
-    </div>
-
-    <div id="headerIcons">
-      <div class="earth dreamstudio planetlive garesource" style="display:none">
-        <div id="showSideTabs" class="showSideTabs" style="padding:6px 0px 10px 10px; margin-right:10px; min-height:64px">
-          <i class="material-icons show-on-load" style="font-size:40px;font-weight:550" data="apps">&#xE5C3;</i>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
+  <div id="headeroffset" style="height:80px;"></div>
+  <!-- /HEADER BAR -->
 </div>
-<!-- /HEADER BAR -->
-
 
 <div id="menuHolder" style="pointer-events: auto; background:#333; display:none">
 
@@ -785,10 +787,6 @@
 </div>
 <!-- End Menu and Secondary Menus -->
 
-
-<!--
-<div id="headeroffset" style="height:100px;"></div>
--->
 <!-- /RIGHT MENU -->
 
 

@@ -772,12 +772,18 @@ function loadLocalTemplate() {
         }
         $("#mapFilters").prependTo("#fullcolumn");
         // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
-        $("#local-header").prependTo("#fullcolumn");
-        $("#headerbar").prependTo("#fullcolumn");
+        $("#localsiteheader").insertBefore("#fullcolumn");
+        //$("#headerbaroffset").prependTo("#fullcolumn");
+        //$("#headerbar").prependTo("#fullcolumn");
       });
       
       waitForElm('#fullcolumn').then((elm) => {
-        $("#headerbar").prependTo("#fullcolumn"); // Move back up to top.
+        $("#localsiteheader").insertBefore("#fullcolumn");
+
+        //$("#headerbaroffset").prependTo("#fullcolumn");
+        //$("#headerbar").prependTo("#fullcolumn"); // Move back up to top.
+
+
         //$("#bodyMainHolder").prependTo("#fullcolumn"); // Move back up to top.
         $("#sideTabs").prependTo("#fullcolumn"); // Move back up to top.
 
