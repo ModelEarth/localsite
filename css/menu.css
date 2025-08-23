@@ -464,28 +464,30 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     display: block;
 }
 
-/* For navcolumn from header.html */
-.navcolumn-inpage .sidecolumnLeft {
+/* For main-nav from header.html */
+.main-nav-inpage .sidecolumnLeft {
     position: static !important;
     float:left;
     padding: 0px;
 }
-.navcolumn-inpage .sidecolumnLeftScroll {
+.main-nav-inpage .sidecolumnLeftScroll {
     position: relative;
     bottom:auto !important;
     right:0 !important;
 }
 
-.navcolumn {
-    position: fixed;
+.main-nav {
     width: 220px;
     padding-right: 0px;
-	top:0;
-	left:0;
-	bottom:0;
+	topX:0;
+	leftX:0;
+	bottomX:0;
+	background-color: #d1d1d1;
+	height: 100%;
+	position:relative; /* prevents nav from exceeding right side */
 }
 @media (max-width: 600px) {
-	.navcolumn {
+	.main-nav {
 		width: 100%;
 	}
 }
@@ -525,11 +527,8 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 #insertedText {
 	flex: 1;
 }
-.pagecolumn {
-	/* top:54px; */
-}
 .pagecolumnToTop {
-	top:0px;
+	top: 0px;
 }
 .rightIcons {
 	position: absolute;
@@ -544,13 +543,16 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 .bothSideIcons {
   top:0px;
-  z-index:10000;
+  z-index:100;
 }
-.pagecolumnLow {
+.pagecolumnLowX {
 	top: 58px;
 }
-.pagecolumnLower { /* same as #local-header */
+.pagecolumnLowerX { /* same as #local-header */
 	top:79px;
+}
+#mapFilters {
+	min-height: 18px; /* prevents top of conent from overlapping 3-bar menu, allows left side to be tighter margin. */
 }
 .sideIconsLower {
   top:79px;
@@ -604,7 +606,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     line-height: 34px;
     font-size: 18px;
 }
-#navcolumn .navcolumnIndent {
+#main-nav .navcolumnIndent {
 	margin-left: 25px;
 }
 #navcolumnTitle {
@@ -690,7 +692,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	border: 0px;
 	font-size: 18px;
 	width: 100%;
-	max-width: 300px;
+	/* max-width: 300px; */
 }
 @media (max-width: 800px) {
 	.navcolumnClear {
@@ -700,21 +702,29 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .navcolumnClear b a, .navcolumnClear b a:visited {
 	color: #fff !important; /* important to override base.css. Not sure why this later css not given priority. */
 }
-#fullcolumn {
-    /* overflow: auto; */ /* Caused address auto-complet to be covered by footer. */
+#main-layout {
+	display: flex;
+	flex-direction: column;
+}
+#main-container {
+	display: flex;
+    flex: 1;
+    flex-direction: row;
     scrollbar-width: none;
-    position: relative;
-    min-height: 100%; /* For short samples page */
+    positionX: relative;
+    min-heightX: 100%; /* For short samples page */
     margin-bottomX: 80px;
     heightX:100%; /* For counties map, but breaks fixed position map on tools page. */
+    margin: 0 auto;
+    width: 100%;
 }
-.dark #fullcolumn  a:link, .dark #fullcolumn  a:visited {
+.dark #main-container  a:link, .dark #main-container  a:visited {
   color: #acb;
 }
-.dark #fullcolumn  b a:link, .dark #fullcolumn  b a:visited {
+.dark #main-container  b a:link, .dark #main-container  b a:visited {
   color: #ccc;
 }
-.dark #fullcolumn h1, .dark #fullcolumn h2, .dark #fullcolumn h3, .dark #fullcolumn h4, .dark #fullcolumn h5, .dark #fullcolumn h6 {
+.dark #main-container h1, .dark #main-container h2, .dark #main-container h3, .dark #main-container h4, .dark #main-container h5, .dark #main-container h6 {
   color: #ccc;
 }
 .navLinks a {
@@ -731,7 +741,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
   font: 400 16px/1.8 "Lato", sans-serif;
   -webkit-font-smoothing: inherit !important;
 }
-.dark #fullcolumn .navLinks a:link, .dark #fullcolumn .navLinks a:visited {
+.dark #main-container .navLinks a:link, .dark #main-container .navLinks a:visited {
   color: #fff;
 }
 .navLinks a:hover {
@@ -748,16 +758,16 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 
 @media (max-width: 800px) {
-    #navcolumn {
+    #main-nav {
       display: none;
       z-index: 1000;
     }
 }
-.navcolumn-inpage {
+.main-nav-inpage {
     position: static !important;
     position: relative;
 }
-.navcolumn-inpage > .sidecolumnLeft {
+.main-nav-inpage > .sidecolumnLeft {
     position: static;
 }
 .navcolumnBar {
@@ -768,7 +778,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	top: 0;
 	display: none;
 }
-/* End For navcolumn from header.html */
+/* End For main-nav from header.html */
 
 #rightTopMenu select {
     width: 280px;

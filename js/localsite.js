@@ -770,22 +770,22 @@ function loadLocalTemplate() {
         if (param.showstates != "false") {
             $("#filterClickLocation").show();
         }
-        $("#mapFilters").prependTo("#fullcolumn");
+        $("#mapFilters").prependTo("#main-content");
         // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
-        $("#localsiteheader").insertBefore("#fullcolumn");
-        //$("#headerbaroffset").prependTo("#fullcolumn");
-        //$("#headerbar").prependTo("#fullcolumn");
+        $("#main-header").insertBefore("#main-container");
+        //$("#headerbaroffset").prependTo("#main-container");
+        //$("#headerbar").prependTo("#main-container");
       });
       
-      waitForElm('#fullcolumn').then((elm) => {
-        $("#localsiteheader").insertBefore("#fullcolumn");
+      waitForElm('#main-container').then((elm) => {
+        $("#main-header").insertBefore("#main-container");
 
-        //$("#headerbaroffset").prependTo("#fullcolumn");
-        //$("#headerbar").prependTo("#fullcolumn"); // Move back up to top.
+        //$("#headerbaroffset").prependTo("#main-container");
+        //$("#headerbar").prependTo("#main-container"); // Move back up to top.
 
 
-        //$("#bodyMainHolder").prependTo("#fullcolumn"); // Move back up to top.
-        $("#sideTabs").prependTo("#fullcolumn"); // Move back up to top.
+        //$("#bodyMainHolder").prependTo("#main-container"); // Move back up to top.
+        $("#sideTabs").prependTo("#main-container"); // Move back up to top.
 
         // Replace paths in div
 
@@ -830,8 +830,8 @@ function showHeaderBar() {
     $('#headerbar').removeClass("headerbarhide");
     $('.bothSideIcons').addClass('sideIconsLower');
     $(".pagecolumn").addClass("pagecolumnLower"); // Didn't seem to be working
-    waitForElm('#navcolumn').then((elm) => {
-      $("#navcolumn").addClass("pagecolumnLower");
+    waitForElm('#main-nav').then((elm) => {
+      $("#main-nav").addClass("pagecolumnLower");
     });
     if (param.shortheader != "true") {
       $('#local-header').show();
@@ -862,10 +862,10 @@ function loadLeafletAndMapFilters() {
       // But navigation.js won't be in the DOM if we don't waitForElm('#bodyloaded'). Used $(document).ready above instead.
       waitForElm('#bodyloaded').then((elm) => {
         console.log("body is now available"); // If missing header persists, remove waitForElm('#bodyloaded') here (line above annd closure)
-        // Puts space above flexmain for navcolumn to be visible after header
+        // Puts space above flexmain for main-nav to be visible after header
         $("body").prepend("<div id='local-header' class='flexheader noprint' style='display:none'></div>\r");
         waitForElm('#local-header').then((elm) => {
-          $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
+          $("#local-header").prependTo("#main-container"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
           if (param.shortheader != "true") {
             // Inital page load
             $('#local-header').show();
@@ -1099,6 +1099,13 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         if (!$("#infoFile").length) {
           $('body').append("<div id='infoFile'></div>");
         }
+
+        waitForElm('#main-content').then((elm) => {
+          // Move to bottom of main-content
+          const infoFile = document.getElementById("infoFile");
+          const mainContent = document.getElementById("main-content");
+          mainContent.appendChild(infoFile);
+        });
         if (param.display == "everything") {
           let infoFile = theroot + "info/template-charts.html #template-charts"; // Including #template-charts limits to div within page, prevents other includes in page from being loaded.
           //alert("Before template Loaded infoFile: " + infoFile);
@@ -1113,15 +1120,16 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           });
         }
 
-        // Move local-footer to the end of body
+        // Move main-footer to the end of main-layout
         let foundTemplate = false;
         // When the template (map/index.html) becomes available
         waitForElm('#templateLoaded').then((elm) => {
           foundTemplate = true;
-          $("#local-footer").appendTo("body");
+          $("#main-footer").appendTo("#main-layout");
         });
         if (foundTemplate == false) { // An initial move to the bottom - occurs when the template is not yet available.
-          $("#local-footer").appendTo("body");
+          // Might reactivate
+          //$("#main-footer").appendTo("#main-layout");
         }
       });
       }); // End body ready

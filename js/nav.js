@@ -180,13 +180,14 @@ class StandaloneNavigation {
     
     createNavigation() {
         // Check if navigation already exists to prevent duplicates
-        const existingSidebar = document.getElementById('standalone-sidebar');
+        const existingSidebar = document.getElementById('side-nav');
         if (existingSidebar) {
             // Remove existing navigation to recreate it
             existingSidebar.remove();
         }
         
         // Also remove any existing app-container to ensure clean slate
+        /*
         const existingAppContainer = document.querySelector('.app-container');
         if (existingAppContainer) {
             // Move main content back to body before removing container
@@ -199,7 +200,9 @@ class StandaloneNavigation {
             }
             existingAppContainer.remove();
         }
-        
+        */
+
+        const existingAppContainer = document.querySelector('body');
         const basePath = this.options.basePath || '';
         const isWebrootContainer = this.options.isWebrootContainer;
         const repoFolderName = this.options.repoFolderName;
@@ -270,7 +273,7 @@ class StandaloneNavigation {
         ].filter(Boolean).join(' ');
         
         const navHTML = `
-            <div class="sidebar ${initialClasses}" id="standalone-sidebar">
+            <div class="sidebar ${initialClasses}" id="side-nav">
                 <!--
                 <div class="sidebar-header" ${isExternalSite ? 'style="display: none;"' : ''}>
                     <div class="logo">
@@ -280,7 +283,7 @@ class StandaloneNavigation {
                 </div>
                 -->
 
-                <div class="nav-menu">
+                <div id="side-nav-menu">
                     <div class="nav-section">
                         <div class="nav-item">
                             <button class="nav-link" data-section="home" data-href="${teamPath}#home">
@@ -479,7 +482,7 @@ class StandaloneNavigation {
                     </div>
                 </div>
                 
-                <div class="sidebar-footer">
+                <div id="side-nav-footer" class="sidebar-footer">
                     <button class="sidebar-toggle" id="sidebar-toggle">
                         <i data-feather="chevrons-left"></i>
                     </button>
@@ -492,7 +495,10 @@ class StandaloneNavigation {
         `;
         
         // Create app container if it doesn't exist
-        let appContainer = document.querySelector('.app-container');
+        //let appContainer = document.querySelector('.app-container');
+
+        /* Might use this to move body in navigation.html
+
         if (!appContainer) {
             // Store existing content efficiently
             const existingContent = [...document.body.children];
@@ -520,7 +526,17 @@ class StandaloneNavigation {
                 }
             });
         }
-        
+        */
+
+        document.body.insertAdjacentHTML('afterbegin', navHTML);
+
+        // Set initial body class for headerbar positioning
+        if (this.isCollapsed && !this.isMobile) {
+            document.body.classList.add('sidebar-collapsed');
+        } else {
+            document.body.classList.add('sidebar-expanded');
+        }
+
         // Check for custom favicon from environment/config
         // Skip favicon update if common.js is handling it
         if (!window.updateFaviconPath) {
@@ -681,17 +697,21 @@ class StandaloneNavigation {
         this.eventListeners.push({ element: window, event: 'resize', handler: resizeHandler });
         
         // Navigation hover effects
-        const sidebar = document.getElementById('standalone-sidebar');
+        const sidebar = document.getElementById('side-nav');
         if (sidebar) {
             const mouseEnterHandler = () => {
                 if (this.isCollapsed && !this.isLocked && !this.isMobile) {
                     sidebar.classList.add('hovered');
+                    // Update body class for headerbar positioning
+                    document.body.classList.add('sidebar-hovered');
                 }
             };
             
             const mouseLeaveHandler = () => {
                 if (this.isCollapsed && !this.isLocked && !this.isMobile) {
                     sidebar.classList.remove('hovered');
+                    // Update body class for headerbar positioning
+                    document.body.classList.remove('sidebar-hovered');
                 }
             };
             
@@ -794,7 +814,7 @@ class StandaloneNavigation {
         // Global click handler for mobile menu
         const globalClickHandler = (e) => {
             if (this.isMobile && this.mobileOpen) {
-                const sidebar = document.getElementById('standalone-sidebar');
+                const sidebar = document.getElementById('side-nav');
                 if (sidebar && !sidebar.contains(e.target)) {
                     this.closeMobileMenu();
                 }
@@ -829,19 +849,25 @@ class StandaloneNavigation {
             return;
         }
         
-        const sidebar = document.getElementById('standalone-sidebar');
+        const sidebar = document.getElementById('side-nav');
         if (sidebar) {
             if (this.isCollapsed) {
                 // Expanding - unlock if locked
                 this.isCollapsed = false;
                 this.isLocked = false;
                 sidebar.classList.remove('collapsed', 'locked', 'hovered');
+                // Update body class for headerbar positioning
+                document.body.classList.remove('sidebar-collapsed');
+                document.body.classList.add('sidebar-expanded');
             } else {
                 // Collapsing - lock it collapsed
                 this.isCollapsed = true;
                 this.isLocked = true;
                 sidebar.classList.add('collapsed', 'locked');
                 sidebar.classList.remove('hovered');
+                // Update body class for headerbar positioning
+                document.body.classList.remove('sidebar-expanded');
+                document.body.classList.add('sidebar-collapsed');
             }
             
             // Update toggle icon with debouncing
@@ -857,11 +883,14 @@ class StandaloneNavigation {
     }
     
     unlockSidebar() {
-        const sidebar = document.getElementById('standalone-sidebar');
+        const sidebar = document.getElementById('side-nav');
         if (sidebar) {
             this.isCollapsed = false;
             this.isLocked = false;
             sidebar.classList.remove('collapsed', 'locked', 'hovered');
+            // Update body class for headerbar positioning
+            document.body.classList.remove('sidebar-collapsed');
+            document.body.classList.add('sidebar-expanded');
             
             // Update toggle icon with debouncing
             this.debouncedUpdateToggleIcon();
@@ -891,7 +920,7 @@ class StandaloneNavigation {
         if (!sidebarToggle) return;
         
         // Check actual sidebar state from DOM
-        const sidebar = document.getElementById('standalone-sidebar');
+        const sidebar = document.getElementById('side-nav');
         const actuallyCollapsed = sidebar?.classList.contains('collapsed') || false;
         
         // Sync the class property with actual DOM state
@@ -913,7 +942,7 @@ class StandaloneNavigation {
     }
     
     toggleMobileMenu() {
-        const sidebar = document.getElementById('standalone-sidebar');
+        const sidebar = document.getElementById('side-nav');
         const overlay = document.getElementById('mobile-overlay');
         
         this.mobileOpen = !this.mobileOpen;
@@ -923,7 +952,7 @@ class StandaloneNavigation {
     }
     
     closeMobileMenu() {
-        const sidebar = document.getElementById('standalone-sidebar');
+        const sidebar = document.getElementById('side-nav');
         const overlay = document.getElementById('mobile-overlay');
         
         this.mobileOpen = false;

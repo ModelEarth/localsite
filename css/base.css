@@ -3,13 +3,6 @@ Originates at https://modelearth.github.io/localsite/css/base.css
 Used in localsite, modelearth, io, neighborhood, trees
 */
 
-/* AnythingLLM specific override - fit within flexmain container */
-.flexmain #root.h-screen {
-  position: relative !important;
-  /* Use flexmain container height instead of viewport, prevents footer overlap */
-  height: 100% !important;
-  min-height: auto !important;
-}
 @font-face {
   font-family:'Amaze';font-weight:300;
   src:url("/localsite/css/fonts/ember.woff2") format("woff2"), url("/localsite/css/fonts/ember.woff") format("woff")
@@ -85,7 +78,8 @@ body {
   }
 }
 .bodyRightMargin {
-  margin-right: 500px;
+  /* adds extra spec left of header following change to add nav.js */
+  /* margin-right: 500px; */
 }
 @media (max-width: 400px) {
   .bodyLeftMargin {
@@ -218,15 +212,32 @@ body {
   }
 }
 
-.flexbodyX {
-  display: flex; /* for footer */
-  flex-direction: column; /* for footer */
+/* Also in nav.css - allows #main-nav to extend to footer */
+.flexbody {
+    display: flex;
+    height: 100vh;
+    flex-direction: row;
 }
+
 main, .flexmain {
     flex-grow: 1; /* for footer */
 }
 header, main, .flexfooter {
     flex-shrink: 0; /* prevent shrinking if content is larger than the screen. */
+}
+#main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+#side-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-right: 1px solid #dedede;
+}
+#main-content {
+  width: 100%;
 }
 
 table {
@@ -491,7 +502,7 @@ summary::-webkit-details-marker {
   margin-top: 100px;
   padding-top: 18px;
 }
-@media (min-width: 1800px) {
+@media (min-width: 1600px) {
 	.content {
 	  max-width: 1500px;
 	  font-size: 18px;
@@ -964,10 +975,6 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .topLinks b {
   font-weight: 800;
 }
-.main-content {
-  /* margin-top: 40px; */
-  /* overflow:hidden; */  /* prevents footer from residing beside columns, but caused menu/accordion to be cut off. */
-}
 #rightColumn img {
   /* messed up /account page */
   /*
@@ -978,7 +985,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   cursor:pointer;
   padding:5px 9px 12px 12px;
   font-size:18px;
-  color:#ddd;
+  color:#eee;
   /* If code appear instead of x, check if some other font is being applied. Try activating this line to fix (copied from an x that worked).
   font-family: 'Nunito Sans', Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
   */
@@ -1264,8 +1271,8 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   font-size: 22px;
 }
 .headerbar {
-  background-color: rgb(230 230 230/50%); /* Don't use. Doesn't overlap left side nav */
   background-color: rgb(239 239 239);
+  position: fixed;
   right: 0px;
   left: 0px;
   top: 0px;
@@ -1308,7 +1315,11 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     background: #fff;
     border-bottom: 1px solid rgb(238,238,238/95%); /* #eee */
     border-bottom: 1px solid rgb(238,238,238);
+    background-color: #eee;
   }
+}
+.headerbarheight {
+  min-height:80px;
 }
 .dark .headerbar {
   background: #333;
@@ -1339,13 +1350,10 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 #headerIcons:hover {
   background-color: #ddd;
 }
-.headerbarheight {
-  min-height:80px;
-}
 .headeroffset { /* Does not include bar */
   height:79px;
 }
-#local-header {
+#local-headerXXX {
   /* min-height:82.5px; */ /* Caused space under current header */
   min-height:79px;
 }
@@ -1374,10 +1382,8 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .upperIcons {
   margin-right: 18px;
 }
-@media (min-width: 300px) {
-  #headerLogoholder {
-    min-widthX: 200px;
-  }
+#headerLogoholder {
+  margin-left: 35px;
 }
 @media (max-width: 600px) {
   .upperIcons {

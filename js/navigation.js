@@ -131,7 +131,7 @@ function hashChanged() {
 
         //$("#tableSide").hide();
 
-        if ($("#navcolumn .catList").is(":visible")) {
+        if ($("#main-nav .catList").is(":visible")) {
             $("#selected_states").hide();
         }
 
@@ -900,9 +900,9 @@ function hideSide(which) {
         }
         $("#showSideInBar").show();
     } else {
-        $("#navcolumn").hide();
+        $("#main-nav").hide();
         $('body').removeClass('bodyLeftMarginFull');
-        if ($("#fullcolumn > .datascape").is(":visible")) { // When NOT embedded
+        if ($("#main-content > .datascape").is(":visible")) { // When NOT embedded
             if ($("#listcolumn").is(':visible')) {
                 $('#listcolumn').addClass('listcolumnOnly');
                 console.log("addClass bodyLeftMarginList");
@@ -910,19 +910,19 @@ function hideSide(which) {
             }
         }
     }
-    if (!$("#navcolumn").is(':visible') && !$("#listcolumn").is(':visible')) {
+    if (!$("#main-nav").is(':visible') && !$("#listcolumn").is(':visible')) {
         $("#showNavColumn").show();$("#showSideInBar").hide();
         $("#sideIcons").show();
-    } else if (!$("#navcolumn").is(':visible') && $("#listcolumn").is(':visible')) {
+    } else if (!$("#main-nav").is(':visible') && $("#listcolumn").is(':visible')) {
         $("#showSideInBar").show();
     }
-    if (!$("#navcolumn").is(':visible')) {
+    if (!$("#main-nav").is(':visible')) {
         $('body').removeClass('bodyLeftMargin');
     }
     if (!$("#listcolumn").is(':visible')) {
         $('body').removeClass('bodyLeftMarginList');
     }
-    if (!$("#navcolumn").is(':visible') || !$("#listcolumn").is(':visible')) {
+    if (!$("#main-nav").is(':visible') || !$("#listcolumn").is(':visible')) {
         $('body').removeClass('bodyLeftMarginFull');
     }
     if (!$('body').hasClass('bodyRightMargin')) {
@@ -1127,7 +1127,7 @@ catArray = [];
     $(document).on("click", "#headerLogoholder", function(event) {
         const headerbarWidth = $("#headerbar").width();
         if (headerbarWidth && headerbarWidth <= 600) {
-            if ($("#navcolumn").is(':hidden')) {
+            if ($("#main-nav").is(':hidden')) {
                 showNavColumn();
             } else {
                 hideNavColumn();
@@ -1354,8 +1354,8 @@ catArray = [];
         $('#topPanel').hide();
     });
     $(document).on("click", "body", function(event) {
-        if ($("#navcolumn").is(":visible") && window.innerWidth < 1200) { 
-            $("#navcolumn").hide();
+        if ($("#main-nav").is(":visible") && window.innerWidth < 1200) { 
+            $("#main-nav").hide();
             $("#showNavColumn").show();$("#showSideInBar").hide();
             $("#sideIcons").show();
             $('body').removeClass('bodyLeftMargin');
@@ -4328,8 +4328,8 @@ function closeExpandedMenus(menuClicked) {
 function showNavColumn() {
     console.log("showNavColumn");
     $("#sideIcons").hide();
-    $("#navcolumn").show(); $("#showSideInBar").hide();
-    if ($("#fullcolumn > .datascape").is(":visible")) { // When NOT embedded.
+    $("#main-nav").show(); $("#showSideInBar").hide();
+    if ($("#main-content > .datascape").is(":visible")) { // When NOT embedded.
         if ($("#listcolumn").is(":visible")) {
             $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed side columns.
             $('#listcolumn').removeClass('listcolumnOnly');
@@ -4337,11 +4337,15 @@ function showNavColumn() {
     }
     $("#showSideInBar").hide();
     if(document.getElementById("containerLayout") != null) {
-        $('#navcolumn').addClass("navcolumnClear");
+        $('#main-nav').addClass("navcolumnClear");
         $('body').addClass('bodyLeftMarginNone');
     } else {
-        $("#fullcolumn #showNavColumn").hide();
-        $('body').addClass('bodyLeftMargin'); // Margin on left for fixed nav column.
+        // #showNavColumn is not in #main-container
+        // $("#main-container #showNavColumn").hide();
+        
+        // DEACTIVATED Aug 23
+        //$('body').addClass('bodyLeftMargin'); // Margin on left for fixed nav column.
+
         if ($('body').hasClass('bodyRightMargin')) {
           $('body').addClass('mobileView');
         }
@@ -4358,7 +4362,7 @@ function showNavColumn() {
 }
 function hideNavColumn() {
     $("#sideIcons").show();
-    $("#navcolumn").hide();
+    $("#main-nav").hide();
     $("#showNavColumn").show();$("#showSideInBar").hide();
     $('body').removeClass('bodyLeftMargin');
     $('body').removeClass('bodyLeftMarginFull');
@@ -4575,6 +4579,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         $(".siteTitleShort").text("Model Earth");
         param.titleArray = ["model","earth"];
         localsiteTitle = "Model Earth";
+        //alert(local_app.modelearth_root())
         param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/modelearth/model-earth.png' style='width:34px; margin-right:2px'>";
         changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/modelearth/model-earth.png")
         showClassInline(".earth");
@@ -4601,15 +4606,23 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
     }
     // Load when body div becomes available, faster than waiting for all DOM .js files to load.
     waitForElm('#bodyloaded').then((elm) => {
-        $("body").wrapInner( "<div id='fullcolumn' style='displayXXX:flex'></div>"); // Creates space for navcolumn
+        $("body").wrapInner( "<div id='main-content'></div>"); // Wraps existing. A column to the right of other children.
+        $("body").wrapInner( "<div id='main-container'></div>"); // Creates space for main-nav to the left of #main-content.
         
         
-        $("body").addClass("flexbody"); // For footer to stick at bottom on short pages
-        $("body").wrapInner("<main class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
+        $("body").addClass("flexbody"); // For left 
+        $("body").wrapInner("<main id='main-layout' class='flexmain' style='position:relative'></main>"); // To stick footer to bottom
         // min-height allows header to serve as #filterbaroffset when header.html not loaded
         // pointer-events:none; // Avoid because sub-divs inherite and settings dropdowns are then not clickable.
         if(document.getElementById("datascape") == null) {
-            $("#fullcolumn").prepend("<div id='datascape' class='datascape'></div>\r");
+            $("#main-content").prepend("<div id='datascape' class='datascape'></div>\r");
+        }
+        // Move main-nav back to immediately in body
+        const sideNav = document.getElementById("side-nav");
+        if (sideNav) {
+            document.body.insertBefore(sideNav, document.body.firstChild);
+        } else {
+            console.log("#side-nav not found");
         }
     });
     waitForElm('#datascape').then((elm) => {
@@ -4617,15 +4630,15 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         if(document.getElementById("datascape") != null || document.getElementById("datascape1") != null) {
             $("#datascape").addClass("datascape");
             $("#datascape").addClass("datascapeEmbed");
-            $("#fullcolumn > #datascape").removeClass("datascapeEmbed");  // When #datascape is NOT embedded.
+            $("#main-content > #datascape").removeClass("datascapeEmbed");  // When #datascape is NOT embedded.
             if (!$("#datascape").hasClass("datascapeEmbed")) {
                 $("#datascape").addClass("datascapeTop");
             }
 
-            $('body').removeClass('bodyLeftMarginFull'); // Gets added back if navcolumn is displayed.
+            $('body').removeClass('bodyLeftMarginFull'); // Gets added back if main-nav is displayed.
             // Wait for template to be loaded so it doesn't overwrite listcolumn in #datascape.
             //waitForElm('#insertedText').then((elm) => {
-            waitForElm('#fullcolumn > .datascapeTop').then((elm) => { // When #datascape is NOT embedded.
+            waitForElm('#main-content > .datascapeTop').then((elm) => { // When #datascape is NOT embedded.
                 // Place list in left margin for whole page use.
                 //$("#datascape").prepend(listColumnElement);
                 $("body").prepend(listColumnElement);
@@ -4636,27 +4649,19 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         } else {
             console.log("#datascape not available");
         }
-        if(document.getElementById("navcolumn") == null) {
-            let prependTo = "#datascape";
-            // BUG #fullcolumn > .datascape does not seem to be loaded yet
-            if ($("#fullcolumn > .datascape").is(":visible")) { // When NOT embedded
-                console.log("Not embed");
-                //prependTo = "body"; // Might not have worked intermintantly for the following prepend here: http://localhost:8887/recycling/
-            }
-            // min-height added since ds.ai html cropping to short side
-
-            // REMOVED pagecolumnLower class from initial load
-            // TO DO: Remove pagecolumnLow when there is no top nav. It provides a minimum of 60px when taller header is hidden.
-            $(prependTo).prepend("<div id='navcolumn' class='navcolumn pagecolumn greyDiv noprint sidecolumnLeft pagecolumnLow liteDiv' style='display:none; min-height:300px'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat' style='display:none'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement); //  listColumnElement will be blank if already applied above.
+        if(document.getElementById("main-nav") == null) {
+            let prependTo = "#main-container";
+            $(prependTo).prepend("<div id='main-nav' class='main-nav pagecolumn greyDiv noprint sidecolumnLeft pagecolumnLow liteDiv' style='display:none; min-height:300px'><div class='hideSide close-X-sm' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat' style='display:none'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement); //  listColumnElement will be blank if already applied above.
+            $("#mapFilters").prependTo($("#main-layout"));
         } else {
             // TODO - change to fixed when side reaches top of page
-            console.log("navigation.js report: navcolumn already exists")
-            $("#navcolumn").addClass("navcolumn-inpage");
+            console.log("navigation.js report: main-nav already exists")
+            $("#main-nav").addClass("main-nav-inpage");
         }
 
         $(document).on("click", ".showNavColumn", function(event) {
             console.log(".showNavColumn click");
-            if ($("#navcolumn").is(':hidden')) {
+            if ($("#main-nav").is(':hidden')) {
                 showNavColumn();
             } else {
                 hideNavColumn();
@@ -4675,12 +4680,12 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             console.log(".hideSide click");
         });
 
-        $(document).on("click", ".showNavColumn, #navcolumn", function(event) {
+        $(document).on("click", ".showNavColumn, #main-nav", function(event) {
           event.stopPropagation();
         });
         $(document).on('click', function(event) {
-            if ($("#navcolumn").is(':visible')) {
-                if ($('#fullcolumn').width() <= 800) {
+            if ($("#main-nav").is(':visible')) {
+                if ($('#main-container').width() <= 800) {
                     hideSide();
                 }
             }
@@ -4742,9 +4747,9 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                     $("#local-header").load(headerFile, function( response, status, xhr ) {
                         waitForElm('#sidecolumnContent').then((elm) => { // Resides in header.html
                             //alert("got sidecolumnContent");
-                            console.log("Doc is ready, header file loaded, place #cloneLeft into #navcolumn")
+                            console.log("Doc is ready, header file loaded, place #cloneLeft into #main-nav")
 
-                            waitForElm('#navcolumn').then((elm) => { // #navcolumn is appended by this navigation.js script, so typically not needed.
+                            waitForElm('#main-nav').then((elm) => { // #main-nav is appended by this navigation.js script, so typically not needed.
                                 $("#showNavColumn").show();
                                 if(location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0) {
                                     $("#sidecolumnContent a").each(function() {
@@ -4961,10 +4966,10 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         */
 
         if(document.getElementById("footer") == null) {
-            $("body").append( "<div id='local-footer' class='flexfooter noprint'></div>\r" );
+            $("#main-layout").append( "<div id='main-footer' class='flexfooter noprint'></div>\r" );
         } else {
             //$("#footer").addClass("flexfooter");
-            $("#footer").prepend( "<div id='local-footer' class='flexfooter noprint'></div>\r" );
+            $("#footer").prepend( "<div id='main-footer' class='flexfooter noprint'></div>\r" );
         }
         if (location.host.indexOf('localhost') >= 0 && param.showfooter != false && !param.footer) {
             earthFooter = true; // Need to drive localhost by settings in a file ignored by .gitignore
@@ -4997,21 +5002,21 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             } else {
                 footerClimbpath = climbpath;
             }
-            $("#local-footer").load(footerFile, function( response, status, xhr ) {
+            $("#main-footer").load(footerFile, function( response, status, xhr ) {
                 console.log("footerFile: " + footerFile);
                 let pageFolder = getPageFolder(footerFile);
                 // Append footerClimbpath to relative paths
-                makeLinksRelative("local-footer", footerClimbpath, pageFolder);
+                makeLinksRelative("main-footer", footerClimbpath, pageFolder);
             });
         }
 
         // SIDE NAV WITH HIGHLIGHT ON SCROLL
 
         // Not currently using nav.html, will likely use later for overrides.  Primary side nav resides in header.
-        if (1==2 && param["navcolumn"]) {
+        if (1==2 && param["main-nav"]) {
             // Wait for header to load?
 
-            let targetColumn = "#navcolumn";
+            let targetColumn = "#main-nav";
             // Had ..
             $(targetColumn).load( modelpath + "/localsite/nav.html", function( response, status, xhr ) {
                 activateSideColumn();
@@ -5386,7 +5391,7 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
             //displayHexagonMenu("", layerObject);
             
             if (!hash.show && !param.show) { // INITial load
-                // alert($("#fullcolumn").width()) = null
+                // alert($("#main-container").width()) = null
                 if ($("body").width() >= 800) {
 
                     //showThumbMenu(hash.show, "#bigThumbMenu");
@@ -5702,14 +5707,14 @@ function hideAdvanced() {
 }
 function activateSideColumn() {
     // Make paths relative to current page
-        $("#navcolumn a[href]").each(function() {
+        $("#main-nav a[href]").each(function() {
             if($(this).attr("href").toLowerCase().indexOf("http") < 0) {
                 if($(this).attr("href").indexOf("/") != 0) { // Don't append if starts with /
                     $(this).attr("href", climbpath + $(this).attr('href'));
             }
         }
     })
-        $("#navcolumn img[src]").each(function() {
+        $("#main-nav img[src]").each(function() {
             if($(this).attr("src").indexOf("/") != 0) { // Don't append if starts with /
             $(this).attr("src", climbpath + $(this).attr('src'));
         }

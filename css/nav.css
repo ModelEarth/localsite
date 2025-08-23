@@ -18,38 +18,48 @@
     --radius-sm: 6px;
     --radius-md: 8px;
     --radius-lg: 12px;
-    --sidebar-width: 280px;
+    --sidebar-width: 250px;
     --sidebar-collapsed: 64px;
+    --side-nav-width: var(--sidebar-width);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .dark {
     --bg-secondary: #555;
     --bg-tertiary: #555;
     --text-secondary: #aaa;
+    --text-primary: #eee;
+}
+/* Also in base.css */
+.flexbody {
+    display: flex;
+    height: 100vh;
+    flex-direction: row;
 }
 
-
-bodyX {
+/* Since pages in team don't have .flexbody in body tag. */
+body {
     display: flex;
-    flex-direction: column;
+    height: 100vh;
+    flex-direction: row;
 }
 
 header, footer {
-    heightX: 60px; /* Example height */
     flex-shrink: 0;
 }
 
-.app-container {
+.app-containerXXX {
     flex: 1 !important; /* Take remaining space between header and footer */
     display: flex;
     position: relative; /* Useful for overlay positioning */
     overflow: hidden;
 }
 
-
-/* App Container */
-.app-containerX {
-    display: flex;
+/* overrides base.css */
+.headerbar { 
+    left: var(--side-nav-width, 62px);
+}
+#sideIcons {
+    left: var(--side-nav-width, 64px) !important; /* Without !important the 3=bar menu is not visible -->
 }
 
 .sidebar {
@@ -89,6 +99,19 @@ header, footer {
 
 .sidebar.collapsed.hovered:not(.locked) {
     width: var(--sidebar-width);
+}
+
+/* Global state classes for sidebar width tracking */
+body.sidebar-collapsed {
+    --side-nav-width: var(--sidebar-collapsed);
+}
+
+body.sidebar-expanded {
+    --side-nav-width: calc(var(--sidebar-width) - 3px);
+}
+
+body.sidebar-hovered {
+    --side-nav-width: calc(var(--sidebar-width) - 3px);
 }
 
 .sidebar-header {
@@ -188,10 +211,12 @@ header, footer {
 }
 
 /* External Site Specific Styles - Add spacing for hidden header */
-.sidebar.external-site .nav-menu .nav-section:first-child {
+/*
+#side-nav-menu
+.sidebar.external-site .nav-section:first-child {
     padding-top: 42px;
 }
-
+*/
 /* External Site Specific Styles - Show arrows when expanded, hide when collapsed */
 .sidebar.external-site .nav-arrow {
     display: block !important;
@@ -269,7 +294,7 @@ header, footer {
 }
 
 /* Navigation Menu */
-.nav-menu {
+#side-nav-menu {
     flex: 1;
     padding: 16px 0;
     overflow-y: auto;
@@ -318,7 +343,9 @@ header, footer {
     font-weight: 800;
     color: var(--text-primary);
 }
+.dark .nav-link.active  {
 
+}
 /* Only show background when collapsed */
 .sidebar.collapsed .nav-link.active {
     background: var(--bg-tertiary);
@@ -347,7 +374,6 @@ header, footer {
     transition: var(--transition-smooth);
     display: block;
 }
-
 .sidebar.collapsed .nav-text {
     opacity: 0;
     width: 0;
@@ -454,9 +480,10 @@ header, footer {
 /* Main Content */
 .main-content {
     flex: 1;
-    margin-left: var(--sidebar-width);
+    margin-leftX: var(--sidebar-width);
     transition: var(--transition-smooth);
     min-height: 100vh;
+    width: 100%;
 }
 
 .sidebar.collapsed ~ .main-content {
@@ -465,10 +492,11 @@ header, footer {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    .sidebar {
+
+    .sidebar { /* bug - removing cause open menu to load when narrow */
         transform: translateX(-100%);
     }
-    
+
     .sidebar.mobile-open {
         transform: translateX(0);
     }

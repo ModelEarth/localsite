@@ -2231,7 +2231,7 @@ function showList(dp,map) {
 
 $(document).on("click", ".showList", function(event) {
   $("#listcolumn").show();
-  if ($("#navcolumn").is(":hidden")) {
+  if ($("#main-nav").is(":hidden")) {
     // Display showNavColumn in bar
     $("#showNavColumn").hide();
     $("#showSideInBar").show();
@@ -2239,12 +2239,12 @@ $(document).on("click", ".showList", function(event) {
   showListBodyMargin();
   $(".showList").hide();
   event.stopPropagation();
-  event.preventDefault(); // Prevents #navcolumn from being hidden.
+  event.preventDefault(); // Prevents #main-nav from being hidden.
 });
 function showListBodyMargin() {
-  if ($("#fullcolumn > .datascape").is(":visible")) { // When NOT embedded
+  if ($("#main-container > .datascape").is(":visible")) { // When NOT embedded
     $('body').addClass('bodyLeftMarginList');
-    if ($("#navcolumn").is(":visible") && $("#listcolumn").is(":visible")) {
+    if ($("#main-nav").is(":visible") && $("#listcolumn").is(":visible")) {
       $('#listcolumn').removeClass('listcolumnOnly');
       $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
     } else if ($("#listcolumn").is(":visible")) {
@@ -2351,7 +2351,7 @@ function renderCatList(catList,cat) {
     if (maxCatTitleChars <= 32) {
       $("#mainCatList").addClass("catListAddMargin");
     }
-    let fullcolumnWidth = $('#fullcolumn').width();
+    let fullcolumnWidth = $('#main-container').width();
     if (fullcolumnWidth > 500) {
       showNavColumn();
     }

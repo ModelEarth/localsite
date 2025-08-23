@@ -21,7 +21,7 @@ hr {
     border-bottom: 1px solid #ccc;
 }
 /*
-html, body, #fullcolumn, 
+html, body, #main-container, 
 */
 .litePanel, #header, #footer, .headerbar, #sidecolumn, #rightcolumn {
     background-colorX: rgba(0, 0, 0, .5);
@@ -30,7 +30,7 @@ html, body, #fullcolumn,
     line-heightX: 1;
 }
 /*
-#fullcolumn {
+#main-container {
 	background-color: rgba(0, 0, 0, .6);
 }
 */
