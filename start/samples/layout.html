@@ -150,6 +150,24 @@
                 margin-left: 0;
             }
         }
+        /* Wrapper div for vertical text positioning */
+        .vertical-text-holder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100px;
+            width: 40px;
+            margin: 60px auto 0 auto;
+            position: relative;
+        }
+        .vertical-text {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -157,16 +175,10 @@
     <nav id="side-nav">
         <button id="nav-toggle" onclick="toggleNav()">☰</button>
         <div id="side-nav-content">
-            <ul>
-                <li><a href="#">Dashboard</a></li>
-                <li><a href="#">Projects</a></li>
-                <li><a href="#">Tasks</a></li>
-                <li><a href="#">Reports</a></li>
-                <li><a href="#">Settings</a></li>
-            </ul>
+            <div class="vertical-text-holder"><span class="vertical-text">#side-nav-content</span></div>
         </div>
         <footer id="side-nav-footer">
-            <div>Side Footer Content</div>
+            <div>123</div>
         </footer>
     </nav>
 
@@ -174,7 +186,7 @@
     <div id="main-layout">
         <!-- Main Header -->
         <header id="main-header">
-            <h1>Application Header</h1>
+            <h1>#main-header</h1>
         </header>
 
         <!-- Main Container (holds section nav and main content) -->
@@ -182,7 +194,6 @@
             <!-- Section Navigation -->
             <nav id="section-nav">
                 <ul>
-                    <li><a href="#overview">Overview</a></li>
                     <li><a href="#details">Details</a></li>
                     <li><a href="#analytics">Analytics</a></li>
                     <li><a href="#settings">Settings</a></li>
@@ -192,17 +203,14 @@
             <!-- Main Content Area -->
             <main id="main-content">
                 
-                <img src="/team/img/banner.webp" class="geo" style="width:100%;display:block;"><br><br>
-                
-                <h2>Main Content Area</h2>
+                <h2>#main-content</h2>
                 <p>This is where your primary content goes. The layout adjusts when the side navigation expands or collapses.</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
             </main>
         </div>
 
         <!-- Main Footer -->
         <footer id="main-footer">
-            <p>&copy; 2025 Your Application. All rights reserved.</p>
+            <p>&copy; <script>document.write(new Date().getFullYear())</script> #main-footer</p>
         </footer>
     </div>
 
