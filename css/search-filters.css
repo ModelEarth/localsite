@@ -46,10 +46,8 @@
 .showApps.active > .material-icons {
   color: #eee;
 }
-@media (prefers-color-scheme: dark) {
-  #filterFieldsHolder {
-    background-color: #333;
-  }
+.dark #filterFieldsHolder {
+  background-color: #333;
 }
 .filterFieldsHolderFixed {
   position: fixed;
