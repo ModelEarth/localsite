@@ -705,6 +705,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 #main-layout {
 	display: flex;
 	flex-direction: column;
+	overflow-y: auto; /* Allows #side-nav to avoid scrolling up, resulting in a space below #side-nav-footer */
 }
 #main-container {
 	display: flex;

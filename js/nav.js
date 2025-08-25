@@ -458,10 +458,12 @@ class StandaloneNavigation {
                                     <i class="nav-arrow" data-feather="chevron-right"></i>
                                 </button>
                                 <div class="subnav">
+                                    <div style="display:none" class="earth">
                                     <a href="${teamPath}projects/" class="subnav-link">
                                         <i class="subnav-icon" data-feather="users"></i>
                                         <span>Meetup Integration</span>
                                     </a>
+                                    </div>
                                     <a href="${teamPath}admin/server/" class="subnav-link">
                                         <i class="subnav-icon" data-feather="zap"></i>
                                         <span>Configure Server</span>
