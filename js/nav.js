@@ -321,20 +321,23 @@ class StandaloneNavigation {
                                 <div class="subnav">
                                     <a href="${rootPath}projects" class="subnav-link">
                                         <i class="subnav-icon" data-feather="globe"></i>
-                                        <span>Model.Earth Projects</span>
+                                        <span>Active Projects</span>
                                     </a>
                                     <a href="${rootPath}projects/hub/" class="subnav-link">
-                                        <i class="subnav-icon" data-feather="globe"></i>
+                                        <i class="subnav-icon" data-feather="target"></i>
                                         <span>Our Project Hub</span>
                                     </a>
-                                    <a href="${teamPath}/projects/#list=democracylab" class="subnav-link">
+                                    <a href="${teamPath}projects/#list=democracylab" class="subnav-link">
                                         <i class="subnav-icon" data-feather="code"></i>
                                         <span>Democracy Lab Projects</span>
                                     </a>
+                                    <div style="display:none">
+                                    Before removing, investigate via: Reveal opportunities section on the team/index.html page
                                     <a href="${teamPath}#projects/opportunities" class="subnav-link">
                                         <i class="subnav-icon" data-feather="target"></i>
                                         <span>Opportunities</span>
                                     </a>
+                                    </div>
                                     <a href="${teamPath}#projects/assigned-tasks" class="subnav-link">
                                         <i class="subnav-icon" data-feather="check-square"></i>
                                         <span>Assigned Tasks</span>
