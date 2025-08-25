@@ -217,25 +217,19 @@ body {
     display: flex;
     height: 100vh;
     flex-direction: row;
-    max-width: 100vw;
 }
 
 main, .flexmain {
     flex-grow: 1; /* for footer */
 }
 header, main, .flexfooter {
-    flex-shrink: 0; /* prevent shrinking if content is larger than the screen. */
+    /* Resulted in massive images */
+    /* flex-shrink: 0; */ /* prevent shrinking if content is larger than the screen. */
 }
 #main-header {
   position: sticky;
   top: 0;
   z-index: 1000;
-}
-#side-nav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-right: 1px solid #dedede;
 }
 #main-content {
   width: 100%;
@@ -551,7 +545,7 @@ summary::-webkit-details-marker {
   color: #fff;
 }
 .dark .greyDiv { /* Left side nav */
-  background-color: #444;
+  background-color: #444 !important;
   border: 0px;
 }
 .dark .greyDiv a:link, .greyDiv a:visited, .dark .content .greyDiv a:link, .dark .content .greyDiv a:visited {
@@ -1310,21 +1304,17 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .headerbar a:link:hover, .headerbar a:visited:hover {
     color: #444;
 }
-/* Seems that brave darkmode ignores the use of prefers-color-scheme: dark */
-@media (not (prefers-color-scheme: dark)) {
-  .headerbar {
-    background: #fff;
-    border-bottom: 1px solid rgb(238,238,238/95%); /* #eee */
-    border-bottom: 1px solid rgb(238,238,238);
-    background-color: #eee;
-  }
+.headerbar {
+  border-bottom: 1px solid rgb(238,238,238/95%); /* #eee */
+  border-bottom: 1px solid rgb(238,238,238);
+  background-color: #eee;
+}
+.dark .headerbar {
+  background: #222;
+  border-bottom: 1px solid #333;
 }
 .headerbarheight {
   min-height:80px;
-}
-.dark .headerbar {
-  background: #333;
-  border-bottom: 1px solid #333;
 }
 .headerbarhide {
   display: none !important;

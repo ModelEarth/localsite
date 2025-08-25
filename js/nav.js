@@ -165,15 +165,15 @@ class StandaloneNavigation {
     }
     
     handleMobileChange() {
-        const sidebar = document.querySelector('.sidebar');
+        const sidenav = document.querySelector('#side-nav');
         const overlay = document.querySelector('.mobile-overlay');
         
         if (this.isMobile) {
-            sidebar?.classList.remove('collapsed', 'hovered', 'locked');
+            sidenav?.classList.remove('collapsed', 'hovered', 'locked', 'expanded');
             overlay?.classList.remove('active');
             this.isLocked = false;
         } else {
-            sidebar?.classList.remove('mobile-open');
+            sidenav?.classList.remove('mobile-open');
             this.mobileOpen = false;
         }
     }
@@ -273,7 +273,7 @@ class StandaloneNavigation {
         ].filter(Boolean).join(' ');
         
         const navHTML = `
-            <div class="sidebar ${initialClasses}" id="side-nav">
+            <div class="sidebar ${initialClasses}${!this.isCollapsed && !this.isMobile ? ' expanded' : ''}" id="side-nav">
                 <!--
                 <div class="sidebar-header" ${isExternalSite ? 'style="display: none;"' : ''}>
                     <div class="logo">
@@ -283,205 +283,207 @@ class StandaloneNavigation {
                 </div>
                 -->
 
-                <div id="side-nav-menu">
-                    <div class="nav-section">
-                        <div class="nav-item">
-                            <button class="nav-link" data-section="home" data-href="${teamPath}#home">
-                                <i class="nav-icon" data-feather="home"></i>
-                                <span class="nav-text">Welcome</span>
-                                <i class="nav-arrow" data-feather="chevron-right"></i>
-                            </button>
-                            <div class="subnav">
-                                <a href="${teamPath}#home" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="smile"></i>
-                                    <span>Welcome</span>
-                                </a>
-                                <a href="${teamPath}#home/documentation" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="book"></i>
-                                    <span>Getting Started</span>
-                                </a>
-                                <div style="display:none" class="earth">
-                                <a href="${rootPath}projects" style="display:none" class="subnav-link earth">
-                                    <i class="subnav-icon" data-feather="bar-chart-2"></i>
-                                    <span>Active Projects</span>
-                                </a>
+                <div id="side-nav-content">
+                    <div id="side-nav-menu">
+                        <div class="nav-section">
+                            <div class="nav-item">
+                                <button class="nav-link" data-section="home" data-href="${teamPath}#home">
+                                    <i class="nav-icon" data-feather="home"></i>
+                                    <span class="nav-text">Welcome</span>
+                                    <i class="nav-arrow" data-feather="chevron-right"></i>
+                                </button>
+                                <div class="subnav">
+                                    <a href="${teamPath}#home" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="smile"></i>
+                                        <span>Welcome</span>
+                                    </a>
+                                    <a href="${teamPath}#home/documentation" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="book"></i>
+                                        <span>Getting Started</span>
+                                    </a>
+                                    <div style="display:none" class="earth">
+                                    <a href="${rootPath}projects" style="display:none" class="subnav-link earth">
+                                        <i class="subnav-icon" data-feather="bar-chart-2"></i>
+                                        <span>Active Projects</span>
+                                    </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="nav-section earth" style="display:none">
-                        <div class="nav-item">
-                            <button class="nav-link" data-section="projects" data-href="${teamPath}#projects">
-                                <i class="nav-icon" data-feather="folder"></i>
-                                <span class="nav-text">Projects</span>
-                                <i class="nav-arrow" data-feather="chevron-right"></i>
-                            </button>
-                            <div class="subnav">
-                                <a href="${rootPath}projects" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="globe"></i>
-                                    <span>Model.Earth Projects</span>
-                                </a>
-                                <a href="${rootPath}projects/hub/" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="globe"></i>
-                                    <span>Our Project Hub</span>
-                                </a>
-                                <a href="${teamPath}/projects/#list=democracylab" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="code"></i>
-                                    <span>Democracy Lab Projects</span>
-                                </a>
-                                <a href="${teamPath}#projects/opportunities" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="target"></i>
-                                    <span>Opportunities</span>
-                                </a>
-                                <a href="${teamPath}#projects/assigned-tasks" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="check-square"></i>
-                                    <span>Assigned Tasks</span>
-                                </a>
-                                <!--
-                                <a href="/data-commons/docs/data/" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="calendar"></i>
-                                    <span>UN Timelines</span>
-                                </a>
-                                -->
+                        <div class="nav-section earth" style="display:none">
+                            <div class="nav-item">
+                                <button class="nav-link" data-section="projects" data-href="${teamPath}#projects">
+                                    <i class="nav-icon" data-feather="folder"></i>
+                                    <span class="nav-text">Projects</span>
+                                    <i class="nav-arrow" data-feather="chevron-right"></i>
+                                </button>
+                                <div class="subnav">
+                                    <a href="${rootPath}projects" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="globe"></i>
+                                        <span>Model.Earth Projects</span>
+                                    </a>
+                                    <a href="${rootPath}projects/hub/" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="globe"></i>
+                                        <span>Our Project Hub</span>
+                                    </a>
+                                    <a href="${teamPath}/projects/#list=democracylab" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="code"></i>
+                                        <span>Democracy Lab Projects</span>
+                                    </a>
+                                    <a href="${teamPath}#projects/opportunities" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="target"></i>
+                                        <span>Opportunities</span>
+                                    </a>
+                                    <a href="${teamPath}#projects/assigned-tasks" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="check-square"></i>
+                                        <span>Assigned Tasks</span>
+                                    </a>
+                                    <!--
+                                    <a href="/data-commons/docs/data/" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="calendar"></i>
+                                        <span>UN Timelines</span>
+                                    </a>
+                                    -->
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="nav-section earth" style="display:none">
-                        <div class="nav-item">
-                            <button class="nav-link" data-section="people" data-href="${teamPath}#people">
-                                <i class="nav-icon" data-feather="users"></i>
-                                <span class="nav-text">People & Places</span>
-                                <i class="nav-arrow" data-feather="chevron-right"></i>
-                            </button>
-                            <div class="subnav">
-                                <a href="${rootPath}projects/#list=modelteam" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="map"></i>
-                                    <span>Model Team</span>
-                                </a>
-                                <a href="${teamPath}#people/people" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="user"></i>
-                                    <span>People</span>
-                                </a>
-                                <a href="${teamPath}#people/teams" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="users"></i>
-                                    <span>Teams</span>
-                                </a>
-                                <a href="${teamPath}#people/organizations" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="grid"></i>
-                                    <span>Organizations</span>
-                                </a>
+                        <div class="nav-section earth" style="display:none">
+                            <div class="nav-item">
+                                <button class="nav-link" data-section="people" data-href="${teamPath}#people">
+                                    <i class="nav-icon" data-feather="users"></i>
+                                    <span class="nav-text">People & Places</span>
+                                    <i class="nav-arrow" data-feather="chevron-right"></i>
+                                </button>
+                                <div class="subnav">
+                                    <a href="${rootPath}projects/#list=modelteam" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="map"></i>
+                                        <span>Model Team</span>
+                                    </a>
+                                    <a href="${teamPath}#people/people" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="user"></i>
+                                        <span>People</span>
+                                    </a>
+                                    <a href="${teamPath}#people/teams" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="users"></i>
+                                        <span>Teams</span>
+                                    </a>
+                                    <a href="${teamPath}#people/organizations" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="grid"></i>
+                                        <span>Organizations</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="nav-section earth" style="display:none">
-                        <div class="nav-item">
-                            <button class="nav-link" data-section="account" data-href="${teamPath}#account">
-                                <i class="nav-icon" data-feather="settings"></i>
-                                <span class="nav-text">My Account</span>
-                                <i class="nav-arrow" data-feather="chevron-right"></i>
-                            </button>
-                            <div class="subnav">
-                                <a href="${teamPath}#account/preferences" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="sliders"></i>
-                                    <span>Preferences</span>
-                                </a>
-                                <a href="${teamPath}#account/skills" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="award"></i>
-                                    <span>Skills</span>
-                                </a>
-                                <a href="${teamPath}#account/interests" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="heart"></i>
-                                    <span>Interests</span>
-                                </a>
+                        <div class="nav-section earth" style="display:none">
+                            <div class="nav-item">
+                                <button class="nav-link" data-section="account" data-href="${teamPath}#account">
+                                    <i class="nav-icon" data-feather="settings"></i>
+                                    <span class="nav-text">My Account</span>
+                                    <i class="nav-arrow" data-feather="chevron-right"></i>
+                                </button>
+                                <div class="subnav">
+                                    <a href="${teamPath}#account/preferences" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="sliders"></i>
+                                        <span>Preferences</span>
+                                    </a>
+                                    <a href="${teamPath}#account/skills" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="award"></i>
+                                        <span>Skills</span>
+                                    </a>
+                                    <a href="${teamPath}#account/interests" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="heart"></i>
+                                        <span>Interests</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="nav-section">
-                        <div class="nav-item">
-                            <button class="nav-link" data-section="realitystream" data-href="${teamPath}projects/#list=all">
-                                <i class="nav-icon" data-feather="activity"></i>
-                                <span class="nav-text">Data Insights</span>
-                                <i class="nav-arrow" data-feather="chevron-right"></i>
-                            </button>
-                            <div class="subnav">
-                                <div style="display:none" class="geo">
-                                <a href="${teamPath}projects/#list=film-scouting" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="users"></i>
-                                    <span>Film Scouting</span>
-                                </a>
+                        <div class="nav-section">
+                            <div class="nav-item">
+                                <button class="nav-link" data-section="realitystream" data-href="${teamPath}projects/#list=all">
+                                    <i class="nav-icon" data-feather="activity"></i>
+                                    <span class="nav-text">Data Insights</span>
+                                    <i class="nav-arrow" data-feather="chevron-right"></i>
+                                </button>
+                                <div class="subnav">
+                                    <div style="display:none" class="geo">
+                                    <a href="${teamPath}projects/#list=film-scouting" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="users"></i>
+                                        <span>Film Scouting</span>
+                                    </a>
+                                    </div>
+                                    <div style="display:none" class="geo">
+                                    <a href="${teamPath}projects/#list=geo" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="heart"></i>
+                                        <span>Location Visits</span>
+                                    </a>
+                                    </div>
+                                    <div style="display:none" class="geo">
+                                    <a href="${teamPath}projects/map/#list=cities" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="heart"></i>
+                                        <span>Location Visits (Map)</span>
+                                    </a>
+                                    </div>
+                                    <div style="display:none" class="geo">
+                                    <a href="${rootPath}localsite/info/#state=GA" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="trending-up"></i>
+                                        <span>Industry Comparisons</span>
+                                    </a>
+                                    </div>
+                                    <div style="display:none" class="earth">
+                                    <a href="${rootPath}localsite/info/" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="trending-up"></i>
+                                        <span>Industry Comparisons</span>
+                                    </a>
+                                    </div>
+                                    <div style="display:none" class="earth">
+                                    <a href="${rootPath}realitystream/models/" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="trending-up"></i>
+                                        <span>Forecasting Models</span>
+                                    </a>
+                                    </div>
                                 </div>
-                                <div style="display:none" class="geo">
-                                <a href="${teamPath}projects/#list=geo" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="heart"></i>
-                                    <span>Location Visits</span>
-                                </a>
-                                </div>
-                                <div style="display:none" class="geo">
-                                <a href="${teamPath}projects/map/#list=cities" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="heart"></i>
-                                    <span>Location Visits (Map)</span>
-                                </a>
-                                </div>
-                                <div style="display:none" class="geo">
-                                <a href="${rootPath}localsite/info/#state=GA" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="trending-up"></i>
-                                    <span>Industry Comparisons</span>
-                                </a>
-                                </div>
-                                <div style="display:none" class="earth">
-                                <a href="${rootPath}localsite/info/" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="trending-up"></i>
-                                    <span>Industry Comparisons</span>
-                                </a>
-                                </div>
-                                <div style="display:none" class="earth">
-                                <a href="${rootPath}realitystream/models/" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="trending-up"></i>
-                                    <span>Forecasting Models</span>
-                                </a>
-                                </div>
+                                
                             </div>
-                            
                         </div>
-                    </div>
-                    
-                    <div class="nav-section">
-                        <div class="nav-item">
-                            <button class="nav-link ${this.options.currentPage === 'admin' ? 'active' : ''}" data-section="admin" data-href="${teamPath}admin">
-                                <i class="nav-icon" data-feather="tool"></i>
-                                <span class="nav-text">Partner Tools</span>
-                                <i class="nav-arrow" data-feather="chevron-right"></i>
-                            </button>
-                            <div class="subnav">
-                                <a href="${teamPath}projects/" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="users"></i>
-                                    <span>Meetup Integration</span>
-                                </a>
-                                <a href="${teamPath}admin/server/" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="zap"></i>
-                                    <span>Configure Server</span>
-                                </a>
-                                <a href="${teamPath}admin/sql/panel/" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="database"></i>
-                                    <span>Database Admin</span>
-                                </a>
-                                <a href="${teamPath}admin/import-data.html" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="upload"></i>
-                                    <span>Data Import</span>
-                                </a>
-                                <a href="${teamPath}admin/log-output/" class="subnav-link">
-                                    <i class="subnav-icon" data-feather="monitor"></i>
-                                    <span>Log Monitor</span>
-                                </a>
+                        
+                        <div class="nav-section">
+                            <div class="nav-item">
+                                <button class="nav-link ${this.options.currentPage === 'admin' ? 'active' : ''}" data-section="admin" data-href="${teamPath}admin">
+                                    <i class="nav-icon" data-feather="tool"></i>
+                                    <span class="nav-text">Partner Tools</span>
+                                    <i class="nav-arrow" data-feather="chevron-right"></i>
+                                </button>
+                                <div class="subnav">
+                                    <a href="${teamPath}projects/" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="users"></i>
+                                        <span>Meetup Integration</span>
+                                    </a>
+                                    <a href="${teamPath}admin/server/" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="zap"></i>
+                                        <span>Configure Server</span>
+                                    </a>
+                                    <a href="${teamPath}admin/sql/panel/" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="database"></i>
+                                        <span>Database Admin</span>
+                                    </a>
+                                    <a href="${teamPath}admin/import-data.html" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="upload"></i>
+                                        <span>Data Import</span>
+                                    </a>
+                                    <a href="${teamPath}admin/log-output/" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="monitor"></i>
+                                        <span>Log Monitor</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div id="side-nav-footer" class="sidebar-footer">
                     <button class="sidebar-toggle" id="sidebar-toggle">
                         <i data-feather="chevrons-left"></i>
@@ -530,11 +532,16 @@ class StandaloneNavigation {
 
         document.body.insertAdjacentHTML('afterbegin', navHTML);
 
-        // Set initial body class for headerbar positioning
+        // Set initial body class for headerbar positioning and sidenav expanded state
         if (this.isCollapsed && !this.isMobile) {
-            document.body.classList.add('sidebar-collapsed');
+            document.body.classList.add('sidenav-collapsed');
         } else {
-            document.body.classList.add('sidebar-expanded');
+            document.body.classList.add('sidenav-expanded');
+            // Also add expanded class to sidenav when not collapsed
+            const sidenav = document.getElementById('side-nav');
+            if (sidenav) {
+                sidenav.classList.add('expanded');
+            }
         }
 
         // Check for custom favicon from environment/config
@@ -697,30 +704,30 @@ class StandaloneNavigation {
         this.eventListeners.push({ element: window, event: 'resize', handler: resizeHandler });
         
         // Navigation hover effects
-        const sidebar = document.getElementById('side-nav');
-        if (sidebar) {
+        const sidenav = document.getElementById('side-nav');
+        if (sidenav) {
             const mouseEnterHandler = () => {
                 if (this.isCollapsed && !this.isLocked && !this.isMobile) {
-                    sidebar.classList.add('hovered');
+                    sidenav.classList.add('hovered');
                     // Update body class for headerbar positioning
-                    document.body.classList.add('sidebar-hovered');
+                    document.body.classList.add('sidenav-hovered');
                 }
             };
             
             const mouseLeaveHandler = () => {
                 if (this.isCollapsed && !this.isLocked && !this.isMobile) {
-                    sidebar.classList.remove('hovered');
+                    sidenav.classList.remove('hovered');
                     // Update body class for headerbar positioning
-                    document.body.classList.remove('sidebar-hovered');
+                    document.body.classList.remove('sidenav-hovered');
                 }
             };
             
-            sidebar.addEventListener('mouseenter', mouseEnterHandler);
-            sidebar.addEventListener('mouseleave', mouseLeaveHandler);
+            sidenav.addEventListener('mouseenter', mouseEnterHandler);
+            sidenav.addEventListener('mouseleave', mouseLeaveHandler);
             
             this.eventListeners.push(
-                { element: sidebar, event: 'mouseenter', handler: mouseEnterHandler },
-                { element: sidebar, event: 'mouseleave', handler: mouseLeaveHandler }
+                { element: sidenav, event: 'mouseenter', handler: mouseEnterHandler },
+                { element: sidenav, event: 'mouseleave', handler: mouseLeaveHandler }
             );
         }
         
@@ -814,8 +821,8 @@ class StandaloneNavigation {
         // Global click handler for mobile menu
         const globalClickHandler = (e) => {
             if (this.isMobile && this.mobileOpen) {
-                const sidebar = document.getElementById('side-nav');
-                if (sidebar && !sidebar.contains(e.target)) {
+                const sidenav = document.getElementById('side-nav');
+                if (sidenav && !sidenav.contains(e.target)) {
                     this.closeMobileMenu();
                 }
             }
@@ -849,25 +856,26 @@ class StandaloneNavigation {
             return;
         }
         
-        const sidebar = document.getElementById('side-nav');
-        if (sidebar) {
+        const sidenav = document.getElementById('side-nav');
+        if (sidenav) {
             if (this.isCollapsed) {
-                // Expanding - unlock if locked
+                // Expanding - add expanded class
                 this.isCollapsed = false;
                 this.isLocked = false;
-                sidebar.classList.remove('collapsed', 'locked', 'hovered');
+                sidenav.classList.remove('collapsed', 'locked', 'hovered');
+                sidenav.classList.add('expanded');
                 // Update body class for headerbar positioning
-                document.body.classList.remove('sidebar-collapsed');
-                document.body.classList.add('sidebar-expanded');
+                document.body.classList.remove('sidenav-collapsed');
+                document.body.classList.add('sidenav-expanded');
             } else {
-                // Collapsing - lock it collapsed
+                // Collapsing - remove expanded class and lock it collapsed
                 this.isCollapsed = true;
                 this.isLocked = true;
-                sidebar.classList.add('collapsed', 'locked');
-                sidebar.classList.remove('hovered');
+                sidenav.classList.remove('expanded', 'hovered');
+                sidenav.classList.add('collapsed', 'locked');
                 // Update body class for headerbar positioning
-                document.body.classList.remove('sidebar-expanded');
-                document.body.classList.add('sidebar-collapsed');
+                document.body.classList.remove('sidenav-expanded');
+                document.body.classList.add('sidenav-collapsed');
             }
             
             // Update toggle icon with debouncing
@@ -883,14 +891,15 @@ class StandaloneNavigation {
     }
     
     unlockSidebar() {
-        const sidebar = document.getElementById('side-nav');
-        if (sidebar) {
+        const sidenav = document.getElementById('side-nav');
+        if (sidenav) {
             this.isCollapsed = false;
             this.isLocked = false;
-            sidebar.classList.remove('collapsed', 'locked', 'hovered');
+            sidenav.classList.remove('collapsed', 'locked', 'hovered');
+            sidenav.classList.add('expanded');
             // Update body class for headerbar positioning
-            document.body.classList.remove('sidebar-collapsed');
-            document.body.classList.add('sidebar-expanded');
+            document.body.classList.remove('sidenav-collapsed');
+            document.body.classList.add('sidenav-expanded');
             
             // Update toggle icon with debouncing
             this.debouncedUpdateToggleIcon();
@@ -919,9 +928,9 @@ class StandaloneNavigation {
         const sidebarToggle = document.getElementById('sidebar-toggle');
         if (!sidebarToggle) return;
         
-        // Check actual sidebar state from DOM
-        const sidebar = document.getElementById('side-nav');
-        const actuallyCollapsed = sidebar?.classList.contains('collapsed') || false;
+        // Check actual sidenav state from DOM
+        const sidenav = document.getElementById('side-nav');
+        const actuallyCollapsed = sidenav?.classList.contains('collapsed') || false;
         
         // Sync the class property with actual DOM state
         this.isCollapsed = actuallyCollapsed;
@@ -942,22 +951,22 @@ class StandaloneNavigation {
     }
     
     toggleMobileMenu() {
-        const sidebar = document.getElementById('side-nav');
+        const sidenav = document.getElementById('side-nav');
         const overlay = document.getElementById('mobile-overlay');
         
         this.mobileOpen = !this.mobileOpen;
         
-        sidebar?.classList.toggle('mobile-open', this.mobileOpen);
+        sidenav?.classList.toggle('mobile-open', this.mobileOpen);
         overlay?.classList.toggle('active', this.mobileOpen);
     }
     
     closeMobileMenu() {
-        const sidebar = document.getElementById('side-nav');
+        const sidenav = document.getElementById('side-nav');
         const overlay = document.getElementById('mobile-overlay');
         
         this.mobileOpen = false;
         
-        sidebar?.classList.remove('mobile-open');
+        sidenav?.classList.remove('mobile-open');
         overlay?.classList.remove('active');
     }
     

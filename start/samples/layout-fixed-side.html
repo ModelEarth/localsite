@@ -11,23 +11,25 @@
             box-sizing: border-box;
         }
         
-        body {
+        .flexbody {
             font-family: Arial, sans-serif;
             height: 100vh;
             display: flex;
-            flex-direction: row;
-            margin: 0;
+            flex-direction: column;
         }
         
         /* Side Navigation */
         #side-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 60px;
             height: 100vh;
             background: #2c3e50;
             transition: width 0.3s ease;
+            z-index: 1000;
             display: flex;
             flex-direction: column;
-            flex-shrink: 0;
         }
         
         #side-nav.expanded {
@@ -59,11 +61,15 @@
         
         /* Main Layout Container */
         #main-layout {
-            flex: 1;
+            margin-left: 60px;
+            transition: margin-left 0.3s ease;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            overflow: hidden;
+        }
+        
+        #main-layout.nav-expanded {
+            margin-left: 250px;
         }
         
         /* Header */
@@ -114,16 +120,10 @@
         #main-content {
             flex: 1;
             padding: 20px;
+            
             max-width: 1200px;
             margin: 0 auto;
             width: 100%;
-            overflow-x: hidden;
-        }
-        
-        /* Prevent images from exceeding main-content width */
-        #main-content img {
-            max-widthX: 100%;
-            height: auto;
         }
         
         /* Footer */
@@ -136,33 +136,21 @@
         
         /* Responsive adjustments */
         @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-            
             #side-nav {
-                width: 100%;
-                height: auto;
-                order: 2;
+                transform: translateX(-100%);
             }
             
             #side-nav.expanded {
-                width: 100%;
+                transform: translateX(0);
             }
             
             #main-layout {
-                order: 1;
+                margin-left: 0;
             }
-        }
-        .mobile-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            display: none;
+            
+            #main-layout.nav-expanded {
+                margin-left: 0;
+            }
         }
         /* Wrapper div for vertical text positioning */
         .vertical-text-holder {

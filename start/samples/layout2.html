@@ -106,14 +106,13 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            color: #eee;
-            background: #555;
         }
         
         /* Main Content Area */
         #main-content {
             flex: 1;
             padding: 20px;
+            background: #ffffff;
             max-width: 1200px;
             margin: 0 auto;
             width: 100%;
@@ -154,45 +153,23 @@
                 order: 1;
             }
         }
-        .mobile-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            display: none;
-        }
-        /* Wrapper div for vertical text positioning */
-        .vertical-text-holder {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100px;
-            width: 40px;
-            margin: 60px auto 0 auto;
-            position: relative;
-        }
-        .vertical-text {
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            transform: rotate(-90deg);
-            transform-origin: center;
-            white-space: nowrap;
-        }
     </style>
 </head>
-<body class="flexbody">
+<body>
     <!-- Side Navigation -->
     <nav id="side-nav">
-        
+        <button id="nav-toggle" onclick="toggleNav()">☰</button>
         <div id="side-nav-content">
-            <div class="vertical-text-holder"><span class="vertical-text">#side-nav-content</span></div>
+            <ul>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Projects</a></li>
+                <li><a href="#">Tasks</a></li>
+                <li><a href="#">Reports</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
         </div>
         <footer id="side-nav-footer">
-            <button id="nav-toggle" onclick="toggleNav()">☰</button>
+            <div>Side Footer Content</div>
         </footer>
     </nav>
 
@@ -200,14 +177,16 @@
     <div id="main-layout">
         <!-- Main Header -->
         <header id="main-header">
-            <h1>#main-header</h1>
+            <h1>Application Header</h1>
         </header>
 
         <!-- Main Container (holds section nav and main content) -->
         <div id="main-container">
+            <img src="../../../team/img/banner.webp" class="geo" style="width:100%;displayX:none">
             <!-- Section Navigation -->
             <nav id="section-nav">
                 <ul>
+                    <li><a href="#overview">Overview</a></li>
                     <li><a href="#details">Details</a></li>
                     <li><a href="#analytics">Analytics</a></li>
                     <li><a href="#settings">Settings</a></li>
@@ -216,25 +195,27 @@
 
             <!-- Main Content Area -->
             <main id="main-content">
-                
-                <h2>#main-content</h2>
+                <h2>Main Content Area2</h2>
                 <p>This is where your primary content goes. The layout adjusts when the side navigation expands or collapses.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                
+
             </main>
+
+            
+
         </div>
 
         <!-- Main Footer -->
         <footer id="main-footer">
-            <p>&copy; <script>document.write(new Date().getFullYear())</script> #main-footer</p>
+            <p>&copy; 2025 Your Application. All rights reserved.</p>
         </footer>
     </div>
 
     <script>
         function toggleNav() {
             const sideNav = document.getElementById('side-nav');
-            const mainLayout = document.getElementById('main-layout');
-            
             sideNav.classList.toggle('expanded');
-            mainLayout.classList.toggle('nav-expanded');
         }
     </script>
 </body>
