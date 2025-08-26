@@ -633,11 +633,9 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	float:left;
 }
 .sidecolumnLeftScroll {
-    position:absolute;
+    position:sticky;
     top:0px; /* was 30px */
-    bottom:0px;
-    right:0px;
-    left:0px;
+    height: 100vh;
     overflow-y:scroll;
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none;  /* IE and Edge */
