@@ -477,7 +477,8 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 
 .main-nav {
-    width: 220px;
+    width: 190px;
+    min-width: 190px;
     padding-right: 0px;
 	topX:0;
 	leftX:0;
@@ -550,9 +551,6 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 .pagecolumnLowerX { /* same as #local-header */
 	top:79px;
-}
-#mapFilters {
-	min-height: 18px; /* prevents top of conent from overlapping 3-bar menu, allows left side to be tighter margin. */
 }
 .sideIconsLower {
   top:79px;
@@ -635,7 +633,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .sidecolumnLeftScroll {
     position:sticky;
     top:0px; /* was 30px */
-    height: 100vh;
+    height: calc(100vh - var(--header-offset-height, 79px)); /* Dynamically subtract header offset height */
     overflow-y:scroll;
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none;  /* IE and Edge */
