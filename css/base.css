@@ -378,7 +378,7 @@ h6 {
 .dark .sector-list .indicator-group {
   color: #bbb;
 }
-.dark .tabulator .tabulator-header {
+.dark .tabulator .tabulator-header, .dark .tabulator .tabulator-footer {
   background-color: transparent;
   border-bottom: 1px solid transparent;
 }

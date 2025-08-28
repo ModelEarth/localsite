@@ -26,7 +26,8 @@
 .dark {
     --bg-secondary: #555;
     --bg-tertiary: #555;
-    --text-secondary: #aaa;
+    --text-secondary: #6B7280; /* too light for icons on team/projects */
+    --text-secondary: #bbb;
     --text-primary: #eee;
 }
 /* Also in base.css */
@@ -58,9 +59,7 @@ header, footer {
 .headerbar { 
     left: 62px;
 }
-#sideIcons {
-    left: 64px !important; /* Without !important the 3-bar menu is not visible */
-}
+
 .sidenav-expanded .headerbar { 
     left: var(--side-nav-width, 245px);
 }
@@ -68,7 +67,20 @@ header, footer {
 .sidenav-expanded #sideIcons {
     left: var(--side-nav-width, 245px) !important; /* Without !important the 3-bar menu is not visible */
 }
-
+#sideIcons {
+    position:absolute;
+    left: 64px !important; /* Without !important the 3-bar menu is not visible */
+    width: 32px;
+}
+#pageControls {
+    displayX: flex;
+}
+#pageControls #sideIcons {
+    position: relative;
+    top: 0;
+    left: 0;
+    flex: 0 0 auto;
+}
 .sidebar {
     width: var(--sidebar-width);
     background: var(--bg-secondary);
