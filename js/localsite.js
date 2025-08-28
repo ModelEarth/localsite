@@ -117,7 +117,7 @@ var local_app = local_app || (function(module) {
             
             // Currently assuming all other ports don't have localsite folder.
             if ((location.host.indexOf('localhost') >= 0 && location.port == "8887") || location.host.indexOf('127.0.0.1') >= 0) {
-              theroot = "";
+              theroot = location.protocol + '//' + location.host;
             }
             return (theroot);
         },
@@ -1086,7 +1086,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         }
         waitForElm('#pageControls').then((elm) => {
           // Move to start of pageControls if exists
-          $('#pageControls').prepend($('#sideIcons'));
+          //$('#pageControls').prepend($('#sideIcons'));
         });
           
 

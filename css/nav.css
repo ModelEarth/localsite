@@ -73,13 +73,17 @@ header, footer {
     width: 32px;
 }
 #pageControls {
-    displayX: flex;
+    position: relative;
 }
+/* inserted into bar at top of content on team/projects and other pages */
 #pageControls #sideIcons {
     position: relative;
     top: 0;
-    left: 0;
+    left: 0 !important;
     flex: 0 0 auto;
+}
+#pageControls #showNavColumn {
+    padding: 0px;
 }
 .sidebar {
     width: var(--sidebar-width);
