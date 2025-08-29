@@ -552,14 +552,14 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .pagecolumnLowerX { /* same as #local-header */
 	top:79px;
 }
-.sideIconsLower {
+.sideIconsLowerX {
   top:79px;
 }
 @media (max-width: 600px) {
 	.pagecolumnLower {
 		top:64px;
 	}
-	.sideIconsLower {
+	.sideIconsLowerX {
 	 	top:4px;
 	}
 }

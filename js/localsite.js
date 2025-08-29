@@ -889,7 +889,9 @@ function loadLeafletAndMapFilters() {
     });
   }
 }
-
+if (typeof Cookies != 'undefined') {
+  alert(Cookies.get('sitelook'));
+};
 // WAIT FOR JQuery
 loadScript(theroot + 'js/jquery.min.js', function(results) {
   var waitForJQuery = setInterval(function () { // Waits for $ within jquery.min.js file to become available.
@@ -1082,7 +1084,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         }
 
         if (param.showLeftIcon != false) { // && param.showheader == "true"
-          $('body').prepend("<div id='sideIcons' class='noprint bothSideIcons'><div id='showNavColumn' class='showNavColumn' style='left:-28px;display:none'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border: 1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
+          $('body').prepend("<div id='sideIcons' class='noprint bothSideIcons' style='display:none'><div id='showNavColumn' class='showNavColumn' style='left:-28px;display:none'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border: 1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
         }
         waitForElm('#pageControls').then((elm) => {
           // Move to start of pageControls if exists
@@ -2942,8 +2944,15 @@ function applyColorSchemeClass() {
     setSitelook(siteLook);
 }
 
-// Run on load
-applyColorSchemeClass();
+// Run when body tag is available, but don't wait for entire DOM
+function waitForBody(callback) {
+    if (document.body) {
+        callback();
+    } else {
+        setTimeout(() => waitForBody(callback), 10);
+    }
+}
+waitForBody(applyColorSchemeClass);
 
 
 function setSitemode(sitemode) {
@@ -2956,7 +2965,12 @@ function setSitelook(siteLook) {
       siteLook = "default"
     }
     consoleLog("setSiteLook: " + siteLook);
-    $("#sitelook").val(siteLook);
+    
+    // Set sitelook select value
+    const sitelookElement = document.getElementById("sitelook");
+    if (sitelookElement) {
+        sitelookElement.value = siteLook;
+    }
 
     // Force the brower to reload by changing version number. Avoid on localhost for in-browser editing. If else.
     //var forceReload = (location.host.indexOf('localhost') >= 0 ? "" : "?v=3");
@@ -2969,26 +2983,35 @@ function setSitelook(siteLook) {
       siteLook = "dark"
     }
     if (siteLook == "dark") {
-        $('.sitebasemap').val("dark").change();
+        // Set sitebasemap value and trigger change event
+        const sitebasemapElements = document.querySelectorAll('.sitebasemap');
+        sitebasemapElements.forEach(element => {
+            element.value = "dark";
+            element.dispatchEvent(new Event('change'));
+        });
+        
         //toggleVideo("show","nochange");
-        $("body").addClass("dark");
+        document.body.classList.add("dark");
         //removeElement('/localsite/css/light.css');
         includeCSS3('/localsite/css/bootstrap.darkly.min.css');
-        $("#css-site-dark-css").removeAttr('disabled');
-        $("#css-site-green-css").attr("disabled", "disabled");
-        $("#css-site-plain-css").attr("disabled", "disabled");
-        $('.searchTextHolder').append($('.searchTextMove'));
+  
+        // Move search text elements
+        const searchTextHolder = document.querySelector('.searchTextHolder');
+        const searchTextMove = document.querySelector('.searchTextMove');
+        if (searchTextHolder && searchTextMove) {
+            searchTextHolder.appendChild(searchTextMove);
+        }
     } else if (siteLook == "default") {
-        $("body").removeClass("dark");
+        document.body.classList.remove("dark");
         removeElement('/localsite/css/bootstrap.darkly.min.css');
-        //$("#css-site-green-css").removeAttr('disabled');
-        //$("#css-site-dark-css").attr("disabled", "disabled");
-        //$("#css-site-plain-css").attr("disabled", "disabled");
-        //$('.searchTextHolder').append($('.searchTextMove'));
     } else { // Light
-        $("body").removeClass("dark");
+        document.body.classList.remove("dark");
         removeElement('/localsite/css/bootstrap.darkly.min.css');
-        //$('.sitebasemap').val("positron_light_nolabels").change();
+        //const sitebasemapElements = document.querySelectorAll('.sitebasemap');
+        //sitebasemapElements.forEach(element => {
+        //    element.value = "positron_light_nolabels";
+        //    element.dispatchEvent(new Event('change'));
+        //});
     }
 }
 function setDevmode(devmode) {
