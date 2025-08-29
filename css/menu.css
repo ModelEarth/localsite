@@ -569,6 +569,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	height: 37px;
  	opacity: .3;
  	cursor: pointer;
+ 	position: relative;
  	z-index: 1001;
 }
 .showList {
