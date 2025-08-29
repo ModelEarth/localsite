@@ -2932,22 +2932,18 @@ function initSitelook() {
     }
 }
 
-// TO DO: Adjust to override sitemode setting - flashes briefly currently.
+// Update automatically whenever mode change occurs on user computer
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyColorSchemeClass);
 function applyColorSchemeClass() {
-  document.addEventListener("DOMContentLoaded", () => {
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      document.body.classList.add("dark");
-    } else {
-      document.body.classList.remove("dark");
+    let siteLook = Cookies.get('sitelook');
+    if (!siteLook) {
+        siteLook = "default";
     }
-  });
+    setSitelook(siteLook);
 }
 
 // Run on load
 applyColorSchemeClass();
-
-// Update automatically if user changes their system preference
-window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyColorSchemeClass);
 
 
 function setSitemode(sitemode) {
@@ -2959,15 +2955,19 @@ function setSitelook(siteLook) {
     if (!siteLook) {
       siteLook = "default"
     }
-    if (siteLook == "default" && (Cookies.get('modelsite') == "dreamstudio" || location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0)) {
-      siteLook = "dark"
-    }
     consoleLog("setSiteLook: " + siteLook);
     $("#sitelook").val(siteLook);
 
     // Force the brower to reload by changing version number. Avoid on localhost for in-browser editing. If else.
-    var forceReload = (location.host.indexOf('localhost') >= 0 ? "" : "?v=3");
-    $("body").removeClass("dark");
+    //var forceReload = (location.host.indexOf('localhost') >= 0 ? "" : "?v=3");
+    
+    if (siteLook == "computer") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        siteLook = "dark"
+      }
+    } else if (siteLook == "default" && (Cookies.get('modelsite') == "dreamstudio" || location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0)) {
+      siteLook = "dark"
+    }
     if (siteLook == "dark") {
         $('.sitebasemap').val("dark").change();
         //toggleVideo("show","nochange");
@@ -2978,39 +2978,18 @@ function setSitelook(siteLook) {
         $("#css-site-green-css").attr("disabled", "disabled");
         $("#css-site-plain-css").attr("disabled", "disabled");
         $('.searchTextHolder').append($('.searchTextMove'));
-    } else if (siteLook == "gc") {
-        $('.sitebasemap').val("osm").change();
-        //toggleVideo("hide","pauseVideo");
-        //includeCSS3(root + 'css/site-green.css' + forceReload);
-        $("#css-site-green-css").removeAttr('disabled');
-        $("#css-site-dark-css").attr("disabled", "disabled");
-        $("#css-site-plain-css").attr("disabled", "disabled");
-        $('.searchTextHolder').append($('.searchTextMove'));
     } else if (siteLook == "default") {
-        //removeElement('/localsite/css/light.css');
+        $("body").removeClass("dark");
         removeElement('/localsite/css/bootstrap.darkly.min.css');
-        $("#css-site-green-css").removeAttr('disabled');
-        $("#css-site-dark-css").attr("disabled", "disabled");
-        $("#css-site-plain-css").attr("disabled", "disabled");
+        //$("#css-site-green-css").removeAttr('disabled');
+        //$("#css-site-dark-css").attr("disabled", "disabled");
+        //$("#css-site-plain-css").attr("disabled", "disabled");
         //$('.searchTextHolder').append($('.searchTextMove'));
     } else { // Light
-        //includeCSS3(root + 'css/light.css'); // + forceReload
+        $("body").removeClass("dark");
         removeElement('/localsite/css/bootstrap.darkly.min.css');
-        //removeElement(root + 'css/site-dark.css');
-
-        $('.sitebasemap').val("positron_light_nolabels").change();
-        //includeCSS3(root + 'css/site-plain.css' + forceReload);
-
-        /*
-        $("#css-site-plain-css").removeAttr('disabled');
-        $("#css-site-dark-css").attr("disabled", "disabled");
-        $("#css-site-green-css").attr("disabled", "disabled");
-        */
-
-        //$(".layoutTabHolder").show();
+        //$('.sitebasemap').val("positron_light_nolabels").change();
     }
-    //setTimeout(function(){ updateOffsets(); }, 200); // Allows time for css file to load.
-    //setTimeout(function(){ updateOffsets(); }, 4000);
 }
 function setDevmode(devmode) {
   if (devmode == "dev") {
