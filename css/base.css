@@ -243,7 +243,14 @@ td {
   vertical-align: top;
 }
 textarea {
-    border-color: #777;
+  border-color: #777;
+}
+.dark textarea {
+  color: #eee;
+  background-color: #222;
+  border-color: #222;
+  border-left: 4px solid green;
+  border-radius: 6px;
 }
 .textInput {
   font-size: 15px;
