@@ -113,7 +113,6 @@ header, footer {
 #side-nav {
   display:flex;
   height: 100vh;
-  top: 0;
   z-index: 4000;
   border-right: 1px solid #dedede;
   width: 64px;
