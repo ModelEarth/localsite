@@ -490,6 +490,22 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 @media (max-width: 600px) {
 	.main-nav {
 		width: 100%;
+		min-width: 100%;
+	}
+	#showSideFromHeader i {
+		margin-top: 4px;
+	}
+	#showSideFromHeader i {
+	    font-size: 40px;
+	    min-width: 48px;
+	}
+	.headerbarheight {
+		height: 60px;
+		min-height: 60px;
+	}
+	.close-X-sm { /* .hideSide */
+		padding: 15px;
+		font-size: 24px;
 	}
 }
 .listcolumn {
@@ -554,14 +570,6 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 .sideIconsLowerX {
   top:79px;
-}
-@media (max-width: 600px) {
-	.pagecolumnLower {
-		top:64px;
-	}
-	.sideIconsLowerX {
-	 	top:4px;
-	}
 }
 #showNavColumn {
 	pointer-events: auto;

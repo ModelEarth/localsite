@@ -900,7 +900,6 @@ function hideSide(which) {
         $("#showSideFromBar").show();
     } else {
         $("#main-nav").hide();
-        $("#showSideFromBar").show();
         $('body').removeClass('bodyLeftMarginFull');
         if ($("#main-content > .datascape").is(":visible")) { // When NOT embedded
             if ($("#listcolumn").is(':visible')) {
@@ -910,11 +909,16 @@ function hideSide(which) {
             }
         }
     }
+    if ($("#filterFieldsMain").is(':visible')) {
+        $("#showSideFromBar").show();
+    } else {
+        $("#showSideFromHeader").show();
+    }
     if (!$("#main-nav").is(':visible') && !$("#listcolumn").is(':visible')) {
         $("#showNavColumn").show();
         $("#sideIcons").show();
     } else if (!$("#main-nav").is(':visible') && $("#listcolumn").is(':visible')) {
-        $("#showSideFromBar").show();
+        
     }
     if (!$("#main-nav").is(':visible')) {
         $('body').removeClass('bodyLeftMargin');
@@ -4335,6 +4339,7 @@ function showNavColumn() {
             $('#listcolumn').removeClass('listcolumnOnly');
         }
     }
+    $("#showSideFromHeader").hide();
     $("#showSideFromBar").hide();
     if(document.getElementById("containerLayout") != null) {
         $('#main-nav').addClass("navcolumnClear");

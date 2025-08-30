@@ -1382,9 +1382,6 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   .headeroffset {
     height:64px;
   }
-  #local-header {
-    min-height:64px; 
-  }
 }
 
 .filters-margin {

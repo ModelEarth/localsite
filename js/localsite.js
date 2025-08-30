@@ -2019,6 +2019,7 @@ function getState(stateCode) {
 function showSearchFilter() {
   if ($("#filterFieldsHolder").is(':visible') ) {
     $("#filterFieldsHolder").hide();
+    $("#showSideFromHeader").show();
     return;
   }
   let loadFilters = false;
@@ -2044,8 +2045,6 @@ function showSearchFilter() {
       consoleLog("Hide #filterFieldsHolder");
       $("#filterFieldsHolder").hide();
       $("#filterFieldsHolder").addClass("filterFieldsHidden");
-      //$("#filterbaroffset").hide();
-      ////$("#pageLinksHolder").hide();
     } else {
       // #datascape is needed for map/index.html to apply $("#filterFieldsHolder").show()
       // Also prevents search filter from flashing briefly in map/index.html before moving into #datascape
