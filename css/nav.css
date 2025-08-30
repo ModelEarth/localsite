@@ -60,12 +60,12 @@ header, footer {
     left: 62px;
 }
 
-.sidenav-expanded .headerbar { 
-    left: var(--side-nav-width, 245px);
+.headerbar { 
+    leftX: var(--side-nav-width, 62px);
 }
 
-.sidenav-expanded #sideIcons {
-    left: var(--side-nav-width, 245px) !important; /* Without !important the 3-bar menu is not visible */
+#sideIcons {
+    left: var(--side-nav-menu, 62px); /* Without !important the 3-bar menu is not visible */
 }
 #sideIcons {
     position:absolute;

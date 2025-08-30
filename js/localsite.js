@@ -1084,7 +1084,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         }
 
         if (param.showLeftIcon != false) { // && param.showheader == "true"
-          $('body').prepend("<div id='sideIcons' class='noprint bothSideIcons' style='displayX:none;z-index:3000'><div id='showNavColumn' class='showNavColumn' style='margin-top:64px;'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border: 1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
+          // <div id='sideIcons' class='noprint bothSideIcons' style='displayX:none;z-index:3000'></div>
+          //$('body').prepend("<div id='showNavColumn' class='showNavColumn' style='margin-top:64px;'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border: 1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div>");
         }
         waitForElm('#pageControls').then((elm) => {
           // Move to start of pageControls if exists
@@ -2071,14 +2072,6 @@ function showSearchFilter() {
     if (loadFilters) {
       waitForElm('#datascape #filterFieldContent').then((elm) => {
         revealFilters();
-        /*
-        console.log("show #filterFieldsHolder");
-        $("#filterFieldsHolder").show();
-        $("#filterFieldsHolder").removeClass("filterFieldsHidden");
-        //$("#filterbaroffset").show();
-        $(".hideWhenPop").show();
-        $('html,body').scrollTop(0);
-        */
       });
     }
     //goHash({"sidetab":""}); // Hide sidetab when showSearchFilter
@@ -2098,6 +2091,7 @@ function closeSideTabs() {
 }
 function revealFilters() {
   //console.log("show #filterFieldsHolder");
+  $("#showSideFromHeader").hide();
   $("#filterFieldsHolder").show();
   $("#filterFieldsHolder").removeClass("filterFieldsHidden");
   //$("#filterbaroffset").show();

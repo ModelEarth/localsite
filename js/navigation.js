@@ -892,15 +892,15 @@ function getUniqueStateAbbreviations(geo) {
 }
 
 function hideSide(which) {
-    console.log("hideSide " + which);
     if (which == "list") {
         $("#listcolumn").hide();
         if ($("#listcolumnList").text().trim().length > 0) {
             $("#showListInBar").show();
         }
-        $("#showSideInBar").show();
+        $("#showSideFromBar").show();
     } else {
         $("#main-nav").hide();
+        $("#showSideFromBar").show();
         $('body').removeClass('bodyLeftMarginFull');
         if ($("#main-content > .datascape").is(":visible")) { // When NOT embedded
             if ($("#listcolumn").is(':visible')) {
@@ -911,10 +911,10 @@ function hideSide(which) {
         }
     }
     if (!$("#main-nav").is(':visible') && !$("#listcolumn").is(':visible')) {
-        $("#showNavColumn").show();$("#showSideInBar").hide();
+        $("#showNavColumn").show();
         $("#sideIcons").show();
     } else if (!$("#main-nav").is(':visible') && $("#listcolumn").is(':visible')) {
-        $("#showSideInBar").show();
+        $("#showSideFromBar").show();
     }
     if (!$("#main-nav").is(':visible')) {
         $('body').removeClass('bodyLeftMargin');
@@ -1356,7 +1356,7 @@ catArray = [];
     $(document).on("click", "body", function(event) {
         if ($("#main-nav").is(":visible") && window.innerWidth < 1200) { 
             $("#main-nav").hide();
-            $("#showNavColumn").show();$("#showSideInBar").hide();
+            $("#showNavColumn").show();$("#showSideFromBar").hide();
             $("#sideIcons").show();
             $('body').removeClass('bodyLeftMargin');
             $('body').removeClass('bodyLeftMarginList');
@@ -4328,14 +4328,14 @@ function closeExpandedMenus(menuClicked) {
 function showNavColumn() {
     console.log("showNavColumn");
     $("#sideIcons").hide();
-    $("#main-nav").show(); $("#showSideInBar").hide();
+    $("#main-nav").show(); $("#showSideFromBar").hide();
     if ($("#main-content > .datascape").is(":visible")) { // When NOT embedded.
         if ($("#listcolumn").is(":visible")) {
             $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed side columns.
             $('#listcolumn').removeClass('listcolumnOnly');
         }
     }
-    $("#showSideInBar").hide();
+    $("#showSideFromBar").hide();
     if(document.getElementById("containerLayout") != null) {
         $('#main-nav').addClass("navcolumnClear");
         $('body').addClass('bodyLeftMarginNone');
@@ -4363,7 +4363,7 @@ function showNavColumn() {
 function hideNavColumn() {
     $("#sideIcons").show();
     $("#main-nav").hide();
-    $("#showNavColumn").show();$("#showSideInBar").hide();
+    $("#showNavColumn").show();$("#showSideFromBar").hide();
     $('body').removeClass('bodyLeftMargin');
     $('body').removeClass('bodyLeftMarginFull');
     if (!$('body').hasClass('bodyRightMargin')) {
@@ -5200,6 +5200,7 @@ $(document).on("change", ".sitebasemap", function(event) {
 
 waitForElm('#mainHero').then((elm) => {
     waitForElm('#mapFilters').then((elm) => {
+        $("#showSideFromHeader").hide();
         $("#datascape").prependTo($("#mainHero"));
         $("#filterFieldsHolder").show();
         $("#filterFieldsHolder").addClass("dark");

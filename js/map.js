@@ -2091,7 +2091,7 @@ function showList(dp,map) {
     if (!$("#listcolumn").is(":visible")) { // #listcolumn may already be visible if icon clicked while page is loading.
         $("#showListInBar").show();
     }
-    //$("#showSideInBar").show(); // Added 2024 May 28
+    //$("#showSideFromBar").show(); // Added 2024 May 28
     $(".sidelistHolder").show();
 
     $('.detail').mouseenter(function(event){
@@ -2234,7 +2234,7 @@ $(document).on("click", ".showList", function(event) {
   if ($("#main-nav").is(":hidden")) {
     // Display showNavColumn in bar
     $("#showNavColumn").hide();
-    $("#showSideInBar").show();
+    $("#showSideFromBar").show();
   }
   showListBodyMargin();
   $(".showList").hide();
