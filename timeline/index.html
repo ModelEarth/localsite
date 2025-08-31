@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Data Commons - Timelines</title>
+<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link type="text/css" href="../css/base.css" rel="stylesheet" id="/localsite/css/base.css" />
+<script type="text/javascript" src="../js/localsite.js?showheader=true&showsearch=true&scope=country"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../js/earthscape.js" id="/localsite/js/earthscape.js" type="text/javascript"></script>
+
+<script>
+loadMarkdown("README.md", "readmeDiv", "_parent");
+
+/* Also update home/index.html */
+document.addEventListener('hashChangeEvent', function (elem) {
+    console.log("Timeline page detects URL hashChangeEvent");
+    let hash = getHash();
+    if (!hash.scope) {
+        hash.scope = "country"; // CUSTOM - also set in call to localsite.js above.
+    }
+    if (hash.scope != priorHash.scope || hash.goal != priorHash.goal) {
+        const selectScope = document.getElementById("selectScope");
+        if (selectScope) {
+          selectScope.value = hash.scope;
+        }
+        updateDcidSelectFromSheet(hash.scope); // In localsite/js/earthscape.js
+    }
+}, false);
+document.addEventListener('DOMContentLoaded', () => {
+    let hash = getHash();
+    if (!hash.scope) {
+        hash.scope = document.getElementById('selectScope').options[document.getElementById('selectScope').selectedIndex].text;
+    }
+    //alert(hash.scope)
+    updateDcidSelectFromSheet(hash.scope);
+    
+    document.addEventListener('change', function(event) {
+        if (event.target.name === 'whichLines') {
+          console.log('whichLines changed to ' + event.target.value);
+          refreshTimeline();
+        }
+    });
+
+    document.getElementById('chartVariable').addEventListener('change', (event) => {
+        refreshTimeline();
+    });
+
+    // State menu change
+    document.getElementById('entityId').addEventListener('change', (event) => {
+        //entityId = event.target.value;
+        refreshTimeline();
+     });
+    document.querySelectorAll('input[name="whichPer"]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+            refreshTimeline(); // This will re-fetch emissions and population and update the chart
+        });
+    });
+});
+</script>
+
+<style>
+#selectScope {
+    display: block !important;
+}
+.heroTransparent {
+  position: relative;
+  background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), 
+              url(https://model.earth/apps/img/hero/state/GA/GA-hero.jpg);
+  background-size: cover; /* Scales the image to cover the div */
+  background-position: center; /* Centers the image in the div */
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+  height: auto; /* Allow height to be determined by content */
+  min-height: 120px; /* Minimum height to show the background image */
+}
+.contenttoogleChartType {
+    display: none;
+}
+.active {
+    display: block;
+}
+</style>
+
+
+<!-- To remove -->
+<style>
+/*Table css start */
+#table-container {
+    paddingX: 24px 0;
+}
+#table-container table {
+    width: 100%;
+    height: auto;
+    background-color: transparent;
+    border: none;
+    font-size: 14px;
+    overflow: hidden;
+    position: relative;
+    text-align: left;
+    line-height: 1.55em;
+}
+#table-container table tr:first-child {
+    background-color: #e6e6e6;
+    border-bottom: 1px solid #999;
+    box-sizing: border-box;
+    color: #555;
+    font-weight: 700;
+    outline: none;
+    overflow: hidden;
+    position: relative;
+    white-space: nowrap;
+    width: 100%;
+    max-height: 32px;
+} 
+#table-container table tr:first-child th {
+    min-width: 40px;
+    width: auto;
+    height: 32px;
+    background-color: #eee;
+    border-right: 1px solid #fff;
+    background: #e6e6e6;
+    box-sizing: border-box;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow: hidden;
+    position: relative;
+    text-align: left;
+    vertical-align: bottom;
+}
+#table-container table tr:not(:first-child) {
+    background-color: #fff;
+    color: #333;
+    display: inline-block;
+    overflow: visible;
+    position: relative;
+    white-space: nowrap;
+}
+#table-container table tr:not(:first-child) td {
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #ccc;
+    box-sizing: border-box;
+    display: inline-block;
+    outline: none;
+    overflow: hidden;
+    padding: 4px;
+    position: relative;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
+    font-size: 13px;
+    height: 30px;  /*!important;*/
+    padding-top: 6px; /*!important;*/
+}
+#table-container table tr:first-child th.Topic,
+#table-container table tr:not(:first-child) td.num0 {
+    width: 80px;
+}
+#table-container table tr:first-child th.Subtopic,
+#table-container table tr:not(:first-child) td.num1 {
+    width: 80px;
+}
+#table-container table tr:first-child th.DCID,
+#table-container table tr:not(:first-child) td.num2 {
+    width: 232px;
+}    
+#table-container table tr:first-child th.Title,
+#table-container table tr:not(:first-child) td.num3 {
+    width: 168px;
+}
+#table-container table tr:first-child th.IsUsable,
+#table-container table tr:not(:first-child) td.num4 {
+    width: 80px;
+}
+#table-container table tr:first-child th.Scope,
+#table-container table tr:not(:first-child) td.num5 {
+    width: 128px;
+}
+#table-container table tr:first-child th.StartYear,
+#table-container table tr:not(:first-child) td.num6 {
+    width: 96px;
+}
+#table-container table tr:first-child th.EndYear,
+#table-container table tr:not(:first-child) td.num7 {
+    width: 96px;
+}
+#table-container table tr:first-child th.Source,
+#table-container table tr:not(:first-child) td.num8 {
+    width: 232px;
+}
+#table-container table tr:first-child th.Notes,
+#table-container table tr:not(:first-child) td.num9 {
+    width: 64px;
+}
+/* Table css end */ 
+</style>
+
+</head>
+
+<body>
+
+
+<div class="heroTransparent notdark">
+
+<div class="content contentpadding large-list">
+  <!-- Also update in home repo -->
+  <div id="timeline-nav" style="margin-bottom: 8px; font-family: Arial, sans-serif;"><!-- Links are populated here --></div>
+  
+  <script>
+    function updateTimelineNav() {
+      // Define all goals with their display names
+      const goals = [
+        { goal: "air", name: "Emissions" },
+        { goal: "health", name: "Health" },
+        { goal: "jobs", name: "Jobs", extra: "&scope=state" },
+        { goal: "economy", name: "Economy" },
+        { goal: "biodiverse", name: "Biodiversity" },
+        { goal: "water", name: "Water" },
+        { goal: "population", name: "Population" }
+      ];
+  
+      // Get the current goal from the hash
+      const hash = window.location.hash;
+      const goalMatch = hash.match(/goal=([^&]+)/);
+      const currentGoal = goalMatch ? goalMatch[1] : "air"; // Default to "air"
+  
+      // Find the active goal object
+      const activeGoal = goals.find(g => g.goal === currentGoal) || goals[0];
+      //const inactiveGoals = goals.filter(g => g.goal !== currentGoal);
+  
+      const allGoals = goals;
+
+      // Clear the container
+      const container = document.getElementById('timeline-nav');
+      container.innerHTML = '';
+  
+      // Add the active goal first as "Timeline"
+      const activeElement = document.createElement('span');
+      activeElement.innerHTML = `<b>${activeGoal.name} Timeline</b>`;
+      //container.appendChild(activeElement);
+  
+      // Add the goals as links
+      allGoals.forEach((goal, index) => {
+        // Only add separator if not the first item
+        if (index > 0) {
+            const separator = document.createTextNode(' | ');
+            container.appendChild(separator);
+        }
+        
+        if (goal.goal === currentGoal) {
+            // Make current goal bold instead of linking it
+            const boldText = document.createElement('b');
+            boldText.textContent = goal.name;
+            boldText.style.marginLeft = '2px';
+            boldText.style.marginRight = '2px';
+            container.appendChild(boldText);
+        } else {
+            // Create link for other goals
+            const link = document.createElement('a');
+            link.href = `#goal=${goal.goal}${goal.extra || ''}`;
+            link.textContent = goal.name;
+            link.style.marginLeft = '2px';
+            link.style.marginRight = '2px';
+            link.style.textDecoration = 'none';
+            link.className = 'timeline-link';
+            container.appendChild(link);
+        }
+      });
+    }
+  
+    // Run on load and hash change
+    document.addEventListener('DOMContentLoaded', updateTimelineNav);
+    window.addEventListener('hashchange', updateTimelineNav);
+  </script>
+
+  <div style="float:right">
+    <div class="local btn btn-primary" onclick="location.href='/realitystream/#' + window.location.hash.substr(1); return false;" style="display:none;min-width:133px;font-size:15px;border:none;">
+                RealityStream
+            </div>
+  </div>
+  <div style="overflow:visible;">
+
+      <div id="relocatedScopeMenu" style="float:left"></div>
+      <div id="template-container"></div>
+      <div id="templateLoaded"></div>
+     
+      <!-- We might not use the same state menu as the search filter.
+      <div id="relocatedStateMenu"></div>
+      -->
+      <div class="chart-controls" style="display:flex; flex-wrap:wrap; gap:10px;">
+        <select id="entityId">
+            <option value="geoId/01">Alabama</option>
+            <option value="geoId/02">Alaska</option>
+            <option value="geoId/04">Arizona</option>
+            <option value="geoId/05">Arkansas</option>
+            <option value="geoId/06">California</option>
+            <option value="geoId/08">Colorado</option>
+            <option value="geoId/09">Connecticut</option>
+            <option value="geoId/10">Delaware</option>
+            <option value="geoId/11">District of Columbia</option>
+            <option value="geoId/12">Florida</option>
+            <option value="geoId/13" selected>Georgia</option>
+            <option value="geoId/15">Hawaii</option>
+            <option value="geoId/16">Idaho</option>
+            <option value="geoId/17">Illinois</option>
+            <option value="geoId/18">Indiana</option>
+            <option value="geoId/19">Iowa</option>
+            <option value="geoId/20">Kansas</option>
+            <option value="geoId/21">Kentucky</option>
+            <option value="geoId/22">Louisiana</option>
+            <option value="geoId/23">Maine</option>
+            <option value="geoId/24">Maryland</option>
+            <option value="geoId/25">Massachusetts</option>
+            <option value="geoId/26">Michigan</option>
+            <option value="geoId/27">Minnesota</option>
+            <option value="geoId/28">Mississippi</option>
+            <option value="geoId/29">Missouri</option>
+            <option value="geoId/30">Montana</option>
+            <option value="geoId/31">Nebraska</option>
+            <option value="geoId/32">Nevada</option>
+            <option value="geoId/33">New Hampshire</option>
+            <option value="geoId/34">New Jersey</option>
+            <option value="geoId/35">New Mexico</option>
+            <option value="geoId/36">New York</option>
+            <option value="geoId/37">North Carolina</option>
+            <option value="geoId/38">North Dakota</option>
+            <option value="geoId/39">Ohio</option>
+            <option value="geoId/40">Oklahoma</option>
+            <option value="geoId/41">Oregon</option>
+            <option value="geoId/42">Pennsylvania</option>
+            <option value="geoId/44">Rhode Island</option>
+            <option value="geoId/45">South Carolina</option>
+            <option value="geoId/46">South Dakota</option>
+            <option value="geoId/47">Tennessee</option>
+            <option value="geoId/48">Texas</option>
+            <option value="geoId/49">Utah</option>
+            <option value="geoId/50">Vermont</option>
+            <option value="geoId/51">Virginia</option>
+            <option value="geoId/53">Washington</option>
+            <option value="geoId/54">West Virginia</option>
+            <option value="geoId/55">Wisconsin</option>
+            <option value="geoId/56">Wyoming</option>
+            <option value="geoId/72">Puerto Rico</option>
+        </select>
+     
+       <!--
+          Adjust to per capita (and SqMiles) using our nav filter file:
+          https://github.com/ModelEarth/localsite/blob/main/info/data/map-filters/us-states.csv
+
+          Or call the API directly for the additional info (population and sq miles)
+
+          show=Count_Person
+
+          Convert 2-char state to geoId/01 in earthscape.js
+      -->
+
+        <select id="chartVariable" style="max-width:380px;"></select>
+      </div>
+  
+        <br>
+        
+        <div class="whichLinesHolder" style="float:left; display: flex;">
+          <label> <input value="showAll" type="radio" name="whichLines" />All &nbsp;</label>
+          <div class="scope-country">
+              <label> <input value="showSelected" type="radio" name="whichLines"/>11 Countries &nbsp;</label>
+          </div>
+          <label> <input value="showTop5" type="radio" name="whichLines" checked />Top 5 &nbsp;</label>
+          <label> <input value="showBottom5" type="radio" name="whichLines" />Bottom 5 &nbsp;</label>
+        </div>
+
+        <div id="perCapitaOptions" style="float:right">
+            <label> <input value="totals" type="radio" name="whichPer" checked  />Totals </label>
+            <label> <input value="percapita" type="radio" name="whichPer" />Per Capita </label>
+            <!--
+            <label> <input value="perarea" type="radio" name="whichPer" />Per Area </label>
+            -->
+        </div>
+
+        <div id="div1" class="toogleDiv" chart-wrapper>
+            <canvas id="timelineChart" ></canvas> 
+        </div>
+        <div id="div2" class="toogleDiv" chart-wrapper>
+            <canvas id="lineAreaChart" ></canvas>
+        </div>
+
+        <label>
+            <input type="radio" name="toogleChartType" value="div1" checked> Line Chart
+        </label>
+        <label>
+            <input type="radio" name="toogleChartType" value="div2"> Area Chart
+        </label>
+        <label>
+            <input type="radio" name="toogleChartType" value="both"> Both
+        </label>
+    </div>
+
+</div>
+</div>
+<!-- /heroTransparent -->
+
+<div class="content contentpadding large-list">
+  <div id="readmeDiv"></div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let hash = getHash(); // Defaulted to country above.
+        const perCapitaOptions = document.getElementById('perCapitaOptions');
+        //const perCapitaTableSection = document.getElementById('perCapitaTableSection');
+        
+        if (hash.goal === "health") {
+            perCapitaOptions.style.display = 'none'; // Hide Per Capita options for health
+            //perCapitaTableSection.style.display = 'none'; // Hide Per Capita table for health
+        } else {
+            perCapitaOptions.style.display = 'block'; // Show Per Capita options for other pages
+            //perCapitaTableSection.style.display = 'block'; // Show Per Capita table for other pages
+        }
+    });
+</script>
+<script>
+    // Add event listener to radio buttons to call toggleDivs() on change
+    // Has to reside after toogleChartType html above.
+    document.querySelectorAll('input[name="toogleChartType"]').forEach((radio) => {
+        radio.addEventListener('change', toggleDivs);
+    });
+    // Show the first div by default on page load
+    toggleDivs();
+</script>
+</body>
+</html>
