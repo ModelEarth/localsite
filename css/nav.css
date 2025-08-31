@@ -575,10 +575,12 @@ body.sidebar-hovered {
     z-index: 5000;
     pointer-events: auto;
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: none;
     height: 48px;
     display: flex;
     align-items: center;
+    min-width: 180px;
+    transform: translateX(13px); /* Shift entire tooltip right by 13px */
 }
 
 .nav-tooltip.show {
@@ -586,14 +588,17 @@ body.sidebar-hovered {
 }
 
 .tooltip-icon {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     flex-shrink: 0;
+    position: absolute;
+    left: 12px; /* Position icon at left edge of tooltip */
 }
 
 .tooltip-text {
     flex: 1;
-    padding: 0 18px 0 0;
+    text-align: center;
+    padding: 0 12px 0 48px; /* Left padding to clear the fixed icon */
 }
 
 .tooltip-link {
@@ -601,18 +606,48 @@ body.sidebar-hovered {
     border: none;
     color: inherit;
     cursor: pointer;
-    padding: 0 12px 0 24px;
+    padding: 0 12px 0 0;
     font: inherit;
     display: flex;
     align-items: center;
-    gap: 12px;
+    position: relative;
     width: 100%;
     height: 100%;
     border-radius: 24px;
-    transition: var(--transition-smooth);
-    margin: 0 -12px;
+    transition: none;
 }
 
 .tooltip-link:hover {
     background: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark mode fix for tooltip curved corners */
+.dark .nav-tooltip {
+    background: #6b7280; /* Lighter grey for rollover */
+}
+
+.dark .tooltip-link {
+    border-radius: 24px;
+    margin: 0 -12px;
+}
+
+.dark .tooltip-link:hover {
+    background: #6b7280; /* Lighter grey for rollover */
+}
+
+/* Active icon circle in dark mode */
+.dark .sidebar.collapsed .nav-link.active {
+    background: #6b7280; /* Lighter grey circle around active icon */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px auto;
+}
+
+.dark .sidebar.collapsed .nav-link.active .nav-icon {
+    color: var(--text-primary);
+    font-weight: bold;
 }

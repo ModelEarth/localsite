@@ -287,7 +287,7 @@ class StandaloneNavigation {
                     <div id="side-nav-menu">
                         <div class="nav-section">
                             <div class="nav-item">
-                                <button class="nav-link" data-section="home" data-href="${teamPath}#home">
+                                <button class="nav-link" data-section="home" data-href="${teamPath}">
                                     <i class="nav-icon" data-feather="home"></i>
                                     <span class="nav-text">Welcome</span>
                                     <i class="nav-arrow" data-feather="chevron-right"></i>
