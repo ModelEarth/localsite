@@ -1338,10 +1338,19 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   padding-right:2px; border:1px solid #555; border-radius:8px;
 }
 #showSideFromHeader i {
+  color: #555;
+}
+#showSideFromHeader i:hover {
+  color: #000 !important;
+}
+#showSideFromHeader:hover i {
+  color: #000 !important;
+}
+.dark #showSideFromHeader i {
   color: #ddd;
 }
-.dark #showSideFromHeader {
-  
+.dark #showSideFromHeader:hover i {
+  color: #fff !important;
 }
 @media (max-width: 380px) {
   .showSearch {
@@ -1802,7 +1811,9 @@ input:checked + .slider:before {
 .large-list .txt {
   margin-left: 33px;
 }
-
+.dark .large-list .num {
+  background-color: #000;
+}
 /* Hide vertical lines in Tabulator grid */
 .tabulator .tabulator-row .tabulator-cell {
     border-right: none !important;
