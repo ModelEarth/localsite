@@ -386,7 +386,7 @@ h6 {
   color: #bbb;
 }
 .dark .tabulator .tabulator-header, .dark .tabulator .tabulator-footer {
-  background-color: transparent;
+  background-color: #333;
   border-bottom: 1px solid transparent;
 }
 .dark .tabulator .tabulator-tableholder .tabulator-table {
