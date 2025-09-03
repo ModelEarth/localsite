@@ -40,10 +40,23 @@ class StandaloneNavigation {
         const savedCollapsed = localStorage.getItem('standaloneNavCollapsed');
         const savedLocked = localStorage.getItem('standaloneNavLocked');
         
-        this.isCollapsed = savedCollapsed === 'true' || savedCollapsed === null; // Default to collapsed
-        this.isLocked = savedLocked === 'true'; // Default to unlocked
+        // Check screen size immediately on refresh
         this.isMobile = window.innerWidth <= 768;
+        
+        // Force collapsed state on narrow screens regardless of saved preference
+        if (this.isMobile) {
+            console.log('INIT: Narrow screen detected on refresh - forcing collapsed state');
+            this.isCollapsed = true;
+            this.isLocked = false;
+        } else {
+            // Use saved preferences on wide screens
+            this.isCollapsed = savedCollapsed === 'true' || savedCollapsed === null; // Default to collapsed
+            this.isLocked = savedLocked === 'true'; // Default to unlocked
+        }
+        
         this.mobileOpen = false;
+        
+        console.log('INIT: Screen width:', window.innerWidth, 'isMobile:', this.isMobile, 'isCollapsed:', this.isCollapsed);
         
         // Store event listeners for cleanup
         this.eventListeners = [];
@@ -148,34 +161,58 @@ class StandaloneNavigation {
         }
     }
 
-    // Debounced resize handler to prevent excessive calls
+    // Immediate resize handler for responsive behavior
     checkMobile() {
-        if (this.resizeTimeout) {
-            clearTimeout(this.resizeTimeout);
-        }
+        const wasMobile = this.isMobile;
+        this.isMobile = window.innerWidth <= 768;
         
-        this.resizeTimeout = setTimeout(() => {
-            const wasMobile = this.isMobile;
-            this.isMobile = window.innerWidth <= 768;
-            
-            if (wasMobile !== this.isMobile) {
-                this.handleMobileChange();
-            }
-        }, 100);
+        console.log('CHECK MOBILE: width', window.innerWidth, 'wasMobile:', wasMobile, 'isMobile:', this.isMobile);
+        
+        if (wasMobile !== this.isMobile) {
+            this.handleMobileChange();
+        }
     }
     
     handleMobileChange() {
+        console.log('MOBILE CHANGE: isMobile changed to', this.isMobile, 'isCollapsed:', this.isCollapsed);
         const sidenav = document.querySelector('#side-nav');
         const overlay = document.querySelector('.mobile-overlay');
         
         if (this.isMobile) {
-            sidenav?.classList.remove('collapsed', 'hovered', 'locked', 'expanded');
+            console.log('MOBILE CHANGE: Switching to mobile mode - applying collapsed state');
+            // Apply collapsed state like manual toggle does (to hide titles/arrows)
+            sidenav?.classList.remove('expanded', 'hovered');
+            sidenav?.classList.add('collapsed');
             overlay?.classList.remove('active');
             this.isLocked = false;
+            // Update body class
+            document.body.classList.remove('sidenav-expanded', 'sidenav-hovered');
+            document.body.classList.add('sidenav-collapsed');
         } else {
+            console.log('MOBILE CHANGE: Switching to desktop mode - checking if should restore expanded');
             sidenav?.classList.remove('mobile-open');
             this.mobileOpen = false;
+            
+            // Restore expanded state when switching back to desktop if not user-collapsed
+            if (!this.isCollapsed) {
+                console.log('MOBILE CHANGE: Restoring expanded class for desktop');
+                sidenav?.classList.remove('collapsed', 'locked');
+                sidenav?.classList.add('expanded');
+                document.body.classList.add('sidenav-expanded');
+                document.body.classList.remove('sidenav-collapsed');
+            } else {
+                console.log('MOBILE CHANGE: Staying collapsed as per user preference');
+                sidenav?.classList.add('collapsed');
+                if (this.isLocked) {
+                    sidenav?.classList.add('locked');
+                }
+                document.body.classList.add('sidenav-collapsed');
+                document.body.classList.remove('sidenav-expanded');
+            }
         }
+        
+        // Update toggle icon after mobile state change
+        this.debouncedUpdateToggleIcon();
     }
     
     createNavigation() {
@@ -268,9 +305,12 @@ class StandaloneNavigation {
         // Apply initial collapsed state to prevent flash
         const initialClasses = [
             isExternalSite ? 'external-site' : '',
-            this.isCollapsed && !this.isMobile ? 'collapsed' : '',
+            // Apply collapsed class immediately if narrow screen OR user preference
+            this.isCollapsed || this.isMobile ? 'collapsed' : '',
             this.isLocked && !this.isMobile ? 'locked' : ''
         ].filter(Boolean).join(' ');
+        
+        console.log('INIT: Creating navigation with classes:', initialClasses);
         
         const navHTML = `
             <div class="sidebar ${initialClasses}${!this.isCollapsed && !this.isMobile ? ' expanded' : ''}" id="side-nav">
@@ -538,10 +578,14 @@ class StandaloneNavigation {
         document.body.insertAdjacentHTML('afterbegin', navHTML);
 
         // Set initial body class for headerbar positioning and sidenav expanded state
-        if (this.isCollapsed && !this.isMobile) {
+        if (this.isCollapsed || this.isMobile) {
+            console.log('INIT: Setting body to sidenav-collapsed');
             document.body.classList.add('sidenav-collapsed');
+            document.body.classList.remove('sidenav-expanded');
         } else {
+            console.log('INIT: Setting body to sidenav-expanded');
             document.body.classList.add('sidenav-expanded');
+            document.body.classList.remove('sidenav-collapsed');
             // Also add expanded class to sidenav when not collapsed
             const sidenav = document.getElementById('side-nav');
             if (sidenav) {
@@ -835,6 +879,23 @@ class StandaloneNavigation {
         
         document.addEventListener('click', globalClickHandler);
         this.eventListeners.push({ element: document, event: 'click', handler: globalClickHandler });
+        
+        // Click handler for side-nav-content area to expand when collapsed
+        const sideNavContent = document.getElementById('side-nav-content');
+        if (sideNavContent) {
+            const contentClickHandler = (e) => {
+                // Only handle clicks on the content area itself, not on nav-links or other interactive elements
+                if (e.target === sideNavContent || e.target.id === 'side-nav-menu') {
+                    if (this.isCollapsed && !this.isMobile) {
+                        console.log('CONTENT CLICK: Expanding sidebar from content area click');
+                        this.toggleSidebar();
+                    }
+                }
+            };
+            
+            sideNavContent.addEventListener('click', contentClickHandler);
+            this.eventListeners.push({ element: sideNavContent, event: 'click', handler: contentClickHandler });
+        }
     }
     
     setupMobileHandlers() {
@@ -936,12 +997,22 @@ class StandaloneNavigation {
         // Check actual sidenav state from DOM
         const sidenav = document.getElementById('side-nav');
         const actuallyCollapsed = sidenav?.classList.contains('collapsed') || false;
+        const mobileOpen = sidenav?.classList.contains('mobile-open') || false;
         
         // Sync the class property with actual DOM state
         this.isCollapsed = actuallyCollapsed;
         
-        // Target icon based on state
-        const targetIcon = this.isCollapsed ? 'chevrons-right' : 'chevrons-left';
+        // Target icon based on state - consider both collapsed state and mobile-open
+        let targetIcon;
+        if (this.isMobile) {
+            // On mobile: right arrow when collapsed, left arrow when mobile-open (expanded)
+            targetIcon = mobileOpen ? 'chevrons-left' : 'chevrons-right';
+        } else {
+            // On desktop: right arrow when collapsed, left arrow when expanded
+            targetIcon = this.isCollapsed ? 'chevrons-right' : 'chevrons-left';
+        }
+        
+        console.log('UPDATE ICON: collapsed:', this.isCollapsed, 'mobileOpen:', mobileOpen, 'isMobile:', this.isMobile, 'targetIcon:', targetIcon);
         
         // Clear all existing icons (both <i> and <svg> elements)
         sidebarToggle.innerHTML = '';
@@ -961,8 +1032,13 @@ class StandaloneNavigation {
         
         this.mobileOpen = !this.mobileOpen;
         
+        console.log('TOGGLE MOBILE: mobileOpen:', this.mobileOpen);
+        
         sidenav?.classList.toggle('mobile-open', this.mobileOpen);
         overlay?.classList.toggle('active', this.mobileOpen);
+        
+        // Update toggle icon to reflect new state
+        this.debouncedUpdateToggleIcon();
     }
     
     closeMobileMenu() {

@@ -386,7 +386,7 @@ h6 {
   color: #bbb;
 }
 .dark .tabulator .tabulator-header, .dark .tabulator .tabulator-footer {
-  background-color: transparent;
+  background-color: #333;
   border-bottom: 1px solid transparent;
 }
 .dark .tabulator .tabulator-tableholder .tabulator-table {
@@ -1793,7 +1793,6 @@ input:checked + .slider:before {
   font-size: 1.1em;
 }
 .large-list .num {
-  position: absolute;
   font-size: 17px;
   background-color: #999;
   color: #fff;
@@ -1807,6 +1806,9 @@ input:checked + .slider:before {
   bottom: 12px;
   border-radius: 13px;
   display: block;
+}
+h2 .num {
+  position: absolute;
 }
 .large-list .txt {
   margin-left: 33px;

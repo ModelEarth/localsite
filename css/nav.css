@@ -382,12 +382,42 @@ body.sidebar-hovered {
 .dark .nav-link.active  {
 
 }
-/* Only show background when collapsed */
+/* Active nav styling for different states */
+.nav-link.active {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+}
+
+/* Expanded state - show full width background */
+#side-nav.expanded .nav-link.active {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    width: calc(100% - 16px);
+    height: auto;
+    margin: 2px 8px;
+    justify-content: space-between;
+    padding: 12px 16px 12px 16px;
+}
+
+/* Collapsed state - show circular background */
 .sidebar.collapsed .nav-link.active {
     background: var(--bg-tertiary);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin: 4px auto;
+    justify-content: center;
+    padding: 12px;
 }
+
 .sidebar.collapsed.hovered:not(.locked) .nav-link.active {
-    background: none;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    width: calc(100% - 16px);
+    height: auto;
+    margin: 2px 8px;
+    justify-content: space-between;
+    padding: 12px 16px 12px 16px;
 }
 
 .nav-icon {
@@ -529,21 +559,95 @@ body.sidebar-hovered {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-
-    .sidebar { /* bug - removing cause open menu to load when narrow */
-        transform: translateX(-100%);
+    #side-nav {
+        width: 64px;
+        position: fixed;
+        z-index: 1000;
     }
-
-    .sidebar.mobile-open {
-        transform: translateX(0);
+    
+    /* When mobile-open, expand to full width and overlay */
+    #side-nav.mobile-open {
+        width: 100vw !important;
+        z-index: 2000;
+    }
+    
+    /* Show titles and arrows when mobile-open (expanded) */
+    #side-nav.mobile-open .nav-text {
+        opacity: 1 !important;
+        width: auto !important;
+        display: block !important;
+    }
+    
+    #side-nav.mobile-open .nav-arrow {
+        display: block !important;
+        opacity: 1 !important;
+    }
+    
+    #side-nav.mobile-open .logo-text {
+        opacity: 1 !important;
+        width: auto !important;
+        display: block !important;
+    }
+    
+    /* Fix active nav alignment in mobile-open - don't center when text is visible */
+    #side-nav.mobile-open .nav-link {
+        justify-content: space-between !important;
+        width: calc(100% - 16px) !important;
+        margin: 2px 8px !important;
+        padding-right: 16px !important;
+    }
+    
+    #side-nav.mobile-open .nav-link .nav-icon {
+        margin-right: 12px !important;
+    }
+    
+    /* Fix active nav circle in mobile-open - prevent oval stretching and offset issues */
+    #side-nav.mobile-open .nav-link.active {
+        background: var(--bg-tertiary) !important;
+        border-radius: var(--radius-md) !important;
+        justify-content: space-between !important;
+        width: calc(100% - 16px) !important;
+        height: auto !important;
+        margin: 2px 8px !important;
+        padding: 12px 16px 12px 16px !important;
+    }
+    
+    /* Show subnav in mobile-open mode */
+    #side-nav.mobile-open .subnav {
+        display: block !important;
+        max-height: 0 !important;
+        opacity: 0 !important;
+        overflow: hidden !important;
+    }
+    
+    #side-nav.mobile-open .subnav.expanded {
+        display: block !important;
+        max-height: 300px !important;
+        opacity: 1 !important;
+        overflow: visible !important;
+    }
+    
+    /* Ensure subnav links are visible in mobile-open */
+    #side-nav.mobile-open .subnav-link {
+        display: flex !important;
+        opacity: 1 !important;
+        padding: 8px 20px 8px 52px !important;
+    }
+    
+    /* Hide main content when mobile nav is open */
+    #main-layout {
+        transition: var(--transition-smooth);
+        margin-left: 64px; /* Account for collapsed nav by default */
+    }
+    
+    #side-nav.mobile-open ~ #main-layout {
+        opacity: 0.3;
+        pointer-events: none;
+        margin-left: 0; /* No margin when overlay mode */
     }
     
     .main-content {
         margin-left: 0;
-    }
-    
-    .logo-text {
-        display: none;
     }
     
     .mobile-overlay {
@@ -553,7 +657,7 @@ body.sidebar-hovered {
         right: 0;
         bottom: 0;
         background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
+        z-index: 1999;
         display: none;
     }
     
