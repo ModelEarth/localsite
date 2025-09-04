@@ -341,12 +341,6 @@ class StandaloneNavigation {
                                         <i class="subnav-icon" data-feather="book"></i>
                                         <span>Getting Started</span>
                                     </a>
-                                    <div style="display:none" class="earth">
-                                    <a href="${rootPath}projects" style="display:none" class="subnav-link earth">
-                                        <i class="subnav-icon" data-feather="bar-chart-2"></i>
-                                        <span>Active Projects</span>
-                                    </a>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -476,7 +470,7 @@ class StandaloneNavigation {
                                     </div>
                                     <div style="display:none" class="geo">
                                     <a href="${rootPath}localsite/info/#state=GA" class="subnav-link">
-                                        <i class="subnav-icon" data-feather="trending-up"></i>
+                                        <i class="subnav-icon" data-feather="bar-chart-2"></i>
                                         <span>Industry Comparisons</span>
                                     </a>
                                     </div>
