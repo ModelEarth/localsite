@@ -838,7 +838,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     margin-bottom:8px;
 }
 .btn:link, .btn:visited, .contentpadding .btn:link, .contentpadding .btn:visited {
-  color: #fff !important; 
+  /* color: #fff !important; */
   text-decoration: none;
 }
 #hero-rect .btn:link, #hero-rect .btn:visited {
