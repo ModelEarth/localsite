@@ -1362,10 +1362,10 @@ catArray = [];
             $("#main-nav").hide();
             $("#showNavColumn").show();$("#showSideFromBar").hide();
             $("#sideIcons").show();
-            $('body').removeClass('bodyLeftMargin');
-            $('body').removeClass('bodyLeftMarginList');
-            $('body').removeClass('bodyLeftMarginFull');
-            $('body').removeClass('bodyLeftMarginNone'); // For DS side over hero
+            //////$('body').removeClass('bodyLeftMargin');
+            //////$('body').removeClass('bodyLeftMarginList');
+            //////$('body').removeClass('bodyLeftMarginFull');
+            //////$('body').removeClass('bodyLeftMarginNone'); // For DS side over hero
             if (!$('body').hasClass('bodyRightMargin')) {
                 $('body').removeClass('mobileView');
             }
@@ -4335,7 +4335,7 @@ function showNavColumn() {
     $("#main-nav").show(); $("#showSideFromBar").hide();
     if ($("#main-content > .datascape").is(":visible")) { // When NOT embedded.
         if ($("#listcolumn").is(":visible")) {
-            $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed side columns.
+            //////$('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed side columns.
             $('#listcolumn').removeClass('listcolumnOnly');
         }
     }
@@ -4343,14 +4343,10 @@ function showNavColumn() {
     $("#showSideFromBar").hide();
     if(document.getElementById("containerLayout") != null) {
         $('#main-nav').addClass("navcolumnClear");
-        $('body').addClass('bodyLeftMarginNone');
+        //////$('body').addClass('bodyLeftMarginNone');
     } else {
-        // #showNavColumn is not in #main-container
-        // $("#main-container #showNavColumn").hide();
-        
-        // DEACTIVATED Aug 23
-        //$('body').addClass('bodyLeftMargin'); // Margin on left for fixed nav column.
-
+        //$("#main-content #showNavColumn").hide();
+        //////$('body').addClass('bodyLeftMargin'); // Margin on left for fixed nav column.
         if ($('body').hasClass('bodyRightMargin')) {
           $('body').addClass('mobileView');
         }
@@ -4369,8 +4365,8 @@ function hideNavColumn() {
     $("#sideIcons").show();
     $("#main-nav").hide();
     $("#showNavColumn").show();$("#showSideFromBar").hide();
-    $('body').removeClass('bodyLeftMargin');
-    $('body').removeClass('bodyLeftMarginFull');
+    //////$('body').removeClass('bodyLeftMargin');
+    //////$('body').removeClass('bodyLeftMarginFull');
     if (!$('body').hasClass('bodyRightMargin')) {
         $('body').removeClass('mobileView');
     }
@@ -4527,7 +4523,6 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA.png' style='width:160px;margin-top:0px'></a>";
         param.headerLogoNoText = "<a href='https://georgia.org' style='margin-top:-1px'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA-icon.png' style='width:52px;padding:0px;margin:0px'></a>";
         localsiteTitle = "Georgia.org";
-
         changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/states/GA-favicon.png");
         if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
             showClassInline(".acct");
@@ -4585,7 +4580,6 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         $(".siteTitleShort").text("Model Earth");
         param.titleArray = ["model","earth"];
         localsiteTitle = "Model Earth";
-        //alert(local_app.modelearth_root())
         param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/modelearth/model-earth.png' style='width:34px; margin-right:2px'>";
         changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/modelearth/model-earth.png")
         showClassInline(".earth");
@@ -4641,7 +4635,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                 $("#datascape").addClass("datascapeTop");
             }
 
-            $('body').removeClass('bodyLeftMarginFull'); // Gets added back if main-nav is displayed.
+            //////$('body').removeClass('bodyLeftMarginFull'); // Gets added back if main-nav is displayed.
             // Wait for template to be loaded so it doesn't overwrite listcolumn in #datascape.
             //waitForElm('#insertedText').then((elm) => {
             waitForElm('#main-content > .datascapeTop').then((elm) => { // When #datascape is NOT embedded.
@@ -4649,7 +4643,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                 //$("#datascape").prepend(listColumnElement);
                 $("body").prepend(listColumnElement);
                 listColumnElement = "";
-                //$('body').addClass('bodyLeftMarginFull'); // Avoid here. Places gap on /community
+                ////// //$('body').addClass('bodyLeftMarginFull'); // Avoid here. Places gap on /community
             });
             
         } else {
@@ -4682,7 +4676,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         });
         $(document).on("click", ".hideSide", function(event) {
             hideSide("");
-            $('body').removeClass('bodyLeftMarginNone'); // For DS side over hero
+            //////$('body').removeClass('bodyLeftMarginNone'); // For DS side over hero
             console.log(".hideSide click");
         });
 
@@ -5398,7 +5392,6 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
             //displayHexagonMenu("", layerObject);
             
             if (!hash.show && !param.show) { // INITial load
-                // alert($("#main-container").width()) = null
                 if ($("body").width() >= 800) {
 
                     //showThumbMenu(hash.show, "#bigThumbMenu");
