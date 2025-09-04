@@ -437,7 +437,7 @@ class StandaloneNavigation {
                                     <i class="nav-arrow" data-feather="chevron-right"></i>
                                 </button>
                                 <div class="subnav">
-                                    <a href="${rootPath}projects/#list=modelteam" class="subnav-link">
+                                    <a href="${teamPath}projects/#list=modelteam" class="subnav-link">
                                         <i class="subnav-icon" data-feather="map"></i>
                                         <span>Model Team</span>
                                     </a>
