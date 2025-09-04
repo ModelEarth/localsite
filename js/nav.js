@@ -66,14 +66,53 @@ class StandaloneNavigation {
         this.currentFavicon = null;
         
         StandaloneNavigation.instance = this;
+        this.loadFeatherIcons();
         this.init();
     }
     
     init() {
         this.checkMobile();
-        this.createNavigation();
-        this.setupEventListeners();
-        this.setupMobileHandlers();
+        
+        // Check for shownav parameter in script src URL
+        let showNav = true;
+        const scripts = document.getElementsByTagName('script');
+        for (const script of scripts) {
+            if (script.src && script.src.includes('nav.js')) {
+                try {
+                    // Handle both absolute and relative URLs
+                    const scriptUrl = script.src.includes('://') ? 
+                        new URL(script.src) : 
+                        new URL(script.src, window.location.href);
+                    if (scriptUrl.searchParams.get('shownav') === 'false') {
+                        showNav = false;
+                        console.log('Found shownav=false in script URL:', script.src);
+                        break;
+                    }
+                } catch (e) {
+                    // Fallback: parse manually if URL constructor fails
+                    if (script.src.includes('shownav=false')) {
+                        showNav = false;
+                        console.log('Found shownav=false via string match in:', script.src);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Also check page URL for backward compatibility
+        if (showNav) {
+            const urlParams = new URLSearchParams(window.location.search);
+            showNav = urlParams.get('shownav') !== 'false';
+        }
+        
+        if (showNav) {
+            this.createNavigation();
+            this.setupEventListeners();
+            this.setupMobileHandlers();
+        } else {
+            console.log('Navigation disabled due to shownav=false parameter');
+        }
+        
         this.initializeFeatherIcons();
         this.startPeriodicFaviconUpdate();
     }
@@ -476,7 +515,7 @@ class StandaloneNavigation {
                                     </div>
                                     <div style="display:none" class="earth">
                                     <a href="${rootPath}localsite/info/" class="subnav-link">
-                                        <i class="subnav-icon" data-feather="trending-up"></i>
+                                        <i class="subnav-icon" data-feather="bar-chart-2"></i>
                                         <span>Industry Comparisons</span>
                                     </a>
                                     </div>
@@ -573,7 +612,15 @@ class StandaloneNavigation {
         }
         */
 
-        document.body.insertAdjacentHTML('afterbegin', navHTML);
+        // Check for shownav parameter to hide navigation
+        const urlParams = new URLSearchParams(window.location.search);
+        const showNav = urlParams.get('shownav') !== 'false';
+        
+        if (showNav) {
+            document.body.insertAdjacentHTML('afterbegin', navHTML);
+        } else {
+            console.log('Navigation hidden due to shownav=false parameter');
+        }
 
         // Set initial body class for headerbar positioning and sidenav expanded state
         if (this.isCollapsed || this.isMobile) {
@@ -1073,6 +1120,30 @@ class StandaloneNavigation {
         window.location.href = adminPath;
     }
     
+    // Load feather icons script if not already loaded
+    loadFeatherIcons() {
+        if (typeof feather !== 'undefined') {
+            // Already loaded
+            return;
+        }
+        
+        // Check if script is already in the DOM
+        const existingScript = document.querySelector('script[src*="feather-icons"]');
+        if (existingScript) {
+            return;
+        }
+        
+        // Load feather icons script
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/feather-icons';
+        script.onload = () => {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        };
+        document.head.appendChild(script);
+    }
+
     // Debounced feather icon refresh
     refreshFeatherIcons() {
         if (this.featherTimeout) {
@@ -1084,6 +1155,13 @@ class StandaloneNavigation {
                 feather.replace();
             }
         }, 100);
+    }
+    
+    // Public method to force immediate feather icon refresh
+    replaceFeatherIcons() {
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
     }
     
     initializeFeatherIcons() {
@@ -1383,6 +1461,9 @@ function initializeStandaloneNav() {
         repoFolderName: repoFolderName,
         isExternalSite: isExternalSite
     });
+    
+    // Make instance globally accessible
+    window.standaloneNav = standaloneNav;
     
     // Restore state after initialization
     setTimeout(() => {
