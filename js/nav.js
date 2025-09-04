@@ -489,22 +489,23 @@ class StandaloneNavigation {
                                     <i class="nav-arrow" data-feather="chevron-right"></i>
                                 </button>
                                 <div class="subnav">
+                                    
                                     <div style="display:none" class="geo">
-                                    <a href="${teamPath}projects/#list=film-scouting" class="subnav-link">
-                                        <i class="subnav-icon" data-feather="users"></i>
-                                        <span>Film Scouting</span>
+                                    <a href="${teamPath}projects/map/#list=cities" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="map"></i>
+                                        <span>Location Visits Map</span>
                                     </a>
                                     </div>
                                     <div style="display:none" class="geo">
                                     <a href="${teamPath}projects/#list=geo" class="subnav-link">
                                         <i class="subnav-icon" data-feather="heart"></i>
-                                        <span>Location Visits</span>
+                                        <span>Location Insights</span>
                                     </a>
                                     </div>
                                     <div style="display:none" class="geo">
-                                    <a href="${teamPath}projects/map/#list=cities" class="subnav-link">
-                                        <i class="subnav-icon" data-feather="heart"></i>
-                                        <span>Location Visits (Map)</span>
+                                    <a href="${teamPath}projects/#list=film-scouting" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="film"></i>
+                                        <span>Film Scout Insights</span>
                                     </a>
                                     </div>
                                     <div style="display:none" class="geo">
