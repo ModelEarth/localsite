@@ -363,6 +363,10 @@ class StandaloneNavigation {
                                         <i class="subnav-icon" data-feather="globe"></i>
                                         <span>Active Projects</span>
                                     </a>
+                                    <a href="https://github.com/modelearth/projects/issues/" class="subnav-link">
+                                        <i class="subnav-icon" data-feather="check-square"></i>
+                                        <span>ToDos (GitHub)</span>
+                                    </a>
                                     <a href="${rootPath}projects/hub/" class="subnav-link">
                                         <i class="subnav-icon" data-feather="target"></i>
                                         <span>Our Project Hub</span>
@@ -378,11 +382,11 @@ class StandaloneNavigation {
                                         <span>Opportunities</span>
                                     </a>
                                     </div>
+                                    <!--
                                     <a href="${teamPath}#projects/assigned-tasks" class="subnav-link">
                                         <i class="subnav-icon" data-feather="check-square"></i>
                                         <span>Assigned Tasks</span>
                                     </a>
-                                    <!--
                                     <a href="/data-commons/docs/data/" class="subnav-link">
                                         <i class="subnav-icon" data-feather="calendar"></i>
                                         <span>UN Timelines</span>
@@ -1312,10 +1316,11 @@ function initializeStandaloneNav() {
     const knownRepoFiles = ['Cargo.toml', 'package.json', 'README.md', 'CLAUDE.md'];
     let detectedRepoName = null;
     
+    /*
     // Try to detect repo folder from current path
     for (const segment of pathSegments) {
         // Skip common non-repo segments
-        if (!['admin', 'js', 'css', 'img', 'projects', 'preferences'].includes(segment)) {
+        if (!['admin', 'js', 'css', 'img', 'preferences'].includes(segment)) {
             detectedRepoName = segment;
             break;
         }
@@ -1325,12 +1330,13 @@ function initializeStandaloneNav() {
     if (!detectedRepoName) {
         // Check if we have any path segments that could be a repo
         const possibleRepoSegment = pathSegments.find(segment => 
-            !['admin', 'js', 'css', 'img', 'projects', 'preferences', 'src', 'target'].includes(segment)
+            !['admin', 'js', 'css', 'img', 'preferences', 'src', 'target'].includes(segment)
         );
         if (possibleRepoSegment) {
             detectedRepoName = possibleRepoSegment;
         }
     }
+    */
     
     // Check if we're being called from an external site or within a webroot container
     if (detectedRepoName && pathSegments.includes(detectedRepoName)) {

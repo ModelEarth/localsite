@@ -440,18 +440,20 @@ allSliders.forEach(slider => buildSwiperSlider(slider));
 //$(".swiper-button-play").css('opacity', '0.8');
 
 
+function setSwiperOpts() {
+  let hash = getHash();
+  let initIDX = 0;
+  // TO DO: Reactivate if hash is again sent when slide changes.  Or store in browser cache.
+  if(1==2 && hash){
+      let lmnt = document.querySelector('[data-hash="'+window.location.hash.substring(1)+'"]'),
+      i = 0;
 
-let initIDX = 0;
-if(window.location.hash){
-    let lmnt = document.querySelector('[data-hash="'+window.location.hash.substring(1)+'"]'),
-    i = 0;
+      while((lmnt = lmnt.previousSibling) != null) if(lmnt.nodeType == 1) ++i;
 
-    while((lmnt = lmnt.previousSibling) != null) if(lmnt.nodeType == 1) ++i;
+      initIDX = i;
+  }
 
-    initIDX = i;
-}
-
-var vis = document.getElementById('vis'),
+  var vis = document.getElementById('vis'),
     swiperOpts = {
         loop: true,
         slidesPerView: 1,
@@ -464,9 +466,8 @@ var vis = document.getElementById('vis'),
         }
     },
     swiper = new Swiper(vis, swiperOpts);
-
-
-
+}
+setSwiperOpts();
 
 </script>
 <!-- /Initialize Swiper -->

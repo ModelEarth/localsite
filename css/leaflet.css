@@ -116,14 +116,14 @@
 
 .leaflet-control {
 	position: relative;
-	z-index: 800;
+	z-index: 400;
 	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
 	pointer-events: auto;
 	}
 .leaflet-top,
 .leaflet-bottom {
 	position: absolute;
-	z-index: 1000;
+	z-index: 400;
 	pointer-events: none;
 	}
 .leaflet-top {

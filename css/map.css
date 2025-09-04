@@ -193,7 +193,7 @@
     position: absolute;
     top: 80px;
     left: 12px;
-    z-index: 1000;
+    z-index: 400;
 }
 
 .info.legend h4 {

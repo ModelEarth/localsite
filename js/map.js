@@ -81,13 +81,6 @@ document.addEventListener('hashChangeEvent', function (elem) {
   console.log("map.js detects URL hashChangeEvent");
   hashChangedMap();
 }, false);
-document.addEventListener('hiddenhashChangeEvent', function (elem) {
-  console.log("Doing nothing: map.js detects hiddenhashChangeEvent, calls hashChangedMap()");
-  // Instead, we'll create a hash change event without changing the hash.
-  
-  // But needed for io center column red bars (not)
-  //hashChangedMap();
-}, false);
 
 // MAP 1
 // var map1 = {};
