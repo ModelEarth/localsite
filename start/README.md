@@ -42,7 +42,7 @@ Contribute to UN goal data visualizations in our <a href="/data-commons/docs/dat
 Environmentally Extended Input-Output (EEIO)
 
 [World Trade Profiles](../../profile/trade/)
-[State Impact Reports](../../trade/footprint/)
+[State Impact Reports](../../profile/footprint/)
 [Inflow-Outflow Widgets](../../io/charts)
 
 <!--
@@ -106,7 +106,7 @@ Responsible sourcing allows manufacturers to...
 
 
 [Use our Lifecycle Tools for Research and Teaching](/io/learn/)
-Explore [the matrix](/io/about/matrix/) and tinker with our [Footprint Javascript](/trade/footprint/)
+Explore [the matrix](/io/about/matrix/) and tinker with our [Footprint Javascript](/profile/footprint/)
 
 <!-- 
 Expensive European Exiobase

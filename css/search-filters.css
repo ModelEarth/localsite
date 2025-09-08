@@ -106,7 +106,7 @@
   }
 }
 @media (min-width: 600px) {
-  #filterFieldsMain {
+  #filterFieldsMainXXX {
       padding:2px 0 0px 10px; /* Moves filters to right of left icon(s) */
   }
   .filterFieldsHolderFixed #filterFieldsMain {

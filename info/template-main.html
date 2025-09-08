@@ -15,8 +15,8 @@
 
 <div id="templateLoaded"></div>
 
-<!-- SIDETABS -->
-<div id="sideTabs" style="position:fixed; z-index:20000; top:0px; bottom:0px; right: 0px; display:none">
+<!-- rightSideTabs -->
+<div id="rightSideTabs" style="position:fixed; z-index:20000; top:0px; bottom:0px; right: 0px; display:none">
   <!-- RIGHT MENU -->
 
   <!-- Menu and Secondary Menus -->
@@ -604,13 +604,18 @@
   </div>
   <!-- /RIGHT MENU -->
 </div>
-<!-- /SIDETABS -->
+<!-- /rightSideTabs -->
 
 <div id="main-header">
   <!-- HEADER BAR (Moved by localsite.js) -->
   <div id="headerbar" class="headerbar headerbarheight headerbarhide" style="displayX:none;overflow:visible;z-index:1002;pointer-events:auto;">
 
-    <div class="headerbarheight" style="float:left;margin-right:6px"><div id="showSideFromHeader" class="showNavColumn" style="vertical-align:middle;display:inline-block;margin:0 auto;padding:6px;opacity:.3"><i class="material-icons">&#xE5D2;</i></div></div>
+    <div class="headerbarheight" style="display:flex;flex-direction:column;float:left;margin-right:6px">
+      <!--
+      <div class="nav-reopen-btn headerLeftIcon" style="vertical-align:middle;display:inline-block;margin:0 auto;padding:6px;opacity:.3"><i class="material-icons">&#xE5D2;</i></div>
+      -->
+        <div id="showSideFromHeader" class="showNavColumn headerLeftIcon" style="vertical-align:middle;display:inline-block;margin:0 auto;padding:6px;opacity:.3; min-height: 43px"><i class="material-icons">&#xE5D2;</i></div>
+    </div>
 
     <!-- class="contentpadding" style="padding-top:0px; padding-bottom:0px; float:left;" -->
     <div id="headerLogoholder">
@@ -807,9 +812,9 @@
     display: inline-block;
   }
 </style>
-<div id="mapFilters" class="hideWhenPop">
+<div id="mapFilters" class="hideWhenPop" style="padding-top:0px; padding-bottom:0px; margin-bottom:0px; line-height:0px">
 
-  <div id="filterFieldsHolder" class="filterFieldsHidden contentfull noprint" style="display:none; padding-top:0px; width:100%">
+  <div id="filterFieldsHolder" class="filterFieldsHidden contentfull noprint" style="display:none; padding-top:0px; width:100%; padding-left:15px">
   </div><!-- /filterFieldsHolder -->
 
 </div>
@@ -989,7 +994,7 @@ document.addEventListener('mousedown', function(e) {
 
       <div id="locationFilterHolderX" style="position: relative;">
           
-        <div style="position:absolute;top:0;right:0;z-index:1000" class="hideinpop">
+        <div style="position:absolute;top:0;right:0" class="hideinpop">
           <div class="hideAdvanced close-X" style="float:left;padding-left:12px;padding-right:35px">&#10005;
           </div>
         </div>

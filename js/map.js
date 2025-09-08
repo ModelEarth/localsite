@@ -2239,7 +2239,7 @@ function showListBodyMargin() {
     $('body').addClass('bodyLeftMarginList');
     if ($("#main-nav").is(":visible") && $("#listcolumn").is(":visible")) {
       $('#listcolumn').removeClass('listcolumnOnly');
-      $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
+      $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed rightSideTabs.
     } else if ($("#listcolumn").is(":visible")) {
       $('#listcolumn').addClass('listcolumnOnly');
       $('body').addClass('bodyLeftMarginList');

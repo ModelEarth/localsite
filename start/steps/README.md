@@ -65,7 +65,7 @@ Fork the [home repo](https://github.com/ModelEarth/home) if you're working on ou
 Fork the [profile repo](https://github.com/ModelEarth/home) if you're working with [Exiobase Trade Flow](/profile/trade), [SuiteCRM](/profile/crm) or [Project Preference Ratings](/profile/preferences/). 
 Fork <a href="https://github.com/ModelEarth/data-commons">data-commons</a> if you're adding [data visualizations](/data-commons/docs/data/) using the Google Data Commons javascript API.  
 Fork <a href="https://github.com/ModelEarth/feed">feed player</a> if you're adding to our React Vite visual [Feed viewer](https://model.earth/feed/) and memberSense for Discord.  
-Fork [useeio.js](https://github.com/ModelEarth/useeio.js) if you're contributing to our <a href="../../../trade/footprint/">State Impact Reports</a> and [Trade Flow](../../../profile/trade/) visualizations.  
+Fork [useeio.js](https://github.com/ModelEarth/useeio.js) if you're contributing to our <a href="../../../profile/footprint/">State Impact Reports</a> and [Trade Flow](../../../profile/trade/) visualizations.  
 Fork <a href="https://github.com/ModelEarth/realitystream">realitystream</a> if you're contributing python to our Machine Learning visualizations.  
 Fork <a href="https://github.com/ModelEarth/requests">requests</a> if you're adding python to our image and video [Storyboard Generation](https://model.earth/data-pipeline/research/stream).  
 Fork <a href="https://github.com/datascape/open-webui/actions">openwebui (Datascape fork)</a> to contribute within our [Open WebUI location projects](/projects/location/) using Python and Vite.  

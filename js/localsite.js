@@ -699,7 +699,7 @@ function consoleLog(text,value) {
   // Instead, hold in consoleLogHolder until #logText is available.
 
   let dsconsole = document.getElementById("logText");
-  if (dsconsole) { // Once in DOM
+  if (1==2 && dsconsole) { // Once in DOM
     //dsconsole.style.display = 'none'; // hidden
     if (consoleLogHolder.length > 0) { // Called only once to display pre-DOM values
       //dsconsole.innerHTML = consoleLogHolder;
@@ -785,7 +785,7 @@ function loadLocalTemplate() {
 
 
         //$("#bodyMainHolder").prependTo("#main-container"); // Move back up to top.
-        $("#sideTabs").prependTo("#main-container"); // Move back up to top.
+        $("#rightSideTabs").prependTo("#main-container"); // Move back up to top.
 
         // Replace paths in div
 
@@ -1057,90 +1057,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     }
 })();
 
-      // Load when body div becomes available, faster than waiting for all DOM .js files to load.
-      waitForElm('#bodyloaded').then((elm) => {
-      consoleLog("#bodyloaded becomes available");
-      waitForElm('#datascape').then((elm) => { // Wait for navigation.js to set
-        let modelsite = Cookies.get('modelsite');
-        if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
-          var div = $("<div />", {
-              html: '<style>.local{display:inline-block !important}.local-block{display:block !important}.localonly{display:block !important}.hidelocal{display:none}</style>'
-            }).appendTo("body");
-        } else {
-          // Inject style rule
-            var div = $("<div />", {
-              html: '<style>.local{display:none}.localonly{display:none}</style>'
-            }).appendTo("body");
-        }
-
-        // LOAD HTML TEMPLATE - Holds search filters and maps
-        // View html source: https://model.earth/localsite/map
-        // Consider pulling in HTML before DOM is loaded, then send to page once #datascape is available.
-
-       if (param.insertafter && $("#" + param.insertafter).length) {
-          $("#" + param.insertafter).append("<div id='datascape'></div>");
-        } else if(document.getElementById("datascape") == null) {
-          $('body').prepend("<div id='datascape'></div>");
-        }
-
-        if (param.showLeftIcon != false) { // && param.showheader == "true"
-          // <div id='sideIcons' class='noprint bothSideIcons' style='displayX:none;z-index:3000'></div>
-          //$('body').prepend("<div id='showNavColumn' class='showNavColumn' style='margin-top:64px;'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border: 1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div>");
-        }
-        waitForElm('#pageControls').then((elm) => {
-          // Move to start of pageControls if exists
-          //$('#pageControls').prepend($('#sideIcons'));
-        });
-          
-
-        if (param.showheader == "true" || param.showsearch == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "map") {
-          //if (param.templatepage != "true") { // Prevents dup header on map/index.html - Correction, this is needed. param.templatepage can probably be removed.
-            //if (param.shownav != "true") { // Test for mentors page, will likely revise
-              loadLocalTemplate();
-            //}
-          //}
-        }
-      
-
-        // LOAD INFO TEMPLATE - Holds input-output widgets
-        // View html source: https://model.earth/localsite/info/template-charts.html
-        if (!$("#infoFile").length) {
-          $('body').append("<div id='infoFile'></div>");
-        }
-
-        waitForElm('#main-content').then((elm) => {
-          // Move to bottom of main-content
-          const infoFile = document.getElementById("infoFile");
-          const mainContent = document.getElementById("main-content");
-          mainContent.appendChild(infoFile);
-        });
-        if (param.display == "everything") {
-          let infoFile = theroot + "info/template-charts.html #template-charts"; // Including #template-charts limits to div within page, prevents other includes in page from being loaded.
-          //alert("Before template Loaded infoFile: " + infoFile);
-          $("#infoFile").load(infoFile, function( response, status, xhr ) {
-
-            /*
-            waitForElm('#industryFilters').then((elm) => {
-              alert("Info Template Loaded: " + infoFile);
-              $("#industryFilters").appendTo("#append_industryFilters");
-            });
-            */
-          });
-        }
-
-        // Move main-footer to the end of main-layout
-        let foundTemplate = false;
-        // When the template (map/index.html) becomes available
-        waitForElm('#templateLoaded').then((elm) => {
-          foundTemplate = true;
-          $("#main-footer").appendTo("#main-layout");
-        });
-        if (foundTemplate == false) { // An initial move to the bottom - occurs when the template is not yet available.
-          // Might reactivate
-          //$("#main-footer").appendTo("#main-layout");
-        }
-      });
-      }); // End body ready
 
       $(document).ready(function () {
         /*! jQuery & Zepto Lazy v1.7.10 - http://jquery.eisbehr.de/lazy - MIT&GPL-2.0 license - Copyright 2012-2018 Daniel 'Eisbehr' Kern */
@@ -2080,7 +1996,7 @@ function showSearchFilter() {
 function closeSideTabs() {
   console.log("closeSideTabs()");
   updateHash({"sidetab":""});
-  $("#sideTabs").hide();
+  $("#rightSideTabs").hide();
   $("body").removeClass("bodyRightMargin");
   if (!$('body').hasClass('bodyLeftMargin')) {
     $('body').removeClass('mobileView');
