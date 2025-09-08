@@ -948,7 +948,7 @@ class StandaloneNavigation {
         let showNav = true;
         const scripts = document.getElementsByTagName('script');
         for (const script of scripts) {
-            if (script.src && script.src.includes('nav.js')) {
+            if (script.src && script.src.includes('navigation.js')) {
                 try {
                     // Handle both absolute and relative URLs
                     const scriptUrl = script.src.includes('://') ? 
@@ -1768,30 +1768,33 @@ class StandaloneNavigation {
             }
         });
         
-        // Navigation hover effects - use native event delegation for dynamic elements
-        /*
+        // Navigation hover effects - use CSS class approach like original design
+        const self = this; // Capture reference to 'this' for use in event listeners
         document.addEventListener('mouseenter', (e) => {
-            if (e.target.closest('#side-nav')) {
-                if (this.isCollapsed && !this.isLocked && !this.isMobile) {
-                    const sideNav = document.getElementById('side-nav');
-                    if (sideNav) sideNav.classList.add('hovered');
-                    // Update body class for headerbar positioning
-                    document.body.classList.add('sidenav-hovered');
+            // Check if target has closest method (Element nodes only)
+            if (!e.target || typeof e.target.closest !== 'function') return;
+            
+            const navItem = e.target.closest('.nav-item');
+            if (navItem && navItem.closest('#side-nav')) {
+                if (self.isCollapsed && !self.isLocked && !self.isMobile) {
+                    // Add hover class to the specific nav item for CSS targeting
+                    navItem.classList.add('nav-item-hovered');
                 }
             }
         }, true);
         
         document.addEventListener('mouseleave', (e) => {
-            if (e.target.closest('#side-nav')) {
-                if (this.isCollapsed && !this.isLocked && !this.isMobile) {
-                    const sideNav = document.getElementById('side-nav');
-                    if (sideNav) sideNav.classList.remove('hovered');
-                    // Update body class for headerbar positioning
-                    document.body.classList.remove('sidenav-hovered');
+            // Check if target has closest method (Element nodes only)
+            if (!e.target || typeof e.target.closest !== 'function') return;
+            
+            const navItem = e.target.closest('.nav-item');
+            if (navItem && navItem.closest('#side-nav')) {
+                if (self.isCollapsed && !self.isLocked && !self.isMobile) {
+                    // Remove hover class from the specific nav item
+                    navItem.classList.remove('nav-item-hovered');
                 }
             }
         }, true);
-        */
         
         // Navigation click handling - use native event delegation for dynamic elements
         document.addEventListener('click', (e) => {
@@ -1839,26 +1842,30 @@ class StandaloneNavigation {
         });
         
         // Tooltip handlers for collapsed nav - use native event delegation
-        /*
         document.addEventListener('mouseenter', (e) => {
+            // Check if target has closest method (Element nodes only)
+            if (!e.target || typeof e.target.closest !== 'function') return;
+            
             const link = e.target.closest('.nav-link');
-            if (link && this.isCollapsed && this.isLocked) {
-                this.showTooltip(e, link);
+            if (link && self.isCollapsed && self.isLocked) {
+                self.showTooltip(e, link);
             }
         }, true);
         
         document.addEventListener('mouseleave', (e) => {
-            if (e.target.closest('.nav-link') && this.isCollapsed && this.isLocked) {
+            // Check if target has closest method (Element nodes only)
+            if (!e.target || typeof e.target.closest !== 'function') return;
+            
+            if (e.target.closest('.nav-link') && self.isCollapsed && self.isLocked) {
                 // Add a small delay to allow moving to the tooltip
                 setTimeout(() => {
                     const tooltip = document.getElementById('nav-tooltip');
                     if (tooltip && !tooltip.matches(':hover')) {
-                        this.hideTooltip();
+                        self.hideTooltip();
                     }
                 }, 100);
             }
         }, true);
-        */
 
         // Global click handler for mobile menu
         const globalClickHandler = (e) => {
@@ -6788,7 +6795,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         */
 
         if(document.getElementById("footer") == null) {
-            $("#main-layout").append( "<div id='main-footer' class='flexfooter noprint'></div>\r" );
+            $("#main-content").append( "<div id='main-footer' class='flexfooter noprint'></div>\r" );
         } else {
             //$("#footer").addClass("flexfooter");
             $("#footer").prepend( "<div id='main-footer' class='flexfooter noprint'></div>\r" );
@@ -6834,7 +6841,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
 
         // SIDE NAV WITH HIGHLIGHT ON SCROLL
 
-        // Not currently using nav.html, will likely use later for overrides.  Primary side nav resides in header.
+        // Not currently using nav.html. Might use later for overrides. Primary side nav resides in header.
         if (1==2 && param["main-nav"]) {
             // Wait for header to load?
 
@@ -6893,7 +6900,7 @@ waitForElm('#bodyloaded').then((elm) => {
       //}
     }
     
-    // LOAD INFO TEMPLATE - Holds input-output widgets
+    // #infoFile - Holds input-output widgets
     // View html source: https://model.earth/localsite/info/template-charts.html
     waitForElm("#main-content").then((elm) => {
       $("#main-content").append("<div id='infoFile'></div>");
@@ -6919,16 +6926,18 @@ waitForElm('#bodyloaded').then((elm) => {
     });
 
     // Move main-footer to the end of main-layout
+    
     let foundTemplate = false;
     // When the template (map/index.html) becomes available
     waitForElm('#templateLoaded').then((elm) => {
       foundTemplate = true;
-      $("#main-footer").appendTo("#main-layout");
+      $("#main-footer").appendTo("#main-content");
     });
     if (foundTemplate == false) { // An initial move to the bottom - occurs when the template is not yet available.
       // Might reactivate
       //$("#main-footer").appendTo("#main-layout");
     }
+    
   });
 }); // End body ready
 
