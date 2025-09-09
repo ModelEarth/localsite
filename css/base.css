@@ -1294,9 +1294,6 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 
 #logospace {
   float:left;
-  borderX: 1px solid blue;
-  line-heightX:32px;
-  margin-leftX:-19px;
   vertical-align:middle;
 }
 /*

@@ -1334,7 +1334,7 @@ class StandaloneNavigation {
                             <div class="nav-section earth" style="display:none">
                                 <div class="nav-item">
                                     <button class="nav-link" data-section="account" data-href="${teamPath}#account">
-                                        <i class="nav-icon" data-feather="settings"></i>
+                                        <i class="nav-icon" data-feather="user"></i>
                                         <span class="nav-text">My Account</span>
                                         <i class="nav-arrow" data-feather="chevron-right"></i>
                                     </button>

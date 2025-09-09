@@ -505,8 +505,8 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     position: fixed;
     width:380px;
     padding-right:0px;
-	top:0;
-	left:220px;
+	top: 80px;
+    left: 257px;
 	bottom:0;
 	background-color: #ddd;
 }
