@@ -2171,7 +2171,7 @@ body.sidebar-hovered {
 }
 #side-nav-menu {
     flexX: 1;
-    padding: 16px 0;
+    padding: 30px 0;
     overflow-yX: auto;
 }
 
@@ -2636,7 +2636,7 @@ body.sidebar-hovered {
 /* Close button for sidebar */
 .nav-close-btn {
     position: absolute;
-    top: 4px;
+    top: 6px;
     right: 3px;
     width: 24px;
     height: 24px;
@@ -2644,7 +2644,7 @@ body.sidebar-hovered {
     border: none;
     color: #666;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1;
     border-radius: 50%;
     display: flex;
