@@ -910,7 +910,7 @@ class StandaloneNavigation {
         const savedHidden = localStorage.getItem('standaloneNavHidden');
         
         // Check screen size immediately on refresh
-        this.isMobile = window.innerWidth <= 768;
+        this.isMobile = window.innerWidth <= 600;
         
         // Set initial state based on screen size
         if (this.isMobile) {
@@ -984,7 +984,7 @@ class StandaloneNavigation {
             console.log('Navigation disabled due to shownav=false parameter');
         }
         
-        this.initializeFeatherIcons();
+        this.initializeNavFeatherIcons();
         this.startPeriodicFaviconUpdate();
     }
     
@@ -1075,7 +1075,7 @@ class StandaloneNavigation {
     // Immediate resize handler for responsive behavior
     checkMobile() {
         const wasMobile = this.isMobile;
-        this.isMobile = window.innerWidth <= 768;
+        this.isMobile = window.innerWidth <= 600;
         
         console.log('CHECK MOBILE: width', window.innerWidth, 'wasMobile:', wasMobile, 'isMobile:', this.isMobile);
         
@@ -1084,6 +1084,21 @@ class StandaloneNavigation {
         }
     }
     
+    // Helper function to safely set sidebar state classes
+    setSidebarState(sidenav, state) {
+        if (!sidenav) return;
+        
+        // Remove all state classes first to prevent duplicates
+        sidenav.classList.remove('collapsed', 'expanded', 'hovered', 'locked', 'mobile-open');
+        
+        // Add the specified state
+        if (state === 'collapsed') {
+            sidenav.classList.add('collapsed');
+        } else if (state === 'expanded') {
+            sidenav.classList.add('expanded');
+        }
+    }
+
     handleMobileChange() {
         //alert("handleMobileChange")
         //console.log("handleMobileChange() disabled since it expands #side-nav on hover")
@@ -1096,8 +1111,7 @@ class StandaloneNavigation {
         if (this.isMobile) {
             console.log('MOBILE CHANGE: Switching to mobile mode - applying collapsed state');
             // Apply collapsed state like manual toggle does (to hide titles/arrows)
-            sidenav?.classList.remove('expanded', 'hovered');
-            sidenav?.classList.add('collapsed');
+            this.setSidebarState(sidenav, 'collapsed');
             overlay?.classList.remove('active');
             this.isLocked = false;
             // Update body class
@@ -1111,13 +1125,12 @@ class StandaloneNavigation {
             // Restore expanded state when switching back to desktop if not user-collapsed
             if (!this.isCollapsed) {
                 console.log('MOBILE CHANGE: Restoring expanded class for desktop');
-                sidenav?.classList.remove('collapsed', 'locked');
-                sidenav?.classList.add('expanded');
+                this.setSidebarState(sidenav, 'expanded');
                 //// document.body.classList.add('sidenav-expanded');
                 //// document.body.classList.remove('sidenav-collapsed');
             } else {
                 console.log('MOBILE CHANGE: Staying collapsed as per user preference');
-                sidenav?.classList.add('collapsed');
+                this.setSidebarState(sidenav, 'collapsed');
                 if (this.isLocked) {
                     sidenav?.classList.add('locked');
                 }
@@ -1232,11 +1245,13 @@ class StandaloneNavigation {
         console.log('INIT: Creating navigation with classes:', initialClasses);
         
         const navHTML = `
-            <div id="side-nav" class="sidebar ${initialClasses}${!this.isCollapsed && !this.isMobile && !this.isHidden ? ' expanded' : 'collapsed'}" style="${initialStyle}">
+            <div id="side-nav" class="sidebar ${initialClasses}${!this.isCollapsed && !this.isMobile && !this.isHidden ? ' expanded' : ' collapsed'}" style="${initialStyle}">
+                      
                 <div id="side-nav-absolute">
-                    <div id="side-nav-content">
-                        <button class="nav-close-btn" id="nav-close-btn" title="Close navigation">✕</button>
-                        
+
+                    <div id="side-nav-content" style="position:relative">
+                        <div style="width:100%" id="side-nav-content-header"><button id="nav-close-btn" class="nav-x" title="Close navigation">✕</button></div>
+                  
                         <div id="side-nav-menu">
                             <div class="nav-section">
                                 <div class="nav-item">
@@ -1763,39 +1778,22 @@ class StandaloneNavigation {
         
         // Close button handler - use native event delegation for dynamic elements
         document.addEventListener('click', (e) => {
+            // Handle the specific close button in #side-nav-content
             if (e.target.closest('#nav-close-btn')) {
                 this.hideSidebar();
+                return;
+            }
+            
+            // Handle main nav close button
+            const mainNavCloseBtn = e.target.closest('.main-nav-close-btn');
+            if (mainNavCloseBtn) {
+                console.log('Clicked .main-nav-close-btn in #main-nav');
+                // Just hide #main-nav, keep #side-nav-content open
+                document.getElementById('main-nav').style.display = 'none';
+                $("#side-nav").removeClass("main-nav").addClass("main-nav-full");
             }
         });
-        
-        // Navigation hover effects - use CSS class approach like original design
-        const self = this; // Capture reference to 'this' for use in event listeners
-        document.addEventListener('mouseenter', (e) => {
-            // Check if target has closest method (Element nodes only)
-            if (!e.target || typeof e.target.closest !== 'function') return;
-            
-            const navItem = e.target.closest('.nav-item');
-            if (navItem && navItem.closest('#side-nav')) {
-                if (self.isCollapsed && !self.isLocked && !self.isMobile) {
-                    // Add hover class to the specific nav item for CSS targeting
-                    navItem.classList.add('nav-item-hovered');
-                }
-            }
-        }, true);
-        
-        document.addEventListener('mouseleave', (e) => {
-            // Check if target has closest method (Element nodes only)
-            if (!e.target || typeof e.target.closest !== 'function') return;
-            
-            const navItem = e.target.closest('.nav-item');
-            if (navItem && navItem.closest('#side-nav')) {
-                if (self.isCollapsed && !self.isLocked && !self.isMobile) {
-                    // Remove hover class from the specific nav item
-                    navItem.classList.remove('nav-item-hovered');
-                }
-            }
-        }, true);
-        
+
         // Navigation click handling - use native event delegation for dynamic elements
         document.addEventListener('click', (e) => {
             const link = e.target.closest('.nav-link');
@@ -1820,6 +1818,7 @@ class StandaloneNavigation {
                             const currentHash = window.location.hash.substring(1);
                             
                             // Check if we're on the root index.html page
+                            // Possible bug - seems like the first two would include the root page outside team.
                             const isRootPage = window.location.pathname === '/' || 
                                              window.location.pathname.endsWith('/index.html') ||
                                              window.location.pathname.endsWith('/team/') ||
@@ -1841,8 +1840,11 @@ class StandaloneNavigation {
             }
         });
         
+
         // Tooltip handlers for collapsed nav - use native event delegation
+        /*
         document.addEventListener('mouseenter', (e) => {
+            //alert("mouseenter")
             // Check if target has closest method (Element nodes only)
             if (!e.target || typeof e.target.closest !== 'function') return;
             
@@ -1866,6 +1868,7 @@ class StandaloneNavigation {
                 }, 100);
             }
         }, true);
+        */
 
         // Global click handler for mobile menu
         const globalClickHandler = (e) => {
@@ -2006,29 +2009,52 @@ class StandaloneNavigation {
         }
     }
     
-    hideSidebar() {
-        console.log('hideSidebar called, isMobile:', this.isMobile);
+    // .sideBar contains both
+    hideSidebar(whichNav) {
+
+        console.log('hideSidebar called, isMobile:', this.isMobile, 'windowWidth:', window.innerWidth);
         const sidenavcontent = document.getElementById('side-nav-content');
+        const mainNav = document.getElementById('main-nav');
+        const isNarrowScreen = window.innerWidth <= 600;
+        
         if (sidenavcontent) {
             console.log('Hiding sidebar...');
             // Hide the sidenavcontent icon sidebar
             sidenavcontent.style.display = 'none';
             $("#side-nav").removeClass("main-nav-full");
-            if ($("#main-nav").is(":visible")) {
+            
+            // Check if main-nav is visible and handle accordingly
+            const mainNavVisible = mainNav && $("#main-nav").is(":visible");
+            
+            if (mainNavVisible) {
+                // Keep #main-nav visible and #side-nav open
                 $("#side-nav").addClass("main-nav");
+                console.log('Keeping main-nav visible, only hiding side-nav-content');
+                
+                // On narrow screens (≤600px), when main-nav is visible, 
+                // do NOT add sidebar-hidden class - just hide side-nav-content
+                if (isNarrowScreen) {
+                    console.log('Narrow screen: main-nav visible, NOT adding sidebar-hidden class');
+                    return; // Don't set isHidden or add sidebar-hidden class
+                } else {
+                    // Wide screen: keep existing behavior
+                    return; // Don't set isHidden or add sidebar-hidden class
+                }
             } else {
+                // No main-nav visible, close entire sidebar
+                console.log('No main-nav visible, closing entire sidebar');
                 document.body.classList.add('sidebar-hidden');
+                // Update internal state
+                this.isHidden = true;
+                
+                // Store hidden state (but don't persist mobile state to localStorage on narrow screens)
+                if (!isNarrowScreen) {
+                    localStorage.setItem('standaloneNavHidden', 'true');
+                }
             }
+            
             document.body.classList.remove('sidenav-collapsed', 'sidenav-expanded');
             console.log('Body classes updated');
-            
-            // Update internal state
-            this.isHidden = true;
-            
-            // Store hidden state (but don't persist mobile state to localStorage on narrow screens)
-            if (!this.isMobile) {
-                localStorage.setItem('standaloneNavHidden', 'true');
-            }
             console.log('Sidebar hidden successfully');
         } else {
             console.log('Cannot hide sidebar - not found');
@@ -2068,78 +2094,67 @@ class StandaloneNavigation {
     handleNavigationToggle() {
         const sidenav = document.getElementById('side-nav');
         const mainNav = document.getElementById('main-nav');
+        const body = document.body;
         const isNarrowScreen = window.innerWidth <= 600;
+        const isCurrentlyHidden = body.classList.contains('sidebar-hidden');
         
         console.log('🔍 handleNavigationToggle:', {
             windowWidth: window.innerWidth,
             isNarrowScreen,
-            currentBodyClasses: document.body.className
+            currentBodyClasses: body.className,
+            isExpanded: sidenav?.classList.contains('expanded'),
+            mainNavVisible: mainNav ? window.getComputedStyle(mainNav).display !== 'none' : false,
+            isCurrentlyHidden
         });
         
+        // FIRST: If sidebar is not hidden, always add .sidebar-hidden and return
+        if (!isCurrentlyHidden) {
+            console.log('🔍 DEBUG: Adding .sidebar-hidden to body - early return');
+            body.classList.add('sidebar-hidden');
+            if (sidenav) sidenav.style.display = 'none';
+            if (mainNav) mainNav.style.display = 'none';
+            this.isHidden = true;
+            
+            // Store hidden state (but don't persist mobile state to localStorage on narrow screens)
+            if (!isNarrowScreen) {
+                localStorage.setItem('standaloneNavHidden', 'true');
+            }
+            
+            console.log('🔍 DEBUG: Body classes after adding:', body.className);
+            return; // Exit early - no additional navigation changes
+        }
+        
+        // SECOND: Only proceed here if sidebar is currently hidden
+        console.log('🔍 DEBUG: Sidebar currently hidden - showing navigation');
+        
         if (isNarrowScreen) {
-            // Special behavior for narrow screens (≤600px)
-            const body = document.body;
-            const isCurrentlyHidden = body.classList.contains('sidebar-hidden');
+            // Narrow screen behavior - show both navigations
+            body.classList.remove('sidebar-hidden');
             
-            console.log('🔍 DEBUG narrow screen logic:', {
-                isCurrentlyHidden,
-                sidenavExists: !!sidenav,
-                mainNavExists: !!mainNav
-            });
-            
-            if (!isCurrentlyHidden) {
-                // Currently showing - hide both navigations
-                console.log('🔍 DEBUG: Adding .sidebar-hidden to body');
-                body.classList.add('sidebar-hidden');
-                if (sidenav) sidenav.style.display = 'none';
-                if (mainNav) mainNav.style.display = 'none';
-                this.isHidden = true;
-                console.log('🔍 DEBUG: Body classes after adding:', body.className);
-            } else {
-                // Currently hidden - show both navigations
-                body.classList.remove('sidebar-hidden');
-                
-                // Show #side-nav-content with .collapsed
-                if (sidenav) {
-                    sidenav.style.removeProperty('display');
-                    sidenav.style.display = 'flex';
-                    // Fix bug: properly manage collapsed class without duplication
-                    sidenav.classList.remove('collapsed', 'expanded');
-                    sidenav.classList.add('collapsed');
-                    this.isCollapsed = true;
-                    this.isLocked = true;
-                }
-                
-                // Show #main-nav
-                if (mainNav) {
-                    mainNav.style.removeProperty('display');
-                    mainNav.style.display = 'block';
-                }
-                
-                this.isHidden = false;
-            }
-        } else {
-            // Original behavior for wide screens (>600px)
-            // Always ensure sidebar is visible first
-            if (this.isHidden || !sidenav || sidenav.style.display === 'none' || 
-                window.getComputedStyle(sidenav).display === 'none' ||
-                document.body.classList.contains('sidebar-hidden')) {
-                this.showSidebar();
-            }
-            
-            // Add .collapsed class and remove .expanded class from #side-nav
+            // Show #side-nav-content with .collapsed
             if (sidenav) {
-                // Fix bug: properly manage collapsed class without duplication
-                sidenav.classList.remove('collapsed', 'expanded');
-                sidenav.classList.add('collapsed');
-                // Update internal state to match
+                sidenav.style.removeProperty('display');
+                sidenav.style.display = 'flex';
+                this.setSidebarState(sidenav, 'collapsed');
                 this.isCollapsed = true;
                 this.isLocked = true;
             }
             
-            // On mobile, also handle mobile menu state
-            if (this.isMobile) {
-                //this.toggleMobileMenu();
+            // Show #main-nav
+            if (mainNav) {
+                mainNav.style.removeProperty('display');
+                mainNav.style.display = 'block';
+            }
+            
+            this.isHidden = false;
+        } else {
+            // Wide screen behavior - show sidebar in collapsed state
+            this.showSidebar();
+            // Set to collapsed state initially
+            if (sidenav) {
+                this.setSidebarState(sidenav, 'collapsed');
+                this.isCollapsed = true;
+                this.isLocked = true;
             }
         }
     }
@@ -2241,6 +2256,16 @@ class StandaloneNavigation {
         window.location.href = adminPath;
     }
     
+    // Initialize feather icons with 22px size
+    initializeNavFeatherIcons() {
+        if (typeof feather !== 'undefined') {
+            feather.replace({
+                width: 22,
+                height: 22
+            });
+        }
+    }
+
     // Load feather icons script if not already loaded
     loadFeatherIcons() {
         if (typeof feather !== 'undefined') {
@@ -2258,9 +2283,7 @@ class StandaloneNavigation {
         const script = document.createElement('script');
         script.src = 'https://unpkg.com/feather-icons';
         script.onload = () => {
-            if (typeof feather !== 'undefined') {
-                feather.replace();
-            }
+            this.initializeNavFeatherIcons();
         };
         document.head.appendChild(script);
     }
@@ -2272,22 +2295,15 @@ class StandaloneNavigation {
         }
         
         this.featherTimeout = setTimeout(() => {
-            if (typeof feather !== 'undefined') {
-                feather.replace();
-            }
+            this.initializeNavFeatherIcons();
         }, 100);
     }
     
     // Public method to force immediate feather icon refresh
     replaceFeatherIcons() {
-        if (typeof feather !== 'undefined') {
-            feather.replace();
-        }
+        this.initializeNavFeatherIcons();
     }
     
-    initializeFeatherIcons() {
-        this.refreshFeatherIcons();
-    }
     
     // Update tooltip for the sidebar toggle button based on current state
     updateExpanderTooltip() {
@@ -2320,8 +2336,12 @@ class StandaloneNavigation {
         this.debouncedUpdateToggleIcon();
     }
     
-    
+    // Invoked by .nav-link circle hover
+    // Allow .tooltip-link button to transend edge of absolute.
+
+    // Switching to rollover instead
     showTooltip(event, navLink) {
+        //alert("showTooltip")
         // Remove existing tooltip
         this.hideTooltip();
         
@@ -2392,10 +2412,8 @@ class StandaloneNavigation {
         // Add to body
         document.body.appendChild(tooltip);
         
-        // Refresh feather icons for the cloned icon
-        if (typeof feather !== 'undefined') {
-            feather.replace();
-        }
+        // Initialize feather icons for the cloned icon
+        this.initializeNavFeatherIcons();
         
         // Position tooltip
         const rect = navLink.getBoundingClientRect();
@@ -6460,12 +6478,12 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
 
         waitForElm('#side-nav-absolute').then((elm) => {
             // For map list
-            let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLow pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSideList close-X-smXXX nav-close-btn' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='sideListSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listInfo' class='listInfo content'></div></div>\r";
+            let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLow pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSideList nav-x' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='sideListSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listInfo' class='listInfo content'></div></div>\r";
         
             if(document.getElementById("main-nav") == null) {
                 let prependTo = "#side-nav-absolute";
                 // Includes listColumnElement with #listcolumn
-                $(prependTo).append("<div id='main-nav' class='main-nav pagecolumn greyDiv noprint sidecolumnLeft pagecolumnLow liteDiv' style='display:none; min-height:300px'><div class='hideSide close-X-smXXX nav-close-btn' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='sidecolumnLeftScroll'><div id='navcolumnTitle' class='maincat' style='display:none'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement); //  listColumnElement will be blank if already applied above.
+                $(prependTo).append("<div id='main-nav' class='main-nav pagecolumn greyDiv noprint sidecolumnLeft pagecolumnLow liteDiv' style='display:none; min-height:300px'><div class='hideSide main-nav-close-btn nav-x' style='position:absolute;right:8px;top:8px;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='main-nav-scroll'><div id='navcolumnTitle' class='maincat' style='display:none'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement); //  listColumnElement will be blank if already applied above.
                 $("#mapFilters").prependTo($("#main-layout"));
             } else {
                 // TODO - change to fixed when side reaches top of page

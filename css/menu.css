@@ -470,7 +470,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     float:left;
     padding: 0px;
 }
-.main-nav-inpage .sidecolumnLeftScroll {
+.main-nav-inpage .main-nav-scroll {
     position: relative;
     bottom:auto !important;
     right:0 !important;
@@ -632,7 +632,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	margin-right:7px;
 	float:left;
 }
-.sidecolumnLeftScroll {
+.main-nav-scroll {
     position:sticky;
     top:0px; /* was 30px */
     height: calc(100vh - var(--header-offset-height, 79px)); /* Dynamically subtract header offset height */
@@ -643,10 +643,10 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     padding-bottom: 500px; /* Allows for footer */
     padding-top: 38px;
 }
-.sidecolumnLeftScroll::-webkit-scrollbar {
+.main-nav-scroll::-webkit-scrollbar {
   display: none;
 }
-.sidecolumnLeftScrollLower {
+.main-nav-scrollLower {
 	padding-top: 70px;
 }
 
