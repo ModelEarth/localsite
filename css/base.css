@@ -877,6 +877,23 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 #hero-content {
   padding: 45px 60px 40px 60px;
 }
+@media (max-width: 600px) {
+  .hero-title {
+    margin: 20px;
+    padding-top: 30px;
+    font-size: 28px !important;
+    font-weight: bold !important;
+  }
+  #hero-content {
+    padding: 0px;
+  }
+  #hero-rect {
+    margin: 0px !important;
+  }
+  .bgimg {
+    min-height: 0px !important;
+  }
+}
 #hero-mini {
   float: right;
   background-color: rgba(33, 33, 33, 0.85);
@@ -1440,7 +1457,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     display: none !important;
   }
   #mapFilters {
-    margin-left: 22px !important;
+    margin-left: 6px !important;
   }
 }
 .headerLeftIcon i {

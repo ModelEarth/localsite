@@ -536,8 +536,13 @@ input.filterClick[type="text"] {
 .bigThumbMenuInner {
   display: grid;
   overflow: auto;
-  padding: 20px;
+  padding: 15px;
   padding-bottom: 10px;
+}
+@media (max-width: 600px) {
+  .bigThumbMenuInner {
+    padding: 40px 0 0 0;
+  }
 }
 .contentpadding .bigThumbMenuInner {
   padding: 0px;
