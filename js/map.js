@@ -464,7 +464,8 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.listTitle = "GDEcD Team Map";
         dp.dataTitle = "GDEcD Team Map";
         dp.datatype = "csv";
-        dp.dataset = "/display/team/map/cities.csv";
+        dp.dataset1 = "/display/team/map/cities.csv";
+        dp.dataset =  "/team/projects/map/cities.csv";
         dp.markerType = "google";
         dp.nameColumn = "city";
         dp.search = {"In City": "City", "In County Name": "County"};
