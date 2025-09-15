@@ -877,6 +877,11 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 #hero-content {
   padding: 45px 60px 40px 60px;
 }
+@media (max-width: 1000px) {
+  .bgimg {
+    min-height: 400px !important;
+  }
+}
 @media (max-width: 600px) {
   .hero-title {
     margin: 20px;
@@ -894,6 +899,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     min-height: 0px !important;
   }
 }
+
 #hero-mini {
   float: right;
   background-color: rgba(33, 33, 33, 0.85);
