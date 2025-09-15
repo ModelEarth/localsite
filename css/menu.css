@@ -485,6 +485,9 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	top: var(--header-height);
 }
 @media (max-width: 600px) {
+	.main-nav {
+    	width: 100% !important;
+	}
 	#showSideFromHeader i {
 		margin-top: 4px;
 	}
@@ -600,6 +603,12 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     font-size: 15px;
     bottom:0;
     z-index:200; /* 1 allows border highlight to overlap adjacent content area. At least 101 is needed for OpenWebUI */
+}
+@media (max-width: 600px) {
+	.sidecolumnLeft {
+	    font-size: 18px;
+	    line-height: 35px;
+	}
 }
 #cloneRight {
 	position:inherit;

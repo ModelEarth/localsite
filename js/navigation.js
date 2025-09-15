@@ -1791,6 +1791,18 @@ class StandaloneNavigation {
                 // Just hide #main-nav, keep #side-nav-content open
                 document.getElementById('main-nav').style.display = 'none';
                 $("#side-nav").removeClass("main-nav").addClass("main-nav-full");
+                
+                // Mobile behavior: if browser is 600px or less and #side-nav-content is visible, 
+                // replace collapsed class with expanded
+                if (window.innerWidth <= 600) {
+                    const sideNavContent = document.getElementById('side-nav-content');
+                    const sideNav = document.getElementById('side-nav');
+                    if (sideNavContent && sideNav && 
+                        window.getComputedStyle(sideNavContent).display !== 'none') {
+                        sideNav.classList.remove('collapsed');
+                        sideNav.classList.add('expanded');
+                    }
+                }
             }
         });
 
@@ -1817,18 +1829,20 @@ class StandaloneNavigation {
                             const targetHash = hashMatch[1];
                             const currentHash = window.location.hash.substring(1);
                             
-                            // Check if we're on the root index.html page
-                            // Possible bug - seems like the first two would include the root page outside team.
+                            // Check if we're on the root index.html page AND the href is for hash navigation only (not a different page)
                             const isRootPage = window.location.pathname === '/' || 
                                              window.location.pathname.endsWith('/index.html') ||
                                              window.location.pathname.endsWith('/team/') ||
                                              window.location.pathname.endsWith('/team/index.html');
                             
-                            if (isRootPage) {
-                                // On root page, use hash navigation only
+                            // Check if href is for same page hash navigation (starts with # or has no path before #)
+                            const isSamePageHash = href.startsWith('#') || !href.includes('/');
+                            
+                            if (isRootPage && isSamePageHash) {
+                                // On root page with same-page hash, use hash navigation only
                                 window.location.hash = targetHash;
                             } else {
-                                // On other pages, use full href navigation
+                                // Different page or not root page, use full href navigation
                                 window.location.href = href;
                             }
                         } else {
@@ -6494,20 +6508,9 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
 
         $(document).on("click", ".showNavColumn", function(event) {
             console.log(".showNavColumn click");
-            
-            // Special handling for #showSideFromHeader on narrow screens
-            /*
-            if (window.innerWidth <= 600) {
-                console.log('🔍 DEBUG: Detected #showSideFromHeader click on narrow screen, calling handleNavigationToggle');
-                event.preventDefault();
-                event.stopPropagation();
-                handleNavigationToggle();
-                return;
-            }
-            */
 
             // Original showNavColumn behavior
-            if ($("body").hasClass("sidebar-hidden") || $("#main-nav").is(':hidden')) {
+            if ($("body").hasClass("sidebar-hidden")) {
                 //alert("showNavColumn")
                 showNavColumn();
             } else {

@@ -41,9 +41,13 @@ Used in localsite, modelearth, io, neighborhood, trees
     display: none;
 }
 .main-nav-full {
-  flexXXX: 0 0 257px !important;
   width: 238px !important;
   flex-shrink: 0; /* Prevents the column from shrinking below 257px */
+}
+@media (max-width: 600px) {
+  .main-nav-full {
+    width:100% !important;
+  }
 }
 .sidebar-hidden #side-nav {
   width: 0px !important;
@@ -1953,7 +1957,7 @@ h2 .num {
 }
 
 /* On mobile, headerbar should be at left edge when sidebar is hidden */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
     body.sidebar-hidden .headerbar {
         left: 0;
     }
@@ -2171,14 +2175,18 @@ body.sidebar-hovered {
   width: auto;
   max-width: 200px !important;
   min-width: 200px !important;
+  transition: none !important;
 }
 .sidebar.collapsed .nav-section:hover .nav-icon {
   margin-right: 12px !important;
-  border-radius: none !important;
 }
 .sidebar.collapsed .nav-section:hover .nav-link.active {
-  background-colorX: none;
-  border-radius: none !important;
+  border-radius: 50px !important;
+  width: calc(100% - 16px) !important;
+  height: auto !important;
+  margin: 2px 8px 2px 14px !important;
+  justify-content: space-between !important;
+  padding: 12px 16px 12px 16px !important;
 }
 
 /* Navigation Menu */
@@ -2217,7 +2225,7 @@ body.sidebar-hovered {
     border-radius: 50px;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: var(--transition-smooth);
+    transitionX: var(--transition-smooth);
     text-align: left;
     font-size: 20px;
     font-weight: 500;
@@ -2447,9 +2455,29 @@ body.sidebar-hovered {
 }
 
 /* Mobile Responsive */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
+  .nav-link {
+    padding-right: 20px;
+  }
   #side-nav {
     top: var(--header-height, 60px);
+  }
+  
+  /* Expanded nav arrows on mobile - larger with circle background */
+  #side-nav.expanded .nav-arrow {
+    width: 32px !important;
+    height: 32px !important;
+    background: var(--bg-tertiary) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-left: 12px !important;
+  }
+  
+  /* Dark mode styling for mobile nav arrow circles */
+  .dark #side-nav.expanded .nav-arrow {
+    background: #333 !important;
   }
     #side-navX {
         width: 64px;
@@ -2774,7 +2802,7 @@ body.sidebar-hidden #openNav {
 }
 
 /* Show reopen button by default on mobile width */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
     #openNav {
         display: inline-block !important;
     }
