@@ -2125,7 +2125,8 @@ class StandaloneNavigation {
         if (!isCurrentlyHidden) {
             console.log('🔍 DEBUG: Adding .sidebar-hidden to body - early return');
             body.classList.add('sidebar-hidden');
-            if (sidenav) sidenav.style.display = 'none';
+            // On mobile (600px and less), don't set display:none on #side-nav
+            if (sidenav && !isNarrowScreen) sidenav.style.display = 'none';
             if (mainNav) mainNav.style.display = 'none';
             this.isHidden = true;
             
@@ -2193,15 +2194,16 @@ class StandaloneNavigation {
         const sidenav = document.getElementById('side-nav');
         const actuallyCollapsed = sidenav?.classList.contains('collapsed') || false;
         const mobileOpen = sidenav?.classList.contains('mobile-open') || false;
+        const actuallyExpanded = sidenav?.classList.contains('expanded') || false;
         
         // Sync the class property with actual DOM state
         this.isCollapsed = actuallyCollapsed;
         
-        // Target icon based on state - consider both collapsed state and mobile-open
+        // Target icon based on state - consider both collapsed state and mobile-open/expanded
         let targetIcon;
         if (this.isMobile) {
-            // On mobile: right arrow when collapsed, left arrow when mobile-open (expanded)
-            targetIcon = mobileOpen ? 'chevrons-left' : 'chevrons-right';
+            // On mobile: right arrow when collapsed, left arrow when mobile-open OR expanded
+            targetIcon = (mobileOpen || actuallyExpanded) ? 'chevrons-left' : 'chevrons-right';
         } else {
             // On desktop: right arrow when collapsed, left arrow when expanded
             targetIcon = this.isCollapsed ? 'chevrons-right' : 'chevrons-left';
@@ -6536,7 +6538,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         $(document).on('click', function(event) {
             if ($("#main-nav").is(':visible')) {
                 if ($('#main-container').width() <= 800) {
-                    hideSide();
+                    //hideSide();
                 }
             }
         });

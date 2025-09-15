@@ -2030,6 +2030,11 @@ h2 .num {
   padding: 8px;
   border-bottom: 1px solid var(--border-light);
 }
+@media (max-width: 600px) {
+  #side-nav-header {
+    display: none;
+  }
+}
 #side-nav-content {
   z-index: 100;
   border-right: 1px solid #dedede;

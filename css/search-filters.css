@@ -98,7 +98,10 @@
 }
 @media (max-width: 600px) {
   #mapFilters {
-    padding-left: 10px;
+    padding-left: 0px;
+  }
+  #filterFieldsHolder {
+    padding: 0px !important;
   }
   #stateFiltersHolder {
     padding-left: 12px;
