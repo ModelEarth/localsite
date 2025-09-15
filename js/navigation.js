@@ -1249,8 +1249,8 @@ class StandaloneNavigation {
                       
                 <div id="side-nav-absolute">
 
-                    <div id="side-nav-content" style="position:relative">
-                        <div style="width:100%" id="side-nav-content-header"><button id="nav-close-btn" class="nav-x" title="Close navigation">✕</button></div>
+                    <div id="side-nav-content">
+                        <div id="side-nav-header"><button id="nav-close-btn" class="nav-x" title="Close navigation">✕</button></div>
                   
                         <div id="side-nav-menu">
                             <div class="nav-section">
@@ -1454,7 +1454,7 @@ class StandaloneNavigation {
                                 </div>
                             </div>
                         </div>
-                        <div id="side-nav-footer" class="sidebar-footer">
+                        <div id="side-nav-footer">
                             <button class="sidebar-toggle" id="sidebar-toggle">
                                 <i data-feather="chevrons-left"></i>
                             </button>
