@@ -1790,7 +1790,7 @@ class StandaloneNavigation {
                 console.log('Clicked .main-nav-close-btn in #main-nav');
                 // Just hide #main-nav, keep #side-nav-content open
                 document.getElementById('main-nav').style.display = 'none';
-                $("#side-nav").removeClass("main-nav").addClass("main-nav-full");
+                $("#side-nav").removeClass("main-nav").removeClass("main-nav-full");
                 
                 // Mobile behavior: if browser is 600px or less and #side-nav-content is visible, 
                 // replace collapsed class with expanded

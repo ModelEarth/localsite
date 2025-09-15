@@ -28,7 +28,7 @@ Data from the US EPA and NAICS, Exiobase, Google Data Commons - [Data Pipelines]
 
 ## <span class="num">3</span><span class="txt">Integrate Machine Learning</span>
 Contribute to our machine learning [RealityStream](../../realitystream/)
-Contribute to UN goal data visualizations in our <a href="/data-commons/docs/data/">Google Data Commons Timelines</a>
+Contribute to UN goal data visualizations in our <a href="/localsite/timeline/">Google Data Commons Timelines</a>
 
 ## <span class="num">4</span><span class="txt">Chart Starter Ideas</span>
 [Chart Starters](../../community/start/charts) - Chord, Sankey, USEEIO Heatmap Mosaic and Input-Output Flow

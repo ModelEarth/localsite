@@ -23,9 +23,8 @@ Used in localsite, modelearth, io, neighborhood, trees
     --radius-sm: 6px;
     --radius-md: 8px;
     --radius-lg: 12px;
-    --sidebar-width: 67px;
+    --sidebar-width-expanded: 67px;
     --sidebar-collapsed: 64px;
-    --side-nav-widthX: var(--sidebar-width);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 #side-nav {
@@ -59,7 +58,7 @@ Used in localsite, modelearth, io, neighborhood, trees
     --text-secondary: #6B7280; /* too light for icons on team/projects */
     --text-secondary: #bbb;
     --text-primary: #eee;
-    --border-light: #444;
+    --border-light: #aaa;
     --border-medium: #666;
 }
 @media (max-width: 600px) {
@@ -2016,7 +2015,6 @@ h2 .num {
 }
 #side-nav {
   transition: var(--transition-smooth);
-  width: var(--sidebar-width);
   background: var(--bg-secondary);
   transition: var(--transition-smooth);
   box-shadow: var(--shadow-sm);
@@ -2031,8 +2029,8 @@ h2 .num {
   width: 238px;
 }
 #side-nav.expanded .nav-link {
-  width: 100%;
-  margin-right:15px;
+  width: calc(100% - 10px);
+  margin-right: 10px;
 }
 @media (max-width: 600px) {
   #side-nav.expanded {
@@ -2081,7 +2079,7 @@ h2 .num {
 }
 
 .sidebarX.collapsed.hovered:not(.locked) {
-    width: var(--sidebar-width);
+    width: var(--sidebar-width-expanded);
 }
 
 /* Global state classes for sidebar width tracking */
@@ -2090,11 +2088,11 @@ body.sidebar-collapsed {
 }
 
 body.sidebar-expanded {
-    --side-nav-width: calc(var(--sidebar-width) - 3px);
+    --side-nav-width: calc(var(--sidebar-width-expanded) - 3px);
 }
 
 body.sidebar-hovered {
-    --side-nav-width: calc(var(--sidebar-width) - 3px);
+    --side-nav-width: calc(var(--sidebar-width-expanded) - 3px);
 }
 
 .sidebar-toggle {
@@ -2472,7 +2470,6 @@ body.sidebar-hovered {
 .main-content {
     displayX: flex;
     flexX: 1;
-    margin-leftX: var(--sidebar-width);
     transition: var(--transition-smooth);
     min-height: 100vh;
     width: 100%;
