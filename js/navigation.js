@@ -1275,7 +1275,7 @@ class StandaloneNavigation {
 
                             <div class="nav-section earth" style="display:none">
                                 <div class="nav-item">
-                                    <button class="nav-link" data-section="projects" data-href="${teamPath}#projects">
+                                    <button class="nav-link" data-section="projects" data-href="${rootPath}projects">
                                         <i class="nav-icon" data-feather="folder"></i>
                                         <span class="nav-text">Projects</span>
                                         <i class="nav-arrow" data-feather="chevron-right"></i>
@@ -1293,9 +1293,9 @@ class StandaloneNavigation {
                                             <i class="subnav-icon" data-feather="target"></i>
                                             <span>Our Project Hub</span>
                                         </a>
-                                        <a href="${teamPath}projects/#list=democracylab" class="subnav-link">
+                                        <a href="https://www.democracylab.org/projects/834" class="subnav-link">
                                             <i class="subnav-icon" data-feather="code"></i>
-                                            <span>Democracy Lab Projects</span>
+                                            <span>Democracy Lab</span>
                                         </a>
                                         <div style="display:none">
                                         Before removing, investigate via: Reveal opportunities section on the team/index.html page
@@ -1318,7 +1318,7 @@ class StandaloneNavigation {
                                 </div>
                             </div>
 
-                            <div class="nav-section earth" style="display:none">
+                            <div class="nav-section earthX" style="display:none">
                                 <div class="nav-item">
                                     <button class="nav-link" data-section="people" data-href="${teamPath}#people">
                                         <i class="nav-icon" data-feather="users"></i>
@@ -1346,7 +1346,7 @@ class StandaloneNavigation {
                                 </div>
                             </div>
 
-                            <div class="nav-section earth" style="display:none">
+                            <div class="nav-section earthX" style="display:none">
                                 <div class="nav-item">
                                     <button class="nav-link" data-section="account" data-href="${teamPath}#account">
                                         <i class="nav-icon" data-feather="user"></i>
@@ -6168,6 +6168,11 @@ function showNavColumn() {
     $("#side-nav").addClass("main-nav-full");
     $("body").removeClass("sidebar-hidden");
     $("#showSideFromBar").hide();
+    
+    // Refresh feather icons when showing navigation
+    if (window.standaloneNav && window.standaloneNav.replaceFeatherIcons) {
+        window.standaloneNav.replaceFeatherIcons();
+    }
 
     if ($("#main-content > .datascape").is(":visible")) { // When NOT embedded.
         if ($("#listcolumn").is(":visible")) {
