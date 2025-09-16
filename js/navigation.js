@@ -2729,46 +2729,6 @@ function hideSide(which) {
             }
         }
     }
-
-    /*
-        if ($("#filterFieldsMain").is(':visible')) {
-            $("#showSideFromBar").show();
-        } else {
-            $("#showSideFromHeader").show();
-        }
-        if (!$("#main-nav").is(':visible') && !$("#listcolumn").is(':visible')) {
-            $("#showNavColumn").show();
-            $("#sideIcons").show();
-        } else if (!$("#main-nav").is(':visible') && $("#listcolumn").is(':visible')) {
-            
-        }
-        if (!$("#main-nav").is(':visible')) {
-            $('body').removeClass('bodyLeftMargin');
-        }
-        if (!$("#listcolumn").is(':visible')) {
-            $('body').removeClass('bodyLeftMarginList');
-        }
-        if (!$("#main-nav").is(':visible') || !$("#listcolumn").is(':visible')) {
-            $('body').removeClass('bodyLeftMarginFull');
-        }
-        if (!$('body').hasClass('bodyRightMargin')) {
-            $('body').removeClass('mobileView');
-        }
-    */
-
-
-    // Might not need this with mobile
-
-    // Stopped working after reconfuring to load map1 and map2 with same function.
-    /*
-    if (document.querySelector('#map1')._leaflet_map) {
-        document.querySelector('#map1')._leaflet_map.invalidateSize(); // Refresh map tiles.
-    }
-    if (document.querySelector('#map2')._leaflet_map) {
-        document.querySelector('#map2')._leaflet_map.invalidateSize(); // Refresh map tiles.
-    }
-    */
-    // Works instead
     if ($("#map1").text().trim().length > 1) {
         if (map1) {
             map1.invalidateSize(); // Refresh map tiles.
@@ -5542,7 +5502,7 @@ function populateCityList(callback) {
         return;
     }
     console.log("cityList");
-    var file = "https://map.georgia.org/explore/menu/data/cities.csv";
+    var file = "/team/projects/map/cities.csv";
     $.get(file, function(data) {
         var cityList;
         var lines = data.split('\n');
