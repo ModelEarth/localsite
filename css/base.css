@@ -82,6 +82,7 @@ body {
     display: flex;
     height: 100vh;
     flex-direction: row;
+    -webkit-font-smoothing: antialiased;
 }
 
 header, footer {
@@ -2053,7 +2054,7 @@ h2 .num {
   border-bottom: 1px solid var(--border-light);
 }
 @media (max-width: 600px) {
-  #side-nav-header {
+  .collapsed #side-nav-header {
     display: none;
   }
 }
@@ -2760,7 +2761,9 @@ body.sidebar-hovered {
 
 @media (max-width: 600px) {
     .nav-x {
-        font-size: 20px;
+        width: 38px;
+        height: 38px;
+        font-size: 30px;
         position: static;
         padding: 12px;
         margin-bottom: 0px;
