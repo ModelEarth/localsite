@@ -2858,3 +2858,46 @@ body.sidebar-hidden #openNav {
     text-shadow: 0 0 1px currentColor, 0 0 1px currentColor, 0 0 1px currentColor !important; /* Make dots appear bolder */
     font-weight: bold !important;
 }
+
+/* Settings toggle styling - shared across projects */
+#settings-toggle {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-medium);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+}
+
+#settings-toggle:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transform: rotate(45deg);
+}
+
+#settings-toggle svg {
+    stroke-width: 1;
+}
+
+/* Dark mode styles for settings toggle */
+.dark #settings-toggle {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-medium);
+    color: var(--text-secondary);
+}
+
+.dark #settings-toggle:hover {
+    background: #666;
+    color: white;
+    border-color: #777;
+    transform: rotate(45deg);
+}
+
+.dark #settings-toggle svg {
+    stroke: white;
+}
