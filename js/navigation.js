@@ -1203,6 +1203,7 @@ class StandaloneNavigation {
                 logoPath = `../localsite/img/logo/neighborhood/favicon.png`;
             }
         } else {
+
             // Direct repo serving - go up to root level where all repos are
             rootPath = basePath ? `${basePath}/../` : '../';
             adminPath = basePath ? `${basePath}/../team/admin/` : '../team/admin/';
@@ -1215,6 +1216,7 @@ class StandaloneNavigation {
             const additionalDotDots = '../'.repeat(extraLevels);
             
             logoPath = basePath ? `${basePath}/../team/img/logo/neighborhood/favicon.png` : `${additionalDotDots}../team/img/logo/neighborhood/favicon.png`;
+            //alert("logoPath " + logoPath)
         }
         
         // Debug logging
@@ -6387,6 +6389,9 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         param.titleArray = ["model","earth"];
         localsiteTitle = "Model Earth";
         param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/modelearth/model-earth.png' style='width:34px; margin-right:2px'>";
+        
+        // Works correctly for model.earth sitemodel, but not reached by geo.
+        //alert("changeFavicon")
         changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/modelearth/model-earth.png")
         showClassInline(".earth");
         console.log(".earth display");
