@@ -2775,6 +2775,14 @@ body.sidebar-hovered {
     }
 }
 
+.widgetPanel {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+}
+.dark .widgetPanel {
+  background: #333;
+}
 /* Reopen button for header */
 .nav-reopen-btn {
     vertical-align: middle;
