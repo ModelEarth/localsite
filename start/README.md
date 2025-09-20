@@ -20,7 +20,9 @@ Helpful tips for [Node, Python, pyenv, Conda and Docker](../../io/coders/python/
 &bullet; <a href="../challenge/how/">How to Create a Local Site Page</a><br>
 --> 
 
-<a href="../../localsite/start/steps/" class="btn btn-success">Start Site Install</a>
+We recommond using the Webroot install with Claude Code CLI<br>
+
+<a href="https://model.earth/webroot/" class="btn btn-success" style="float:left;margin:0px;margin-right:6px">Webroot Install</a><a href="../../localsite/start/steps/" class="btn btn-success" style="margin:0px">Repo Install</a>
 
 ## <span class="num">2</span><span class="txt">Input-Output Widgets</span>
 <a href="../../io/charts/">Contribute to Impact Widgets</a> - Display based on [localsite parameters](../) 
