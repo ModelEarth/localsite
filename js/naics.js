@@ -595,6 +595,7 @@ function populateTitle(showtitle,showtab) {
 function loadIndustryData(hash) {
     let stateAbbr;
     if (hash.state && hash.state.length >= 2) {
+        hash.state = hash.state.split(",").filter(s => s.length === 2).join(","); // Remove if not 2-char, including state=all
         stateAbbr = hash.state.split(",")[0].toUpperCase();
     }
     $("#top-content-columns").hide();
@@ -816,6 +817,7 @@ $(document).ready(function() {
 function renderIndustryChart(dataObject,values,hash) {
     let stateAbbr 
     if (hash.state) {
+                hash.state = hash.state.split(",").filter(s => s.length === 2).join(","); // Remove if not 2-char, including state=all
         stateAbbr = hash.state.split(",")[0].toUpperCase();
         dataObject.stateshown=stateID[stateAbbr.toUpperCase()];
     }
@@ -1290,7 +1292,8 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                 let stateAbbr;
                 
                 if (hash.state) {
-                    stateAbbr = hash.state.split(",")[0].toUpperCase();
+                            hash.state = hash.state.split(",").filter(s => s.length === 2).join(","); // Remove if not 2-char, including state=all
+        stateAbbr = hash.state.split(",")[0].toUpperCase();
                 } else {
                     if (hash.beta != "true") {
                         //stateAbbr = "GA"; // Temp HACK to show US

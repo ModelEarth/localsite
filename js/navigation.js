@@ -3470,7 +3470,8 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
   let stateAbbr = "";
   //alert("hash.state " + hash.state);
   if (hash.state) {
-      stateAbbr = hash.state.split(",")[0].toUpperCase();
+              hash.state = hash.state.split(",").filter(s => s.length === 2).join(","); // Remove if not 2-char, including state=all
+        stateAbbr = hash.state.split(",")[0].toUpperCase();
   }
   if (stateAbbr == "DC") {
     console.log("TOPOJSON IS NOT AVAILABLE FOR DC");
@@ -7387,7 +7388,8 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
                 stateAbbr = param.state.split(",")[0].toUpperCase();
             }
             if (hash.state) {
-                stateAbbr = hash.state.split(",")[0].toUpperCase();
+                        hash.state = hash.state.split(",").filter(s => s.length === 2).join(","); // Remove if not 2-char, including state=all
+        stateAbbr = hash.state.split(",")[0].toUpperCase();
             }
             if (stateAbbr && stateAbbr.length > 2) {
                 stateAbbr = stateAbbr.substring(0,2);

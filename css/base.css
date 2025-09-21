@@ -1306,7 +1306,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   /* white arrow */
   background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 5px center; /* Custom white arrow */
   background-color: #888;
-  margin-left: 1px; /* prevents border from being cropped when dropdown selected */
+  margin-leftX: 1px; /* prevents border from being cropped when dropdown selected */
 }
 
 .notdark {

@@ -44,7 +44,7 @@ Contribute to UN goal data visualizations in our <a href="/localsite/timeline/">
 Environmentally Extended Input-Output (EEIO)
 
 [World Trade Profiles](../../profile/trade/)
-[State Impact Reports](../../profile/footprint/)
+[US State Reports](../../profile/footprint/)
 [Inflow-Outflow Widgets](../../io/charts)
 
 <!--

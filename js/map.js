@@ -107,6 +107,10 @@ function loadMap1(calledBy, show, dp_incoming) {
   if (!show && param["show"]) {
     show = param["show"];
   }
+  let modelsite;
+  if (Cookies.get('modelsite')) {
+    modelsite = Cookies.get('modelsite');
+  }
   console.log('loadMap1 start. CalledBy ' + calledBy + '. Show: ' + show + '. Cat: ' + hash.cat);
   dp = {}; // Clear prior
   if (dp_incoming) { // Parameters set in page or layer json
