@@ -2775,13 +2775,30 @@ body.sidebar-hovered {
     }
 }
 
-.widgetPanel {
+.basePanel {
     background: white;
     border-radius: 8px;
-    padding: 16px;
 }
-.dark .widgetPanel {
-  background: #333;
+.basePanelTop {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+.dark .basePanel {
+    background: #333;
+}
+.basePanelBackground { /* For control that overlap scrolling list */
+    background: white;
+}
+.dark .basePanelBackground {
+    background: #333;
+}
+.basePanelPadding {
+    padding:15px;
+}
+.basePanelFadeOut {
+    position: relative;
+    mask: linear-gradient(to bottom, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
+    -webkit-mask: linear-gradient(to bottom, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
 }
 /* Reopen button for header */
 .nav-reopen-btn {
