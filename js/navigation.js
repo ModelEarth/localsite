@@ -6238,6 +6238,7 @@ function iNav(set) {
         goHash({"set":set,"indicators":hash.indicators});
     }
 }
+let localsiteTitle = "";
 function applyNavigation() { // Waits for localsite.js 'localStart' variable so local_app path is available.
 
     // To do: fetch the existing background-image.

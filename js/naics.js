@@ -576,17 +576,21 @@ function populateTitle(showtitle,showtab) {
     $("#showAppsText").attr("title",showtab); // Swaps in when viewing app thumbs
     $(".regiontitle").text(regionServiceTitle);
 
-    if (thestate && localsiteTitle.indexOf(thestate) >= 0) { // Avoids showing state twice in browser title
+    let localsiteTitleNaics = "";
+    if (typeof localsiteTitle !== "undefined") { // Declared in localsite.js
+        localsiteTitleNaics = localsiteTitle;
+    }
+    if (thestate && localsiteTitleNaics.indexOf(thestate) >= 0) { // Avoids showing state twice in browser title
         if (showtitle) {
-            document.title = localsiteTitle + " - " + showtitle;
+            document.title = localsiteTitleNaics + " - " + showtitle;
         } else {
             console.log("TODO: Load state here");
-            document.title = localsiteTitle + " - " + thestate;
+            document.title = localsiteTitleNaics + " - " + thestate;
         }
     } else if (regionServiceTitle) {
-        document.title = localsiteTitle + " - " + regionServiceTitle;
+        document.title = localsiteTitleNaics + " - " + regionServiceTitle;
     } else if (showtitle) {
-        document.title = localsiteTitle + " - " + showtitle;
+        document.title = localsiteTitleNaics + " - " + showtitle;
     }
 }
 
