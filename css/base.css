@@ -43,7 +43,13 @@ Used in localsite, modelearth, io, neighborhood, trees
   width: 252px !important;
   flex-shrink: 0; /* Prevents the column from shrinking below 257px */
 }
+.dark #side-nav-absolute {
+  background-color: #666667;
+}
 @media (max-width: 600px) {
+  .main-nav {
+    width:100% !important;
+  }
   .main-nav-full {
     width:100% !important;
   }
@@ -611,9 +617,9 @@ summary::-webkit-details-marker {
 }
 .contentpadding, #observablehq-center {
   padding-top: 25px;
-  padding-left: 66px; /* avoids overlapping left icon menu */
-  padding-right: 40px;
-  padding-bottom: 45px;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-bottom: 30px;
 }
 .content a, .contentfull a {
   text-decoration: none;
@@ -694,16 +700,6 @@ summary::-webkit-details-marker {
   max-width: 2000px;
 }
 
-/* caused cropping on /feed 
-.content ul li {
-  margin-left: -10px;
-}
-*/
-@media (max-width: 800px) {
-    .content {
-      padding: 15px 30px 30px 64px;
-    }
-}
 @media (max-width: 1400px) {
   .contentwide {
     max-width: 1350px;
@@ -1353,7 +1349,11 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   margin-right: 4.5px;
   float: left;
 }
-
+@media (max-width: 600px) {
+  #headerLogo img {
+    max-width: 120px;
+  }
+}
 /* phase out? */
 .logoholder-state {
   background:url(img/logo/georgia-icon-on-gray.png) no-repeat;
@@ -2190,6 +2190,7 @@ body.sidebar-hovered {
 /* Cursor for expanding collapsed sidebar */
 .sidebar.collapsed #side-nav-content {
     cursor: e-resize; /* rightward pointing double-arrow */
+    max-width: 62px;
 }
 .sidebar.collapsed .nav-section .nav-text {
   display: none !important;
