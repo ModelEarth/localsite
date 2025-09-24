@@ -477,7 +477,6 @@ var triggerHashChangeEvent = function () {
 function loadScript(url, callback)
 {
   //let urlID = url.replace(/^.*\/\/[^\/]+/, ''); // Allows id's to always omit the domain.
-
   let urlID = getUrlID3(url);
   var loadFile = true;
 
@@ -488,7 +487,7 @@ function loadScript(url, callback)
      loadFile = false;
   }
 
-  //alert(urlID)
+  // Nested calls are described here: https://books.google.com/books?id=ZOtVCgAAQBAJ&pg=PA6&lpg=PA6
   if (loadFile && !document.getElementById(urlID)) { // Prevents multiple loads.
       consoleLog("loadScript seeking " + url + " via urlID: " + urlID);
       var script = document.createElement('script');
@@ -496,41 +495,17 @@ function loadScript(url, callback)
       script.src = url;
       script.id = urlID; // Prevents multiple loads.
 
-      //$(document).ready(function () { // Only needed if appending to body
-       var head = document.getElementsByTagName('head')[0];
-       head.appendChild(script);
-      //});
+      var head = document.getElementsByTagName('head')[0];
+      head.appendChild(script);
 
-      // NOT NEEDED, this did not yet resolve function not being found in navigation.js
-      /*
-      let cleanUrlID = urlID.replace(/^\/+|\/+$/g, '').replace(/\//g, '-').replace(/\./g, '-'); // Remove / and . and beginning and ending slashes;
-      var script2 = document.createElement('script');
-      script2.type = 'text/javascript';
-      script2.src = ""; // Later we might try changing the id of existing scripts instead (to remove slashes).
-      script2.id = cleanUrlID + "-inserted";
-      head.appendChild(script2);
-      */
-
-      // Bind the event to the callback function. Two events for cross browser compatibility.
-      ////script.onreadystatechange = callback; // This apparently is never called by Brave, but needed for some of the other browsers.
-      //script.onreadystatechange = function() { // Cound eliminate these 3 lines and switch back to the line above.
-      //  consoleLog("loadScript ready: " + url); // This apparently is never called by Brave.
-      //  callback();
-      //}
-      //script.onload = callback;
       script.onload = function() {
-        //waitForElm(cleanUrlID).then((elm) => { // Since script.onload does not validate script is actually active in the DOM.
-          consoleLog("loadScript loaded: " + url); // Once the entire file is processed.
-          callback();
-        //});
+        consoleLog("loadScript loaded: " + url); // Once the entire file is processed.
+        callback();
       }
-
-        
   } else {
     consoleLog("loadScript script already available: " + url + " via ID: " + urlID);
     if(callback) callback();
   }
-  // Nested calls are described here: https://books.google.com/books?id=ZOtVCgAAQBAJ&pg=PA6&lpg=PA6
 }
 
 var localsite_repo3; // TEMP HERE
