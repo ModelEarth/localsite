@@ -1964,7 +1964,6 @@ function showSearchFilter() {
         revealFilters();
       });
     }
-    //goHash({"sidetab":""}); // Hide sidetab when showSearchFilter
   }
 
 }
