@@ -952,6 +952,43 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             }
           });
 
+          // Handle gravatar checkbox and email field changes
+          $(document).on('change', '#getGravatar', function() {
+            updateGravatarDisplay();
+          });
+
+          $(document).on('input', '#input123', function() {
+            updateGravatarDisplay();
+          });
+
+          function updateGravatarDisplay() {
+            const email = $('#input123').val().trim();
+            const gravatarChecked = $("#getGravatar").is(":checked");
+            const gravatarLine = $("#getGravatar").parent();
+            
+            // Hide gravatar line when email is blank
+            if (!email) {
+              gravatarLine.hide();
+              $("#gravatarImg").empty();
+              return;
+            } else {
+              gravatarLine.show();
+            }
+            
+            // Show/hide gravatar image based on checkbox and valid email
+            if (gravatarChecked && isValidEmail(email)) {
+              loadScript('http://pajhome.org.uk/crypt/md5/md5.js', function(results) {
+                let userImg = $.gravatar(email);
+                if (userImg) {
+                  localStorage.userImg = userImg;
+                  $("#gravatarImg").html("<img src='" + localStorage.userImg + "' style='width:100%;max-width:220px;border-radius:30px;'><br><br>");
+                }
+              });
+            } else {
+              $("#gravatarImg").empty();
+            }
+          }
+
           function handleEmail(e) {
               // For both keypress and click events
               let email = $('#input123').val();
@@ -983,6 +1020,22 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
                 $("#input123").focus();
               }
           }
+
+          // Initialize gravatar display when DOM is ready
+          $(document).ready(function() {
+            if (typeof waitForElm === 'function') {
+              waitForElm('#input123').then(() => {
+                updateGravatarDisplay();
+              });
+            } else {
+              // Fallback if waitForElm is not available
+              setTimeout(() => {
+                if ($("#input123").length) {
+                  updateGravatarDisplay();
+                }
+              }, 100);
+            }
+          });
       })();
 
       $.gravatar = function(emailAddress, overrides)
@@ -3581,5 +3634,21 @@ function adjustAnythingLLMNavigation() {
 
 // Initialize AnythingLLM navigation adjustments when DOM is ready
 document.addEventListener('DOMContentLoaded', adjustAnythingLLMNavigation);
+
+// Auth Modal Integration - lazy load and show modal
+function showAuthModal() {
+  if (typeof window.authModal !== 'undefined' && window.authModal) {
+    window.authModal.show();
+  } else {
+    // Lazy load the auth modal script
+    const authModalPath = local_app.localsite_root() + '../team/js/auth-modal.js';
+    loadScript(authModalPath, function() {
+      // Modal initializes immediately when script loads, so show it
+      if (window.authModal) {
+        window.authModal.show();
+      }
+    });
+  }
+}
 
 consoleLog("end localsite");

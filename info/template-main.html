@@ -83,6 +83,8 @@
     .showResources {
       display: block;
     }
+    
+    /* Use generic button class from base.css */
     </style>
 
   <div class="flex-row" style="height:100%">
@@ -462,16 +464,19 @@
             <div style="font-size:16pt; margin-bottom:20px">Account</div>
             
             <div style="display:none" class="local">
+
               <div class="sign-in-container" style="margin-left:auto;">
-                  <button id="signInBtn" class="btn btn-primary sign-in-btn" style="margin-top:10px" onclick="showAuthModal()">Sign In</button>
+                  Not yet active (localhost only)<br>
+                  <button id="signInBtn" class="btn btn-primary sign-in-btn bthButton" style="margin-top:10px;width:220px" onclick="showAuthModal()">Auth.js Sign In</button>
+                  <br><br>
               </div>
             </div>
 
             <div style="margin-bottom:5px;">Email 
-              <span style="font-size:.9em;">- stored only in browser</span></div>
-            <input id="input123" autocompleteX="off" style="width:100%; min-width:250px;max-width:300px;" class="mobileWide textInput si-input" type="text" value=""><br><br>
+              <span style="font-size:.9em;">(stored only in browser)</span>
+            </div>
 
-              <div style="margin-bottom:8px">My Image</div>
+            <input id="input123" autocompleteX="off" style="width:220px;margin-bottom:7px" class="mobileWide textInput si-input" type="text" value=""><br>
               <input type="checkbox" id="getGravatar" style="margin-right:4px" checked><span style="font-size:.9em;">Display <a href="https://gravatar.com/" target="gravatar">my gravatar.com image</a></span>
             <br><br>
 
@@ -479,14 +484,13 @@
 
             <div class="uIn btn btn-success" style="margin-bottom:20px;float:left">Continue</div>
 
-            <div class="georgia" style="display:none;margin-bottom:20px;float:left">
-              <a class="btn btn-success use-5" href="/resources/" style="display:none;">Staff Resources</a>
-              <a class="btn btn-warning" href="https://partner.exploregeorgia.org/login">Partner Resources</a>
+            <div class="georgia" style="display:none;margin-bottom:20px">
+              <a class="btn btn-success use-5" href="/resources/" style="display:none; width:220px">Staff Resources</a>
+              <a class="btn btn-warning" href="https://partner.exploregeorgia.org/login" style="width:220px">Partner Resources</a>
             </div>
 
-            <div style="float:left">
-              <a class="uOut btn btn-primary" style="margin:0 0 20px 0;">Log Out</a>
-            </div>
+            <a class="uOut btn btn-primary" style="margin:0 0 20px 0; width:220px">Log Out</a>
+            <br><br><br>
 
           </div>
         </div>

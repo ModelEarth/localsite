@@ -2927,3 +2927,13 @@ body.sidebar-hidden #openNav {
 .dark #settings-toggle svg {
     stroke: white;
 }
+
+/* Generic button styling to match anchor links */
+.bthButton {
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    font-family: inherit !important;
+    min-height: 38px;
+    justify-content: center;
+    box-sizing: border-box;
+}
