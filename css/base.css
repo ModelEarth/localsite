@@ -85,9 +85,11 @@ Used in localsite, modelearth, io, neighborhood, trees
 
 /* Since pages in team don't have .flexbody in body tag. */
 body {
+    /*
     display: flex;
     height: 100vh;
     flex-direction: row;
+    */
     -webkit-font-smoothing: antialiased;
 }
 
