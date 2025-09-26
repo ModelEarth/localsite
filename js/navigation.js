@@ -7178,6 +7178,21 @@ $(document).on("click", ".showTheMenu", function(event) { // Seasons
 });
 
 $(document).on("click", ".showSideTabs", function(event) {
+    // Prevent any left navigation mobile menu from interfering
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    
+    // Close any open left mobile navigation on mobile devices
+    if (window.innerWidth <= 600) {
+        const sidenav = document.getElementById('side-nav');
+        const overlay = document.getElementById('mobile-overlay');
+        if (sidenav?.classList.contains('mobile-open')) {
+            sidenav.classList.remove('mobile-open');
+            overlay?.classList.remove('active');
+        }
+    }
+    
     let hash = getHash();
     let modelsite = Cookies.get('modelsite');
     if (hash.sidetab) {
@@ -7190,7 +7205,6 @@ $(document).on("click", ".showSideTabs", function(event) {
             goHash({'sidetab':'sections'});
         }
     }
-    event.stopPropagation();
 });
 
 $(document).on('click', '.closeParent', function () {
@@ -7202,9 +7216,27 @@ $(document).on("click", ".closeSideTabs", function(event) {
     //closeSideTabs();
     event.stopPropagation();
 });
+// Function to auto-close right navigation on narrow screens
+function autoCloseRightNavOnNarrow() {
+    if (window.innerWidth <= 1000) {
+        goHash({'sidetab':''});
+    }
+}
+
 $(document).on("click", ".showEarth", function(event) {
     showEarth("show");
+    autoCloseRightNavOnNarrow();
     event.stopPropagation();
+});
+
+// Auto-close right navigation when dropdowns change in settings panel on narrow screens
+$(document).on("change", ".settingsPanel select", function(event) {
+    autoCloseRightNavOnNarrow();
+});
+
+// Auto-close right navigation when any input changes in settings panel on narrow screens  
+$(document).on("change", ".settingsPanel input", function(event) {
+    autoCloseRightNavOnNarrow();
 });
 function showEarth(show) {
     if ($("#nullschoolHeader").is(':visible') && show != "show") {

@@ -1135,6 +1135,14 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       });
       $(document).on("click", ".showSearch", function(event) {
         showSearchFilter();
+        // Auto-close right navigation on narrow screens
+        if (window.innerWidth <= 1000) {
+            if (typeof goHash === 'function') {
+                goHash({'sidetab':''});
+            } else {
+                updateHash({"sidetab":""});
+            }
+        }
       });
       
       clearInterval(waitForJQuery); // Escape the loop
