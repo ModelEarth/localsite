@@ -34,7 +34,7 @@ Run annually for both states and countries.
 DONE: Document how to add a private Github token to push from CoLab. Documented below. - Ivy
 
 
-Also see our [UN Goal Timelines Javascript API display and Python API Data Pull](/data-commons/docs/data/)
+Also see our [UN Goal Timelines Javascript API display and Python API Data Pull](/localsite/timeline/)
 
 
 ## Previous: State Carbon Comparison

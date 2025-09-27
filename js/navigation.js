@@ -1311,7 +1311,7 @@ class StandaloneNavigation {
                                             <i class="subnav-icon" data-feather="check-square"></i>
                                             <span>Assigned Tasks</span>
                                         </a>
-                                        <a href="/data-commons/docs/data/" class="subnav-link">
+                                        <a href="/localsite/timeline/" class="subnav-link">
                                             <i class="subnav-icon" data-feather="calendar"></i>
                                             <span>UN Timelines</span>
                                         </a>

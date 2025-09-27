@@ -20,7 +20,7 @@ STILL NEEDED?: Sort timeline data by year before sending it to the chart. Which 
 <!--
 DONE: Update earthscape.js to also display countries and states. - Mehul, Priyanka
 
-CANCELED - Using Python colab pull from GDC instead: Update [RealityStream](/realitystream/models/) to fetch a path from our timelines page. The process will need to wait until the DOM is replaced with json. Sample path: [/data-commons/docs/data/#output=json](https://model.earth/data-commons/docs/data/#output=json)
+CANCELED - Using Python colab pull from GDC instead: Update [RealityStream](/realitystream/models/) to fetch a path from our timelines page. The process will need to wait until the DOM is replaced with json. Sample path: [/localsite/timeline/#output=json](https://model.earth/localsite/timeline/#output=json)
 -->
 
 <!--

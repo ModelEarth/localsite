@@ -68,7 +68,7 @@ How to [Fork Repos](https://medium.com/@6unpnp/fork-a-github-repository-and-depl
 Always fork <a href="https://github.com/ModelEarth/localsite">localsite</a> so we can review your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart).  
 Fork the [home repo](https://github.com/ModelEarth/home) if you're working on our ["Everybody's Homepage" frontend](../../../home/).  
 Fork the [profile repo](https://github.com/ModelEarth/home) if you're working with [Exiobase Trade Flow](/profile/trade), [SuiteCRM](/profile/crm) or [Project Preference Ratings](/profile/preferences/). 
-Fork <a href="https://github.com/ModelEarth/data-commons">data-commons</a> if you're adding [data visualizations](/data-commons/docs/data/) using the Google Data Commons javascript API.  
+Fork <a href="https://github.com/ModelEarth/data-commons">data-commons</a> if you're adding [data visualizations](/localsite/timeline/) using the Google Data Commons javascript API.  
 Fork <a href="https://github.com/ModelEarth/feed">feed player</a> if you're adding to our React Vite visual [Feed viewer](https://model.earth/feed/) and memberSense for Discord.  
 Fork [useeio.js](https://github.com/ModelEarth/useeio.js) if you're contributing to our <a href="../../../profile/footprint/">US State Reports</a> and [Trade Flow](../../../profile/trade/) visualizations.  
 Fork <a href="https://github.com/ModelEarth/realitystream">realitystream</a> if you're contributing python to our Machine Learning visualizations.  
@@ -86,7 +86,7 @@ Fork <a href="https://github.com/localsite/membermap">membermap</a> if you're co
 <!--
 It's designed to serve infinite content based on parameters.  
 Fork the home repo and start creating your own custom home page.  
-We manage the home config setting in [Google Sheets](../../../data-commons/docs/data/) (and soon local config files).  
+We manage the home config setting in [Google Sheets](../../../localsite/timeline/) (and soon local config files).  
 -->
 
 <!-- Activate GitHub Pages so we can preview your contributions. -->
