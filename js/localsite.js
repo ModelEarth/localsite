@@ -946,8 +946,14 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
           $(document).on('keypress', function(e) {
             if (e.which === 13 && $('#input123').is(':focus')) { // Return is key code 13.
-                //alert("return")
-                handleEmail(e);
+                const email = $('#input123').val().trim();
+                if (email.length == 0) {
+                  // TODO Clear email here
+                  delete localStorage.email;
+                  $(".uOut").hide();
+                } else { 
+                  handleEmail(e);
+                }
                 //console.log("Return key pressed in #input123");
             }
           });
@@ -965,11 +971,13 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             const email = $('#input123').val().trim();
             const gravatarChecked = $("#getGravatar").is(":checked");
             const gravatarLine = $("#getGravatar").parent();
-            
+            $("#gravatarLine").show();
             // Hide gravatar line when email is blank
             if (!email) {
               gravatarLine.hide();
               $("#gravatarImg").empty();
+              delete localStorage.email;
+              $(".uOut").hide();
               return;
             } else {
               gravatarLine.show();
@@ -989,18 +997,18 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             }
           }
 
+          // Save clicked
           function handleEmail(e) {
               // For both keypress and click events
               let email = $('#input123').val();
               if (isValidEmail(email)) {
                 localStorage.email = email;
-
+                $(".uIn").hide();
                 if (isValid(email)) {
                   Cookies.set('golog', window.location.href);
+                  alert("valid email")
                   window.location = "/explore/menu/login/azure/";
                   return;
-                } else {
-                  //window.location = "/";
                 }
 
                 if ($("#getGravatar").is(":checked")) {
@@ -1014,7 +1022,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
                     }
                   });
                 }
-
               } else {
                 alert("email required"); // TO DO: Display in browser
                 $("#input123").focus();

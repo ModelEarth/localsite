@@ -2788,6 +2788,7 @@ function showSideTabs() {
             } else if (hash.sidetab == "account") {
                 $(".showAccount").addClass("active");
                 $("#accountPanel").show();
+                $("#accountPanel .menuExpandedScroll").show();
             } else {
                 //$("#rightSideTabs").show();
             }

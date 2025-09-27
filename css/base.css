@@ -2938,7 +2938,7 @@ body.sidebar-hidden #openNav {
     font-size: inherit !important;
     font-weight: inherit !important;
     font-family: inherit !important;
-    min-height: 38px;
+    min-height: 32px;
     justify-content: center;
     box-sizing: border-box;
 }
