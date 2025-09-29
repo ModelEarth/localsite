@@ -1345,7 +1345,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   transform: translate(0%, -50%);
 }
 #logoholderbar {
-  padding: 6px 8px 0 0;
+  padding: 0px 14px 0 0;
 }
 #headerLogo {
   margin-right: 4.5px;
@@ -2777,7 +2777,7 @@ body.sidebar-hovered {
     
     /* Keep showSideFromHeader visible on narrow screens */
     #showSideFromHeader {
-        display: inline-block !important;
+        display: inline-block;
     }
 }
 

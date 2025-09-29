@@ -6338,7 +6338,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         param.titleArray = [];
         console.log("local_app.localsite_root() " + local_app.localsite_root()); // https://model.earth was in here: https://map.georgia.org/localsite/map/#show=recyclers
         param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA.png' style='width:160px;margin-top:0px'></a>";
-        param.headerLogoNoText = "<a href='https://georgia.org' style='margin-top:-1px'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA-icon.png' style='width:52px;padding:0px;margin:0px'></a>";
+        param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA-icon.png' style='width:52px;padding:0px;margin-top:-2px'></a>";
         localsiteTitle = "Georgia.org";
         changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/states/GA-favicon.png");
         if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
