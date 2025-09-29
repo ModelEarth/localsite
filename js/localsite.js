@@ -958,7 +958,7 @@ function loadLeafletAndMapFilters() {
   }
 }
 if (typeof Cookies != 'undefined') {
-  alert(Cookies.get('sitelook'));
+  //alert('sitelook' + Cookies.get('sitelook'));
 };
 // WAIT FOR JQuery
 loadScript(theroot + 'js/jquery.min.js', function(results) {
@@ -1099,7 +1099,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
                 $(".uIn").hide();
                 if (isValid(email)) {
                   Cookies.set('golog', window.location.href);
-                  alert("valid email")
+                  //alert("valid email")
                   window.location = "/explore/menu/login/azure/";
                   return;
                 }
@@ -1116,7 +1116,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
                   });
                 }
               } else {
-                alert("email required"); // TO DO: Display in browser
+                //alert("email required"); // TO DO: Display in browser
                 $("#input123").focus();
               }
           }
@@ -3449,12 +3449,9 @@ function isValidJSON(str) {
     }
 }
 
-
 function formatCell(input, format) {
-    //alert("format: " + format)
-    // Debug: log the input value
     if (Math.abs(input) < 1e-10 && input !== 0) {
-        console.log('formatCell received very small value:', input, 'type:', typeof input);
+        //console.log('formatCell received very small value:', input, 'type:', typeof input);
     }
     
     // If format is none or blank, return input as it is.

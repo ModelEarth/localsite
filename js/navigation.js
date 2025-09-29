@@ -5820,7 +5820,7 @@ function localJsonpCallback(json) {
   } else {
     //$('#loading').hide();
     //$('#userForm').show();
-    alert(json.Message);
+    //alert("json.Message " + json.Message);
   }
 }
 
@@ -6829,7 +6829,6 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                 }       
                 footerClimbpath = climbLevels; // Example: ../
                 console.log("footerClimbpath (Levels up to current page): " + footerClimbpath);
-                //alert(footerClimbpath)
             } else {
                 footerClimbpath = climbpath;
             }
@@ -7120,7 +7119,6 @@ waitForElm('#mainHero').then((elm) => {
         $("#datascape").prependTo($("#mainHero"));
         $("#filterFieldsHolder").show();
         $("#filterFieldsHolder").addClass("dark");
-        //alert("mainhero")
     });
 });
 $(document).on("change", "#mainhero", function(event) { // Public or Dev
@@ -7165,8 +7163,6 @@ function setSitesource(sitesource) {
 }
 
 $(document).on("click", ".showPrintOptions, .print_button", function(event) {
-//$('.showPrintOptions, .print_button').click(function(event) {
-    //alert("show print2")
     $('.menuExpanded').hide();
     $('.printOptionsText').show();
     $('.printOptionsHolderWide').show();
@@ -7293,16 +7289,12 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
         layerJson = "https://model.earth/localsite/info/data/ga-layers-array.json";
         console.log("Set layerJson: " + layerJson);
     }
-    //alert(layerJson)
-    //console.log(layerJson);
-
     if (localObject.layers.length >= 0) {
         callback();
         return;
     }
     let layerObject = (function() {
         //alert("loadLocalObjectLayers layerObject " + layerName);
-
         if(!localObject.layers) {
             console.log("Error: no localObject.layers");
         }
@@ -7331,10 +7323,6 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
             let layer = hash.show;
             //alert(hash.show)
             //alert(localObject.layers[layer].state)
-            
-
-
-
 
             // These should be lazy loaded when clicking menu
             //displayBigThumbnails(0, hash.show, "main");
@@ -7342,7 +7330,6 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
             
             if (!hash.show && !param.show) { // INITial load
                 if ($("body").width() >= 800) {
-
                     //showThumbMenu(hash.show, "#bigThumbMenu");
                 }
             }
@@ -7384,7 +7371,6 @@ function getDirectLink(livedomain,directlink,rootfolder,hashStr) {
             //rootfolder = "/explore/" + rootfolder;
         }
         directlink = removeFrontFolder(rootfolder + "#" + hashStr);
-        //alert(directlink)
     } else {
         //directlink = removeFrontFolder("/explore/#" + hashStr);
     }
@@ -7466,11 +7452,8 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
                     } catch(e) {
                         consoleLog("displayLayerCheckboxes: no menuaccess");
                     }
-                    
                     var linkJavascript = "";
-                    //alert(layer) // Returns a nummber: 1,2,3 etc
                     var directlink = getDirectLink(thelayers[layer].livedomain, thelayers[layer].directlink, thelayers[layer].rootfolder, thelayers[layer].item);
-                    //alert("directlink " + directlink);
                     if (bigThumbSection == "main") {
                         if (thelayers[layer].menulevel == "1") {
                             if (access(currentAccess,menuaccess)) {
@@ -7598,9 +7581,6 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 }
 
 function showClassInline(theclass) {
-
-    
-
     // Load when body head becomes available, faster than waiting for all DOM .js files to load.
     // Append -hide to hide a div for a site.
     waitForElm('head').then((elm) => {
@@ -7612,24 +7592,6 @@ function showClassInline(theclass) {
             html: theclass + ' {display: inline !important} ' + theclass + '-hide {display:none}'
         }).appendTo("head");
     });
-
-    /*
-    setTimeout( function() {
-        $(theclass).css('display', 'inline');
-    }, 1000);
-    setTimeout( function() {
-        $(theclass).css('display', 'inline');
-    }, 2000);
-    setTimeout( function() {
-        $(theclass).css('display', 'inline');
-    }, 5000);
-    setTimeout( function() {
-        $(theclass).css('display', 'inline');
-    }, 10000);
-    setTimeout( function() {
-        $(theclass).css('display', 'inline');
-    }, 30000);
-    */
 }
 function imagineLocation() {
     if (location.href.indexOf('/info') == -1) {
@@ -7717,22 +7679,6 @@ function activateSideColumn() {
       }
     });
 
-    /*
-    // Alternative to flaky $(this).scrollTop()+topMenuHeight; // this is the window
-    function getScrollTop(){
-        if(typeof pageYOffset != 'undefined'){
-            //most browsers except IE before #9
-            return pageYOffset;
-        }
-        else{
-            var B= document.body; //IE 'quirks'
-            var D= document.documentElement; //IE with doctype
-            D= (D.clientHeight)? D: B;
-            return D.scrollTop;
-        }
-    }
-    */
-
     // HIGHLIGHT SIDE NAVIGATION ON SCROLL
     function currentSideID() {
         var scrollTop = window.pageYOffset || (document.documentElement.clientHeight ? document.documentElement.scrollTop : document.body.scrollTop) || 0;
@@ -7758,13 +7704,16 @@ function activateSideColumn() {
         // Get the id of the last item fetched from scrollItems
         cur = cur[cur.length-1];
         var id = cur && cur.length ? cur[0].id : "";
-        //console.log('currentSideID id: ' + id);
+        console.log('STILL IN USE? currentSideID id: ' + id);
         return id;
     }
     var lastID;
     
     $(window).scroll(function() {
         var id = currentSideID();
+        if (location.host.indexOf('localhost') >= 0) {
+            console.log("DO WE STILL USE? (window).scroll navigation.js")
+        }
         //console.log("id: " + id + " lastID: " + lastID);
        if($('#' + bottomSection).length > 0 && $(window).scrollTop() + $(window).height() == $(document).height()) { // If bottomSection exists and at bottom
           //console.log('at bottom');
@@ -7782,18 +7731,10 @@ function activateSideColumn() {
                 // To do: Change to highlight the uppermost section.
                 menuItems.filter("[href='..\/tools\/#']").addClass("active");
             } else {
-                //alert("id " + id)
                 menuItems.filter("[href*='#"+id+"']").addClass("active"); // *= means contains
                 menuItems.filter("[hashid='" + id + "']").addClass("active");
             }
           }
-          /*
-          menuItems
-             .parent().removeClass("active")
-             .end().filter("[href*='#"+id+"']").parent().addClass("active");
-           */
-       } else {
-            //console.log("Scrolling, no action");
        }
        
       if (id == "intro") {
@@ -7808,7 +7749,6 @@ function activateSideColumn() {
 
     // Initial page load
     var currentSection = currentSideID();
-    //alert("currentSection " + currentSection)
     if (currentSection && currentSection.length) {
         if (currentSection == "intro") {
             // To do: Change to highlight the uppermost section.
@@ -7890,23 +7830,14 @@ $(document).on("click", "#filterClickLocation", function(event) {
 
     if ($("#draggableSearch").is(':visible')) {
         $("#draggableSearch").hide();
-        //alert("append")
-        //$("#filterLocations").prependTo($("#locationFilterHolder"));
         $("#filterLocations").hide();
     }
-    /*
-    if ($("#localePanel").is(':visible')) {
-        closeSideTabs();
-        $("#topicsPanel").show(); // So return to apps menu shows something
-        $(".rightTopMenuInner div").removeClass("active"); // So not displayed when returning
-    }
-    */
-
     filterClickLocation();
     event.stopPropagation();
     return;
 
 
+    /// NOT USED
 
     //delete(hiddenhash.geoview); // Not sure where this gets set.
     if ($("#geoPicker").is(':visible')) {
@@ -8078,23 +8009,17 @@ function filterClickLocation(loadGeoTable) {
     return;
 }
 function filterLocationChange() {
-    //alert("filterLocationChange")
     $("#bigThumbPanelHolder").hide();
     $('.showApps').removeClass("filterClickActive"); ////updateHash({'appview':''});
     let distanceFilterFromTop = 120;
     if ($("#locationFilterHolder #filterLocations").length) {
         distanceFilterFromTop = $("#filterLocations").offset().top - $(document).scrollTop();
     }
-    //alert("distanceFilterFromTop  " + distanceFilterFromTop);
-    //$('.hideMetaMenuClick').trigger("click"); // Otherwise covers location popup. Problem: hides hideLayers/hideLocationsMenu.
-    
-
     if ($("#filterLocations").is(':visible')) { // && (distanceFilterFromTop < 300 || distanceFilterFromTop > 300)
-        //alert("closeLocationFilter()");
         closeLocationFilter();
         console.log("closeLocationFilter");
     } else { // OPEN MAP FILTER
-        //alert("openLocationFilter() 1");
+
         $("#filterLocations").prependTo($("#locationFilterHolder"));
         openMapLocationFilter();
 
@@ -8111,7 +8036,6 @@ function filterLocationChange() {
     $("#keywordFields").hide();
 }
 function openMapLocationFilter() {
-    //alert("openMapLocationFilter");
     let hash = getHash();
 
     if (!hash.geoview) { // && hash.sidetab != "locale"
@@ -8122,26 +8046,13 @@ function openMapLocationFilter() {
                 currentStates.push(getKeyByValue(localObject.us_stateIDs, Number(geos[i].replace("US","").substring(0,2))));
             }
         }
-
-        /*
-        if (currentStates.length > 0) { // Multiple states, use first one.
-            goHash({"geoview":"state","state":currentStates[0]});
-        } else {
-            goHash({"geoview":"state"});
-        }
-        */
     }
-    ///$("#geoPicker").show();
     $("#geomap").appendTo($("#geomapHolder")); // Move back from rightSideTabs
-
 
     $(".locationTabText").text("Locations");
     $("#topPanel").hide();
     $("#showLocations").show();
     $("#hideLocations").hide();
-
-    // Not sure why, but show() is not revealing again when Locations tab closed.
-    //$("#hero_holder").hide();
 
     if (typeof state_select_holder != "undefined") {
         state_select_holder.appendChild(state_select); // For apps hero
@@ -8152,11 +8063,6 @@ function openMapLocationFilter() {
 
     if (hash.geo) {
         let geoDeselect = "";
-        if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state) {
-            //geoDeselect = hash.geo
-            //delete hash.geo;
-            //alert("geoDeselect BUG? " + geoDeselect)
-        }
         if (hash.geoview != "country") {
             updateSelectedTableRows(hash.geo, geoDeselect, 0);
         }
@@ -8171,15 +8077,9 @@ function openMapLocationFilter() {
 
     waitForElm('#filterLocations').then((elm) => {
         $("#filterLocations").prependTo($("#locationFilterHolder")); // Move back from rightSideTabs
-        // Here we show the interior, but not #locationFilterHolder.
-        // Jul2 $("#filterLocations").show();$("#imagineBar").show();
-        //if ($("#filterLocations").length) {
-            $('html,body').animate({
-                scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
-            });
-        //} else {
-        //    console.log("ALERT #filterLocations not available yet.")
-        //}
+        $('html,body').animate({
+            scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
+        });
     });
     if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
         $("#header.nav-up").show();
@@ -8189,7 +8089,6 @@ function closeLocationFilter() {
     $(".locationTabText").text($(".locationTabText").attr("title"));
     $("#showLocations").hide();
     $("#hideLocations").show();
-    //$(".locationTabText").text("Entire State");
     $("#locationFilterHolder").hide();
     $("#filterLocations").hide(); // Not sure why this was still needed.
     $("#imagineBar").hide();
@@ -8257,7 +8156,6 @@ $(window).scroll(function() {
 
         $("#headerLarge").addClass("headerLargeHide");
         $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower");
-        //alert("headerbar hide");
         if (!$("#filterFieldsHolder").is(':visible')) { // Move to top if no small top bar
           $(".pagecolumn").addClass("pagecolumnToTop");
         }
@@ -8266,14 +8164,9 @@ $(window).scroll(function() {
         $('.headerOffset').hide();
         $('#logoholderbar').show();
 
-        // BUGBUG - occuring on initial reload when page is a little from top.
-        //$('#logoholderside').show();
-
         if (!$("#filterFieldsHolder").hasClass("filterFieldsHidden")) {
           $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
           $("body").addClass("filterFieldsBodyTop");
-
-          //if (param.showheader != "false") {
           if (param.showfilters == "true") {
             $('.showMenuSmNav').show(); 
           }
@@ -8282,11 +8175,6 @@ $(window).scroll(function() {
           $('#headerbar').hide(); // Not working
           $('#headerbar').addClass("headerbarhide");
         }
-        if (sideTopOffsetEnabled) {
-          //$('.sidecolumnLeft').css("top","54px");
-        }
-        //alert("#headerbar hide")
-        //$('#showNavColumn').css("top","7px");
         if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
           $('#headerLarge').hide();
         }
@@ -8368,12 +8256,10 @@ function lockSidemap() {
   } else if (topReached('#hublist')) {
     if (mapFixed==false) {
       let mapHolderInner = $('#mapHolderInner').width();
-      //alert(mapHolderInner)
       console.log('topReached - fixed side map position');
       $('#mapHolderInner').addClass('mapHolderFixed');
       $("#mapHolderInner").css("max-width",mapHolderInner);
       $('#mapHolderInner').removeClass('mapHolderBottom');
-      //alert("fixed position")
       mapFixed = true;
     }
   } else if(!topReached('#hublist') && mapFixed == true) { // Not top reached (scrolling down)
@@ -8423,8 +8309,6 @@ function topReached(elem) { // top scrolled out view
 function hideScopeOptions(hideScopes) {
     // Avoids revealing if option is already hidden
     waitForElm('#selectScope').then((elm) => {
-        //alert("hideScopeOptions")
-
         let select = $("#selectScope");
         let selectedOption = select.find(":selected");
         let isSelectedHidden = hideScopes.includes(selectedOption.val());
@@ -8435,13 +8319,11 @@ function hideScopeOptions(hideScopes) {
                 $option.prop("hidden", true);
             }
         });
-
         // If the selected option was hidden, force-select the first visible one
         if (isSelectedHidden || !select.find(":selected").length) {
             let firstVisibleOption = select.find("option:not([hidden])").first();
             if (firstVisibleOption.length) {
                 select.val(firstVisibleOption.val()); // Properly select without showing a hidden option
-                //alert("New selection: " + firstVisibleOption.val());
                 updateHash({'scope':firstVisibleOption.val()});
             }
         }
