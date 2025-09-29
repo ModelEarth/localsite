@@ -8,7 +8,7 @@
 
 [How to add a new localsite page](template).  View our [Active Projects](../../projects) and [Moonshots](../../community/projects).
 
-Helpful tips for [Node, Python, pyenv, Conda and Docker](../../io/coders/python/).
+Helpful tips for [NVM, Node, npm, pyenv, Python, pip, Conda and Docker](cmds/).
 
 
 ## <span class="num">1</span><span class="txt">Site Install - Code globally, run locally</span>
