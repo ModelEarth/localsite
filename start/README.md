@@ -22,7 +22,7 @@ Helpful tips for [NVM, Node, npm, pyenv, Python, pip, Conda and Docker](cmds/).
 
 We recommond using the Webroot install with Claude Code CLI<br>
 
-<a href="https://model.earth/webroot/" class="btn btn-success" style="float:left;margin:0px;margin-right:6px">Webroot Install</a><a href="../../localsite/start/steps/" class="btn btn-success" style="margin:0px">Repo Install</a>
+<a href="https://model.earth/webroot/" class="btn btn-success" style="float:left;margin:0px;margin-right:6px">Webroot Install</a><a href="../../localsite/start/steps/" class="btn btn-primary" style="margin:0px">Repo Install</a>
 
 ## <span class="num">2</span><span class="txt">Input-Output Widgets</span>
 <a href="../../io/charts/">Contribute to Impact Widgets</a> - Display based on [localsite parameters](../) 
