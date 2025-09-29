@@ -25,9 +25,58 @@ if (location.host.indexOf('localhost') >= 0) {
   defaultState = "";  // Set to GA to include additional map layers in top nav.
 }
 consoleLog("start localsite");
+
+// Common function to find script with delay handling for DOM recognition
+function findScript(scriptNames = ['localsite.js', 'map-embed.js']) {
+    return new Promise((resolve, reject) => {
+        let scripts = document.getElementsByTagName('script'); 
+        let myScript;
+        
+        // Try to find scripts in priority order
+        for (let scriptName of scriptNames) {
+            for (var i = 0; i < scripts.length; ++i) {
+                if(scripts[i].src && scripts[i].src.indexOf(scriptName) !== -1){
+                    myScript = scripts[i];
+                    break;
+                }
+            }
+            if (myScript) break;
+        }
+        
+        if (!myScript) {
+            console.log('%cALERT: the current script was not yet recognized in the DOM. Waiting for second attempt...', 'color: red; background: yellow; font-size: 14px');
+            
+            // Handle delay if script is not found by adding retry with timeout
+            setTimeout(function() {
+                let scripts = document.getElementsByTagName('script'); 
+                for (let scriptName of scriptNames) {
+                    for (var i = 0; i < scripts.length; ++i) {
+                        if(scripts[i].src && scripts[i].src.indexOf(scriptName) !== -1){
+                            myScript = scripts[i];
+                            break;
+                        }
+                    }
+                    if (myScript) break;
+                }
+                
+                if (myScript) {
+                    console.log('%cGot script from DOM after delay!', 'color: green; background: yellow; font-size: 14px');
+                    resolve(myScript);
+                } else {
+                    console.log('%cScript still not found after delay. Using fallback.', 'color: orange; background: yellow; font-size: 14px');
+                    resolve(null);
+                }
+            }, 1000);
+        } else {
+            resolve(myScript);
+        }
+    });
+}
+
 var local_app = local_app || (function(module) {
     let _args = {}; // private, also worked as []
     let localsite_repo;
+    let modelearth_repo;
     return {
         init : function(Args) {
             _args = Args;
@@ -44,36 +93,37 @@ var local_app = local_app || (function(module) {
             }
             //alert("get localsite_repo");
 
+            // Try to find script synchronously first
             let scripts = document.getElementsByTagName('script'); 
-            let myScript; // = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
-            // Now try to find localsite.js
-            //alert(myScript.length)
-            for (var i = 0; i < scripts.length; ++i) {
-                if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
-                  myScript = scripts[i];
-                }
-            }
-            if (!myScript) { // Now try to find one containging map-embed.js
-              for (var i = 0; i < scripts.length; ++i) {
-                if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
-                  myScript = scripts[i];
-                }
-              }
-            }
-            if (!myScript) {
-              console.log('%cALERT: the current script localsite.js was not yet recognized in the DOM. Hit refresh.', 'color: red; background: yellow; font-size: 14px');
-              
-              // If this setTimeout works, we'll add it before extractHostnameAndPort is called.
-              setTimeout( function() {
+            let myScript;
+            for (let scriptName of ['localsite.js', 'map-embed.js']) {
                 for (var i = 0; i < scripts.length; ++i) {
-                    if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
-                      myScript = scripts[i];
+                    if(scripts[i].src && scripts[i].src.indexOf(scriptName) !== -1){
+                        myScript = scripts[i];
+                        break;
                     }
-                    console.log('%cGot script from DOM after delay! We need to modify code here to add additional attempts. ', 'color: green; background: yellow; font-size: 14px');
-              
                 }
-              }, 1000 );
-
+                if (myScript) break;
+            }
+            
+            if (!myScript) {
+                // If not found, try async approach (for future calls)
+                findScript(['localsite.js', 'map-embed.js']).then(script => {
+                    if (script) {
+                        // Cache the result for future synchronous calls
+                        let hostnameAndPort = extractHostnameAndPort(script.src);
+                        let theroot = location.protocol + '//' + location.host + '/localsite/';
+                        if (location.host.indexOf("georgia") >= 0) {
+                            // Additional logic would go here if needed
+                        }
+                        if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+                            theroot = hostnameAndPort + "/localsite/";
+                        }
+                        localsite_repo = theroot; // Cache for future calls
+                    }
+                });
+                // Return fallback for immediate use
+                return location.protocol + '//' + location.host + '/localsite/';
             }
 
             let hostnameAndPort = extractHostnameAndPort(myScript.src);
@@ -112,13 +162,55 @@ var local_app = local_app || (function(module) {
             return (theroot);
         },
         modelearth_root : function() { // General US states and eventually some international
+            if (modelearth_repo) { // Use cached value if available
+                return modelearth_repo;
+            }
+            
             let theroot = "https://model.earth";
             // TO DO: Check if localsite.js include div contains "https://model.earth" (non-relative)
             
+            // Try to find script synchronously first
+            let scripts = document.getElementsByTagName('script'); 
+            let myScript;
+            for (let scriptName of ['localsite.js', 'map-embed.js']) {
+                for (var i = 0; i < scripts.length; ++i) {
+                    if(scripts[i].src && scripts[i].src.indexOf(scriptName) !== -1){
+                        myScript = scripts[i];
+                        break;
+                    }
+                }
+                if (myScript) break;
+            }
+            
+            if (!myScript) {
+                // If not found, try async approach (for future calls)
+                findScript(['localsite.js', 'map-embed.js']).then(script => {
+                    if (script) {
+                        let hostnameAndPort = extractHostnameAndPort(script.src);
+                        let result = theroot;
+                        if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+                            result = hostnameAndPort;
+                        } else if ((location.host.indexOf('localhost') >= 0 && location.port == "8887") || location.host.indexOf('127.0.0.1') >= 0) {
+                            result = location.protocol + '//' + location.host;
+                        }
+                        modelearth_repo = result; // Cache for future calls
+                    }
+                });
+                // Return default for immediate use
+                return theroot;
+            }
+            
+            let hostnameAndPort = extractHostnameAndPort(myScript.src);
+            if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+              // External webroot
+              modelearth_repo = hostnameAndPort; // Cache result
+              return (hostnameAndPort);
+            }
             // Currently assuming all other ports don't have localsite folder.
             if ((location.host.indexOf('localhost') >= 0 && location.port == "8887") || location.host.indexOf('127.0.0.1') >= 0) {
               theroot = location.protocol + '//' + location.host;
             }
+            modelearth_repo = theroot; // Cache result
             return (theroot);
         },
         topojson_root : function() { // General US states and eventually some international
@@ -604,6 +696,7 @@ function toggleFullScreen(alsoToggleHeader) {
   }
 }
 
+// Determined by where localsite.js if fetched from.
 var theroot = get_localsite_root(); // Try using let instead of var to find other declarations.
 function get_localsite_root() { // Also in two other places
   if (localsite_repo3) { // Intensive, so limit to running once.
@@ -630,7 +723,7 @@ function get_localsite_root() { // Also in two other places
   }
   if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
     theroot = hostnameAndPort + "/localsite/";
-    //console.log("theroot: " + theroot);
+    console.log("theroot from remotely called localsite: " + theroot);
     //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
   }
   if (location.host.indexOf('localhost') >= 0) {
@@ -900,8 +993,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           sitelook = param.sitelook;
         }
         if (sitelook == "light") {
-          removeElement('/localsite/css/bootstrap.darkly.min.css');
-          removeElement('/explore/css/site-dark.css');
+          removeElement(theroot + 'css/bootstrap.darkly.min.css');
+          removeElement(theroot + '../explore/css/site-dark.css');
           //includeCSS3(theroot + 'css/light.css',theroot);
           if (typeof Cookies != 'undefined') {
               waitForElm('#sitelook').then((elm) => {
@@ -2944,7 +3037,7 @@ function setSitelook(siteLook) {
         //toggleVideo("show","nochange");
         document.body.classList.add("dark");
         //removeElement('/localsite/css/light.css');
-        includeCSS3('/localsite/css/bootstrap.darkly.min.css');
+        includeCSS3(theroot + 'css/bootstrap.darkly.min.css');
   
         // Move search text elements
         const searchTextHolder = document.querySelector('.searchTextHolder');
@@ -2954,10 +3047,10 @@ function setSitelook(siteLook) {
         }
     } else if (siteLook == "default") {
         document.body.classList.remove("dark");
-        removeElement('/localsite/css/bootstrap.darkly.min.css');
+        removeElement(theroot + 'css/bootstrap.darkly.min.css');
     } else { // Light
         document.body.classList.remove("dark");
-        removeElement('/localsite/css/bootstrap.darkly.min.css');
+        removeElement(theroot + 'css/bootstrap.darkly.min.css');
         //const sitebasemapElements = document.querySelectorAll('.sitebasemap');
         //sitebasemapElements.forEach(element => {
         //    element.value = "positron_light_nolabels";
@@ -2967,9 +3060,11 @@ function setSitelook(siteLook) {
 }
 function setDevmode(devmode) {
   if (devmode == "dev") {
-    includeCSS3(local_app.localsite_root() + 'css/dev.css');
+    //includeCSS3(local_app.localsite_root() + 'css/dev.css');
+    includeCSS3(theroot + 'css/dev.css');
   } else {
-    removeElement('/localsite/css/dev.css');
+    //removeElement('/localsite/css/dev.css');
+    removeElement(theroot + 'css/dev.css');
   }
 }
 function setOnlinemode(onlinemode) {
