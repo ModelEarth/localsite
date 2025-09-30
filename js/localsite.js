@@ -27,44 +27,42 @@ if (location.host.indexOf('localhost') >= 0) {
 consoleLog("start localsite");
 
 // Common function to find script with delay handling for DOM recognition
-function findScript(scriptNames = ['localsite.js', 'map-embed.js']) {
+// NOTE: This Promise will NOT wait forever - it has a built-in 1-second timeout.
+// If script is not found immediately, it waits 1000ms then resolves with either 
+// the found script or null (never rejects, preventing infinite waiting).
+function findScript(scriptName = 'localsite.js') {
     return new Promise((resolve, reject) => {
         let scripts = document.getElementsByTagName('script'); 
         let myScript;
         
-        // Try to find scripts in priority order
-        for (let scriptName of scriptNames) {
-            for (var i = 0; i < scripts.length; ++i) {
-                if(scripts[i].src && scripts[i].src.indexOf(scriptName) !== -1){
-                    myScript = scripts[i];
-                    break;
-                }
+        // Try to find the specified script
+        for (var i = 0; i < scripts.length; ++i) {
+            if(scripts[i].src && scripts[i].src.indexOf(scriptName) !== -1){
+                myScript = scripts[i];
+                break;
             }
-            if (myScript) break;
         }
         
         if (!myScript) {
-            console.log('%cALERT: the current script was not yet recognized in the DOM. Waiting for second attempt...', 'color: red; background: yellow; font-size: 14px');
+            console.log(`%cALERT: ${scriptName} was not yet recognized in the DOM. Waiting for second attempt...`, 'color: red; background: yellow; font-size: 14px');
             
             // Handle delay if script is not found by adding retry with timeout
+            // This ensures the Promise resolves within 1 second, never hanging indefinitely
             setTimeout(function() {
                 let scripts = document.getElementsByTagName('script'); 
-                for (let scriptName of scriptNames) {
-                    for (var i = 0; i < scripts.length; ++i) {
-                        if(scripts[i].src && scripts[i].src.indexOf(scriptName) !== -1){
-                            myScript = scripts[i];
-                            break;
-                        }
+                for (var i = 0; i < scripts.length; ++i) {
+                    if(scripts[i].src && scripts[i].src.indexOf(scriptName) !== -1){
+                        myScript = scripts[i];
+                        break;
                     }
-                    if (myScript) break;
                 }
                 
                 if (myScript) {
-                    console.log('%cGot script from DOM after delay!', 'color: green; background: yellow; font-size: 14px');
+                    console.log(`%cGot ${scriptName} from DOM after delay!`, 'color: green; background: yellow; font-size: 14px');
                     resolve(myScript);
                 } else {
-                    console.log('%cScript still not found after delay. Using fallback.', 'color: orange; background: yellow; font-size: 14px');
-                    resolve(null);
+                    console.log(`%c${scriptName} still not found after delay. Using fallback.`, 'color: orange; background: yellow; font-size: 14px');
+                    resolve(null); // Always resolves (never hangs), even when script not found
                 }
             }, 1000);
         } else {
@@ -73,118 +71,102 @@ function findScript(scriptNames = ['localsite.js', 'map-embed.js']) {
     });
 }
 
-var local_app = local_app || (function(module) {
+// Ensure local_app exists and extend it with all required methods
+var local_app = local_app || {};
+
+// Add localsite methods to local_app (extending existing object if it already has web_root)
+(function(module) {
     let _args = {}; // private, also worked as []
     let localsite_repo;
     let modelearth_repo;
-    return {
-        init : function(Args) {
-            _args = Args;
-            // some other initialising
-        },
-        helloWorld : function() {
-            //alert('Hello World! -' + _args[0]);
-            //alert('Hello World! -' + _args.test1);
-            alert(Object.keys(_args)[0]);
-        },
-        localsite_root : function() {
-            if (localsite_repo) { // Intensive, so allows to only run once
+    
+    // Extend local_app with localsite methods
+    local_app.init = local_app.init || function(Args) {
+        _args = Args;
+        // some other initialising
+    };
+    
+    local_app.helloWorld = local_app.helloWorld || function() {
+        //alert('Hello World! -' + _args[0]);
+        //alert('Hello World! -' + _args.test1);
+        alert(Object.keys(_args)[0]);
+    };
+    
+    local_app.localsite_root = local_app.localsite_root || function() {
+            if (localsite_repo) { // Use cached value if available
               return(localsite_repo);
             }
             //alert("get localsite_repo");
 
-            // Try to find script synchronously first
-            let scripts = document.getElementsByTagName('script'); 
-            let myScript;
-            for (let scriptName of ['localsite.js', 'map-embed.js']) {
-                for (var i = 0; i < scripts.length; ++i) {
-                    if(scripts[i].src && scripts[i].src.indexOf(scriptName) !== -1){
-                        myScript = scripts[i];
-                        break;
-                    }
-                }
-                if (myScript) break;
+            // Get web_root and append "/localsite/" - no DOM checking needed here
+            let web_root = this.web_root();
+            let theroot = web_root + "/localsite/";
+            
+            // Handle special case for Georgia domain
+            if (location.host.indexOf("georgia") >= 0) { 
+              // For feedback link within embedded map, and ga-layers.json
+              // Keep the theroot as determined by web_root + "/localsite/"
+              // This maintains compatibility with embedded maps
             }
             
-            if (!myScript) {
-                // If not found, try async approach (for future calls)
-                findScript(['localsite.js', 'map-embed.js']).then(script => {
-                    if (script) {
-                        // Cache the result for future synchronous calls
-                        let hostnameAndPort = extractHostnameAndPort(script.src);
-                        let theroot = location.protocol + '//' + location.host + '/localsite/';
-                        if (location.host.indexOf("georgia") >= 0) {
-                            // Additional logic would go here if needed
-                        }
-                        if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-                            theroot = hostnameAndPort + "/localsite/";
-                        }
-                        localsite_repo = theroot; // Cache for future calls
-                    }
-                });
-                // Return fallback for immediate use
-                return location.protocol + '//' + location.host + '/localsite/';
-            }
-
-            let hostnameAndPort = extractHostnameAndPort(myScript.src);
-            console.log("location.host " + location.host);
-            let theroot = location.protocol + '//' + location.host + '/localsite/';
-
-            if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map, and ga-layers.json
-              // Might need (hopefully not) for https://www.georgia.org/center-of-innovation/energy/smart-mobility - needed occasionally for js/jquery.min.js below, not needed when hitting reload.
-              //theroot = "https://map.georgia.org/localsite/";
-              
-              // This could be breaking top links to Location and Good & Services.
-              // But reactivating after smart-mobility page tried to get js/jquery.min.js from geogia.org
-              // Re-omitting because js/jquery.min.js still used geogia.org on first load, once. (not 100% sure if old page was cached)
-              //theroot = hostnameAndPort + "/localsite/";
-            }
-            
-            if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-              console.log("hostnameAndPort " + hostnameAndPort);
-              theroot = hostnameAndPort + "/localsite/";
-              //consoleLog("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src));
-              //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
-            }
-            if (location.host.indexOf('localhost') >= 0) {
-              // For testing embedding without locathost repo in site theroot. Rename your localsite folder.
-              // Why don't we reach ".showApps click" when activatied?:
-              //theroot = "https://model.earth/localsite/";
-            }
-            localsite_repo = theroot; // Save to reduce DOM hits
+            localsite_repo = theroot; // Cache to reduce repeated calls
             return (theroot);
-        },
-        community_data_root : function() { // General US states and eventually some international
+    };
+    
+    local_app.community_data_root = local_app.community_data_root || function() { // General US states and eventually some international
             let theroot = "https://model.earth/community-data/";
             if (location.host.indexOf('localhost') >= 0 && !onlineApp) {
               theroot = location.protocol + '//' + location.host + '/community-data/';
             }
             return (theroot);
-        },
-        modelearth_root : function() { // General US states and eventually some international
+    };
+    
+    local_app.web_root = local_app.web_root || function() { // General US states and eventually some international
+            // Check if web_root was already populated by widget-embed.js or other scripts
+            // Avoid infinite recursion by checking if window.local_app is a different object
+            if (window.local_app && window.local_app !== local_app && 
+                typeof window.local_app.web_root === 'function') {
+                // Use the existing function from widget-embed.js or other source
+                let existingResult = window.local_app.web_root();
+                if (existingResult) {
+                    modelearth_repo = existingResult; // Cache the result
+                    return existingResult;
+                }
+            }
+            
             if (modelearth_repo) { // Use cached value if available
                 return modelearth_repo;
             }
             
             let theroot = "https://model.earth";
-            // TO DO: Check if localsite.js include div contains "https://model.earth" (non-relative)
-            
-            // Try to find script synchronously first
+
+            // Try to find script synchronously first, prioritizing localsite.js
             let scripts = document.getElementsByTagName('script'); 
             let myScript;
-            for (let scriptName of ['localsite.js', 'map-embed.js']) {
+            
+            // Use path to localsite.js as location for supporting files - for embedding
+            for (var i = 0; i < scripts.length; ++i) {
+                if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
+                    myScript = scripts[i];
+                    break;
+                }
+            }
+            
+            // If localsite.js not found, try map-embed.js as fallback
+            /*
+            if (!myScript) {
                 for (var i = 0; i < scripts.length; ++i) {
-                    if(scripts[i].src && scripts[i].src.indexOf(scriptName) !== -1){
+                    if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
                         myScript = scripts[i];
                         break;
                     }
                 }
-                if (myScript) break;
             }
-            
+            */
+
             if (!myScript) {
                 // If not found, try async approach (for future calls)
-                findScript(['localsite.js', 'map-embed.js']).then(script => {
+                findScript('localsite.js').then(script => {
                     if (script) {
                         let hostnameAndPort = extractHostnameAndPort(script.src);
                         let result = theroot;
@@ -194,9 +176,24 @@ var local_app = local_app || (function(module) {
                             result = location.protocol + '//' + location.host;
                         }
                         modelearth_repo = result; // Cache for future calls
+                    } else {
+                        // Try map-embed.js as fallback if localsite.js fails
+                        findScript('map-embed.js').then(fallbackScript => {
+                            if (fallbackScript) {
+                                let hostnameAndPort = extractHostnameAndPort(fallbackScript.src);
+                                let result = theroot;
+                                if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+                                    result = hostnameAndPort;
+                                } else if ((location.host.indexOf('localhost') >= 0 && location.port == "8887") || location.host.indexOf('127.0.0.1') >= 0) {
+                                    result = location.protocol + '//' + location.host;
+                                }
+                                modelearth_repo = result; // Cache for future calls
+                            }
+                        });
                     }
                 });
                 // Return default for immediate use
+                alert(theroot)
                 return theroot;
             }
             
@@ -212,28 +209,26 @@ var local_app = local_app || (function(module) {
             }
             modelearth_repo = theroot; // Cache result
             return (theroot);
-        },
-        topojson_root : function() { // General US states and eventually some international
+    };
+    
+    local_app.topojson_root = local_app.topojson_root || function() { // General US states and eventually some international
             // These repos will typically reside on github, so no localhost.
             let theroot = "https://model.earth";
             if (!onlineApp) {
               theroot = "";
             }
             return (theroot);
-        },
-        custom_data_root : function() { // Unique US states - will use javascript, domain, cookies and json.
+    };
+    
+    local_app.custom_data_root = local_app.custom_data_root || function() { // Unique US states - will use javascript, domain, cookies and json.
             let theroot = location.protocol + '//' + location.host + '/georgia-data/';
             if (location.host.indexOf('localhost') < 0) {
               theroot = "https://neighborhood.org/georgia-data/";
             }
             return (theroot);
-        }
     };
-
-    // EXPORTS
-    //module.init = init;
-    //module.setData = setData;
-}());
+    
+})(); // End of extending local_app
 
 //local_app.loctitle = "what"
 //alert(local_app.loctitle);
@@ -2103,7 +2098,7 @@ function showSearchFilter() {
         
       if (document.getElementById("filterFieldContent") == null) { 
         //alert("load filter.html")
-        let filterFile = local_app.modelearth_root() + "/localsite/map/filter.html";
+        let filterFile = local_app.web_root() + "/localsite/map/filter.html";
         $("#filterFieldsHolder").load(filterFile, function( response, status, xhr ) {
 
         }); // End $("#filters").load

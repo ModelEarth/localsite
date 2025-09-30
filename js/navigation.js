@@ -308,10 +308,10 @@ function hashChanged() {
             element.scope = "country-us"
 
             //element.key = "State";
-            //element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states.json";
-            //element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states-edited.csv";
+            //element.datasource = local_app.web_root() + "/localsite/info/data/map-filters/us-states.json";
+            //element.datasource = local_app.web_root() + "/localsite/info/data/map-filters/us-states-edited.csv";
             // https://github.com/ModelEarth/localsite/blob/main/info/data/map-filters/us-states.csv
-            element.datasource = local_app.modelearth_root() + "/localsite/info/data/map-filters/us-states-full.csv";
+            element.datasource = local_app.web_root() + "/localsite/info/data/map-filters/us-states-full.csv";
             let formatType = "simple";
 
             
@@ -375,7 +375,7 @@ function hashChanged() {
         } else if (hash.geoview == "countries") {
             // COUNTRIES
             // TO DO: Remove countries.csv and other non-full.csv files from python file generation.
-            const csvFilePath = local_app.modelearth_root() + "/localsite/info/data/map-filters/countries-full.csv"; // Or use the full version
+            const csvFilePath = local_app.web_root() + "/localsite/info/data/map-filters/countries-full.csv"; // Or use the full version
             
             const element = {};
             element.scope = "countries";
@@ -2860,8 +2860,8 @@ catArray = [];
     
     // This can be reactivated for international harmonized system.
     /*
-    alert(local_app.modelearth_root() + '/localsite/js/d3.v5.min.js'); // Is model.earth used to avoid CORS error? Better to avoid and move harmonized-system.txt in localsite repo.
-    loadScript(local_app.modelearth_root() + '/localsite/js/d3.v5.min.js', function(results) {
+    alert(local_app.web_root() + '/localsite/js/d3.v5.min.js'); // Is model.earth used to avoid CORS error? Better to avoid and move harmonized-system.txt in localsite repo.
+    loadScript(local_app.web_root() + '/localsite/js/d3.v5.min.js', function(results) {
 
         // This avoids cross domain CORS error      
         
@@ -3579,14 +3579,14 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
         if (hash.geoview == "zip") {
           layerName = "Zipcodes";
           if (stateAbbr) {
-            url = local_app.modelearth_root() + "/community-forecasting/map/zcta/states/" + getState(stateAbbr) + ".topo.json";
+            url = local_app.web_root() + "/community-forecasting/map/zcta/states/" + getState(stateAbbr) + ".topo.json";
           } else {
-            url = local_app.modelearth_root() + "/community-forecasting/map/zip/topo/zips_us_topo.json";
+            url = local_app.web_root() + "/community-forecasting/map/zip/topo/zips_us_topo.json";
           }
           topoObjName = "topoob.objects.data";
         }  else if (hash.geoview == "country") { // USA  && stateAbbr.length != 2
           layerName = "States";
-          url = local_app.modelearth_root() + "/localsite/map/topo/states-10m.json"; // name parameter is full state name
+          url = local_app.web_root() + "/localsite/map/topo/states-10m.json"; // name parameter is full state name
           topoObjName = "topoob.objects.states";
         } else if (stateAbbr && stateAbbr.length <= 2) { // COUNTIES
           layerName = stateAbbr + " Counties";
@@ -6003,14 +6003,14 @@ if (modelpath == "./") {
 
 // 2024 June - Override everything above to allow for other localsite ports not having local files.
 // If navigation.js is loaded first, this will be...
-if (typeof local_app.modelearth_root === 'function') {
-    modelpath = local_app.modelearth_root();
+if (typeof local_app.web_root === 'function') {
+    modelpath = local_app.web_root();
 }
 //alert("modelpath " + modelpath)
 
 if(location.host.indexOf('localhost') < 0 && location.host.indexOf('model.') < 0 && location.host.indexOf('neighborhood.org') < 0) { // When not localhost or other site that has a fork of io and community.
     // To do: allow "Input-Output Map" link in footer to remain relative.
-    //modelpath = "https://model.earth/" + modelpath; // Avoid - use local_app.modelearth_root() instead - Check if/why used for #headerSiteTitle and hamburger menu
+    //modelpath = "https://model.earth/" + modelpath; // Avoid - use local_app.web_root() instead - Check if/why used for #headerSiteTitle and hamburger menu
     ////modelroot = "https://model.earth"; // For embeds
 }
 consoleLog("theroot NOT APPENDED: " + theroot + modelpath); // Not correct since modelpath starts with https://locasite etc
@@ -6240,7 +6240,7 @@ function iNav(set) {
     let hashString = decodeURIComponent($.param(hash)); // decode to display commas in URL
     if (location.href.indexOf('/info') == -1) {
         //updateHash({"geoview":""}); // Close location filter before redirect.
-        location.href = local_app.modelearth_root() + "/localsite/info/#" + hashString;
+        location.href = local_app.web_root() + "/localsite/info/#" + hashString;
     } else {
         goHash({"set":set,"indicators":hash.indicators});
     }
@@ -6312,10 +6312,10 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         showLeftIcon = true;
         $(".siteTitleShort").text("Civic Tech Atlanta");
         param.titleArray = ["civic tech","atlanta"]
-        param.headerLogo = "<a href='https://codeforatlanta.org'><img src='" + local_app.modelearth_root() + "/community/img/logo/orgs/civic-tech-atlanta-text.png' style='width:186px;padding-top:8px'></a>";
+        param.headerLogo = "<a href='https://codeforatlanta.org'><img src='" + local_app.web_root() + "/community/img/logo/orgs/civic-tech-atlanta-text.png' style='width:186px;padding-top:8px'></a>";
         
         localsiteTitle = "Civic Tech Atlanta";
-        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png")
+        changeFavicon(local_app.web_root() + "/localsite/img/logo/neighborhood/favicon.png")
         showClassInline(".neighborhood");
         earthFooter = true;
         showClassInline(".georgia"); // Temp side nav
@@ -6337,10 +6337,10 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         $(".siteTitleShort").text("Model Georgia");
         param.titleArray = [];
         console.log("local_app.localsite_root() " + local_app.localsite_root()); // https://model.earth was in here: https://map.georgia.org/localsite/map/#show=recyclers
-        param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA.png' style='width:160px;margin-top:0px'></a>";
-        param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.modelearth_root() + "/localsite/img/logo/states/GA-icon.png' style='width:52px;padding:0px;margin-top:-2px'></a>";
+        param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.web_root() + "/localsite/img/logo/states/GA.png' style='width:160px;margin-top:0px'></a>";
+        param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.web_root() + "/localsite/img/logo/states/GA-icon.png' style='width:52px;padding:0px;margin-top:-2px'></a>";
         localsiteTitle = "Georgia.org";
-        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/states/GA-favicon.png");
+        changeFavicon(local_app.web_root() + "/localsite/img/logo/states/GA-favicon.png");
         if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
             showClassInline(".acct");
             showClassInline(".garesource");
@@ -6359,9 +6359,9 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
     } else if ((modelsite=="neighborhood.org" || param.startTitle == "Neighborhood.org" || location.host.indexOf('neighborhood.org') >= 0)) {
         showLeftIcon = true;
         param.titleArray = ["neighbor","hood"]
-        param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png' style='width:40px;opacity:0.7'>"
+        param.headerLogoSmall = "<img src='" + local_app.web_root() + "/localsite/img/logo/neighborhood/favicon.png' style='width:40px;opacity:0.7'>"
         localsiteTitle = "Neighborhood.org";
-        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png")
+        changeFavicon(local_app.web_root() + "/localsite/img/logo/neighborhood/favicon.png")
         showClassInline(".neighborhood");
         showClassInline(".earth");
         earthFooter = true;
@@ -6374,13 +6374,13 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         }
         param.showLeftIcon = false;
         localsiteTitle = "DemocracyLab 2.0";
-        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/democracylab/favicon.png")
+        changeFavicon(local_app.web_root() + "/localsite/img/logo/democracylab/favicon.png")
         $(".siteTitleShort").text("Democracy Lab");
         param.titleArray = ["democracy","lab"]
-        //param.headerLogo = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/partners/democracylab/democracy-lab-2.png' style='width:190px;margin-top:15px'>";
+        //param.headerLogo = "<img src='" + local_app.web_root() + "/localsite/img/logo/partners/democracylab/democracy-lab-2.png' style='width:190px;margin-top:15px'>";
         param.headerLogo = "<a href='/'><img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab-2.png' style='width:170px;margin-top:10px'></a>";
         
-        //param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/partners/democracylab/democracy-lab-icon.jpg' style='width:32px;margin:4px 8px 0 0'>";
+        //param.headerLogoSmall = "<img src='" + local_app.web_root() + "/localsite/img/logo/partners/democracylab/democracy-lab-icon.jpg' style='width:32px;margin:4px 8px 0 0'>";
         param.headerLogoSmall = "<img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab-2.png' style='width:120px;margin:4px 8px 0 0'>";
         //param.headerLogoNoText = "<a href='https://democracylab2.org'><img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab-2.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
         showClassInline(".dlab");
@@ -6388,8 +6388,8 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         localsiteTitle = "MemberCommons";
         $(".siteTitleShort").text("MemberCommons");
         param.titleArray = ["Member","Commons"];
-        param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png' style='width:40px;opacity:0.7'>"
-        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/neighborhood/favicon.png")
+        param.headerLogoSmall = "<img src='" + local_app.web_root() + "/localsite/img/logo/neighborhood/favicon.png' style='width:40px;opacity:0.7'>"
+        changeFavicon(local_app.web_root() + "/localsite/img/logo/neighborhood/favicon.png")
         showClassInline(".membercommons");
     } else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
     //} else if (location.host.indexOf('model.earth') >= 0) {
@@ -6397,11 +6397,11 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         $(".siteTitleShort").text("Model Earth");
         param.titleArray = ["model","earth"];
         localsiteTitle = "Model Earth";
-        param.headerLogoSmall = "<img src='" + local_app.modelearth_root() + "/localsite/img/logo/modelearth/model-earth.png' style='width:34px; margin-right:2px'>";
+        param.headerLogoSmall = "<img src='" + local_app.web_root() + "/localsite/img/logo/modelearth/model-earth.png' style='width:34px; margin-right:2px'>";
         
         // Works correctly for model.earth sitemodel, but not reached by geo.
         //alert("changeFavicon")
-        changeFavicon(local_app.modelearth_root() + "/localsite/img/logo/modelearth/model-earth.png")
+        changeFavicon(local_app.web_root() + "/localsite/img/logo/modelearth/model-earth.png")
         showClassInline(".earth");
         console.log(".earth display");
         earthFooter = true;
@@ -6560,12 +6560,12 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                 */
 
                 if (param.header) {
-                    headerFile = local_app.modelearth_root() + param.header;
+                    headerFile = local_app.web_root() + param.header;
                 } else if (param.headerFile) {
                     modelpath = ""; // Use the current repo when custom headerFile provided. Allows for site to reside within repo.
                     headerFile = param.headerFile;
                 } else {
-                    headerFile = local_app.modelearth_root() + "/localsite/header.html";
+                    headerFile = local_app.web_root() + "/localsite/header.html";
                 }
 
                 //if (earthFooter && param.showSideTabs != "false") { // Sites including modelearth and neighborhood
@@ -6652,7 +6652,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                             $("#local-header img[src]").each(function() {
                                 if($(this).attr("src").toLowerCase().indexOf("http") < 0) {
                                     if($(this).attr("src").indexOf("/") == 0) { // Starts with slash
-                                        $(this).attr("src", local_app.modelearth_root() + $(this).attr('src'));
+                                        $(this).attr("src", local_app.web_root() + $(this).attr('src'));
                                     } else {
                                     $(this).attr("src", modelpath + $(this).attr('src'));
                                 }
@@ -7596,7 +7596,7 @@ function showClassInline(theclass) {
 function imagineLocation() {
     if (location.href.indexOf('/info') == -1) {
         updateHash({"geoview":""}); // Prevents location filter from remaining open after redirect.
-        location.href = local_app.modelearth_root() + "/localsite/info/" + location.hash;
+        location.href = local_app.web_root() + "/localsite/info/" + location.hash;
         return;
     }
     updateHash({"imgview":"state","geoview":"","appview":""}); // Should this reside in hideAdvanced()?
