@@ -1347,6 +1347,9 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 #logoholderbar {
   padding: 0px 14px 0 0;
 }
+.logoTopPadding {
+  padding-top:5.5px;
+}
 #headerLogo {
   margin-right: 4.5px;
   float: left;

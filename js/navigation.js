@@ -8,6 +8,12 @@
 // showTabulatorList() renders country and state lists
 // updateMapColors() uses values in sorted column to place color scale on map shapes
 
+// Map click → goHash() → hash change → updateSelectedTableRows() → geotable.selectRow() → rowSelected event WITHOUT goHash() again.
+
+// We disable the rowSelected event handler during the updateSelectedTableRows function so it doesn't re-fire the goHash().
+
+
+
 // TO DO: Unselecting county on map is not unchecking tabulator checkbox
 
 if(typeof local_app == 'undefined') { var local_app = {}; console.log("BUG: Move navigation.js after localsite.js"); } // In case navigation.js included before localsite.js
@@ -439,6 +445,10 @@ function hashChanged() {
 
                     showTabulatorList(element, 0);
                 });
+            } else {
+                // Data already exists, but still need to show the tabulator on reload
+                console.log("localObject[element.scope] already exists, showing tabulator with existing data");
+                showTabulatorList(element, 0);
             }
         } else { // For backing up within apps
         
@@ -858,7 +868,7 @@ function hashChanged() {
         //if($("#geomap").is(':visible')){
         waitForElm('#geomap').then((elm) => {
             console.log("call renderGeomapShapes from navigation.js hashChanged()");
-            renderGeomapShapes("geomap", hash, "county", 1); // County select map
+            renderGeomapShapes("geomap", hash, hash.geoview || "county", 1); // Use the actual geoview from hash
         });
         //}
     }
@@ -2860,8 +2870,8 @@ catArray = [];
     
     // This can be reactivated for international harmonized system.
     /*
-    alert(local_app.web_root() + '/localsite/js/d3.v5.min.js'); // Is model.earth used to avoid CORS error? Better to avoid and move harmonized-system.txt in localsite repo.
-    loadScript(local_app.web_root() + '/localsite/js/d3.v5.min.js', function(results) {
+    alert(local_app.localsite_root() + 'js/d3.v5.min.js'); // Using localsite_root() for proper path resolution
+    loadScript(local_app.localsite_root() + 'js/d3.v5.min.js', function(results) {
 
         // This avoids cross domain CORS error      
         
@@ -3635,7 +3645,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
             
             // Check if topojson library is loaded
             if (typeof topojson === 'undefined') {
-                console.error('topojson library not loaded. Loading it now...');
+                console.log('topojson library not loaded. Loading it now...');
                 
                 // Check if we're already in the process of loading topojson
                 if (window.topojsonLoading) {
@@ -3648,85 +3658,82 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                 
                 window.topojsonLoading = true;
                 
-                // Try direct script injection with better error handling
-                const script = document.createElement('script');
-                script.src = local_app.localsite_root() + 'js/topojson-client.min.js';
-                script.onload = function() {
-                    console.log('topojson script onload fired');
+                // Instead of fighting the existing script loading system, 
+                // work with it by forcing a reload of the global object
+                console.log('Forcing topojson global creation...');
+                
+                // Check if the script content is already loaded but global not created
+                const existingScript = document.querySelector('script[src*="topojson"]');
+                if (existingScript) {
+                    console.log('topojson script exists, attempting to force global creation');
                     
-                    // Force topojson to be global by loading it via eval in global context
-                    // This handles module format scripts that don't auto-create globals
+                    // Try to manually execute the UMD pattern
                     try {
-                        // Try to access the loaded script content and force global assignment
-                        if (typeof topojson === 'undefined') {
-                            // Create a simple eval to force module execution in global scope
-                            const tempScript = document.createElement('script');
-                            tempScript.textContent = `
-                                if (typeof window.topojson === 'undefined' && typeof exports !== 'undefined') {
-                                    // Try to access topojson from module exports
-                                    try {
-                                        window.topojson = this.topojson || exports.topojson || exports;
-                                    } catch(e) {
-                                        console.log('Could not assign from exports:', e);
-                                    }
-                                }
-                            `;
-                            document.head.appendChild(tempScript);
-                            document.head.removeChild(tempScript);
-                        }
-                    } catch(e) {
-                        console.log('Global assignment attempt failed:', e);
+                        // Create a new script element that forces global execution
+                        const forceScript = document.createElement('script');
+                        forceScript.textContent = `
+                            // Force topojson global creation
+                            if (typeof window.topojson === 'undefined') {
+                                // Load and execute the topojson script content directly
+                                var script = document.createElement('script');
+                                script.src = local_app.localsite_root() + 'js/topojson-client310.min.js?t=' + Date.now();
+                                script.onload = function() {
+                                    console.log('Force-loaded topojson script');
+                                    setTimeout(function() {
+                                        if (typeof topojson !== 'undefined' && topojson.feature) {
+                                            console.log('topojson global successfully created');
+                                            window.topojsonLoading = false;
+                                            // Trigger the continuation
+                                            window.dispatchEvent(new CustomEvent('topojsonReady'));
+                                        }
+                                    }, 50);
+                                };
+                                document.head.appendChild(script);
+                            }
+                        `;
+                        document.head.appendChild(forceScript);
+                        
+                        // Listen for the ready event
+                        window.addEventListener('topojsonReady', function() {
+                            if (typeof topojson !== 'undefined' && topojson.feature) {
+                                topodata = topojson.feature(topoob, eval(topoObjName));
+                                continueHandler();
+                            }
+                        }, { once: true });
+                        
+                        // Also set a timeout fallback
+                        setTimeout(function() {
+                            if (typeof topojson !== 'undefined' && topojson.feature) {
+                                console.log('topojson available via timeout fallback');
+                                window.topojsonLoading = false;
+                                topodata = topojson.feature(topoob, eval(topoObjName));
+                                continueHandler();
+                            } else {
+                                console.error('topojson still not available after force loading');
+                                window.topojsonLoading = false;
+                            }
+                        }, 300);
+                        
+                    } catch (e) {
+                        console.error('Failed to force topojson loading:', e);
+                        window.topojsonLoading = false;
                     }
-                    
-                    // Add multiple delays to ensure execution
-                    setTimeout(function() {
-                        if (typeof topojson !== 'undefined') {
-                            console.log('topojson library loaded successfully');
-                            window.topojsonLoading = false;
-                            topodata = topojson.feature(topoob, eval(topoObjName));
-                            continueHandler();
-                        } else {
-                            console.log('topojson still undefined after 100ms, trying 300ms...');
-                            setTimeout(function() {
-                                if (typeof topojson !== 'undefined') {
-                                    console.log('topojson library loaded after 300ms delay');
-                                    window.topojsonLoading = false;
-                                    topodata = topojson.feature(topoob, eval(topoObjName));
-                                    continueHandler();
-                                } else {
-                                    console.error('topojson failed to load after 300ms delay. Trying fallback topojson-client310.min.js...');
-                                    // Try to load the older version as fallback
-                                    const fallbackScript = document.createElement('script');
-                                    fallbackScript.src = local_app.localsite_root() + 'js/topojson-client310.min.js';
-                                    fallbackScript.onload = function() {
-                                        console.log('Fallback topojson script loaded');
-                                        setTimeout(function() {
-                                            if (typeof topojson !== 'undefined') {
-                                                console.log('Fallback topojson library loaded successfully');
-                                                window.topojsonLoading = false;
-                                                topodata = topojson.feature(topoob, eval(topoObjName));
-                                                continueHandler();
-                                            } else {
-                                                console.error('Both topojson versions failed to create global object');
-                                                window.topojsonLoading = false;
-                                            }
-                                        }, 100);
-                                    };
-                                    fallbackScript.onerror = function() {
-                                        console.error('Fallback topojson script also failed to load');
-                                        window.topojsonLoading = false;
-                                    };
-                                    document.head.appendChild(fallbackScript);
-                                }
-                            }, 200);
-                        }
-                    }, 100);
-                };
-                script.onerror = function(error) {
-                    console.error('topojson script failed to load:', error);
-                    window.topojsonLoading = false;
-                };
-                document.head.appendChild(script);
+                } else {
+                    // No existing script, load it fresh
+                    const script = document.createElement('script');
+                    script.src = local_app.localsite_root() + 'js/topojson-client310.min.js?t=' + Date.now();
+                    script.onload = function() {
+                        setTimeout(function() {
+                            if (typeof topojson !== 'undefined' && topojson.feature) {
+                                console.log('topojson library loaded successfully');
+                                window.topojsonLoading = false;
+                                topodata = topojson.feature(topoob, eval(topoObjName));
+                                continueHandler();
+                            }
+                        }, 100);
+                    };
+                    document.head.appendChild(script);
+                }
                 return;
             }
             
@@ -4806,10 +4813,12 @@ function loadObjectData(element, attempts) {
 
 var statetable = {};
 var geotable = {};
+var currentRowIDs = [];
+var currentCountryIDs = [];
+var programmaticSelection = false; // Flag to prevent goHash() during programmatic selections
 
 function showTabulatorList(element, attempts) {
-    let currentRowIDs = [];
-    let currentCountryIDs = [];
+    // currentRowIDs and currentCountryIDs are now global variables
     console.log("showTabulatorList scope: " + element.scope + ". Length: " + Object.keys(element).length + ". Attempt: " + attempts);
     let hash = getHash();
     let theState = "";
@@ -4915,30 +4924,31 @@ function showTabulatorList(element, attempts) {
 
                         statetable.on("tableBuilt", function() {
                             //alert("currentStateIDs " + currentStateIDs)
+                            programmaticSelection = true;
                             statetable.selectRow(currentStateIDs);
+                            programmaticSelection = false;
                             statetable.on("rowSelected", function(row) {
                                 // Handle row selection here
                             });
                         });
                     }
 
-                    let rowSelectedTime = 0;
-                    const selectionDelay = 50;  // Reduced from 500ms to 50ms for better responsiveness
-
                     // Called for every box check when loading tabulator.
                     statetable.on("rowSelected", function(row) {
-                        let now = Date.now();
-                        if (now - rowSelectedTime > selectionDelay) {
+                        console.log("statetable rowSelected " + row._row.data.id + " (programmatic: " + programmaticSelection + ")");
 
-                            //alert("statetable rowSelected " + row._row.data.id);
-                            // Important: The incoming 2-char state is a column called "id"
-                            if (!currentRowIDs.includes(row._row.data.id)) {
-                                currentRowIDs.push(row._row.data.id);
-                            }
-                            //if(hash.geo) {
-                                //hash.geo = hash.geo + "," + currentRowIDs.toString();
-                            //  hash.geo = hash.geo + "," + row._row.data.id;
-                            //} else {
+                        //alert("statetable rowSelected " + row._row.data.id);
+                        // Important: The incoming 2-char state is a column called "id"
+                        if (!currentRowIDs.includes(row._row.data.id)) {
+                            currentRowIDs.push(row._row.data.id);
+                        }
+                        //if(hash.geo) {
+                            //hash.geo = hash.geo + "," + currentRowIDs.toString();
+                        //  hash.geo = hash.geo + "," + row._row.data.id;
+                        //} else {
+                        
+                        // Only trigger goHash if this is a user-initiated selection, not programmatic
+                        if (!programmaticSelection) {
                             if (!hash.geoview || hash.geoview == "state") { // Clicking on counties for a state
                                 if (hash.geo != currentRowIDs.toString()) {
                                     hash.geo = currentRowIDs.toString();
@@ -4955,6 +4965,10 @@ function showTabulatorList(element, attempts) {
                                 }
                                 goHash({'country':currentCountryIDs.toString()});
                             }
+                        }
+                        
+                        // Only trigger these goHash calls if user-initiated
+                        if (!programmaticSelection) {
                             if (row._row.data["CountryName"] == "United States") {
                                 goHash({'geoview':'country'});
                             } else if(row._row.data.id) {
@@ -4999,22 +5013,26 @@ function showTabulatorList(element, attempts) {
                                 goHash({'state':filteredArray.toString()});
                                 return;
                             }
-                            rowSelectedTime = now;  // Update the timestamp after processing
                         }
                     })
                     statetable.on("rowDeselected", function(row) {
-                        let countryCode = row._row.data["Country"];
-                        let filteredCountryArray = currentCountryIDs.filter(item => item !== countryCode);
-                        if (hash.geoview == "countries") {
-                            goHash({'country':filteredCountryArray.toString()});
-                            return;
-                        }
+                        console.log("statetable rowDeselected " + row._row.data.id + " (programmatic: " + programmaticSelection + ")");
+                        
+                        // Only trigger goHash if this is a user-initiated deselection, not programmatic
+                        if (!programmaticSelection) {
+                            let countryCode = row._row.data["Country"];
+                            let filteredCountryArray = currentCountryIDs.filter(item => item !== countryCode);
+                            if (hash.geoview == "countries") {
+                                goHash({'country':filteredCountryArray.toString()});
+                                return;
+                            }
 
-                        let filteredArray = currentRowIDs.filter(item => item !== row._row.data.id);
-                        if (hash.state != filteredArray.toString()) {
-                            //hash.geo = filteredArray.toString();
-                            goHash({'state':filteredArray.toString()});
-                            return;
+                            let filteredArray = currentRowIDs.filter(item => item !== row._row.data.id);
+                            if (hash.state != filteredArray.toString()) {
+                                //hash.geo = filteredArray.toString();
+                                goHash({'state':filteredArray.toString()});
+                                return;
+                            }
                         }
                     })
                     statetable.on("dataSorted", function(sorters, rows){
@@ -5028,7 +5046,9 @@ function showTabulatorList(element, attempts) {
                             let currentStates = hash.state.split(',');
                             statetable.on("tableBuilt", function() {
                                 //alert("try it")
+                                programmaticSelection = true;
                                 statetable.selectRow(currentStates); // Uses "id" incoming rowData
+                                programmaticSelection = false;
                             });
                         }
                     }
@@ -5235,14 +5255,15 @@ function showTabulatorList(element, attempts) {
 
                 // Row selection handler
                 geotable.on("rowSelected", function(row){
-                    console.log("geotable rowSelected " + row._row.data.id);
+                    console.log("geotable rowSelected " + row._row.data.id + " (programmatic: " + programmaticSelection + ")");
                     if (!currentRowIDs.includes(row._row.data.id)) {
                         //alert("Add to geo in url hash: " + row._row.data.id)
                         // Updates geo in url hash
                         currentRowIDs.push(row._row.data.id);
                     }
                     
-                    if (hash.geo != currentRowIDs.toString()) {
+                    // Only trigger goHash if this is a user-initiated selection, not programmatic
+                    if (!programmaticSelection && hash.geo != currentRowIDs.toString()) {
                         hash.geo = currentRowIDs.toString();
                         //alert("goHash rowSelected " + hash.geo);
                         //alert("rowSelected currentRowIDs call goHash " + currentRowIDs.toString());
@@ -5253,8 +5274,10 @@ function showTabulatorList(element, attempts) {
                 // Row deselection handler
                 geotable.on("rowDeselected", function(row){
                     currentRowIDs = currentRowIDs.filter(item => item !== row._row.data.id);
-                    console.log("rowDeselected. Remaining currentRowIDs: " + currentRowIDs.toString());
-                    if (hash.geo != currentRowIDs.toString()) {
+                    console.log("rowDeselected. Remaining currentRowIDs: " + currentRowIDs.toString() + " (programmatic: " + programmaticSelection + ")");
+                    
+                    // Only trigger goHash if this is a user-initiated deselection, not programmatic
+                    if (!programmaticSelection && hash.geo != currentRowIDs.toString()) {
                         // Why is currentRowIDs incorrect? (blank)
                         hash.geo = currentRowIDs.toString();
                         goHash({'geo':hash.geo}); // Reapplies selections to map (otherwise map reverts to chlorpleth)
@@ -5285,13 +5308,13 @@ function showTabulatorList(element, attempts) {
     } else {
       attempts = attempts + 1;
       loadTabulator();
-      if (attempts < 5) {
+      if (attempts < 25) {
         // To do: Add a loading image after a couple seconds. 5 attempts waits about 2 seconds.
         setTimeout( function() {
           showTabulatorList(element, attempts);
         }, 400 );
       } else {
-        console.log("INFINITE LOOP PREVENTION: Exiting showTabulatorList after " + attempts + " attempts. Reason: typeof Tabulator = '" + typeof Tabulator + "'. Scope: " + element.scope + ". Tabulator may not be loading properly or loadTabulator() may be failing.");
+        console.log("INFINITE LOOP PREVENTION: Exiting showTabulatorList after " + attempts + " attempts (limit: 25). Reason: typeof Tabulator = '" + typeof Tabulator + "'. Scope: " + element.scope + ". Tabulator may not be loading properly or loadTabulator() may be failing.");
         
         // Enhanced diagnostics
         const tabulatorScript = document.querySelector('script[src*="tabulator552.min.js"]');
@@ -5304,15 +5327,70 @@ function showTabulatorList(element, attempts) {
           'window.Tabulator': typeof window.Tabulator !== 'undefined'
         });
         
-        // Try to manually load tabulator to see if there's an error
-        console.log("Attempting manual script load test...");
+        // Try to force Tabulator global creation similar to topojson fix
+        console.log("Attempting to force Tabulator global creation...");
+        
+        // Try cache-busting approach
         const testScript = document.createElement('script');
-        testScript.src = local_app.localsite_root() + 'js/tabulator552.min.js';
+        testScript.src = local_app.localsite_root() + 'js/tabulator552.min.js?t=' + Date.now();
         testScript.onload = function() {
           console.log("Manual script load: SUCCESS. Tabulator type immediately after load:", typeof Tabulator);
           // Check again after a delay to see if it takes time to define
           setTimeout(function() {
             console.log("Manual script load: Tabulator type after 500ms delay:", typeof Tabulator);
+            console.log("Manual script load: window.Tabulator:", typeof window.Tabulator);
+            console.log("Manual script load: Checking global scope...");
+            
+            // Try to access Tabulator from different scopes
+            let foundTabulator = false;
+            try {
+              // Check if it's in global scope
+              if (typeof window.Tabulator !== 'undefined') {
+                console.log("Found Tabulator in window scope");
+                window.Tabulator = window.Tabulator;
+                foundTabulator = true;
+              } else if (typeof Tabulator !== 'undefined') {
+                console.log("Found Tabulator in local scope");
+                foundTabulator = true;
+              } else {
+                // Try to force execution by evaluating the script content directly
+                console.log("Tabulator not found, attempting direct evaluation...");
+                
+                // Create a more aggressive loading approach
+                const forceScript = document.createElement('script');
+                forceScript.textContent = `
+                  // Force global Tabulator creation
+                  (function() {
+                    if (typeof window.Tabulator === 'undefined') {
+                      console.log('Attempting to manually create Tabulator global...');
+                      // Try to access from module system if it exists
+                      if (typeof module !== 'undefined' && module.exports) {
+                        window.Tabulator = module.exports;
+                      }
+                    }
+                  })();
+                `;
+                document.head.appendChild(forceScript);
+                document.head.removeChild(forceScript);
+                
+                // Check again
+                if (typeof window.Tabulator !== 'undefined') {
+                  foundTabulator = true;
+                  console.log("Successfully created Tabulator global manually");
+                }
+              }
+            } catch (e) {
+              console.error("Error trying to access Tabulator:", e);
+            }
+            
+            // If Tabulator is now available, retry the showTabulatorList
+            if (foundTabulator || typeof Tabulator !== 'undefined') {
+              console.log("Tabulator is now available! Retrying showTabulatorList...");
+              showTabulatorList(element, 0); // Restart with 0 attempts
+            } else {
+              console.error("Tabulator still not available after all attempts");
+              console.log("Available globals:", Object.keys(window).filter(key => key.toLowerCase().includes('tab')));
+            }
           }, 500);
         };
         testScript.onerror = function(error) {
@@ -5340,6 +5418,10 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
             //alert("geotable.getRows === function")
             // #tabulator-geotable
             //geotable.selectRow(geotable.getRows().filter(row => row.getData().name.includes('Ba')));
+            
+            // Set flag to indicate programmatic selection (don't trigger goHash)
+            programmaticSelection = true;
+            
             if (geo) {
                 $.each(geo.split(','), function(index, value) {
                     console.log("geo value: " + value);
@@ -5356,6 +5438,9 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
                     geotable.deselectRow(value); // Pass the row ID directly
                 });
             }
+            
+            // Reset flag after programmatic selections are complete
+            programmaticSelection = false;
             // Row Display Test - scroll down to see which rows were not initially in DOM.
             //$('.tabulator-row input:checkbox').css('display', 'none');
 
@@ -6536,7 +6621,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         $(".siteTitleShort").text("Model Earth");
         param.titleArray = ["model","earth"];
         localsiteTitle = "Model Earth";
-        param.headerLogoSmall = "<img src='" + local_app.web_root() + "/localsite/img/logo/modelearth/model-earth.png' style='width:34px; margin-right:2px'>";
+        param.headerLogoSmall = "<img src='" + local_app.web_root() + "/localsite/img/logo/modelearth/model-earth.png' style='width:34px; margin-right:2px' class='logoTopPadding'>";
         
         // Works correctly for model.earth sitemodel, but not reached by geo.
         //alert("changeFavicon")
@@ -7848,6 +7933,7 @@ function activateSideColumn() {
     }
     var lastID;
     
+    /*
     $(window).scroll(function() {
         var id = currentSideID();
         if (location.host.indexOf('localhost') >= 0) {
@@ -7875,7 +7961,8 @@ function activateSideColumn() {
             }
           }
        }
-       
+    
+
       if (id == "intro") {
         console.log("headerbar show");
         $('.headerbar').show();
@@ -7885,6 +7972,7 @@ function activateSideColumn() {
         //$('html,body').scrollTop(0); 
       }
     });
+    */
 
     // Initial page load
     var currentSection = currentSideID();
