@@ -4923,7 +4923,7 @@ function showTabulatorList(element, attempts) {
                     }
 
                     let rowSelectedTime = 0;
-                    const selectionDelay = 500;  // Wait so rowSelected is only invoked once.
+                    const selectionDelay = 50;  // Reduced from 500ms to 50ms for better responsiveness
 
                     // Called for every box check when loading tabulator.
                     statetable.on("rowSelected", function(row) {
@@ -4943,6 +4943,7 @@ function showTabulatorList(element, attempts) {
                                 if (hash.geo != currentRowIDs.toString()) {
                                     hash.geo = currentRowIDs.toString();
                                     console.log("Got hash.geo " + hash.geo);
+                                    goHash({'geo':hash.geo}); // Update URL hash with selected counties
                                 }
                             } else if (hash.geoview == "countries") {
                                 //alert("row._row.data.id " + row._row.data["Country Code"])
