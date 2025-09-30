@@ -3445,13 +3445,24 @@ function isValidJSON(str) {
 }
 
 function formatCell(input, format) {
-    if (Math.abs(input) < 1e-10 && input !== 0) {
-        //console.log('formatCell received very small value:', input, 'type:', typeof input);
+    // If format is none or blank, return input as it is.
+    if (format === 'none' || format === '' || input === '') {
+        return input;
     }
     
-    // If format is none or blank, return input as it is.
-    if (format === 'none' || format === '') {
-        return input;
+    // Store original input for fallback
+    const originalInput = input;
+    
+    // Convert input to a number to prevent toFixed errors
+    input = parseFloat(input);
+    
+    // If input is not a valid number, return original input
+    if (isNaN(input)) {
+        return originalInput;
+    }
+    
+    if (Math.abs(input) < 1e-10 && input !== 0) {
+        //console.log('formatCell received very small value:', input, 'type:', typeof input);
     }
 
     // Format as scientific notation
