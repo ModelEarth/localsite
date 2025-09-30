@@ -3453,7 +3453,7 @@ function productList(startRange, endRange, text) {
 function renderGeomapShapes(whichmap, hash, geoview, attempts) {
   console.log("renderGeomapShapes() state: " + hash.state + " attempts: " + attempts);
   // local_app.topojson_root() + 
-  loadScript('/localsite/js/topojson-client.min.js', function(results) {
+  loadScript(local_app.localsite_root() + 'js/topojson-client.min.js', function(results) {
     renderMapShapeAfterPromise(whichmap, hash, attempts);
   });
 }
@@ -3518,7 +3518,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
     $("#state_select").val(stateAbbr); // Used for lat lon fetch
 
     // local_app.topojson_root() + 
-    loadScript('/localsite/js/topojson-client.min.js', function(results) {
+    loadScript(local_app.localsite_root() + 'js/topojson-client.min.js', function(results) {
     console.log("topoJsonReady loaded from " + local_app.topojson_root());
     //waitForVariable('topoJsonReady', function () {
     //console.log("topoJsonReady " + topoJsonReady);
@@ -3616,7 +3616,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
           url = local_app.topojson_root() + "/topojson/world-countries-sans-antarctica.json";
           topoObjName = "topoob.objects.countries1";
         }
-        //console.log("topojson url " + url); // TEMP
+        console.log("Loading topojson url: " + url);
+        console.log("State parameter: " + (hash.state || 'undefined'));
+        console.log("geoview parameter: " + (hash.geoview || 'undefined'));
 
         req.open('GET', url, true);
         req.onreadystatechange = handler;
@@ -3630,8 +3632,110 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
         if(req.readyState === XMLHttpRequest.DONE) {
 
             topoob = JSON.parse(req.responseText)
+            
+            // Check if topojson library is loaded
+            if (typeof topojson === 'undefined') {
+                console.error('topojson library not loaded. Loading it now...');
+                
+                // Check if we're already in the process of loading topojson
+                if (window.topojsonLoading) {
+                    console.log('topojson already loading, waiting...');
+                    setTimeout(function() {
+                        handler(); // Retry the entire handler
+                    }, 200);
+                    return;
+                }
+                
+                window.topojsonLoading = true;
+                
+                // Try direct script injection with better error handling
+                const script = document.createElement('script');
+                script.src = local_app.localsite_root() + 'js/topojson-client.min.js';
+                script.onload = function() {
+                    console.log('topojson script onload fired');
+                    
+                    // Force topojson to be global by loading it via eval in global context
+                    // This handles module format scripts that don't auto-create globals
+                    try {
+                        // Try to access the loaded script content and force global assignment
+                        if (typeof topojson === 'undefined') {
+                            // Create a simple eval to force module execution in global scope
+                            const tempScript = document.createElement('script');
+                            tempScript.textContent = `
+                                if (typeof window.topojson === 'undefined' && typeof exports !== 'undefined') {
+                                    // Try to access topojson from module exports
+                                    try {
+                                        window.topojson = this.topojson || exports.topojson || exports;
+                                    } catch(e) {
+                                        console.log('Could not assign from exports:', e);
+                                    }
+                                }
+                            `;
+                            document.head.appendChild(tempScript);
+                            document.head.removeChild(tempScript);
+                        }
+                    } catch(e) {
+                        console.log('Global assignment attempt failed:', e);
+                    }
+                    
+                    // Add multiple delays to ensure execution
+                    setTimeout(function() {
+                        if (typeof topojson !== 'undefined') {
+                            console.log('topojson library loaded successfully');
+                            window.topojsonLoading = false;
+                            topodata = topojson.feature(topoob, eval(topoObjName));
+                            continueHandler();
+                        } else {
+                            console.log('topojson still undefined after 100ms, trying 300ms...');
+                            setTimeout(function() {
+                                if (typeof topojson !== 'undefined') {
+                                    console.log('topojson library loaded after 300ms delay');
+                                    window.topojsonLoading = false;
+                                    topodata = topojson.feature(topoob, eval(topoObjName));
+                                    continueHandler();
+                                } else {
+                                    console.error('topojson failed to load after 300ms delay. Trying fallback topojson-client310.min.js...');
+                                    // Try to load the older version as fallback
+                                    const fallbackScript = document.createElement('script');
+                                    fallbackScript.src = local_app.localsite_root() + 'js/topojson-client310.min.js';
+                                    fallbackScript.onload = function() {
+                                        console.log('Fallback topojson script loaded');
+                                        setTimeout(function() {
+                                            if (typeof topojson !== 'undefined') {
+                                                console.log('Fallback topojson library loaded successfully');
+                                                window.topojsonLoading = false;
+                                                topodata = topojson.feature(topoob, eval(topoObjName));
+                                                continueHandler();
+                                            } else {
+                                                console.error('Both topojson versions failed to create global object');
+                                                window.topojsonLoading = false;
+                                            }
+                                        }, 100);
+                                    };
+                                    fallbackScript.onerror = function() {
+                                        console.error('Fallback topojson script also failed to load');
+                                        window.topojsonLoading = false;
+                                    };
+                                    document.head.appendChild(fallbackScript);
+                                }
+                            }, 200);
+                        }
+                    }, 100);
+                };
+                script.onerror = function(error) {
+                    console.error('topojson script failed to load:', error);
+                    window.topojsonLoading = false;
+                };
+                document.head.appendChild(script);
+                return;
+            }
+            
             topodata = topojson.feature(topoob, eval(topoObjName));
-
+            continueHandler();
+        }
+        }
+        
+        function continueHandler() {
             //console.log("topodata")
             //console.log(topodata)
               
@@ -4182,13 +4286,12 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
               info.addTo(map);
             }
           }
-        }
-  }); // waitforElm # whichmap
-  //}); // waitforVar
+        }); // end continueHandler
+    }); // waitforElm # whichmap
+    //}); // waitforVar
+    });
   });
-  });
-  });
-}
+} 
 
 function getValueByIdAndColumn(array, idColumn, id, column) {
     const row = array.find(obj => obj[idColumn] === id);
@@ -5181,13 +5284,42 @@ function showTabulatorList(element, attempts) {
     } else {
       attempts = attempts + 1;
       loadTabulator();
-      if (attempts < 4000) {
-        // To do: Add a loading image after a coouple seconds. 2000 waits about 300 seconds.
+      if (attempts < 5) {
+        // To do: Add a loading image after a couple seconds. 5 attempts waits about 2 seconds.
         setTimeout( function() {
           showTabulatorList(element, attempts);
-        }, 100 );
+        }, 400 );
       } else {
-        alert("Tabulator JS not available for displaying " + element.scope + ". (4000 attempts by navigation.js)")
+        console.log("INFINITE LOOP PREVENTION: Exiting showTabulatorList after " + attempts + " attempts. Reason: typeof Tabulator = '" + typeof Tabulator + "'. Scope: " + element.scope + ". Tabulator may not be loading properly or loadTabulator() may be failing.");
+        
+        // Enhanced diagnostics
+        const tabulatorScript = document.querySelector('script[src*="tabulator552.min.js"]');
+        console.log("Diagnostic info - Scripts loaded:", {
+          'tabulator552.min.js script tag exists': !!tabulatorScript,
+          'tabulator script src': tabulatorScript ? tabulatorScript.src : 'N/A',
+          'tabulator script loaded state': tabulatorScript ? (tabulatorScript.readyState || 'unknown') : 'N/A',
+          'Tabulator defined': typeof Tabulator !== 'undefined',
+          'loadTabulator function': typeof loadTabulator !== 'undefined',
+          'window.Tabulator': typeof window.Tabulator !== 'undefined'
+        });
+        
+        // Try to manually load tabulator to see if there's an error
+        console.log("Attempting manual script load test...");
+        const testScript = document.createElement('script');
+        testScript.src = local_app.localsite_root() + 'js/tabulator552.min.js';
+        testScript.onload = function() {
+          console.log("Manual script load: SUCCESS. Tabulator type immediately after load:", typeof Tabulator);
+          // Check again after a delay to see if it takes time to define
+          setTimeout(function() {
+            console.log("Manual script load: Tabulator type after 500ms delay:", typeof Tabulator);
+          }, 500);
+        };
+        testScript.onerror = function(error) {
+          console.log("Manual script load: ERROR", error);
+        };
+        document.head.appendChild(testScript);
+        // Remove the alert to prevent user interruption during debugging
+        // alert("Tabulator JS not available for displaying " + element.scope + ". (10 attempts by navigation.js)")
       }
     }
 }
@@ -5329,7 +5461,10 @@ function updateMapColors(whichmap) {
 
         // BUGBUG - When state included with geoview=country
         // http://localhost:8887/community/start/maps/#geoview=country&state=GA
-        geoOverlays[layerName].eachLayer(function (layer) {
+        
+        // Check if geoOverlays[layerName] exists before calling eachLayer
+        if (geoOverlays[layerName]) {
+            geoOverlays[layerName].eachLayer(function (layer) {
             const location = layer.feature.properties.COUNTYFP; // Match GeoJSON property
             const stateFP = layer.feature.properties.STATEFP;
             //alert("locationA: " + location)
@@ -5372,6 +5507,9 @@ function updateMapColors(whichmap) {
                 });
             }
         });
+        } else {
+            console.log("WARN: geoOverlays[" + layerName + "] is undefined, skipping eachLayer processing");
+        }
 
         // Add a legend
         addLegendToMap(minCO2, maxCO2, whichmap, legendTitle);
