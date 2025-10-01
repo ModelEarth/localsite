@@ -214,6 +214,8 @@ var local_app = local_app || {};
     local_app.topojson_root = local_app.topojson_root || function() { // General US states and eventually some international
             // These repos will typically reside on github, so no localhost.
             let theroot = "https://model.earth";
+            //alert("hack")
+            //theroot = "http://localhost:8887";
             if (!onlineApp) {
               theroot = "";
             }
@@ -1073,7 +1075,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             
             // Show/hide gravatar image based on checkbox and valid email
             if (gravatarChecked && isValidEmail(email)) {
-              loadScript('http://pajhome.org.uk/crypt/md5/md5.js', function(results) {
+              loadScript('http://pajhome.org.uk/crypt/md5/md5.js', function(results) { // For gravatar image display
                 let userImg = $.gravatar(email);
                 if (userImg) {
                   localStorage.userImg = userImg;
@@ -1935,14 +1937,8 @@ function loadTabulator() {
   if (typeof Tabulator === 'undefined') {
     includeCSS3(theroot + 'css/tabulator.min.css',theroot);
     includeCSS3(theroot + 'css/base-tabulator.css',theroot);
-    
-    // BUGBUG - Tabulator v6.2.0 error at http://localhost:8887/localsite/info/#geoview=country
-    // Uncaught RangeError: Maximum call stack size exceeded
-    //loadScript(theroot + 'js/tabulator.min.js', function(results) {});
-
-    // HACK - using 5.5.2 until above resolved
-    //alert("tabulator552")
-    loadScript(theroot + 'js/tabulator552.min.js', function(results) {});
+    // Be aware that including observablehq/runtime@4/dist/runtime.js in page breaks nav location filter's topojson and tabulator
+    loadScript(theroot + 'js/tabulator.min.js', function(results) {});
   }
 }
 

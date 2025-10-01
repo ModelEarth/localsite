@@ -2514,6 +2514,7 @@ let standaloneNav;
 
 // Initialize navigation function
 function initializeStandaloneNav() {
+
     //alert("initializeStandaloneNav")
     //let hash = getHash();
     const defaultToGeo = (navParam.list == "geo" || window.location.hostname.includes('geo') || window.location.hostname.includes('location'));
@@ -2543,28 +2544,6 @@ function initializeStandaloneNav() {
     // Look for typical repo files to identify the repository folder
     const knownRepoFiles = ['Cargo.toml', 'package.json', 'README.md', 'CLAUDE.md'];
     let detectedRepoName = null;
-    
-    /*
-    // Try to detect repo folder from current path
-    for (const segment of pathSegments) {
-        // Skip common non-repo segments
-        if (!['admin', 'js', 'css', 'img', 'preferences'].includes(segment)) {
-            detectedRepoName = segment;
-            break;
-        }
-    }
-    
-    // Fallback detection logic
-    if (!detectedRepoName) {
-        // Check if we have any path segments that could be a repo
-        const possibleRepoSegment = pathSegments.find(segment => 
-            !['admin', 'js', 'css', 'img', 'preferences', 'src', 'target'].includes(segment)
-        );
-        if (possibleRepoSegment) {
-            detectedRepoName = possibleRepoSegment;
-        }
-    }
-    */
     
     // Check if we're being called from an external site or within a webroot container
     if (detectedRepoName && pathSegments.includes(detectedRepoName)) {
@@ -2623,7 +2602,7 @@ function initializeStandaloneNav() {
     
     // Restore state after initialization
     setTimeout(() => {
-        standaloneNav.restoreState();
+        //standaloneNav.restoreState();
     }, 100);
 }
 
@@ -3495,6 +3474,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
  includeCSS3(theroot + 'css/leaflet.css',theroot);
   loadScript(theroot + 'js/leaflet.js', function(results) {
+
     waitForVariable('L', function() { // Wait for Leaflet
 
     // Occurs twice in page
@@ -5308,7 +5288,7 @@ function showTabulatorList(element, attempts) {
     } else {
       attempts = attempts + 1;
       loadTabulator();
-      if (attempts < 25) {
+      if (attempts < 5) {
         // To do: Add a loading image after a couple seconds. 5 attempts waits about 2 seconds.
         setTimeout( function() {
           showTabulatorList(element, attempts);
@@ -5317,9 +5297,9 @@ function showTabulatorList(element, attempts) {
         console.log("INFINITE LOOP PREVENTION: Exiting showTabulatorList after " + attempts + " attempts (limit: 25). Reason: typeof Tabulator = '" + typeof Tabulator + "'. Scope: " + element.scope + ". Tabulator may not be loading properly or loadTabulator() may be failing.");
         
         // Enhanced diagnostics
-        const tabulatorScript = document.querySelector('script[src*="tabulator552.min.js"]');
+        const tabulatorScript = document.querySelector('script[src*="tabulator.min.js"]');
         console.log("Diagnostic info - Scripts loaded:", {
-          'tabulator552.min.js script tag exists': !!tabulatorScript,
+          'tabulator.min.js script tag exists': !!tabulatorScript,
           'tabulator script src': tabulatorScript ? tabulatorScript.src : 'N/A',
           'tabulator script loaded state': tabulatorScript ? (tabulatorScript.readyState || 'unknown') : 'N/A',
           'Tabulator defined': typeof Tabulator !== 'undefined',
@@ -5332,7 +5312,7 @@ function showTabulatorList(element, attempts) {
         
         // Try cache-busting approach
         const testScript = document.createElement('script');
-        testScript.src = local_app.localsite_root() + 'js/tabulator552.min.js?t=' + Date.now();
+        testScript.src = local_app.localsite_root() + 'js/tabulator.min.js?t=' + Date.now();
         testScript.onload = function() {
           console.log("Manual script load: SUCCESS. Tabulator type immediately after load:", typeof Tabulator);
           // Check again after a delay to see if it takes time to define
