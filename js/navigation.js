@@ -3645,7 +3645,6 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                 // Check if the script content is already loaded but global not created
                 const existingScript = document.querySelector('script[src*="topojson"]');
                 if (existingScript) {
-                    console.log('topojson script exists, attempting to force global creation');
                     
                     // Try to manually execute the UMD pattern
                     try {
@@ -3656,9 +3655,8 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                             if (typeof window.topojson === 'undefined') {
                                 // Load and execute the topojson script content directly
                                 var script = document.createElement('script');
-                                script.src = local_app.localsite_root() + 'js/topojson-client310.min.js?t=' + Date.now();
+                                script.src = local_app.localsite_root() + 'js/topojson-client310.min.js';
                                 script.onload = function() {
-                                    console.log('Force-loaded topojson script');
                                     setTimeout(function() {
                                         if (typeof topojson !== 'undefined' && topojson.feature) {
                                             console.log('topojson global successfully created');
@@ -3701,7 +3699,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                 } else {
                     // No existing script, load it fresh
                     const script = document.createElement('script');
-                    script.src = local_app.localsite_root() + 'js/topojson-client310.min.js?t=' + Date.now();
+                    script.src = local_app.localsite_root() + 'js/topojson-client310.min.js';
                     script.onload = function() {
                         setTimeout(function() {
                             if (typeof topojson !== 'undefined' && topojson.feature) {
@@ -5288,97 +5286,14 @@ function showTabulatorList(element, attempts) {
     } else {
       attempts = attempts + 1;
       loadTabulator();
-      if (attempts < 5) {
+      if (attempts < 25) {
         // To do: Add a loading image after a couple seconds. 5 attempts waits about 2 seconds.
         setTimeout( function() {
           showTabulatorList(element, attempts);
-        }, 400 );
+        }, 10 );
       } else {
-        console.log("INFINITE LOOP PREVENTION: Exiting showTabulatorList after " + attempts + " attempts (limit: 25). Reason: typeof Tabulator = '" + typeof Tabulator + "'. Scope: " + element.scope + ". Tabulator may not be loading properly or loadTabulator() may be failing.");
-        
-        // Enhanced diagnostics
-        const tabulatorScript = document.querySelector('script[src*="tabulator.min.js"]');
-        console.log("Diagnostic info - Scripts loaded:", {
-          'tabulator.min.js script tag exists': !!tabulatorScript,
-          'tabulator script src': tabulatorScript ? tabulatorScript.src : 'N/A',
-          'tabulator script loaded state': tabulatorScript ? (tabulatorScript.readyState || 'unknown') : 'N/A',
-          'Tabulator defined': typeof Tabulator !== 'undefined',
-          'loadTabulator function': typeof loadTabulator !== 'undefined',
-          'window.Tabulator': typeof window.Tabulator !== 'undefined'
-        });
-        
-        // Try to force Tabulator global creation similar to topojson fix
-        console.log("Attempting to force Tabulator global creation...");
-        
-        // Try cache-busting approach
-        const testScript = document.createElement('script');
-        testScript.src = local_app.localsite_root() + 'js/tabulator.min.js?t=' + Date.now();
-        testScript.onload = function() {
-          console.log("Manual script load: SUCCESS. Tabulator type immediately after load:", typeof Tabulator);
-          // Check again after a delay to see if it takes time to define
-          setTimeout(function() {
-            console.log("Manual script load: Tabulator type after 500ms delay:", typeof Tabulator);
-            console.log("Manual script load: window.Tabulator:", typeof window.Tabulator);
-            console.log("Manual script load: Checking global scope...");
-            
-            // Try to access Tabulator from different scopes
-            let foundTabulator = false;
-            try {
-              // Check if it's in global scope
-              if (typeof window.Tabulator !== 'undefined') {
-                console.log("Found Tabulator in window scope");
-                window.Tabulator = window.Tabulator;
-                foundTabulator = true;
-              } else if (typeof Tabulator !== 'undefined') {
-                console.log("Found Tabulator in local scope");
-                foundTabulator = true;
-              } else {
-                // Try to force execution by evaluating the script content directly
-                console.log("Tabulator not found, attempting direct evaluation...");
-                
-                // Create a more aggressive loading approach
-                const forceScript = document.createElement('script');
-                forceScript.textContent = `
-                  // Force global Tabulator creation
-                  (function() {
-                    if (typeof window.Tabulator === 'undefined') {
-                      console.log('Attempting to manually create Tabulator global...');
-                      // Try to access from module system if it exists
-                      if (typeof module !== 'undefined' && module.exports) {
-                        window.Tabulator = module.exports;
-                      }
-                    }
-                  })();
-                `;
-                document.head.appendChild(forceScript);
-                document.head.removeChild(forceScript);
-                
-                // Check again
-                if (typeof window.Tabulator !== 'undefined') {
-                  foundTabulator = true;
-                  console.log("Successfully created Tabulator global manually");
-                }
-              }
-            } catch (e) {
-              console.error("Error trying to access Tabulator:", e);
-            }
-            
-            // If Tabulator is now available, retry the showTabulatorList
-            if (foundTabulator || typeof Tabulator !== 'undefined') {
-              console.log("Tabulator is now available! Retrying showTabulatorList...");
-              showTabulatorList(element, 0); // Restart with 0 attempts
-            } else {
-              console.error("Tabulator still not available after all attempts");
-              console.log("Available globals:", Object.keys(window).filter(key => key.toLowerCase().includes('tab')));
-            }
-          }, 500);
-        };
-        testScript.onerror = function(error) {
-          console.log("Manual script load: ERROR", error);
-        };
-        document.head.appendChild(testScript);
-        // Remove the alert to prevent user interruption during debugging
-        // alert("Tabulator JS not available for displaying " + element.scope + ". (10 attempts by navigation.js)")
+        console.log("INFINITE LOOP PREVENTION: Exiting showTabulatorList after " + attempts + " attempts (limit: 25)");
+        // alert("Tabulator JS not available for displaying " + element.scope + ". (25 attempts by navigation.js)")
       }
     }
 }
