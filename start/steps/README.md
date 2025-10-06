@@ -65,6 +65,10 @@ Turn on GitHub Pages for any repo you fork by clicking the Settings icon, then P
 ### Fork one or two repos you plan to edit
 
 How to [Fork Repos](https://medium.com/@6unpnp/fork-a-github-repository-and-deploy-its-github-pages-site-d55dc53988d).  
+
+Fork <a href="https://github.com/ModelEarth/webroot">webroot</a> to work across multiple repos as submodules.<br><br>
+
+Or you can fork individual repos:<br>
 Always fork <a href="https://github.com/ModelEarth/localsite">localsite</a> so we can review your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart).  
 Fork the [home repo](https://github.com/ModelEarth/home) if you're working on our ["Everybody's Homepage" frontend](../../../home/).  
 Fork the [profile repo](https://github.com/ModelEarth/home) if you're working with [Exiobase Trade Flow](/profile/trade), [SuiteCRM](/profile/crm) or [Project Preference Ratings](/profile/preferences/). 
@@ -76,12 +80,6 @@ Fork <a href="https://github.com/ModelEarth/requests">requests</a> if you're add
 Fork <a href="https://github.com/datascape/open-webui/actions">openwebui (Datascape fork)</a> to contribute within our [Open WebUI location projects](/projects/location/) using Python and Vite.  
 Fork <a href="https://github.com/ModelEarth/earthscape">earthscape</a> if you're contributing to the our fork of [Chatbot UI](https://model.earth/earthscape/app/) using NextJS React and Supabase for team tools.  
 Fork <a href="https://github.com/ModelEarth/data-pipeline">data-pipeline</a> if you're contributing Python to data prep.  
-
-We've omitted the Community repo since it's only used for model.earth hosting. It's not needed for shared component dev.  
-
-Newest: These reside in the localsite github account:
-Fork <a href="https://github.com/localsite/membercommons">membercommons</a> if you're contributing to Gemini+Rust+AzurePostgreSQL.  
-Fork <a href="https://github.com/localsite/membermap">membermap</a> if you're contributing to javascript listing UI tools. 
 
 <!--
 It's designed to serve infinite content based on parameters.  

@@ -3463,7 +3463,18 @@ function formatCell(input, format) {
 
     // Format as scientific notation
     if (format === 'scientific') {
-        return input.toExponential(1);
+        let scientificValue = input.toExponential(1);
+        let parts = scientificValue.split('e');
+        let base = parts[0];
+        let exponent = parseInt(parts[1]);
+        
+        // Don't show power notation for exponent of 0
+        if (exponent === 0) {
+            return base;
+        }
+        
+        // Format with HTML superscript
+        return `${base}&times;10<sup>${exponent}</sup>`;
     }
 
     // Format as full number with all decimal places
