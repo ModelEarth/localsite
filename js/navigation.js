@@ -1482,6 +1482,19 @@ class StandaloneNavigation {
         waitForElm('#main-container').then((elm) => {
             $("body").addClass("sidebar-hidden");
             $("#main-container").prepend(navHTML);
+            waitForElm('#legend-content').then((elm) => { // On timeline page
+                 setTimeout(() => { // Temp until Leaflet load timing is resolved.
+                    toggleShowNavColumn();
+                    $("#listLeft").prepend($('#legend-content'));
+                    $("#listLeft").prepend('<b><a href="#geoview=countries">LOCATIONS</a></b>');
+                    $('#legend-content').css('padding', '10px');
+                    $('#legend-content').css('padding-top', '0px');
+                    $('#legend-content').css('font-size', '12px');
+                    $('#legend-content').css('line-height', '1em');
+                    $('#floating-legend').hide(); // No effect since display: is on #floating-legend
+                    $('#floating-legend').css('opacity', '0'); // Works, but might block clicks
+                }, 1000);
+            });
         });
 
         // Create app container if it doesn't exist
@@ -6364,6 +6377,17 @@ function iNav(set) {
         goHash({"set":set,"indicators":hash.indicators});
     }
 }
+function toggleShowNavColumn() {
+    // Original showNavColumn behavior
+    if ($("body").hasClass("sidebar-hidden")) {
+        //alert("showNavColumn")
+        showNavColumn();
+    } else {
+        hideNavColumn();
+    }
+    let headerFixedHeight = $("#headerLarge").height();
+    $('#cloneLeft').css("top",headerFixedHeight + "px");
+}
 let localsiteTitle = "";
 function applyNavigation() { // Waits for localsite.js 'localStart' variable so local_app path is available.
 
@@ -6608,16 +6632,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
 
         $(document).on("click", ".showNavColumn", function(event) {
             console.log(".showNavColumn click");
-
-            // Original showNavColumn behavior
-            if ($("body").hasClass("sidebar-hidden")) {
-                //alert("showNavColumn")
-                showNavColumn();
-            } else {
-                hideNavColumn();
-            }
-            let headerFixedHeight = $("#headerLarge").height();
-            $('#cloneLeft').css("top",headerFixedHeight + "px");
+            toggleShowNavColumn();
         });
         $(document).on("click", ".hideSideList", function(event) {
             hideSide("list");
