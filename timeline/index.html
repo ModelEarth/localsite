@@ -83,6 +83,58 @@ document.addEventListener('DOMContentLoaded', () => {
 .active {
     display: block;
 }
+/* Floating legend for timeline chart (fixed viewport position so it doesn't jump around)
+    The legend will be fixed in the viewport (top-right by default) regardless of canvas updates.
+    Individual legend items remain interactive while the container lets other clicks pass through. */
+#div1 { position: relative; }
+#floating-legend {
+     position: fixed;
+     top: 120px;
+     right: 20px;
+     left: auto;
+     background: rgba(255,255,255,0.95);
+     border-radius: 8px;
+     padding: 8px;
+     box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+     backdrop-filter: blur(6px);
+     border: 1px solid rgba(0,0,0,0.04);
+     z-index: 9999;
+     min-width: 160px;
+     max-height: 320px;
+     overflow-y: auto;
+     font-size: 13px;
+     /* Allow clicks to pass through the legend container so underlying controls (radios, etc.) remain clickable.
+         Individual legend items are interactive (see .legend-item pointer-events:auto). */
+     pointer-events: none;
+}
+
+/* On small screens place legend inside the chart area to avoid overflow */
+@media (max-width: 700px) {
+    #floating-legend {
+        right: auto;
+        left: 12px;
+        top: 12px;
+    }
+}
+.legend-item { display:flex; align-items:center; gap:8px; padding:6px 8px; margin:4px 0; border-radius:6px; cursor:pointer; transition:all 0.18s ease; 
+    /* Make individual items accept pointer events while the container lets other clicks through */
+    pointer-events: auto;
+}
+.legend-item .item-actions { display: none; }
+.legend-swatch { width:14px; height:14px; border-radius:3px; box-shadow:0 0 0 1px rgba(0,0,0,0.06) inset; }
+.legend-item.hidden { opacity:0.45; }
+</style>
+
+<style>
+/* Keep the whichLinesHolder controls above the floating legend so radios remain clickable */
+/* Ensure per-capita option radios are above the legend (prevents legend items from intercepting clicks) */
+#perCapitaOptions { position: relative; z-index: 10002; }
+.whichLinesHolder { position: relative; z-index: 10001; }
+</style>
+
+<style>
+.legend-item:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+
 </style>
 
 
@@ -90,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <style>
 /*Table css start */
 #table-container {
-    paddingX: 24px 0;
+    padding: 24px 0;
 }
 #table-container table {
     width: 100%;
@@ -381,7 +433,8 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <div id="div1" class="toogleDiv" chart-wrapper>
-            <canvas id="timelineChart" ></canvas> 
+            <canvas id="timelineChart" ></canvas>
+            <div id="floating-legend" aria-hidden="false" style="display:none"><div id="legend-content"></div></div>
         </div>
         <div id="div2" class="toogleDiv" chart-wrapper>
             <canvas id="lineAreaChart" ></canvas>
@@ -424,10 +477,363 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add event listener to radio buttons to call toggleDivs() on change
     // Has to reside after toogleChartType html above.
     document.querySelectorAll('input[name="toogleChartType"]').forEach((radio) => {
-        radio.addEventListener('change', toggleDivs);
+        radio.addEventListener('change', () => { toggleDivs(); try { if (typeof buildFloatingLegendFromChart === 'function') buildFloatingLegendFromChart(); } catch (e) { console.warn('legend rebuild failed on toggle:', e); } });
     });
     // Show the first div by default on page load
     toggleDivs();
+</script>
+<script>
+// Floating legend helper for Chart.js timelineChart
+function buildFloatingLegendFromChart() {
+    const canvas = document.getElementById('timelineChart');
+    if (!canvas || typeof Chart === 'undefined') return false;
+    // Decide which chart(s) to build the legend for based on the chart-type toggle
+    const selectedToggle = document.querySelector('input[name="toogleChartType"]:checked')?.value || 'div1';
+    const timelineCanvas = document.getElementById('timelineChart');
+    const lineAreaCanvas = document.getElementById('lineAreaChart');
+    const timelineChartObj = (timelineCanvas && (Chart.getChart(timelineCanvas) || timelineCanvas.__chart__));
+    const lineAreaChartObj = (lineAreaCanvas && (Chart.getChart(lineAreaCanvas) || lineAreaCanvas.__chart__));
+
+    if (!timelineChartObj && !lineAreaChartObj) return false;
+
+    // Turn off built-in legend on both charts if present
+    [timelineChartObj, lineAreaChartObj].forEach((c) => {
+        if (!c) return;
+        try {
+            if (!c.options) c.options = {};
+            if (!c.options.plugins) c.options.plugins = {};
+            c.options.plugins.legend = { display: false };
+            try { c.update(); } catch (e) { /* ignore update errors */ }
+        } catch (e) { console.warn('Could not set built-in legend display:', e); }
+    });
+
+    const legend = document.getElementById('floating-legend');
+    if (!legend) return true;
+    const legendContent = document.getElementById('legend-content');
+    if (!legendContent) return true;
+    legendContent.innerHTML = '';
+
+    // Count datasets across available charts for diagnostics
+    const timelineCount = (timelineChartObj && timelineChartObj.data && timelineChartObj.data.datasets) ? timelineChartObj.data.datasets.length : 0;
+    const areaCount = (lineAreaChartObj && lineAreaChartObj.data && lineAreaChartObj.data.datasets) ? lineAreaChartObj.data.datasets.length : 0;
+    const datasetCount = timelineCount + areaCount;
+    // Determine selected chart count based on toggle
+    const selectedCount = (selectedToggle === 'div2') ? areaCount : (selectedToggle === 'both' ? datasetCount : timelineCount);
+    console.log('buildFloatingLegendFromChart: toggle=', selectedToggle, 'timeline=', timelineCount, 'area=', areaCount, 'selectedCount=', selectedCount);
+
+    // Which-lines mode (controls which series are shown): showAll, showSelected, showTop5, showBottom5
+    const whichLinesMode = document.querySelector('input[name="whichLines"]:checked')?.value || 'showTop5';
+
+    // Helper to convert various color formats into an rgba(...) string with given alpha
+    function colorToRgba(color, alpha) {
+        alpha = (typeof alpha === 'number') ? alpha : 0.12;
+        if (!color) return `rgba(0,0,0,${alpha})`;
+        color = String(color).trim();
+        // rgb(...) -> rgba(...)
+        if (color.indexOf('rgb(') === 0) {
+            return color.replace('rgb(', 'rgba(').replace(')', `,${alpha})`);
+        }
+        // rgba(...) -> override alpha
+        if (color.indexOf('rgba(') === 0) {
+            const parts = color.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([0-9.]+)\)/);
+            if (parts) return `rgba(${parts[1]}, ${parts[2]}, ${parts[3]}, ${alpha})`;
+        }
+        // hsl(...) or hsla(...) -> convert to rgba
+        if (color.toLowerCase().indexOf('hsl(') === 0 || color.toLowerCase().indexOf('hsla(') === 0) {
+            const parts = color.match(/hsla?\(\s*([0-9.+-]+)\s*,\s*([0-9.+-]+)%\s*,\s*([0-9.+-]+)%\s*(?:,\s*([0-9.+-]+)\s*)?\)/i);
+            if (parts) {
+                let h = parseFloat(parts[1]);
+                let s = parseFloat(parts[2]) / 100;
+                let l = parseFloat(parts[3]) / 100;
+                // parse original alpha if present
+                let originalA = (typeof parts[4] !== 'undefined') ? parseFloat(parts[4]) : null;
+                // convert HSL to RGB
+                function hslToRgb(h, s, l) {
+                    h = ((h % 360) + 360) % 360 / 360; // normalize to [0,1]
+                    let r, g, b;
+                    if (s === 0) {
+                        r = g = b = l; // achromatic
+                    } else {
+                        const hue2rgb = (p, q, t) => {
+                            if (t < 0) t += 1;
+                            if (t > 1) t -= 1;
+                            if (t < 1/6) return p + (q - p) * 6 * t;
+                            if (t < 1/2) return q;
+                            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                            return p;
+                        };
+                        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                        const p = 2 * l - q;
+                        r = hue2rgb(p, q, h + 1/3);
+                        g = hue2rgb(p, q, h);
+                        b = hue2rgb(p, q, h - 1/3);
+                    }
+                    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+                }
+                const [r, g, b] = hslToRgb(h, s, l);
+                // if original had an alpha and caller didn't pass an explicit alpha, use it
+                const outA = (originalA !== null && typeof alpha === 'undefined') ? originalA : alpha;
+                return `rgba(${r}, ${g}, ${b}, ${outA})`;
+            }
+        }
+        // Hex formats #rrggbb or #rgb
+        if (color[0] === '#') {
+            let hex = color.slice(1);
+            if (hex.length === 3) {
+                hex = hex.split('').map(c => c + c).join('');
+            }
+            if (hex.length === 6) {
+                const r = parseInt(hex.slice(0,2), 16);
+                const g = parseInt(hex.slice(2,4), 16);
+                const b = parseInt(hex.slice(4,6), 16);
+                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            }
+        }
+        // Fallback: return the original color (may be a named color) with alpha applied via rgba(0,0,0,alpha) overlay
+        return `rgba(0,0,0,${alpha})`;
+    }
+
+    // Apply selection visuals to a legend item
+    function setItemSelectionStyle(item, color, visible) {
+        const bg = visible ? colorToRgba(color, 0.12) : 'transparent';
+        const border = visible ? color : 'transparent';
+        item.style.background = bg;
+        item.style.borderLeft = `4px solid ${border}`;
+        item.classList.toggle('hidden', !visible);
+    }
+
+    // Unified legend: merge dataset labels across both charts so each country appears once
+    const labelMap = new Map(); // label -> { color, charts: [{chart, index}] }
+    function collectFromChart(chartObj) {
+        if (!chartObj || !chartObj.data || !chartObj.data.datasets) return;
+        chartObj.data.datasets.forEach((ds, i) => {
+            const label = ds.label || `Series ${i+1}`;
+            const color = (Array.isArray(ds.borderColor) ? ds.borderColor[0] : ds.borderColor) || (Array.isArray(ds.backgroundColor) ? ds.backgroundColor[0] : ds.backgroundColor) || '#666';
+            if (!labelMap.has(label)) labelMap.set(label, { color: color, charts: [] });
+            labelMap.get(label).charts.push({ chart: chartObj, index: i });
+        });
+    }
+    collectFromChart(timelineChartObj);
+    collectFromChart(lineAreaChartObj);
+
+    // Build unified legend items
+    labelMap.forEach((info, label) => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        item.title = label;
+
+        const lbl = document.createElement('span');
+        lbl.textContent = label;
+        item.appendChild(lbl);
+
+        // initialize selection visuals: visible if at least one chart has dataset visible
+        const visible = info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden);
+        // If not showing all series, omit items that are currently not visible
+        const whichLinesModeLocal = document.querySelector('input[name="whichLines"]:checked')?.value || 'showTop5';
+        if (whichLinesModeLocal !== 'showAll' && !visible) {
+            return; // don't add this legend item
+        }
+        setItemSelectionStyle(item, info.color, visible);
+
+        // Toggle handler: toggles the dataset in all charts where it exists
+        item.addEventListener('click', (ev) => {
+            info.charts.forEach(({chart, index}) => {
+                const meta = chart.getDatasetMeta(index);
+                meta.hidden = !meta.hidden;
+                try { chart.update(); } catch (e) {}
+            });
+            const nowVisible = info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden);
+            setItemSelectionStyle(item, info.color, nowVisible);
+        });
+
+        legendContent.appendChild(item);
+    });
+
+    // Build legend depending on toggle state
+    const toggle = selectedToggle || 'div1';
+
+    // Short-circuit if legend already matches the current toggle and counts
+    if (!window._lastLegendState) window._lastLegendState = {};
+    const last = window._lastLegendState;
+    // If toggle and selectedCount match previous and legend already has expected children, skip rebuild
+    if (last.toggle === toggle && last.selectedCount === selectedCount && last.whichLines === whichLinesMode && legendContent.children.length === last.itemsCount) {
+        console.log('buildFloatingLegendFromChart: no change detected, skipping rebuild');
+        // Ensure visibility still correct
+        const shouldShow = selectedCount > 0 && legendContent.children.length > 0;
+        legend.style.display = shouldShow ? 'block' : 'none';
+        legend.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+        // Refresh selection visuals on existing legend items in case dataset visibility changed
+        try {
+            Array.from(legendContent.children).forEach((child) => {
+                const label = (child.title && child.title.trim()) || (child.textContent && child.textContent.trim());
+                if (!label) return;
+                const info = labelMap.get(label);
+                if (info) {
+                    const visible = info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden);
+                    setItemSelectionStyle(child, info.color, visible);
+                }
+            });
+        } catch (e) { /* ignore */ }
+        return true;
+    }
+    // Unified legend already built above (labelMap). Record last state for future short-circuiting.
+    last.toggle = toggle;
+    last.selectedCount = selectedCount;
+    last.whichLines = whichLinesMode;
+    last.itemsCount = legendContent.children.length;
+
+    // Default legend mode: 'fixed' (viewport corner). Previously sticky-in-chart is disabled by default.
+    if (typeof window._timelineLegendMode === 'undefined') window._timelineLegendMode = 'fixed';
+
+    // Show legend if we built any items
+    const visible = datasetCount > 0 && legendContent.children.length > 0;
+    // Ensure legend is appended to body (fixed viewport legend)
+    try {
+        if (legend.parentElement !== document.body) document.body.appendChild(legend);
+    } catch (e) { /* ignore */ }
+
+    if (visible) {
+        legend.style.display = 'block';
+        legend.setAttribute('aria-hidden', 'false');
+                // Place the legend at a fixed viewport location so it stays put even when canvases resize/update.
+                // Small screens still get the legend inside the content area for better UX.
+                try {
+                    // fixed viewport placement
+                    if (window.innerWidth <= 700) {
+                        legend.style.position = 'fixed';
+                        legend.style.left = '12px';
+                        legend.style.top = '12px';
+                        legend.style.right = 'auto';
+                    } else {
+                        legend.style.position = 'fixed';
+                        legend.style.top = '120px';
+                        legend.style.right = '20px';
+                        legend.style.left = 'auto';
+                    }
+                    legend.style.zIndex = 9999;
+                } catch (e) { console.warn('Could not set legend position:', e); }
+    } else {
+        legend.style.display = 'none';
+        legend.setAttribute('aria-hidden', 'true');
+    }
+    console.log('buildFloatingLegendFromChart: legend visible=', !!visible, 'datasetCount=', datasetCount, 'items=', legendContent.children.length);
+    return true;
+}
+
+// Try to build legend on page load for charts created later
+document.addEventListener('DOMContentLoaded', () => {
+    let attempts = 0;
+    const maxAttempts = 12;
+    const intId = setInterval(() => {
+        attempts += 1;
+        const ok = buildFloatingLegendFromChart();
+        if (ok || attempts >= maxAttempts) clearInterval(intId);
+    }, 500);
+    window.addEventListener('focus', () => buildFloatingLegendFromChart());
+    window.addEventListener('resize', () => setTimeout(buildFloatingLegendFromChart, 300));
+    // Install visibility observer so legend only appears when chart area is visible in viewport
+    try {
+        if (!window._timelineLegendVisibilityObserver) {
+            const legend = document.getElementById('floating-legend');
+            const chartContainers = [];
+            const d1 = document.getElementById('div1');
+            const d2 = document.getElementById('div2');
+            if (d1) chartContainers.push(d1);
+            if (d2) chartContainers.push(d2);
+            // If no containers found, fallback to observing the whole page (show legend normally)
+            if (chartContainers.length > 0 && legend) {
+                const onIntersect = (entries) => {
+                    // Show legend if any container is at least partially visible
+                    const anyVisible = entries.some(e => e.isIntersecting && e.intersectionRatio > 0.05);
+                    // Only show legend if it has content (built) and chart datasets exist
+                    const hasItems = document.getElementById('legend-content')?.children?.length > 0;
+                    if (anyVisible && hasItems) {
+                        legend.style.display = 'block';
+                    } else {
+                        legend.style.display = 'none';
+                    }
+                };
+                const obs = new IntersectionObserver(onIntersect, { root: null, threshold: [0, 0.05, 0.2] });
+                chartContainers.forEach(c => obs.observe(c));
+                window._timelineLegendVisibilityObserver = obs;
+            }
+        }
+    } catch (e) { console.warn('Legend visibility observer failed to install:', e); }
+});
+
+// Helper: position legend next to a target canvas. Also manages observers/listeners
+function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
+    if (!legend || !targetCanvas) return;
+
+    // Debounced reposition function
+    const reposition = () => {
+        try {
+            const rect = targetCanvas.getBoundingClientRect();
+            const lw = legend.offsetWidth || 220;
+            const topPos = rect.top + window.scrollY + 20;
+            if (window.innerWidth <= 700) {
+                legend.style.left = Math.max(8, rect.left + 12 + window.scrollX) + 'px';
+                legend.style.top = Math.max(8, rect.top + 12 + window.scrollY) + 'px';
+            } else {
+                const leftPos = rect.left + window.scrollX - lw - 18;
+                let chosenLeft = (leftPos < 8 ? rect.right + 18 + window.scrollX : leftPos);
+                // Avoid overlapping the whichLinesHolder controls
+                try {
+                    const which = document.querySelector('.whichLinesHolder');
+                    if (which) {
+                        const wRect = which.getBoundingClientRect();
+                        const legendRectCandidate = { left: chosenLeft, top: Math.max(12, topPos), right: chosenLeft + lw, bottom: Math.max(12, topPos) + (legend.offsetHeight || 220) };
+                        const whichRectAbs = { left: wRect.left + window.scrollX, top: wRect.top + window.scrollY, right: wRect.right + window.scrollX, bottom: wRect.bottom + window.scrollY };
+                        const intersects = !(legendRectCandidate.right < whichRectAbs.left || legendRectCandidate.left > whichRectAbs.right || legendRectCandidate.bottom < whichRectAbs.top || legendRectCandidate.top > whichRectAbs.bottom);
+                        if (intersects) {
+                            // move legend to the right of the canvas instead
+                            chosenLeft = rect.right + 18 + window.scrollX;
+                        }
+                    }
+                } catch (e) { /* ignore */ }
+                legend.style.left = chosenLeft + 'px';
+                legend.style.top = Math.max(12, topPos) + 'px';
+            }
+            legend.style.position = 'absolute';
+            legend.style.right = 'auto';
+            legend.style.zIndex = 9999;
+        } catch (e) { /* ignore */ }
+    };
+
+    // Clean up any previous observers/listeners we created
+    try {
+        if (window._timelineLegendCleanup) {
+            window._timelineLegendCleanup();
+        }
+    } catch (e) { /* ignore */ }
+
+    // Create a ResizeObserver on the canvas to reposition when it changes
+    let ro = null;
+    try {
+        ro = new ResizeObserver(() => {
+            reposition();
+        });
+        ro.observe(targetCanvas);
+    } catch (e) { ro = null; }
+
+    // Debounce helper for scroll/resize
+    let timer = null;
+    const onScrollOrResize = () => { clearTimeout(timer); timer = setTimeout(reposition, 80); };
+    window.addEventListener('scroll', onScrollOrResize, { passive: true });
+    window.addEventListener('resize', onScrollOrResize);
+
+    // Store cleanup so next call removes these
+    window._timelineLegendCleanup = () => {
+        try { if (ro) ro.disconnect(); } catch (e) {}
+        try { window.removeEventListener('scroll', onScrollOrResize); } catch (e) {}
+        try { window.removeEventListener('resize', onScrollOrResize); } catch (e) {}
+        try { clearTimeout(timer); } catch (e) {}
+        window._timelineLegendCleanup = null;
+    };
+
+    // Initial position
+    reposition();
+}
 </script>
 </body>
 </html>

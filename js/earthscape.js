@@ -513,33 +513,50 @@ dataCopy.forEach(location => {
      console.log("Filtered Countries:", selectedData);
 
     // Get datasets
+    // Deterministic color generator per label so line and area charts match
+    function colorForLabel(label, alpha) {
+        // Simple string hash
+        let hash = 0;
+        for (let i = 0; i < label.length; i++) {
+            hash = label.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const h = Math.abs(hash) % 360; // hue
+        const s = 62; // saturation
+        const l = 48; // lightness
+        if (typeof alpha === 'number') {
+            return `hsla(${h}, ${s}%, ${l}%, ${alpha})`;
+        }
+        return `hsl(${h}, ${s}%, ${l}%)`;
+    }
+
     const datasets = selectedData.map(location => {
+        const border = colorForLabel(location.name);
         return {
             label: location.name,
             data: years.map(year => {
-                const observation = location.observations.find(obs => 
-                obs.date.split('-')[0] === year
-            );
-            return observation ? observation.value : null;
-        }),
-            borderColor: 'rgb(' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ')',
+                const observation = location.observations.find(obs => obs.date.split('-')[0] === year);
+                return observation ? observation.value : null;
+            }),
+            borderColor: border,
             backgroundColor: 'rgba(0, 0, 0, 0)',
         };
     });
 
-    // For Area Chart
+    // For Area Chart - reuse the same colors (with alpha)
     const datasets1 = selectedData.map(location => {
+        const bg = colorForLabel(location.name, 0.18);
+        const border = colorForLabel(location.name);
         return {
             label: location.name,
             data: years.map(year => {
-                const observation = location.observations.find(obs => obs.date === year);
+                const observation = location.observations.find(obs => obs.date.split('-')[0] === year);
                 return observation ? observation.value : null;
             }),
-            backgroundColor: 'rgba(' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ',0.2)',
+            backgroundColor: bg,
             borderColor: 'rgba(0,0,0,0)',
             fill: true
         };
-    });      
+    });
     const config = {
         type: 'line',
         data: {
@@ -550,14 +567,9 @@ dataCopy.forEach(location => {
             responsive: true,
             
             plugins: {
+                // Use a floating DOM legend instead of the built-in Chart.js legend
                 legend: {
-                    position: 'bottom', //Better on small screens
-                    labels: {
-                        boxwidth: 12,
-                        font: {
-                            size: 13 // smaller text for legends
-                        }
-                    }
+                    display: false
                 },
                 title: {
                     display: true,
@@ -622,15 +634,10 @@ dataCopy.forEach(location => {
                   tooltip: {
                     mode: 'index'
                   },
-                  legend: {
-                    position: 'bottom',
-                    labels: {
-                      boxWidth: 12,
-                      font: {
-                        size: 12
-                      }
-                    }
-                  }
+                                        // Disable built-in legend in favor of floating DOM legend
+                                        legend: {
+                                            display: false
+                                        }
                 },
                 interaction: {
                   mode: 'nearest',
@@ -690,6 +697,22 @@ dataCopy.forEach(location => {
         
         const ctx = document.getElementById('timelineChart').getContext('2d');
         timelineChart = new Chart(ctx, config);
+
+        // Trigger floating legend build in the page (if the function exists).
+        // The legend builder lives in the HTML page and may not be defined yet,
+        // so retry a few times with small delays to avoid race conditions.
+        (function tryBuildLegend(attempt) {
+            attempt = attempt || 0;
+            if (typeof window.buildFloatingLegendFromChart === 'function') {
+                try {
+                    window.buildFloatingLegendFromChart();
+                } catch (e) {
+                    console.warn('buildFloatingLegendFromChart failed:', e);
+                }
+            } else if (attempt < 10) {
+                setTimeout(() => tryBuildLegend(attempt + 1), 250);
+            }
+        })();
 
         if (lineAreaChart instanceof Chart) {
             lineAreaChart.destroy();
