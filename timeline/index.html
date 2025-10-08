@@ -108,6 +108,25 @@ document.addEventListener('DOMContentLoaded', () => {
      pointer-events: none;
 }
 
+/* Overlay legend placed inside each chart wrapper (absolute within chart area) */
+.overlay-legend {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 6px;
+    padding: 6px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.04);
+    z-index: 10010;
+    min-width: 120px;
+    max-height: 220px;
+    overflow-y: auto;
+    font-size: 12px;
+    pointer-events: none; /* allow underlying chart interactions except for items */
+}
+.overlay-legend .overlay-legend-content { pointer-events: auto; }
+
 /* On small screens place legend inside the chart area to avoid overflow */
 @media (max-width: 700px) {
     #floating-legend {
@@ -616,7 +635,7 @@ function buildFloatingLegendFromChart() {
     collectFromChart(timelineChartObj);
     collectFromChart(lineAreaChartObj);
 
-    // Build unified legend items
+    // Build unified legend items (authoritative in #legend-content)
     labelMap.forEach((info, label) => {
         const item = document.createElement('div');
         item.className = 'legend-item';
@@ -644,10 +663,90 @@ function buildFloatingLegendFromChart() {
             });
             const nowVisible = info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden);
             setItemSelectionStyle(item, info.color, nowVisible);
+            // Also refresh overlay clones visuals to reflect the change
+            document.querySelectorAll('.overlay-legend').forEach((ov) => {
+                const clone = ov.querySelector(`[data-legend-label="${CSS.escape(label)}"]`);
+                if (clone) setItemSelectionStyle(clone, info.color, nowVisible);
+            });
         });
 
+        // Tag for cloning into overlays
+        item.setAttribute('data-legend-label', label);
         legendContent.appendChild(item);
     });
+
+    // Populate per-chart overlay legends by cloning authoritative items
+    function ensureOverlay(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return null;
+        let ov = container.querySelector('.overlay-legend');
+        if (!ov) {
+            ov = document.createElement('div');
+            ov.className = 'overlay-legend';
+            const inner = document.createElement('div');
+            inner.className = 'overlay-legend-content';
+            ov.appendChild(inner);
+            // position absolute relative to chart wrapper
+            container.style.position = container.style.position || 'relative';
+            container.appendChild(ov);
+        }
+        return ov.querySelector('.overlay-legend-content');
+    }
+
+    const div1Content = ensureOverlay('div1');
+    const div2Content = ensureOverlay('div2');
+    // Clear previous overlay items
+    if (div1Content) div1Content.innerHTML = '';
+    if (div2Content) div2Content.innerHTML = '';
+
+    // Clone authority items into each overlay but only include series present in that chart
+    const authoritativeItems = Array.from(legendContent.children);
+    authoritativeItems.forEach((authItem) => {
+        const label = authItem.getAttribute('data-legend-label') || authItem.title || authItem.textContent.trim();
+        const info = labelMap.get(label);
+        if (!info) return;
+
+        // div1: only include if timeline chart has the dataset
+        const hasInTimeline = info.charts.some(({chart}) => chart === timelineChartObj);
+        if (div1Content && hasInTimeline) {
+            const clone = authItem.cloneNode(true);
+            clone.setAttribute('data-legend-label', label);
+            // ensure pointer events work for overlay clones
+            clone.style.pointerEvents = 'auto';
+            // sync click to authoritative click
+            clone.addEventListener('click', (ev) => {
+                authItem.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+            });
+            div1Content.appendChild(clone);
+        }
+
+        // div2: only include if area chart has the dataset
+        const hasInArea = info.charts.some(({chart}) => chart === lineAreaChartObj);
+        if (div2Content && hasInArea) {
+            const clone = authItem.cloneNode(true);
+            clone.setAttribute('data-legend-label', label);
+            clone.style.pointerEvents = 'auto';
+            clone.addEventListener('click', (ev) => {
+                authItem.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+            });
+            div2Content.appendChild(clone);
+        }
+    });
+
+    // Refresh overlay visuals to match current dataset visibility
+    try {
+        authoritativeItems.forEach((authItem) => {
+            const label = authItem.getAttribute('data-legend-label') || authItem.title || authItem.textContent.trim();
+            const info = labelMap.get(label);
+            if (!info) return;
+            const nowVisible = info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden);
+            document.querySelectorAll('.overlay-legend [data-legend-label]').forEach((el) => {
+                if ((el.getAttribute('data-legend-label') || '').trim() === label) {
+                    setItemSelectionStyle(el, info.color, nowVisible);
+                }
+            });
+        });
+    } catch (e) { /* ignore */ }
 
     // Build legend depending on toggle state
     const toggle = selectedToggle || 'div1';
