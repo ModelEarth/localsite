@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     border: 1px solid rgba(0,0,0,0.04);
     z-index: 10010;
-    min-width: 300px;
+    min-width: 200px;
     max-height: 220px;
     overflow-y: auto;
     font-size: 12px;
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     display: none; /* hidden by default; shown only via updateOverlayLegendVisibility() */
 }
 .overlay-legend .overlay-legend-content { pointer-events: auto; }
-.overlay-legend .overlay-legend-title { pointer-events: auto; user-select: none; }
+.overlay-legend .overlay-legend-title { pointer-events: auto; user-select: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 
 /* Overlay title (bold) */
 .overlay-legend .overlay-legend-title {
@@ -137,6 +137,25 @@ document.addEventListener('DOMContentLoaded', () => {
     margin-bottom: 6px;
     font-size: 13px;
 }
+
+/* Close button in overlay titles */
+.overlay-legend .overlay-legend-close {
+    display: inline-block;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: rgba(0,0,0,0.8);
+    pointer-events: auto; /* ensure clickable */
+    margin-left: 8px;
+    vertical-align: middle;
+}
+.overlay-legend .overlay-legend-close:hover { background: rgba(0,0,0,0.04); color: rgba(0,0,0,0.95); }
+/* Make title text take the remaining horizontal space so the close sits at the far right */
+.overlay-legend .overlay-legend-title-text { flex: 1 1 auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* On small screens place legend inside the chart area to avoid overflow */
 @media (max-width: 700px) {
@@ -700,7 +719,7 @@ function buildFloatingLegendFromChart() {
         try {
             const h = window.location.hash ? new URLSearchParams(window.location.hash.substring(1)) : null;
             if (h) {
-                const geoview = (h.get('geoview') || '').toLowerCase();
+                const geoview = (h.get('scope') || '').toLowerCase();
                 if (geoview === 'countries' || geoview === 'country' || geoview === 'earth') return 'country';
                 if (geoview === 'states' || geoview === 'state') return 'state';
                 if (geoview === 'counties' || geoview === 'county') return 'county';
@@ -778,10 +797,13 @@ function buildFloatingLegendFromChart() {
             ov.className = 'overlay-legend';
             // Mark which container this overlay belongs to so future lookups find it
             ov.setAttribute('data-overlay-for', containerId);
-            // title (bold)
+            // title (bold) with title text span so a close button can be added without being removed
             const title = document.createElement('div');
             title.className = 'overlay-legend-title';
-            title.textContent = getOverlayTitleText();
+            const titleTextSpan = document.createElement('span');
+            titleTextSpan.className = 'overlay-legend-title-text';
+            titleTextSpan.textContent = getOverlayTitleText();
+            title.appendChild(titleTextSpan);
             ov.appendChild(title);
             const inner = document.createElement('div');
             inner.className = 'overlay-legend-content';
@@ -796,8 +818,17 @@ function buildFloatingLegendFromChart() {
         }
         // Update title each time (in case scope changed)
         try {
-            const title = ov.querySelector('.overlay-legend-title');
-            if (title) title.textContent = getOverlayTitleText();
+            const tspan = ov.querySelector('.overlay-legend-title-text');
+            if (tspan) tspan.textContent = getOverlayTitleText();
+            else {
+                const title = ov.querySelector('.overlay-legend-title');
+                if (title) {
+                    const s = document.createElement('span');
+                    s.className = 'overlay-legend-title-text';
+                    s.textContent = getOverlayTitleText();
+                    title.insertBefore(s, title.firstChild);
+                }
+            }
         } catch (e) { /* ignore */ }
         // Ensure draggable handlers are attached even for existing overlays
         try { makeOverlayDraggable(ov, containerId); } catch (e) { /* ignore */ }
@@ -1036,6 +1067,8 @@ function buildFloatingLegendFromChart() {
     } catch (e) { /* ignore */ }
     // Ensure titles are up-to-date after rebuild
     try { if (typeof updateOverlayTitles === 'function') updateOverlayTitles(); } catch (e) { /* ignore */ }
+    // Ensure close buttons exist on overlays and floating legend (creates X if missing)
+    try { if (typeof ensureCloseButtons === 'function') ensureCloseButtons(); } catch (e) { /* ignore */ }
     return true;
 }
 
@@ -1186,11 +1219,82 @@ function updateOverlayTitles() {
         } catch (e) { /* ignore logging errors */ }
         document.querySelectorAll('.overlay-legend').forEach((ov) => {
             try {
-                const t = ov.querySelector('.overlay-legend-title');
-                if (t) t.textContent = titleText;
+                const tspan = ov.querySelector('.overlay-legend-title-text');
+                if (tspan) tspan.textContent = titleText;
+                else {
+                    const t = ov.querySelector('.overlay-legend-title');
+                    if (t) {
+                        let s = t.querySelector('.overlay-legend-title-text');
+                        if (!s) {
+                            s = document.createElement('span');
+                            s.className = 'overlay-legend-title-text';
+                            t.insertBefore(s, t.firstChild);
+                        }
+                        s.textContent = titleText;
+                    }
+                }
             } catch (e) { /* ignore per-overlay errors */ }
         });
     } catch (e) { /* ignore */ }
+}
+
+// Ensure there is a close (✕) button on each overlay's title and on the floating legend
+function ensureCloseButtons() {
+    try {
+        // For overlay-legend elements
+        document.querySelectorAll('.overlay-legend').forEach((ov) => {
+            try {
+                const overlayFor = ov.getAttribute('data-overlay-for') || '';
+                let closeBtn = ov.querySelector('.overlay-legend-close');
+                if (!closeBtn) {
+                    // create close button and append to title
+                    const title = ov.querySelector('.overlay-legend-title') || (() => {
+                        const t = document.createElement('div'); t.className = 'overlay-legend-title'; ov.insertBefore(t, ov.firstChild); return t; })();
+                    const titleSpan = title.querySelector('.overlay-legend-title-text') || (() => { const s = document.createElement('span'); s.className = 'overlay-legend-title-text'; s.textContent = getOverlayTitleText(); title.appendChild(s); return s; })();
+                    closeBtn = document.createElement('button');
+                    closeBtn.className = 'overlay-legend-close';
+                    closeBtn.setAttribute('title', 'Close legend');
+                    closeBtn.innerHTML = '✕';
+                    closeBtn.addEventListener('click', (ev) => {
+                        try { ev.stopPropagation(); } catch (e) {}
+                        try { ov.style.display = 'none'; ov.setAttribute('aria-hidden', 'true'); } catch (e) {}
+                        try { localStorage.setItem('overlayClosed_' + (overlayFor || ''), 'true'); } catch (e) {}
+                        try { if (typeof checkForClosedOverlays === 'function') checkForClosedOverlays(); } catch (e) {}
+                    });
+                    title.appendChild(closeBtn);
+                }
+            } catch (e) { /* ignore per-overlay */ }
+        });
+
+        // For the fixed floating legend (#floating-legend), add a small title row with close if missing
+        try {
+            const fixedLegend = document.getElementById('floating-legend');
+            if (fixedLegend) {
+                // See if there's already a title row
+                let titleRow = fixedLegend.querySelector('.overlay-legend-title');
+                if (!titleRow) {
+                    titleRow = document.createElement('div');
+                    titleRow.className = 'overlay-legend-title';
+                    const span = document.createElement('span');
+                    span.className = 'overlay-legend-title-text';
+                    span.textContent = getOverlayTitleText();
+                    titleRow.appendChild(span);
+                    const closeBtn = document.createElement('button');
+                    closeBtn.className = 'overlay-legend-close';
+                    closeBtn.setAttribute('title', 'Close legend');
+                    closeBtn.innerHTML = '✕';
+                    closeBtn.addEventListener('click', (ev) => {
+                        try { ev.stopPropagation(); } catch (e) {}
+                        try { fixedLegend.style.display = 'none'; fixedLegend.setAttribute('aria-hidden', 'true'); } catch (e) {}
+                        try { localStorage.setItem('overlayClosed_floating', 'true'); } catch (e) {}
+                        try { if (typeof checkForClosedOverlays === 'function') checkForClosedOverlays(); } catch (e) {}
+                    });
+                    titleRow.appendChild(closeBtn);
+                    fixedLegend.insertBefore(titleRow, fixedLegend.firstChild);
+                }
+            }
+        } catch (e) { /* ignore fixed legend errors */ }
+    } catch (e) { /* ignore overall */ }
 }
 
 // Remove duplicate overlays in the hero root: keep only one overlay per data-overlay-for attribute.
