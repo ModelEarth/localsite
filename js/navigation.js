@@ -1810,6 +1810,7 @@ class StandaloneNavigation {
                 sideNav.classList.remove('expanded');
                 sideNav.classList.add('collapsed');
                 this.hideSidebar();
+                if (window.updateOverlayLegendVisibility) window.updateOverlayLegendVisibility();
                 return;
             }
             
@@ -1831,6 +1832,14 @@ class StandaloneNavigation {
                         sideNav.classList.remove('collapsed');
                         sideNav.classList.add('expanded');
                     }
+                }
+                // Ensure overlay legends refresh visibility now that main-nav is closed.
+                // Run immediately and once after a short delay to handle any DOM transitions.
+                if (window.updateOverlayLegendVisibility) {
+                    try { window.updateOverlayLegendVisibility(); } catch (err) { console.warn('updateOverlayLegendVisibility error', err); }
+                    setTimeout(() => {
+                        try { if (window.updateOverlayLegendVisibility) window.updateOverlayLegendVisibility(); } catch (e) { /* ignore */ }
+                    }, 60);
                 }
             }
         });
@@ -2029,6 +2038,8 @@ class StandaloneNavigation {
             // Store state in localStorage
             localStorage.setItem('standaloneNavCollapsed', this.isCollapsed);
             localStorage.setItem('standaloneNavLocked', this.isLocked);
+            // Update overlay legend visibility (timeline listens for this function)
+            if (window.updateOverlayLegendVisibility) window.updateOverlayLegendVisibility();
         }
     }
     
@@ -2131,6 +2142,8 @@ class StandaloneNavigation {
             // Clear hidden state
             localStorage.removeItem('standaloneNavHidden');
             this.isHidden = false;
+            // Update overlay legend visibility after showing the sidebar
+            if (window.updateOverlayLegendVisibility) window.updateOverlayLegendVisibility();
         }
     }
     
@@ -2165,6 +2178,8 @@ class StandaloneNavigation {
             }
             
             console.log('🔍 DEBUG: Body classes after adding:', body.className);
+            // Recompute overlay visibility after hiding
+            if (window.updateOverlayLegendVisibility) window.updateOverlayLegendVisibility();
             return; // Exit early - no additional navigation changes
         }
         
@@ -2191,6 +2206,8 @@ class StandaloneNavigation {
             }
             
             this.isHidden = false;
+            // update overlay visibility after showing
+            if (window.updateOverlayLegendVisibility) window.updateOverlayLegendVisibility();
         } else {
             // Wide screen behavior - show sidebar in collapsed state
             this.showSidebar();
@@ -2200,6 +2217,8 @@ class StandaloneNavigation {
                 this.isCollapsed = true;
                 this.isLocked = true;
             }
+            // update overlay visibility after showing
+            if (window.updateOverlayLegendVisibility) window.updateOverlayLegendVisibility();
         }
     }
     

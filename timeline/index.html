@@ -119,13 +119,24 @@ document.addEventListener('DOMContentLoaded', () => {
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     border: 1px solid rgba(0,0,0,0.04);
     z-index: 10010;
-    min-width: 120px;
+    min-width: 300px;
     max-height: 220px;
     overflow-y: auto;
     font-size: 12px;
     pointer-events: none; /* allow underlying chart interactions except for items */
+    display: none; /* hidden by default; shown only via updateOverlayLegendVisibility() */
 }
 .overlay-legend .overlay-legend-content { pointer-events: auto; }
+.overlay-legend .overlay-legend-title { pointer-events: auto; user-select: none; }
+
+/* Overlay title (bold) */
+.overlay-legend .overlay-legend-title {
+    font-weight: 700;
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 6px;
+    font-size: 13px;
+}
 
 /* On small screens place legend inside the chart area to avoid overflow */
 @media (max-width: 700px) {
@@ -505,6 +516,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // Floating legend helper for Chart.js timelineChart
 function buildFloatingLegendFromChart() {
     const canvas = document.getElementById('timelineChart');
+    // Tidy up any duplicate overlays before building
+    try { tidyOverlayLegends(); } catch (e) { /* ignore */ }
     if (!canvas || typeof Chart === 'undefined') return false;
     // Decide which chart(s) to build the legend for based on the chart-type toggle
     const selectedToggle = document.querySelector('input[name="toogleChartType"]:checked')?.value || 'div1';
@@ -676,21 +689,222 @@ function buildFloatingLegendFromChart() {
     });
 
     // Populate per-chart overlay legends by cloning authoritative items
+    // Map of scope keys to human-readable overlay title
+    const SCOPE_TITLES = {
+        country: 'Countries',
+        state: 'States',
+        county: 'Counties'
+    };
+
+    function getScopeKeyFromHash() {
+        try {
+            const h = window.location.hash ? new URLSearchParams(window.location.hash.substring(1)) : null;
+            if (h) {
+                const geoview = (h.get('geoview') || '').toLowerCase();
+                if (geoview === 'countries' || geoview === 'country' || geoview === 'earth') return 'country';
+                if (geoview === 'states' || geoview === 'state') return 'state';
+                if (geoview === 'counties' || geoview === 'county') return 'county';
+                if (h.get('state')) return 'state';
+                // If geo param looks like a list of county FIPS (many commas) assume county
+                const geo = h.get('geo') || h.get('geoIds') || h.get('geo_id');
+                if (geo && geo.indexOf(',') >= 0) {
+                    // If tokens look like county FIPS (USxxxxx) or many numeric codes, treat as county
+                    const tokens = geo.split(',').map(s => s.trim()).filter(Boolean);
+                    const numericCount = tokens.filter(t => /^\d+$/.test(t)).length;
+                    const usFipsLike = tokens.filter(t => /^US\d{2,}/i.test(t)).length;
+                    if (tokens.length > 2 && (numericCount > 2 || usFipsLike > 0)) return 'county';
+                }
+            }
+        } catch (e) { /* ignore */ }
+        // Fallback: check visible controls such as #entityId
+        try {
+            const select = document.getElementById('entityId');
+            if (select && select.value) {
+                const val = String(select.value).trim();
+                // Common localsite convention: geoId/NN -> state
+                if (val.indexOf('geoId/') === 0 || /^geoId:\/\//i.test(val)) return 'state';
+                // Two-letter uppercase values likely indicate country codes (e.g. US, GB)
+                if (/^[A-Za-z]{2}$/.test(val)) return 'country';
+                // If value contains 'country' keyword, treat as country
+                if (val.toLowerCase().indexOf('country') >= 0) return 'country';
+            }
+        } catch (e) { /* ignore */ }
+        return 'country';
+    }
+
+    function getOverlayTitleText() {
+        const key = getScopeKeyFromHash();
+        return SCOPE_TITLES[key] || '';
+    }
+
     function ensureOverlay(containerId) {
         const container = document.getElementById(containerId);
         if (!container) return null;
-        let ov = container.querySelector('.overlay-legend');
+        // Remove any duplicate overlays so we start from a clean state
+        try { tidyOverlayLegends(); } catch (e) { /* ignore */ }
+        // Prefer hero root for lookup since overlays are appended there for cross-chart dragging
+        const heroRoot = document.querySelector('.heroTransparent.notdark') || document.querySelector('.heroTransparent') || container;
+        // Look for existing overlays across the document that were created for this containerId
+        let ov = null;
+        try {
+            const existing = Array.from(document.querySelectorAll(`.overlay-legend[data-overlay-for="${containerId}"]`));
+            console.debug('[ensureOverlay] existing overlays for containerId=', containerId, 'count=', existing.length);
+            if (existing.length > 0) {
+                // Reuse first, remove any extras
+                ov = existing[0];
+                for (let i = 1; i < existing.length; i++) {
+                    try { existing[i].remove(); } catch (e) { /* ignore */ }
+                }
+            } else {
+                // No explicit overlay-for found; see if heroRoot has a single orphan overlay we can reclaim
+                const orphans = Array.from(heroRoot.querySelectorAll('.overlay-legend:not([data-overlay-for])'));
+                if (orphans.length === 1) {
+                    ov = orphans[0];
+                    ov.setAttribute('data-overlay-for', containerId);
+                    console.debug('[ensureOverlay] reclaimed orphan overlay for', containerId);
+                } else {
+                    // Fall back to local container check
+                    ov = container.querySelector(`.overlay-legend[data-overlay-for="${containerId}"]`) || container.querySelector('.overlay-legend');
+                }
+            }
+            console.debug('[ensureOverlay] lookup', { containerId, heroRootChildren: heroRoot.querySelectorAll('.overlay-legend').length, found: !!ov });
+        } catch (e) {
+            ov = container.querySelector('.overlay-legend');
+        }
+
         if (!ov) {
+            console.debug('[ensureOverlay] creating overlay for', containerId, 'heroRootChildrenBeforeCreate=', heroRoot.querySelectorAll('.overlay-legend').length);
             ov = document.createElement('div');
             ov.className = 'overlay-legend';
+            // Mark which container this overlay belongs to so future lookups find it
+            ov.setAttribute('data-overlay-for', containerId);
+            // title (bold)
+            const title = document.createElement('div');
+            title.className = 'overlay-legend-title';
+            title.textContent = getOverlayTitleText();
+            ov.appendChild(title);
             const inner = document.createElement('div');
             inner.className = 'overlay-legend-content';
             ov.appendChild(inner);
             // position absolute relative to chart wrapper
-            container.style.position = container.style.position || 'relative';
-            container.appendChild(ov);
+            // Prefer placing overlays inside the main hero area so they can be dragged across it.
+            try { heroRoot.style.position = heroRoot.style.position || 'relative'; } catch (e) { /* ignore */ }
+            // Append overlay to the hero root so it can be moved across the entire hero area
+            try { heroRoot.appendChild(ov); } catch (e) { try { container.appendChild(ov); } catch (ee) { /* ignore */ } }
+            // make draggable and restore saved position
+            try { makeOverlayDraggable(ov, containerId); } catch (e) { /* ignore */ }
         }
+        // Update title each time (in case scope changed)
+        try {
+            const title = ov.querySelector('.overlay-legend-title');
+            if (title) title.textContent = getOverlayTitleText();
+        } catch (e) { /* ignore */ }
+        // Ensure draggable handlers are attached even for existing overlays
+        try { makeOverlayDraggable(ov, containerId); } catch (e) { /* ignore */ }
         return ov.querySelector('.overlay-legend-content');
+    }
+
+    // Make an overlay draggable by its title. Positions are clamped within the container
+    // and persisted to localStorage under key `overlayPos_<containerId>`.
+    function makeOverlayDraggable(ov, containerId) {
+        if (!ov || !containerId) return;
+        // Avoid attaching multiple handlers
+        if (ov._draggableAttached) return;
+        ov._draggableAttached = true;
+
+    // Prefer the element the overlay is appended to (ov.parentElement), e.g. the hero root,
+    // so dragging is clamped within that root. Fall back to the original containerId element.
+    const container = ov.parentElement || document.getElementById(containerId) || document.body;
+    try { if (container) container.style.position = container.style.position || 'relative'; } catch (e) { /* ignore */ }
+
+        const handle = ov.querySelector('.overlay-legend-title') || ov;
+        handle.style.cursor = 'move';
+
+        // Restore persisted position if available
+        try {
+            const key = 'overlayPos_' + containerId;
+            const raw = localStorage.getItem(key);
+            if (raw) {
+                const pos = JSON.parse(raw);
+                if (typeof pos.left !== 'undefined' && typeof pos.top !== 'undefined') {
+                    ov.style.position = 'absolute';
+                    ov.style.left = (parseFloat(pos.left) || 0) + 'px';
+                    ov.style.top = (parseFloat(pos.top) || 0) + 'px';
+                    ov.style.right = 'auto';
+                }
+            }
+        } catch (e) { /* ignore */ }
+
+        let dragging = false;
+        let startX = 0, startY = 0, startLeft = 0, startTop = 0;
+
+        const onPointerDown = (ev) => {
+            // Only left button
+            if (ev.button && ev.button !== 0) return;
+            ev.preventDefault();
+            dragging = true;
+            const rect = ov.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            startX = ev.clientX;
+            startY = ev.clientY;
+            // Compute position relative to container
+            startLeft = rect.left - containerRect.left + container.scrollLeft;
+            startTop = rect.top - containerRect.top + container.scrollTop;
+            ov.style.position = 'absolute';
+            ov.style.right = 'auto';
+            // capture pointer if supported
+            try { if (ev.target.setPointerCapture) ev.target.setPointerCapture(ev.pointerId); } catch (e) {}
+            document.addEventListener('pointermove', onPointerMove);
+            document.addEventListener('pointerup', onPointerUp);
+        };
+
+        const onPointerMove = (ev) => {
+            if (!dragging) return;
+            ev.preventDefault();
+            const dx = ev.clientX - startX;
+            const dy = ev.clientY - startY;
+            let newLeft = startLeft + dx;
+            let newTop = startTop + dy;
+            // Clamp within container bounds
+            try {
+                const ovRect = ov.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                const maxLeft = Math.max(0, containerRect.width - ovRect.width);
+                const maxTop = Math.max(0, containerRect.height - ovRect.height);
+                newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+                newTop = Math.max(0, Math.min(newTop, maxTop));
+            } catch (e) { /* ignore clamping errors */ }
+            ov.style.left = newLeft + 'px';
+            ov.style.top = newTop + 'px';
+        };
+
+        const onPointerUp = (ev) => {
+            if (!dragging) return;
+            dragging = false;
+            try { if (ev.target.releasePointerCapture) ev.target.releasePointerCapture(ev.pointerId); } catch (e) {}
+            document.removeEventListener('pointermove', onPointerMove);
+            document.removeEventListener('pointerup', onPointerUp);
+            // Persist position
+            try {
+                const key = 'overlayPos_' + containerId;
+                const left = parseFloat(ov.style.left || '0') || 0;
+                const top = parseFloat(ov.style.top || '0') || 0;
+                localStorage.setItem(key, JSON.stringify({ left: left, top: top }));
+            } catch (e) { /* ignore persistence errors */ }
+        };
+
+        handle.addEventListener('pointerdown', onPointerDown, { passive: false });
+
+        // Also allow double-click to reset position
+        handle.addEventListener('dblclick', () => {
+            try {
+                ov.style.left = '';
+                ov.style.top = '';
+                ov.style.right = '';
+                const key = 'overlayPos_' + containerId;
+                localStorage.removeItem(key);
+            } catch (e) { /* ignore */ }
+        });
     }
 
     const div1Content = ensureOverlay('div1');
@@ -816,6 +1030,12 @@ function buildFloatingLegendFromChart() {
         legend.setAttribute('aria-hidden', 'true');
     }
     console.log('buildFloatingLegendFromChart: legend visible=', !!visible, 'datasetCount=', datasetCount, 'items=', legendContent.children.length);
+    // After building the legend and overlay clones, let the page decide visibility
+    try {
+        if (window.updateOverlayLegendVisibility) window.updateOverlayLegendVisibility();
+    } catch (e) { /* ignore */ }
+    // Ensure titles are up-to-date after rebuild
+    try { if (typeof updateOverlayTitles === 'function') updateOverlayTitles(); } catch (e) { /* ignore */ }
     return true;
 }
 
@@ -859,6 +1079,161 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch (e) { console.warn('Legend visibility observer failed to install:', e); }
 });
+
+// Show/hide per-chart overlay legends only when the main navigation is explicitly closed/hidden.
+function isMainNavClosed() {
+    try {
+        const mainNav = document.getElementById('main-nav');
+        const body = document.body;
+        // If there's no main-nav element, do NOT treat as closed: overlays should remain hidden
+        if (!mainNav) return false;
+        // If body explicitly hides main-nav (app-level class), treat as closed
+        if (body.classList.contains('main-nav-hidden') || body.classList.contains('sidebar-hidden')) return true;
+        // If #main-nav has inline display:none or visibility hidden, treat as closed
+        const style = window.getComputedStyle(mainNav);
+        if (style.display === 'none' || style.visibility === 'hidden') return true;
+        // If main-nav has semantic classes that indicate it's collapsed/closed
+        if (mainNav.classList.contains('closed') || mainNav.classList.contains('collapsed') || mainNav.getAttribute('aria-hidden') === 'true') return true;
+        // If width is very small (collapsed to icons only), consider it closed for overlay purposes
+        const w = parseFloat(style.width || '0');
+        if (!isNaN(w) && w > 0 && w < 48) return true;
+        // Otherwise not closed
+        return false;
+    } catch (e) { return false; }
+}
+
+function updateOverlayLegendVisibility() {
+    try {
+        const show = isMainNavClosed();
+        // Determine which overlay(s) should be visible based on the chart-type toggle
+    const selectedToggle = document.querySelector('input[name="toogleChartType"]:checked')?.value || 'div1';
+        document.querySelectorAll('.overlay-legend').forEach((el) => {
+            // Only show if overlay actually has legend items inside
+            const hasItems = el.querySelector('.overlay-legend-content')?.children?.length > 0;
+            const overlayFor = (el.getAttribute('data-overlay-for') || '').trim();
+            // Decide visibility: nav must be closed, overlay must have items, and overlay must match the selected toggle
+            let shouldBeVisible = false;
+            if (show && hasItems) {
+                if (selectedToggle === 'both') {
+                    shouldBeVisible = true;
+                } else if (selectedToggle === overlayFor) {
+                    shouldBeVisible = true;
+                } else {
+                    // Selected toggle may be 'div1' or 'div2' - only show matching overlay
+                    shouldBeVisible = false;
+                }
+            }
+            if (shouldBeVisible) {
+                el.style.display = 'block';
+                el.setAttribute('aria-hidden', 'false');
+            } else {
+                el.style.display = 'none';
+                el.setAttribute('aria-hidden', 'true');
+            }
+        });
+        // Also refresh titles in case scope changed but titles haven't been updated yet
+        try { if (typeof updateOverlayTitles === 'function') updateOverlayTitles(); } catch (e) { /* ignore */ }
+    } catch (e) { /* ignore visibility update errors */ }
+}
+
+// Install a MutationObserver to watch for main-nav class/style changes and body class toggles
+try {
+    if (!window._timelineOverlayNavObserver) {
+        const targets = [];
+        const mainNav = document.getElementById('main-nav');
+        if (mainNav) targets.push(mainNav);
+        targets.push(document.body);
+        const obs = new MutationObserver((mutations) => {
+            // Quick debounce
+            clearTimeout(window._overlayNavVisibilityTimer);
+            window._overlayNavVisibilityTimer = setTimeout(() => updateOverlayLegendVisibility(), 40);
+        });
+        targets.forEach((n) => {
+            try { obs.observe(n, { attributes: true, attributeFilter: ['class', 'style', 'aria-hidden'] }); } catch (e) { /* ignore */ }
+        });
+        window._timelineOverlayNavObserver = obs;
+    }
+} catch (e) { /* ignore */ }
+
+// Storage events may toggle saved collapsed state in navigation code; listen for changes from other windows
+window.addEventListener('storage', (ev) => {
+    if (!ev.key || ev.key.indexOf('Nav') >= 0 || ev.key.indexOf('standaloneNavCollapsed') >= 0) {
+        setTimeout(updateOverlayLegendVisibility, 30);
+    }
+});
+
+// Do not auto-run visibility update on page init; visibility will be driven
+// by the nav MutationObserver and explicit nav-close/open actions.
+
+// Run a guarded initial visibility update shortly after load so overlays appear
+// when the page first renders (kept short to allow chart setup).
+setTimeout(() => {
+    try {
+        if (window.updateOverlayLegendVisibility) window.updateOverlayLegendVisibility();
+    } catch (e) { /* ignore */ }
+}, 120);
+
+// Update overlay titles when scope changes (hash, entity selector, or scope controls)
+function updateOverlayTitles() {
+    try {
+        const titleText = getOverlayTitleText();
+        // Debug: log computed title and relevant inputs so we can trace why default appears
+        try {
+            const hash = window.location.hash || '';
+            const ent = document.getElementById('entityId') ? document.getElementById('entityId').value : '<no-entityId>';
+            const selScope = (document.getElementById('selectScope') && document.getElementById('selectScope').value) || '<no-selectScope>';
+            console.debug('[overlay title debug] computedTitle=', titleText, ' hash=', hash, ' entityId=', ent, ' selectScope=', selScope, ' overlays=', document.querySelectorAll('.overlay-legend').length);
+        } catch (e) { /* ignore logging errors */ }
+        document.querySelectorAll('.overlay-legend').forEach((ov) => {
+            try {
+                const t = ov.querySelector('.overlay-legend-title');
+                if (t) t.textContent = titleText;
+            } catch (e) { /* ignore per-overlay errors */ }
+        });
+    } catch (e) { /* ignore */ }
+}
+
+// Remove duplicate overlays in the hero root: keep only one overlay per data-overlay-for attribute.
+function tidyOverlayLegends() {
+    try {
+        const heroRoot = document.querySelector('.heroTransparent.notdark') || document.querySelector('.heroTransparent') || document.body;
+        const overlays = Array.from(heroRoot.querySelectorAll('.overlay-legend'));
+        if (overlays.length <= 1) return;
+        const seen = new Map();
+        overlays.forEach((ov) => {
+            const key = ov.getAttribute('data-overlay-for') || '__orphan__';
+            if (!seen.has(key)) {
+                seen.set(key, ov);
+            } else {
+                try { ov.remove(); } catch (e) { /* ignore */ }
+            }
+        });
+        // Remove leftover orphans if there are too many (keep at most one orphan)
+        const orphanKey = '__orphan__';
+        const orphanEls = Array.from(heroRoot.querySelectorAll('.overlay-legend:not([data-overlay-for])'));
+        if (orphanEls.length > 1) {
+            for (let i = 1; i < orphanEls.length; i++) {
+                try { orphanEls[i].remove(); } catch (e) { /* ignore */ }
+            }
+        }
+    } catch (e) { /* ignore */ }
+}
+
+// Hash changes indicate scope changes in this app
+window.addEventListener('hashchange', () => {
+    try { updateOverlayTitles(); } catch (e) { /* ignore */ }
+});
+
+// When the entity selector changes, update titles
+document.addEventListener('change', (ev) => {
+    try {
+        const id = ev.target && ev.target.id;
+        if (id === 'entityId' || id === 'selectScope') {
+            updateOverlayTitles();
+        }
+    } catch (e) { /* ignore */ }
+});
+
 
 // Helper: position legend next to a target canvas. Also manages observers/listeners
 function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
