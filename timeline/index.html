@@ -683,6 +683,56 @@ function buildFloatingLegendFromChart() {
         item.classList.toggle('hidden', !visible);
     }
 
+    // Highlight datasets for a given info object when hovering a legend item
+    function highlightDatasets(info, highlight) {
+        if (!info || !info.charts) return;
+        info.charts.forEach(({chart, index}) => {
+            try {
+                if (!chart || typeof index !== 'number') return;
+                // Prepare backup storage on the chart object
+                chart._legendHighlightBackup = chart._legendHighlightBackup || {};
+                const key = 'ds_' + index;
+                if (highlight) {
+                    // Backup original dataset props if not already backed up
+                    if (!chart._legendHighlightBackup[key]) {
+                        const ds = chart.data && chart.data.datasets && chart.data.datasets[index];
+                        chart._legendHighlightBackup[key] = ds ? {
+                            borderWidth: ds.borderWidth,
+                            pointRadius: ds.pointRadius,
+                            borderColor: ds.borderColor,
+                            backgroundColor: ds.backgroundColor,
+                            tension: ds.tension
+                        } : null;
+                    }
+                    // Emphasize the dataset
+                    const ds = chart.data && chart.data.datasets && chart.data.datasets[index];
+                    if (ds) {
+                        ds.borderWidth = (ds.borderWidth || 2) * 2.5;
+                        ds.pointRadius = Math.max(2, (ds.pointRadius || 0) * 2);
+                        // Make border/background fully opaque using colorToRgba
+                        try { ds.borderColor = colorToRgba((Array.isArray(ds.borderColor) ? ds.borderColor[0] : ds.borderColor) || ds.backgroundColor || '#000', 1); } catch (e) {}
+                        try { ds.backgroundColor = colorToRgba((Array.isArray(ds.backgroundColor) ? ds.backgroundColor[0] : ds.backgroundColor) || ds.borderColor || '#000', 0.18); } catch (e) {}
+                    }
+                } else {
+                    // Restore original props
+                    const backup = chart._legendHighlightBackup && chart._legendHighlightBackup[key];
+                    const ds = chart.data && chart.data.datasets && chart.data.datasets[index];
+                    if (backup && ds) {
+                        ds.borderWidth = backup.borderWidth;
+                        ds.pointRadius = backup.pointRadius;
+                        ds.borderColor = backup.borderColor;
+                        ds.backgroundColor = backup.backgroundColor;
+                        ds.tension = backup.tension;
+                        // Remove backup object
+                        try { delete chart._legendHighlightBackup[key]; } catch (e) {}
+                    }
+                }
+                // For performance, update chart without animation
+                try { chart.update('none'); } catch (e) { try { chart.update(); } catch (ee) { /* ignore */ } }
+            } catch (e) { /* ignore per-chart highlight errors */ }
+        });
+    }
+
     // Helper: get the latest numeric value for an info entry
     function getLatestValueForInfo(info) {
         // Sum latest numeric values across any chart datasets for this label
@@ -794,6 +844,17 @@ function buildFloatingLegendFromChart() {
                 const clone = ov.querySelector(`[data-legend-label="${CSS.escape(label)}"]`);
                 if (clone) setItemSelectionStyle(clone, info.color, nowVisible);
             });
+        });
+
+        // Hover handlers: highlight corresponding chart curves when hovering legend items
+        item.addEventListener('mouseenter', (ev) => {
+            try { highlightDatasets(info, true); } catch (e) { /* ignore */ }
+            // also visually emphasize the legend item
+            try { item.style.transform = 'translateY(-2px) scale(1.02)'; item.style.boxShadow = '0 12px 28px rgba(0,0,0,0.08)'; } catch (e) {}
+        });
+        item.addEventListener('mouseleave', (ev) => {
+            try { highlightDatasets(info, false); } catch (e) { /* ignore */ }
+            try { item.style.transform = ''; item.style.boxShadow = ''; } catch (e) {}
         });
 
         // Tag for cloning into overlays
@@ -1132,6 +1193,9 @@ function buildFloatingLegendFromChart() {
             clone.addEventListener('click', (ev) => {
                 authItem.dispatchEvent(new MouseEvent('click', { bubbles: true }));
             });
+            // forward hover events to authoritative item so highlighting works from clones
+            clone.addEventListener('mouseenter', (ev) => { try { authItem.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true })); } catch (e) {} });
+            clone.addEventListener('mouseleave', (ev) => { try { authItem.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })); } catch (e) {} });
             combinedContent.appendChild(clone);
         }
     });
@@ -1276,6 +1340,15 @@ function buildFloatingLegendFromChart() {
                         try { const info = labelMap.get(label); const nowVisible = info ? info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden) : true; item.classList.toggle('hidden', !nowVisible); } catch (e) {}
                     }, 40);
                 }
+            });
+            // Forward hover events to the authoritative legend item so highlighting also works from bottom legend
+            item.addEventListener('mouseenter', (ev) => {
+                const auth = document.querySelector(`#legend-content .legend-item[data-legend-label="${CSS.escape(label)}"]`);
+                if (auth) try { auth.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true })); } catch (e) {}
+            });
+            item.addEventListener('mouseleave', (ev) => {
+                const auth = document.querySelector(`#legend-content .legend-item[data-legend-label="${CSS.escape(label)}"]`);
+                if (auth) try { auth.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })); } catch (e) {}
             });
             created.push(item);
         });
