@@ -1294,6 +1294,9 @@ function buildFloatingLegendFromChart() {
             more.textContent = `... +${extraCount} more`;
             more.setAttribute('role','button');
             more.setAttribute('aria-expanded','false');
+            // Make keyboard-focusable
+            more.tabIndex = 0;
+            // Click handler toggles collapsed state
             more.addEventListener('click', () => {
                 const expanded = bottom.classList.toggle('bottom-legend-collapsed');
                 // When class present we consider collapsed; toggle text accordingly
@@ -1303,6 +1306,13 @@ function buildFloatingLegendFromChart() {
                 } else {
                     more.textContent = 'Show less';
                     more.setAttribute('aria-expanded','true');
+                }
+            });
+            // Keyboard handler for Enter / Space
+            more.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                    ev.preventDefault();
+                    more.click();
                 }
             });
             bottom.appendChild(more);
@@ -1753,5 +1763,62 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
     reposition();
 }
 </script>
+<style>
+/* Bottom legend visual styling (transparent, unobtrusive) */
+#bottom-legend {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    background: transparent; /* removed white background as requested */
+    border-radius: 6px;
+    margin-top: 12px;
+    overflow-x: auto;
+}
+.bottom-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    border-left: 4px solid transparent;
+}
+.bottom-legend-item.hidden { opacity: 0.55; }
+.bottom-legend-more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    margin-left: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    background: transparent; /* no filled color */
+    color: #0066ff; /* accent color applied to text and border */
+    font-weight: 700; /* bold text */
+    border: 1px solid rgba(0,102,255,0.9);
+    box-shadow: none; /* remove shadow */
+    user-select: none;
+}
+.bottom-legend-more:hover {
+    background: rgba(0,102,255,0.06); /* subtle hover tint */
+    transform: translateY(-1px);
+}
+.bottom-legend-more:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,102,255,0.12);
+}
+.bottom-legend-collapsed .bottom-legend-item.extra { display: none; }
+/* Ensure swatch small square */
+.legend-swatch { width: 12px; height: 12px; display:inline-block; border-radius:2px; }
+@media (max-width:700px) {
+    #bottom-legend { padding: 6px; }
+    .bottom-legend-more { font-size: 13px; padding: 6px 8px; }
+}
+</style>
 </body>
 </html>
