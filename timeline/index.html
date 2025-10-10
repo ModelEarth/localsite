@@ -1291,7 +1291,10 @@ function buildFloatingLegendFromChart() {
             const more = document.createElement('div');
             more.className = 'bottom-legend-more';
             const extraCount = created.length - maxVisible;
-            more.textContent = `... +${extraCount} more`;
+            const moreLabel = document.createElement('span');
+            moreLabel.className = 'more-label';
+            moreLabel.textContent = `... +${extraCount} more`;
+            more.appendChild(moreLabel);
             more.setAttribute('role','button');
             more.setAttribute('aria-expanded','false');
             // Make keyboard-focusable
@@ -1315,7 +1318,116 @@ function buildFloatingLegendFromChart() {
                     more.click();
                 }
             });
+            // create a separate three-dot icon element which opens a placement dropdown menu
+            const moreIcon = document.createElement('div');
+            moreIcon.className = 'bottom-legend-more-icon';
+            moreIcon.setAttribute('role','button');
+            moreIcon.tabIndex = 0;
+            moreIcon.innerHTML = '<span class="mdot"></span><span class="mdot"></span><span class="mdot"></span>';
+
+            // Build or reuse a small menu appended to body
+            let menu = document.getElementById('bottom-legend-menu');
+            if (!menu) {
+                menu = document.createElement('div');
+                menu.id = 'bottom-legend-menu';
+                menu.className = 'bottom-legend-menu';
+                menu.style.display = 'none';
+                document.body.appendChild(menu);
+            }
+
+            const closeMenu = () => {
+                if (menu) { menu.style.display = 'none'; menu.innerHTML = ''; }
+                document.removeEventListener('click', onDocClick);
+            };
+            const onDocClick = (ev) => {
+                if (!menu.contains(ev.target) && ev.target !== moreIcon) closeMenu();
+            };
+
+            const applyLegendMode = (mode) => {
+                // modes: left, right, full, below
+                try {
+                    window._timelineLegendMode = mode;
+                    const legendEl = document.getElementById('floating-legend');
+                    const canvas = document.getElementById('timelineChart') || document.getElementById('lineAreaChart');
+                    if (!legendEl || !canvas) return;
+                    const rect = canvas.getBoundingClientRect();
+                    legendEl.style.position = 'absolute';
+                    legendEl.style.zIndex = 9999;
+                    legendEl.style.width = '';
+                    if (mode === 'left') {
+                        legendEl.style.left = Math.max(8, rect.left + window.scrollX - (legendEl.offsetWidth || 220) - 18) + 'px';
+                        legendEl.style.top = Math.max(12, rect.top + window.scrollY) + 'px';
+                        legendEl.style.right = 'auto';
+                    } else if (mode === 'right') {
+                        legendEl.style.left = (rect.right + 18 + window.scrollX) + 'px';
+                        legendEl.style.top = Math.max(12, rect.top + window.scrollY) + 'px';
+                        legendEl.style.right = 'auto';
+                    } else if (mode === 'full') {
+                        legendEl.style.left = (rect.left + window.scrollX) + 'px';
+                        legendEl.style.top = Math.max(8, rect.top + window.scrollY - (legendEl.offsetHeight || 120) - 8) + 'px';
+                        legendEl.style.width = (rect.width || 320) + 'px';
+                        legendEl.style.right = 'auto';
+                    } else if (mode === 'below') {
+                        legendEl.style.left = Math.max(8, rect.left + window.scrollX + (rect.width - (legendEl.offsetWidth || 220)) / 2) + 'px';
+                        legendEl.style.top = (rect.bottom + 12 + window.scrollY) + 'px';
+                        legendEl.style.right = 'auto';
+                    }
+                    legendEl.style.display = 'block';
+                    legendEl.setAttribute('aria-hidden', 'false');
+                } catch (e) { console.warn('applyLegendMode error', e); }
+            };
+
+            const menuItems = [
+                { id: 'left', label: 'Left Side' },
+                { id: 'right', label: 'Right Side' },
+                { id: 'full', label: 'Full list' },
+                { id: 'below', label: 'Below chart' }
+            ];
+
+            const openMenu = () => {
+                menu.innerHTML = '';
+                menuItems.forEach(it => {
+                    const row = document.createElement('div');
+                    row.className = 'bottom-legend-menu-item';
+                    row.setAttribute('role','menuitem');
+                    row.tabIndex = 0;
+                    row.textContent = it.label;
+                    row.addEventListener('click', (ev) => { ev.preventDefault(); applyLegendMode(it.id); closeMenu(); });
+                    row.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); applyLegendMode(it.id); closeMenu(); } });
+                    menu.appendChild(row);
+                });
+                const rect = moreIcon.getBoundingClientRect();
+                menu.style.display = 'block';
+                // Use absolute positioning in document coordinates so the menu scrolls with the page
+                menu.style.position = 'absolute';
+                menu.style.zIndex = 20000;
+                // Temporarily place at 0,0 so offsetWidth/offsetHeight are available
+                menu.style.left = '0px';
+                menu.style.top = '0px';
+                const mw = menu.offsetWidth || 160;
+                const mh = menu.offsetHeight || 120;
+                // Compute desired position in viewport coords
+                let leftVp = rect.right + 6;
+                let topVp = rect.top;
+                if (leftVp + mw > window.innerWidth - 8) {
+                    leftVp = rect.left - mw - 6;
+                }
+                leftVp = Math.max(6, Math.min(leftVp, Math.max(6, window.innerWidth - mw - 6)));
+                if (topVp + mh > window.innerHeight - 8) {
+                    topVp = Math.max(6, window.innerHeight - mh - 6);
+                }
+                // Convert viewport coords to document (page) coords by adding scroll offsets
+                const leftDoc = leftVp + window.scrollX;
+                const topDoc = topVp + window.scrollY;
+                menu.style.left = leftDoc + 'px';
+                menu.style.top = topDoc + 'px';
+                setTimeout(() => document.addEventListener('click', onDocClick), 10);
+            };
+
+            moreIcon.addEventListener('click', (ev) => { ev.stopPropagation(); openMenu(); });
+            moreIcon.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openMenu(); } });
             bottom.appendChild(more);
+            bottom.appendChild(moreIcon);
         } else {
             // No extras; ensure collapsed class removed
             bottom.classList.remove('bottom-legend-collapsed');
@@ -1815,10 +1927,38 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
 .bottom-legend-collapsed .bottom-legend-item.extra { display: none; }
 /* Ensure swatch small square */
 .legend-swatch { width: 12px; height: 12px; display:inline-block; border-radius:2px; }
+/* two-dot icon next to more control */
+.more-label { font-weight:700; }
+/* separate three-dot icon for compact menu */
+.bottom-legend-more-icon { display:inline-flex; flex-direction:column; gap:4px; padding:6px; margin-left:6px; align-items:center; justify-content:center; cursor:pointer; }
+.bottom-legend-more-icon:focus { outline: none; box-shadow: 0 0 0 3px rgba(0,102,255,0.08); }
+.bottom-legend-more-icon .mdot { width:5px; height:5px; border-radius:50%; background:#0066ff; display:block; }
 @media (max-width:700px) {
     #bottom-legend { padding: 6px; }
     .bottom-legend-more { font-size: 13px; padding: 6px 8px; }
 }
+/* dropdown menu for placement options */
+.bottom-legend-menu {
+    min-width: 160px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.09);
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    padding: 6px 4px;
+}
+.bottom-legend-menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+.bottom-legend-menu-item:hover, .bottom-legend-menu-item:focus {
+    background: rgba(0,102,255,0.06);
+    outline: none;
+}
+
+</style>
+
 </style>
 </body>
 </html>
