@@ -432,13 +432,13 @@ h2 {
   height: auto;
 }
 h3 {
-  font-weight: 600; 
-  font-size: 1.3em;
+  font-weight: 800; 
+  font-size: 1.4em;
   line-height: 1.3em;
-  margin-top: 20px;
+  margin-top: 25px;
   margin-bottom: 16px;
   color: #000;
-  font-family: "Amaze", 'PT Sans', sans-serif;
+  /* font-family: "Amaze", 'PT Sans', sans-serif; */
 }
 h4 {
   margin-top: 20px;
