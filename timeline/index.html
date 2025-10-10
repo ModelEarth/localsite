@@ -187,13 +187,21 @@ document.addEventListener('DOMContentLoaded', () => {
 .bottom-legend-more { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:6px; cursor:pointer; white-space:nowrap; color:rgba(0,0,0,0.65); background: transparent; border: 1px dashed rgba(0,0,0,0.06); }
 .bottom-legend-more:hover { background: rgba(0,0,0,0.02); }
 .bottom-legend-collapsed .bottom-legend-item.extra { display: none; }
-.legend-item { display:flex; align-items:center; gap:8px; padding:6px 8px; margin:4px 0; border-radius:6px; cursor:pointer; transition:all 0.18s ease; 
+.bottom-legend-item .legend-label { max-width: 10em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display:inline-block; }
+.bottom-legend-item .legend-value { margin-left: 6px; font-weight:600; color: rgba(0,0,0,0.65); }
+.legend-item { display:flex; align-items:center; gap:8px; padding:6px 8px; margin:4px 0; border-radius:6px; cursor:pointer; transition:all 0.18s ease; min-width:0; width:100%; box-sizing:border-box;
     /* Make individual items accept pointer events while the container lets other clicks through */
     pointer-events: auto;
 }
 .legend-item .item-actions { display: none; }
 .legend-swatch { width:14px; height:14px; border-radius:3px; box-shadow:0 0 0 1px rgba(0,0,0,0.06) inset; }
 .legend-item.hidden { opacity:0.45; }
+
+/* Label part of legend item — truncate if too long */
+.legend-label { display:inline-block; flex: 1 1 auto; min-width:0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Value small text shown aligned to the right edge of the legend item */
+.legend-value { margin-left: auto; flex: 0 0 auto; color: rgba(0,0,0,0.7); font-weight: 600; padding-left: 8px; }
 </style>
 
 <style>
@@ -675,6 +683,68 @@ function buildFloatingLegendFromChart() {
         item.classList.toggle('hidden', !visible);
     }
 
+    // Helper: get the latest numeric value for an info entry
+    function getLatestValueForInfo(info) {
+        // Sum latest numeric values across any chart datasets for this label
+        let total = 0;
+        let found = false;
+        try {
+            info.charts.forEach(({chart, index}) => {
+                try {
+                    const ds = chart.data && chart.data.datasets && chart.data.datasets[index];
+                    if (!ds) return;
+                    const data = ds.data || [];
+                    // walk from end to find last numeric-ish value
+                    for (let i = data.length - 1; i >= 0; i--) {
+                        const v = data[i];
+                        let num = null;
+                        if (v == null) continue;
+                        if (typeof v === 'number') num = v;
+                        else if (typeof v === 'object') {
+                            if (typeof v.y === 'number') num = v.y;
+                            else if (typeof v.value === 'number') num = v.value;
+                        } else if (!isNaN(Number(v))) {
+                            num = Number(v);
+                        }
+                        if (typeof num === 'number' && !isNaN(num)) {
+                            total += num;
+                            found = true;
+                            break; // only take latest for this dataset
+                        }
+                    }
+                } catch (e) { /* ignore dataset errors */ }
+            });
+        } catch (e) { /* ignore */ }
+        return found ? total : null;
+    }
+
+    // Format a number using suffixes: T (trillions), B (billions), M (millions), K (thousands)
+    function formatSuffix(n) {
+        if (n == null || isNaN(n)) return '';
+        const abs = Math.abs(n);
+        const sign = n < 0 ? '-' : '';
+        if (abs >= 1e12) {
+            const v = Math.round((abs / 1e12) * 10) / 10; // 1 decimal
+            return sign + v + 'T';
+        }
+        if (abs >= 1e9) {
+            const v = Math.round((abs / 1e9) * 10) / 10;
+            return sign + v + 'B';
+        }
+        if (abs >= 1e6) {
+            const v = Math.round((abs / 1e6) * 10) / 10;
+            return sign + v + 'M';
+        }
+        if (abs >= 1e3) {
+            const v = Math.round((abs / 1e3) * 10) / 10;
+            return sign + v + 'K';
+        }
+        // For smaller numbers, show with commas (and up to 2 decimals)
+        try {
+            return sign + (Math.round(n * 100) / 100).toLocaleString();
+        } catch (e) { return sign + String(n); }
+    }
+
     // Unified legend: merge dataset labels across both charts so each country appears once
     const labelMap = new Map(); // label -> { color, charts: [{chart, index}] }
     function collectFromChart(chartObj) {
@@ -695,9 +765,10 @@ function buildFloatingLegendFromChart() {
         item.className = 'legend-item';
         item.title = label;
 
-        const lbl = document.createElement('span');
-        lbl.textContent = label;
-        item.appendChild(lbl);
+    const lbl = document.createElement('span');
+    lbl.className = 'legend-label';
+    lbl.textContent = label;
+    item.appendChild(lbl);
 
         // initialize selection visuals: visible if at least one chart has dataset visible
         const visible = info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden);
@@ -707,6 +778,7 @@ function buildFloatingLegendFromChart() {
             return; // don't add this legend item
         }
         setItemSelectionStyle(item, info.color, visible);
+        // NOTE: value indicator will be shown only in the floating legend; do not append here
 
         // Toggle handler: toggles the dataset in all charts where it exists
         item.addEventListener('click', (ev) => {
@@ -728,6 +800,28 @@ function buildFloatingLegendFromChart() {
         item.setAttribute('data-legend-label', label);
         legendContent.appendChild(item);
     });
+
+        // Populate value spans inside the floating legend authoritative items (#legend-content)
+        try {
+            Array.from(legendContent.children).forEach((child) => {
+                try {
+                    const label = child.getAttribute('data-legend-label') || child.title || child.textContent.trim();
+                    const info = labelMap.get(label);
+                    const latest = info ? getLatestValueForInfo(info) : null;
+                    let vs = child.querySelector('.legend-value');
+                    if (!vs) {
+                        vs = document.createElement('span');
+                        vs.className = 'legend-value';
+                        vs.style.marginLeft = '8px';
+                        vs.style.fontSize = '12px';
+                        vs.style.opacity = '0.9';
+                        child.appendChild(vs);
+                    }
+                    vs.textContent = latest != null ? formatSuffix(latest) : '';
+                    if (latest != null) vs.setAttribute('title', String(latest));
+                } catch (e) { /* ignore per-item */ }
+            });
+        } catch (e) { /* ignore */ }
 
     // Populate per-chart overlay legends by cloning authoritative items
     // Map of scope keys to human-readable overlay title
@@ -1027,6 +1121,13 @@ function buildFloatingLegendFromChart() {
             clone.setAttribute('data-legend-label', label);
             // ensure pointer events work for overlay clones
             clone.style.pointerEvents = 'auto';
+            // remove any numeric value spans from the clone (values only belong in floating legend)
+            try {
+                const vs = clone.querySelectorAll && clone.querySelectorAll('.legend-value');
+                if (vs && vs.length) {
+                    vs.forEach((v) => v.remove());
+                }
+            } catch (e) { /* ignore */ }
             // sync click to authoritative click
             clone.addEventListener('click', (ev) => {
                 authItem.dispatchEvent(new MouseEvent('click', { bubbles: true }));
@@ -1163,7 +1264,8 @@ function buildFloatingLegendFromChart() {
             try { if (!color && labelMap && labelMap.has(label)) color = labelMap.get(label).color; } catch (e) {}
             if (color) sw.style.background = color;
             item.appendChild(sw);
-            const txt = document.createElement('span'); txt.textContent = label; item.appendChild(txt);
+            const txt = document.createElement('span'); txt.className = 'legend-label'; txt.textContent = label; item.appendChild(txt);
+            // Do not add a numeric value in the bottom legend; values are shown only in the floating legend
             // mirror selection
             try { const info = labelMap.get(label); const visible = info ? info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden) : true; if (!visible) item.classList.add('hidden'); } catch (e) {}
             item.addEventListener('click', (ev) => {
