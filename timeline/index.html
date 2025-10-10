@@ -1416,10 +1416,18 @@ function buildFloatingLegendFromChart() {
                             }
                         } catch (e) { /* ignore */ }
                     } else if (mode === 'full') {
-                        legendEl.style.left = (rect.left + window.scrollX) + 'px';
-                        legendEl.style.top = Math.max(8, rect.top + window.scrollY - (legendEl.offsetHeight || 120) - 8) + 'px';
-                        legendEl.style.width = (rect.width || 320) + 'px';
-                        legendEl.style.right = 'auto';
+                        // Navigate to full list view: set geoview=country in the hash and reload
+                        try {
+                            const raw = window.location.hash ? window.location.hash.substring(1) : '';
+                            const params = new URLSearchParams(raw);
+                            params.set('geoview', 'country');
+                            // Update the hash and reload to apply full list view
+                            window.location.hash = params.toString();
+                            window.location.reload();
+                            return;
+                        } catch (e) {
+                            try { window.location.hash = 'geoview=country'; window.location.reload(); return; } catch (ee) { console.warn('could not navigate to full list', ee); }
+                        }
                     } else if (mode === 'below') {
                         legendEl.style.left = Math.max(8, rect.left + window.scrollX + (rect.width - (legendEl.offsetWidth || 220)) / 2) + 'px';
                         legendEl.style.top = (rect.bottom + 12 + window.scrollY) + 'px';
