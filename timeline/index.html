@@ -1358,10 +1358,63 @@ function buildFloatingLegendFromChart() {
                         legendEl.style.left = Math.max(8, rect.left + window.scrollX - (legendEl.offsetWidth || 220) - 18) + 'px';
                         legendEl.style.top = Math.max(12, rect.top + window.scrollY) + 'px';
                         legendEl.style.right = 'auto';
+                        // Also show the combined overlay on the left and hide bottom legend
+                        try {
+                            const ov = document.querySelector('.overlay-legend[data-overlay-for="combined"]');
+                            const bottom = document.getElementById('bottom-legend');
+                            if (ov) {
+                                // ensure overlay is visible and not marked closed
+                                try { clearOverlayClosed('combined'); } catch (e) {}
+                                ov.style.display = 'block';
+                                ov.setAttribute('aria-hidden', 'false');
+                                // Position overlay near left within its parent (hero root)
+                                try {
+                                    const hero = ov.parentElement || document.querySelector('.heroTransparent.notdark') || document.querySelector('.heroTransparent') || document.body;
+                                    const heroRect = hero.getBoundingClientRect();
+                                    const ovTop = Math.max(8, rect.top + window.scrollY - (heroRect.top + window.scrollY));
+                                    ov.style.position = 'absolute';
+                                    ov.style.left = '12px';
+                                    ov.style.top = (ovTop) + 'px';
+                                    ov.style.zIndex = 9999;
+                                } catch (e) { /* ignore positioning errors */ }
+                            }
+                            if (bottom) {
+                                bottom.style.display = 'none';
+                                bottom.setAttribute('aria-hidden', 'true');
+                            }
+                        } catch (e) { /* ignore overlay show errors */ }
                     } else if (mode === 'right') {
                         legendEl.style.left = (rect.right + 18 + window.scrollX) + 'px';
                         legendEl.style.top = Math.max(12, rect.top + window.scrollY) + 'px';
                         legendEl.style.right = 'auto';
+                        // Also show the combined overlay on the right and hide bottom legend
+                        try {
+                            const ov = document.querySelector('.overlay-legend[data-overlay-for="combined"]');
+                            const bottom = document.getElementById('bottom-legend');
+                            if (ov) {
+                                try { clearOverlayClosed('combined'); } catch (e) {}
+                                ov.style.display = 'block';
+                                ov.setAttribute('aria-hidden', 'false');
+                                try {
+                                    const hero = ov.parentElement || document.querySelector('.heroTransparent.notdark') || document.querySelector('.heroTransparent') || document.body;
+                                    // Ensure hero is positioned
+                                    hero.style.position = hero.style.position || 'relative';
+                                    // place overlay at right inside hero
+                                    ov.style.position = 'absolute';
+                                    ov.style.right = '12px';
+                                    ov.style.left = 'auto';
+                                    // compute top relative to hero
+                                    const heroRect = hero.getBoundingClientRect();
+                                    const ovTop = Math.max(8, rect.top + window.scrollY - (heroRect.top + window.scrollY));
+                                    ov.style.top = (ovTop) + 'px';
+                                    ov.style.zIndex = 9999;
+                                } catch (e) { /* ignore */ }
+                            }
+                            if (bottom) {
+                                bottom.style.display = 'none';
+                                bottom.setAttribute('aria-hidden', 'true');
+                            }
+                        } catch (e) { /* ignore */ }
                     } else if (mode === 'full') {
                         legendEl.style.left = (rect.left + window.scrollX) + 'px';
                         legendEl.style.top = Math.max(8, rect.top + window.scrollY - (legendEl.offsetHeight || 120) - 8) + 'px';
@@ -1391,11 +1444,18 @@ function buildFloatingLegendFromChart() {
                     row.className = 'bottom-legend-menu-item';
                     row.setAttribute('role','menuitem');
                     row.tabIndex = 0;
+                    row.setAttribute('data-item-id', it.id);
                     row.textContent = it.label;
                     row.addEventListener('click', (ev) => { ev.preventDefault(); applyLegendMode(it.id); closeMenu(); });
                     row.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); applyLegendMode(it.id); closeMenu(); } });
                     menu.appendChild(row);
                 });
+                // Highlight 'Below chart' by default when opening the menu
+                try {
+                    const defaultId = 'below';
+                    const defaultRow = menu.querySelector(`[data-item-id="${defaultId}"]`);
+                    if (defaultRow) defaultRow.classList.add('selected');
+                } catch (e) { /* ignore */ }
                 const rect = moreIcon.getBoundingClientRect();
                 menu.style.display = 'block';
                 // Use absolute positioning in document coordinates so the menu scrolls with the page
@@ -1955,6 +2015,11 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
 .bottom-legend-menu-item:hover, .bottom-legend-menu-item:focus {
     background: rgba(0,102,255,0.06);
     outline: none;
+}
+
+.bottom-legend-menu-item.selected {
+    background: rgba(0,102,255,0.12);
+    font-weight: 700;
 }
 
 </style>
