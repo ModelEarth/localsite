@@ -820,7 +820,9 @@ function hashChanged() {
             $("#nullschoolHeader").hide();
         }
         if (!hash.geoview && priorHash.geoview) {
-            $("#nullschoolHeader").show();
+            if ($('#globalMapHolder #mainframe').attr('src')) { // Checking so we don't show a close-X when there is no content in the iframe.
+                $("#nullschoolHeader").show();
+            }
         }
         waitForElm('#state_select').then((elm) => {
             if (!hash.geoview || hash.geoview == "none") {
