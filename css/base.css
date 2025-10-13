@@ -989,9 +989,9 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 /* color is !important so surrounding a href color from menu.css does not override */
 .btn-primary {
     color: #fff !important;
-    background-color: #6fa1d8;
-    background-colorX: #375a7f;
-    background-colorX: #579;
+    background-color: #6fa1d8; /* med baby blue */
+    background-color: #375a7f; /* akin to blueberry */
+    background-colorX: #579; /* faded blue */
     border-color: #6fa1d8;
     border-colorX: #375a7f;
 }
@@ -1024,7 +1024,11 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   background-color: purple !important;
   text-decoration: none;
 }
-
+.btn-info {
+    color: #fff !important;
+    background-color: #a6c36e;
+    border-color: #a6c36e;
+}
 .btn-success {
     color: #fff !important;
     background-color: #a6c36e;
@@ -2213,6 +2217,8 @@ body.sidebar-hovered {
   max-width: 200px !important;
   min-width: 200px !important;
   transition: none !important;
+  z-index: 99999 !important;
+  border: 2px solid blue;
 }
 .sidebar.collapsed .nav-section:hover .nav-icon {
   margin-right: 12px !important;
