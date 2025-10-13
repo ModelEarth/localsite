@@ -2203,6 +2203,7 @@ body.sidebar-hovered {
 .sidebar.collapsed #side-nav-content {
     cursor: e-resize; /* rightward pointing double-arrow */
     max-width: 62px;
+    overflow: visible;
 }
 .sidebar.collapsed .nav-section .nav-text {
   display: none !important;
@@ -2212,13 +2213,19 @@ body.sidebar-hovered {
   max-width: 0px !important;
   min-width: 0px !important;
 }
+.sidebar.collapsed .nav-section {
+  position: relative;
+}
 .sidebar.collapsed .nav-section:hover .nav-link {
   width: auto;
   max-width: 200px !important;
   min-width: 200px !important;
   transition: none !important;
   z-index: 99999 !important;
-  border: 2px solid blue;
+  position: relative;
+  margin-top: -2px;
+  margin-left: 5px;
+  border: 3px solid #000;
 }
 .sidebar.collapsed .nav-section:hover .nav-icon {
   margin-right: 12px !important;
@@ -2251,6 +2258,16 @@ body.sidebar-hovered {
 #side-nav-menu {
     flex: 1;
     overflow-y: auto;
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar.collapsed #side-nav-menu {
+    overflow: visible;
+}
+
+.sidebar.collapsed #side-nav-absolute {
+    overflow: visible;
 }
 .nav-item {
     margin-bottom: 4px;
