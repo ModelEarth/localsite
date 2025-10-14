@@ -1,6 +1,5 @@
-// Load localsite.js and supporting files for widget.js (for map)
+// Load localsite.js and supporting files for embed.js (for map)
 // Optimized loading strategy: parallel JS batches, non-blocking CSS
-
 (function() {
     // Create or ensure local_app exists
     var local_app = local_app || {}; // Same as localsite.js
@@ -24,20 +23,20 @@
     // Process widget script to extract web root
     function processWidgetScript(widgetScript) {
         let hostnameAndPort = extractHostnameAndPort(widgetScript.src);
-        console.log("widget-embed.js: script src hostname and port: " + hostnameAndPort);
+        console.log("embed.js: script src hostname and port: " + hostnameAndPort);
         
-        // Extract the path and find the webroot (everything before /team/js/widget-embed.js)
+        // Extract the path and find the webroot (everything before /localsite/js/embed.js)
         const scriptPath = new URL(widgetScript.src).pathname;
-        const teamIndex = scriptPath.lastIndexOf('/team/js/widget-embed.js');
+        const teamIndex = scriptPath.lastIndexOf('/localsite/js/embed.js');
         if (teamIndex !== -1) {
             const webroot = scriptPath.substring(0, teamIndex);
             const fullWebroot = hostnameAndPort + webroot;
-            console.log("widget-embed.js: final web_root = " + fullWebroot);
+            console.log("embed.js: final web_root = " + fullWebroot);
             return fullWebroot;
         }
         
         // If path parsing fails, just return the hostname
-        console.log("widget-embed.js: path parsing failed, returning hostname: " + hostnameAndPort);
+        console.log("embed.js: path parsing failed, returning hostname: " + hostnameAndPort);
         return hostnameAndPort;
     }
 
@@ -51,23 +50,23 @@
                 let scripts = document.getElementsByTagName('script');
                 let widgetScript;
                 
-                // Look for widget-embed.js script
+                // Look for embed.js script
                 for (var i = 0; i < scripts.length; ++i) {
-                    if(scripts[i].src && scripts[i].src.indexOf('widget-embed.js') !== -1){
+                    if(scripts[i].src && scripts[i].src.indexOf('embed.js') !== -1){
                         widgetScript = scripts[i];
                         break;
                     }
                 }
                 
                 if (widgetScript) {
-                    console.log('widget-embed.js: found script after', attemptIndex === 0 ? 'immediate try' : delays[attemptIndex-1] + 'ms delay');
+                    console.log('embed.js: found script after', attemptIndex === 0 ? 'immediate try' : delays[attemptIndex-1] + 'ms delay');
                     resolve(widgetScript);
                 } else if (attemptIndex < delays.length) {
-                    console.log('widget-embed.js: script not found, trying again in', delays[attemptIndex] + 'ms');
+                    console.log('embed.js: script not found, trying again in', delays[attemptIndex] + 'ms');
                     setTimeout(tryFindScript, delays[attemptIndex]);
                     attemptIndex++;
                 } else {
-                    console.log('widget-embed.js: script not found after all delay attempts');
+                    console.log('embed.js: script not found after all delay attempts');
                     resolve(null);
                 }
             }
@@ -77,16 +76,16 @@
         });
     }
 
-    // Extract parameters from widget-embed.js URL
+    // Extract parameters from embed.js URL
     function getWidgetParameters() {
         let scripts = document.getElementsByTagName('script');
         for (var i = 0; i < scripts.length; ++i) {
-            if(scripts[i].src && scripts[i].src.indexOf('widget-embed.js') !== -1){
+            if(scripts[i].src && scripts[i].src.indexOf('embed.js') !== -1){
                 const src = scripts[i].src;
                 const paramIndex = src.indexOf('?');
                 if (paramIndex !== -1) {
                     const params = src.substring(paramIndex); // includes the '?'
-                    console.log('widget-embed.js: found parameters:', params);
+                    console.log('embed.js: found parameters:', params);
                     return params;
                 }
                 break;
@@ -109,19 +108,19 @@
             let widgetScript;
             
             for (var i = 0; i < scripts.length; ++i) {
-                if(scripts[i].src && scripts[i].src.indexOf('widget-embed.js') !== -1){
+                if(scripts[i].src && scripts[i].src.indexOf('embed.js') !== -1){
                     widgetScript = scripts[i];
                     break;
                 }
             }
             
             if (!widgetScript) {
-                console.log('widget-embed.js: script not found immediately, async detection in progress');
+                console.log('embed.js: script not found immediately, async detection in progress');
                 // Start async detection to cache result for future calls
                 findWidgetScript().then(script => {
                     if (script) {
                         cachedWebRoot = processWidgetScript(script);
-                        console.log('widget-embed.js: cached web_root =', cachedWebRoot);
+                        console.log('embed.js: cached web_root =', cachedWebRoot);
                     }
                 });
                 // Return fallback domain unless current domain matches
@@ -138,7 +137,7 @@
     
     // Configuration - use local_app.web_root() (also accessible as widgetWebroot for backward compatibility)
     const widgetWebroot = local_app.web_root();
-    console.log('widget-embed.js: Final widgetWebroot value =', widgetWebroot);
+    console.log('embed.js: Final widgetWebroot value =', widgetWebroot);
     
     // Make local_app globally available for localsite.js to use
     window.local_app = local_app;
@@ -221,29 +220,31 @@
         }
     });
     
-    // Wait for essential scripts to load, then load widget.js
+    // Wait for essential scripts to load, then load team/js/map.js
     Promise.all(scriptPromises).then(() => {
-        console.log('Essential scripts loaded, loading widget.js');
+        console.log('Essential scripts loaded, loading team/js/map.js');
         
         // Get parameters from current script tag and hash
         let mapParam = '';
         let sourceParam = '';
-        const currentScript = document.currentScript || document.querySelector('script[src*="widget-embed.js"]');
+        const currentScript = document.currentScript || document.querySelector('script[src*="embed.js"]');
+        
+        // TO DO: Only append showmap=true if not in call to embed.js. So showmap=false will override.
         
         // Check for map= parameter in URL hash first
         const urlParams = new URLSearchParams(window.location.hash.substring(1));
         const hashMap = urlParams.get('map');
         if (hashMap) {
             // Use map= parameter from hash
-            mapParam = '?map=' + hashMap;
-            console.log('widget-embed.js: Using map parameter from hash:', hashMap);
+            mapParam = '?showmap=true&map=' + hashMap;
+            console.log('embed.js: Using map parameter from hash:', hashMap);
         } else if (currentScript && currentScript.src.includes('?')) {
             // Only if map= is not available in hash, check for list= in script URL and convert to map=
             const url = new URL(currentScript.src);
             const listFromScript = urlParams.get('list') || url.searchParams.get('list');
             if (listFromScript) {
-                mapParam = '?map=' + listFromScript;
-                console.log('widget-embed.js: Converting list parameter to map:', listFromScript);
+                mapParam = '?showmap=true&map=' + listFromScript;
+                console.log('embed.js: Converting list parameter to map:', listFromScript);
             }
         }
         
@@ -265,11 +266,12 @@
             currentScript.parentNode.insertBefore(teamwidgetDiv, currentScript.nextSibling);
         }
         
-        // Load widget.js with optional parameters
+        // Load map.js with optional parameters... showmap=true
+        //alert("mapParam: " + mapParam) // Starts with ?
         const fullParams = mapParam + sourceParam;
-        return loadScript(widgetWebroot + '/team/js/widget.js' + fullParams, '/team/js/widget.js');
+        return loadScript(widgetWebroot + '/team/js/map.js' + fullParams, '/team/js/map.js');
     }).then(() => {
-        console.log('Widget.js loaded successfully');
+        console.log('team/js/map.js loaded successfully');
         
         // Load non-essential print-download.js last (optional)
         loadScript(widgetWebroot + '/team/js/print-download.js', '/team/js/print-download.js')
