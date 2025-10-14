@@ -1075,7 +1075,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             
             // Show/hide gravatar image based on checkbox and valid email
             if (gravatarChecked && isValidEmail(email)) {
-              loadScript('http://pajhome.org.uk/crypt/md5/md5.js', function(results) { // For gravatar image display
+                // https://pajhome.org.uk/crypt/md5/md5.js
+              loadScript('/localsite/js/md5.js', function(results) { // For gravatar image display
                 let userImg = $.gravatar(email);
                 if (userImg) {
                   localStorage.userImg = userImg;
@@ -1103,7 +1104,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
                 if ($("#getGravatar").is(":checked")) {
                   // BUGBUG - Redirect above will bypass.
-                  loadScript('http://pajhome.org.uk/crypt/md5/md5.js', function(results) {
+                  loadScript('/localsite/js/md5.js', function(results) {
                     let userImg = $.gravatar(email);
                     if (userImg) {
                       localStorage.userImg = userImg;

@@ -6505,12 +6505,18 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.web_root() + "/localsite/img/logo/states/GA-icon.png' style='width:52px;padding:0px;margin-top:-2px'></a>";
         localsiteTitle = "Georgia.org";
         changeFavicon(local_app.web_root() + "/localsite/img/logo/states/GA-favicon.png");
-        if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
+        if (location.host.indexOf('localhost') >= 0) {
             showClassInline(".acct");
             showClassInline(".garesource");
+            showClassInline(".georgia");
+        } else if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
+            showClassInline(".acct");
+            showClassInline(".garesource");
+        } else {
+            showClassInline(".georgia");
         }
         showClassInline(".geo");
-        showClassInline(".georgia");
+        
         if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
             // To activate when filter are ready
             //showClassInline(".earth");
