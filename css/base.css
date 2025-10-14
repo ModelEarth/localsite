@@ -614,7 +614,6 @@ summary::-webkit-details-marker {
 @media (min-width: 1600px) {
 	.content {
 	  max-width: 1500px;
-	  font-size: 18px;
 	}
 }
 .contentpadding, #observablehq-center {
@@ -994,6 +993,9 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     background-colorX: #579; /* faded blue */
     border-color: #6fa1d8;
     border-colorX: #375a7f;
+}
+.dark .btn-primary {
+  background-color: #084975; /* darker = blueberry */
 }
 .btn-primary:visited {
     color: #fff !important;
