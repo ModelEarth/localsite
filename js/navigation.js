@@ -1399,16 +1399,20 @@ class StandaloneNavigation {
                                             <span>Location Visits Map</span>
                                         </a>
                                         </div>
+
+                                        <!-- Not all have images
                                         <div style="display:none" class="geo">
-                                        <a href="${teamPath}projects/#list=geo" class="subnav-link">
+                                        <a href="${teamPath}projects/#list=cameraready" class="subnav-link">
                                             <i class="subnav-icon" data-feather="heart"></i>
-                                            <span>Location Insights</span>
+                                            <span>Film Location Insights</span>
                                         </a>
                                         </div>
+                                        -->
+
                                         <div style="display:none" class="geo">
-                                        <a href="${teamPath}projects/#list=film-scouting" class="subnav-link">
+                                        <a href="${teamPath}projects/#list=film-liaisons" class="subnav-link">
                                             <i class="subnav-icon" data-feather="film"></i>
-                                            <span>Film Scout Insights</span>
+                                            <span>Film Community Insights</span>
                                         </a>
                                         </div>
                                         <div style="display:none" class="geo">
