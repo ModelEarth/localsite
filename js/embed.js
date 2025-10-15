@@ -266,10 +266,13 @@
             currentScript.parentNode.insertBefore(teamwidgetDiv, currentScript.nextSibling);
         }
         
+        /// BUG - Better to pas to localsite so the parameters are in params object
+        /// essentialScripts should already wait for localsite to be loaded
+
         // Load map.js with optional parameters... showmap=true
         //alert("mapParam: " + mapParam) // Starts with ?
         const fullParams = mapParam + sourceParam;
-        return loadScript(widgetWebroot + '/team/js/map.js' + fullParams, '/team/js/map.js');
+        return loadScript(widgetWebroot + '/team/js/map.js?' + fullParams, '/team/js/map.js');
     }).then(() => {
         console.log('team/js/map.js loaded successfully');
         
