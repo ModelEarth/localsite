@@ -1365,6 +1365,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   }
 
   function loadMapAndMapFilters() {
+    return; //TEMP
     console.log("loadScript called from localsite.js");
     loadSearchFilterCss(); 
     loadScript(theroot + 'js/navigation.js', function(results) {
