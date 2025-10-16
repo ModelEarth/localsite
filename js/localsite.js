@@ -477,10 +477,12 @@ function updateHash(addToHash, addToExisting, removeFromHash) {
         if (value && typeof value === 'object' && !Array.isArray(value)) {
             // Flatten nested object properties
             Object.entries(value).forEach(([subKey, subValue]) => {
-                flatHash[`${key}.${subKey}`] = subValue;
+                // Encode & characters in values to prevent hash parsing issues
+                flatHash[`${key}.${subKey}`] = String(subValue).replace(/&/g, '%26');
             });
         } else {
-            flatHash[key] = value;
+            // Encode & characters in values to prevent hash parsing issues
+            flatHash[key] = String(value).replace(/&/g, '%26');
         }
     });
     
