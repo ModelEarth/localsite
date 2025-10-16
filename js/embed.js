@@ -142,6 +142,33 @@
     // Make local_app globally available for localsite.js to use
     window.local_app = local_app;
     
+    // Initialize param object if not already defined (before map.js loads)
+    if(typeof param == 'undefined') {
+        // Extract parameters from embed.js script URL and initialize param object
+        function initializeParamFromEmbedScript() {
+            let scripts = document.getElementsByTagName('script');
+            for (var i = 0; i < scripts.length; ++i) {
+                if(scripts[i].src && scripts[i].src.indexOf('embed.js') !== -1){
+                    const src = scripts[i].src;
+                    const url = new URL(src);
+                    const params = {};
+                    
+                    // Extract all URL parameters
+                    url.searchParams.forEach((value, key) => {
+                        params[key.toLowerCase()] = value;
+                    });
+                    
+                    console.log('embed.js: initialized param object from script URL:', params);
+                    return params;
+                }
+            }
+            return {};
+        }
+        
+        // Initialize global param object
+        window.param = initializeParamFromEmbedScript();
+    }
+    
     // Helper function to load script with promise
     function loadScript(src, id) {
         return new Promise((resolve, reject) => {
