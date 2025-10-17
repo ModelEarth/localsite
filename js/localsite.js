@@ -11,6 +11,10 @@ Localsite Path Library - A global namespace singleton
 Define a new object if localsite library does not exist yet.
 */
 
+//if (window.localsiteLoaded) { // Would need to make sure access to variables is not restricted.
+window.localsiteLoaded = true; // Used by embed.js to avoid double loading localsite.js
+
+let localsiteTitle = "Localsite";
 var localStart = Date.now(); // A var so waitForVariableNav detects in navigation.js.
 
 if(typeof onlineApp == 'undefined') {
@@ -19,7 +23,7 @@ if(typeof onlineApp == 'undefined') {
 } else {
   consoleLog("ALERT: Page loads localsite.js more than once.")
 }
-let localsiteTitle = "Localsite";
+
 let defaultState = "";
 if (location.host.indexOf('localhost') >= 0) {
   defaultState = "";  // Set to GA to include additional map layers in top nav.
@@ -252,7 +256,7 @@ if(typeof hiddenhash == 'undefined') {
   var hiddenhash = {};
 }
 if (hiddenhash.geoview) {
-    alert("BUG L1 hiddenhash.geoview " + hiddenhash.geoview);
+    console.log("BUG L1 hiddenhash.geoview " + hiddenhash.geoview);
 }
 // param values from page are placed in hiddenhash. (UNLESS THEY ARE ALREADY IN THE HASH.)
 // hiddenhash is loaded into hash in gethash if hash does not have an existing value.
@@ -270,9 +274,17 @@ if(typeof param != 'undefined') { // From settings in HTML page
 
 } else { // No param object in page, but could be set in localsite.js include.
   hiddenhash = mix(hiddenhash,paramIncludeFile);
+  var param = {};
+
   // Now we add in the hash, after hiddenhash is set without hash
-  var param = structuredClone(extend(true, loadParams(location.search,location.hash), paramIncludeFile)); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
+  // TO DO - comment this line out since window.param seems to also sets param.  (Observed that in embed.js or map.js)
+  param = structuredClone(extend(true, loadParams(location.search,location.hash), paramIncludeFile)); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
   //param = loadParams(location.search,location.hash); // Includes localsite.js include.
+
+  // Allows embed.js to access. 
+  window.param = structuredClone(extend(true, loadParams(location.search,location.hash), paramIncludeFile)); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
+  
+  //alert("param set in localsite. param.map " + param.map);
 }
 
 if (param.state) {
