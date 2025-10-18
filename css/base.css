@@ -1725,14 +1725,15 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   min-width: 80px;
 }
 .titlecell {
+  border-top:1px solid #ccc;
   padding: 5px 12px 0 5px;
-  float:left;
+  floatX:left;
   clear:both;
   min-width: 180px;
   font-weight: 500;
 }
 .floating-object {
-  float:left;
+  floatX:left;
   margin-right:10px;
   margin-bottom:10px;
 }
@@ -1819,6 +1820,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   float: left;
 }
 .valueonly {
+  padding-left: 5px;
   padding-right: 5px;
   overflow: auto;
 }

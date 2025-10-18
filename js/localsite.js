@@ -3202,7 +3202,7 @@ function formatRow(key,value,level,item) {
       //if(value && value.length > 0) { // Hides blank for nutrition
       if(value) { // Hides blank for nutrition
         // level" + level + " 
-        addHtml += "<div class='keyonly titlecell celltop'><b>" + key + "</b></div>";
+        addHtml += "<div class='keyonly barTitle titlecell celltop'><b>" + key + "</b></div>";
       }
     }
   } else {
@@ -3250,7 +3250,7 @@ function formatRow(key,value,level,item) {
       }
       if (barTitle) {
         addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell objectcell-lines' style='" + insertStyle + "'>"; // Around rows
-        addHtml += "<div keyname='" + keyName + "' class='barTitle child-count-" + Object.keys(value).length + "'>" + barTitle + "</div>\n";
+        addHtml += "<div keyname='" + keyName + "' class='child-count-" + Object.keys(value).length + "'>" + barTitle + "</div>\n";
       } else {
         addHtml += "<!--Child count " + Object.keys(value).length + "-->";
         addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell' style='" + insertStyle + "'>"; // Around rows
