@@ -312,15 +312,15 @@ Promise.all(scriptPromises).then(() => {
         }
     }
     
-    // Check if #teamwidget exists, if not create it at script location
-    let teamwidgetExists = document.getElementById('teamwidget');
-    if (!teamwidgetExists && currentScript) {
-        console.log('Creating #teamwidget at script location');
-        const teamwidgetDiv = document.createElement('div');
-        teamwidgetDiv.id = 'teamwidget';
+    // Check if #localwidget exists, if not create it at script location
+    let localwidgetExists = document.getElementById('localwidget');
+    if (!localwidgetExists && currentScript) {
+        console.log('Creating #localwidget at script location');
+        const localwidgetDiv = document.createElement('div');
+        localwidgetDiv.id = 'localwidget';
         
-        // Insert the teamwidget div right after the script tag
-        currentScript.parentNode.insertBefore(teamwidgetDiv, currentScript.nextSibling);
+        // Insert the localwidget div right after the script tag
+        currentScript.parentNode.insertBefore(localwidgetDiv, currentScript.nextSibling);
     }
     
     /// BUG - Better to pas to localsite so the parameters are in params object
