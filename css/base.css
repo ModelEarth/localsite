@@ -2828,8 +2828,11 @@ body.sidebar-hovered {
 .dark .basePanelBackground {
     background: #333;
 }
+/* Not needed for team/js/map.js widget
+
+*/
 .basePanelPadding {
-    padding:15px;
+    padding:10px;
 }
 .basePanelFadeOut {
     position: relative;

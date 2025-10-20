@@ -125,20 +125,14 @@ window.local_app = local_app;
 // Initialize param object if not already defined (before map.js loads)
 //if(typeof param === 'undefined') {
 if (typeof window.param == 'undefined') {
-    alert("window.param == 'undefined'")
-    //var param = {}; // Declare first to hold, so localsite doesn't start to generate.
-    // Extract parameters from embed.js script URL and initialize param object
-
-    
-    //alert("Before param.map is: " + param.map); // Fails
-
-    // Initialize global param object
+    console.log("window.param inititated in embed.js")
+    // Extract parameters from embed.js script embed tag
     window.param = initializeParamFromEmbedScript();
 
-    alert("embed.js fetched window.param.map " + window.param.map)
-    alert("param.map is now also: " + param.map); // Apparently setting window.param also sets param
+    //alert("embed.js fetched window.param.map " + window.param.map)
+    //alert("param.map is now also: " + param.map); // Apparently setting window.param also sets param
 
-    // BUGBUG - So apparently the above overwrites param values sent via localsite.js below, but that's okay
+    // Apparently the above overwrites param values sent via localsite.js below, but that's okay
 
 } else if (typeof window.param.map == 'undefined') { // Localsite.js was loaded outside embed.js, but we still need to get the map.
     
