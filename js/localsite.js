@@ -181,6 +181,7 @@ var local_app = local_app || {};
                         }
                         modelearth_repo = result; // Cache for future calls
                     } else {
+                        /*
                         // Try map-embed.js as fallback if localsite.js fails
                         findScript('map-embed.js').then(fallbackScript => {
                             if (fallbackScript) {
@@ -194,6 +195,7 @@ var local_app = local_app || {};
                                 modelearth_repo = result; // Cache for future calls
                             }
                         });
+                        */
                     }
                 });
                 // Return default for immediate use
@@ -708,7 +710,12 @@ function toggleFullScreen(alsoToggleHeader) {
 }
 
 // Determined by where localsite.js if fetched from.
+
 var theroot = get_localsite_root(); // Try using let instead of var to find other declarations.
+
+// TO DO - eliminate theroot and use local_app.localsite_root instead.
+// TO DO - Then eliminate the following get_localsite_root
+
 function get_localsite_root() { // Also in two other places
   if (localsite_repo3) { // Intensive, so limit to running once.
     //alert(localsite_repo);
@@ -716,16 +723,20 @@ function get_localsite_root() { // Also in two other places
   }
 
   let scripts = document.getElementsByTagName('script'); 
-  let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
-  //let myScript = null;
-  // Now try to find one containging map-embed.js
-  for (var i = 0; i < scripts.length; ++i) {
-      if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
+
+  // let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js - Doesn't work for embedded widgets - returns cloudflare
+
+  let hostnameAndPort = window.location.protocol + '//' + window.location.host; // The base, which includes the port.
+  let myScript;
+  for (var i = 0; i < scripts.length; ++i) { // Using current script
+      if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
         myScript = scripts[i];
       }
   }
-  let hostnameAndPort = extractHostnameAndPort(myScript.src);
-  //consoleLog("hostnameAndPort: " + hostnameAndPort);
+  if (myScript) {
+      hostnameAndPort = extractHostnameAndPort(myScript.src);
+      consoleLog("hostnameAndPort from " + myScript.src + " is " + hostnameAndPort);
+  }
   let theroot = location.protocol + '//' + location.host + '/localsite/';
 
   if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map

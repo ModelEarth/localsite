@@ -1008,6 +1008,8 @@ class StandaloneNavigation {
         this.startPeriodicFaviconUpdate();
     }
     
+    // TO DO - Try using variable set in localsite.js instead 
+
     // Auto-detect webroot container from script path
     detectWebrootFromScriptPath() {
         // Get the current script path
