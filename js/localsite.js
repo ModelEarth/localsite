@@ -605,7 +605,7 @@ function loadScript(url, callback)
 
       script.onload = function() {
         consoleLog("loadScript loaded: " + url); // Once the entire file is processed.
-        callback();
+        if(callback) callback();
       }
   } else {
     consoleLog("loadScript script already available: " + url + " via ID: " + urlID);
