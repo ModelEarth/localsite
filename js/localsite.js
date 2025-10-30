@@ -3780,7 +3780,8 @@ function adjustAnythingLLMNavigation() {
 }
 
 // Initialize AnythingLLM navigation adjustments when DOM is ready
-document.addEventListener('DOMContentLoaded', adjustAnythingLLMNavigation);
+// Saving incase anyone wants to include AnythingLLM in webroot
+//document.addEventListener('DOMContentLoaded', adjustAnythingLLMNavigation);
 
 // Auth Modal Integration - lazy load and show modal
 function showAuthModal() {
