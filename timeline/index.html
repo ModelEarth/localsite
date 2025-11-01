@@ -87,6 +87,26 @@ document.addEventListener('DOMContentLoaded', () => {
     The legend will be fixed in the viewport (top-right by default) regardless of canvas updates.
     Individual legend items remain interactive while the container lets other clicks pass through. */
 #div1 { position: relative; }
+#div2 { position: relative; }
+
+/* Ensure chart containers don't take up space when hidden */
+.toogleDiv {
+    margin: 0;
+    padding: 0;
+}
+
+.toogleDiv[style*="display: none"] {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+.toogleDiv[style*="display: block"] {
+    display: block !important;
+    margin-bottom: 20px;
+}
 #floating-legend {
      position: fixed;
      top: 120px;
@@ -509,6 +529,29 @@ document.addEventListener('DOMContentLoaded', () => {
             <!--
             <label> <input value="perarea" type="radio" name="whichPer" />Per Area </label>
             -->
+        </div>
+
+        <!-- Chart Size Controls -->
+        <div style="clear: both; margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+            <h4 style="margin: 0 0 15px 0; color: #495057; font-size: 16px;">Chart Size Controls</h4>
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label for="widthSlider" style="font-weight: 500; min-width: 50px;">Width:</label>
+                    <input type="range" id="widthSlider" min="300" max="1200" value="800" step="10" 
+                           style="width: 150px;" oninput="updateChartSize()">
+                    <span id="widthValue" style="min-width: 50px; font-family: monospace;">800px</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label for="heightSlider" style="font-weight: 500; min-width: 50px;">Height:</label>
+                    <input type="range" id="heightSlider" min="200" max="800" value="400" step="10" 
+                           style="width: 150px;" oninput="updateChartSize()">
+                    <span id="heightValue" style="min-width: 50px; font-family: monospace;">400px</span>
+                </div>
+                <button onclick="resetChartSize()" 
+                        style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                    Reset to Auto
+                </button>
+            </div>
         </div>
 
         <div id="div1" class="toogleDiv" chart-wrapper>
