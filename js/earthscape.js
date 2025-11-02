@@ -4,6 +4,7 @@
 // Declare global chart variables so they can be accessed in resize handler
 let timelineChart;
 let lineAreaChart;
+let manualSizingActive = false; // Flag to track if manual sizing is being used
 
 function loadEarthScape(my) {
     loadScript(theroot + 'js/d3.v5.min.js', function (results) {
@@ -565,6 +566,7 @@ dataCopy.forEach(location => {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
             
             plugins: {
                 // Use a floating DOM legend instead of the built-in Chart.js legend
@@ -622,6 +624,7 @@ dataCopy.forEach(location => {
             data: data1,
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
                  // Important for fluid resizing
                 plugins: {
                   title: {
@@ -732,12 +735,151 @@ dataCopy.forEach(location => {
 
 // Chart resize handler function
 function handleChartResize() {
+    // Only auto-resize if manual sizing is not active
+    if (!manualSizingActive) {
+        if (timelineChart instanceof Chart) {
+            timelineChart.resize();
+        }
+        if (lineAreaChart instanceof Chart) {
+            lineAreaChart.resize();
+        }
+    }
+}
+
+// Chart size control functions
+function updateChartSize() {
+    const widthSlider = document.getElementById('widthSlider');
+    const heightSlider = document.getElementById('heightSlider');
+    const widthValue = document.getElementById('widthValue');
+    const heightValue = document.getElementById('heightValue');
+    
+    if (!widthSlider || !heightSlider || !widthValue || !heightValue) {
+        return; // Elements not found, exit gracefully
+    }
+    
+    const width = widthSlider.value + 'px';
+    const height = heightSlider.value + 'px';
+    
+    // Update display values
+    widthValue.textContent = width;
+    heightValue.textContent = height;
+    
+    // Set manual sizing flag to prevent auto-resize
+    manualSizingActive = true;
+    
+    // Apply size ONLY to chart containers (divs that hold the canvases)
+    // Don't modify canvas attributes directly to avoid diagonal scaling
+    const timelineContainer = document.getElementById('div1');
+    const lineAreaContainer = document.getElementById('div2');
+    
+    if (timelineContainer) {
+        timelineContainer.style.width = width;
+        timelineContainer.style.height = height;
+        // Ensure container has proper positioning for chart sizing
+        timelineContainer.style.position = 'relative';
+    }
+    
+    if (lineAreaContainer) {
+        lineAreaContainer.style.width = width;
+        lineAreaContainer.style.height = height;
+        // Ensure container has proper positioning for chart sizing
+        lineAreaContainer.style.position = 'relative';
+    }
+    
+    // Update chart options to disable aspect ratio maintenance for manual sizing
     if (timelineChart instanceof Chart) {
-        timelineChart.resize();
+        timelineChart.options.maintainAspectRatio = false;
+        timelineChart.options.responsive = true;
+        timelineChart.update('none'); // Update without animation
     }
+    
     if (lineAreaChart instanceof Chart) {
-        lineAreaChart.resize();
+        lineAreaChart.options.maintainAspectRatio = false;
+        lineAreaChart.options.responsive = true;
+        lineAreaChart.update('none'); // Update without animation
     }
+    
+    // Force chart resize with manual sizing active
+    setTimeout(() => {
+        if (timelineChart instanceof Chart) {
+            timelineChart.resize();
+        }
+        if (lineAreaChart instanceof Chart) {
+            lineAreaChart.resize();
+        }
+    }, 100);
+}
+
+function resetChartSize() {
+    const widthSlider = document.getElementById('widthSlider');
+    const heightSlider = document.getElementById('heightSlider');
+    const widthValue = document.getElementById('widthValue');
+    const heightValue = document.getElementById('heightValue');
+    
+    if (!widthSlider || !heightSlider || !widthValue || !heightValue) {
+        return; // Elements not found, exit gracefully
+    }
+    
+    // Reset sliders to default values
+    widthSlider.value = 800;
+    heightSlider.value = 400;
+    
+    // Clear manual sizing flag to restore responsive behavior
+    manualSizingActive = false;
+    
+    // Reset chart containers to auto sizing
+    const timelineContainer = document.getElementById('div1');
+    const lineAreaContainer = document.getElementById('div2');
+    
+    if (timelineContainer) {
+        timelineContainer.style.width = '';
+        timelineContainer.style.height = '';
+    }
+    
+    if (lineAreaContainer) {
+        lineAreaContainer.style.width = '';
+        lineAreaContainer.style.height = '';
+    }
+    
+    // Reset canvases to auto sizing
+    const timelineCanvas = document.getElementById('timelineChart');
+    const lineAreaCanvas = document.getElementById('lineAreaChart');
+    
+    if (timelineCanvas) {
+        timelineCanvas.style.width = '';
+        timelineCanvas.style.height = '';
+        timelineCanvas.removeAttribute('width');
+        timelineCanvas.removeAttribute('height');
+    }
+    
+    if (lineAreaCanvas) {
+        lineAreaCanvas.style.width = '';
+        lineAreaCanvas.style.height = '';
+        lineAreaCanvas.removeAttribute('width');
+        lineAreaCanvas.removeAttribute('height');
+    }
+    
+    // Update display values
+    widthValue.textContent = '800px';
+    heightValue.textContent = '400px';
+    
+    // Restore chart options to default responsive behavior
+    if (timelineChart instanceof Chart) {
+        timelineChart.options.maintainAspectRatio = true;
+        timelineChart.options.responsive = true;
+        timelineChart.update('none'); // Update without animation
+    }
+    
+    if (lineAreaChart instanceof Chart) {
+        lineAreaChart.options.maintainAspectRatio = true;
+        lineAreaChart.options.responsive = true;
+        lineAreaChart.update('none'); // Update without animation
+    }
+    
+    // Trigger chart resize with responsive behavior restored
+    setTimeout(() => {
+        handleChartResize();
+    }, 100);
 }
 
 function refreshTimeline() {
@@ -1000,15 +1142,42 @@ function parseCSV(csvText) {
 function toggleDivs() {
     // Get selected value from radio buttons
     const selectedValue = document.querySelector('input[name="toogleChartType"]:checked').value;
+    
+    const div1 = document.getElementById('div1');
+    const div2 = document.getElementById('div2');
+    
     if (selectedValue == "both") {
-        document.getElementById('div1').style.display = 'block';
-        document.getElementById('div2').style.display = 'block';
+        // Show both charts
+        div1.style.display = 'block';
+        div1.style.height = '';
+        div1.style.margin = '';
+        div1.style.padding = '';
+        
+        div2.style.display = 'block';
+        div2.style.height = '';
+        div2.style.margin = '';
+        div2.style.padding = '';
         return;
     }
-    // Hide both divs initially
-    document.getElementById('div1').style.display = 'none';
-    document.getElementById('div2').style.display = 'none';
+    
+    // Hide both divs initially and remove all spacing
+    div1.style.display = 'none';
+    div1.style.height = '0';
+    div1.style.margin = '0';
+    div1.style.padding = '0';
+    div1.style.overflow = 'hidden';
+    
+    div2.style.display = 'none';
+    div2.style.height = '0';
+    div2.style.margin = '0';
+    div2.style.padding = '0';
+    div2.style.overflow = 'hidden';
 
-    // Show the selected div
-    document.getElementById(selectedValue).style.display = 'block';
+    // Show the selected div and restore its spacing
+    const selectedDiv = document.getElementById(selectedValue);
+    selectedDiv.style.display = 'block';
+    selectedDiv.style.height = '';
+    selectedDiv.style.margin = '';
+    selectedDiv.style.padding = '';
+    selectedDiv.style.overflow = '';
 }
