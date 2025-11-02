@@ -6,7 +6,7 @@
 
 ### Localsite Setup and Development
 
-[How to add a new localsite page](template).  View our [Active Projects](../../projects) and [Moonshots](../../community/projects).
+[How to add a new readme page (index.html)](template).  View our [Active Projects](../../projects) and [Moonshots](../../community/projects).
 
 Helpful tips for [NVM, Node, npm, pyenv, Python, pip, Conda and Docker](cmds/).
 

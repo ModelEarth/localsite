@@ -2980,7 +2980,7 @@ body.sidebar-hidden #openNav {
     border: 1px solid #ddd;
 }
 .badge:hover {
-  background: #aaa;
+  background: #888;
   color: white;
 }
 /* Generic button styling to match anchor links */
