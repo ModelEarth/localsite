@@ -5,204 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
     <title>Standard Layout Structure</title>
-    <style>
-        :root {
-            --header-height: 71px;  /* Define header height as CSS variable */
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: row;
-            margin: 0;
-        }
-        
-        /* Side Navigation */
-        #side-nav {
-            width: 60px;
-            height: 100%;
-            background: #444;
-            transition: width 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            /* position: relative; */
-        }
-        
-        #side-nav.expanded {
-            width: 250px;
-        }
-        #side-nav-absolute {
-            position: absolute;
-            top: var(--header-height);
-            bottom: 0px;
-            height: calc(100vh - var(--header-height));
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-        #side-nav-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 10px;
-            background: #222;
-        }
-        
-        #side-nav-footer {
-            padding: 15px 10px;
-            border-top: 1px solid #34495e;
-            background: #1a252f;
-        }
-        
-        /* Toggle Button */
-        #nav-toggle {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            width: 100%;
-            text-align: center;
-        }
-        
-        /* Main Layout Container */
-        #main-layout {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            overflow-y: auto;
-        }
-        
-        /* Header */
-        #main-header {
-            background: #34495e;
-            color: white;
-            padding: 15px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            height: var(--header-height);
-            display: flex;
-            align-items: center;
-        }
-        
-        /* Section Navigation */
-        #section-nav {
-            background: #ecf0f1;
-            padding: 10px 20px;
-            border-bottom: 1px solid #bdc3c7;
-        }
-        
-        #section-nav ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-        }
-        
-        #section-nav a {
-            text-decoration: none;
-            color: #2c3e50;
-            padding: 8px 12px;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-        
-        #section-nav a:hover {
-            background: #d5dbdb;
-        }
-        
-        /* Main Container */
-        #main-container {
-            flex: 1;
-            display: flex;
-            flex-direction: row;
-            color: #eee;
-            background: #555;
-        }
-        
-        /* Main Content Area */
-        #main-content {
-            flex: 1;
-            max-width: 1200px;
-            width: 100%;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-        
-        /* Prevent images from exceeding main-content width */
-        #main-content img {
-            max-widthX: 100%;
-            height: auto;
-        }
-        
-        /* Footer */
-        #main-footer {
-            background: #2c3e50;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-            
-            #side-nav {
-                width: 100%;
-                height: auto;
-                order: 2;
-            }
-            
-            #side-nav.expanded {
-                width: 100%;
-            }
-            
-            #main-layout {
-                order: 1;
-            }
-        }
-        .mobile-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            display: none;
-        }
-        /* Wrapper div for vertical text positioning */
-        .vertical-text-holder {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100px;
-            width: 40px;
-            margin: 60px auto 0 auto;
-            position: relative;
-        }
-        .vertical-text {
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            transform: rotate(-90deg);
-            transform-origin: center;
-            white-space: nowrap;
-        }
-        .contentpadding {
-            padding: 30px;
-        }
-    </style>
+
+    <!-- Initially this sample did not includeing tbase.css -->
+    <link type="text/css" rel="stylesheet" href="../../../localsite/css/base.css" id="/localsite/css/base.css" />
+
+    <link type="text/css" rel="stylesheet" href="layout.css" />
+
 </head>
 <body class="flexbody">
 
@@ -217,14 +25,70 @@
         <div id="main-container">
 
             <!-- Side Navigation -->
-            <nav id="side-nav">
+            <nav id="side-nav" class="sidebar collapsed">
                 <div id="side-nav-absolute">
                     <div id="side-nav-content">
-                        <div class="vertical-text-holder"><span class="vertical-text">#side-nav-content</span></div>
+
+                        <!-- MENU -->
+
+                        <div id="side-nav-menu">
+                            <div class="nav-section">
+                                <div class="nav-item">
+                                    <button class="nav-link" data-section="home" data-href=".//../team/">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home nav-icon"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                        <span class="nav-text">Welcome</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right nav-arrow"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                    </button>
+                                    <div class="subnav">
+                                        <a href=".//../team/#home" class="subnav-link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smile subnav-icon"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                                            <span>Welcome</span>
+                                        </a>
+                                        <a href=".//../team/#home/documentation" class="subnav-link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book subnav-icon"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                                            <span>Getting Started</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="nav-section earth">
+                                <div class="nav-item">
+                                    <button class="nav-link" data-section="projects" data-href=".//../projects">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder nav-icon"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                        <span class="nav-text">Projects</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right nav-arrow"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                    </button>
+                                    <div class="subnav">
+                                        <a href=".//../projects" class="subnav-link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe subnav-icon"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                                            <span>Active Projects</span>
+                                        </a>
+                                        <a href="https://github.com/modelearth/projects/issues/" class="subnav-link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-square subnav-icon"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                                            <span>ToDos (GitHub)</span>
+                                        </a>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="vertical-text-holder"><span class="vertical-text">#side-nav-content</span></div>
+
+                        </div>
+
+                        <!-- /MENU -->
+
+                        
+
+                        <div id="side-nav-footer">
+                            <button id="nav-toggle" onclick="toggleNav();//toggleNavAdjacent();">☰</button>
+                        </div>
+
                     </div>
-                    <footer id="side-nav-footer">
-                        <button id="nav-toggle" onclick="toggleNav()">☰</button>
-                    </footer>
+
+
+                    
                 </div>
             </nav>
 
@@ -256,13 +120,43 @@
     </div>
 
     <script>
-        function toggleNav() {
+        function toggleNavAdjacent() { // Gets overlapped
             const sideNav = document.getElementById('side-nav');
             const mainLayout = document.getElementById('main-layout');
             
             sideNav.classList.toggle('expanded');
             mainLayout.classList.toggle('nav-expanded');
         }
+    </script>
+
+    <script>
+        function toggleNav() {
+            const sideNav = document.getElementById('side-nav');
+            const body = document.body;
+            
+            // Toggle between collapsed and expanded states
+            if (sideNav.classList.contains('collapsed')) {
+                sideNav.classList.remove('collapsed');
+                body.classList.remove('sidebar-collapsed');
+                body.classList.add('sidebar-expanded');
+            } else {
+                sideNav.classList.add('collapsed');
+                body.classList.remove('sidebar-expanded');
+                body.classList.add('sidebar-collapsed');
+            }
+        }
+
+        // Initialize body class based on sidebar state
+        document.addEventListener('DOMContentLoaded', function() {
+            const sideNav = document.getElementById('side-nav');
+            const body = document.body;
+            
+            if (sideNav.classList.contains('collapsed')) {
+                body.classList.add('sidebar-collapsed');
+            } else {
+                body.classList.add('sidebar-expanded');
+            }
+        });
     </script>
 </body>
 </html>

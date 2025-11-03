@@ -614,7 +614,6 @@ summary::-webkit-details-marker {
 @media (min-width: 1600px) {
 	.content {
 	  max-width: 1500px;
-	  font-size: 18px;
 	}
 }
 .contentpadding, #observablehq-center {
@@ -989,11 +988,14 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 /* color is !important so surrounding a href color from menu.css does not override */
 .btn-primary {
     color: #fff !important;
-    background-color: #6fa1d8;
-    background-colorX: #375a7f;
-    background-colorX: #579;
+    background-color: #6fa1d8; /* med baby blue */
+    background-color: #375a7f; /* akin to blueberry */
+    background-colorX: #579; /* faded blue */
     border-color: #6fa1d8;
     border-colorX: #375a7f;
+}
+.dark .btn-primary {
+  background-color: #084975; /* darker = blueberry */
 }
 .btn-primary:visited {
     color: #fff !important;
@@ -1024,7 +1026,11 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   background-color: purple !important;
   text-decoration: none;
 }
-
+.btn-info {
+    color: #fff !important;
+    background-color: #a6c36e;
+    border-color: #a6c36e;
+}
 .btn-success {
     color: #fff !important;
     background-color: #a6c36e;
@@ -1285,7 +1291,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   border: 1px solid lightgray;
   border: 1px solid #444;
   border-radius: 18px;
-  min-height: 34px;
+  min-height: 32px;
   padding: 0 5px 0 10px;
   padding-top: 4px; /* Firefox */
   margin-right: 5px;
@@ -1719,14 +1725,15 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   min-width: 80px;
 }
 .titlecell {
+  border-top:1px solid #ccc;
   padding: 5px 12px 0 5px;
-  float:left;
+  floatX:left;
   clear:both;
   min-width: 180px;
   font-weight: 500;
 }
 .floating-object {
-  float:left;
+  floatX:left;
   margin-right:10px;
   margin-bottom:10px;
 }
@@ -1813,6 +1820,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   float: left;
 }
 .valueonly {
+  padding-left: 5px;
   padding-right: 5px;
   overflow: auto;
 }
@@ -2199,6 +2207,7 @@ body.sidebar-hovered {
 .sidebar.collapsed #side-nav-content {
     cursor: e-resize; /* rightward pointing double-arrow */
     max-width: 62px;
+    overflow: visible;
 }
 .sidebar.collapsed .nav-section .nav-text {
   display: none !important;
@@ -2208,11 +2217,19 @@ body.sidebar-hovered {
   max-width: 0px !important;
   min-width: 0px !important;
 }
+.sidebar.collapsed .nav-section {
+  position: relative;
+}
 .sidebar.collapsed .nav-section:hover .nav-link {
   width: auto;
   max-width: 200px !important;
   min-width: 200px !important;
   transition: none !important;
+  z-index: 99999 !important;
+  position: relative;
+  margin-top: -2px;
+  margin-left: 5px;
+  border: 3px solid #000;
 }
 .sidebar.collapsed .nav-section:hover .nav-icon {
   margin-right: 12px !important;
@@ -2245,6 +2262,16 @@ body.sidebar-hovered {
 #side-nav-menu {
     flex: 1;
     overflow-y: auto;
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar.collapsed #side-nav-menu {
+    overflow: visible;
+}
+
+.sidebar.collapsed #side-nav-absolute {
+    overflow: visible;
 }
 .nav-item {
     margin-bottom: 4px;
@@ -2801,8 +2828,11 @@ body.sidebar-hovered {
 .dark .basePanelBackground {
     background: #333;
 }
+/* Not needed for team/js/map.js widget
+
+*/
 .basePanelPadding {
-    padding:15px;
+    padding:10px;
 }
 .basePanelFadeOut {
     position: relative;
@@ -2935,7 +2965,24 @@ body.sidebar-hidden #openNav {
 .dark #settings-toggle svg {
     stroke: white;
 }
-
+.badge-setX {
+    display: flex;
+    flex-wrap: wrap;
+}
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 3px;
+    margin: 3px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    border: 1px solid #ddd;
+}
+.badge:hover {
+  background: #888;
+  color: white;
+}
 /* Generic button styling to match anchor links */
 .bthButton {
     font-size: inherit !important;

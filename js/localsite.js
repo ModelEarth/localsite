@@ -11,6 +11,10 @@ Localsite Path Library - A global namespace singleton
 Define a new object if localsite library does not exist yet.
 */
 
+//if (window.localsiteLoaded) { // Would need to make sure access to variables is not restricted.
+window.localsiteLoaded = true; // Used by embed.js to avoid double loading localsite.js
+
+let localsiteTitle = "Localsite";
 var localStart = Date.now(); // A var so waitForVariableNav detects in navigation.js.
 
 if(typeof onlineApp == 'undefined') {
@@ -19,7 +23,7 @@ if(typeof onlineApp == 'undefined') {
 } else {
   consoleLog("ALERT: Page loads localsite.js more than once.")
 }
-let localsiteTitle = "Localsite";
+
 let defaultState = "";
 if (location.host.indexOf('localhost') >= 0) {
   defaultState = "";  // Set to GA to include additional map layers in top nav.
@@ -177,6 +181,7 @@ var local_app = local_app || {};
                         }
                         modelearth_repo = result; // Cache for future calls
                     } else {
+                        /*
                         // Try map-embed.js as fallback if localsite.js fails
                         findScript('map-embed.js').then(fallbackScript => {
                             if (fallbackScript) {
@@ -190,6 +195,7 @@ var local_app = local_app || {};
                                 modelearth_repo = result; // Cache for future calls
                             }
                         });
+                        */
                     }
                 });
                 // Return default for immediate use
@@ -252,7 +258,7 @@ if(typeof hiddenhash == 'undefined') {
   var hiddenhash = {};
 }
 if (hiddenhash.geoview) {
-    alert("BUG L1 hiddenhash.geoview " + hiddenhash.geoview);
+    console.log("BUG L1 hiddenhash.geoview " + hiddenhash.geoview);
 }
 // param values from page are placed in hiddenhash. (UNLESS THEY ARE ALREADY IN THE HASH.)
 // hiddenhash is loaded into hash in gethash if hash does not have an existing value.
@@ -270,9 +276,17 @@ if(typeof param != 'undefined') { // From settings in HTML page
 
 } else { // No param object in page, but could be set in localsite.js include.
   hiddenhash = mix(hiddenhash,paramIncludeFile);
+  var param = {};
+
   // Now we add in the hash, after hiddenhash is set without hash
-  var param = structuredClone(extend(true, loadParams(location.search,location.hash), paramIncludeFile)); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
+  // TO DO - comment this line out since window.param seems to also sets param.  (Observed that in embed.js or map.js)
+  param = structuredClone(extend(true, loadParams(location.search,location.hash), paramIncludeFile)); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
   //param = loadParams(location.search,location.hash); // Includes localsite.js include.
+
+  // Allows embed.js to access. 
+  window.param = structuredClone(extend(true, loadParams(location.search,location.hash), paramIncludeFile)); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
+  
+  //alert("param set in localsite. param.map " + param.map);
 }
 
 if (param.state) {
@@ -477,10 +491,12 @@ function updateHash(addToHash, addToExisting, removeFromHash) {
         if (value && typeof value === 'object' && !Array.isArray(value)) {
             // Flatten nested object properties
             Object.entries(value).forEach(([subKey, subValue]) => {
-                flatHash[`${key}.${subKey}`] = subValue;
+                // Encode & characters in values to prevent hash parsing issues
+                flatHash[`${key}.${subKey}`] = String(subValue).replace(/&/g, '%26');
             });
         } else {
-            flatHash[key] = value;
+            // Encode & characters in values to prevent hash parsing issues
+            flatHash[key] = String(value).replace(/&/g, '%26');
         }
     });
     
@@ -589,7 +605,7 @@ function loadScript(url, callback)
 
       script.onload = function() {
         consoleLog("loadScript loaded: " + url); // Once the entire file is processed.
-        callback();
+        if(callback) callback();
       }
   } else {
     consoleLog("loadScript script already available: " + url + " via ID: " + urlID);
@@ -694,7 +710,12 @@ function toggleFullScreen(alsoToggleHeader) {
 }
 
 // Determined by where localsite.js if fetched from.
+
 var theroot = get_localsite_root(); // Try using let instead of var to find other declarations.
+
+// TO DO - eliminate theroot and use local_app.localsite_root instead.
+// TO DO - Then eliminate the following get_localsite_root
+
 function get_localsite_root() { // Also in two other places
   if (localsite_repo3) { // Intensive, so limit to running once.
     //alert(localsite_repo);
@@ -702,16 +723,20 @@ function get_localsite_root() { // Also in two other places
   }
 
   let scripts = document.getElementsByTagName('script'); 
-  let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
-  //let myScript = null;
-  // Now try to find one containging map-embed.js
-  for (var i = 0; i < scripts.length; ++i) {
-      if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
+
+  // let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js - Doesn't work for embedded widgets - returns cloudflare
+
+  let hostnameAndPort = window.location.protocol + '//' + window.location.host; // The base, which includes the port.
+  let myScript;
+  for (var i = 0; i < scripts.length; ++i) { // Using current script
+      if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
         myScript = scripts[i];
       }
   }
-  let hostnameAndPort = extractHostnameAndPort(myScript.src);
-  //consoleLog("hostnameAndPort: " + hostnameAndPort);
+  if (myScript) {
+      hostnameAndPort = extractHostnameAndPort(myScript.src);
+      consoleLog("hostnameAndPort from " + myScript.src + " is " + hostnameAndPort);
+  }
   let theroot = location.protocol + '//' + location.host + '/localsite/';
 
   if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
@@ -1075,7 +1100,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             
             // Show/hide gravatar image based on checkbox and valid email
             if (gravatarChecked && isValidEmail(email)) {
-              loadScript('http://pajhome.org.uk/crypt/md5/md5.js', function(results) { // For gravatar image display
+                // https://pajhome.org.uk/crypt/md5/md5.js
+              loadScript('/localsite/js/md5.js', function(results) { // For gravatar image display
                 let userImg = $.gravatar(email);
                 if (userImg) {
                   localStorage.userImg = userImg;
@@ -1103,7 +1129,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
                 if ($("#getGravatar").is(":checked")) {
                   // BUGBUG - Redirect above will bypass.
-                  loadScript('http://pajhome.org.uk/crypt/md5/md5.js', function(results) {
+                  loadScript('/localsite/js/md5.js', function(results) {
                     let userImg = $.gravatar(email);
                     if (userImg) {
                       localStorage.userImg = userImg;
@@ -1364,6 +1390,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   }
 
   function loadMapAndMapFilters() {
+    return; //TEMP
     console.log("loadScript called from localsite.js");
     loadSearchFilterCss(); 
     loadScript(theroot + 'js/navigation.js', function(results) {
@@ -3186,7 +3213,7 @@ function formatRow(key,value,level,item) {
       //if(value && value.length > 0) { // Hides blank for nutrition
       if(value) { // Hides blank for nutrition
         // level" + level + " 
-        addHtml += "<div class='keyonly titlecell celltop'><b>" + key + "</b></div>";
+        addHtml += "<div class='keyonly barTitle titlecell celltop'><b>" + key + "</b></div>";
       }
     }
   } else {
@@ -3234,7 +3261,7 @@ function formatRow(key,value,level,item) {
       }
       if (barTitle) {
         addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell objectcell-lines' style='" + insertStyle + "'>"; // Around rows
-        addHtml += "<div keyname='" + keyName + "' class='barTitle child-count-" + Object.keys(value).length + "'>" + barTitle + "</div>\n";
+        addHtml += "<div keyname='" + keyName + "' class='child-count-" + Object.keys(value).length + "'>" + barTitle + "</div>\n";
       } else {
         addHtml += "<!--Child count " + Object.keys(value).length + "-->";
         addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell' style='" + insertStyle + "'>"; // Around rows
@@ -3753,7 +3780,8 @@ function adjustAnythingLLMNavigation() {
 }
 
 // Initialize AnythingLLM navigation adjustments when DOM is ready
-document.addEventListener('DOMContentLoaded', adjustAnythingLLMNavigation);
+// Saving incase anyone wants to include AnythingLLM in webroot
+//document.addEventListener('DOMContentLoaded', adjustAnythingLLMNavigation);
 
 // Auth Modal Integration - lazy load and show modal
 function showAuthModal() {

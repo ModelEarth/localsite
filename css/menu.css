@@ -830,7 +830,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
-    padding: 12px 24px 34px 16px;
+    padding: 12px 24px 34px 20px;
 }
 .menuTitle {
   font-size:18pt;

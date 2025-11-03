@@ -25,6 +25,14 @@ if(typeof localObject.geo == 'undefined') { localObject.geo = []; } // Holds cou
 localObject.us_stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78};
 // Later: localObject.stateZipsLoaded
 
+/* Allows map to remove selected shapes when backing up. */
+document.addEventListener('hashChangeEvent', function (elem) {
+    console.log("navigation.js detects URL hashChangeEvent");
+    hashChanged();
+}, false);
+if(typeof hiddenhash == 'undefined') {
+    var hiddenhash = {};
+}
 function hashChanged() {
 
     let loadGeomap = false;
@@ -820,7 +828,9 @@ function hashChanged() {
             $("#nullschoolHeader").hide();
         }
         if (!hash.geoview && priorHash.geoview) {
-            $("#nullschoolHeader").show();
+            if ($('#globalMapHolder #mainframe').attr('src')) { // Checking so we don't show a close-X when there is no content in the iframe.
+                $("#nullschoolHeader").show();
+            }
         }
         waitForElm('#state_select').then((elm) => {
             if (!hash.geoview || hash.geoview == "none") {
@@ -998,6 +1008,8 @@ class StandaloneNavigation {
         this.startPeriodicFaviconUpdate();
     }
     
+    // TO DO - Try using variable set in localsite.js instead 
+
     // Auto-detect webroot container from script path
     detectWebrootFromScriptPath() {
         // Get the current script path
@@ -1397,16 +1409,20 @@ class StandaloneNavigation {
                                             <span>Location Visits Map</span>
                                         </a>
                                         </div>
+
+                                        <!-- Not all have images
                                         <div style="display:none" class="geo">
-                                        <a href="${teamPath}projects/#list=geo" class="subnav-link">
+                                        <a href="${teamPath}projects/#list=cameraready" class="subnav-link">
                                             <i class="subnav-icon" data-feather="heart"></i>
-                                            <span>Location Insights</span>
+                                            <span>Film Location Insights</span>
                                         </a>
                                         </div>
+                                        -->
+
                                         <div style="display:none" class="geo">
-                                        <a href="${teamPath}projects/#list=film-scouting" class="subnav-link">
+                                        <a href="${teamPath}projects/#list=film-liaisons" class="subnav-link">
                                             <i class="subnav-icon" data-feather="film"></i>
-                                            <span>Film Scout Insights</span>
+                                            <span>Film Community Insights</span>
                                         </a>
                                         </div>
                                         <div style="display:none" class="geo">
@@ -5986,15 +6002,6 @@ if(!param.show) {
 }
 */
 
-/* Allows map to remove selected shapes when backing up. */
-document.addEventListener('hashChangeEvent', function (elem) {
-    console.log("navigation.js detects URL hashChangeEvent");
-    hashChanged();
-}, false);
-
-if(typeof hiddenhash == 'undefined') {
-    var hiddenhash = {};
-}
 function updateRegionService(section) {
 
     //alert("updateRegionService");
@@ -6503,12 +6510,18 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.web_root() + "/localsite/img/logo/states/GA-icon.png' style='width:52px;padding:0px;margin-top:-2px'></a>";
         localsiteTitle = "Georgia.org";
         changeFavicon(local_app.web_root() + "/localsite/img/logo/states/GA-favicon.png");
-        if (location.host.indexOf('localhost') >= 0 || location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
+        if (location.host.indexOf('localhost') >= 0) {
             showClassInline(".acct");
             showClassInline(".garesource");
+            showClassInline(".georgia");
+        } else if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
+            showClassInline(".acct");
+            showClassInline(".garesource");
+        } else {
+            showClassInline(".georgia");
         }
         showClassInline(".geo");
-        showClassInline(".georgia");
+        
         if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
             // To activate when filter are ready
             //showClassInline(".earth");

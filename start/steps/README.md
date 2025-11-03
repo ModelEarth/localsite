@@ -6,14 +6,14 @@ Our helpful tips for [Yarn, Node, Python, Docker and Conda](../cmds/).
 
 ## ModelEarth webroot with Claude Code CLI
 
-<a href="https://model.earth/webroot/" class="btn btn-success">Webroot Setup</a><br>
-
 **Getting Started** [Activate your webroot](https://model.earth/webroot) using Claude Code CLI or your favorite AI CLI
 
 **CodeChat:** [Overview of our webroot and RAG process](../../../codechat/) 
 
 **Contribute Locally:** The webroot [runs on port 8887](http://localhost:8887)
-<br>
+
+<a href="https://model.earth/webroot/" class="btn btn-success">Activate Your Webroot</a><br>
+
 
 ## Alternative: Manual webroot setup
 
