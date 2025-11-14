@@ -1,0 +1,125 @@
+/* Georgia Typography Styles */
+.georgia {
+  display:block !important;
+  --font-primary: 'Gotham', 'Nunito Sans', sans-serif;
+  --font-secondary: Georgia, serif;
+  --font-headline: 'Gotham', 'Nunito Sans', sans-serif;
+  --font-subheadline: 'Gotham', 'Nunito Sans', sans-serif;
+  --font-body: Georgia, serif;
+}
+
+.georgia .palette-title,
+.georgia .samples-title,
+.georgia .component-label,
+.georgia .card-title {
+  font-family: var(--font-headline);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* Avoiding Serif in alerts since it looks too old-school. */
+.georgia body,
+.georgia .card-text {
+  font-family: var(--font-body);
+}
+
+.georgia .btn {
+  font-family: var(--font-subheadline);
+}
+.georgia .btn-primary {
+  background-color: #375a7f !important;
+  background-color: #084975 !important; /* blueberry - dark */
+  background-color: #0056b3 !important;
+}
+
+.georgia .btn-primary:hover {
+  background-color: #003d82 !important; /* darker blue for hover */
+}
+
+.georgia .dark .btn-primary {
+  background-color: #084975 !important; /* darker = blueberry */
+}
+
+.georgia .color-name {
+  font-family: var(--font-subheadline);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Ensure Georgia sections are visible */
+.georgia .component-group {
+  opacity: 1;
+  display: block;
+}
+
+/* Link styles with Clay color */
+.georgiaX a,
+.georgiaX a:link,
+.georgiaX a:visited {
+  color: #AA483E; /* Clay  */
+  color: #0969DA;
+}
+
+.georgiaX a:hover {
+  color: #8B3A31;
+  color: #2980d9;
+}
+
+/* Georgia Color Variables - soft version of main color palette */
+.georgia {
+  /* Georgia Soft Background Colors - very light */
+  --soft-bg-green: #F4F8F5;     /* Very soft Pine */
+  --soft-bg-blue: #F2F6F9;      /* Very soft Blueberry */
+  --soft-bg-yellow: #FEF9F1;    /* Very soft Honey */
+  --soft-bg-red: #FDF4F3;       /* Very soft Peach */
+  --soft-bg-purple: #F7F5F8;    /* Very soft Blossom */
+
+  /* Georgia Soft Color Palette - more vibrant soft tones */
+  --notion-green: #E8F5E8;     /* More vibrant Pine */
+  --notion-blue: #E3F2FD;      /* More vibrant Blueberry */
+  --notion-yellow: #FFF8E1;    /* More vibrant Honey */
+  --notion-red: #FFEBEE;       /* More vibrant Peach */
+  --notion-purple: #F3E5F5;    /* More vibrant Blossom */
+
+  /* Georgia Text Colors - derived from main palette */
+  --notion-green-text: #235D39;    /* Pine */
+  --notion-blue-text: #084975;     /* Blueberry */
+  --notion-yellow-text: #B8891A;   /* Darker Honey */
+  --notion-red-text: #AA483E;      /* Clay */
+  --notion-purple-text: #8B7B8F;   /* Darker Blossom */
+  --notion-gray-text: #666666;     /* Concrete */
+
+  /* Georgia Heatmap Scale (Pine-based) */
+  --heatmap-0: #F4F8F5;
+  --heatmap-1: #D8E6DD;
+  --heatmap-2: #A8CDB5;
+  --heatmap-3: #6FA082;
+  --heatmap-4: #4A7A5E;
+  --heatmap-5: #235D39;
+
+  /* Georgia Heatmap Scale (Peach/Clay-based) */
+  --heatmap-hot-0: #FDF4F3;
+  --heatmap-hot-1: #F5D4CD;
+  --heatmap-hot-2: #EDB4A8;
+  --heatmap-hot-3: #D18B7E;
+  --heatmap-hot-4: #B86B5E;
+  --heatmap-hot-5: #AA483E;
+
+  /* Georgia Heatmap Scale (Warm - Honey) - moved from 4th to 3rd */
+  --heatmap-cool-0: #FEF9F1;
+  --heatmap-cool-1: #FBECCC;
+  --heatmap-cool-2: #F8DFA7;
+  --heatmap-cool-3: #F5D182;
+  --heatmap-cool-4: #E6BE3D;
+  --heatmap-cool-5: #B8891A;
+
+  /* Georgia Heatmap Scale (Cool - Blueberry) - moved from 3rd to 4th */
+  --heatmap-warm-0: #F2F6F9;
+  --heatmap-warm-1: #C8D9E6;
+  --heatmap-warm-2: #9BBCD3;
+  --heatmap-warm-3: #6E9FC0;
+  --heatmap-warm-4: #4F7CA2;
+  --heatmap-warm-5: #084975;
+}
