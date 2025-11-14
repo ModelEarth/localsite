@@ -857,11 +857,19 @@ function buildFloatingLegendFromChart() {
         const item = document.createElement('div');
         item.className = 'legend-item';
         item.title = label;
-
-    const lbl = document.createElement('span');
-    lbl.className = 'legend-label';
-    lbl.textContent = label;
-    item.appendChild(lbl);
+        const sw = document.createElement('span');
+        sw.className = 'legend-swatch';
+        try { sw.style.background = info.color; } catch (e) {}
+        item.appendChild(sw);
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'legend-checkbox';
+        try { cb.style.accentColor = info.color; } catch (e) {}
+        item.appendChild(cb);
+        const lbl = document.createElement('span');
+        lbl.className = 'legend-label';
+        lbl.textContent = label;
+        item.appendChild(lbl);
 
         // initialize selection visuals: visible if at least one chart has dataset visible
         const visible = info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden);
@@ -871,6 +879,7 @@ function buildFloatingLegendFromChart() {
             return; // don't add this legend item
         }
         setItemSelectionStyle(item, info.color, visible);
+        try { cb.checked = visible; } catch (e) {}
         // NOTE: value indicator will be shown only in the floating legend; do not append here
 
         // Toggle handler: toggles the dataset in all charts where it exists
@@ -882,12 +891,14 @@ function buildFloatingLegendFromChart() {
             });
             const nowVisible = info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden);
             setItemSelectionStyle(item, info.color, nowVisible);
+            try { cb.checked = nowVisible; } catch (e) {}
             // Also refresh overlay clones visuals to reflect the change
             document.querySelectorAll('.overlay-legend').forEach((ov) => {
                 const clone = ov.querySelector(`[data-legend-label="${CSS.escape(label)}"]`);
                 if (clone) setItemSelectionStyle(clone, info.color, nowVisible);
             });
         });
+        cb.addEventListener('click', (ev) => { try { ev.stopPropagation(); } catch (e) {} try { item.dispatchEvent(new MouseEvent('click', { bubbles: true })); } catch (e) {} });
 
         // Hover handlers: highlight corresponding chart curves when hovering legend items
         item.addEventListener('mouseenter', (ev) => {
@@ -1354,7 +1365,7 @@ function buildFloatingLegendFromChart() {
         // Clear and repopulate with collapse/expand behavior when many items
         bottom.innerHTML = '';
         const authItems = Array.from(document.querySelectorAll('#legend-content .legend-item'));
-        const maxVisible = 7;
+        const maxVisible = 12;
         const created = [];
         authItems.forEach((auth, idx) => {
             const label = auth.getAttribute('data-legend-label') || auth.title || auth.textContent.trim();
@@ -1612,10 +1623,125 @@ function buildFloatingLegendFromChart() {
             moreIcon.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openMenu(); } });
             bottom.appendChild(more);
             bottom.appendChild(moreIcon);
+            try {
+                const existingLabels = new Set(authItems.map((el) => (el.getAttribute('data-legend-label') || el.title || el.textContent.trim())));
+                const allMap = window._timelineCountryDataByName || {};
+                const addable = Object.keys(allMap).filter((n) => n && !existingLabels.has(n));
+                if (addable.length > 0) {
+                    const addBtn = document.createElement('div');
+                    addBtn.className = 'bottom-legend-more';
+                    addBtn.textContent = 'More Countries';
+                    addBtn.setAttribute('role','button');
+                    addBtn.tabIndex = 0;
+                    let panel = document.getElementById('more-countries-menu');
+                    if (!panel) {
+                        panel = document.createElement('div');
+                        panel.id = 'more-countries-menu';
+                        panel.className = 'bottom-legend-menu';
+                        panel.style.display = 'none';
+                        const inp = document.createElement('input');
+                        inp.type = 'text';
+                        inp.placeholder = 'Search countries';
+                        inp.style.width = '96%';
+                        inp.style.margin = '8px';
+                        panel.appendChild(inp);
+                        const list = document.createElement('div');
+                        list.className = 'bottom-legend-menu-list';
+                        panel.appendChild(list);
+                        document.body.appendChild(panel);
+                        const render = (query) => {
+                            list.innerHTML = '';
+                            const q = (query||'').toLowerCase();
+                            addable.filter((n) => !q || n.toLowerCase().indexOf(q) >= 0).slice(0, 40).forEach((n) => {
+                                const row = document.createElement('div');
+                                row.className = 'bottom-legend-menu-item';
+                                row.textContent = n;
+                                row.setAttribute('role','menuitem');
+                                row.tabIndex = 0;
+                                row.addEventListener('click', () => {
+                                    try { if (typeof window.addCountryToCharts === 'function') window.addCountryToCharts(n); } catch (e) {}
+                                    try { panel.style.display = 'none'; } catch (e) {}
+                                });
+                                list.appendChild(row);
+                            });
+                        };
+                        inp.addEventListener('input', () => render(inp.value));
+                        render('');
+                    }
+                    const openPanel = () => {
+                        try {
+                            const rect = addBtn.getBoundingClientRect();
+                            panel.style.left = (rect.left + window.scrollX) + 'px';
+                            panel.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+                            panel.style.display = 'block';
+                        } catch (e) {}
+                    };
+                    addBtn.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); openPanel(); });
+                    addBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openPanel(); } });
+                    bottom.appendChild(addBtn);
+                }
+            } catch (e) {}
         } else {
-            // No extras; ensure collapsed class removed
             bottom.classList.remove('bottom-legend-collapsed');
             created.forEach(el => bottom.appendChild(el));
+            try {
+                const existingLabels = new Set(authItems.map((el) => (el.getAttribute('data-legend-label') || el.title || el.textContent.trim())));
+                const allMap = window._timelineCountryDataByName || {};
+                const addable = Object.keys(allMap).filter((n) => n && !existingLabels.has(n));
+                if (addable.length > 0) {
+                    const addBtn = document.createElement('div');
+                    addBtn.className = 'bottom-legend-more';
+                    addBtn.textContent = 'More Countries';
+                    addBtn.setAttribute('role','button');
+                    addBtn.tabIndex = 0;
+                    let panel = document.getElementById('more-countries-menu');
+                    if (!panel) {
+                        panel = document.createElement('div');
+                        panel.id = 'more-countries-menu';
+                        panel.className = 'bottom-legend-menu';
+                        panel.style.display = 'none';
+                        const inp = document.createElement('input');
+                        inp.type = 'text';
+                        inp.placeholder = 'Search countries';
+                        inp.style.width = '96%';
+                        inp.style.margin = '8px';
+                        panel.appendChild(inp);
+                        const list = document.createElement('div');
+                        list.className = 'bottom-legend-menu-list';
+                        panel.appendChild(list);
+                        document.body.appendChild(panel);
+                        const render = (query) => {
+                            list.innerHTML = '';
+                            const q = (query||'').toLowerCase();
+                            addable.filter((n) => !q || n.toLowerCase().indexOf(q) >= 0).slice(0, 40).forEach((n) => {
+                                const row = document.createElement('div');
+                                row.className = 'bottom-legend-menu-item';
+                                row.textContent = n;
+                                row.setAttribute('role','menuitem');
+                                row.tabIndex = 0;
+                                row.addEventListener('click', () => {
+                                    try { if (typeof window.addCountryToCharts === 'function') window.addCountryToCharts(n); } catch (e) {}
+                                    try { panel.style.display = 'none'; } catch (e) {}
+                                });
+                                list.appendChild(row);
+                            });
+                        };
+                        inp.addEventListener('input', () => render(inp.value));
+                        render('');
+                    }
+                    const openPanel = () => {
+                        try {
+                            const rect = addBtn.getBoundingClientRect();
+                            panel.style.left = (rect.left + window.scrollX) + 'px';
+                            panel.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+                            panel.style.display = 'block';
+                        } catch (e) {}
+                    };
+                    addBtn.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); openPanel(); });
+                    addBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openPanel(); } });
+                    bottom.appendChild(addBtn);
+                }
+            } catch (e) {}
         }
         // Defer visibility decision to updateBottomLegendVisibility (driven by user X clicks)
         try { if (typeof updateBottomLegendVisibility === 'function') updateBottomLegendVisibility(); } catch (e) {}
