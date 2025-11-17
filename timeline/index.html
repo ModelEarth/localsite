@@ -2273,7 +2273,103 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
 }
 
 </style>
+<canvas id="myChart" width="600" height="300"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/earthscape.js"></script>
 
 </style>
+<script>
+let countries = ["AU","BR","CA","CN","DE","FR","GB","IN","IT","JP","KR","US","RU","AE","SA","ZA"];
+
+let legendContainer = document.createElement("div");
+legendContainer.id = "countryLegend";
+document.body.appendChild(legendContainer);
+
+countries.forEach(country => {
+    let checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = country;
+    checkbox.checked = true;
+
+    let label = document.createElement("label");
+    label.htmlFor = country;
+    label.innerText = country;
+
+    checkbox.addEventListener("change", () => {
+        console.log("Checkbox changed: " + country);
+    });
+
+    legendContainer.appendChild(checkbox);
+    legendContainer.appendChild(label);
+    legendContainer.appendChild(document.createElement("br"));
+});
+
+let moreLink = document.createElement("a");
+moreLink.href = "#";
+moreLink.innerText = "More Countries";
+moreLink.addEventListener("click", () => {
+    alert("Load more countries if available");
+});
+legendContainer.appendChild(moreLink);
+
+let summary = document.createElement("div");
+summary.innerText = `All ${countries.length}`;
+legendContainer.appendChild(summary);
+window.addEventListener("DOMContentLoaded", () => {
+
+    // Sample chart data
+    let dataValues = {
+  "AU":[5,10,15,20], "BR":[8,12,18,25], "CA":[3,9,14,19], 
+  "CN":[6,11,16,21], "DE":[7,13,19,24], "FR":[4,9,14,20],
+  "GB":[5,10,15,22], "IN":[7,11,17,21], "IT":[6,12,18,23], 
+  "JP":[8,13,19,24], "KR":[5,9,14,20], "US":[9,13,20,28],
+  "RU":[6,12,18,23], "AE":[4,8,13,19], "SA":[5,10,15,21], "ZA":[7,11,17,22]
+};
+
+    let colors = {
+  "AU":"red","BR":"green","CA":"orange","CN":"purple","DE":"pink",
+  "FR":"brown","GB":"cyan","IN":"magenta","IT":"lime","JP":"navy",
+  "KR":"teal","US":"blue","RU":"maroon","AE":"gold","SA":"gray","ZA":"olive"
+};
+
+    
+
+    // Draw chart
+    let ctx = document.getElementById("myChart").getContext("2d");
+    let chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ["Q1","Q2","Q3","Q4"],
+            datasets: Object.keys(dataValues).map(country => ({
+                label: country,
+                data: dataValues[country],
+                borderWidth: 2,
+                borderColor: colors[country]
+
+            }))
+        }
+    });
+
+    // Connect checkboxes to chart
+    let countries = ["AU","BR","CA","CN","DE","FR","GB","IN","IT","JP","KR","US","RU","AE","SA","ZA"];
+
+    countries.forEach(country => {
+        document.getElementById(country).addEventListener("change", () => {
+            chart.data.datasets = Object.keys(dataValues)
+                .filter(c => document.getElementById(c).checked)
+                .map(c => ({
+                    label: c,
+                    data: dataValues[c],
+                    borderWidth: 2,
+                    borderColor: colors[c]
+                }));
+            chart.update();
+        });
+    });
+
+});
+
+</script>
+
 </body>
 </html>
