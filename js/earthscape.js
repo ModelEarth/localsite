@@ -681,6 +681,38 @@ dataCopy.forEach(location => {
               
     }
 
+    window._timelineYears = years;
+    window._timelineCountryDataByName = {};
+    formattedData.forEach(function(loc){ window._timelineCountryDataByName[loc.name] = loc; });
+    window._timelineSelectedLabels = selectedData.map(function(loc){ return loc.name; });
+    window.addCountryToCharts = function(name){
+        try {
+            var loc = window._timelineCountryDataByName && window._timelineCountryDataByName[name];
+            if (!loc) return;
+            var yrs = window._timelineYears || [];
+            var existsLine = false;
+            var existsArea = false;
+            try { existsLine = Array.isArray(timelineChart?.data?.datasets) && timelineChart.data.datasets.some(function(ds){ return ds.label === name; }); } catch (e) {}
+            try { existsArea = Array.isArray(lineAreaChart?.data?.datasets) && lineAreaChart.data.datasets.some(function(ds){ return ds.label === name; }); } catch (e) {}
+            var border = colorForLabel(name);
+            var dataArr = yrs.map(function(year){ var observation = (loc.observations || []).find(function(obs){ return (obs.date.split('-')[0]) === year; }); return observation ? observation.value : null; });
+            if (timelineChart && !existsLine) {
+                try {
+                    timelineChart.data.datasets.push({ label: name, data: dataArr, borderColor: border, backgroundColor: 'rgba(0, 0, 0, 0)' });
+                    timelineChart.update();
+                } catch (e) {}
+            }
+            if (lineAreaChart && !existsArea) {
+                try {
+                    var bg = colorForLabel(name, 0.18);
+                    lineAreaChart.data.datasets.push({ label: name, data: dataArr, backgroundColor: bg, borderColor: 'rgba(0,0,0,0)', fill: true });
+                    lineAreaChart.update();
+                } catch (e) {}
+            }
+            try { if (typeof window.buildFloatingLegendFromChart === 'function') window.buildFloatingLegendFromChart(); } catch (e) {}
+        } catch (e) {}
+    };
+
         if (hash.output === "json") {
         // Output JSON data to the page
         const jsonOutput = {
