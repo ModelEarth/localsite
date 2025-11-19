@@ -274,11 +274,10 @@ function hashChanged() {
         }
         if (hash.state && hash.state.length == 2 && !($("#filterLocations").is(':visible'))) {
             $(".locationTabText").text($("#state_select").find(":selected").text());
-        } else {
-            $(".locationTabText").text("Locations");
-            //$("#filterLocations").hide();
-            //$("#industryListHolder").hide(); // Remove once national naics are loaded.
+        } else if (!hash.state) {
+            $(".locationTabText").text("United States");
         }
+        // Note: We no longer revert to "Locations" - keep the state name
 
         //&& hash.geoview == "state"
         if (hash.geoview && hash.geoview == priorHash.geoview) { // Prevents dup loading when hash.geoview != priorHash.geoview below.
@@ -7994,6 +7993,37 @@ $(document).on("change", "#state_select", function(event) {
 $(document).on("change", "#selectScope", function(event) {
     goHash({'scope':this.value});
 });
+// Click handler for State Name Tab - Shows inline dropdown
+$(document).on("click", "#filterClickState", function(event) {
+    // Toggle inline state dropdown
+    const inlineDropdown = $("#inlineStateDropdown");
+    
+    if (inlineDropdown.is(':visible')) {
+        inlineDropdown.hide();
+    } else {
+        // Move state_select to inline dropdown
+        if (typeof state_select != "undefined") {
+            inlineDropdown.empty();
+            const stateSelectClone = $(state_select).clone();
+            stateSelectClone.attr('id', 'state_select_inline').show();
+            stateSelectClone.val($("#state_select").val());
+            stateSelectClone.on('change', function() {
+                $("#state_select").val($(this).val()).trigger('change');
+                inlineDropdown.hide();
+            });
+            inlineDropdown.append(stateSelectClone);
+            inlineDropdown.show();
+        }
+    }
+    event.stopPropagation();
+});
+
+// Close inline dropdown when clicking elsewhere
+$(document).on("click", function() {
+    $("#inlineStateDropdown").hide();
+});
+
+// Click handler for Counties Tab - Opens location filter panel
 $(document).on("click", "#filterClickLocation", function(event) {
 
     if ($("#draggableSearch").is(':visible')) {
@@ -8217,14 +8247,24 @@ function openMapLocationFilter() {
     }
     $("#geomap").appendTo($("#geomapHolder")); // Move back from rightSideTabs
 
-    $(".locationTabText").text("Locations");
+    // Keep state name, don't revert to "Locations"
+    // $(".locationTabText").text("Locations"); // REMOVED - keep state name
+    
+    // Change filterClickLocation text to "States" when panel is open
+    $(".countiesTabText").text("States");
+    
     $("#topPanel").hide();
     $("#showLocations").show();
     $("#hideLocations").hide();
 
-    if (typeof state_select_holder != "undefined") {
-        state_select_holder.appendChild(state_select); // For apps hero
-    }
+    // Move state_select to location filter holder when Counties panel opens
+    waitForElm('#locationFilterHolder').then((elm) => {
+        if (typeof state_select != "undefined") {
+            // Move state dropdown to top of location filter panel
+            $("#locationFilterHolder").prepend(state_select);
+        }
+    });
+
     if (typeof select_scope_holder != "undefined") {
         select_scope_holder.appendChild(selectScope); // For apps hero
     }
@@ -8254,13 +8294,22 @@ function openMapLocationFilter() {
     }
 }
 function closeLocationFilter() {
-    $(".locationTabText").text($(".locationTabText").attr("title"));
+    // Keep state name in locationTabText (don't revert)
+    // $(".locationTabText").text($(".locationTabText").attr("title")); // REMOVED
+    
+    // Change countiesTabText back to "Counties"
+    $(".countiesTabText").text("Counties");
+    
     $("#showLocations").hide();
     $("#hideLocations").show();
     $("#locationFilterHolder").hide();
     $("#filterLocations").hide(); // Not sure why this was still needed.
     $("#imagineBar").hide();
     $("#filterClickLocation").removeClass("filterClickActive");
+    
+    // Close inline state dropdown if open
+    $("#inlineStateDropdown").hide();
+    
     if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
         $("#header.nav-up").hide();
     }
