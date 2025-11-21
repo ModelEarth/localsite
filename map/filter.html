@@ -75,15 +75,23 @@
               overflow:auto; causes vertical scroll to appear here:
             -->
             <div style="position:relative;">
+              <!-- State Name Tab - Shows state dropdown when clicked -->
+              <div class="filterClick" id="filterClickState" style="display:none; float:left; margin-right: 4px;">
+                <div class="filterClickText locationTabText">United States</div>
+              </div>
+              
+              <!-- State Dropdown Container - Appears inline when state tab is clicked -->
+              <div id="inlineStateDropdown" style="display:none; position:absolute; z-index:1000; background:#fff; padding:10px; border:1px solid #ccc; border-radius:5px; margin-top:2px;"></div>
+              
+              <!-- Counties Tab - Opens location filter panel -->
               <div class="filterClick" id="filterClickLocation" style="display:none">
-
                 <div class="select-menu-arrow-holder show-on-load" style="display:none">
                   <!-- We could place over all select menus
                     https://fabriceleven.com/design/clever-way-to-change-the-drop-down-selector-arrow-icon/ -->
                   <i id="showLocations" class="material-icons" style="font-size:24px;display:none">&#xE313;</i>
                   <i id="hideLocations"  class="material-icons" style="font-size:24px;cursor:pointer;">&#xE409;</i>
                 </div>
-                <div class="filterClickText locationTabText">Locations</div><!-- Entire State -->
+                <div class="filterClickText countiesTabText">Counties</div><!-- Changed from Locations to Counties -->
               </div>
             </div>
           </div>

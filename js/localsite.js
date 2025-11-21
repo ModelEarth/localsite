@@ -858,7 +858,8 @@ function loadLocalTemplate() {
       }
       waitForElm('#filterClickLocation').then((elm) => {
         if (param.showstates != "false") {
-            $("#filterClickLocation").show();
+            $("#filterClickState").show();  // Show state name tab
+            $("#filterClickLocation").show(); // Show counties tab
         }
         $("#mapFilters").prependTo("#main-content");
         // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
