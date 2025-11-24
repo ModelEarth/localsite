@@ -214,7 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
     pointer-events: auto;
 }
 .legend-item .item-actions { display: none; }
-.legend-swatch { width:14px; height:14px; border-radius:3px; box-shadow:0 0 0 1px rgba(0,0,0,0.06) inset; }
 .legend-item.hidden { opacity:0.45; }
 
 /* Label part of legend item — truncate if too long */
@@ -857,10 +856,6 @@ function buildFloatingLegendFromChart() {
         const item = document.createElement('div');
         item.className = 'legend-item';
         item.title = label;
-        const sw = document.createElement('span');
-        sw.className = 'legend-swatch';
-        try { sw.style.background = info.color; } catch (e) {}
-        item.appendChild(sw);
         const cb = document.createElement('input');
         cb.type = 'checkbox';
         cb.className = 'legend-checkbox';
@@ -2235,8 +2230,6 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
     box-shadow: 0 0 0 3px rgba(0,102,255,0.12);
 }
 .bottom-legend-collapsed .bottom-legend-item.extra { display: none; }
-/* Ensure swatch small square */
-.legend-swatch { width: 12px; height: 12px; display:inline-block; border-radius:2px; }
 /* two-dot icon next to more control */
 .more-label { font-weight:700; }
 /* separate three-dot icon for compact menu */
