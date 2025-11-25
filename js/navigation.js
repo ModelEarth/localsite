@@ -3365,6 +3365,12 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
     // Occurs twice in page
     let modelsite = Cookies.get('modelsite');
+
+    // Allow URL parameter to override cookie for testing
+    if (hash.site) {
+        modelsite = hash.site;
+    }
+
     if (!stateAbbr && modelsite) {
         if (modelsite == "model.georgia" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) { // Add loop if other states added to settings.
             stateAbbr = "GA";
@@ -6256,9 +6262,18 @@ let localsiteTitle = "";
 function applyNavigation() { // Waits for localsite.js 'localStart' variable so local_app path is available.
 
     // To do: fetch the existing background-image.
-    
-    let modelsite = Cookies.get('modelsite');
+
     let hash = getHash();
+    let modelsite = Cookies.get('modelsite');
+
+    // Allow URL parameter to override cookie for testing
+    if (hash.site) {
+        modelsite = hash.site;
+        // Optionally set cookie for persistence across page loads
+        if (typeof Cookies != 'undefined') {
+            Cookies.set('modelsite', hash.site);
+        }
+    }
     const changeFavicon = link => { // var for Safari
       let $favicon = document.querySelector('link[rel="icon"]')
       // If a <link rel="icon"> element already exists,
