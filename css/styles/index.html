@@ -644,7 +644,7 @@
 
 <script>
 // Color palette data stored in JSON
-const colorPalette = {
+const georgiaColorPalette = {
   primaryColor: [
     { name: "Pine", hex: "#235D39" }
   ],
@@ -670,26 +670,54 @@ const colorPalette = {
   ]
 };
 
+// Notion-inspired color palette - softer, more balanced tones
+const notionColorPalette = {
+  primaryColor: [
+    { name: "Sage", hex: "#52796F" }
+  ],
+  mainColors: [
+    { name: "Sky", hex: "#5B9BD5" },
+    { name: "Coral", hex: "#E8988F" },
+    { name: "Terra", hex: "#B5838D" },
+    { name: "Lavender", hex: "#C9B8D4" },
+    { name: "Amber", hex: "#F4A460" },
+    { name: "Mist", hex: "#D4D8DC" },
+    { name: "Mint", hex: "#84A98C" },
+    { name: "Aqua", hex: "#A8DADC" }
+  ],
+  supportingColors: [
+    { name: "Slate", hex: "#37474F" },
+    { name: "Marigold", hex: "#FFB84D" },
+    { name: "Crimson", hex: "#E07A5F" },
+    { name: "Sand", hex: "#E5D4C1" },
+    { name: "Graphite", hex: "#6C757D" },
+    { name: "Blush", hex: "#D4A5A5" },
+    { name: "Walnut", hex: "#8B7D6B" },
+    { name: "Cream", hex: "#FAF9F6" }
+  ]
+};
+
 // Function to render color swatches
 function renderColors(colors, containerId) {
   const container = document.getElementById(containerId);
-  
+  container.innerHTML = ''; // Clear existing content
+
   colors.forEach(color => {
     const swatch = document.createElement('div');
     swatch.className = 'color-swatch';
-    
+
     const circle = document.createElement('div');
     circle.className = 'color-circle';
     circle.style.backgroundColor = color.hex;
-    
+
     const name = document.createElement('div');
     name.className = 'color-name';
     name.textContent = color.name;
-    
+
     const hex = document.createElement('div');
     hex.className = 'color-hex';
     hex.textContent = color.hex;
-    
+
     swatch.appendChild(circle);
     swatch.appendChild(name);
     swatch.appendChild(hex);
@@ -697,10 +725,44 @@ function renderColors(colors, containerId) {
   });
 }
 
-// Render the color palettes first
-renderColors(colorPalette.primaryColor, 'primaryColor');
-renderColors(colorPalette.mainColors, 'mainColors');
-renderColors(colorPalette.supportingColors, 'supportingColors');
+// Function to render color palette based on typography style
+function renderColorPalette(typographyValue) {
+  const palette = (typographyValue === 'notion') ? notionColorPalette : georgiaColorPalette;
+  renderColors(palette.primaryColor, 'primaryColor');
+  renderColors(palette.mainColors, 'mainColors');
+  renderColors(palette.supportingColors, 'supportingColors');
+}
+
+// Function to show/hide palette section
+function togglePaletteSection(show) {
+  const paletteSection = document.querySelector('.palette-section');
+  if (paletteSection) {
+    paletteSection.style.display = show ? 'block' : 'none';
+  }
+}
+
+// Hash management functions
+function getHash() {
+  const hash = window.location.hash.substring(1);
+  const params = {};
+  if (hash) {
+    hash.split('&').forEach(part => {
+      const [key, value] = part.split('=');
+      if (key) params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+    });
+  }
+  return params;
+}
+
+function updateHash(updates) {
+  const current = getHash();
+  const merged = { ...current, ...updates };
+  const hashString = Object.keys(merged)
+    .filter(key => merged[key] !== '')
+    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(merged[key])}`)
+    .join('&');
+  window.location.hash = hashString;
+}
 
 // Typography toggle functionality
 const typographySelect = document.getElementById('typographySelect');
@@ -712,11 +774,11 @@ const bodyElement = document.body;
 // Soft background color palettes (very soft) for each typography style
 const softBackgroundPalettes = {
   notion: [
-    { name: "Soft Green", hex: "#F8FBF8", var: "--soft-bg-green" },
-    { name: "Soft Blue", hex: "#F6FAFC", var: "--soft-bg-blue" },
-    { name: "Soft Yellow", hex: "#FEFCF5", var: "--soft-bg-yellow" },
-    { name: "Soft Red", hex: "#FDF9F9", var: "--soft-bg-red" },
-    { name: "Soft Purple", hex: "#FAFAFC", var: "--soft-bg-purple" }
+    { name: "Soft Sage", hex: "#F7F9F8", var: "--soft-bg-green" },
+    { name: "Soft Sky", hex: "#F5F9FC", var: "--soft-bg-blue" },
+    { name: "Soft Amber", hex: "#FDF9F4", var: "--soft-bg-yellow" },
+    { name: "Soft Coral", hex: "#FDF8F7", var: "--soft-bg-red" },
+    { name: "Soft Lavender", hex: "#F9F8FB", var: "--soft-bg-purple" }
   ],
   georgia: [
     { name: "Soft Pine", hex: "#F4F8F5", var: "--soft-bg-green" },
@@ -737,11 +799,11 @@ const softBackgroundPalettes = {
 // More vibrant soft color palettes for each typography style
 const softColorPalettes = {
   notion: [
-    { name: "Green", hex: "#EEF3ED", var: "--notion-green" },
-    { name: "Blue", hex: "#E9F3F7", var: "--notion-blue" },
-    { name: "Yellow", hex: "#FAF3DD", var: "--notion-yellow" },
-    { name: "Red", hex: "#FAECEC", var: "--notion-red" },
-    { name: "Purple", hex: "#F6F3F8", var: "--notion-purple" }
+    { name: "Sage", hex: "#E8F0ED", var: "--notion-green" },
+    { name: "Sky", hex: "#E8F2F9", var: "--notion-blue" },
+    { name: "Amber", hex: "#FDF2E3", var: "--notion-yellow" },
+    { name: "Coral", hex: "#FBEEED", var: "--notion-red" },
+    { name: "Lavender", hex: "#F0EEF5", var: "--notion-purple" }
   ],
   georgia: [
     { name: "Soft Pine", hex: "#E8F5E8", var: "--notion-green" },
@@ -820,17 +882,19 @@ function updateSectionTitle(typographyValue) {
   colorPaletteTitle.textContent = 'Soft Background Colors';
 }
 
-// Load saved typography selection from localStorage
-const savedTypography = localStorage.getItem('typographySelection');
-if (savedTypography && ['georgia', 'notion', 'none'].includes(savedTypography)) {
-  typographySelect.value = savedTypography;
-} else {
-  // Default to georgia if no saved preference
-  typographySelect.value = 'georgia';
+// Get initial typography value from hash, localStorage, or default
+const hashParams = getHash();
+let initialValue = hashParams.style || localStorage.getItem('typographySelection') || 'georgia';
+
+// Validate the value
+if (!['georgia', 'notion', 'none'].includes(initialValue)) {
+  initialValue = 'georgia';
 }
 
-// Apply the loaded/default typography
-const initialValue = typographySelect.value;
+// Set the select value
+typographySelect.value = initialValue;
+
+// Apply the typography class
 bodyElement.classList.remove('georgia', 'notion');
 if (initialValue === 'georgia') {
   bodyElement.classList.add('georgia');
@@ -838,32 +902,84 @@ if (initialValue === 'georgia') {
   bodyElement.classList.add('notion');
 }
 
-// Initialize title and both color palettes on page load
-updateSectionTitle(initialValue);
-renderSoftBackgroundPalette(initialValue);
-renderSoftColorPalette(initialValue);
+// Handle color palette display for "none" option
+if (initialValue === 'none') {
+  // Get the most recent Georgia/Notion selection
+  const lastStyled = localStorage.getItem('lastStyledTypography');
+  if (lastStyled && (lastStyled === 'georgia' || lastStyled === 'notion')) {
+    // Use the most recent palette but don't apply the class
+    renderColorPalette(lastStyled);
+    updateSectionTitle(lastStyled);
+    renderSoftBackgroundPalette(lastStyled);
+    renderSoftColorPalette(lastStyled);
+  } else {
+    // No recent cache - hide the palette section
+    togglePaletteSection(false);
+  }
+} else {
+  // For Georgia or Notion, show the palette and render it
+  togglePaletteSection(true);
+  renderColorPalette(initialValue);
+  updateSectionTitle(initialValue);
+  renderSoftBackgroundPalette(initialValue);
+  renderSoftColorPalette(initialValue);
+
+  // Save as the most recent styled typography
+  localStorage.setItem('lastStyledTypography', initialValue);
+}
+
+// Update hash if not already set
+if (!hashParams.style) {
+  updateHash({ style: initialValue });
+}
 
 typographySelect.addEventListener('change', function() {
   console.log('Typography changed:', this.value);
-  
+
   // Save selection to localStorage
   localStorage.setItem('typographySelection', this.value);
-  
+
+  // Update hash with new style
+  updateHash({ style: this.value });
+
   // Remove all typography classes
   bodyElement.classList.remove('georgia', 'notion');
-  
-  // Add the selected class if it's not 'none'
-  if (this.value === 'georgia') {
-    bodyElement.classList.add('georgia');
-  } else if (this.value === 'notion') {
-    bodyElement.classList.add('notion');
+
+  // Handle typography application and palette display
+  if (this.value === 'none') {
+    // For 'none', use the most recent Georgia/Notion palette if available
+    const lastStyled = localStorage.getItem('lastStyledTypography');
+    if (lastStyled && (lastStyled === 'georgia' || lastStyled === 'notion')) {
+      // Show palette from most recent styled selection
+      togglePaletteSection(true);
+      renderColorPalette(lastStyled);
+      updateSectionTitle(lastStyled);
+      renderSoftBackgroundPalette(lastStyled);
+      renderSoftColorPalette(lastStyled);
+    } else {
+      // No recent cache - hide the palette section
+      togglePaletteSection(false);
+    }
+  } else {
+    // For Georgia or Notion
+    togglePaletteSection(true);
+
+    // Add the selected class
+    if (this.value === 'georgia') {
+      bodyElement.classList.add('georgia');
+    } else if (this.value === 'notion') {
+      bodyElement.classList.add('notion');
+    }
+
+    // Save as the most recent styled typography
+    localStorage.setItem('lastStyledTypography', this.value);
+
+    // Update section title and all palettes
+    renderColorPalette(this.value);
+    updateSectionTitle(this.value);
+    renderSoftBackgroundPalette(this.value);
+    renderSoftColorPalette(this.value);
   }
-  // For 'none', no class is added - uses default CSS only
-  
-  // Update section title and both color palettes
-  updateSectionTitle(this.value);
-  renderSoftBackgroundPalette(this.value);
-  renderSoftColorPalette(this.value);
 });
 </script>
 
