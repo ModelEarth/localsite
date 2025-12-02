@@ -146,9 +146,9 @@ function exploreFiles(param) {
 }
 
 
-// Enhanced chart display for ML reports - Added by Akhil
+// Enhanced chart display for ML reports - Updated per Loren's request
+// Shows ALL files in folder: charts, CSVs, and links to everything else
 function displayCharts(param) {
-    // Set defaults if coming from external domain
     if (param.showother && window.location.origin.indexOf('github') < 0) {
         param.owner = 'modelearth';
         param.repo = 'reports';
@@ -173,26 +173,40 @@ function displayCharts(param) {
         success: function(data) {
             console.log('[displayCharts] GitHub API response:', data);
             
-            // Filter PNG files in current folder only
-            const allPNGs = data.tree.filter(file => {
-                if (!/\.png$/i.test(file.path)) return false;
+            // Filter all files in current folder only
+            const allFiles = data.tree.filter(file => {
+                if (file.type !== 'blob') return false; // Only files, not directories
                 const fileFolder = file.path.substring(0, file.path.lastIndexOf('/'));
                 const matches = fileFolder === currentFolder;
                 if (matches) {
-                    console.log('[displayCharts] Found chart:', file.path);
+                    console.log('[displayCharts] Found file:', file.path);
                 }
                 return matches;
             });
 
-            console.log('[displayCharts] Total PNG files found:', allPNGs.length);
+            console.log('[displayCharts] Total files found:', allFiles.length);
 
-            if (allPNGs.length === 0) {
-                console.warn('[displayCharts] No PNG files found in folder:', currentFolder);
-                $('#exploreOutput').append('<p style="color:#999;">No chart visualizations found in this folder.</p>');
+            // Categorize files by type
+            const pngFiles = allFiles.filter(f => /\.png$/i.test(f.path));
+            const csvFiles = allFiles.filter(f => /\.csv$/i.test(f.path));
+            const mdFiles = allFiles.filter(f => /\.(md|txt)$/i.test(f.path));
+            const pdfFiles = allFiles.filter(f => /\.pdf$/i.test(f.path));
+            const otherFiles = allFiles.filter(f => 
+                !/\.(png|csv|md|txt|pdf|html)$/i.test(f.path)
+            );
+
+            // Don't show index.html in the file list
+            const displayOtherFiles = otherFiles.filter(f => 
+                !/index\.html$/i.test(f.path)
+            );
+
+            if (allFiles.length === 0) {
+                console.warn('[displayCharts] No files found in folder:', currentFolder);
+                $('#exploreOutput').append('<p style="color:#999;">No files found in this folder.</p>');
                 return;
             }
 
-            // Add styling and container
+            // Add styling
             $('#exploreOutput').append(`
                 <style>
                     .chart-grid {
@@ -227,37 +241,190 @@ function displayCharts(param) {
                         border-radius: 8px;
                         cursor: pointer;
                     }
+                    .tableSurround {
+                        border: 1px solid #aaa;
+                        border-radius: 20px;
+                        background: #fff;
+                        padding: 20px;
+                        margin-bottom: 30px;
+                    }
+                    .file-list {
+                        background: #f8f9fa;
+                        border-radius: 8px;
+                        padding: 20px;
+                        margin: 20px 0;
+                    }
+                    .file-list h3 {
+                        margin: 0 0 12px 0;
+                        color: #2c3e50;
+                        font-size: 16px;
+                        font-weight: 600;
+                    }
+                    .file-list ul {
+                        list-style: none;
+                        padding: 0;
+                        margin: 0;
+                    }
+                    .file-list li {
+                        padding: 8px 12px;
+                        margin: 4px 0;
+                        background: white;
+                        border-radius: 4px;
+                        border-left: 3px solid #007bff;
+                    }
+                    .file-list a {
+                        color: #007bff;
+                        text-decoration: none;
+                        font-size: 14px;
+                    }
+                    .file-list a:hover {
+                        text-decoration: underline;
+                    }
+                    .file-icon {
+                        margin-right: 8px;
+                        opacity: 0.6;
+                    }
                     .dark .chart-card { background: #313131; }
                     .dark .chart-card h3 { color: #fff; }
+                    .dark .tableSurround { background: #313131; }
+                    .dark .file-list { background: #2a2a2a; }
+                    .dark .file-list h3 { color: #fff; }
+                    .dark .file-list li { background: #313131; }
                 </style>
-                <h2>Analysis Visualizations</h2>
-                <div class="chart-grid" id="chartGrid"></div>
             `);
 
-            // Display each PNG file
-            allPNGs.forEach(file => {
-                const imagePath = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
-                const fileName = file.path.split('/').pop().replace('.png', '').replace(/_/g, ' ');
-                const title = fileName.charAt(0).toUpperCase() + fileName.slice(1);
+            // Display PNG charts
+            if (pngFiles.length > 0) {
+                $('#exploreOutput').append(`
+                    <h2>Analysis Visualizations</h2>
+                    <div class="chart-grid" id="chartGrid"></div>
+                `);
+
+                pngFiles.forEach(file => {
+                    const imagePath = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
+                    const fileName = file.path.split('/').pop().replace('.png', '').replace(/_/g, ' ');
+                    const title = fileName.charAt(0).toUpperCase() + fileName.slice(1);
+                    
+                    console.log('[displayCharts] Adding chart:', title);
+                    
+                    const chartHTML = `
+                        <div class="chart-card">
+                            <h3>${title}</h3>
+                            <a href="${imagePath}" target="_blank">
+                                <img src="${imagePath}" alt="${title}" loading="lazy">
+                            </a>
+                        </div>
+                    `;
+                    $('#chartGrid').append(chartHTML);
+                });
+            }
+
+            // Display CSV files as tables
+            if (csvFiles.length > 0) {
+                $('#exploreOutput').append('<h2>Data Tables</h2>');
                 
-                console.log('[displayCharts] Adding chart:', title);
-                
-                const chartHTML = `
-                    <div class="chart-card">
-                        <h3>${title}</h3>
-                        <a href="${imagePath}" target="_blank">
-                            <img src="${imagePath}" alt="${title}" loading="lazy">
-                        </a>
-                    </div>
-                `;
-                $('#chartGrid').append(chartHTML);
-            });
+                csvFiles.forEach(function(file, index) {
+                    const fileURL = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
+                    const githubURL = `https://github.com/${owner}/${repo}/tree/${branch}/${file.path}`;
+                    
+                    let my = {};
+                    my.dataset = fileURL;
+                    my.elementID = "exploreTable" + (index + 1);
+                    
+                    my.title = file.path
+                        .split('/').pop()
+                        .split('.').slice(0, -1).join('.')
+                        .replace(/[_-]/g, ' ')
+                        .replace(/\b\w/g, char => char.toUpperCase());
+
+                    const fileoutput = `
+                        <div class="tableSurround">
+                            <div style="font-size:18px;margin-bottom:6px;font-weight:600">${my.title}</div>
+                            <div id="${my.elementID}"></div>
+                            <div style="font-size:11px;margin-top:8px;color:#666">
+                                <a href="${githubURL}">${file.path}</a> | <a href="${fileURL}">download</a>
+                            </div>
+                        </div>
+                    `;
+                    $('#exploreOutput').append(fileoutput);
+                    
+                    // Load table after DOM is ready
+                    setTimeout(() => loadEarthScape(my), 100);
+                });
+            }
+
+            // Display other files as downloadable links
+            let hasOtherFiles = false;
+            let filesHTML = '<div class="file-list"><h3>📁 Additional Files</h3><ul>';
+
+            // Add markdown/text files
+            if (mdFiles.length > 0) {
+                hasOtherFiles = true;
+                mdFiles.forEach(file => {
+                    const fileURL = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
+                    const fileName = file.path.split('/').pop();
+                    const icon = fileName.toLowerCase().includes('readme') ? '📖' : '📄';
+                    filesHTML += `
+                        <li>
+                            <span class="file-icon">${icon}</span>
+                            <a href="${fileURL}" target="_blank">${fileName}</a>
+                        </li>
+                    `;
+                });
+            }
+
+            // Add PDF files
+            if (pdfFiles.length > 0) {
+                hasOtherFiles = true;
+                pdfFiles.forEach(file => {
+                    const fileURL = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
+                    const fileName = file.path.split('/').pop();
+                    filesHTML += `
+                        <li>
+                            <span class="file-icon">📕</span>
+                            <a href="${fileURL}" target="_blank">${fileName}</a>
+                        </li>
+                    `;
+                });
+            }
+
+            // Add other files
+            if (displayOtherFiles.length > 0) {
+                hasOtherFiles = true;
+                displayOtherFiles.forEach(file => {
+                    const fileURL = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
+                    const fileName = file.path.split('/').pop();
+                    const ext = fileName.split('.').pop().toLowerCase();
+                    
+                    // Choose icon based on file extension
+                    let icon = '📎';
+                    if (ext === 'py') icon = '🐍';
+                    else if (ext === 'ipynb') icon = '📓';
+                    else if (ext === 'json' || ext === 'yaml' || ext === 'yml') icon = '⚙️';
+                    else if (ext === 'zip' || ext === 'tar' || ext === 'gz') icon = '📦';
+                    
+                    filesHTML += `
+                        <li>
+                            <span class="file-icon">${icon}</span>
+                            <a href="${fileURL}" target="_blank">${fileName}</a>
+                            <span style="color:#999;font-size:12px;margin-left:8px">(${ext.toUpperCase()})</span>
+                        </li>
+                    `;
+                });
+            }
+
+            filesHTML += '</ul></div>';
+
+            // Only append if there are files to show
+            if (hasOtherFiles) {
+                $('#exploreOutput').append(filesHTML);
+            }
             
-            console.log('[displayCharts] Successfully displayed', allPNGs.length, 'charts');
+            console.log('[displayCharts] Successfully displayed', pngFiles.length, 'charts,', csvFiles.length, 'tables, and', (mdFiles.length + pdfFiles.length + displayOtherFiles.length), 'other files');
         },
         error: function(err) {
             console.error('[displayCharts] Error fetching from GitHub:', err);
-            $('#exploreOutput').append('<p style="color:red;">Error loading charts. Check console for details.</p>');
+            $('#exploreOutput').append('<p style="color:red;">Error loading files. Check console for details.</p>');
         }
     });
 }
