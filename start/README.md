@@ -6,7 +6,7 @@
 
 ### Localsite Setup and Development
 
-[How to add a new localsite page](template).  View our [Active Projects](../../projects) and [Moonshots](../../community/projects).
+[How to add a new readme page (index.html)](template).  View our [Active Projects](../../projects) and [Moonshots](../../community/projects).
 
 Helpful tips for [NVM, Node, npm, pyenv, Python, pip, Conda and Docker](cmds/).
 
@@ -97,8 +97,7 @@ Responsible sourcing allows manufacturers to...
 [Challenge.gov](https://www.challenge.gov) - Web Challenges created by US Government Agencies
 [OpenLCA](https://www.openlca.org/) - Downloadable app for Life Cycle Assessment
 [OECD - Organization for Economic Co-Operation and Development](https://www.oecd.org/sti/ind/measuring-trade-in-value-added.htm) - France
-[Leyla Acaroglu on Life Cycle Assessment](https://medium.com/disruptive-design/a-guide-to-life-cycle-thinking-b762ab49bce3)
-[Knoema Infographics](https://knoema.com/infographics) - [Data Coverage Matrix](https://knoema.com/atlas/matrix) - Global models which could be reproduced locally.  
+[Leyla Acaroglu on Life Cycle Assessment](https://medium.com/disruptive-design/a-guide-to-life-cycle-thinking-b762ab49bce3)   
 [World Input-Output Database (WOID)](http://www.wiod.org/otherdb)  
 [IMPLAN Impact Analysis](https://implanhelp.zendesk.com/hc/en-us/articles/360039284273-Environmental-Data) - 8 broad categories using USEEIO model data
 
@@ -108,7 +107,7 @@ Responsible sourcing allows manufacturers to...
 
 
 [Use our Lifecycle Tools for Research and Teaching](/io/learn/)
-Explore [the matrix](/io/about/matrix/) and tinker with our [Footprint Javascript](/profile/footprint/)
+Explore [the matrix](/io/about/matrix/) and tinker with our [Open Footprint Javascript](/profile/)
 
 <!-- 
 Expensive European Exiobase

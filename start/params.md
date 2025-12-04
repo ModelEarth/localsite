@@ -1,6 +1,6 @@
 # Parameters
 
-To create a page where you can edit parameters, copy our [base starter page](../../apps/base/).  
+To create a page where you can edit parameters, copy our [base starter page](../start/template/).  
 You can copy parameters from the URL.  Here's a sample with [Air impacts for Fulton and DeKalb Counties](../info/#geo=US13121,US13089&set=air&indicators=GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS)
 
     param.display = "everything"

@@ -858,7 +858,8 @@ function loadLocalTemplate() {
       }
       waitForElm('#filterClickLocation').then((elm) => {
         if (param.showstates != "false") {
-            $("#filterClickLocation").show();
+            $("#filterClickState").show();  // Show state name tab
+            $("#filterClickLocation").show(); // Show counties tab
         }
         $("#mapFilters").prependTo("#main-content");
         // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
@@ -886,7 +887,7 @@ function loadLocalTemplate() {
             });
           });
         }
-        if(location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0) {
+        if(location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0 || location.host.indexOf("8888") >= 0) {
           $("#dreamstudio-nav a").each(function() {
             $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
           });
@@ -3780,7 +3781,8 @@ function adjustAnythingLLMNavigation() {
 }
 
 // Initialize AnythingLLM navigation adjustments when DOM is ready
-document.addEventListener('DOMContentLoaded', adjustAnythingLLMNavigation);
+// Saving incase anyone wants to include AnythingLLM in webroot
+//document.addEventListener('DOMContentLoaded', adjustAnythingLLMNavigation);
 
 // Auth Modal Integration - lazy load and show modal
 function showAuthModal() {

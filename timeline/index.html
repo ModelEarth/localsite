@@ -87,6 +87,26 @@ document.addEventListener('DOMContentLoaded', () => {
     The legend will be fixed in the viewport (top-right by default) regardless of canvas updates.
     Individual legend items remain interactive while the container lets other clicks pass through. */
 #div1 { position: relative; }
+#div2 { position: relative; }
+
+/* Ensure chart containers don't take up space when hidden */
+.toogleDiv {
+    margin: 0;
+    padding: 0;
+}
+
+.toogleDiv[style*="display: none"] {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+.toogleDiv[style*="display: block"] {
+    display: block !important;
+    margin-bottom: 20px;
+}
 #floating-legend {
      position: fixed;
      top: 120px;
@@ -194,12 +214,41 @@ document.addEventListener('DOMContentLoaded', () => {
     pointer-events: auto;
 }
 .legend-item .item-actions { display: none; }
-.legend-swatch { width:14px; height:14px; border-radius:3px; box-shadow:0 0 0 1px rgba(0,0,0,0.06) inset; }
 .legend-item.hidden { opacity:0.45; }
 
 /* Label part of legend item — truncate if too long */
 .legend-label { display:inline-block; flex: 1 1 auto; min-width:0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* More Locations button in floating/overlay legends */
+.legend-more-btn {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: #0066ff;
+    color: white;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    pointer-events: auto !important;
+    user-select: none;
+}
 
+.legend-more-btn:hover {
+    background: #0052cc;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,102,255,0.3);
+}
+
+.legend-more-btn:active {
+    transform: translateY(0);
+}
+
+/* Menu styling */
+.floating-legend-menu-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
 /* Value small text shown aligned to the right edge of the legend item */
 .legend-value { margin-left: auto; flex: 0 0 auto; color: rgba(0,0,0,0.7); font-weight: 600; padding-left: 8px; }
 </style>
@@ -497,7 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="whichLinesHolder" style="float:left; display: flex;">
           <label> <input value="showAll" type="radio" name="whichLines" />All &nbsp;</label>
           <div class="scope-country">
-              <!-- <label> <input value="showSelected" type="radio" name="whichLines"/>11 Countries &nbsp;</label> -->
+              <label> <input value="showSelected" type="radio" name="whichLines"/>Top Economics &nbsp;</label>
           </div>
           <label> <input value="showTop5" type="radio" name="whichLines" checked />Top 5 &nbsp;</label>
           <label> <input value="showBottom5" type="radio" name="whichLines" />Bottom 5 &nbsp;</label>
@@ -509,6 +558,29 @@ document.addEventListener('DOMContentLoaded', () => {
             <!--
             <label> <input value="perarea" type="radio" name="whichPer" />Per Area </label>
             -->
+        </div>
+
+        <!-- Chart Size Controls -->
+        <div style="clear: both; margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+            <h4 style="margin: 0 0 15px 0; color: #495057; font-size: 16px;">Chart Size Controls</h4>
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label for="widthSlider" style="font-weight: 500; min-width: 50px;">Width:</label>
+                    <input type="range" id="widthSlider" min="300" max="1200" value="800" step="10" 
+                           style="width: 150px;" oninput="updateChartSize()">
+                    <span id="widthValue" style="min-width: 50px; font-family: monospace;">800px</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label for="heightSlider" style="font-weight: 500; min-width: 50px;">Height:</label>
+                    <input type="range" id="heightSlider" min="200" max="800" value="400" step="10" 
+                           style="width: 150px;" oninput="updateChartSize()">
+                    <span id="heightValue" style="min-width: 50px; font-family: monospace;">400px</span>
+                </div>
+                <button onclick="resetChartSize()" 
+                        style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                    Reset to Auto
+                </button>
+            </div>
         </div>
 
         <div id="div1" class="toogleDiv" chart-wrapper>
@@ -814,11 +886,15 @@ function buildFloatingLegendFromChart() {
         const item = document.createElement('div');
         item.className = 'legend-item';
         item.title = label;
-
-    const lbl = document.createElement('span');
-    lbl.className = 'legend-label';
-    lbl.textContent = label;
-    item.appendChild(lbl);
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'legend-checkbox';
+        try { cb.style.accentColor = info.color; } catch (e) {}
+        item.appendChild(cb);
+        const lbl = document.createElement('span');
+        lbl.className = 'legend-label';
+        lbl.textContent = label;
+        item.appendChild(lbl);
 
         // initialize selection visuals: visible if at least one chart has dataset visible
         const visible = info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden);
@@ -828,6 +904,7 @@ function buildFloatingLegendFromChart() {
             return; // don't add this legend item
         }
         setItemSelectionStyle(item, info.color, visible);
+        try { cb.checked = visible; } catch (e) {}
         // NOTE: value indicator will be shown only in the floating legend; do not append here
 
         // Toggle handler: toggles the dataset in all charts where it exists
@@ -839,12 +916,14 @@ function buildFloatingLegendFromChart() {
             });
             const nowVisible = info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden);
             setItemSelectionStyle(item, info.color, nowVisible);
+            try { cb.checked = nowVisible; } catch (e) {}
             // Also refresh overlay clones visuals to reflect the change
             document.querySelectorAll('.overlay-legend').forEach((ov) => {
                 const clone = ov.querySelector(`[data-legend-label="${CSS.escape(label)}"]`);
                 if (clone) setItemSelectionStyle(clone, info.color, nowVisible);
             });
         });
+        cb.addEventListener('click', (ev) => { try { ev.stopPropagation(); } catch (e) {} try { item.dispatchEvent(new MouseEvent('click', { bubbles: true })); } catch (e) {} });
 
         // Hover handlers: highlight corresponding chart curves when hovering legend items
         item.addEventListener('mouseenter', (ev) => {
@@ -861,6 +940,181 @@ function buildFloatingLegendFromChart() {
         item.setAttribute('data-legend-label', label);
         legendContent.appendChild(item);
     });
+            try {
+        const legendContent = document.getElementById('legend-content');
+        if (legendContent) {
+            // Check if More Locations button already exists
+            let existingMoreBtn = legendContent.querySelector('.legend-more-btn');
+            if (existingMoreBtn) {
+                existingMoreBtn.remove();
+            }
+            
+            // Get list of countries already displayed
+            const existingLabels = new Set(
+                Array.from(labelMap.keys())
+            );
+            
+            // Get all available countries
+            const allCountries = window._timelineCountryDataByName || {};
+            const addableCountries = Object.keys(allCountries).filter(
+                name => name && !existingLabels.has(name)
+            );
+            
+            // Only show button if there are countries to add
+            if (addableCountries.length > 0) {
+                const moreBtn = document.createElement('div');
+                moreBtn.className = 'legend-more-btn';
+                moreBtn.style.cssText = `
+                    margin-top: 8px;
+                    padding: 8px 12px;
+                    background: #0066ff;
+                    color: white;
+                    border-radius: 6px;
+                    text-align: center;
+                    cursor: pointer;
+                    font-weight: bold;
+                    font-size: 12px;
+                    pointer-events: auto;
+                `;
+                moreBtn.textContent = `More Locations`;
+                moreBtn.setAttribute('role', 'button');
+                moreBtn.tabIndex = 0;
+                
+                // Create popup menu (same as bottom legend)
+                let panel = document.getElementById('floating-legend-more-menu');
+                if (!panel) {
+                    panel = document.createElement('div');
+                    panel.id = 'floating-legend-more-menu';
+                    panel.className = 'bottom-legend-menu';
+                    panel.style.cssText = `
+                        position: fixed;
+                        display: none;
+                        min-width: 200px;
+                        max-height: 400px;
+                        overflow-y: auto;
+                        background: white;
+                        border: 1px solid rgba(0,0,0,0.09);
+                        border-radius: 6px;
+                        box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+                        padding: 6px 4px;
+                        z-index: 99999;
+                    `;
+                    
+                    const inp = document.createElement('input');
+                    inp.type = 'text';
+                    inp.placeholder = 'Search countries...';
+                    inp.style.cssText = `
+                        width: calc(100% - 16px);
+                        margin: 8px;
+                        padding: 8px;
+                        border: 1px solid #ddd;
+                        border-radius: 4px;
+                        font-size: 13px;
+                    `;
+                    panel.appendChild(inp);
+                    
+                    const list = document.createElement('div');
+                    list.className = 'floating-legend-menu-list';
+                    panel.appendChild(list);
+                    
+                    document.body.appendChild(panel);
+                    
+                    const render = (query) => {
+                        list.innerHTML = '';
+                        const q = (query || '').toLowerCase();
+                        addableCountries.filter((n) => {
+                            // Only show countries that have actual timeline data
+                            const hasData = window._timelineCountryDataByName && window._timelineCountryDataByName[n];
+                            const matchesQuery = !q || n.toLowerCase().indexOf(q) >= 0;
+                            return hasData && matchesQuery;
+                        }).slice(0, 50).forEach((n) => {
+                            const row = document.createElement('div');
+                            row.className = 'bottom-legend-menu-item';
+                            row.textContent = n;
+                            row.style.cssText = `
+                                padding: 8px 12px;
+                                cursor: pointer;
+                                border-radius: 4px;
+                            `;
+                            row.setAttribute('role', 'menuitem');
+                            row.tabIndex = 0;
+                            
+                            row.addEventListener('mouseenter', () => {
+                                row.style.background = 'rgba(0,102,255,0.1)';
+                            });
+                            row.addEventListener('mouseleave', () => {
+                                row.style.background = 'transparent';
+                            });
+                            
+                            row.addEventListener('click', () => {
+                                try {
+                                    if (typeof window.addCountryToCharts === 'function') {
+                                        window.addCountryToCharts(n);
+                                    }
+                                    panel.style.display = 'none';
+                                } catch (e) {
+                                    console.error('Error adding country:', e);
+                                }
+                            });
+                            list.appendChild(row);
+                        });
+                    };
+                    
+                    inp.addEventListener('input', () => render(inp.value));
+                    render('');
+                }
+                
+                const openPanel = () => {
+                    try {
+                        const rect = moreBtn.getBoundingClientRect();
+                        panel.style.left = (rect.left + window.scrollX) + 'px';
+                        panel.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+                        panel.style.display = 'block';
+                        
+                        // Close panel when clicking outside
+                        setTimeout(() => {
+                            const closePanel = (e) => {
+                                if (!panel.contains(e.target) && e.target !== moreBtn) {
+                                    panel.style.display = 'none';
+                                    document.removeEventListener('click', closePanel);
+                                }
+                            };
+                            document.addEventListener('click', closePanel);
+                        }, 100);
+                    } catch (e) {
+                        console.error('Error opening panel:', e);
+                    }
+                };
+                
+                moreBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openPanel();
+                });
+                
+                moreBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openPanel();
+                    }
+                });
+                
+                moreBtn.addEventListener('mouseenter', () => {
+                    moreBtn.style.background = '#0052cc';
+                    moreBtn.style.transform = 'translateY(-1px)';
+                });
+                
+                moreBtn.addEventListener('mouseleave', () => {
+                    moreBtn.style.background = '#0066ff';
+                    moreBtn.style.transform = 'none';
+                });
+                
+                legendContent.appendChild(moreBtn);
+            }
+        }
+    } catch (e) {
+        console.error('Error adding More Locations to floating legend:', e);
+    }
 
         // Populate value spans inside the floating legend authoritative items (#legend-content)
         try {
@@ -1311,7 +1565,7 @@ function buildFloatingLegendFromChart() {
         // Clear and repopulate with collapse/expand behavior when many items
         bottom.innerHTML = '';
         const authItems = Array.from(document.querySelectorAll('#legend-content .legend-item'));
-        const maxVisible = 7;
+        const maxVisible = 12;
         const created = [];
         authItems.forEach((auth, idx) => {
             const label = auth.getAttribute('data-legend-label') || auth.title || auth.textContent.trim();
@@ -1569,10 +1823,125 @@ function buildFloatingLegendFromChart() {
             moreIcon.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openMenu(); } });
             bottom.appendChild(more);
             bottom.appendChild(moreIcon);
+            try {
+                const existingLabels = new Set(authItems.map((el) => (el.getAttribute('data-legend-label') || el.title || el.textContent.trim())));
+                const allMap = window._timelineCountryDataByName || {};
+                const addable = Object.keys(allMap).filter((n) => n && !existingLabels.has(n));
+                if (addable.length > 0) {
+                    const addBtn = document.createElement('div');
+                    addBtn.className = 'bottom-legend-more';
+                    addBtn.textContent = 'More Locations';
+                    addBtn.setAttribute('role','button');
+                    addBtn.tabIndex = 0;
+                    let panel = document.getElementById('more-countries-menu');
+                    if (!panel) {
+                        panel = document.createElement('div');
+                        panel.id = 'more-countries-menu';
+                        panel.className = 'bottom-legend-menu';
+                        panel.style.display = 'none';
+                        const inp = document.createElement('input');
+                        inp.type = 'text';
+                        inp.placeholder = 'Search countries';
+                        inp.style.width = '96%';
+                        inp.style.margin = '8px';
+                        panel.appendChild(inp);
+                        const list = document.createElement('div');
+                        list.className = 'bottom-legend-menu-list';
+                        panel.appendChild(list);
+                        document.body.appendChild(panel);
+                        const render = (query) => {
+                            list.innerHTML = '';
+                            const q = (query||'').toLowerCase();
+                            addable.filter((n) => !q || n.toLowerCase().indexOf(q) >= 0).slice(0, 40).forEach((n) => {
+                                const row = document.createElement('div');
+                                row.className = 'bottom-legend-menu-item';
+                                row.textContent = n;
+                                row.setAttribute('role','menuitem');
+                                row.tabIndex = 0;
+                                row.addEventListener('click', () => {
+                                    try { if (typeof window.addCountryToCharts === 'function') window.addCountryToCharts(n); } catch (e) {}
+                                    try { panel.style.display = 'none'; } catch (e) {}
+                                });
+                                list.appendChild(row);
+                            });
+                        };
+                        inp.addEventListener('input', () => render(inp.value));
+                        render('');
+                    }
+                    const openPanel = () => {
+                        try {
+                            const rect = addBtn.getBoundingClientRect();
+                            panel.style.left = (rect.left + window.scrollX) + 'px';
+                            panel.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+                            panel.style.display = 'block';
+                        } catch (e) {}
+                    };
+                    addBtn.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); openPanel(); });
+                    addBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openPanel(); } });
+                    bottom.appendChild(addBtn);
+                }
+            } catch (e) {}
         } else {
-            // No extras; ensure collapsed class removed
             bottom.classList.remove('bottom-legend-collapsed');
             created.forEach(el => bottom.appendChild(el));
+            try {
+                const existingLabels = new Set(authItems.map((el) => (el.getAttribute('data-legend-label') || el.title || el.textContent.trim())));
+                const allMap = window._timelineCountryDataByName || {};
+                const addable = Object.keys(allMap).filter((n) => n && !existingLabels.has(n));
+                if (addable.length > 0) {
+                    const addBtn = document.createElement('div');
+                    addBtn.className = 'bottom-legend-more';
+                    addBtn.textContent = 'More Locations';
+                    addBtn.setAttribute('role','button');
+                    addBtn.tabIndex = 0;
+                    let panel = document.getElementById('more-countries-menu');
+                    if (!panel) {
+                        panel = document.createElement('div');
+                        panel.id = 'more-countries-menu';
+                        panel.className = 'bottom-legend-menu';
+                        panel.style.display = 'none';
+                        const inp = document.createElement('input');
+                        inp.type = 'text';
+                        inp.placeholder = 'Search countries';
+                        inp.style.width = '96%';
+                        inp.style.margin = '8px';
+                        panel.appendChild(inp);
+                        const list = document.createElement('div');
+                        list.className = 'bottom-legend-menu-list';
+                        panel.appendChild(list);
+                        document.body.appendChild(panel);
+                        const render = (query) => {
+                            list.innerHTML = '';
+                            const q = (query||'').toLowerCase();
+                            addable.filter((n) => !q || n.toLowerCase().indexOf(q) >= 0).slice(0, 40).forEach((n) => {
+                                const row = document.createElement('div');
+                                row.className = 'bottom-legend-menu-item';
+                                row.textContent = n;
+                                row.setAttribute('role','menuitem');
+                                row.tabIndex = 0;
+                                row.addEventListener('click', () => {
+                                    try { if (typeof window.addCountryToCharts === 'function') window.addCountryToCharts(n); } catch (e) {}
+                                    try { panel.style.display = 'none'; } catch (e) {}
+                                });
+                                list.appendChild(row);
+                            });
+                        };
+                        inp.addEventListener('input', () => render(inp.value));
+                        render('');
+                    }
+                    const openPanel = () => {
+                        try {
+                            const rect = addBtn.getBoundingClientRect();
+                            panel.style.left = (rect.left + window.scrollX) + 'px';
+                            panel.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+                            panel.style.display = 'block';
+                        } catch (e) {}
+                    };
+                    addBtn.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); openPanel(); });
+                    addBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openPanel(); } });
+                    bottom.appendChild(addBtn);
+                }
+            } catch (e) {}
         }
         // Defer visibility decision to updateBottomLegendVisibility (driven by user X clicks)
         try { if (typeof updateBottomLegendVisibility === 'function') updateBottomLegendVisibility(); } catch (e) {}
@@ -2066,8 +2435,6 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
     box-shadow: 0 0 0 3px rgba(0,102,255,0.12);
 }
 .bottom-legend-collapsed .bottom-legend-item.extra { display: none; }
-/* Ensure swatch small square */
-.legend-swatch { width: 12px; height: 12px; display:inline-block; border-radius:2px; }
 /* two-dot icon next to more control */
 .more-label { font-weight:700; }
 /* separate three-dot icon for compact menu */

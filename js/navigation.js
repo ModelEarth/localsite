@@ -282,11 +282,10 @@ function hashChanged() {
         }
         if (hash.state && hash.state.length == 2 && !($("#filterLocations").is(':visible'))) {
             $(".locationTabText").text($("#state_select").find(":selected").text());
-        } else {
-            $(".locationTabText").text("Locations");
-            //$("#filterLocations").hide();
-            //$("#industryListHolder").hide(); // Remove once national naics are loaded.
+        } else if (!hash.state) {
+            $(".locationTabText").text("United States");
         }
+        // Note: We no longer revert to "Locations" - keep the state name
 
         //&& hash.geoview == "state"
         if (hash.geoview && hash.geoview == priorHash.geoview) { // Prevents dup loading when hash.geoview != priorHash.geoview below.
@@ -1512,167 +1511,6 @@ class StandaloneNavigation {
                 }, 1000);
             });
         });
-
-        // Create app container if it doesn't exist
-        //let appContainer = document.querySelector('.app-container');
-
-        /* Might use this to move body in navigation.html
-
-        if (!appContainer) {
-            // Store existing content efficiently
-            const existingContent = [...document.body.children];
-            
-            // Create and setup app container
-            appContainer = document.createElement('div');
-            appContainer.className = 'app-container';
-            
-            // Clear body and add app container
-            document.body.innerHTML = '';
-            document.body.appendChild(appContainer);
-            
-            // Add navigation
-            appContainer.innerHTML = navHTML;
-            
-            // Create main content area
-            const mainContent = document.createElement('div');
-            mainContent.className = 'main-content';
-            appContainer.appendChild(mainContent);
-            
-            // Move existing content with bounds checking
-            existingContent.forEach(element => {
-                if (element && element.nodeType === Node.ELEMENT_NODE) {
-                    mainContent.appendChild(element);
-                }
-            });
-        }
-        */
-
-
-        /*
-        // Check for shownav parameter to hide navigation
-        const urlParams = new URLSearchParams(window.location.search);
-        const showNav = urlParams.get('shownav') !== 'false';
-        
-        if (showNav) {
-            // Use the exact same reliable pattern as #main-nav, but insert AFTER #main-nav is created
-            if (typeof waitForElm !== 'undefined') {
-                // Wait for #main-nav to be created first (this ensures all DOM restructuring is done)
-                waitForElm('#main-nav').then(() => {
-                    // Now safely insert the sidebar after all main DOM operations are complete
-                    const insertSideNav = () => {
-                        // Check if #side-nav already exists to prevent duplicates
-                        if (document.getElementById("side-nav") == null) {
-                            const rightSideTabs = document.getElementById('rightSideTabs');
-                            const mainNav = document.getElementById('main-nav');
-                            
-                            if (rightSideTabs && mainNav) {
-                                // Insert after #rightSideTabs (before #main-nav)
-                                rightSideTabs.insertAdjacentHTML('afterend', navHTML);
-                            } else if (rightSideTabs) {
-                                // Insert after #rightSideTabs if #main-nav doesn't exist
-                                rightSideTabs.insertAdjacentHTML('afterend', navHTML);
-                            } else if (mainNav) {
-                                // Insert before #main-nav if #rightSideTabs doesn't exist
-                                mainNav.insertAdjacentHTML('beforebegin', navHTML);
-                            } else {
-                                // Insert into #main-container like #main-nav does
-                                const mainContainer = document.getElementById('main-container');
-                                if (mainContainer) {
-                                    mainContainer.insertAdjacentHTML('afterbegin', navHTML);
-                                } else {
-                                    // Final fallback to body
-                                    document.body.insertAdjacentHTML('afterbegin', navHTML);
-                                }
-                            }
-                            
-                            console.log('✅ #side-nav inserted after #main-nav creation');
-                        } else {
-                            console.log('ℹ️ #side-nav already exists, skipping insertion');
-                        }
-                    };
-                    
-                    insertSideNav();
-                });
-            } else {
-                // Fallback if waitForElm not available - immediate insertion
-                const insertSideNav = () => {
-                    if (document.getElementById("side-nav") == null) {
-                        const rightSideTabs = document.getElementById('rightSideTabs');
-                        const mainNav = document.getElementById('main-nav');
-                        
-                        if (rightSideTabs && mainNav) {
-                            rightSideTabs.insertAdjacentHTML('afterend', navHTML);
-                        } else if (rightSideTabs) {
-                            rightSideTabs.insertAdjacentHTML('afterend', navHTML);
-                        } else if (mainNav) {
-                            mainNav.insertAdjacentHTML('beforebegin', navHTML);
-                        } else {
-                            const mainContainer = document.getElementById('main-container');
-                            if (mainContainer) {
-                                mainContainer.insertAdjacentHTML('afterbegin', navHTML);
-                            } else {
-                                document.body.insertAdjacentHTML('afterbegin', navHTML);
-                            }
-                        }
-                    }
-                };
-                
-            }
-            
-            // Handle hidden state after creation
-            if (this.isHidden) {
-                setTimeout(() => {
-                    const sidenav = document.getElementById('side-nav');
-                    if (sidenav) {
-                        sidenav.style.display = 'none';
-
-                        // TODO - Can we remove the use of .sidebar-hidden?
-                        //document.body.classList.add('sidebar-hidden');
-
-                        // Reopen button is now in template-main.html
-                    }
-                }, 10);
-            }
-        } else {
-            console.log('Navigation hidden due to shownav=false parameter');
-        }
-        */
-
-        // // TODO - Can we remove the use of .sidebar-hidden?
-        /*
-        // Set initial body class for headerbar positioning and sidenav expanded state
-        if (this.isHidden) {
-            console.log('INIT: Setting body to sidebar-hidden');
-            document.body.classList.add('sidebar-hidden');
-            document.body.classList.remove('sidenav-collapsed', 'sidenav-expanded');
-        } else if (this.isCollapsed || this.isMobile) {
-            console.log('INIT: Setting body to sidenav-collapsed');
-            //// document.body.classList.add('sidenav-collapsed');
-            //// document.body.classList.remove('sidenav-expanded');
-        } else {
-            console.log('INIT: Setting body to sidenav-expanded');
-            //// document.body.classList.add('sidenav-expanded');
-            //// document.body.classList.remove('sidenav-collapsed');
-            // Also add expanded class to sidenav when not collapsed
-            const sidenav = document.getElementById('side-nav');
-            if (sidenav) {
-                sidenav.classList.add('expanded');
-            }
-        }
-        */
-
-
-        // Check for custom favicon from environment/config
-        // Skip favicon update if common.js is handling it
-        /*
-        if (!window.updateFaviconPath) {
-            this.updateLogoFromConfig().catch(error => {
-                console.log('Failed to update logo/favicon from config:', error);
-            });
-        } else {
-            console.log('[FaviconManager] Skipping - common.js will handle favicon updates');
-        }
-        */
     }
     
     // Update logo and favicon based on SITE_FAVICON environment variable or config
@@ -3546,6 +3384,12 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
     // Occurs twice in page
     let modelsite = Cookies.get('modelsite');
+
+    // Allow URL parameter to override cookie for testing
+    if (hash.site) {
+        modelsite = hash.site;
+    }
+
     if (!stateAbbr && modelsite) {
         if (modelsite == "model.georgia" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) { // Add loop if other states added to settings.
             stateAbbr = "GA";
@@ -6437,9 +6281,18 @@ let localsiteTitle = "";
 function applyNavigation() { // Waits for localsite.js 'localStart' variable so local_app path is available.
 
     // To do: fetch the existing background-image.
-    
-    let modelsite = Cookies.get('modelsite');
+
     let hash = getHash();
+    let modelsite = Cookies.get('modelsite');
+
+    // Allow URL parameter to override cookie for testing
+    if (hash.site) {
+        modelsite = hash.site;
+        // Optionally set cookie for persistence across page loads
+        if (typeof Cookies != 'undefined') {
+            Cookies.set('modelsite', hash.site);
+        }
+    }
     const changeFavicon = link => { // var for Safari
       let $favicon = document.querySelector('link[rel="icon"]')
       // If a <link rel="icon"> element already exists,
@@ -7768,11 +7621,7 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
 function showClassInline(theclass) {
     // Load when body head becomes available, faster than waiting for all DOM .js files to load.
     // Append -hide to hide a div for a site.
-    waitForElm('head').then((elm) => {
-        //alert("showClassInline " + theclass)
-        //$(theclass).css('display', 'inline');
-        //$(".dlab").css('display', 'inline');
-
+    waitForElm('head').then((elm) => { // -omit
         var div = $("<style />", {
             html: theclass + ' {display: inline !important} ' + theclass + '-hide {display:none}'
         }).appendTo("head");
@@ -8014,6 +7863,37 @@ $(document).on("change", "#state_select", function(event) {
 $(document).on("change", "#selectScope", function(event) {
     goHash({'scope':this.value});
 });
+// Click handler for State Name Tab - Shows inline dropdown
+$(document).on("click", "#filterClickState", function(event) {
+    // Toggle inline state dropdown
+    const inlineDropdown = $("#inlineStateDropdown");
+    
+    if (inlineDropdown.is(':visible')) {
+        inlineDropdown.hide();
+    } else {
+        // Move state_select to inline dropdown
+        if (typeof state_select != "undefined") {
+            inlineDropdown.empty();
+            const stateSelectClone = $(state_select).clone();
+            stateSelectClone.attr('id', 'state_select_inline').show();
+            stateSelectClone.val($("#state_select").val());
+            stateSelectClone.on('change', function() {
+                $("#state_select").val($(this).val()).trigger('change');
+                inlineDropdown.hide();
+            });
+            inlineDropdown.append(stateSelectClone);
+            inlineDropdown.show();
+        }
+    }
+    event.stopPropagation();
+});
+
+// Close inline dropdown when clicking elsewhere
+$(document).on("click", function() {
+    $("#inlineStateDropdown").hide();
+});
+
+// Click handler for Counties Tab - Opens location filter panel
 $(document).on("click", "#filterClickLocation", function(event) {
 
     if ($("#draggableSearch").is(':visible')) {
@@ -8237,14 +8117,24 @@ function openMapLocationFilter() {
     }
     $("#geomap").appendTo($("#geomapHolder")); // Move back from rightSideTabs
 
-    $(".locationTabText").text("Locations");
+    // Keep state name, don't revert to "Locations"
+    // $(".locationTabText").text("Locations"); // REMOVED - keep state name
+    
+    // Change filterClickLocation text to "States" when panel is open
+    $(".countiesTabText").text("States");
+    
     $("#topPanel").hide();
     $("#showLocations").show();
     $("#hideLocations").hide();
 
-    if (typeof state_select_holder != "undefined") {
-        state_select_holder.appendChild(state_select); // For apps hero
-    }
+    // Move state_select to location filter holder when Counties panel opens
+    waitForElm('#locationFilterHolder').then((elm) => {
+        if (typeof state_select != "undefined") {
+            // Move state dropdown to top of location filter panel
+            $("#locationFilterHolder").prepend(state_select);
+        }
+    });
+
     if (typeof select_scope_holder != "undefined") {
         select_scope_holder.appendChild(selectScope); // For apps hero
     }
@@ -8274,13 +8164,22 @@ function openMapLocationFilter() {
     }
 }
 function closeLocationFilter() {
-    $(".locationTabText").text($(".locationTabText").attr("title"));
+    // Keep state name in locationTabText (don't revert)
+    // $(".locationTabText").text($(".locationTabText").attr("title")); // REMOVED
+    
+    // Change countiesTabText back to "Counties"
+    $(".countiesTabText").text("Counties");
+    
     $("#showLocations").hide();
     $("#hideLocations").show();
     $("#locationFilterHolder").hide();
     $("#filterLocations").hide(); // Not sure why this was still needed.
     $("#imagineBar").hide();
     $("#filterClickLocation").removeClass("filterClickActive");
+    
+    // Close inline state dropdown if open
+    $("#inlineStateDropdown").hide();
+    
     if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
         $("#header.nav-up").hide();
     }

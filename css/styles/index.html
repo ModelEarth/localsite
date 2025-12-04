@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Palette & CSS Framework</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="georgia.css">
+<link rel="stylesheet" href="notion.css">
+<style>
+  /* Color Variables */
+  :root {
+    /* Primary Color */
+    --color-pine: #235D39;
+    
+    /* Main Colors */
+    --color-blueberry: #084975;
+    --color-peach: #EE907B;
+    --color-clay: #AA483E;
+    --color-blossom: #DFD9E1;
+    --color-honey: #FAA621;
+    --color-shell: #CFD2D3;
+    --color-grass: #6AA442;
+    --color-cloud: #BADBE5;
+    
+    /* Supporting Colors */
+    --color-blackwater: #212721;
+    --color-sunflower: #FEC558;
+    --color-apple: #D64127;
+    --color-wheat: #F2C6A7;
+    --color-concrete: #666666;
+    --color-providence: #D9A298;
+    --color-pecan: #6E4F47;
+    --color-dogwood: #FEFBF9;
+    
+    /* Semantic Mappings */
+    --color-primary: var(--color-pine);
+    --color-secondary: var(--color-peach);
+    --color-success: var(--color-grass);
+    --color-danger: var(--color-apple);
+    --color-warning: var(--color-honey);
+    --color-info: var(--color-cloud);
+    --color-light: var(--color-dogwood);
+    --color-dark: var(--color-blackwater);
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    padding: 40px;
+    background: #FAFAFA;
+    color: #37352F;
+    line-height: 1.5;
+  }
+  
+  a {
+    text-decoration: none;
+  }
+  
+  .typography-toggle {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 1px solid rgba(55, 53, 47, 0.06);
+  }
+  
+  .typography-toggle select {
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #37352F;
+    background: white;
+    border: 1px solid rgba(55, 53, 47, 0.16);
+    border-radius: 4px;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .typography-toggle select:hover {
+    border-color: rgba(55, 53, 47, 0.3);
+  }
+  
+  .typography-toggle select:focus {
+    border-color: var(--color-primary);
+  }
+  
+  .typography-toggle label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #37352F;
+  }
+  
+  .palette-section {
+    margin-bottom: 50px;
+  }
+  
+  .palette-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+    color: rgba(55, 53, 47, 0.65);
+    text-transform: uppercase;
+  }
+  
+  .color-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+  
+  .color-swatch {
+    text-align: center;
+  }
+  
+  .color-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    transition: transform 0.2s ease;
+  }
+  
+  .color-circle:hover {
+    transform: translateY(-2px);
+  }
+  
+  .color-name {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #37352F;
+  }
+
+  /* Soft background palette specific styling */
+  #softBackgroundPalette {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  #softBackgroundPalette .color-swatch {
+    width: 120px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #softBackgroundPalette .color-name {
+    font-size: 11px;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  #softBackgroundPalette .color-hex {
+    width: 100%;
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  /* Soft color palette specific styling */
+  #softColorPalette {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+
+  #softColorPalette .color-swatch {
+    width: 120px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #softColorPalette .color-name {
+    font-size: 11px;
+    width: 100%;
+    text-align: center;
+  }
+
+  #softColorPalette .color-hex {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .color-hex {
+    font-size: 11px;
+    color: rgba(55, 53, 47, 0.5);
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  }
+  
+  /* Button Styles - Notion-inspired with larger size */
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.12s ease-in;
+    margin: 4px;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  
+  .btn:hover {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .btn-primary {
+    background: var(--color-primary);
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background: #1d4d2f;
+  }
+  
+  .btn-secondary {
+    background: var(--color-secondary);
+    color: white;
+  }
+  
+  .btn-secondary:hover {
+    background: #e67962;
+  }
+  
+  .btn-success {
+    background: var(--color-success);
+    color: white;
+  }
+  
+  .btn-success:hover {
+    background: #5a8d38;
+  }
+  
+  .btn-danger {
+    background: var(--color-danger);
+    color: white;
+  }
+  
+  .btn-danger:hover {
+    background: #b5371f;
+  }
+  
+  .btn-warning {
+    background: var(--color-warning);
+    color: white;
+  }
+  
+  .btn-warning:hover {
+    background: #e8971a;
+  }
+  
+  .btn-info {
+    background: var(--color-info);
+    color: #37352F;
+  }
+  
+  .btn-info:hover {
+    background: #a5d0da;
+  }
+  
+  .btn-light {
+    background: rgba(242, 241, 238, 0.6);
+    color: #37352F;
+    border: 1px solid rgba(55, 53, 47, 0.09);
+  }
+  
+  .btn-light:hover {
+    background: rgba(242, 241, 238, 1);
+  }
+  
+  .btn-dark {
+    background: var(--color-dark);
+    color: white;
+  }
+  
+  .btn-dark:hover {
+    background: #161916;
+  }
+  
+  /* Alert Styles - Notion-inspired */
+  .alert {
+    padding: 16px;
+    border-radius: 3px;
+    margin: 12px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .alert::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: 3px;
+    margin-top: 1px;
+  }
+  
+  .alert-primary {
+    background: rgba(35, 93, 57, 0.08);
+    color: #1d4d2f;
+  }
+  
+  .alert-primary::before {
+    background: var(--color-primary);
+  }
+  
+  .alert-success {
+    background: rgba(106, 164, 66, 0.08);
+    color: #4a7a32;
+  }
+  
+  .alert-success::before {
+    background: var(--color-success);
+  }
+  
+  .alert-danger {
+    background: rgba(214, 65, 39, 0.08);
+    color: #a02a18;
+  }
+  
+  .alert-danger::before {
+    background: var(--color-danger);
+  }
+  
+  .alert-warning {
+    background: rgba(250, 166, 33, 0.08);
+    color: #a07014;
+  }
+  
+  .alert-warning::before {
+    background: var(--color-warning);
+  }
+  
+  .alert-info {
+    background: rgba(186, 219, 229, 0.15);
+    color: #0a5f75;
+  }
+  
+  .alert-info::before {
+    background: var(--color-info);
+  }
+  
+  /* Badge Styles - Notion-inspired */
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 3px;
+    margin: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  
+  .badge-primary {
+    background: rgba(35, 93, 57, 0.12);
+    color: var(--color-primary);
+  }
+  
+  .badge-secondary {
+    background: rgba(238, 144, 123, 0.12);
+    color: #c6563d;
+  }
+  
+  .badge-success {
+    background: rgba(106, 164, 66, 0.12);
+    color: #5a8d38;
+  }
+  
+  .badge-danger {
+    background: rgba(214, 65, 39, 0.12);
+    color: var(--color-danger);
+  }
+  
+  .badge-warning {
+    background: rgba(250, 166, 33, 0.12);
+    color: #d08a1a;
+  }
+  
+  .badge-info {
+    background: rgba(186, 219, 229, 0.2);
+    color: #0a5f75;
+  }
+  
+  /* Card Component - Notion-inspired */
+  .card {
+    background: white;
+    border-radius: 3px;
+    padding: 24px;
+    margin: 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 1px solid rgba(55, 53, 47, 0.06);
+  }
+  
+  .card-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    color: #37352F;
+  }
+  
+  .card-text {
+    color: rgba(55, 53, 47, 0.7);
+    margin-bottom: 16px;
+  }
+  
+  .samples-section {
+    margin-top: 60px;
+  }
+  
+  .samples-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 32px;
+    color: #37352F;
+  }
+  
+  .component-group {
+    margin-bottom: 40px;
+  }
+  
+  .component-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: rgba(55, 53, 47, 0.65);
+    letter-spacing: 0.3px;
+  }
+
+  /* More space after the color palette title */
+  #colorPaletteTitle {
+    margin-bottom: 24px;
+  }
+
+  /* Default Color Variables (No external CSS) - soft version of main color palette */
+  :root {
+    /* Default Soft Background Colors - very light */
+    --soft-bg-green: #F4F7F6;     /* Very soft Pine */
+    --soft-bg-blue: #F1F5F8;      /* Very soft Blueberry */
+    --soft-bg-yellow: #FDF8F0;    /* Very soft Honey */
+    --soft-bg-red: #FBF4F3;       /* Very soft Apple */
+    --soft-bg-purple: #F6F5F7;    /* Very soft Lavender */
+
+    /* Default Soft Color Palette - more vibrant soft tones */
+    --notion-green: #E8F5E8;     /* More vibrant Pine variant */
+    --notion-blue: #E3F2FD;      /* More vibrant Blueberry variant */
+    --notion-yellow: #FFF8E1;    /* More vibrant Honey variant */
+    --notion-red: #FFEBEE;       /* More vibrant Apple variant */
+    --notion-purple: #F3E5F5;    /* More vibrant variant */
+
+    /* Default Text Colors - derived from main palette */
+    --notion-green-text: #235D39;    /* Pine */
+    --notion-blue-text: #084975;     /* Blueberry */
+    --notion-yellow-text: #B8891A;   /* Darker Honey */
+    --notion-red-text: #D64127;      /* Apple */
+    --notion-purple-text: #7A6F84;   /* Purple variant */
+    --notion-gray-text: #666666;     /* Concrete */
+
+    /* Default Heatmap Scale (Cool - Teal) - moved from 3rd to 1st */
+    --heatmap-0: #F0F9F9;
+    --heatmap-1: #B8E6E6;
+    --heatmap-2: #7DD3D3;
+    --heatmap-3: #42C0C0;
+    --heatmap-4: #2A9A9A;
+    --heatmap-5: #1A6B6B;
+
+    /* Default Heatmap Scale (Red-based) */
+    --heatmap-hot-0: #FBF4F3;
+    --heatmap-hot-1: #F5CFCA;
+    --heatmap-hot-2: #EFAAA1;
+    --heatmap-hot-3: #E98578;
+    --heatmap-hot-4: #DD5A47;
+    --heatmap-hot-5: #D64127;
+
+    /* Default Heatmap Scale (Warm - Orange) - moved from 4th to 3rd */
+    --heatmap-cool-0: #FEF7F0;
+    --heatmap-cool-1: #FAD4B3;
+    --heatmap-cool-2: #F5B076;
+    --heatmap-cool-3: #F08C39;
+    --heatmap-cool-4: #D6751F;
+    --heatmap-cool-5: #A65A17;
+
+    /* Default Heatmap Scale (Blue-based) - moved from 3rd to 4th */
+    --heatmap-warm-0: #F1F5F8;
+    --heatmap-warm-1: #BADBE5;
+    --heatmap-warm-2: #8BC5E0;
+    --heatmap-warm-3: #5AABDA;
+    --heatmap-warm-4: #2E8CC7;
+    --heatmap-warm-5: #084975;
+  }
+
+  /* Ensure default sections are visible */
+  .component-group {
+    opacity: 1;
+    display: block;
+  }
+</style>
+</head>
+<body class="georgia">
+
+<div class="typography-toggle">
+  <select id="typographySelect">
+    <option value="notion">Notion Style</option>
+    <option value="georgia">Georgia Style</option>
+    <option value="none">No external css</option>
+  </select>
+</div>
+
+<div class="palette-section">
+  <div class="palette-title">Primary Color</div>
+  <div class="color-row" id="primaryColor"></div>
+  
+  <div class="palette-title">Main Colors</div>
+  <div class="color-row" id="mainColors"></div>
+  
+  <div class="palette-title">Supporting Colors</div>
+  <div class="color-row" id="supportingColors"></div>
+</div>
+
+<div class="samples-section">
+  <div class="samples-title">Component Samples</div>
+  
+  <div class="component-group">
+    <div class="component-label">Buttons</div>
+    <button class="btn btn-primary">Primary</button>
+    <button class="btn btn-secondary">Secondary</button>
+    <button class="btn btn-success">Success</button>
+    <button class="btn btn-danger">Danger</button>
+    <button class="btn btn-warning">Warning</button>
+    <button class="btn btn-info">Info</button>
+    <button class="btn btn-light">Light</button>
+    <button class="btn btn-dark">Dark</button>
+  </div>
+  
+  <div class="component-group">
+    <div class="component-label">Card Component</div>
+    <div class="card">
+      <h3 class="card-title">Welcome to your workspace</h3>
+      <p class="card-text">This is a sample card component with clean typography and minimal styling.</p>
+      <button class="btn btn-primary">Get Started</button>
+      <button class="btn btn-light">Learn More</button>
+    </div>
+  </div>
+
+  <div class="component-group">
+    <div class="component-label">Alerts</div>
+    <div class="alert alert-primary">This is a primary alert message with important information</div>
+    <div class="alert alert-success">This is a success alert message indicating completion</div>
+    <div class="alert alert-danger">This is a danger alert message requiring attention</div>
+    <div class="alert alert-warning">This is a warning alert message with a cautionary note</div>
+    <div class="alert alert-info">This is an info alert message with helpful details</div>
+  </div>
+  
+  <div class="component-group">
+    <div class="component-label">Badges</div>
+    <span class="badge badge-primary">Primary</span>
+    <span class="badge badge-secondary">Secondary</span>
+    <span class="badge badge-success">Success</span>
+    <span class="badge badge-danger">Danger</span>
+    <span class="badge badge-warning">Warning</span>
+    <span class="badge badge-info">Info</span>
+  </div>
+
+  <div class="component-group">
+    <div class="component-label">Text Colors</div>
+    <div style="margin-bottom: 12px;">
+      <span style="color: var(--notion-green-text); font-weight: 600;">Green Text</span> • 
+      <span style="color: var(--notion-blue-text); font-weight: 600;">Blue Text</span> • 
+      <span style="color: var(--notion-red-text); font-weight: 600;">Red Text</span> • 
+      <span style="color: var(--notion-purple-text); font-weight: 600;">Purple Text</span> • 
+      <span style="color: var(--notion-gray-text); font-weight: 600;">Gray Text</span>
+    </div>
+  </div>
+
+  <div class="component-group">
+    <div class="component-label">Heatmap Colors</div>
+    <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+      <div style="width: 40px; height: 40px; background: var(--heatmap-0); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500;">0</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-1); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500;">1</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-2); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500;">2</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-3); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white;">3</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-4); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white;">4</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-5); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white;">5</div>
+    </div>
+    <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+      <div style="width: 40px; height: 40px; background: var(--heatmap-hot-0); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500;">0</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-hot-1); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500;">1</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-hot-2); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500;">2</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-hot-3); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white;">3</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-hot-4); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white;">4</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-hot-5); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white;">5</div>
+    </div>
+    <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+      <div style="width: 40px; height: 40px; background: var(--heatmap-cool-0); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500;">0</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-cool-1); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500;">1</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-cool-2); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500;">2</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-cool-3); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white;">3</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-cool-4); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white;">4</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-cool-5); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white;">5</div>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <div style="width: 40px; height: 40px; background: var(--heatmap-warm-0); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500;">0</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-warm-1); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500;">1</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-warm-2); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500;">2</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-warm-3); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white;">3</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-warm-4); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white;">4</div>
+      <div style="width: 40px; height: 40px; background: var(--heatmap-warm-5); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white;">5</div>
+    </div>
+  </div>
+
+  <div class="component-group">
+    <div class="component-label" id="colorPaletteTitle">Soft Background Colors</div>
+    <div class="color-row" id="softBackgroundPalette">
+      <!-- Very soft background colors with title above and hex below -->
+    </div>
+    <div class="color-row" id="softColorPalette">
+      <!-- More vibrant soft colors -->
+    </div>
+  </div>
+  
+</div>
+
+<script>
+// Color palette data stored in JSON
+const georgiaColorPalette = {
+  primaryColor: [
+    { name: "Pine", hex: "#235D39" }
+  ],
+  mainColors: [
+    { name: "Blueberry", hex: "#084975" },
+    { name: "Peach", hex: "#EE907B" },
+    { name: "Clay", hex: "#AA483E" },
+    { name: "Blossom", hex: "#DFD9E1" },
+    { name: "Honey", hex: "#FAA621" },
+    { name: "Shell", hex: "#CFD2D3" },
+    { name: "Grass", hex: "#6AA442" },
+    { name: "Cloud", hex: "#BADBE5" }
+  ],
+  supportingColors: [
+    { name: "Blackwater", hex: "#212721" },
+    { name: "Sunflower", hex: "#FEC558" },
+    { name: "Apple", hex: "#D64127" },
+    { name: "Wheat", hex: "#F2C6A7" },
+    { name: "Concrete", hex: "#666666" },
+    { name: "Providence", hex: "#D9A298" },
+    { name: "Pecan", hex: "#6E4F47" },
+    { name: "Dogwood", hex: "#FEFBF9" }
+  ]
+};
+
+// Notion-inspired color palette - softer, more balanced tones
+const notionColorPalette = {
+  primaryColor: [
+    { name: "Sage", hex: "#52796F" }
+  ],
+  mainColors: [
+    { name: "Sky", hex: "#5B9BD5" },
+    { name: "Coral", hex: "#E8988F" },
+    { name: "Terra", hex: "#B5838D" },
+    { name: "Lavender", hex: "#C9B8D4" },
+    { name: "Amber", hex: "#F4A460" },
+    { name: "Mist", hex: "#D4D8DC" },
+    { name: "Mint", hex: "#84A98C" },
+    { name: "Aqua", hex: "#A8DADC" }
+  ],
+  supportingColors: [
+    { name: "Slate", hex: "#37474F" },
+    { name: "Marigold", hex: "#FFB84D" },
+    { name: "Crimson", hex: "#E07A5F" },
+    { name: "Sand", hex: "#E5D4C1" },
+    { name: "Graphite", hex: "#6C757D" },
+    { name: "Blush", hex: "#D4A5A5" },
+    { name: "Walnut", hex: "#8B7D6B" },
+    { name: "Cream", hex: "#FAF9F6" }
+  ]
+};
+
+// Function to render color swatches
+function renderColors(colors, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = ''; // Clear existing content
+
+  colors.forEach(color => {
+    const swatch = document.createElement('div');
+    swatch.className = 'color-swatch';
+
+    const circle = document.createElement('div');
+    circle.className = 'color-circle';
+    circle.style.backgroundColor = color.hex;
+
+    const name = document.createElement('div');
+    name.className = 'color-name';
+    name.textContent = color.name;
+
+    const hex = document.createElement('div');
+    hex.className = 'color-hex';
+    hex.textContent = color.hex;
+
+    swatch.appendChild(circle);
+    swatch.appendChild(name);
+    swatch.appendChild(hex);
+    container.appendChild(swatch);
+  });
+}
+
+// Function to render color palette based on typography style
+function renderColorPalette(typographyValue) {
+  const palette = (typographyValue === 'notion') ? notionColorPalette : georgiaColorPalette;
+  renderColors(palette.primaryColor, 'primaryColor');
+  renderColors(palette.mainColors, 'mainColors');
+  renderColors(palette.supportingColors, 'supportingColors');
+}
+
+// Function to show/hide palette section
+function togglePaletteSection(show) {
+  const paletteSection = document.querySelector('.palette-section');
+  if (paletteSection) {
+    paletteSection.style.display = show ? 'block' : 'none';
+  }
+}
+
+// Hash management functions
+function getHash() {
+  const hash = window.location.hash.substring(1);
+  const params = {};
+  if (hash) {
+    hash.split('&').forEach(part => {
+      const [key, value] = part.split('=');
+      if (key) params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+    });
+  }
+  return params;
+}
+
+function updateHash(updates) {
+  const current = getHash();
+  const merged = { ...current, ...updates };
+  const hashString = Object.keys(merged)
+    .filter(key => merged[key] !== '')
+    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(merged[key])}`)
+    .join('&');
+  window.location.hash = hashString;
+}
+
+// Typography toggle functionality
+const typographySelect = document.getElementById('typographySelect');
+const bodyElement = document.body;
+
+// Initialize with Notion style (default)
+//bodyElement.classList.remove('custom-typography');
+
+// Soft background color palettes (very soft) for each typography style
+const softBackgroundPalettes = {
+  notion: [
+    { name: "Soft Sage", hex: "#F7F9F8", var: "--soft-bg-green" },
+    { name: "Soft Sky", hex: "#F5F9FC", var: "--soft-bg-blue" },
+    { name: "Soft Amber", hex: "#FDF9F4", var: "--soft-bg-yellow" },
+    { name: "Soft Coral", hex: "#FDF8F7", var: "--soft-bg-red" },
+    { name: "Soft Lavender", hex: "#F9F8FB", var: "--soft-bg-purple" }
+  ],
+  georgia: [
+    { name: "Soft Pine", hex: "#F4F8F5", var: "--soft-bg-green" },
+    { name: "Soft Blueberry", hex: "#F2F6F9", var: "--soft-bg-blue" },
+    { name: "Soft Honey", hex: "#FEF9F1", var: "--soft-bg-yellow" },
+    { name: "Soft Peach", hex: "#FDF4F3", var: "--soft-bg-red" },
+    { name: "Soft Blossom", hex: "#F7F5F8", var: "--soft-bg-purple" }
+  ],
+  none: [
+    { name: "Soft Pine", hex: "#F4F7F6", var: "--soft-bg-green" },
+    { name: "Soft Blueberry", hex: "#F1F5F8", var: "--soft-bg-blue" },
+    { name: "Soft Honey", hex: "#FDF8F0", var: "--soft-bg-yellow" },
+    { name: "Soft Apple", hex: "#FBF4F3", var: "--soft-bg-red" },
+    { name: "Soft Lavender", hex: "#F6F5F7", var: "--soft-bg-purple" }
+  ]
+};
+
+// More vibrant soft color palettes for each typography style
+const softColorPalettes = {
+  notion: [
+    { name: "Sage", hex: "#E8F0ED", var: "--notion-green" },
+    { name: "Sky", hex: "#E8F2F9", var: "--notion-blue" },
+    { name: "Amber", hex: "#FDF2E3", var: "--notion-yellow" },
+    { name: "Coral", hex: "#FBEEED", var: "--notion-red" },
+    { name: "Lavender", hex: "#F0EEF5", var: "--notion-purple" }
+  ],
+  georgia: [
+    { name: "Soft Pine", hex: "#E8F5E8", var: "--notion-green" },
+    { name: "Soft Blueberry", hex: "#E3F2FD", var: "--notion-blue" },
+    { name: "Soft Honey", hex: "#FFF8E1", var: "--notion-yellow" },
+    { name: "Soft Peach", hex: "#FFEBEE", var: "--notion-red" },
+    { name: "Soft Blossom", hex: "#F3E5F5", var: "--notion-purple" }
+  ],
+  none: [
+    { name: "Soft Pine", hex: "#E8F5E8", var: "--notion-green" },
+    { name: "Soft Blueberry", hex: "#E3F2FD", var: "--notion-blue" },
+    { name: "Soft Honey", hex: "#FFF8E1", var: "--notion-yellow" },
+    { name: "Soft Apple", hex: "#FFEBEE", var: "--notion-red" },
+    { name: "Soft Lavender", hex: "#F3E5F5", var: "--notion-purple" }
+  ]
+};
+
+// Function to render soft background palette (title above, hex below)
+function renderSoftBackgroundPalette(typographyValue) {
+  const container = document.getElementById('softBackgroundPalette');
+  container.innerHTML = '';
+  
+  const colors = softBackgroundPalettes[typographyValue] || softBackgroundPalettes.notion;
+  
+  colors.forEach(color => {
+    const swatch = document.createElement('div');
+    swatch.className = 'color-swatch';
+    
+    const name = document.createElement('div');
+    name.className = 'color-name';
+    name.textContent = color.name;
+    
+    const circle = document.createElement('div');
+    circle.className = 'color-circle';
+    circle.style.backgroundColor = `var(${color.var})`;
+    
+    const hex = document.createElement('div');
+    hex.className = 'color-hex';
+    hex.textContent = color.hex;
+    
+    swatch.appendChild(name);
+    swatch.appendChild(circle);
+    swatch.appendChild(hex);
+    container.appendChild(swatch);
+  });
+}
+
+// Function to render soft color palette (no color names, just circles and hex)
+function renderSoftColorPalette(typographyValue) {
+  const container = document.getElementById('softColorPalette');
+  container.innerHTML = '';
+  
+  const colors = softColorPalettes[typographyValue] || softColorPalettes.notion;
+  
+  colors.forEach(color => {
+    const swatch = document.createElement('div');
+    swatch.className = 'color-swatch';
+    
+    const circle = document.createElement('div');
+    circle.className = 'color-circle';
+    circle.style.backgroundColor = `var(${color.var})`;
+    
+    const hex = document.createElement('div');
+    hex.className = 'color-hex';
+    hex.textContent = color.hex;
+    
+    swatch.appendChild(circle);
+    swatch.appendChild(hex);
+    container.appendChild(swatch);
+  });
+}
+
+// Function to update section title based on typography
+function updateSectionTitle(typographyValue) {
+  const colorPaletteTitle = document.getElementById('colorPaletteTitle');
+  colorPaletteTitle.textContent = 'Soft Background Colors';
+}
+
+// Get initial typography value from hash, localStorage, or default
+const hashParams = getHash();
+let initialValue = hashParams.style || localStorage.getItem('typographySelection') || 'georgia';
+
+// Validate the value
+if (!['georgia', 'notion', 'none'].includes(initialValue)) {
+  initialValue = 'georgia';
+}
+
+// Set the select value
+typographySelect.value = initialValue;
+
+// Apply the typography class
+bodyElement.classList.remove('georgia', 'notion');
+if (initialValue === 'georgia') {
+  bodyElement.classList.add('georgia');
+} else if (initialValue === 'notion') {
+  bodyElement.classList.add('notion');
+}
+
+// Handle color palette display for "none" option
+if (initialValue === 'none') {
+  // Get the most recent Georgia/Notion selection
+  const lastStyled = localStorage.getItem('lastStyledTypography');
+  if (lastStyled && (lastStyled === 'georgia' || lastStyled === 'notion')) {
+    // Use the most recent palette but don't apply the class
+    renderColorPalette(lastStyled);
+    updateSectionTitle(lastStyled);
+    renderSoftBackgroundPalette(lastStyled);
+    renderSoftColorPalette(lastStyled);
+  } else {
+    // No recent cache - hide the palette section
+    togglePaletteSection(false);
+  }
+} else {
+  // For Georgia or Notion, show the palette and render it
+  togglePaletteSection(true);
+  renderColorPalette(initialValue);
+  updateSectionTitle(initialValue);
+  renderSoftBackgroundPalette(initialValue);
+  renderSoftColorPalette(initialValue);
+
+  // Save as the most recent styled typography
+  localStorage.setItem('lastStyledTypography', initialValue);
+}
+
+// Update hash if not already set
+if (!hashParams.style) {
+  updateHash({ style: initialValue });
+}
+
+typographySelect.addEventListener('change', function() {
+  console.log('Typography changed:', this.value);
+
+  // Save selection to localStorage
+  localStorage.setItem('typographySelection', this.value);
+
+  // Update hash with new style
+  updateHash({ style: this.value });
+
+  // Remove all typography classes
+  bodyElement.classList.remove('georgia', 'notion');
+
+  // Handle typography application and palette display
+  if (this.value === 'none') {
+    // For 'none', use the most recent Georgia/Notion palette if available
+    const lastStyled = localStorage.getItem('lastStyledTypography');
+    if (lastStyled && (lastStyled === 'georgia' || lastStyled === 'notion')) {
+      // Show palette from most recent styled selection
+      togglePaletteSection(true);
+      renderColorPalette(lastStyled);
+      updateSectionTitle(lastStyled);
+      renderSoftBackgroundPalette(lastStyled);
+      renderSoftColorPalette(lastStyled);
+    } else {
+      // No recent cache - hide the palette section
+      togglePaletteSection(false);
+    }
+  } else {
+    // For Georgia or Notion
+    togglePaletteSection(true);
+
+    // Add the selected class
+    if (this.value === 'georgia') {
+      bodyElement.classList.add('georgia');
+    } else if (this.value === 'notion') {
+      bodyElement.classList.add('notion');
+    }
+
+    // Save as the most recent styled typography
+    localStorage.setItem('lastStyledTypography', this.value);
+
+    // Update section title and all palettes
+    renderColorPalette(this.value);
+    updateSectionTitle(this.value);
+    renderSoftBackgroundPalette(this.value);
+    renderSoftColorPalette(this.value);
+  }
+});
+</script>
+
+</body>
+</html>
