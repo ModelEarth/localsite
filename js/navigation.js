@@ -8019,8 +8019,11 @@ $(document).on("click", "#filterClickState", function(event) {
 });
 
 // Close inline dropdown when clicking elsewhere
-$(document).on("click", function() {
-    $("#inlineStateDropdown").hide();
+$(document).on("click", function(event) {
+    // Only close if click is outside dropdown and trigger button
+    if (!$(event.target).closest('#inlineStateDropdown, #filterClickState').length) {
+        $("#inlineStateDropdown").hide();
+    }
 });
 
 // Click handler for Counties Tab - Opens location filter panel

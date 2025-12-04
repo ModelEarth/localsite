@@ -598,12 +598,36 @@ config.join(sectorList);
 
 
 
-<!-- Warning: adding content class causes popups to disappear because the absoulte top is using the top of page. -->
+<!-- impact bar chart not displayed -->
+<div class="content contentpadding" style="display:none; padding-top: 0px">
+	<!-- Saving for later -->
+	<div id="barchart" style="display:none"></div>
+
+	<div id="impactTextIntro" class="noprint">Click bubbles above to display a bar chart below for comparison.</div>
+
+	<div style="clear:both"></div>
+
+	<div class="io" style=" max-width: 850px; margin: auto;">
+	        <h1 class="text-center">Impact chart</h1>
+	        <p>
+	            The impact chart widget shows the environmental profile of one or more sectors.
+	        </p>
+	        <div id="impact-chart" class="impact-chart" style="display:none">
+	        	
+	        </div>
+	</div>
+
+</div>
+
+<br><br><br>
+
+
+<!-- Bubble Chart - Moved to appear after other charts per Loren's request -->
 <div class="contentpadding" style="padding-top:0px">
 
 	<link rel="stylesheet" type="text/css" href="/io/charts/bubble/css/bubble.css"/>
 
-	<div id="bubble-graph-id" class="bubble-graph" style="display:none">
+	<div id="bubble-graph-id" class="bubble-graph">
 
 		<div style="float:right;margin-bottom:16px" class="noprint">
 			<a href="https://model.earth/io/charts/">About Bubble Chart</a>
@@ -686,29 +710,6 @@ config.join(sectorList);
 
 </div>
 
-<!-- impact bar chart not displayed -->
-<div class="content contentpadding" style="display:none; padding-top: 0px">
-	<!-- Saving for later -->
-	<div id="barchart" style="display:none"></div>
-
-	<div id="impactTextIntro" class="noprint">Click bubbles above to display a bar chart below for comparison.</div>
-
-	<div style="clear:both"></div>
-
-	<div class="io" style=" max-width: 850px; margin: auto;">
-	        <h1 class="text-center">Impact chart</h1>
-	        <p>
-	            The impact chart widget shows the environmental profile of one or more sectors.
-	        </p>
-	        <div id="impact-chart" class="impact-chart" style="display:none">
-	        	
-	        </div>
-	</div>
-
-</div>
-
-<br><br><br>
-
 
 <script type="text/javascript">
 console.log("template-charts.html loaded");
@@ -739,6 +740,64 @@ function hashChangedLocal() {
 	}
 	//priorHashLocal = getHash();
 	priorHashLocal = structuredClone($.extend(true, {}, getHash())); // Clone/copy object without entanglement
+	
+	// Show/hide bubble chart based on state selection
+	updateBubbleChartVisibility();
+}
+
+// Show bubble chart only when viewing US national data (no state selected)
+function updateBubbleChartVisibility() {
+	console.log("[VISIBILITY] updateBubbleChartVisibility called");
+	const bubbleChart = document.getElementById('bubble-graph-id');
+	console.log("[VISIBILITY] Bubble chart element:", bubbleChart);
+	
+	if (bubbleChart) {
+		// Get hash fresh each time
+		let hash = typeof getHash === 'function' ? getHash() : {};
+		console.log("[VISIBILITY] Current hash:", hash);
+		
+		if (!hash.state || hash.state === 'US') {
+			bubbleChart.style.display = 'block';
+			console.log("[VISIBILITY] Showing bubble chart for US national data");
+		} else {
+			bubbleChart.style.display = 'none';
+			console.log("[VISIBILITY] Hiding bubble chart for state: " + hash.state);
+		}
+	} else {
+		console.log("[VISIBILITY] Bubble chart element not found!");
+	}
+}
+
+console.log("[VISIBILITY] Bubble chart visibility script loaded");
+
+// Initialize bubble chart visibility on page load
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', function() {
+		setTimeout(updateBubbleChartVisibility, 500);
+	});
+} else {
+	setTimeout(updateBubbleChartVisibility, 500);
+}
+
+// Listen for hash changes to update bubble chart visibility
+window.addEventListener('hashchange', function() {
+	console.log("[VISIBILITY] window.hashchange fired");
+	// Run multiple times to override bubble.js
+	setTimeout(updateBubbleChartVisibility, 100);
+	setTimeout(updateBubbleChartVisibility, 500);
+	setTimeout(updateBubbleChartVisibility, 1000);
+	setTimeout(updateBubbleChartVisibility, 2000);
+});
+
+if (typeof document !== 'undefined') {
+	document.addEventListener('hashChangeEvent', function() {
+		console.log("[VISIBILITY] hashChangeEvent fired");
+		// Run multiple times to override bubble.js
+		setTimeout(updateBubbleChartVisibility, 100);
+		setTimeout(updateBubbleChartVisibility, 500);
+		setTimeout(updateBubbleChartVisibility, 1000);
+		setTimeout(updateBubbleChartVisibility, 2000);
+	});
 }
 /*
 document.getElementById('showValues').onclick = function() {
