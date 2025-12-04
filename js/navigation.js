@@ -2826,6 +2826,25 @@ function showSideTabs() {
                 $(".showAccount").addClass("active");
                 $("#accountPanel").show();
                 $("#accountPanel .menuExpandedScroll").show();
+
+                // Update auth status display using global function
+                console.log('[Auth Navigation] Account tab opened, updating auth UI - VERSION 2.0');
+                console.log('[Auth Navigation] updateAuthUI type:', typeof window.updateAuthUI);
+                console.log('[Auth Navigation] waitForVariable type:', typeof waitForVariable);
+
+                if (typeof window.updateAuthUI === 'function') {
+                    console.log('[Auth Navigation] Calling updateAuthUI directly');
+                    window.updateAuthUI();
+                } else if (typeof waitForVariable === 'function') {
+                    // Wait for updateAuthUI to be defined
+                    console.log('[Auth Navigation] Waiting for updateAuthUI function...');
+                    waitForVariable('updateAuthUI', window).then(function() {
+                        console.log('[Auth Navigation] updateAuthUI now available');
+                        window.updateAuthUI();
+                    });
+                } else {
+                    console.error('[Auth Navigation] UPDATED CODE - updateAuthUI not found, no waitForVariable');
+                }
             } else {
                 //$("#rightSideTabs").show();
             }

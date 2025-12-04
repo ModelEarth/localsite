@@ -461,14 +461,92 @@
         <!-- Account Panel -->
         <div id="accountPanel" class="menuExpanded topMenuOffset dark" style="display:none">
           <div class="menuExpandedScroll">
-            <div style="font-size:16pt; margin-bottom:20px">Account</div>
-            
-            <div style="display:none" class="local">
+            <!-- Account Title and Sign Out Button - Side by Side -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="font-size:16pt;">Account</div>
+                <button id="signOutBtn" onclick="handleSignOut()"
+                        style="display: none;
+                               padding: 7px 16px;
+                               background: linear-gradient(135deg, #ff2e2ea4 0%, #ff27274d 100%);
+                               border: 1.5px solid rgba(239,68,68,0.3);
+                               border-radius: 7px;
+                               color: #fef2f2;
+                               font-size: 11pt;
+                               font-weight: 600;
+                               cursor: pointer;
+                               transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                               box-shadow: 0 2px 5px rgba(220,38,38,0.3);
+                               letter-spacing: 0.01em;"
+                        onmouseover="this.style.background='linear-gradient(135deg, #b91c1c 0%, #991b1b 100%)';
+                                    this.style.borderColor='rgba(239,68,68,0.5)';
+                                    this.style.color='#ffffff';
+                                    this.style.boxShadow='0 3px 10px rgba(220,38,38,0.4)';"
+                        onmouseout="this.style.background='linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)';
+                                   this.style.borderColor='rgba(239,68,68,0.3)';
+                                   this.style.color='#fef2f2';
+                                   this.style.boxShadow='0 2px 5px rgba(220,38,38,0.3)';"
+                        onmousedown="this.style.transform='scale(0.97)';"
+                        onmouseup="this.style.transform='scale(1)';">
+                    🚪 Sign Out
+                </button>
+            </div>
 
-              <div class="sign-in-container" style="margin-left:auto;">
-                  Not yet active (localhost only)<br>
-                  <button id="signInBtn" class="btn btn-primary sign-in-btn bthButton" style="margin-top:10px;width:220px" onclick="showAuthModal()">Auth.js Sign In</button>
+
+
+            
+            <div style="display:none; width: 100%; text-align: center;" class="local">
+
+              <div class="sign-in-container">
+                  <div style="font-size: 10pt; color: #94a3b8; margin-bottom: 12px;">Not yet active (localhost only)</div>
+                  <button id="signInBtn" onclick="showAuthModal()"
+                          style="padding: 12px 32px;
+                                 background: linear-gradient(135deg, #3094ce 0%, #25a2eb 100%);
+                                 border: 1.5px solid rgba(59,130,246,0.3);
+                                 border-radius: 8px;
+                                 color: #ffffff;
+                                 font-size: 13pt;
+                                 font-weight: 600;
+                                 cursor: pointer;
+                                 transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                                 box-shadow: 0 3px 8px rgba(59,130,246,0.3);
+                                 letter-spacing: 0.02em;
+                                 min-width: 220px;"
+                          onmouseover="this.style.background='linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)';
+                                      this.style.borderColor='rgba(59,130,246,0.5)';
+                                      this.style.transform='translateY(-2px)';
+                                      this.style.boxShadow='0 5px 14px rgba(59,130,246,0.4)';"
+                          onmouseout="this.style.background='linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+                                     this.style.borderColor='rgba(59,130,246,0.3)';
+                                     this.style.transform='translateY(0)';
+                                     this.style.boxShadow='0 3px 8px rgba(59,130,246,0.3)';"
+                          onmousedown="this.style.transform='translateY(0) scale(0.97)';"
+                          onmouseup="this.style.transform='translateY(-2px) scale(1)';">
+                      <span style="display: inline-flex; align-items: center; gap: 8px;">
+                         Sign In
+                      </span>
+                  </button>
                   <br><br>
+              </div>
+
+              <div class="user-info-container" style="display: none; margin-bottom: 25px;">
+                  <!-- Avatar - FIRST -->
+                  <div style="margin-bottom: 12px;margin-top: 12px;">
+                      <img id="userAvatar" src="" alt=""
+                           style="width: 64px; height: 64px; border-radius: 50%; display: none;
+                                  object-fit: cover; border: 2.5px solid rgba(96,165,250,0.3);
+                                  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+                                  margin: 0 auto;">
+                  </div>
+
+                  <!-- Username and Email - BELOW -->
+                  <div>
+                      <div id="userDisplayName" style="font-size: 14.5pt; font-weight: 600;
+                                                        color: #f7fafc;
+                                                        letter-spacing: -0.02em;"></div>
+                      <div id="userEmail" style="font-size: 10pt; color: #94a3b8;
+                                                 font-weight: 400; letter-spacing: 0.01em;
+                                                 margin-top: 3px;"></div>
+                  </div>
               </div>
             </div>
 

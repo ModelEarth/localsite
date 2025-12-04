@@ -3798,4 +3798,105 @@ function showAuthModal() {
   }
 }
 
+// Update Auth UI - show/hide containers based on authentication state
+async function updateAuthUI() {
+  const signInContainer = document.querySelector('.sign-in-container');
+  const userInfoContainer = document.querySelector('.user-info-container');
+
+  consoleLog('[Auth UI] Updating authentication UI state');
+
+  // Check session via Better Auth API
+  try {
+    const response = await fetch('http://localhost:3002/api/auth-status', {
+      credentials: 'include' // Send httpOnly cookies
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      if (result && result.authenticated && result.user) {
+        const user = result.user;
+        consoleLog('[Auth UI] User authenticated:', user.name);
+
+      // Hide sign-in container, show user info container
+      if (signInContainer) signInContainer.style.display = 'none';
+      if (userInfoContainer) {
+        userInfoContainer.style.display = 'block';
+
+        // Show sign out button
+        const signOutBtn = document.getElementById('signOutBtn');
+        if (signOutBtn) {
+          signOutBtn.style.display = 'inline-block';
+          consoleLog('[Auth UI] Sign out button displayed');
+        }
+
+        // Update user avatar
+        const userAvatar = document.getElementById('userAvatar');
+        consoleLog('[Auth UI] User image URL:', user.image);
+        if (userAvatar && user.image) {
+          userAvatar.src = user.image;
+          userAvatar.style.display = 'block';
+          consoleLog('[Auth UI] Avatar displayed with image:', user.image);
+        } else if (userAvatar) {
+          userAvatar.style.display = 'none';
+          consoleLog('[Auth UI] No image available for user');
+        }
+
+        // Update user display name
+        const displayNameEl = document.getElementById('userDisplayName');
+        if (displayNameEl) {
+          displayNameEl.textContent = user.name;
+          consoleLog('[Auth UI] Username displayed:', user.name);
+        }
+
+        // Update user email
+        const userEmailEl = document.getElementById('userEmail');
+        if (userEmailEl && user.email) {
+          userEmailEl.textContent = user.email;
+          consoleLog('[Auth UI] User email displayed:', user.email);
+        }
+      }
+      return; // Exit early if authenticated
+    }
+    }
+  } catch (e) {
+    consoleLog('[Auth UI] Error checking authentication:', e);
+  }
+
+  // No authenticated user - show sign-in container
+  consoleLog('[Auth UI] No authenticated user');
+  if (signInContainer) signInContainer.style.display = 'block';
+  if (userInfoContainer) userInfoContainer.style.display = 'none';
+  const signOutBtn = document.getElementById('signOutBtn');
+  if (signOutBtn) signOutBtn.style.display = 'none';
+}
+
+// Handle sign out
+async function handleSignOut() {
+  consoleLog('[Auth] Signing out user');
+  try {
+    // Call Better Auth sign-out endpoint
+    await fetch('http://localhost:3002/api/auth/sign-out', {
+      method: 'POST',
+      credentials: 'include'
+    });
+  } catch (e) {
+    consoleLog('[Auth] Error during sign-out:', e);
+  }
+  // Reload page to refresh UI
+  window.location.reload();
+}
+
+// Make functions globally available
+window.updateAuthUI = updateAuthUI;
+window.handleSignOut = handleSignOut;
+
+// Auto-update auth UI if account panel is open when this script loads
+setTimeout(function() {
+  const hash = getHash();
+  if (hash && hash.sidetab === 'account') {
+    consoleLog('[Auth UI] Auto-updating on load because account tab is open');
+    updateAuthUI();
+  }
+}, 500);
+
 consoleLog("end localsite");
