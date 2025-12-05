@@ -19,40 +19,30 @@
 </head>
 <body>
 
+<!-- DELETE
 <script>
-// Bubble chart visibility controller - hide when state is selected
+// Bubble chart visibility controller - always show bubble chart
 (function() {
 	console.log("[INFO-INDEX] Bubble chart visibility script loaded");
-	
-	function hideBubbleChartForStates() {
-		const hash = window.location.hash;
-		const hasState = hash && hash.includes('state=') && !hash.includes('state=US');
-		
-		// Find and hide/show bubble chart
+
+	function showBubbleChart() {
+		// Always show bubble chart regardless of state parameter
 		const bubbleChart = document.getElementById('bubble-graph-id');
 		if (bubbleChart) {
-			if (hasState) {
-				bubbleChart.style.display = 'none';
-				console.log("[INFO-INDEX] Hiding bubble chart - state detected in URL");
-			} else {
-				bubbleChart.style.display = 'block';
-				console.log("[INFO-INDEX] Showing bubble chart - no state or US");
-			}
+			//bubbleChart.style.display = 'block';
 		}
 	}
-	
+
 	// Run periodically to catch dynamic content
-	setInterval(hideBubbleChartForStates, 500);
-	
+	//setInterval(showBubbleChart, 500);
+
 	// Also run on hash changes
 	window.addEventListener('hashchange', function() {
-		console.log("[INFO-INDEX] Hash changed");
-		setTimeout(hideBubbleChartForStates, 100);
-		setTimeout(hideBubbleChartForStates, 500);
-		setTimeout(hideBubbleChartForStates, 1000);
-		setTimeout(hideBubbleChartForStates, 2000);
+		//setTimeout(showBubbleChart, 100);
 	});
 })();
 </script>
+-->
+
 </body>
 </html>

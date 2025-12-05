@@ -280,11 +280,14 @@ function hashChanged() {
             $(".regionFilter").show();
             $(".geo-US13").show();
         }
-        if (hash.state && hash.state.length == 2 && !($("#filterLocations").is(':visible'))) {
-            $(".locationTabText").text($("#state_select").find(":selected").text());
-        } else if (!hash.state) {
-            $(".locationTabText").text("United States");
-        }
+        //waitForElm('#filterClickState').then((elm) => {
+            //alert("#filterClickState available");
+            if (hash.state && hash.state.length == 2 && !($("#filterLocations").is(':visible'))) {
+                $(".locationTabText").text($("#state_select").find(":selected").text());
+            } else if (!hash.state) {
+                $(".locationTabText").text("United States");
+            }
+        //});
         // Note: We no longer revert to "Locations" - keep the state name
 
         //&& hash.geoview == "state"
@@ -462,7 +465,8 @@ function hashChanged() {
             // Since geoview "earth" does uses an iFrame instead of the geomap display.
             if (typeof relocatedStateMenu != "undefined") {
                 waitForElm('#state_select').then((elm) => {
-                    relocatedStateMenu.appendChild(state_select); // For apps hero
+                    // DEACTIVATED, OCCURRED ON LOAD OF /localsite/info/
+                    //relocatedStateMenu.appendChild(state_select); // For apps hero
                 });
             }
             if (typeof relocatedScopeMenu != "undefined") {
@@ -499,24 +503,27 @@ function hashChanged() {
         if ($("#state_select").find(":selected").value) {
             theStateName = $("#state_select").find(":selected").text();
         }
-        if (theStateName != "") {
-            $(".statetitle").text(theStateName);
-            $(".regiontitle").text(theStateName);
-            $(".locationTabText").text(theStateName);
-            local_app.loctitle = theStateName;
-        } else if (hash.state) {
-            //let multiStateString = hash.state.replace(",",", ") + " - USA";
-            let multiStateString = hash.state + " USA";
-            $(".statetitle").text(multiStateString);
-            $(".regiontitle").text(multiStateString);
-            $(".locationTabText").text(multiStateString);
-            local_app.loctitle = multiStateString;
-        } else {
-            local_app.loctitle = "USA";
-            $(".statetitle").text("US");
-            $(".regiontitle").text("United States");
-            $(".locationTabText").text("United States");
-        }
+        //waitForElm('#filterClickState').then((elm) => {
+            //alert("#filterClickState available");
+            if (theStateName != "") {
+                $(".statetitle").text(theStateName);
+                $(".regiontitle").text(theStateName);
+                $(".locationTabText").text(theStateName);
+                local_app.loctitle = theStateName;
+            } else if (hash.state) {
+                //let multiStateString = hash.state.replace(",",", ") + " - USA";
+                let multiStateString = hash.state + " USA";
+                $(".statetitle").text(multiStateString);
+                $(".regiontitle").text(multiStateString);
+                $(".locationTabText").text(multiStateString);
+                local_app.loctitle = multiStateString;
+            } else {
+                local_app.loctitle = "USA";
+                $(".statetitle").text("US");
+                $(".regiontitle").text("United States");
+                $(".locationTabText").text("United States");
+            }
+        //});
 
         if(!hash.regiontitle) {
             //alert("OKAY hash.geo before: " + hash.geo);
@@ -543,11 +550,15 @@ function hashChanged() {
             }
 
             if (hash.show && local_app.loctitle) {
-                $(".region_service").text(local_app.loctitle + " - " + hash.show.toTitleCaseFormat());
-                
+                waitForElm('.region_service').then((elm) => {
+                    $(".region_service").text(local_app.loctitle + " - " + hash.show.toTitleCaseFormat());
+                });
+
             } else if (hash.state) {
 
-                $(".region_service").text(hash.state); // While waiting for full state name
+                waitForElm('.region_service').then((elm) => {
+                    $(".region_service").text(hash.state); // While waiting for full state name
+                });
                 waitForElm('#state_select').then((elm) => {
                     //$("#state_select").val(stateAbbrev);
                     console.log("fetch theStateName from #state_select");
@@ -556,18 +567,20 @@ function hashChanged() {
                     if ($("#state_select").find(":selected").val()) { // Omits top which has no text
                         theStateName = $("#state_select").find(":selected").text();
                         console.log("fetched " + theStateName);
-                        $(".region_service").text(theStateName + " Industries");
-                        if (showTitle) {
-                            $(".region_service").text(theStateName + " - " + hash.show.toTitleCaseFormat());
-                        }
+                        waitForElm('.region_service').then((elm) => {
+                            $(".region_service").text(theStateName + " Industries");
+                            if (showTitle) {
+                                $(".region_service").text(theStateName + " - " + hash.show.toTitleCaseFormat());
+                            }
+                        });
                     }
 
                     if (hash.show && param.display == "everything") { // Limitig to everything since /map page does not load layers, or need longer title.
                         let layer = hash.show;
 
                         /* Bug waitForSubObject is not finding localObject layers
-                        waitForSubObject('localObject','layers', function() { 
-                        //waitForObjectProperty('localObject','layers', function() { 
+                        waitForSubObject('localObject','layers', function() {
+                        //waitForObjectProperty('localObject','layers', function() {
                             if (localObject.layers[layer] && localObject.layers[layer].section) {
                                 let section = localObject.layers[layer].section;
                                 updateRegionService(section);
@@ -589,8 +602,10 @@ function hashChanged() {
                 */
             } else {
                 ////$(".region_service").text("Top " + $(".locationTabText").text() + " Industries");
-                $(".region_service").text(""); // Clear prior state
-                consoleLog("Clear prior state")
+                waitForElm('.region_service').then((elm) => {
+                    $(".region_service").text(""); // Clear prior state
+                    consoleLog("Clear prior state")
+                });
             }
             if (appTitle) {
 
@@ -608,12 +623,17 @@ function hashChanged() {
             //alert("hash.regiontitle1 " + hash.regiontitle);
             hiddenhash.loctitle = hash.regiontitle.replace(/\+/g," ");
             $(".regiontitle").text(hash.regiontitle.replace(/\+/g," "));
-            if (hash.show) {
-                $(".region_service").text(hash.regiontitle.replace(/\+/g," ") + " - " + hash.show.toTitleCaseFormat());
-            } else {
-                $(".region_service").text(hash.regiontitle.replace(/\+/g," "));
-            }
-            $(".locationTabText").text(hash.regiontitle.replace(/\+/g," "));
+            waitForElm('.region_service').then((elm) => {
+                if (hash.show) {
+                    $(".region_service").text(hash.regiontitle.replace(/\+/g," ") + " - " + hash.show.toTitleCaseFormat());
+                } else {
+                    $(".region_service").text(hash.regiontitle.replace(/\+/g," "));
+                }
+            });
+            //waitForElm('#filterClickState').then((elm) => {
+                //alert("#filterClickState available");
+                $(".locationTabText").text(hash.regiontitle.replace(/\+/g," "));
+            //});
             local_app.loctitle = hash.regiontitle.replace(/\+/g," ");
             
             $(".regiontitle").val(hash.regiontitle.replace(/\+/g," "));
@@ -700,7 +720,10 @@ function hashChanged() {
         //loadGeomap = true; // No longer showing map when just geo.
     }
 
-    $(".locationTabText").attr("title",$(".locationTabText").text());
+    //waitForElm('#filterClickState').then((elm) => {
+        //alert("#filterClickState available");
+        $(".locationTabText").attr("title",$(".locationTabText").text());
+    //});
     if (hash.cat != priorHash.cat) {
         changeCat(hash.cat)
     }
@@ -4783,6 +4806,12 @@ function showTabulatorList(element, attempts) {
                         paginationSize:10000,
                         columns:element.columns,
                         selectable:true,
+                        autoResize:false,         //disable auto resize to prevent infinite loop
+                    });
+
+                    // Manually redraw statetable after build since autoResize is disabled
+                    statetable.on("tableBuilt", function() {
+                        statetable.redraw(true); // Force full redraw
                     });
 
                     // TO DO: 2-char state needs to be added
@@ -5013,7 +5042,7 @@ function showTabulatorList(element, attempts) {
 
                 geotable = new Tabulator("#tabulator-geotable", {
                     data:rowData,
-                    layout:"fitColumns",      //fit columns to width of table 
+                    layout:"fitColumns",      //fit columns to width of table
                     responsiveLayout:"hide",  //hide columns that dont fit on the table
                     //tooltips:true,          //show tool tips on cells
                     addRowPos:"top",          //when adding a new row, add it to the top of the table
@@ -5028,6 +5057,7 @@ function showTabulatorList(element, attempts) {
                     columns:columnArray,
                     selectable:true,
                     movableRows:true,
+                    autoResize:false,         //disable auto resize to prevent infinite loop
                 });
 
                 geotable.on("dataSorted", function(sorters, rows){
@@ -5156,6 +5186,11 @@ function showTabulatorList(element, attempts) {
 
 
                 consoleLog("Before Update Map Colors Tabulator list displayed. State: " + theState);
+
+                // Manually redraw geotable after build since autoResize is disabled
+                geotable.on("tableBuilt", function() {
+                    geotable.redraw(true); // Force full redraw
+                });
 
                 if(hash.geo) {
                     let currentGeoIDs = hash.geo.split(',');
@@ -7625,9 +7660,10 @@ function hideAdvanced() {
     $("#imagineBar").hide();
     $("#filterClickLocation").removeClass("filterClickActive");
     $("#draggableSearch").hide();
-    
+
     if (typeof relocatedStateMenu != "undefined") {
-        relocatedStateMenu.appendChild(state_select); // For apps hero
+        // DEACTIVATED, OCCURRED ON LOAD OF /localsite/info/
+        //relocatedStateMenu.appendChild(state_select); // For apps hero
     }
     $("#hero_holder").show();
     $(".locationTabText").text($(".locationTabText").attr("title"));
@@ -8115,7 +8151,8 @@ function openMapLocationFilter() {
     waitForElm('#locationFilterHolder').then((elm) => {
         if (typeof state_select != "undefined") {
             // Move state dropdown to top of location filter panel
-            $("#locationFilterHolder").prepend(state_select);
+            // If this is reactivated, move it somewhere else.
+            //$("#locationFilterHolder").prepend(state_select);
         }
     });
 
@@ -8164,12 +8201,13 @@ function closeLocationFilter() {
     // Close inline state dropdown if open
     $("#inlineStateDropdown").hide();
     
-    if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
+    if (location.host == 'georgia.org' || location.host == 'www.georgia.org') {
         $("#header.nav-up").hide();
     }
 
     if (typeof relocatedStateMenu != "undefined") {
-        relocatedStateMenu.appendChild(state_select); // For apps hero
+        // DEACTIVATED, OCCURRED ON LOAD OF /localsite/info/
+        //relocatedStateMenu.appendChild(state_select); // For apps hero
     }
     if (typeof relocatedScopeMenu != "undefined") {
         relocatedScopeMenu.appendChild(selectScope); // For apps hero

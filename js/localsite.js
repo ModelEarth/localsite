@@ -850,7 +850,9 @@ function loadLocalTemplate() {
       consoleLog("Template Loaded: " + datascapeFile);
       initSitelook();
       if (typeof relocatedStateMenu != "undefined") {
-        relocatedStateMenu.appendChild(state_select); // For apps hero
+        // DEACTIVATED, OCCURRED ON LOAD OF /localsite/info/
+        // Move elsewhere if still needed.
+        //relocatedStateMenu.appendChild(state_select); // For apps hero
         $(".stateFilters").hide();
       }
       if (typeof relocatedScopeMenu != "undefined") {
