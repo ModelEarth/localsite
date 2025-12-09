@@ -733,24 +733,46 @@ function get_localsite_root() { // Also in two other places
         myScript = scripts[i];
       }
   }
+
+  // --- START MODIFICATION FOR GITHUB PAGES ---
+  let basePath = '/'; // Default to root path
+  // Check if it's a GitHub Pages Project site (e.g., username.github.io/repo-name/)
+  // And the pathname is not just '/' (which would be a User/Organization page)
+  if (location.host.endsWith('.github.io') && window.location.pathname.length > 1) {
+    // Extract the /repo-name/ part from the pathname
+    // Example: /webroot-earth/some/page.html => /webroot-earth/
+    // Example: /webroot-earth => /webroot-earth/
+    let pathSegments = window.location.pathname.split('/').filter(s => s.length > 0);
+    if (pathSegments.length > 0) {
+      basePath = '/' + pathSegments[0] + '/';
+    }
+  }
+  // --- END MODIFICATION FOR GITHUB PAGES ---
+
   if (myScript) {
       hostnameAndPort = extractHostnameAndPort(myScript.src);
       consoleLog("hostnameAndPort from " + myScript.src + " is " + hostnameAndPort);
   }
-  let theroot = location.protocol + '//' + location.host + '/localsite/';
+
+  // Construct theroot, incorporating basePath
+  // The goal is to get: https://harimayooram.github.io/webroot-earth/localsite/
+  let theroot = location.protocol + '//' + location.host + basePath + 'localsite/'; // Modified line
 
   if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
     //theroot = "https://map.georgia.org/localsite/";
-    theroot = hostnameAndPort + "/localsite/";
+    theroot = hostnameAndPort + basePath + "localsite/"; // Modified line
   }
   if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-    theroot = hostnameAndPort + "/localsite/";
+    theroot = hostnameAndPort + basePath + "localsite/"; // Modified line
     console.log("theroot from remotely called localsite: " + theroot);
     //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
   }
   if (location.host.indexOf('localhost') >= 0) {
-    // Enable to test embedding without locathost repo in site theroot. Rename your localsite folder.
-    //theroot = "https://model.earth/localsite/";
+    // For localhost, we generally want relative paths without the repo name in the root part
+    // e.g., http://localhost:PORT/localsite/
+    // The previous logic here would make theroot = "https://model.earth/localsite/" which is wrong for local testing
+    // So, explicitly set it for localhost to be consistent.
+    theroot = location.protocol + '//' + location.host + '/localsite/';
   }
   localsite_repo3 = theroot; // Save to reduce DOM hits
   return (theroot);
