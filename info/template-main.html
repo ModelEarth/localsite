@@ -83,6 +83,9 @@
     .showResources {
       display: block;
     }
+    .acct {
+      display: inline-block !important;
+    }
     
     /* Use generic button class from base.css */
     </style>
@@ -206,7 +209,7 @@
                 </div>
               </div>
 
-              <div class="local acct" style="display:none">
+              <div class="acct">
               <div class="showAccount rightTopItem">
                   <div class="showAccount">
                       <i class="material-icons menuTopIcon">&#xE7FD;</i>
@@ -314,14 +317,14 @@
             <div class="setDiv"></div>
 
             <div class="dev local earth" style="display:none">
-              <div class="setLeft">Dev Mode</div>
-              <div class="setOverflow"><div class="setRight">
-                  <select id="devmode">
-                    <option value="public" selected>Public</option>
-                    <option value="dev">Developer</option>
-                  </select>
-              </div></div>
-              <div class="setDiv"></div>
+            <div class="setLeft">Dev Mode</div>
+            <div class="setOverflow"><div class="setRight">
+                <select id="devmode">
+                  <option value="public" selected>Public</option>
+                  <option value="dev">Developer</option>
+                </select>
+            </div></div>
+            <div class="setDiv"></div>
             </div>
 
             <div class="dev" style="display:none">
@@ -1519,7 +1522,7 @@ Displayed by hashChanged() in navigation.js
 <div id="log_display" style="display:none"><span style='float:left; font-size:18px'>Console Log</span>
   
   <div style="float:right">
-    <i class="material-icons show-on-load" style="font-size:28px;cursor:" onclick="$('#log_display').hide();Cookies.set('showlog','0');return false;">&#xE5CD;</i>
+    <i class="material-icons show-on-load" style="font-size:28px;cursor:pointer" onclick="$('#log_display').hide();Cookies.set('showlog','0');return false;">&#xE5CD;</i>
   </div>
 
   <br><textarea id="logText">LogText</textarea></div>

@@ -858,8 +858,7 @@ function loadLocalTemplate() {
       }
       waitForElm('#filterClickLocation').then((elm) => {
         if (param.showstates != "false") {
-            $("#filterClickState").show();  // Show state name tab
-            $("#filterClickLocation").show(); // Show counties tab
+            $("#filterClickLocation").show();
         }
         $("#mapFilters").prependTo("#main-content");
         // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
@@ -887,7 +886,7 @@ function loadLocalTemplate() {
             });
           });
         }
-        if(location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0 || location.host.indexOf("8888") >= 0) {
+        if(location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0) {
           $("#dreamstudio-nav a").each(function() {
             $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
           });
@@ -3809,7 +3808,8 @@ async function updateAuthUI() {
 
   // Check session via Better Auth API
   try {
-    const response = await fetch('http://localhost:3002/api/auth-status', {
+    const authApiUrl = window.AUTH_API_URL || 'http://localhost:3002/api';
+    const response = await fetch(`${authApiUrl}/auth-status`, {
       credentials: 'include' // Send httpOnly cookies
     });
 
@@ -3877,7 +3877,8 @@ async function handleSignOut() {
   consoleLog('[Auth] Signing out user');
   try {
     // Call Better Auth sign-out endpoint
-    await fetch('http://localhost:3002/api/auth/sign-out', {
+    const authApiUrl = window.AUTH_API_URL || 'http://localhost:3002/api';
+    await fetch(`${authApiUrl}/auth/sign-out`, {
       method: 'POST',
       credentials: 'include'
     });
