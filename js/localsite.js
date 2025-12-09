@@ -100,21 +100,26 @@ var local_app = local_app || {};
             if (localsite_repo) { // Use cached value if available
               return(localsite_repo);
             }
-            //alert("get localsite_repo");
 
-            // Get web_root and append "/localsite/" - no DOM checking needed here
-            let web_root = this.web_root();
-            let theroot = web_root + "/localsite/";
+            // //alert("get localsite_repo");
+
+            // // Get web_root and append "/localsite/" - no DOM checking needed here
+            // let web_root = this.web_root();
+            // let theroot = web_root + "/localsite/";
             
-            // Handle special case for Georgia domain
-            if (location.host.indexOf("georgia") >= 0) { 
-              // For feedback link within embedded map, and ga-layers.json
-              // Keep the theroot as determined by web_root + "/localsite/"
-              // This maintains compatibility with embedded maps
-            }
+            // // Handle special case for Georgia domain
+            // if (location.host.indexOf("georgia") >= 0) { 
+            //   // For feedback link within embedded map, and ga-layers.json
+            //   // Keep the theroot as determined by web_root + "/localsite/"
+            //   // This maintains compatibility with embedded maps
+            // }
             
-            localsite_repo = theroot; // Cache to reduce repeated calls
-            return (theroot);
+            // localsite_repo = theroot; // Cache to reduce repeated calls
+            // return (theroot);
+            let web_root = this.web_root(); // Use the robust web_root
+            let theroot = web_root + "localsite/"; // Append localsite/
+            localsite_repo = theroot;
+            return theroot;
     };
     
     local_app.community_data_root = local_app.community_data_root || function() { // General US states and eventually some international
@@ -126,95 +131,62 @@ var local_app = local_app || {};
     };
     
     local_app.web_root = local_app.web_root || function() { // General US states and eventually some international
-            // Check if web_root was already populated by widget-embed.js or other scripts
-            // Avoid infinite recursion by checking if window.local_app is a different object
-            if (window.local_app && window.local_app !== local_app && 
-                typeof window.local_app.web_root === 'function') {
-                // Use the existing function from widget-embed.js or other source
-                let existingResult = window.local_app.web_root();
-                if (existingResult) {
-                    modelearth_repo = existingResult; // Cache the result
-                    return existingResult;
-                }
-            }
+       //             // // Check if web_root was already populated by widget-embed.js or other scripts
+            // // Avoid infinite recursion by checking if window.local_app is a different object
+            // if (window.local_app && window.local_app !== local_app && 
+            //     typeof window.local_app.web_root === 'function') {
+            //     // Use the existing function from widget-embed.js or other source
+            //     let existingResult = window.local_app.web_root();
+            //     if (existingResult) {
+            //         modelearth_repo = existingResult; // Cache the result
+            //         return existingResult;
+            //     }
+            // }
+            //             if (modelearth_repo) { // Use cached value if available
+            //     return modelearth_repo;
+            // }
             
-            if (modelearth_repo) { // Use cached value if available
-                return modelearth_repo;
-            }
-            
-            let theroot = "https://model.earth";
+            // let scripts = document.getElementsByTagName('script'); 
+            // let myScript = null;
+            // // Find the script tag for localsite.js
+            // for (var i = 0; i < scripts.length; ++i) {
+            //     if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
+            //         myScript = scripts[i];
+            //         break;
+            //     }
+            // }
 
-            // Try to find script synchronously first, prioritizing localsite.js
-            let scripts = document.getElementsByTagName('script'); 
-            let myScript;
+            // let calculatedWebRoot = '';
+            // if (myScript) {
+            //     // Example myScript.src: https://harimayooram.github.io/webroot-earth/localsite/js/localsite.js
+            //     // We want: https://harimayooram.github.io/webroot-earth/
+            //     // Example myScript.src: https://model.earth/webroot/localsite/js/localsite.js
+            //     // We want: https://model.earth/webroot/
+            //     let src = myScript.src;
+            //     let localsiteIndex = src.indexOf('/localsite/');
+            //     if (localsiteIndex !== -1) {
+            //         // Extract everything before and including the '/' right before 'localsite'
+            //         calculatedWebRoot = src.substring(0, localsiteIndex + 1); 
+            //     } else {
+            //         // Fallback if /localsite/ is not in the path (e.g., direct access to localsite/index.html)
+            //         // In this case, the web_root is likely the current domain root
+            //         calculatedWebRoot = location.protocol + '//' + location.host + '/';
+            //     }
+            // } else {
+            //     // If localsite.js script tag itself is not found, fallback to domain root
+            //     calculatedWebRoot = location.protocol + '//' + location.host + '/';
+            // }
             
-            // Use path to localsite.js as location for supporting files - for embedding
-            for (var i = 0; i < scripts.length; ++i) {
-                if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
-                    myScript = scripts[i];
-                    break;
-                }
-            }
-            
-            // If localsite.js not found, try map-embed.js as fallback
-            /*
-            if (!myScript) {
-                for (var i = 0; i < scripts.length; ++i) {
-                    if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
-                        myScript = scripts[i];
-                        break;
-                    }
-                }
-            }
-            */
-
-            if (!myScript) {
-                // If not found, try async approach (for future calls)
-                findScript('localsite.js').then(script => {
-                    if (script) {
-                        let hostnameAndPort = extractHostnameAndPort(script.src);
-                        let result = theroot;
-                        if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-                            result = hostnameAndPort;
-                        } else if ((location.host.indexOf('localhost') >= 0 && location.port == "8887") || location.host.indexOf('127.0.0.1') >= 0) {
-                            result = location.protocol + '//' + location.host;
-                        }
-                        modelearth_repo = result; // Cache for future calls
-                    } else {
-                        /*
-                        // Try map-embed.js as fallback if localsite.js fails
-                        findScript('map-embed.js').then(fallbackScript => {
-                            if (fallbackScript) {
-                                let hostnameAndPort = extractHostnameAndPort(fallbackScript.src);
-                                let result = theroot;
-                                if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-                                    result = hostnameAndPort;
-                                } else if ((location.host.indexOf('localhost') >= 0 && location.port == "8887") || location.host.indexOf('127.0.0.1') >= 0) {
-                                    result = location.protocol + '//' + location.host;
-                                }
-                                modelearth_repo = result; // Cache for future calls
-                            }
-                        });
-                        */
-                    }
-                });
-                // Return default for immediate use
-                alert(theroot)
-                return theroot;
-            }
-            
-            let hostnameAndPort = extractHostnameAndPort(myScript.src);
-            if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-              // External webroot
-              modelearth_repo = hostnameAndPort; // Cache result
-              return (hostnameAndPort);
-            }
-            // Currently assuming all other ports don't have localsite folder.
-            if ((location.host.indexOf('localhost') >= 0 && location.port == "8887") || location.host.indexOf('127.0.0.1') >= 0) {
-              theroot = location.protocol + '//' + location.host;
-            }
-            modelearth_repo = theroot; // Cache result
-            return (theroot);
+            // modelearth_repo = calculatedWebRoot; // Cache result
+            // return (calculatedWebRoot);      
+      
+      
+      
+      
+      // window.appBaseUrl is now guaranteed to be set early in index.html
+            // The logic to find the localsite.js script src and extract the base path is now in index.html,
+            // so we can directly use the global variable.
+            return window.appBaseUrl;
     };
     
     local_app.topojson_root = local_app.topojson_root || function() { // General US states and eventually some international
@@ -711,72 +683,71 @@ function toggleFullScreen(alsoToggleHeader) {
 
 // Determined by where localsite.js if fetched from.
 
-var theroot = get_localsite_root(); // Try using let instead of var to find other declarations.
+// var theroot = local_app.localsite_root(); // Use local_app.localsite_root to get the base for localsite
 
-// TO DO - eliminate theroot and use local_app.localsite_root instead.
-// TO DO - Then eliminate the following get_localsite_root
+// // TO DO - eliminate theroot and use local_app.localsite_root instead.
+// // TO DO - Then eliminate the following get_localsite_root
 
-function get_localsite_root() { // Also in two other places
-  if (localsite_repo3) { // Intensive, so limit to running once.
-    //alert(localsite_repo);
-    return(localsite_repo3);
-  }
+// function get_localsite_root() { // Also in two other places
+//   if (localsite_repo3) { // Intensive, so limit to running once.
+//     //alert(localsite_repo);
+//     return(localsite_repo3);
+//   }
 
-  let scripts = document.getElementsByTagName('script'); 
+//   let scripts = document.getElementsByTagName('script'); 
 
-  // let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js - Doesn't work for embedded widgets - returns cloudflare
+//   // let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js - Doesn't work for embedded widgets - returns cloudflare
 
-  let hostnameAndPort = window.location.protocol + '//' + window.location.host; // The base, which includes the port.
-  let myScript;
-  for (var i = 0; i < scripts.length; ++i) { // Using current script
-      if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
-        myScript = scripts[i];
-      }
-  }
+//   let hostnameAndPort = window.location.protocol + '//' + window.location.host; // The base, which includes the port.
+//   let myScript;
+//   for (var i = 0; i < scripts.length; ++i) { // Using current script
+//       if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
+//         myScript = scripts[i];
+//       }
+//   }
 
-  // --- START MODIFICATION FOR GITHUB PAGES ---
-  let basePath = '/'; // Default to root path
-  // Check if it's a GitHub Pages Project site (e.g., username.github.io/repo-name/)
-  // And the pathname is not just '/' (which would be a User/Organization page)
-  if (location.host.endsWith('.github.io') && window.location.pathname.length > 1) {
-    // Extract the /repo-name/ part from the pathname
-    // Example: /webroot-earth/some/page.html => /webroot-earth/
-    // Example: /webroot-earth => /webroot-earth/
-    let pathSegments = window.location.pathname.split('/').filter(s => s.length > 0);
-    if (pathSegments.length > 0) {
-      basePath = '/' + pathSegments[0] + '/';
-    }
-  }
-  // --- END MODIFICATION FOR GITHUB PAGES ---
+//   // --- START MODIFICATION FOR GITHUB PAGES ---
+//   let basePath = '/'; // Default to root path
+//   // Check if it's a GitHub Pages Project site (e.g., username.github.io/repo-name/)
+//   // And the pathname is not just '/' (which would be a User/Organization page)
+//   if (location.host.endsWith('.github.io') && window.location.pathname.length > 1) {
+//     // Extract the /repo-name/ part from the pathname
+//     // Example: /webroot-earth/some/page.html => /webroot-earth/
+//     // Example: /webroot-earth => /webroot-earth/
+//     let pathSegments = window.location.pathname.split('/').filter(s => s.length > 0);
+//     if (pathSegments.length > 0) {
+//       basePath = '/' + pathSegments[0] + '/';
+//     }
+//   }
+//   // --- END MODIFICATION FOR GITHUB PAGES ---
 
-  if (myScript) {
-      hostnameAndPort = extractHostnameAndPort(myScript.src);
-      consoleLog("hostnameAndPort from " + myScript.src + " is " + hostnameAndPort);
-  }
+//   if (myScript) {
+//       hostnameAndPort = extractHostnameAndPort(myScript.src);
+//       consoleLog("hostnameAndPort from " + myScript.src + " is " + hostnameAndPort);
+//   }
 
-  // Construct theroot, incorporating basePath
-  // The goal is to get: https://harimayooram.github.io/webroot-earth/localsite/
-  let theroot = location.protocol + '//' + location.host + basePath + 'localsite/'; // Modified line
+//   // Construct theroot, incorporating basePath
+//   // The goal is to get: https://harimayooram.github.io/webroot-earth/localsite/
+//   let theroot = location.protocol + '//' + location.host + basePath + 'localsite/'; // Modified line
 
-  if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
-    //theroot = "https://map.georgia.org/localsite/";
-    theroot = hostnameAndPort + basePath + "localsite/"; // Modified line
-  }
-  if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-    theroot = hostnameAndPort + basePath + "localsite/"; // Modified line
-    console.log("theroot from remotely called localsite: " + theroot);
-    //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
-  }
-  if (location.host.indexOf('localhost') >= 0) {
-    // For localhost, we generally want relative paths without the repo name in the root part
-    // e.g., http://localhost:PORT/localsite/
-    // The previous logic here would make theroot = "https://model.earth/localsite/" which is wrong for local testing
-    // So, explicitly set it for localhost to be consistent.
-    theroot = location.protocol + '//' + location.host + '/localsite/';
-  }
-  localsite_repo3 = theroot; // Save to reduce DOM hits
-  return (theroot);
-}
+//   if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
+//     //theroot = "https://map.georgia.org/localsite/";
+//     theroot = hostnameAndPort + basePath + "localsite/"; // Modified line
+//   }
+//   if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+//     theroot = hostnameAndPort + basePath + "localsite/"; // Modified line
+//     console.log("theroot from remotely called localsite: " + theroot);
+//     //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
+//   }
+//   if (location.host.indexOf('localhost') >= 0) {
+//     // For localhost, we generally want relative paths without the repo name in the root part
+//     // e.g., http://localhost:PORT/localsite/
+//     // The previous logic here would make theroot = "https://model.earth/localsite/" which is wrong for local testing
+//     // So, explicitly set it for localhost to be consistent.
+//     theroot = location.protocol + '//' + location.host + '/localsite/';
+//   }
+//   localsite_repo3 = theroot; // Save to reduce DOM hits
+//   return (theroot);
 
 function clearHash(toClear) {
   let hash = getHashOnly(); // Include all existing
