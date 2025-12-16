@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 
-<script type="text/javascript" src="../js/localsite.js?display=everything&showbubbles=true&showheader=true&showsearch=true"></script>
+<script type="text/javascript" src="../js/localsite.js?display=everything&showheader=true&showsearch=true"></script>
 <style>
 .navlink-industries {
     font: 600 16px/1.8 "Lato", sans-serif !important;
@@ -18,5 +18,31 @@
 </style>
 </head>
 <body>
+
+<!-- DELETE
+<script>
+// Bubble chart visibility controller - always show bubble chart
+(function() {
+	console.log("[INFO-INDEX] Bubble chart visibility script loaded");
+
+	function showBubbleChart() {
+		// Always show bubble chart regardless of state parameter
+		const bubbleChart = document.getElementById('bubble-graph-id');
+		if (bubbleChart) {
+			//bubbleChart.style.display = 'block';
+		}
+	}
+
+	// Run periodically to catch dynamic content
+	//setInterval(showBubbleChart, 500);
+
+	// Also run on hash changes
+	window.addEventListener('hashchange', function() {
+		//setTimeout(showBubbleChart, 100);
+	});
+})();
+</script>
+-->
+
 </body>
 </html>

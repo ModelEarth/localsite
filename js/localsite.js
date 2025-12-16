@@ -850,7 +850,9 @@ function loadLocalTemplate() {
       consoleLog("Template Loaded: " + datascapeFile);
       initSitelook();
       if (typeof relocatedStateMenu != "undefined") {
-        relocatedStateMenu.appendChild(state_select); // For apps hero
+        // DEACTIVATED, OCCURRED ON LOAD OF /localsite/info/
+        // Move elsewhere if still needed.
+        //relocatedStateMenu.appendChild(state_select); // For apps hero
         $(".stateFilters").hide();
       }
       if (typeof relocatedScopeMenu != "undefined") {
@@ -858,7 +860,8 @@ function loadLocalTemplate() {
       }
       waitForElm('#filterClickLocation').then((elm) => {
         if (param.showstates != "false") {
-            $("#filterClickLocation").show();
+            $("#filterClickState").show();  // Show state name tab
+            $("#filterClickLocation").show(); // Show counties tab
         }
         $("#mapFilters").prependTo("#main-content");
         // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
