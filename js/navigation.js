@@ -1523,8 +1523,12 @@ class StandaloneNavigation {
             waitForElm('#legend-content').then((elm) => { // On timeline page
                  setTimeout(() => { // Temp until Leaflet load timing is resolved.
                     toggleShowNavColumn();
-                    $("#listLeft").prepend($('#legend-content'));
-                    $("#listLeft").prepend('<b><a href="#geoview=countries">LOCATIONS</a></b>');
+                    // First add header, then legend content after it
+                    if (!$('#locations-header').length) {
+                        $('#listLeft').prepend('<b id="locations-header"><a href="#geoview=countries">LOCATIONS</a></b>');
+                    }
+                    // Insert legend content after the header
+                    $('#locations-header').after($('#legend-content'));
                     $('#legend-content').css('padding', '10px');
                     $('#legend-content').css('padding-top', '0px');
                     $('#legend-content').css('font-size', '12px');
@@ -6194,7 +6198,19 @@ function showNavColumn() {
     $("#showSideFromBar").hide();
     // Move legend content to sidebar and hide floating legend
     if ($('#legend-content').length && $('#listLeft').length) {
-        $('#listLeft').prepend($('#legend-content'));
+        // Ensure header exists at top of listLeft
+        if (!$('#locations-header').length) {
+            $('#listLeft').prepend('<b id="locations-header"><a href="#geoview=countries">LOCATIONS</a></b>');
+        } else {
+            // Move header to top if it exists elsewhere
+            $('#listLeft').prepend($('#locations-header'));
+        }
+        // Insert legend content right after the header
+        $('#locations-header').after($('#legend-content'));
+        $('#legend-content').css('padding', '10px');
+        $('#legend-content').css('padding-top', '0px');
+        $('#legend-content').css('font-size', '12px');
+        $('#legend-content').css('line-height', '1em');
     }
     $('#floating-legend').hide();
     $('#floating-legend').css('opacity', '0');

@@ -134,6 +134,16 @@ document.addEventListener('DOMContentLoaded', () => {
     font-weight: 600;
     font-size: 14px;
     color: #333;
+    cursor: grab;
+    user-select: none;
+}
+#floating-legend-header:active {
+    cursor: grabbing;
+}
+#floating-legend.dragging {
+    opacity: 0.9;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 999999;
 }
 #floating-legend-close {
     background: none;
@@ -1441,11 +1451,11 @@ function buildFloatingLegendFromChart() {
                         legend.style.right = 'auto';
                     } else {
                         legend.style.position = 'fixed';
-                        legend.style.top = '120px';
+                        legend.style.top = '320px';
                         legend.style.right = '20px';
                         legend.style.left = 'auto';
                     }
-                    legend.style.zIndex = 9999;
+                    legend.style.zIndex = 99999;
                 } catch (e) { console.warn('Could not set legend position:', e); }
     } else {
         legend.style.display = 'none';
@@ -1541,14 +1551,15 @@ function buildFloatingLegendFromChart() {
             // Make keyboard-focusable
             more.tabIndex = 0;
             // Click handler toggles collapsed state
-            more.addEventListener('click', () => {
-                const expanded = bottom.classList.toggle('bottom-legend-collapsed');
+            more.addEventListener('click', (e) => {
+                e.stopPropagation();
+                bottom.classList.toggle('bottom-legend-collapsed');
                 // When class present we consider collapsed; toggle text accordingly
                 if (bottom.classList.contains('bottom-legend-collapsed')) {
-                    more.textContent = `... +${extraCount} more`;
+                    moreLabel.textContent = `... +${extraCount} more`;
                     more.setAttribute('aria-expanded','false');
                 } else {
-                    more.textContent = 'Show less';
+                    moreLabel.textContent = 'Show less';
                     more.setAttribute('aria-expanded','true');
                 }
             });
@@ -1913,6 +1924,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         legend.classList.remove('chart-visible');
                     }
+                    // Also update bottom legend visibility based on chart visibility
+                    const bottomLegend = document.getElementById('bottom-legend');
+                    if (bottomLegend) {
+                        // If user manually closed floating legend, bottom legend follows chart visibility
+                        if (window._floatingLegendManuallyClosed) {
+                            bottomLegend.style.display = (anyVisible && hasItems) ? 'flex' : 'none';
+                        } else {
+                            // Bottom legend hidden when floating legend is visible
+                            bottomLegend.style.display = 'none';
+                        }
+                    }
                 };
                 const obs = new IntersectionObserver(onIntersect, { root: null, threshold: [0, 0.05, 0.2] });
                 chartContainers.forEach(c => obs.observe(c));
@@ -1937,6 +1959,113 @@ document.addEventListener('DOMContentLoaded', () => {
             const bottomLegend = document.getElementById('bottom-legend');
             if (bottomLegend) {
                 bottomLegend.style.display = 'flex';
+            }
+        });
+    }
+
+    // Setup drag functionality for floating legend
+    const legendHeader = document.getElementById('floating-legend-header');
+    const legend = document.getElementById('floating-legend');
+    if (legendHeader && legend) {
+        let isDragging = false;
+        let startX, startY, startLeft, startTop;
+
+        legendHeader.addEventListener('mousedown', (e) => {
+            // Don't drag if clicking on close button
+            if (e.target.id === 'floating-legend-close') return;
+            
+            isDragging = true;
+            legend.classList.add('dragging');
+            
+            // Get current position
+            const rect = legend.getBoundingClientRect();
+            startX = e.clientX;
+            startY = e.clientY;
+            startLeft = rect.left;
+            startTop = rect.top;
+            
+            // Switch to left/top positioning for dragging
+            legend.style.right = 'auto';
+            legend.style.left = startLeft + 'px';
+            legend.style.top = startTop + 'px';
+            legend.style.position = 'fixed';
+            
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            
+            let newLeft = startLeft + deltaX;
+            let newTop = startTop + deltaY;
+            
+            // Keep within viewport bounds
+            const legendRect = legend.getBoundingClientRect();
+            const maxLeft = window.innerWidth - legendRect.width;
+            const maxTop = window.innerHeight - legendRect.height;
+            
+            newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+            newTop = Math.max(0, Math.min(newTop, maxTop));
+            
+            legend.style.left = newLeft + 'px';
+            legend.style.top = newTop + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                legend.classList.remove('dragging');
+            }
+        });
+
+        // Touch support for mobile
+        legendHeader.addEventListener('touchstart', (e) => {
+            if (e.target.id === 'floating-legend-close') return;
+            
+            isDragging = true;
+            legend.classList.add('dragging');
+            
+            const touch = e.touches[0];
+            const rect = legend.getBoundingClientRect();
+            startX = touch.clientX;
+            startY = touch.clientY;
+            startLeft = rect.left;
+            startTop = rect.top;
+            
+            legend.style.right = 'auto';
+            legend.style.left = startLeft + 'px';
+            legend.style.top = startTop + 'px';
+            legend.style.position = 'fixed';
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - startX;
+            const deltaY = touch.clientY - startY;
+            
+            let newLeft = startLeft + deltaX;
+            let newTop = startTop + deltaY;
+            
+            const legendRect = legend.getBoundingClientRect();
+            const maxLeft = window.innerWidth - legendRect.width;
+            const maxTop = window.innerHeight - legendRect.height;
+            
+            newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+            newTop = Math.max(0, Math.min(newTop, maxTop));
+            
+            legend.style.left = newLeft + 'px';
+            legend.style.top = newTop + 'px';
+        }, { passive: true });
+
+        document.addEventListener('touchend', () => {
+            if (isDragging) {
+                isDragging = false;
+                legend.classList.remove('dragging');
             }
         });
     }
@@ -2021,7 +2150,23 @@ function updateBottomLegendVisibility() {
     const bottomLegend = document.getElementById('bottom-legend');
     if (!bottomLegend) return;
     
-    // If user manually closed floating legend, show bottom legend
+    // Check if chart is visible in viewport
+    const d1 = document.getElementById('div1');
+    const d2 = document.getElementById('div2');
+    const chartContainers = [d1, d2].filter(Boolean);
+    const chartVisible = chartContainers.some(c => {
+        const rect = c.getBoundingClientRect();
+        return rect.top < window.innerHeight && rect.bottom > 0;
+    });
+    const hasItems = document.getElementById('legend-content')?.children?.length > 0;
+    
+    // If chart is not visible, hide bottom legend
+    if (!chartVisible || !hasItems) {
+        bottomLegend.style.display = 'none';
+        return;
+    }
+    
+    // If user manually closed floating legend, show bottom legend when chart is visible
     if (window._floatingLegendManuallyClosed) {
         bottomLegend.style.display = 'flex';
         return;
