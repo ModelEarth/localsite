@@ -2160,15 +2160,27 @@ function updateBottomLegendVisibility() {
     });
     const hasItems = document.getElementById('legend-content')?.children?.length > 0;
     
-    // If chart is not visible, hide bottom legend
+    // If chart is not visible, hide both legends
     if (!chartVisible || !hasItems) {
         bottomLegend.style.display = 'none';
         return;
     }
     
-    // If user manually closed floating legend, show bottom legend when chart is visible
+    // If user manually closed floating legend, show bottom legend and hide floating legend
     if (window._floatingLegendManuallyClosed) {
         bottomLegend.style.display = 'flex';
+        // Ensure floating legend stays hidden
+        if (floatingLegend) {
+            floatingLegend.style.display = 'none';
+        }
+        return;
+    }
+    
+    // Check if bottom legend is visible - if so, hide floating legend
+    const bottomVisible = window.getComputedStyle(bottomLegend).display !== 'none';
+    if (bottomVisible && floatingLegend) {
+        floatingLegend.style.display = 'none';
+        floatingLegend.classList.remove('chart-visible');
         return;
     }
     
@@ -2181,6 +2193,10 @@ function updateBottomLegendVisibility() {
         bottomLegend.style.display = 'none';
     } else {
         bottomLegend.style.display = 'flex';
+        // If bottom legend is now visible, hide floating legend
+        if (floatingLegend) {
+            floatingLegend.style.display = 'none';
+        }
     }
 }
 function tidyOverlayLegends() {}
@@ -2322,7 +2338,11 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
 }
 /* dropdown menu for placement options */
 .bottom-legend-menu {
+    position: absolute;
+    z-index: 100000;
     min-width: 160px;
+    max-height: 300px;
+    overflow-y: auto;
     background: white;
     border: 1px solid rgba(0,0,0,0.09);
     border-radius: 6px;
