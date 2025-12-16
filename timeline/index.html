@@ -263,6 +263,16 @@ document.addEventListener('DOMContentLoaded', () => {
 <style>
 .legend-item:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
 
+/* Region/Continent grouping styles */
+.region-section { margin-bottom: 4px; border-radius: 6px; overflow: hidden; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.08); }
+.region-toggle { width: 100%; display: flex; align-items: center; gap: 6px; padding: 8px 10px; background: rgba(248,249,250,0.9); border: none; cursor: pointer; font-size: 12px; font-weight: 600; color: #333; transition: background 0.2s; text-align: left; }
+.region-toggle:hover { background: rgba(240,242,244,1); }
+.region-toggle.active { background: rgba(232,236,240,0.9); }
+.region-icon { font-size: 14px; flex-shrink: 0; }
+.toggle-arrow { font-size: 10px; transition: transform 0.2s; flex-shrink: 0; }
+.country-buttons-region { padding: 4px 6px; }
+.country-buttons-region .legend-item { margin: 2px 0; padding: 4px 8px; font-size: 11px; }
+
 </style>
 
 
@@ -650,6 +660,105 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleDivs();
 </script>
 <script>
+// Continent to Countries mapping for grouping
+const continentToCountriesMap = {
+    "North America": [
+        "United States", "United States of America", "Canada", "Mexico"
+    ],
+    "Central America": [
+        "Guatemala", "Belize", "Honduras", "El Salvador", "Nicaragua", "Costa Rica", "Panama"
+    ],
+    "Caribbean": [
+        "Cuba", "Jamaica", "Haiti", "Dominican Republic", "Puerto Rico", "Trinidad and Tobago",
+        "Bahamas", "Barbados", "Saint Lucia", "Grenada", "Antigua and Barbuda", "Saint Kitts and Nevis",
+        "Saint Vincent and the Grenadines", "Dominica"
+    ],
+    "South America": [
+        "Brazil", "Argentina", "Colombia", "Peru", "Venezuela", "Chile", "Ecuador",
+        "Bolivia", "Paraguay", "Uruguay", "Guyana", "Suriname", "French Guiana"
+    ],
+    "Europe": [
+        "United Kingdom", "Germany", "France", "Italy", "Spain", "Poland", "Romania",
+        "Netherlands", "Belgium", "Czech Republic", "Czechia", "Greece", "Portugal",
+        "Sweden", "Hungary", "Austria", "Switzerland", "Bulgaria", "Denmark", "Finland",
+        "Slovakia", "Norway", "Ireland", "Croatia", "Moldova", "Bosnia and Herzegovina",
+        "Albania", "Lithuania", "North Macedonia", "Slovenia", "Latvia", "Estonia",
+        "Montenegro", "Luxembourg", "Malta", "Iceland", "Andorra", "Monaco",
+        "Liechtenstein", "San Marino", "Holy See", "Serbia", "Kosovo", "Belarus",
+        "Ukraine", "Russia", "Russian Federation"
+    ],
+    "Asia": [
+        "China", "India", "Indonesia", "Pakistan", "Bangladesh", "Japan", "Philippines",
+        "Vietnam", "Viet Nam", "Turkey", "Iran", "Thailand", "Myanmar", "South Korea",
+        "Korea, Republic of", "Iraq", "Afghanistan", "Saudi Arabia", "Uzbekistan",
+        "Malaysia", "Yemen", "Nepal", "North Korea", "Korea, Democratic People's Republic of",
+        "Sri Lanka", "Kazakhstan", "Syria", "Cambodia", "Jordan", "Azerbaijan",
+        "United Arab Emirates", "Tajikistan", "Israel", "Laos", "Lao People's Democratic Republic",
+        "Lebanon", "Kyrgyzstan", "Turkmenistan", "Singapore", "Oman", "State of Palestine",
+        "Palestine", "Kuwait", "Georgia", "Mongolia", "Armenia", "Qatar", "Bahrain",
+        "Timor-Leste", "Cyprus", "Bhutan", "Maldives", "Brunei", "Taiwan", "Hong Kong", "Macau"
+    ],
+    "Africa": [
+        "Nigeria", "Ethiopia", "Egypt", "Democratic Republic of the Congo", "Tanzania",
+        "South Africa", "Kenya", "Uganda", "Algeria", "Sudan", "Morocco", "Angola",
+        "Mozambique", "Ghana", "Madagascar", "Cameroon", "Ivory Coast", "Côte d'Ivoire",
+        "Niger", "Burkina Faso", "Mali", "Malawi", "Zambia", "Senegal", "Chad",
+        "Somalia", "Zimbabwe", "Guinea", "Rwanda", "Benin", "Burundi", "Tunisia",
+        "South Sudan", "Togo", "Sierra Leone", "Libya", "Congo", "Liberia",
+        "Central African Republic", "Mauritania", "Eritrea", "Namibia", "Gambia",
+        "Botswana", "Gabon", "Lesotho", "Guinea-Bissau", "Equatorial Guinea",
+        "Mauritius", "Eswatini", "Djibouti", "Comoros", "Cabo Verde",
+        "Sao Tome and Principe", "Seychelles"
+    ],
+    "Oceania": [
+        "Australia", "Papua New Guinea", "New Zealand", "Fiji", "Solomon Islands",
+        "Vanuatu", "Samoa", "Kiribati", "Micronesia", "Tonga", "Marshall Islands",
+        "Palau", "Tuvalu", "Nauru"
+    ]
+};
+
+// Build reverse lookup map for quick country -> continent lookup
+const countryToContinentMap = {};
+for (const [continent, countries] of Object.entries(continentToCountriesMap)) {
+    for (const country of countries) {
+        countryToContinentMap[country] = continent;
+        countryToContinentMap[country.toLowerCase()] = continent; // Also add lowercase version
+    }
+}
+
+// Get continent for a country name (with fuzzy matching)
+function getContinentForCountry(countryName) {
+    if (!countryName) return "Other";
+    // Direct match
+    if (countryToContinentMap[countryName]) return countryToContinentMap[countryName];
+    // Try lowercase comparison
+    const lower = countryName.toLowerCase();
+    if (countryToContinentMap[lower]) return countryToContinentMap[lower];
+    // Try partial match
+    for (const [continent, countries] of Object.entries(continentToCountriesMap)) {
+        for (const country of countries) {
+            if (lower.includes(country.toLowerCase()) || country.toLowerCase().includes(lower)) {
+                return continent;
+            }
+        }
+    }
+    return "Other";
+}
+
+// Continent display order and icons
+const continentOrder = ["North America", "Central America", "Caribbean", "South America", "Europe", "Asia", "Africa", "Oceania", "Other"];
+const continentIcons = {
+    "North America": "🌎",
+    "Central America": "🌎",
+    "Caribbean": "🌴",
+    "South America": "🌎",
+    "Europe": "🇪🇺",
+    "Asia": "🌏",
+    "Africa": "🌍",
+    "Oceania": "🌏",
+    "Other": "🌐"
+};
+
 // Floating legend helper for Chart.js timelineChart
 function buildFloatingLegendFromChart() {
     const canvas = document.getElementById('timelineChart');
@@ -897,8 +1006,17 @@ function buildFloatingLegendFromChart() {
     collectFromChart(timelineChartObj);
     collectFromChart(lineAreaChartObj);
 
-    // Build unified legend items (authoritative in #legend-content)
+    // Build unified legend items grouped by continent (authoritative in #legend-content)
+    // First, group countries by continent
+    const continentGroups = {};
     labelMap.forEach((info, label) => {
+        const continent = getContinentForCountry(label);
+        if (!continentGroups[continent]) continentGroups[continent] = [];
+        continentGroups[continent].push({ label, info });
+    });
+
+    // Helper function to create a legend item
+    function createLegendItem(label, info) {
         const item = document.createElement('div');
         item.className = 'legend-item';
         item.title = label;
@@ -917,11 +1035,10 @@ function buildFloatingLegendFromChart() {
         // If not showing all series, omit items that are currently not visible
         const whichLinesModeLocal = document.querySelector('input[name="whichLines"]:checked')?.value || 'showTop5';
         if (whichLinesModeLocal !== 'showAll' && !visible) {
-            return; // don't add this legend item
+            return null; // don't add this legend item
         }
         setItemSelectionStyle(item, info.color, visible);
         try { cb.checked = visible; } catch (e) {}
-        // NOTE: value indicator will be shown only in the floating legend; do not append here
 
         // Toggle handler: toggles the dataset in all charts where it exists
         item.addEventListener('click', (ev) => {
@@ -933,7 +1050,6 @@ function buildFloatingLegendFromChart() {
             const nowVisible = info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden);
             setItemSelectionStyle(item, info.color, nowVisible);
             try { cb.checked = nowVisible; } catch (e) {}
-            // Also refresh overlay clones visuals to reflect the change
             document.querySelectorAll('.overlay-legend').forEach((ov) => {
                 const clone = ov.querySelector(`[data-legend-label="${CSS.escape(label)}"]`);
                 if (clone) setItemSelectionStyle(clone, info.color, nowVisible);
@@ -941,26 +1057,97 @@ function buildFloatingLegendFromChart() {
         });
         cb.addEventListener('click', (ev) => { try { ev.stopPropagation(); } catch (e) {} try { item.dispatchEvent(new MouseEvent('click', { bubbles: true })); } catch (e) {} });
 
-        // Hover handlers: highlight corresponding chart curves when hovering legend items
+        // Hover handlers
         item.addEventListener('mouseenter', (ev) => {
-            try { highlightDatasets(info, true); } catch (e) { /* ignore */ }
-            // also visually emphasize the legend item
+            try { highlightDatasets(info, true); } catch (e) {}
             try { item.style.transform = 'translateY(-2px) scale(1.02)'; item.style.boxShadow = '0 12px 28px rgba(0,0,0,0.08)'; } catch (e) {}
         });
         item.addEventListener('mouseleave', (ev) => {
-            try { highlightDatasets(info, false); } catch (e) { /* ignore */ }
+            try { highlightDatasets(info, false); } catch (e) {}
             try { item.style.transform = ''; item.style.boxShadow = ''; } catch (e) {}
         });
 
-        // Tag for cloning into overlays
         item.setAttribute('data-legend-label', label);
-        legendContent.appendChild(item);
+        return item;
+    }
+
+    // Build continent sections
+    continentOrder.forEach((continent) => {
+        const countries = continentGroups[continent];
+        if (!countries || countries.length === 0) return;
+
+        // Create continent section
+        const section = document.createElement('div');
+        section.className = 'region-section';
+        section.style.cssText = 'margin-bottom: 4px; border-radius: 6px; overflow: hidden; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.08);';
+
+        // Create toggle button for continent
+        const toggle = document.createElement('button');
+        toggle.className = 'region-toggle';
+        toggle.style.cssText = 'width: 100%; display: flex; align-items: center; gap: 6px; padding: 8px 10px; background: rgba(248,249,250,0.9); border: none; cursor: pointer; font-size: 12px; font-weight: 600; color: #333; transition: background 0.2s;';
+        
+        const icon = document.createElement('span');
+        icon.className = 'region-icon';
+        icon.textContent = continentIcons[continent] || '🌐';
+        icon.style.cssText = 'font-size: 14px;';
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.style.cssText = 'flex: 1; text-align: left;';
+        nameSpan.textContent = `${continent} (${countries.length})`;
+        
+        const arrow = document.createElement('span');
+        arrow.className = 'toggle-arrow';
+        arrow.textContent = '▼';
+        arrow.style.cssText = 'font-size: 10px; transition: transform 0.2s;';
+        
+        toggle.appendChild(icon);
+        toggle.appendChild(nameSpan);
+        toggle.appendChild(arrow);
+        
+        // Create country list container
+        const countryList = document.createElement('div');
+        countryList.className = 'country-buttons-region';
+        countryList.style.cssText = 'padding: 4px 6px; display: block;'; // First section expanded by default
+        
+        // Add country items to the list
+        countries.forEach(({ label, info }) => {
+            const item = createLegendItem(label, info);
+            if (item) {
+                item.style.cssText += 'margin: 2px 0; padding: 4px 8px; font-size: 11px;';
+                countryList.appendChild(item);
+            }
+        });
+
+        // Toggle handler for continent section
+        toggle.addEventListener('click', () => {
+            const isHidden = countryList.style.display === 'none';
+            countryList.style.display = isHidden ? 'block' : 'none';
+            arrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
+            toggle.style.background = isHidden ? 'rgba(248,249,250,0.9)' : 'rgba(232,236,240,0.9)';
+        });
+
+        toggle.addEventListener('mouseenter', () => { toggle.style.background = 'rgba(240,242,244,1)'; });
+        toggle.addEventListener('mouseleave', () => { 
+            const isHidden = countryList.style.display === 'none';
+            toggle.style.background = isHidden ? 'rgba(232,236,240,0.9)' : 'rgba(248,249,250,0.9)';
+        });
+
+        section.appendChild(toggle);
+        section.appendChild(countryList);
+        
+        // Only append if there are visible items in this section
+        if (countryList.children.length > 0) {
+            legendContent.appendChild(section);
+        }
     });
-            try {
+
+    // Add "More Locations" button after continent sections
+    try {
         const legendContent = document.getElementById('legend-content');
         if (legendContent) {
             // Check if More Locations button already exists
             let existingMoreBtn = legendContent.querySelector('.legend-more-btn');
+
             if (existingMoreBtn) {
                 existingMoreBtn.remove();
             }
