@@ -683,7 +683,7 @@ function toggleFullScreen(alsoToggleHeader) {
 
 // Determined by where localsite.js if fetched from.
 
-// var theroot = local_app.localsite_root(); // Use local_app.localsite_root to get the base for localsite
+var theroot = local_app.localsite_root(); // Use local_app.localsite_root to get the base for localsite
 
 // // TO DO - eliminate theroot and use local_app.localsite_root instead.
 // // TO DO - Then eliminate the following get_localsite_root
