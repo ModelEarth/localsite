@@ -1697,7 +1697,23 @@ class StandaloneNavigation {
                 console.log('Clicked .main-nav-close-btn in #main-nav');
                 // Just hide #main-nav, keep #side-nav-content open
                 document.getElementById('main-nav').style.display = 'none';
+                document.body.classList.add('main-nav-hidden');
                 $("#side-nav").removeClass("main-nav").removeClass("main-nav-full");
+                
+                // Show floating legend when main-nav is closed
+                $('#floating-legend').show();
+                $('#floating-legend').css('opacity', '1');
+                $('#floating-legend').css('display', 'block');
+                // Move legend content back to floating legend if needed
+                if ($('#legend-content').length && $('#floating-legend').length) {
+                    if ($('#legend-content').parent().attr('id') !== 'floating-legend') {
+                        $('#floating-legend').append($('#legend-content'));
+                    }
+                }
+                // Rebuild legend if needed
+                if (typeof window.buildFloatingLegendFromChart === 'function') {
+                    setTimeout(() => { try { window.buildFloatingLegendFromChart(); } catch(e) {} }, 100);
+                }
                 
                 // Mobile behavior: if browser is 600px or less and #side-nav-content is visible, 
                 // replace collapsed class with expanded
@@ -6174,7 +6190,14 @@ function showNavColumn() {
     $("#side-nav").show();
     $("#side-nav").addClass("main-nav-full");
     $("body").removeClass("sidebar-hidden");
+    $("body").removeClass("main-nav-hidden");
     $("#showSideFromBar").hide();
+    // Move legend content to sidebar and hide floating legend
+    if ($('#legend-content').length && $('#listLeft').length) {
+        $('#listLeft').prepend($('#legend-content'));
+    }
+    $('#floating-legend').hide();
+    $('#floating-legend').css('opacity', '0');
     
     // Refresh feather icons when showing navigation
     if (window.standaloneNav && window.standaloneNav.replaceFeatherIcons) {
@@ -6211,6 +6234,23 @@ function showNavColumn() {
 }
 function hideNavColumn() {
     $('body').addClass('sidebar-hidden');
+    // Move legend content back to floating legend and show it when nav is closed
+    if ($('#legend-content').length && $('#floating-legend').length) {
+        $('#floating-legend').append($('#legend-content'));
+    }
+    $('#floating-legend').show();
+    $('#floating-legend').css('opacity', '1');
+    $('#floating-legend').css('display', 'block');
+    // Rebuild legend content if empty
+    if (typeof window.buildFloatingLegendFromChart === 'function') {
+        setTimeout(() => {
+            try { window.buildFloatingLegendFromChart(); } catch(e) {}
+        }, 100);
+    }
+    // Trigger overlay legend visibility update for timeline page
+    if (typeof window.updateOverlayLegendVisibility === 'function') {
+        setTimeout(() => window.updateOverlayLegendVisibility(), 150);
+    }
     return;
 
     $("#sideIcons").show();
