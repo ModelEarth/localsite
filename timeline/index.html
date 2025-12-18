@@ -595,6 +595,25 @@ body.main-nav-hidden #floating-legend.chart-visible {
                     Reset to Auto
                 </button>
             </div>
+            
+            <!-- Legend Position Settings -->
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #dee2e6;">
+                <h5 style="margin: 0 0 10px 0; color: #495057; font-size: 15px; font-weight: 600;">Legend Position</h5>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="display: flex; align-items: center; cursor: pointer; padding: 4px 0;">
+                        <input type="radio" name="legendPosition" value="left" style="margin-right: 8px; cursor: pointer;">
+                        <span>Left Nav</span>
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; padding: 4px 0;">
+                        <input type="radio" name="legendPosition" value="right" checked style="margin-right: 8px; cursor: pointer;">
+                        <span>Float Right</span>
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer; padding: 4px 0;">
+                        <input type="radio" name="legendPosition" value="below" style="margin-right: 8px; cursor: pointer;">
+                        <span>Below</span>
+                    </label>
+                </div>
+            </div>
         </div>
 
         <script>
@@ -607,6 +626,74 @@ body.main-nav-hidden #floating-legend.chart-visible {
                     sizeControl.style.display = 'none';
                 }
             }
+        }
+        
+        // Legend Position Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const legendRadios = document.querySelectorAll('input[name="legendPosition"]');
+            
+            // Load saved position from localStorage
+            const savedPosition = localStorage.getItem('legendPosition') || 'right';
+            const savedRadio = document.querySelector(`input[name="legendPosition"][value="${savedPosition}"]`);
+            if (savedRadio) {
+                savedRadio.checked = true;
+                updateLegendPosition(savedPosition);
+            }
+            
+            // Add change event listeners
+            legendRadios.forEach(radio => {
+                radio.addEventListener('change', function(e) {
+                    const position = e.target.value;
+                    updateLegendPosition(position);
+                    localStorage.setItem('legendPosition', position);
+                });
+            });
+        });
+        
+        // Function to update legend position
+        function updateLegendPosition(position) {
+            const floatingLegend = document.getElementById('floating-legend');
+            const bottomLegend = document.getElementById('bottom-legend');
+            const overlayLegends = document.querySelectorAll('.overlay-legend');
+            
+            // Hide all legends first
+            if (floatingLegend) floatingLegend.style.display = 'none';
+            if (bottomLegend) bottomLegend.style.display = 'none';
+            overlayLegends.forEach(ol => ol.style.display = 'none');
+            
+            // Show selected legend position
+            switch(position) {
+                case 'left':
+                    // Left Nav - show floating legend on left
+                    if (floatingLegend) {
+                        floatingLegend.style.display = 'block';
+                        floatingLegend.style.position = 'fixed';
+                        floatingLegend.style.left = '20px';
+                        floatingLegend.style.right = 'auto';
+                        floatingLegend.style.top = '120px';
+                    }
+                    break;
+                    
+                case 'right':
+                    // Float Right - show floating legend on right (default)
+                    if (floatingLegend) {
+                        floatingLegend.style.display = 'block';
+                        floatingLegend.style.position = 'fixed';
+                        floatingLegend.style.right = '20px';
+                        floatingLegend.style.left = 'auto';
+                        floatingLegend.style.top = '120px';
+                    }
+                    break;
+                    
+                case 'below':
+                    // Below - show bottom legend
+                    if (bottomLegend) {
+                        bottomLegend.style.display = 'flex';
+                    }
+                    break;
+            }
+            
+            console.log('Legend position changed to:', position);
         }
         </script>
 
