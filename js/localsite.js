@@ -3784,7 +3784,7 @@ function showAuthModal() {
     window.authModal.show();
   } else {
     // Lazy load the auth modal script
-    const authModalPath = local_app.localsite_root() + '../team/js/auth-modal.js';
+    const authModalPath = local_app.localsite_root() + '../auth-system/public/js/auth-modal.js';
     loadScript(authModalPath, function() {
       // Modal initializes immediately when script loads, so show it
       if (window.authModal) {
