@@ -3804,13 +3804,14 @@ async function updateAuthUI() {
   // Check session via Better Auth API
   try {
     const authApiUrl = window.AUTH_API_URL || 'http://localhost:3002/api';
-    const response = await fetch(`${authApiUrl}/auth-status`, {
+    const response = await fetch(`${authApiUrl}/auth/get-session`, {
       credentials: 'include' // Send httpOnly cookies
     });
 
     if (response.ok) {
       const result = await response.json();
-      if (result && result.authenticated && result.user) {
+      // Better-auth returns { session, user } structure
+      if (result && result.user) {
         const user = result.user;
         consoleLog('[Auth UI] User authenticated:', user.name);
 
