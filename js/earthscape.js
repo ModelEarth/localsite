@@ -526,10 +526,16 @@ dataCopy.forEach(location => {
     } else {
         selectedData = dataCopy;
         // Update label with actual count of countries that have data
-        if (scope === "country") {
+        if (scope === "country" && showAll === 'showAll') {
             updateAllCountryLabel(selectedData.length);
         }
     }
+
+    // Reset the "All" label when other modes are selected
+    if (scope === "country" && showAll !== 'showAll') {
+        resetAllCountryLabel();
+    }
+
      console.log("Filtered Countries:", selectedData);
 
     // Get datasets
@@ -1210,6 +1216,28 @@ function updateAllCountryLabel(count) {
         }
     } catch (error) {
         console.warn('Could not update All label:', error);
+    }
+}
+
+// Function to reset the "All" radio button label (remove count)
+function resetAllCountryLabel() {
+    try {
+        // Find the "All" radio button's parent label
+        const allRadio = document.querySelector('input[name="whichLines"][value="showAll"]');
+        if (allRadio && allRadio.parentElement) {
+            // Reset the label text to just "All"
+            const labelText = allRadio.parentElement.childNodes;
+            // Find the text node and reset it
+            for (let i = 0; i < labelText.length; i++) {
+                if (labelText[i].nodeType === Node.TEXT_NODE && (labelText[i].textContent.includes('All'))) {
+                    labelText[i].textContent = 'All ';
+                    console.log('Reset "All" label to just "All"');
+                    break;
+                }
+            }
+        }
+    } catch (error) {
+        console.warn('Could not reset All label:', error);
     }
 }
 
