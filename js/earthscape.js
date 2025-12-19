@@ -177,7 +177,10 @@ const countryCodeMap = {
   };
   const defaultCountries = ['IN', 'CN', 'US', 'GB', 'DE', 'JP', 'BR', 'RU', 'ZA', 'SA', 'AE'];
 
-//Timelinechart for scopes country, state, and county 
+// Cache for all countries data to avoid re-fetching
+let allCountriesCache = null;
+
+//Timelinechart for scopes country, state, and county
 let geoValues = {};
 const MIN_YEAR = 1960; // Minimum year to filter data
 async function getTimelineChart(scope, chartVariable, entityId, showAll, chartText) {
@@ -275,23 +278,37 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             };
         });
 
-    }/* else if (scope === "country") {// Fetch country ISO codes first
-        const restResponse = await fetch("https://restcountries.com/v3.1/all?fields=cca2,name"); // cca3 is also available
-    } */else if (scope === "country")
-        
-        {
-        // Fetch country ISO codes first
-        //const restResponse = await fetch("https://restcountries.com/v3.1/all");
-        const restResponse = await fetch("https://restcountries.com/v3.1/all?fields=cca2,name"); // cca3 is also available
-        const countriesData = await restResponse.json();
-    
-        // Get all ISO Alpha-2 codes
-        const selectedCountries = countriesData.map(country => country.cca2).filter(Boolean); // filter out undefined/null
-    
-        console.log("Selected Countries:", selectedCountries); // Debug log
-    
-        // Fetch country dcids using ISO codes
+    } else if (scope === "country") {
+        // Only fetch ALL countries if showAll === 'showAll'
+        // Otherwise use default countries for better performance
+        let selectedCountries;
 
+        if (showAll === 'showAll') {
+            // Lazy load: Fetch all countries only when "All" is selected
+            if (!allCountriesCache) {
+                console.log("Fetching all countries from RESTCountries API...");
+                const restResponse = await fetch("https://restcountries.com/v3.1/all?fields=cca2,name");
+                const countriesData = await restResponse.json();
+
+                // Cache the result
+                allCountriesCache = countriesData.map(country => country.cca2).filter(Boolean);
+                console.log(`Loaded ${allCountriesCache.length} countries`);
+
+                // Update the "All" label with count
+                updateAllCountryLabel(allCountriesCache.length);
+            } else {
+                console.log("Using cached country data");
+            }
+            selectedCountries = allCountriesCache;
+        } else {
+            // Use default countries for Top 5, Top Economics, Bottom 5
+            selectedCountries = defaultCountries;
+            console.log("Using default countries:", selectedCountries);
+        }
+
+        console.log("Selected Countries:", selectedCountries); // Debug log
+
+        // Fetch country dcids using ISO codes
         response = await fetch('https://api.datacommons.org/v2/resolve?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
             method: 'POST',
             headers: {
@@ -302,13 +319,13 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 "property": "<-description{typeOf:Country}->dcid"
             })
         });
-    
+
         data = await response.json();
-    
+
         geoIds = data.entities
             .map(entity => entity?.candidates?.[0]?.dcid)
             .filter(Boolean); // remove undefined/null
-    
+
         // Fetch country names
         const response2 = await fetch('https://api.datacommons.org/v2/node?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
             method: 'POST',
@@ -320,9 +337,9 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 "property": "->name"
             })
         });
-    
+
         const data2 = await response2.json();
-    
+
         Object.keys(data2.data).forEach(geoId => {
             const countryName = data2.data[geoId]?.arcs?.name?.nodes?.[0]?.value;
             if (countryName) {
@@ -332,7 +349,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 };
             }
         });
-       
+
     }
 
     // Fetch observational data using geoIds list
@@ -1171,6 +1188,29 @@ function parseCSV(csvText) {
     });
     return rows;
 }
+
+// Function to update the "All" radio button label with country count
+function updateAllCountryLabel(count) {
+    try {
+        // Find the "All" radio button's parent label
+        const allRadio = document.querySelector('input[name="whichLines"][value="showAll"]');
+        if (allRadio && allRadio.parentElement) {
+            // Update the label text to show count
+            const labelText = allRadio.parentElement.childNodes;
+            // Find the text node and update it
+            for (let i = 0; i < labelText.length; i++) {
+                if (labelText[i].nodeType === Node.TEXT_NODE && labelText[i].textContent.includes('All')) {
+                    labelText[i].textContent = `All ${count} `;
+                    console.log(`Updated "All" label to "All ${count}"`);
+                    break;
+                }
+            }
+        }
+    } catch (error) {
+        console.warn('Could not update All label:', error);
+    }
+}
+
 function toggleDivs() {
     // Get selected value from radio buttons
     const selectedValue = document.querySelector('input[name="toogleChartType"]:checked').value;
