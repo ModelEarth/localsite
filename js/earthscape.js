@@ -1197,13 +1197,13 @@ function updateAllCountryLabel(count) {
         // Find the "All" radio button's parent label
         const allRadio = document.querySelector('input[name="whichLines"][value="showAll"]');
         if (allRadio && allRadio.parentElement) {
-            // Update the label text to show count
+            // Update the label text to show count in parentheses
             const labelText = allRadio.parentElement.childNodes;
             // Find the text node and update it
             for (let i = 0; i < labelText.length; i++) {
                 if (labelText[i].nodeType === Node.TEXT_NODE && labelText[i].textContent.includes('All')) {
-                    labelText[i].textContent = `All ${count} `;
-                    console.log(`Updated "All" label to "All ${count}"`);
+                    labelText[i].textContent = `All (${count}) `;
+                    console.log(`Updated "All" label to "All (${count})"`);
                     break;
                 }
             }
