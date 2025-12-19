@@ -292,10 +292,8 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
 
                 // Cache the result
                 allCountriesCache = countriesData.map(country => country.cca2).filter(Boolean);
-                console.log(`Loaded ${allCountriesCache.length} countries`);
-
-                // Update the "All" label with count
-                updateAllCountryLabel(allCountriesCache.length);
+                console.log(`Loaded ${allCountriesCache.length} countries from API`);
+                // Note: Label will be updated later with actual count of countries that have data
             } else {
                 console.log("Using cached country data");
             }
@@ -524,9 +522,13 @@ dataCopy.forEach(location => {
                 : a.latestValue - b.latestValue
         )
         .slice(0, Math.min(5, validData.length));
-            
+
     } else {
         selectedData = dataCopy;
+        // Update label with actual count of countries that have data
+        if (scope === "country") {
+            updateAllCountryLabel(selectedData.length);
+        }
     }
      console.log("Filtered Countries:", selectedData);
 
