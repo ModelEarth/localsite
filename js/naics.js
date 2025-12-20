@@ -275,39 +275,7 @@ function refreshNaicsWidget(initialLoad) {
                 }
                 showIndustryDetail(hash.naics, sectorData);
 
-                // Try to find and pass industry stats from the loaded data
-                // Use a retry mechanism since dataSet.industries loads asynchronously
-                function tryUpdateStats(retriesLeft = 10) {
-                    console.log('[IndustryStats] Attempt', (10 - retriesLeft + 1), '- Looking for NAICS:', hash.naics);
-
-                    if (typeof dataSet !== 'undefined' && dataSet.industries && dataSet.industries.length > 0) {
-                        console.log('[IndustryStats] dataSet.industries loaded, length:', dataSet.industries.length);
-                        console.log('[IndustryStats] First few industries:', dataSet.industries.slice(0, 5).map(i => i.id));
-
-                        const industryData = dataSet.industries.find(ind => ind.id === hash.naics || ind.id === String(hash.naics));
-
-                        if (industryData) {
-                            console.log('[IndustryStats] Found industry data:', industryData);
-                            if (typeof updateIndustryStats === 'function') {
-                                updateIndustryStats({
-                                    employment: industryData.employees,
-                                    establishments: industryData.establishments,
-                                    payroll: industryData.payroll
-                                });
-                                console.log('[IndustryStats] Updated stats successfully');
-                            }
-                        } else {
-                            console.warn('[IndustryStats] No data found for NAICS:', hash.naics);
-                        }
-                    } else if (retriesLeft > 0) {
-                        // Data not loaded yet, retry after 200ms
-                        console.log('[IndustryStats] Data not ready, retrying...');
-                        setTimeout(() => tryUpdateStats(retriesLeft - 1), 200);
-                    } else {
-                        console.error('[IndustryStats] Failed to load stats after all retries');
-                    }
-                }
-                tryUpdateStats();
+                // Note: Stats are populated later when dataSet.industryCounties loads (see line ~2029)
             }
         } else if (!hash.state) {
             $("#industryListHolder").show();
