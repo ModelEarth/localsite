@@ -4907,8 +4907,9 @@ function showTabulatorList(element, attempts) {
                                 //goHash({'state':hash.state});
 
                                 consoleLog("ALERT state checked - called for everybox checked")
-                                delete hiddenhash.naics;
-                                goHash({'state':hash.state, 'naics':''}); // Clears hiddenhash
+                                // Don't clear naics parameter - preserve it for industry detail pages
+                                //delete hiddenhash.naics;
+                                goHash({'state':hash.state}); // Preserve other hash parameters like naics
 
                             } else if(!hash.geo && row._row.data.StateName) { // Or StateName?
                                 if(row._row.data.statename == "Georgia") { // From state checkboxes
