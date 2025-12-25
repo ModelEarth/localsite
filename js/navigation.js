@@ -7938,29 +7938,29 @@ $(document).on("change", "#selectScope", function(event) {
     goHash({'scope':this.value});
 });
 // Click handler for State Name Tab - Shows inline dropdown
-$(document).on("click", "#filterClickState", function(event) {
-    // Toggle inline state dropdown
-    const inlineDropdown = $("#inlineStateDropdown");
+// $(document).on("click", "#filterClickState", function(event) {
+//     // Toggle inline state dropdown
+//     const inlineDropdown = $("#inlineStateDropdown");
     
-    if (inlineDropdown.is(':visible')) {
-        inlineDropdown.hide();
-    } else {
-        // Move state_select to inline dropdown
-        if (typeof state_select != "undefined") {
-            inlineDropdown.empty();
-            const stateSelectClone = $(state_select).clone();
-            stateSelectClone.attr('id', 'state_select_inline').show();
-            stateSelectClone.val($("#state_select").val());
-            stateSelectClone.on('change', function() {
-                $("#state_select").val($(this).val()).trigger('change');
-                inlineDropdown.hide();
-            });
-            inlineDropdown.append(stateSelectClone);
-            inlineDropdown.show();
-        }
-    }
-    event.stopPropagation();
-});
+//     if (inlineDropdown.is(':visible')) {
+//         inlineDropdown.hide();
+//     } else {
+//         // Move state_select to inline dropdown
+//         if (typeof state_select != "undefined") {
+//             inlineDropdown.empty();
+//             const stateSelectClone = $(state_select).clone();
+//             stateSelectClone.attr('id', 'state_select_inline').show();
+//             stateSelectClone.val($("#state_select").val());
+//             stateSelectClone.on('change', function() {
+//                 $("#state_select").val($(this).val()).trigger('change');
+//                 inlineDropdown.hide();
+//             });
+//             inlineDropdown.append(stateSelectClone);
+//             inlineDropdown.show();
+//         }
+//     }
+//     event.stopPropagation();
+// });
 
 // Close inline dropdown when clicking elsewhere
 $(document).on("click", function(event) {
@@ -7969,9 +7969,8 @@ $(document).on("click", function(event) {
         $("#inlineStateDropdown").hide();
     }
 });
-
 // Click handler for Counties Tab - Opens location filter panel
-$(document).on("click", "#filterClickLocation", function(event) {
+$(document).on("click", "#filterClickLocation, #filterClickState", function(event) {
 
     if ($("#draggableSearch").is(':visible')) {
         $("#draggableSearch").hide();
