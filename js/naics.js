@@ -265,6 +265,18 @@ function refreshNaicsWidget(initialLoad) {
         if (hash.state && hash.naics && hash.naics.indexOf(",") < 0) { // Hide when viewing just 1 naics within a state.
             $("#industryListHolder").hide();
             $("#industryDetail").show();
+            
+            // Load industry detail with products
+            if (typeof showIndustryDetail === 'function') {
+                // Try to get sector data from USEEIO if available
+                let sectorData = null;
+                if (typeof epaSectors !== 'undefined' && epaSectors.get) {
+                    sectorData = epaSectors.get(hash.naics);
+                }
+                showIndustryDetail(hash.naics, sectorData);
+
+                // Note: Stats are populated later when dataSet.industryCounties loads (see line ~2029)
+            }
         } else if (!hash.state) {
             $("#industryListHolder").show();
             //$("#industries").html("<div class='contentpadding' style='padding-top:10px; padding-bottom:10px'>Select a location above for industry and impact details.</div>");
@@ -1960,6 +1972,42 @@ function topRatesInFipsNew(dataSet, fips) {
 
     console.log("dataSet.industries v2")
     console.log(dataSet.industries);
+
+    // Update industry stats if we're viewing a specific NAICS
+    let currentHash = getHash();
+    if (currentHash.naics && typeof updateIndustryStats === 'function') {
+        // Aggregate county-level data for this NAICS code
+        if (dataSet.industryCounties && dataSet.industryCounties.length > 0) {
+            let totalEmployees = 0;
+            let totalEstablishments = 0;
+            let totalPayroll = 0;
+            let countyCount = 0;
+
+            for (let i = 0; i < dataSet.industryCounties.length; i++) {
+                // Property is "Naics" not "NAICS"
+                if (dataSet.industryCounties[i].Naics === currentHash.naics || dataSet.industryCounties[i].Naics === String(currentHash.naics)) {
+                    totalEmployees += Number(dataSet.industryCounties[i]['Employees']) || 0;
+                    totalEstablishments += Number(dataSet.industryCounties[i]['Establishments']) || 0;
+                    totalPayroll += Number(dataSet.industryCounties[i]['Payroll']) || 0;
+                    countyCount++;
+                }
+            }
+
+            if (countyCount > 0) {
+                console.log('[IndustryStats] Aggregated data from', countyCount, 'counties for NAICS', currentHash.naics);
+                updateIndustryStats({
+                    employment: totalEmployees,
+                    establishments: totalEstablishments,
+                    payroll: totalPayroll
+                });
+            } else {
+                console.warn('[IndustryStats] No county data found for NAICS', currentHash.naics);
+            }
+        } else {
+            console.warn('[IndustryStats] dataSet.industryCounties not available');
+        }
+    }
+
     return;
 
     for (var j = 0; j < fips.length; j++) { 

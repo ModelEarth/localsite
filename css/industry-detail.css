@@ -1,0 +1,329 @@
+/* Industry Detail Page Styles */
+/* v3 - Enhanced specificity to fix overlapping text issues */
+
+/* Reset box model for all elements within product cards */
+#industryDetail #productGrid,
+#industryDetail #productGrid *,
+#industryDetail .product-card,
+#industryDetail .product-card * {
+  box-sizing: border-box !important;
+  position: relative !important;
+}
+
+/* Product Grid Container - CSS Grid layout */
+#industryDetail #productGrid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  gap: 20px !important;
+}
+
+/* Product Card - More specific selectors to avoid conflicts */
+#industryDetail #productGrid .product-card {
+  background: white !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  margin-bottom: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  overflow: hidden !important;
+  min-height: 200px !important;
+}
+
+#industryDetail #productGrid .product-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Product Card Header - flexbox row */
+#industryDetail #productGrid .product-card-header {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  margin-bottom: 8px !important;
+  gap: 10px !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+}
+
+/* Product Name */
+#industryDetail #productGrid .product-name {
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  color: #333 !important;
+  line-height: 1.4 !important;
+  flex: 1 1 auto !important;
+  display: block !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  min-width: 0 !important;
+}
+
+/* Manufacturer */
+#industryDetail #productGrid .product-manufacturer {
+  font-size: 13px !important;
+  color: #666 !important;
+  margin-bottom: 15px !important;
+  display: block !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+}
+
+/* Product Metrics - CSS Grid 2-column layout */
+#industryDetail #productGrid .product-metrics {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin-bottom: 15px !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+}
+
+/* Individual Metric Box */
+#industryDetail #productGrid .metric {
+  background: #f8f9fa !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+}
+
+/* Metric Label */
+#industryDetail #productGrid .metric-label {
+  font-size: 10px !important;
+  color: #888 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  margin-bottom: 4px !important;
+  display: block !important;
+  width: 100% !important;
+}
+
+/* Metric Value */
+#industryDetail #productGrid .metric-value {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  display: block !important;
+  width: 100% !important;
+  word-break: break-word !important;
+}
+
+/* GWP Status Colors */
+#industryDetail #productGrid .gwp-good {
+  color: #28a745 !important;
+}
+
+#industryDetail #productGrid .gwp-average {
+  color: #856404 !important;
+}
+
+#industryDetail #productGrid .gwp-poor {
+  color: #dc3545 !important;
+}
+
+/* GWP Badge */
+#industryDetail #productGrid .gwp-badge {
+  font-size: 11px !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+  height: fit-content !important;
+}
+
+#industryDetail #productGrid .gwp-badge.gwp-good {
+  background: #d4edda !important;
+  color: #155724 !important;
+}
+
+#industryDetail #productGrid .gwp-badge.gwp-average {
+  background: #fff3cd !important;
+  color: #856404 !important;
+}
+
+#industryDetail #productGrid .gwp-badge.gwp-poor {
+  background: #f8d7da !important;
+  color: #721c24 !important;
+}
+
+/* Product Card Footer - flexbox row */
+#industryDetail #productGrid .product-card-footer {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding-top: 12px !important;
+  margin-top: auto !important;
+  border-top: 1px solid #eee !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+}
+
+/* View EPD Link */
+#industryDetail #productGrid .view-epd-link {
+  color: #007bff !important;
+  text-decoration: none !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+#industryDetail #productGrid .view-epd-link:hover {
+  text-decoration: underline !important;
+}
+
+/* Stats Cards */
+.stat-card {
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Buttons */
+.btn-outline {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+.btn-primary {
+  display: inline-block;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 6px;
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #0056b3;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  #industryDetail #productGrid .product-metrics {
+    grid-template-columns: 1fr !important;
+  }
+
+  #industryDetail #productGrid .product-card {
+    padding: 15px !important;
+  }
+
+  #industryDetail #industryStats {
+    grid-template-columns: 1fr !important;
+  }
+
+  #industryDetail #productGrid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Dark Mode Support - System preference */
+@media (prefers-color-scheme: dark) {
+  #industryDetail #productGrid .product-card {
+    background: #2d2d2d !important;
+    border-color: #444 !important;
+  }
+
+  #industryDetail #productGrid .product-name {
+    color: #eee !important;
+  }
+
+  #industryDetail #productGrid .product-manufacturer {
+    color: #aaa !important;
+  }
+
+  #industryDetail #productGrid .metric {
+    background: #3d3d3d !important;
+  }
+
+  #industryDetail #productGrid .metric-value {
+    color: #eee !important;
+  }
+
+  #industryDetail #productGrid .product-card-footer {
+    border-top-color: #444 !important;
+  }
+
+  #industryDetail .stat-card {
+    background: #3d3d3d !important;
+  }
+
+  #industryDetail .stat-card div:last-child {
+    color: #eee !important;
+  }
+}
+
+/* Dark Mode Support - Class-based (.dark) */
+.dark #industryDetail #productGrid .product-card {
+  background: #2d2d2d !important;
+  border-color: #444 !important;
+}
+
+.dark #industryDetail #productGrid .product-name {
+  color: #eee !important;
+}
+
+.dark #industryDetail #productGrid .product-manufacturer {
+  color: #aaa !important;
+}
+
+.dark #industryDetail #productGrid .metric {
+  background: #3d3d3d !important;
+}
+
+.dark #industryDetail #productGrid .metric-value {
+  color: #eee !important;
+}
+
+.dark #industryDetail #productGrid .product-card-footer {
+  border-top-color: #444 !important;
+}
+
+.dark #industryDetail .stat-card {
+  background: #3d3d3d !important;
+}
+
+.dark #industryDetail .stat-card div:last-child {
+  color: #eee !important;
+}
+

@@ -1801,6 +1801,81 @@ Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
 
 
 <section class="data-section" id="data" style="overflow:auto">
+
+<!-- NAICS Industry Detail Dashboard -->
+<div id="industryDetail" style="display:none">
+	<!-- Industry Header -->
+	<div class="contentpadding">
+		<div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:15px;">
+			<div>
+				<a href="#" onclick="goHash({'naics':''});return false;" class="btn btn-outline" style="margin-bottom:10px;">
+					&larr; Back to Industries
+				</a>
+			</div>
+			<div id="industryNaicsCode" style="font-size:14px; color:#666; padding:8px 12px; background:#f5f5f5; border-radius:4px;"></div>
+		</div>
+
+		<h1 id="industryDetailTitle" class="h1-home" style="margin-top:20px; margin-bottom:5px;">
+			NAICS Industry
+		</h1>
+		<p id="industryDetailDescription" style="color:#666; margin-bottom:20px; font-size:15px;"></p>
+
+		<!-- Industry Stats Grid -->
+		<div id="industryStats" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:15px; margin:25px 0;">
+			<div class="stat-card" style="background:#f8f9fa; padding:20px; border-radius:8px; text-align:center;">
+				<div style="font-size:12px; color:#666; text-transform:uppercase; margin-bottom:5px;">Employment</div>
+				<div id="industryEmployment" style="font-size:24px; font-weight:600; color:#333;">--</div>
+			</div>
+			<div class="stat-card" style="background:#f8f9fa; padding:20px; border-radius:8px; text-align:center;">
+				<div style="font-size:12px; color:#666; text-transform:uppercase; margin-bottom:5px;">Establishments</div>
+				<div id="industryEstablishments" style="font-size:24px; font-weight:600; color:#333;">--</div>
+			</div>
+			<div class="stat-card" style="background:#f8f9fa; padding:20px; border-radius:8px; text-align:center;">
+				<div style="font-size:12px; color:#666; text-transform:uppercase; margin-bottom:5px;">Annual Payroll</div>
+				<div id="industryPayroll" style="font-size:24px; font-weight:600; color:#333;">--</div>
+			</div>
+		</div>
+	</div>
+
+	<hr style="margin:0;">
+
+	<!-- Related Products Section -->
+	<div class="contentpadding" style="padding-top:25px;">
+		<h2 style="margin-bottom:5px; display:flex; align-items:center; gap:10px;">
+			<span style="font-size:24px;">&#127981;</span>
+			<span>Related Products</span>
+			<span id="productCount" style="font-size:14px; color:#666; font-weight:normal;"></span>
+		</h2>
+		<p style="color:#666; margin-bottom:20px; font-size:14px;">
+			Environmental Product Declarations (EPDs) from <a href="https://buildingtransparency.org" target="_blank">BuildingTransparency.org</a>
+		</p>
+
+		<div id="productGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px;">
+			<!-- Product cards dynamically inserted here -->
+		</div>
+
+		<div id="productLoading" style="text-align:center; padding:40px; display:none;">
+			<div style="font-size:16px; color:#666;">Loading products...</div>
+		</div>
+
+		<div id="loadMoreProducts" style="text-align:center; margin:30px 0; display:none;">
+			<button onclick="loadMoreProducts()" class="btn btn-primary" style="padding:12px 32px; font-size:14px; cursor:pointer; border-radius:6px; border:none; background:#007bff; color:white; font-weight:500; transition:all 0.2s ease; box-shadow:0 2px 4px rgba(0,123,255,0.2);">
+				Load More Products
+			</button>
+		</div>
+
+		<div id="noProductsMessage" style="display:none; padding:40px; text-align:center; background:#f8f9fa; border-radius:12px; margin-top:20px;">
+			<div style="font-size:40px; margin-bottom:15px;">&#128230;</div>
+			<p style="font-size:18px; margin-bottom:10px; color:#333;">No products available yet for this industry.</p>
+			<p style="color:#666; margin-bottom:20px;">Product data comes from Environmental Product Declarations (EPDs) registered with BuildingTransparency.org</p>
+			<a href="https://buildingtransparency.org" target="_blank" class="btn btn-outline" style="padding:10px 20px; text-decoration:none;">
+				Learn More About EPDs
+			</a>
+		</div>
+	</div>
+</div>
+<!-- /NAICS Industry Detail Dashboard -->
+
 <div style="border-bottom:1px solid #ccc">
   <div class="content contentpadding contentpaddingMin litePanel" style="max-width:2000px; padding-bottom:0px">
 
