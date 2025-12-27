@@ -308,7 +308,7 @@ function refreshNaicsWidget(initialLoad) {
         }
 
         // v2
-        if ((location.host.indexOf('localhost') >= 0 || hash.beta == "true") || location.href.indexOf('/info/naics/') >= 0) {
+        if ((location.host.indexOf('localhost') >= 0 || hash.beta == "true") || location.href.indexOf('/info/naics/') >= 0 || location.host.indexOf('github.io') >= 0) {
 
             $("#industryTableHolder").show();
             $("#sectorTableHolder").show();
