@@ -1990,18 +1990,18 @@ function topRatesInFipsNew(dataSet, fips) {
     let currentHash = getHash();
     if (currentHash.naics && typeof updateIndustryStats === 'function') {
         // Aggregate county-level data for this NAICS code
-        if (dataSet.industryCounties && dataSet.industryCounties.length > 0) {
+        if (localObject.industryCounties && localObject.industryCounties.length > 0) {
             let totalEmployees = 0;
             let totalEstablishments = 0;
             let totalPayroll = 0;
             let countyCount = 0;
 
-            for (let i = 0; i < dataSet.industryCounties.length; i++) {
+            for (let i = 0; i < localObject.industryCounties.length; i++) {
                 // Property is "Naics" not "NAICS"
-                if (dataSet.industryCounties[i].Naics === currentHash.naics || dataSet.industryCounties[i].Naics === String(currentHash.naics)) {
-                    totalEmployees += Number(dataSet.industryCounties[i]['Employees']) || 0;
-                    totalEstablishments += Number(dataSet.industryCounties[i]['Establishments']) || 0;
-                    totalPayroll += Number(dataSet.industryCounties[i]['Payroll']) || 0;
+                if (localObject.industryCounties[i].Naics === currentHash.naics || localObject.industryCounties[i].Naics === String(currentHash.naics)) {
+                    totalEmployees += Number(localObject.industryCounties[i]['Employees']) || 0;
+                    totalEstablishments += Number(localObject.industryCounties[i]['Establishments']) || 0;
+                    totalPayroll += Number(localObject.industryCounties[i]['Payroll']) || 0;
                     countyCount++;
                 }
             }
@@ -2017,7 +2017,7 @@ function topRatesInFipsNew(dataSet, fips) {
                 console.warn('[IndustryStats] No county data found for NAICS', currentHash.naics);
             }
         } else {
-            console.warn('[IndustryStats] dataSet.industryCounties not available');
+            console.warn('[IndustryStats] localObject.industryCounties not available');
         }
     }
 
