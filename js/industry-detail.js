@@ -26,7 +26,11 @@ let allProductFiles = [];
  */
 async function initIndustryDetail() {
     try {
-        const response = await fetch('/io/naics/product-category-mapping.json');
+        // Use full URL for GitHub Pages, relative path for localhost
+        const baseUrl = window.location.hostname.includes('github.io')
+            ? 'https://mohammed-saalim.github.io'
+            : '';
+        const response = await fetch(`${baseUrl}/io/naics/product-category-mapping.json`);
         if (response.ok) {
             productCategoryMapping = await response.json();
             console.log('[IndustryDetail] Product mapping loaded:', Object.keys(productCategoryMapping.mappings).length, 'categories');

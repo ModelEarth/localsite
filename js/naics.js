@@ -97,7 +97,6 @@ function refreshNaicsWidget(initialLoad) {
     //alert("refreshNaicsWidget() hiddenhash.naics: " + hiddenhash.naics);
 
     let hash = getHash(); // Includes hiddenhash
-    console.log("refreshNaicsWidget hash.naics: " + hash.naics + " and prior naics: " + priorHash_naicspage.naics);
 
     if (hash.set != priorHash_naicspage.set) {
         if (!hash.set) {
@@ -130,7 +129,6 @@ function refreshNaicsWidget(initialLoad) {
     // Exit if no change to: county (geo) or state.
     if (!initialLoad) {
         if (!(hash.geo != priorHash_naicspage.geo || hash.state != priorHash_naicspage.state)) {
-            console.log("No geo change for refreshNaicsWidget()");
             priorHash_naicspage = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
             initialNaicsLoad = false;
             return;
@@ -209,7 +207,9 @@ function refreshNaicsWidget(initialLoad) {
         loadNAICS = true;
     } else if (hash.geo != priorHash_naicspage.geo) {
         loadNAICS = true;
-    } else if ((hash.naics != priorHash_naicspage.naics) && hash.naics && hash.naics.indexOf(",") > 0) { // Skip if only one naics
+    } else if ((hash.naics != priorHash_naicspage.naics) && hash.naics) {
+        // Load when NAICS changes (both single and multiple NAICS codes)
+        // This ensures the Industry Detail Dashboard displays for single NAICS
         loadNAICS = true;
     } else if (hash.catsize != priorHash_naicspage.catsize) {
         loadNAICS = true;
@@ -263,9 +263,13 @@ function refreshNaicsWidget(initialLoad) {
     //alert("naics " + hash.naics)
     if (loadNAICS) {
         if (hash.state && hash.naics && hash.naics.indexOf(",") < 0) { // Hide when viewing just 1 naics within a state.
+            // Show parent container first (required for visibility)
+            $("#list_main").show();
+
+            // Hide industry list, show detail dashboard
             $("#industryListHolder").hide();
             $("#industryDetail").show();
-            
+
             // Load industry detail with products
             if (typeof showIndustryDetail === 'function') {
                 // Try to get sector data from USEEIO if available
@@ -280,7 +284,7 @@ function refreshNaicsWidget(initialLoad) {
         } else if (!hash.state) {
             $("#industryListHolder").show();
             //$("#industries").html("<div class='contentpadding' style='padding-top:10px; padding-bottom:10px'>Select a location above for industry and impact details.</div>");
-        
+
             $("#econ_list").hide(); // Hides loading icon when no state
 
             // Replaces loading icon
@@ -291,6 +295,8 @@ function refreshNaicsWidget(initialLoad) {
             $("#industryListHolder").show();
             $("#industryDetail").hide();
         }
+
+        // Common logic for all branches of if (loadNAICS)
         if (!hash.catsort) {
             hash.catsort = "payann";
         }
@@ -302,7 +308,7 @@ function refreshNaicsWidget(initialLoad) {
         }
 
         // v2
-        if ((location.host.indexOf('localhost') >= 0 || hash.beta == "true") || location.href.indexOf('/info/naics/') >= 0) {
+        if ((location.host.indexOf('localhost') >= 0 || hash.beta == "true") || location.href.indexOf('/info/naics/') >= 0 || location.host.indexOf('github.io') >= 0) {
 
             $("#industryTableHolder").show();
             $("#sectorTableHolder").show();
@@ -319,7 +325,7 @@ function refreshNaicsWidget(initialLoad) {
             }
             d3.csv(industryLocDataFile).then( function(county_data) {
                 // Loads Tabulator via showIndustryTabulatorList()
-                callPromises(industryLocDataFile); 
+                callPromises(industryLocDataFile);
             });
         }
         loadIndustryData(hash);
@@ -536,7 +542,14 @@ function getNaics_setHiddenHash2(go) {
 
     //delete hash.naics; // Since show value invokes new hiddenhash
 
-    updateHash({'naics':''})
+    // Only clear naics from URL if user didn't explicitly provide it
+    // Check if naics exists in the URL hash (not just in hiddenhash)
+    let currentUrlHash = getHashOnly(); // Gets only URL hash, excludes hiddenhash
+    if (!currentUrlHash.naics) {
+        // User didn't provide naics in URL, safe to clear it
+        updateHash({'naics':''})
+    }
+    // If currentUrlHash.naics exists, preserve it in the URL (don't clear it)
 
     // If states are not available yet, wait for DOM.
     if(!$("#state_select").length) {
@@ -1977,18 +1990,18 @@ function topRatesInFipsNew(dataSet, fips) {
     let currentHash = getHash();
     if (currentHash.naics && typeof updateIndustryStats === 'function') {
         // Aggregate county-level data for this NAICS code
-        if (dataSet.industryCounties && dataSet.industryCounties.length > 0) {
+        if (localObject.industryCounties && localObject.industryCounties.length > 0) {
             let totalEmployees = 0;
             let totalEstablishments = 0;
             let totalPayroll = 0;
             let countyCount = 0;
 
-            for (let i = 0; i < dataSet.industryCounties.length; i++) {
+            for (let i = 0; i < localObject.industryCounties.length; i++) {
                 // Property is "Naics" not "NAICS"
-                if (dataSet.industryCounties[i].Naics === currentHash.naics || dataSet.industryCounties[i].Naics === String(currentHash.naics)) {
-                    totalEmployees += Number(dataSet.industryCounties[i]['Employees']) || 0;
-                    totalEstablishments += Number(dataSet.industryCounties[i]['Establishments']) || 0;
-                    totalPayroll += Number(dataSet.industryCounties[i]['Payroll']) || 0;
+                if (localObject.industryCounties[i].Naics === currentHash.naics || localObject.industryCounties[i].Naics === String(currentHash.naics)) {
+                    totalEmployees += Number(localObject.industryCounties[i]['Employees']) || 0;
+                    totalEstablishments += Number(localObject.industryCounties[i]['Establishments']) || 0;
+                    totalPayroll += Number(localObject.industryCounties[i]['Payroll']) || 0;
                     countyCount++;
                 }
             }
@@ -2004,7 +2017,7 @@ function topRatesInFipsNew(dataSet, fips) {
                 console.warn('[IndustryStats] No county data found for NAICS', currentHash.naics);
             }
         } else {
-            console.warn('[IndustryStats] dataSet.industryCounties not available');
+            console.warn('[IndustryStats] localObject.industryCounties not available');
         }
     }
 
