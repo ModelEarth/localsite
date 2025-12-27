@@ -458,9 +458,42 @@ document.addEventListener('DOMContentLoaded', () => {
   </script>
 
   <div style="float:right">
-    <div class="local btn btn-primary" onclick="location.href='/realitystream/#' + window.location.hash.substr(1); return false;" style="display:none;min-width:133px;font-size:15px;border:none;">
+    <!-- <div class="local btn btn-primary" onclick="location.href='/realitystream/#' + window.location.hash.substr(1); return false;" style="display:none;min-width:133px;font-size:15px;border:none;">
                 RealityStream
-            </div>
+            </div> -->
+
+            <div class="local btn btn-primary"
+ onclick="
+  const h = (window.location.hash || '').replace(/^#/, '');
+const p = new URLSearchParams(h);
+
+// Pick the selected DCID (features.dcid is what your Timeline uses)
+const dcid = p.get('features.dcid') || p.get('targets.dcid') || '';
+
+// Make a filesystem-safe folder name from dcid
+function makeSafeFolderName(input) {
+  return String(input || '')
+    .replace(/[\/\\]+/g, '_')          // eia/INTL -> eia_INTL
+    .replace(/[^A-Za-z0-9._-]+/g, '_') // remove anything odd
+    .replace(/_+/g, '_')               // collapse ___
+    .replace(/^_+|_+$/g, '')           // trim _
+    .slice(0, 120);                    // avoid crazy long folders
+}
+
+// Only add folder if not already present
+if (!p.get('folder') && dcid) {
+  p.set('folder', makeSafeFolderName(dcid));
+}
+
+location.href = '/realitystream/#' + p.toString();
+return false;
+
+"
+  style="display:none;min-width:133px;font-size:15px;border:none;"
+>
+  RealityStream
+</div>
+
   </div>
   <div style="overflow:visible;">
 
