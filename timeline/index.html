@@ -469,9 +469,69 @@ body.main-nav-hidden #floating-legend.chart-visible {
   </script>
 
   <div style="float:right">
-    <div class="local btn btn-primary" onclick="location.href='/realitystream/#' + window.location.hash.substr(1); return false;" style="display:none;min-width:133px;font-size:15px;border:none;">
-                RealityStream
-            </div>
+
+            <div class="local btn btn-primary"
+ onclick="
+  const h = (window.location.hash || '').replace(/^#/, '');
+  const p = new URLSearchParams(h);
+
+  // This is what Timeline currently uses as the selected item
+  // Get selected dcid from the chart dropdown first (this is the real selected series)
+let dcid = '';
+const chartVar = document.getElementById('chartVariable');
+if (chartVar && chartVar.value) dcid = chartVar.value;
+
+// fallback: sometimes it's still in the hash
+if (!dcid) dcid = p.get('features.dcid') || p.get('targets.dcid') || '';
+
+// last resort: use the select option text if value is empty
+if (!dcid && chartVar) dcid = chartVar.options[chartVar.selectedIndex]?.text || '';
+
+if (!dcid) return false;
+
+
+  // Put the selected dcid into rs_dcid (append behavior key)
+ // Put the selected dcid into rs_dcid (APPEND + DEDUPE)
+const existing = (p.get('rs_dcid') || '').trim();
+
+// support comma-separated list (rs_dcid=a,b,c)
+const list = existing
+  ? existing.split(',').map(s => s.trim()).filter(Boolean)
+  : [];
+
+if (!list.includes(dcid)) list.push(dcid);
+
+p.set('rs_dcid', list.join(','));
+
+
+  // IMPORTANT: remove override keys so param-input.js will NOT replace YAML
+  p.delete('features.dcid');
+  p.delete('targets.dcid');
+
+  // Keep your role/source
+  if (!p.get('rs_role')) p.set('rs_role', 'features');
+  if (!p.get('rs_source')) p.set('rs_source', 'timelines');
+
+  // folder (optional)
+  function makeSafeFolderName(input) {
+    return String(input || '')
+      .replace(/[\/\\]+/g, '_')
+      .replace(/[^A-Za-z0-9._-]+/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_+|_+$/g, '')
+      .slice(0, 120);
+  }
+  if (!p.get('folder')) p.set('folder', makeSafeFolderName(dcid));
+
+  location.href = '/realitystream/#' + p.toString();
+  return false;
+"
+
+  style="display:none;min-width:133px;font-size:15px;border:none;"
+>
+  RealityStream
+</div>
+
   </div>
   <div style="overflow:visible;">
 
