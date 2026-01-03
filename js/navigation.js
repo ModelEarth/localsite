@@ -81,7 +81,7 @@ function hashChanged() {
             //$("#hitRefreshNote").show();
         }
     } else {
-        //$(".locationTabText").text("United States");
+        $(".locationTabText").text("United States");
     }
     if (hash.state != priorHash.state) {
         waitForElm('#state_select').then((elm) => {
@@ -285,7 +285,7 @@ function hashChanged() {
             if (hash.state && hash.state.length == 2 && !($("#filterLocations").is(':visible'))) {
                 $(".locationTabText").text($("#state_select").find(":selected").text());
             } else if (!hash.state) {
-                $(".locationTabText").text("United States");
+               // $(".locationTabText").text("United States");
             }
         //});
         // Note: We no longer revert to "Locations" - keep the state name
