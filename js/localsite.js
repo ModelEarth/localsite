@@ -2752,7 +2752,8 @@ function useSet() {
         if (uAcc < 5) {
           Cookies.set('golog', window.location.href);
           if (param.minred) {
-            window.location = param.minred;
+            //window.location = param.minred;
+            window.location.replace(param.minred); // So backing up skips the redirecting page.
           } else {
             window.location = "/explore/menu/login/azure";
           }
