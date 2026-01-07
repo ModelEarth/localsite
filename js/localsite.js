@@ -1108,7 +1108,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
                 let userImg = $.gravatar(email);
                 if (userImg) {
                   localStorage.userImg = userImg;
-                  $("#gravatarImg").html("<img src='" + localStorage.userImg + "' style='width:100%;max-width:220px;border-radius:30px;'><br><br>");
+                  $("#gravatarImg").html("<img src='" + localStorage.userImg + "' style='width:100%;max-width:100px;border-radius:50px;'><br><br>");
                 }
               });
             } else {
@@ -1125,8 +1125,10 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
                 $(".uIn").hide();
                 if (isValid(email)) {
                   Cookies.set('golog', window.location.href);
-                  //alert("valid email")
-                  window.location = "/explore/menu/login/azure/";
+                  if (location.host.indexOf('localhost') >= 0) {
+                    alert("Redirect to explore - invalid email")
+                  }
+                  window.location = "/explore";
                   return;
                 }
 
@@ -2755,7 +2757,10 @@ function useSet() {
             //window.location = param.minred;
             window.location.replace(param.minred); // So backing up skips the redirecting page.
           } else {
-            window.location = "/explore/menu/login/azure";
+            if (location.host.indexOf('localhost') >= 0) {
+                alert("Redirect to explore 4")
+            }
+            window.location = "/explore";
           }
           return;
         }
