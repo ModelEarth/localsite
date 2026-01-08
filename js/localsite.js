@@ -462,11 +462,14 @@ function getHashOnly() {
 
 function updateHash(addToHash, addToExisting, removeFromHash) {
     //alert("updateHash object: " + JSON.stringify(addToHash))
+    //let debugMsg = "updateHash called with: " + JSON.stringify(addToHash) + " addToExisting: " + addToExisting + " isPopstateNavigation: " + (typeof isPopstateNavigation !== 'undefined' ? isPopstateNavigation : "undefined");
+    //alert(debugMsg);
+    console.log("updateHash called with:", JSON.stringify(addToHash), "addToExisting:", addToExisting);
     let hash = {}; // Limited to this function
     if (addToExisting != false) {
       hash = getHashOnly(); // Include all existing. Excludes hiddenhash.
     }
-    console.log(addToHash)
+    console.log("updateHash addToHash:", addToHash)
     const newObj = {}; // For removal of blank keys in addToHash
     Object.entries(addToHash).forEach(([k, v]) => {
       if (v != null) {
@@ -506,14 +509,33 @@ function updateHash(addToHash, addToExisting, removeFromHash) {
     if (window.location.search) { // Existing, for parameters that are retained as hash changes.
       queryString += window.location.search; // Contains question mark (?)
     }
-    if (hashString) { // Remove the hash here if adding to other 
+    if (hashString) { // Remove the hash here if adding to other
       queryString += "#" + hashString;
     }
     let searchTitle = 'Page ' + hashString;
-    //alert(queryString)
-    window.history.pushState("", searchTitle, pathname + queryString);
+    let newURL = pathname + queryString;
+    let currentURL = window.location.pathname + window.location.search + window.location.hash;
+    console.log("pushState - Old URL:", currentURL, "New URL:", newURL);
+
+    // Only push to history if the URL is actually changing
+    if (currentURL !== newURL) {
+      // Use replaceState during back/forward navigation to avoid creating new history entries
+      if (typeof isPopstateNavigation !== 'undefined' && isPopstateNavigation) {
+        // alert("Using REPLACESTATE\nOld: " + currentURL + "\nNew: " + newURL); // Temp for testing
+        window.history.replaceState("", searchTitle, newURL);
+        console.log("replaceState executed - history entry updated (popstate navigation)");
+      } else {
+        //alert("Using PUSHSTATE\nOld: " + currentURL + "\nNew: " + newURL); // Temp for testing
+        window.history.pushState("", searchTitle, newURL);
+        console.log("pushState executed - new history entry created");
+      }
+    } else {
+      console.log("SKIPPING history update - URL unchanged\nURL: " + currentURL); // Temp for testing
+      console.log("pushState/replaceState skipped - URL unchanged");
+    }
 }
 function goHash(addToHash,removeFromHash) {
+  //alert("goHash called with: " + JSON.stringify(addToHash) + "\nremoveFromHash: " + removeFromHash);
   consoleLog("goHash\n" + JSON.stringify(addToHash, null, 2));
   // Get and normalize the current hash
   const currentHash = normalizeHash(window.location.hash);
@@ -522,7 +544,10 @@ function goHash(addToHash,removeFromHash) {
   const newHash = normalizeHash(window.location.hash);
   // Only trigger the event if the normalized hash actually changed
   if (currentHash !== newHash) {
+    consoleLog("goHash triggering hashChangeEvent\nOld hash: " + currentHash + "\nNew hash: " + newHash);
     triggerHashChangeEvent();
+  } else {
+    consoleLog("goHash NOT triggering hashChangeEvent - hash unchanged");
   }
 }
 function go(addToHash) {
@@ -563,6 +588,7 @@ if(typeof priorHash == 'undefined') {
 }
 //let nextPriorHash = {};
 let nextPriorHash = structuredClone(param); // Param values set in pages and the include URL are passed forward as a hiddenhash.
+var isPopstateNavigation = false; // Flag to track if we're in a back/forward navigation. Temp for testing
 // Triggers custom hashChangeEvent in multiple widgets.
 // Exception, React widgets use a different process.
 var triggerHashChangeEvent = function () {
@@ -1225,7 +1251,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         
       });
 
-      $(window).on('hashchange', function() { // Avoid window.onhashchange since overridden by map and widget embeds  
+      $(window).on('hashchange', function() { // Avoid window.onhashchange since overridden by map and widget embeds
+        //alert("HASHCHANGE event fired!\nNew URL: " + window.location.href);
         consoleLog("window hashchange");
         consoleLog("delete hiddenhash.name");
         delete hiddenhash.name; // Not sure where this is set.
@@ -1233,6 +1260,25 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         //delete hiddenhash.geo; // Not sure where this is set.
 
         triggerHashChangeEvent();
+      });
+
+      // Handle browser back/forward button navigation
+      window.addEventListener('popstate', function(event) {
+        console.log("popstate event, back/forward button navigation - URL:", window.location.href);
+        isPopstateNavigation = true;
+        // The hashchange event should handle the actual hash change,
+        // but we trigger it explicitly to ensure it fires
+        triggerHashChangeEvent();
+
+        // Temp for testing
+        // Reset flag after a short delay to allow hash change handlers to complete
+        /*
+        setTimeout(function() {
+          isPopstateNavigation = false;
+          console.log("isPopstateNavigation reset to false");
+        }, 100);
+        */
+
       });
       //MutationObserver.observe(hiddenhash, triggerHashChangeEvent);
 

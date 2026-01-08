@@ -2352,6 +2352,17 @@ function renderCatList(catList,cat) {
     let fullcolumnWidth = $('#main-container').width();
     if (fullcolumnWidth > 500) {
       showNavColumn();
+      // Collapse #side-nav-content when #mainCatList has categories so #main-nav is visible
+      const sidenav = document.getElementById('side-nav');
+      if (sidenav && $("#mainCatList").children().length > 0) {
+        sidenav.classList.remove('expanded', 'hovered');
+        sidenav.classList.add('collapsed', 'locked');
+        if (window.standaloneNav) {
+          window.standaloneNav.isCollapsed = true;
+          window.standaloneNav.isLocked = true;
+          window.standaloneNav.updateToggleIcon();
+        }
+      }
     }
   }
 }
@@ -3047,15 +3058,18 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       //layerControls[whichmap].removeLayer(overlays["Georgia Solid Waste (2023)"])
 
       // Partially works! - Unchecked on second map.
-      //map.removeLayer(overlays[priorLayer]); // Remove overlay but not checkbox. 
+      //map.removeLayer(overlays[priorLayer]); // Remove overlay but not checkbox.
 
-      // Ooriginally only map1 was getting updated.
+      // Originally only map1 was getting updated.
 
-      console.log("BUGBUG - No icons show with, multiple states show without.")
-      // BUGBUG - No icons show with, multiple states show without.
-      //map1.removeLayer(overlays1[priorLayer]);
-
-      map2.removeLayer(overlays2[priorLayer]);
+      console.log("Removing prior layer:", priorLayer, "from both maps");
+      // Remove prior layer from both maps when switching topics
+      if (overlays1[priorLayer]) {
+        map1.removeLayer(overlays1[priorLayer]);
+      }
+      if (overlays2[priorLayer]) {
+        map2.removeLayer(overlays2[priorLayer]);
+      }
     }
     //alert("addOverlay - typeof overlays[dataTitle] " + typeof overlays[dataTitle])
 
@@ -3678,11 +3692,13 @@ function hashChangedMap() {
   }
 
   let whatChanged = "";
+  console.log("hashChangedMap: hash.show =", hash.show, ", priorHash.show =", priorHash.show);
   if (hash.layers !== priorHash.layers) {
     //applyIO(hiddenhash.naics);
     whatChanged = "hashChangedMap() in map.js layers";
   } else if (hash.show !== priorHash.show) {
     //applyIO(hiddenhash.naics);
+    console.log("Show value changed from", priorHash.show, "to", hash.show);
     whatChanged = "hash.show hashChangedMap() in map.js";
   } else if (hash.state && hash.state !== priorHash.state) {
     // Why are new map points not appearing
@@ -3757,6 +3773,11 @@ function hashChangedMap() {
 $(document).ready(function () {
   // INIT
   hashChangedMap();
+  // Initialize nextPriorHash with current hash values after initial load
+  // This ensures priorHash is set correctly on the next hash change
+  if (typeof nextPriorHash !== 'undefined') {
+    //nextPriorHash = getHash();
+  }
 });
 
 function zoomFromKm2(kilometers_wide, theState) {
