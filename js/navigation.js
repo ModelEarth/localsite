@@ -1541,8 +1541,6 @@ class StandaloneNavigation {
                     }
                     // Insert legend content inside locations-content, after the toggle
                     $('#locations-content').append($('#legend-content'));
-                    $('#legend-content').css('padding', '10px');
-                    $('#legend-content').css('padding-top', '0px');
                     $('#legend-content').css('font-size', '12px');
                     $('#legend-content').css('line-height', '1em');
                     $('#floating-legend').hide(); // No effect since display: is on #floating-legend
@@ -6232,8 +6230,6 @@ function showNavColumn() {
         }
         // Insert legend content inside locations-content, after the toggle
         $('#locations-content').append($('#legend-content'));
-        $('#legend-content').css('padding', '10px');
-        $('#legend-content').css('padding-top', '0px');
         $('#legend-content').css('font-size', '12px');
         $('#legend-content').css('line-height', '1em');
     }

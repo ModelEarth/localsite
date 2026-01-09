@@ -123,6 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
      font-size: 13px;
      pointer-events: auto;
 }
+#floating-legend #legend-content {
+    padding: 5px 10px;
+}
 #floating-legend-header {
     display: flex;
     justify-content: space-between;
@@ -189,9 +192,8 @@ document.addEventListener('DOMContentLoaded', () => {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 #legend-content {
-    padding: 8px;
     overflow-y: auto;
-    max-height: 280px;
+    max-height: 400px;
 }
 /* Show floating legend when sidebar is hidden (nav closed) AND chart is visible */
 body.sidebar-hidden #floating-legend.chart-visible,
