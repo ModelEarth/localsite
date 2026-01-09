@@ -161,6 +161,33 @@ document.addEventListener('DOMContentLoaded', () => {
     background: rgba(0,0,0,0.1);
     color: #333;
 }
+#legend-view-toggle {
+    display: flex;
+    background: rgba(0,0,0,0.06);
+    border-radius: 6px;
+    padding: 2px;
+    gap: 2px;
+}
+.view-toggle-btn {
+    padding: 4px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.view-toggle-btn:hover {
+    color: #333;
+    background: rgba(255,255,255,0.5);
+}
+.view-toggle-btn.active {
+    background: #fff;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
 #legend-content {
     padding: 8px;
     overflow-y: auto;
@@ -761,7 +788,10 @@ p.set('rs_dcid', list.join(','));
             <canvas id="timelineChart" ></canvas>
             <div id="floating-legend" aria-hidden="false" style="display:none">
                 <div id="floating-legend-header">
-                    <span>Locations</span>
+                    <div id="legend-view-toggle">
+                        <button id="view-locations-btn" class="view-toggle-btn active" title="Show flat list of locations">Locations</button>
+                        <button id="view-continents-btn" class="view-toggle-btn" title="Group by continent">Continents</button>
+                    </div>
                     <button id="floating-legend-close" title="Close">&times;</button>
                 </div>
                 <div id="legend-content"></div>
@@ -1158,8 +1188,13 @@ function buildFloatingLegendFromChart() {
     collectFromChart(timelineChartObj);
     collectFromChart(lineAreaChartObj);
 
-    // Build unified legend items grouped by continent (authoritative in #legend-content)
-    // First, group countries by continent
+    // Initialize legend view mode (default to flat 'locations' view)
+    if (typeof window._legendViewMode === 'undefined') {
+        window._legendViewMode = 'locations';
+    }
+
+    // Build unified legend items (authoritative in #legend-content)
+    // Group countries by continent for 'continents' view
     const continentGroups = {};
     labelMap.forEach((info, label) => {
         const continent = getContinentForCountry(label);
@@ -1219,75 +1254,102 @@ function buildFloatingLegendFromChart() {
         return item;
     }
 
-    // Build continent sections
-    continentOrder.forEach((continent) => {
-        const countries = continentGroups[continent];
-        if (!countries || countries.length === 0) return;
+    // Check view mode and build accordingly
+    if (window._legendViewMode === 'continents') {
+        // Build continent sections (grouped view)
+        continentOrder.forEach((continent) => {
+            const countries = continentGroups[continent];
+            if (!countries || countries.length === 0) return;
 
-        // Create continent section
-        const section = document.createElement('div');
-        section.className = 'region-section';
-        section.style.cssText = 'margin-bottom: 4px; border-radius: 6px; overflow: hidden; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.08);';
+            // Create continent section
+            const section = document.createElement('div');
+            section.className = 'region-section';
+            section.style.cssText = 'margin-bottom: 4px; border-radius: 6px; overflow: hidden; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.08);';
 
-        // Create toggle button for continent
-        const toggle = document.createElement('button');
-        toggle.className = 'region-toggle';
-        toggle.style.cssText = 'width: 100%; display: flex; align-items: center; gap: 6px; padding: 8px 10px; background: rgba(248,249,250,0.9); border: none; cursor: pointer; font-size: 12px; font-weight: 600; color: #333; transition: background 0.2s;';
-        
-        const icon = document.createElement('span');
-        icon.className = 'region-icon';
-        icon.textContent = continentIcons[continent] || '🌐';
-        icon.style.cssText = 'font-size: 14px;';
-        
-        const nameSpan = document.createElement('span');
-        nameSpan.style.cssText = 'flex: 1; text-align: left;';
-        nameSpan.textContent = `${continent} (${countries.length})`;
-        
-        const arrow = document.createElement('span');
-        arrow.className = 'toggle-arrow';
-        arrow.textContent = '▼';
-        arrow.style.cssText = 'font-size: 10px; transition: transform 0.2s;';
-        
-        toggle.appendChild(icon);
-        toggle.appendChild(nameSpan);
-        toggle.appendChild(arrow);
-        
-        // Create country list container
-        const countryList = document.createElement('div');
-        countryList.className = 'country-buttons-region';
-        countryList.style.cssText = 'padding: 4px 6px; display: block;'; // First section expanded by default
-        
-        // Add country items to the list
-        countries.forEach(({ label, info }) => {
+            // Create toggle button for continent
+            const toggle = document.createElement('button');
+            toggle.className = 'region-toggle';
+            toggle.style.cssText = 'width: 100%; display: flex; align-items: center; gap: 6px; padding: 8px 10px; background: rgba(248,249,250,0.9); border: none; cursor: pointer; font-size: 12px; font-weight: 600; color: #333; transition: background 0.2s;';
+
+            const icon = document.createElement('span');
+            icon.className = 'region-icon';
+            icon.textContent = continentIcons[continent] || '🌐';
+            icon.style.cssText = 'font-size: 14px;';
+
+            const nameSpan = document.createElement('span');
+            nameSpan.style.cssText = 'flex: 1; text-align: left;';
+            nameSpan.textContent = `${continent} (${countries.length})`;
+
+            const arrow = document.createElement('span');
+            arrow.className = 'toggle-arrow';
+            arrow.textContent = '▼';
+            arrow.style.cssText = 'font-size: 10px; transition: transform 0.2s;';
+
+            toggle.appendChild(icon);
+            toggle.appendChild(nameSpan);
+            toggle.appendChild(arrow);
+
+            // Create country list container
+            const countryList = document.createElement('div');
+            countryList.className = 'country-buttons-region';
+            countryList.style.cssText = 'padding: 4px 6px; display: block;'; // First section expanded by default
+
+            // Add country items to the list
+            countries.forEach(({ label, info }) => {
+                const item = createLegendItem(label, info);
+                if (item) {
+                    item.style.cssText += 'margin: 2px 0; padding: 4px 8px; font-size: 11px;';
+                    countryList.appendChild(item);
+                }
+            });
+
+            // Toggle handler for continent section
+            toggle.addEventListener('click', () => {
+                const isHidden = countryList.style.display === 'none';
+                countryList.style.display = isHidden ? 'block' : 'none';
+                arrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
+                toggle.style.background = isHidden ? 'rgba(248,249,250,0.9)' : 'rgba(232,236,240,0.9)';
+            });
+
+            toggle.addEventListener('mouseenter', () => { toggle.style.background = 'rgba(240,242,244,1)'; });
+            toggle.addEventListener('mouseleave', () => {
+                const isHidden = countryList.style.display === 'none';
+                toggle.style.background = isHidden ? 'rgba(232,236,240,0.9)' : 'rgba(248,249,250,0.9)';
+            });
+
+            section.appendChild(toggle);
+            section.appendChild(countryList);
+
+            // Only append if there are visible items in this section
+            if (countryList.children.length > 0) {
+                legendContent.appendChild(section);
+            }
+        });
+    } else {
+        // Build flat list of locations (default view - no continent grouping)
+        const flatContainer = document.createElement('div');
+        flatContainer.className = 'locations-flat-list';
+        flatContainer.style.cssText = 'display: flex; flex-direction: column; gap: 2px;';
+
+        // Collect all items and sort alphabetically
+        const allItems = [];
+        labelMap.forEach((info, label) => {
+            allItems.push({ label, info });
+        });
+        allItems.sort((a, b) => a.label.localeCompare(b.label));
+
+        allItems.forEach(({ label, info }) => {
             const item = createLegendItem(label, info);
             if (item) {
                 item.style.cssText += 'margin: 2px 0; padding: 4px 8px; font-size: 11px;';
-                countryList.appendChild(item);
+                flatContainer.appendChild(item);
             }
         });
 
-        // Toggle handler for continent section
-        toggle.addEventListener('click', () => {
-            const isHidden = countryList.style.display === 'none';
-            countryList.style.display = isHidden ? 'block' : 'none';
-            arrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
-            toggle.style.background = isHidden ? 'rgba(248,249,250,0.9)' : 'rgba(232,236,240,0.9)';
-        });
-
-        toggle.addEventListener('mouseenter', () => { toggle.style.background = 'rgba(240,242,244,1)'; });
-        toggle.addEventListener('mouseleave', () => { 
-            const isHidden = countryList.style.display === 'none';
-            toggle.style.background = isHidden ? 'rgba(232,236,240,0.9)' : 'rgba(248,249,250,0.9)';
-        });
-
-        section.appendChild(toggle);
-        section.appendChild(countryList);
-        
-        // Only append if there are visible items in this section
-        if (countryList.children.length > 0) {
-            legendContent.appendChild(section);
+        if (flatContainer.children.length > 0) {
+            legendContent.appendChild(flatContainer);
         }
-    });
+    }
 
     // Add "More Locations" button after continent sections
     try {
@@ -2110,6 +2172,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Setup toggle buttons for Locations/Continents view
+    const locationsBtn = document.getElementById('view-locations-btn');
+    const continentsBtn = document.getElementById('view-continents-btn');
+    if (locationsBtn && continentsBtn) {
+        const updateToggleState = () => {
+            if (window._legendViewMode === 'continents') {
+                locationsBtn.classList.remove('active');
+                continentsBtn.classList.add('active');
+            } else {
+                locationsBtn.classList.add('active');
+                continentsBtn.classList.remove('active');
+            }
+            // Also sync sidebar toggle if it exists
+            const sidebarLocBtn = document.getElementById('sidebar-locations-btn');
+            const sidebarContBtn = document.getElementById('sidebar-continents-btn');
+            if (sidebarLocBtn && sidebarContBtn) {
+                if (window._legendViewMode === 'continents') {
+                    sidebarLocBtn.classList.remove('active');
+                    sidebarContBtn.classList.add('active');
+                } else {
+                    sidebarLocBtn.classList.add('active');
+                    sidebarContBtn.classList.remove('active');
+                }
+            }
+        };
+
+        locationsBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent drag
+            if (window._legendViewMode !== 'locations') {
+                window._legendViewMode = 'locations';
+                updateToggleState();
+                buildFloatingLegendFromChart();
+            }
+        });
+
+        continentsBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent drag
+            if (window._legendViewMode !== 'continents') {
+                window._legendViewMode = 'continents';
+                updateToggleState();
+                buildFloatingLegendFromChart();
+            }
+        });
+
+        // Initialize toggle state
+        updateToggleState();
+    }
+
     // Setup drag functionality for floating legend
     const legendHeader = document.getElementById('floating-legend-header');
     const legend = document.getElementById('floating-legend');
@@ -2118,8 +2228,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let startX, startY, startLeft, startTop;
 
         legendHeader.addEventListener('mousedown', (e) => {
-            // Don't drag if clicking on close button
+            // Don't drag if clicking on close button or toggle buttons
             if (e.target.id === 'floating-legend-close') return;
+            if (e.target.classList.contains('view-toggle-btn')) return;
             
             isDragging = true;
             legend.classList.add('dragging');
@@ -2171,7 +2282,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Touch support for mobile
         legendHeader.addEventListener('touchstart', (e) => {
             if (e.target.id === 'floating-legend-close') return;
-            
+            if (e.target.classList.contains('view-toggle-btn')) return;
+
             isDragging = true;
             legend.classList.add('dragging');
             

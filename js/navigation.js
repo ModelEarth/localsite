@@ -1523,12 +1523,24 @@ class StandaloneNavigation {
             waitForElm('#legend-content').then((elm) => { // On timeline page
                  setTimeout(() => { // Temp until Leaflet load timing is resolved.
                     toggleShowNavColumn();
-                    // First add header, then legend content after it
+                    // First add header with toggle, then legend content after it
                     if (!$('#locations-header').length) {
-                        $('#listLeft').prepend('<b id="locations-header"><a href="#geoview=countries">LOCATIONS</a></b>');
+                        $('#listLeft').prepend(`
+                            <div id="locations-header">
+                                <b><a href="#" onclick="toggleDiv('#locations-content');return false;">LOCATIONS</a></b>
+                                <div id="locations-content">
+                                    <div id="sidebar-view-toggle" class="legend-view-toggle">
+                                        <button id="sidebar-locations-btn" class="view-toggle-btn active" title="Show flat list of locations">Locations</button>
+                                        <button id="sidebar-continents-btn" class="view-toggle-btn" title="Group by continent">Continents</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                        // Setup toggle event handlers for sidebar
+                        setupSidebarViewToggle();
                     }
-                    // Insert legend content after the header
-                    $('#locations-header').after($('#legend-content'));
+                    // Insert legend content inside locations-content, after the toggle
+                    $('#locations-content').append($('#legend-content'));
                     $('#legend-content').css('padding', '10px');
                     $('#legend-content').css('padding-top', '0px');
                     $('#legend-content').css('font-size', '12px');
@@ -6199,15 +6211,27 @@ function showNavColumn() {
     $("#showSideFromBar").hide();
     // Move legend content to sidebar and hide floating legend
     if ($('#legend-content').length && $('#listLeft').length) {
-        // Ensure header exists at top of listLeft
+        // Ensure header with toggle exists at top of listLeft
         if (!$('#locations-header').length) {
-            $('#listLeft').prepend('<b id="locations-header"><a href="#geoview=countries">LOCATIONS</a></b>');
+            $('#listLeft').prepend(`
+                <div id="locations-header">
+                    <b><a href="#" onclick="toggleDiv('#locations-content');return false;">LOCATIONS</a></b>
+                    <div id="locations-content">
+                        <div id="sidebar-view-toggle" class="legend-view-toggle">
+                            <button id="sidebar-locations-btn" class="view-toggle-btn active" title="Show flat list of locations">Locations</button>
+                            <button id="sidebar-continents-btn" class="view-toggle-btn" title="Group by continent">Continents</button>
+                        </div>
+                    </div>
+                </div>
+            `);
+            // Setup toggle event handlers for sidebar
+            setupSidebarViewToggle();
         } else {
             // Move header to top if it exists elsewhere
             $('#listLeft').prepend($('#locations-header'));
         }
-        // Insert legend content right after the header
-        $('#locations-header').after($('#legend-content'));
+        // Insert legend content inside locations-content, after the toggle
+        $('#locations-content').append($('#legend-content'));
         $('#legend-content').css('padding', '10px');
         $('#legend-content').css('padding-top', '0px');
         $('#legend-content').css('font-size', '12px');
@@ -6339,6 +6363,63 @@ function iNav(set) {
         goHash({"set":set,"indicators":hash.indicators});
     }
 }
+
+// Setup toggle buttons for Locations/Continents view in sidebar
+function setupSidebarViewToggle() {
+    const locationsBtn = document.getElementById('sidebar-locations-btn');
+    const continentsBtn = document.getElementById('sidebar-continents-btn');
+
+    if (!locationsBtn || !continentsBtn) return;
+
+    const updateToggleState = () => {
+        const mode = window._legendViewMode || 'locations';
+        if (mode === 'continents') {
+            locationsBtn.classList.remove('active');
+            continentsBtn.classList.add('active');
+        } else {
+            locationsBtn.classList.add('active');
+            continentsBtn.classList.remove('active');
+        }
+        // Also sync floating legend toggle if it exists
+        const floatingLocBtn = document.getElementById('view-locations-btn');
+        const floatingContBtn = document.getElementById('view-continents-btn');
+        if (floatingLocBtn && floatingContBtn) {
+            if (mode === 'continents') {
+                floatingLocBtn.classList.remove('active');
+                floatingContBtn.classList.add('active');
+            } else {
+                floatingLocBtn.classList.add('active');
+                floatingContBtn.classList.remove('active');
+            }
+        }
+    };
+
+    locationsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (window._legendViewMode !== 'locations') {
+            window._legendViewMode = 'locations';
+            updateToggleState();
+            if (typeof buildFloatingLegendFromChart === 'function') {
+                buildFloatingLegendFromChart();
+            }
+        }
+    });
+
+    continentsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (window._legendViewMode !== 'continents') {
+            window._legendViewMode = 'continents';
+            updateToggleState();
+            if (typeof buildFloatingLegendFromChart === 'function') {
+                buildFloatingLegendFromChart();
+            }
+        }
+    });
+
+    // Initialize toggle state
+    updateToggleState();
+}
+
 function toggleShowNavColumn() {
     // Original showNavColumn behavior
     if ($("body").hasClass("sidebar-hidden")) {
