@@ -766,7 +766,6 @@ function get_localsite_root() { // Also in two other places
   let theroot = location.protocol + '//' + location.host + '/localsite/';
 
   if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
-    //theroot = "https://map.georgia.org/localsite/";
     theroot = hostnameAndPort + "/localsite/";
   }
   if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
