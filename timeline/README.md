@@ -1,16 +1,14 @@
-[Data Commons](../../)
-
 # Goal Timelines - Data Pull
+
+TO DOs: [UN Goal Timeline page updates](https://github.com/ModelEarth/projects/issues/28)
 
 Our timeline charts use javascript to pull directly from the Google Data Commons API.  
 The Google DCID values for our timelines reside in our <a href="https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/edit?usp=sharing" target="googleUnGoals">Google Sheet UN goal tabs</a>.  
 
 
-**Scope** values: country, state, county, zip
+**Scopes**: country, state, county, zip
 
 ---
-
-TO DOs: [UN Goal Timeline page updates](https://github.com/ModelEarth/projects/issues/28)
 
 <!--
 DONE: Update earthscape.js to also display countries and states. - Mehul, Priyanka
@@ -40,7 +38,7 @@ Earlier dev page:
 -->
 
 
-In addition to the javascript API pull above, we created a couple [GDC API Python colabs](python)
+In addition to the javascript API timelines, we created a couple [GDC API Python colabs](python)
 
 A [location impact pull](/localsite/info/data/map-filters) is used for our location [Navigation Map Filters](/localsite/info/data/map-filters/#geoview=country)  
 
