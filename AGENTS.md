@@ -2,6 +2,8 @@
 
 The AGENTS.md is the equivalent to CLAUDE.md
 
+Use modern clean designs inspired by claude.ai
+
 ### HTML File Standards
 **UTF-8 Character Encoding**: Always include `<meta charset="UTF-8">` in the `<head>` section of new HTML pages to ensure proper character rendering and prevent display issues with special characters.
 
