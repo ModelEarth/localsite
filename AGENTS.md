@@ -5,18 +5,19 @@ The AGENTS.md is the equivalent to CLAUDE.md
 Use modern clean designs inspired by claude.ai
 
 ### HTML File Standards
+
+New index.html pages can use a copy of the template:
+/localsite/start/template/index.html
+
+The template .html includes localsite.js and base.css
+
 **UTF-8 Character Encoding**: Always include `<meta charset="UTF-8">` in the `<head>` section of new HTML pages to ensure proper character rendering and prevent display issues with special characters.
 
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <!-- other meta tags and content -->
-</head>
-```
+**Exceptions**: Do not add charset declarations to redirect pages, or to html template fragments that are included in other pages, as they inherit encoding from their parent documents.
 
-**Exceptions**: Do not add charset declarations to redirect pages or template fragments that are included in other pages, as they inherit encoding from their parent documents.
+### Icons
+
+material-icons are available to pages that include localsite/js/localsite.js
 
 ### Alert Messages
 

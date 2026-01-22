@@ -1378,6 +1378,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 
 #headerLocTitleHolder {
   float:left;
+  positionX: relative; /* moves too high, needs work */
   /*
   padding:10px 0 0 0px;
   font-size: 22px;
@@ -1396,7 +1397,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   font-family: Helvetica !important;
   font-weight: 100;
   color: #777;
-  letter-spacing: 2px;
+  letter-spacing: 1.4px;
   padding-bottom: 5px;
 
   /* Align vertically */
