@@ -64,3 +64,40 @@ Use these functions from localsite/js/localsite.js for hash-based state manageme
 - **Use updateHash()**: When you want to update the hash without triggering reactions
 - **Use hashChangeEvent**: To listen for hash changes triggered by goHash()
 - **Always check function existence**: `if (typeof getHash === 'function')`
+
+#### Dual-Purpose Menu System (Food and Product Views)
+The profile/item/menu.html page demonstrates hash-based view switching:
+
+- **Food View (default)**: No `layout` parameter in hash
+  - Shows food categories and USDA nutrition search
+  - Country dropdown filters food search results (US = "American", IN = "India")
+
+- **Product View**: `layout=product` in hash
+  - Shows product categories from products-data repository
+  - Country parameter (US or IN) determines which product catalog to display
+  - Without product ID: displays category sidebar for browsing
+  - With product ID: loads specific product environmental impact label
+
+- **Hash Parameters**:
+  - `layout`: "product" or absent (for food view)
+  - `country`: "US" or "IN" (default: "US")
+  - `id`: Product UUID (only in product view)
+
+Example hash change handler:
+```javascript
+document.addEventListener('hashChangeEvent', loadMenu, false);
+function loadMenu() {
+    const hash = getHash();
+    if (hash.layout == "product") {
+        // Load product categories or specific product
+        if (hash.id) {
+            loadProductByCountryAndId(hash.country, hash.id);
+        } else {
+            loadProductCategorySidebar();
+        }
+    } else {
+        // Load food categories
+        loadFoodCategorySidebar();
+    }
+}
+```
