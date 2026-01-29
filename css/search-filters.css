@@ -32,9 +32,6 @@
 .select-menu-arrow-holder {
     position:absolute; right:4px; top:4px;
 }
-.stateFilters {
-  padding-top:10px;
-}
 #appSelectHolder .showApps {
   padding-right:4px;
 }
@@ -204,6 +201,10 @@ input.filterClick[type="text"] {
     outline: 2px solid #cfcfcf;
     outline-offset: 1px;
 }
+#geoview_select:focus,
+#geoview_select:focus-visible {
+    outline: none;
+}
 #geoviewSelectHolder {
     float: left;
     position: relative;
@@ -364,10 +365,7 @@ input.filterClick[type="text"] {
   z-index: 1000;
 }
 #geoListHolder {
-    displayX: flex;
     overflow: hidden;
-    padding-left: 15px;
-    padding-right: 20px;
     height: 530px;
     border: 10px solid blue;
 }

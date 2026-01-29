@@ -64,6 +64,20 @@ function hashChanged() {
     populateFieldsFromHash();
     productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 
+    if (hash.geoview == "earth") {
+        let latLonZoom = "-115.84,31.09,1037";
+        if (localStorage.latitude && localStorage.longitude) {
+            latLonZoom = localStorage.longitude + "," + localStorage.latitude + ",1037";
+        }
+        testAlert("hashChanged earth: waiting for #globalMapHolder");
+        waitForElm('#globalMapHolder').then((elm) => {
+            testAlert("hashChanged earth: showGlobalMap");
+            showGlobalMap(`https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=${latLonZoom}`);
+        });
+        $("#geoPicker").hide();
+        $(".stateFilters").hide();
+    }
+
     let stateAbbrev = "";
     if (hash.statename) { // From Tabulator state list, convert to 2-char abbrviation
         //alert("hash.statename1 " + hash.statename);
@@ -272,7 +286,7 @@ function hashChanged() {
         }
     }
     if (hash.state != priorHash.state) {
-        if (hash.geoview) {
+        if (hash.geoview && hash.geoview != "earth") {
             loadGeomap = true;
         }
         if(location.host.indexOf('model.georgia') >= 0) {
@@ -925,10 +939,19 @@ function hashChanged() {
 
         //$("#filterLocations").show();$("#locationFilterHolder").show();$("#imagineBar").show();
         //$("#geomap").show(); // To trigger map filter display below.
-        if (hash.geoview && hash.geoview != "earth") {
+        if (hash.geoview == "earth") {
+            if (location.host.indexOf('localhost') >= 0) {
+                testAlert("hashChanged earth: show nullschoolHeader");
+            }
+            $("#nullschoolHeader").show();
+        } else if (!hash.geoview && priorHash.geoview == "earth") {
+            if (location.host.indexOf('localhost') >= 0) {
+                testAlert("hashChanged earth: hide nullschoolHeader");
+            }
             $("#nullschoolHeader").hide();
-        }
-        if (!hash.geoview && priorHash.geoview) {
+        } else if (hash.geoview && hash.geoview != "earth") {
+            $("#nullschoolHeader").hide();
+        } else if (!hash.geoview && priorHash.geoview) {
             if ($('#globalMapHolder #mainframe').attr('src')) { // Checking so we don't show a close-X when there is no content in the iframe.
                 $("#nullschoolHeader").show();
             }
@@ -3152,6 +3175,10 @@ catArray = [];
         });
     }
     function applyGeoviewSelection(value) {
+        if (value == "earth" && $("#nullschoolHeader").is(":visible")) {
+            goHash({"geoview":""});
+            return;
+        }
         if (value == "countries" || value == "earth") {
             hiddenhash.state = "";
             goHash({"geoview":value,"state":"",});
@@ -3688,6 +3715,10 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
     //topojson = topojson-client;
     waitForElm('#' + whichmap).then((elm) => {
 
+        if (hash.geoview == "earth") {
+          $("#geoPicker").hide();
+          return;
+        }
         $("#geoPicker").show();
         $('#' + whichmap).show();
         if (!$("#" + whichmap).is(":visible")) {
@@ -8558,6 +8589,8 @@ function getPageFolder(pagePath) {
 
 $(document).on("change", "#state_select", function(event) {
     console.log("state_select change");
+    $("#geoview_container").hide();
+    closeAppsMenu();
     if (this.value) {
         $("#region_select").val("");
         // Later a checkbox could be added to retain geo values across multiple states

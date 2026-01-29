@@ -1510,6 +1510,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   $(document).on("click", "#earthClose", function(event) { // ZOOM IN
     $("#nullschoolHeader").hide();
     $("#hero_holder").show();
+    if (typeof goHash === "function") {
+      goHash({"geoview":""});
+    }
     event.stopPropagation();
   });
   $(document).on("click", "#earthZoom .leaflet-control-zoom-in", function(event) { // ZOOM IN

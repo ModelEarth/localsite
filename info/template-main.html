@@ -945,98 +945,6 @@ document.addEventListener('mousedown', function(e) {
           <div class="hideAdvanced close-X" style="float:left;padding-left:12px;padding-right:35px">&#10005;
           </div>
         </div>
-        <div id="stateFiltersHolder">
-
-          <div class="stateFilters input-output" style="float:left;display:none" class="mock-up earth">
-            <b><!--States--></b>
-            <div id="state_select_holder" class="earth" style="float:left">
-                <select id="state_select" name="state" style="max-width:285px;">
-                 <option value="">States and Territories...</option>
-                <!-- Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
-                <option value="AL" stateid="1" lat="32.7396" lon="-86.8435" km="131174">Alabama</option>
-                <option value="AK" stateid="2" lat="63.3474" lon="-152.8397" km="1478927">Alaska</option>
-                <option value="AS" stateid="60" lat="-14.2672" lon="-170.6683" km="198"  style="display:none">American Samoa</option>
-                <option value="AZ" stateid="4" lat="34.2039" lon="-111.6064" km="294360">Arizona</option>
-                <option value="AR" stateid="5" lat="34.8955" lon="-92.4446" km="134777">Arkansas</option>
-                <option value="CA" stateid="6" lat="37.1552" lon="-119.5434" km="403660">California</option>
-                <option value="CO" stateid="8" lat="38.9938" lon="-105.5083" km="268420">Colorado</option>
-                <option value="MP" stateid="69" lat="14.9368" lon="145.601" km="472" style="display:none">Commonwealth of the Northern Mariana Islands</option>
-                <option value="CT" stateid="9" lat="41.5799" lon="-72.7467" km="12542">Connecticut</option>
-                <option value="DE" stateid="10" lat="38.9986" lon="-75.4416" km="5047">Delaware</option>
-                <option value="DC" stateid="11" lat="38.9042" lon="-77.0165" km="158" style="display:none">District of Columbia</option>
-                <option value="FL" stateid="12" lat="28.4574" lon="-82.4091" km="138947">Florida</option>
-                <option value="GA" stateid="13" lat="32.73" lon="-83.4235" km="149485">Georgia</option>
-                <option value="GU" stateid="66" lat="13.4417" lon="144.7719" km="544" style="display:none">Guam</option>
-                <option value="HI" stateid="15" lat="19.5978" lon="-155.5024" km="16634">Hawaii</option>
-                <option value="ID" stateid="16" lat="44.3484" lon="-114.5589" km="214050">Idaho</option>
-                <option value="IL" stateid="17" lat="40.1029" lon="-89.1526" km="143780">Illinois</option>
-                <option value="IN" stateid="18" lat="39.9013" lon="-86.2919" km="92790">Indiana</option>
-                <option value="IA" stateid="19" lat="42.07" lon="-93.4933" km="144660">Iowa</option>
-                <option value="KS" stateid="20" lat="38.4985" lon="-98.3834" km="211753">Kansas</option>
-                <option value="KY" stateid="21" lat="37.5337" lon="-85.293" km="102282">Kentucky</option>
-                <option value="LA" stateid="22" lat="30.8634" lon="-91.7987" km="111899">Louisiana</option>
-                <option value="ME" stateid="23" lat="45.4093" lon="-68.6666" km="79888">Maine</option>
-                <option value="MD" stateid="24" lat="38.9467" lon="-76.6745" km="25152">Maryland</option>
-                <option value="MA" stateid="25" lat="42.1565" lon="-71.4896" km="20204">Massachusetts</option>
-                <option value="MI" stateid="26" lat="44.8442" lon="-85.6605" km="146609">Michigan</option>
-                <option value="MN" stateid="27" lat="46.316" lon="-94.1996" km="206230">Minnesota</option>
-                <option value="MS" stateid="28" lat="32.6865" lon="-89.6561" km="121537">Mississippi</option>
-                <option value="MO" stateid="29" lat="38.3507" lon="-92.4568" km="178050">Missouri</option>
-                <option value="MT" stateid="30" lat="47.0512" lon="-109.6348" km="376967">Montana</option>
-                <option value="NE" stateid="31" lat="41.5433" lon="-99.8119" km="198954">Nebraska</option>
-                <option value="NV" stateid="32" lat="39.3311" lon="-116.6151" km="284537">Nevada</option>
-                <option value="NH" stateid="33" lat="43.6727" lon="-71.5843" km="23189">New Hampshire</option>
-                <option value="NJ" stateid="34" lat="40.1073" lon="-74.6652" km="19049">New Jersey</option>
-                <option value="NM" stateid="35" lat="34.4347" lon="-106.1316" km="314197">New Mexico</option>
-                <option value="NY" stateid="36" lat="42.9134" lon="-75.5963" km="122050">New York</option>
-                <option value="NC" stateid="37" lat="35.5397" lon="-79.1309" km="125926">North Carolina</option>
-                <option value="ND" stateid="38" lat="47.4422" lon="-100.4608" km="178696">North Dakota</option>
-                <option value="OH" stateid="39" lat="40.4149" lon="-82.712" km="105824">Ohio</option>
-                <option value="OK" stateid="40" lat="35.5901" lon="-97.4868" km="177663">Oklahoma</option>
-                <option value="OR" stateid="41" lat="43.9717" lon="-120.623" km="248608">Oregon</option>
-                <option value="PA" stateid="42" lat="40.9046" lon="-77.8275" km="115880">Pennsylvania</option>
-                <option value="PR" stateid="72" lat="18.2176" lon="-66.4108" km="8869" style="display:none">Puerto Rico</option>
-                <option value="RI" stateid="44" lat="41.5974" lon="-71.5273" km="2678">Rhode Island</option>
-                <option value="SC" stateid="45" lat="33.8742" lon="-80.8543" km="77865">South Carolina</option>
-                <option value="SD" stateid="46" lat="44.4468" lon="-100.2382" km="196346">South Dakota</option>
-                <option value="TN" stateid="47" lat="35.8608" lon="-86.35" km="106806">Tennessee</option>
-                <option value="TX" stateid="48" lat="31.4347" lon="-99.2818" km="676668">Texas</option>
-                <option value="VI" stateid="78" lat="18.3267" lon="-64.9713" km="348" style="display:none">United States Virgin Islands</option>
-                <option value="UT" stateid="49" lat="39.335" lon="-111.6563" km="213355">Utah</option>
-                <option value="VT" stateid="50" lat="44.0686" lon="-72.6692" km="23874">Vermont</option>
-                <option value="VA" stateid="51" lat="37.5223" lon="-78.6682" km="102258">Virginia</option>
-                <option value="WA" stateid="53" lat="47.4073" lon="-120.5758" km="172118">Washington</option>
-                <option value="WV" stateid="54" lat="38.6473" lon="-80.6183" km="62266">West Virginia</option>
-                <option value="WI" stateid="55" lat="44.6309" lon="-89.7094" km="140293">Wisconsin</option>
-                <option value="WY" stateid="56" lat="42.9897" lon="-107.5444" km="251459">Wyoming</option>
-               </select>
-             </div>
-             <br>
-          </div>
-
-          <div class="stateFilters" style="display:none;">
-            <div class="regionFilter input-output" style="float:left; display:none">
-              <div class="local" style="display:none">
-                <select id="region_select">
-                  <option value=''>Region...</option>
-                  <option value='Metro Atlanta' lat='33.8498' lon='-84.4383' geo='US13121,US13097,US13067,US13,US13057,US13113,US13063,US13089,US13135,US13151,US13247'>Metro Atlanta</option>
-                  <option value='West Central Georgia' lat='33.0362' lon='-85.0322' geo='US13045,US13077,US13143,US13145,US13149,US13199,US13223,US13233,US13263,US13285,US01111,US01017'>West Central Georgia</option>
-                  <option value='Central Georgia' lat='32.3771' lon='-82.5924' geo='US13023,US13043,US13091,US13109,US13167,US13175,US13209,US13267,US13271,US13279,US13283,US13309,US13315,US13107,US13235'>Central Georgia</option>
-                  <option value='Coastal Georgia' lat='32.0809' lon='-81.0912'  geo='US13127,US13039,US13191,US13179,US13029,US13051'>Coastal Georgia</option>
-                  <option value='Southeast Coastal' lat='31.1891' lon='-81.4979' geo='US13001,US13005,US13127,US13161,US13229,US13305'>Southeast Coastal</option>
-                </select>
-
-              </div>
-            </div>
-          </div>
-
-          <select id="selectYear" name="state" style="float:right;margin-right:20px;display:none">
-                 <option value="">Year</option>
-                 <option value="2017">2017</option>
-                 <option value="2018">2018</option>
-                 <option value="2019">2019</option>
-          </select>
-      </div>
 
         <!-- GOOGLE ADDRESS AUTOCOMPLETE -->
         <!-- USES "Google Autocomplete" javascript in map-filters.js 
@@ -1183,7 +1091,7 @@ document.addEventListener('mousedown', function(e) {
 
         <div style="clear:both;"></div>
 
-        <div id="geoPicker" style="margin-top:2px;display:none;">
+        <div id="geoPicker" style="display:none;">
           <div id="geomapHolder">
             <!-- Must be displayed initiallly so tiles are visible -->
               <div id="geomap"></div>
