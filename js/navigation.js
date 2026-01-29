@@ -3424,6 +3424,7 @@ catArray = [];
     });
 
     $(document).on("click", "#keywordsTB", function(event) {
+        closeGeoviewList();
         if ($("#keywordFields").is(':visible')) {
             $("#keywordFields").hide();
         } else {
@@ -8643,6 +8644,7 @@ $(document).on("click", "#filterClickLocation", function(event) {
         $("#draggableSearch").hide();
         $("#filterLocations").hide();
     }
+    closeGeoviewList();
     filterClickLocation();
     event.stopPropagation();
     return;
@@ -8724,6 +8726,7 @@ $(document).on("click", "#filterClickLocation", function(event) {
 
 
 $(document).on("click", ".showApps, .hideApps", function(event) {
+    closeGeoviewList();
     showApps("#bigThumbMenu");
     event.stopPropagation();
 });
