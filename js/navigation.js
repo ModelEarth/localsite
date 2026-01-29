@@ -4938,6 +4938,9 @@ var geotableClickHandlerBound = false;
 var geotableVisibilityForced = false;
 var geotableInitState = "";
 var geotableInitInProgress = false;
+var geotablePendingSelection = null;
+var geotablePendingDeselect = null;
+var geotablePendingListener = false;
 
 function testAlert(message) {
     if (showAlerts) {
@@ -5597,7 +5600,9 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
     if (!hash.state) {
         console.log("ALERT - A state value is needed in the URL")
     } else {
-        if (typeof geotable.getRows === "function" && geotableIsBuilt) {
+        const geotableInstance = getGeoTableInstance();
+        const canUseTable = geotableInstance && typeof geotableInstance.getRows === "function" && geotableIsBuilt;
+        if (canUseTable) {
             //alert("geotable.getRows === function")
             // #tabulator-geotable
             //geotable.selectRow(geotable.getRows().filter(row => row.getData().name.includes('Ba')));
@@ -5609,7 +5614,7 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
                 $.each(geo.split(','), function(index, value) {
                     console.log("geo value: " + value);
                     //geotable.selectRow(geotable.getRows().filter(row => row.getData().id == value));
-                    geotable.selectRow(value);
+                    geotableInstance.selectRow(value);
                 });
             }
             if (geoDeselect) {
@@ -5618,7 +5623,7 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
                     //geotable.deselectRow(geotable.getRows().filter(row => row.getData().id == value));
 
                     // Preferable if we have the row's actual ID value
-                    geotable.deselectRow(value); // Pass the row ID directly
+                    geotableInstance.deselectRow(value); // Pass the row ID directly
                 });
             }
             
@@ -5629,7 +5634,7 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
 
             //var selectedRows = ; //get array of currently selected row components.
             let county_names = []
-            $.each(geotable.getSelectedRows(), function(index, value) {
+            $.each(geotableInstance.getSelectedRows(), function(index, value) {
                 // TODO - Group by state
                 county_names.push(value._row.data.name.split(",")[0].replace(" County",""));
                 //if (geoDeselect.length && ) {
@@ -5639,14 +5644,26 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
             console.log("county_names from geotable{} set by current tabulator: " + county_names.toString());
             $(".counties_title").text(county_names.toString().replaceAll(",",", "));
         } else {
-          attempts = attempts + 1;
-          if (attempts < 200) {
-            // To do: Add a loading image after a couple seconds. 2000 waits about 300 seconds.
-            setTimeout( function() {
-              updateSelectedTableRows(geo,geoDeselect,attempts);
-            }, 20 );
-          } else {
-            alert("geotable.getRows not available after " + attempts + " attempts.")
+          geotablePendingSelection = geo || "";
+          geotablePendingDeselect = geoDeselect || "";
+          if (!geotablePendingListener) {
+            geotablePendingListener = true;
+            waitForElm('#tabulator-geotable').then(() => {
+              const pendingInstance = getGeoTableInstance();
+              if (!pendingInstance) {
+                geotablePendingListener = false;
+                return;
+              }
+              if (geotableIsBuilt && typeof pendingInstance.getRows === "function") {
+                updateSelectedTableRows(geotablePendingSelection, geotablePendingDeselect, 0);
+                geotablePendingListener = false;
+                return;
+              }
+              pendingInstance.on("tableBuilt", function() {
+                updateSelectedTableRows(geotablePendingSelection, geotablePendingDeselect, 0);
+                geotablePendingListener = false;
+              });
+            });
           }
         }
     }
