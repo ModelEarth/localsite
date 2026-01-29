@@ -37,6 +37,8 @@ function hashChanged() {
 
     let loadGeomap = false;
     let hash = getHash(); // Might still include changes to hiddenhash
+    const validGeoviews = ["state", "country", "countries", "county", "zip", "city", "earth"];
+    const isValidGeoview = !hash.geoview || validGeoviews.includes(hash.geoview);
     console.log("hashChanged() navigation.js");
     if (hash.geo != priorHash.geo && location.pathname.indexOf('/localsite/info/') >= 0) {
         let earlyGeoDeselect = "";
@@ -286,7 +288,7 @@ function hashChanged() {
         }
     }
     if (hash.state != priorHash.state) {
-        if (hash.geoview && hash.geoview != "earth") {
+        if (hash.geoview && hash.geoview != "earth" && isValidGeoview) {
             loadGeomap = true;
         }
         if(location.host.indexOf('model.georgia') >= 0) {
@@ -324,6 +326,14 @@ function hashChanged() {
 
     //if (hash.geoview != priorHash.geoview || (priorHash.state && !hash.state)) { // This did not support changing state in the URL.
     if (hash.geoview != priorHash.geoview || hash.state != priorHash.state) {
+        if (!isValidGeoview) {
+            $("#geoPicker").hide();
+            $(".stateFilters").hide();
+            $("#filterClickLocation").removeClass("filterClickActive");
+            closeLocationFilter();
+            updateHash({"geoview":""});
+            console.log("Invalid geoview removed from hash");
+        } else {
         /*
         if (hash.geoview) {
             openMapLocationFilter();
@@ -557,6 +567,7 @@ function hashChanged() {
             }
             $("#hero_holder").show();
         }
+        }
     }
     if (hash.geoview == "earth" || hash.geoview == "countries") {
         waitForElm('#state_select').then((elm) => {
@@ -570,6 +581,9 @@ function hashChanged() {
         }
     } else if (hash.geoview == "state") {
         $("#state_select").show();
+    } else if (hash.geoview && !isValidGeoview) {
+        $("#state_select").hide();
+        closeLocationFilter();
     } else if (!hash.geoview && priorHash.geoview) {
         closeLocationFilter();
     }
@@ -917,8 +931,10 @@ function hashChanged() {
             }
             $("#geoPicker").hide();
             $(".stateFilters").hide();
-        } else {
+        } else if (hash.geoview && isValidGeoview) {
             filterLocationChange();
+        } else {
+            closeLocationFilter();
         }
     }
     if (hash.sidetab != priorHash.sidetab) {
@@ -940,14 +956,8 @@ function hashChanged() {
         //$("#filterLocations").show();$("#locationFilterHolder").show();$("#imagineBar").show();
         //$("#geomap").show(); // To trigger map filter display below.
         if (hash.geoview == "earth") {
-            if (location.host.indexOf('localhost') >= 0) {
-                testAlert("hashChanged earth: show nullschoolHeader");
-            }
             $("#nullschoolHeader").show();
         } else if (!hash.geoview && priorHash.geoview == "earth") {
-            if (location.host.indexOf('localhost') >= 0) {
-                testAlert("hashChanged earth: hide nullschoolHeader");
-            }
             $("#nullschoolHeader").hide();
         } else if (hash.geoview && hash.geoview != "earth") {
             $("#nullschoolHeader").hide();
@@ -957,7 +967,7 @@ function hashChanged() {
             }
         }
         waitForElm('#state_select').then((elm) => {
-            if (!hash.geoview || hash.geoview == "none" || hash.geoview == "earth") {
+            if (!hash.geoview || hash.geoview == "none" || hash.geoview == "earth" || !validGeoviews.includes(hash.geoview)) {
                 if (location.host.indexOf('localhost') >= 0) {
                     testAlert("geoPicker hide in hashChanged: hash.geoview='" + (hash.geoview || "") + "' priorHash.geoview='" + (priorHash.geoview || "") + "' hash.state='" + (hash.state || "") + "'");
                 }
@@ -977,7 +987,7 @@ function hashChanged() {
                 latLonZoom = localStorage.longitude + "," + localStorage.latitude + ",1037";
             }
             showGlobalMap(`https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=${latLonZoom}`);
-        } else if (hash.geoview) {
+        } else if (hash.geoview && isValidGeoview) {
             loadGeomap = true;
             // if ((priorHash.sidetab == "locale" && hash.sidetab != "locale") || (priorHash.locpop  && !hash.locpop)) {
                 // Closing sidetab or locpop, move geomap back to holder.
@@ -1001,6 +1011,9 @@ function hashChanged() {
     }
     $(".regiontitle").text(local_app.loctitle);
     $(".service_title").text(local_app.loctitle + " - " + local_app.showtitle);
+    if (hash.geoview && !isValidGeoview) {
+        loadGeomap = false;
+    }
     if (loadGeomap) {
         // TO DO: Should we avoid reloading if already loaded for a state?  Occurs when hash.locpop & changes.
 
@@ -3146,7 +3159,8 @@ catArray = [];
         return $("#geoview_select_list .geoviewSelectOption");
     }
     function setGeoviewSelect(value) {
-        const safeValue = value || "none";
+        const allowedValues = ["none", "state", "country", "countries", "county", "zip", "city", "earth"];
+        const safeValue = allowedValues.includes(value) ? value : "none";
         const stateValue = $("#state_select").val();
         if (safeValue == "state" && stateValue) {
             const stateText = $("#state_select").find(":selected").text();
@@ -8591,11 +8605,16 @@ $(document).on("change", "#state_select", function(event) {
     console.log("state_select change");
     $("#geoview_container").hide();
     closeAppsMenu();
+    let hash = getHash();
     if (this.value) {
         $("#region_select").val("");
         // Later a checkbox could be added to retain geo values across multiple states
         // Omitting for BC apps page  ,'geoview':'state'
-        goHash({'state':this.value,'geo':'','name':'','regiontitle':''}); // triggers renderGeomapShapes("geomap", hash); // County select map
+        if (hash.geoview) {
+            goHash({'state':this.value,'geo':'','name':'','regiontitle':'','geoview':'state'}); // triggers renderGeomapShapes("geomap", hash); // County select map
+        } else {
+            goHash({'state':this.value,'geo':'','name':'','regiontitle':''}); // triggers renderGeomapShapes("geomap", hash); // County select map
+        }
         setGeoviewTitleFromState();
         //$("#filterLocations").hide(); // So state appears on map immediately
     } else { // US selected
