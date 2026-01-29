@@ -562,7 +562,7 @@ function hashChanged() {
             }
             if (typeof relocatedScopeMenu != "undefined") {
                 waitForElm('#selectScope').then((elm) => {
-                    relocatedScopeMenu.appendChild(selectScope); // For apps hero
+                    // DROPDOWN #selectScope was REMOVED  relocatedScopeMenu.appendChild(selectScope); // For apps hero
                 });
             }
             $("#hero_holder").show();
@@ -8937,7 +8937,7 @@ function closeLocationFilter() {
         //relocatedStateMenu.appendChild(state_select); // For apps hero
     }
     if (typeof relocatedScopeMenu != "undefined") {
-        relocatedScopeMenu.appendChild(selectScope); // For apps hero
+        // DROPDOWN #selectScope was REMOVED  relocatedScopeMenu.appendChild(selectScope); // For apps hero
     }
     $("#hero_holder").show();
 }

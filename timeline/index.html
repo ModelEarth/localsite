@@ -572,7 +572,10 @@ p.set('rs_dcid', list.join(','));
       <div id="relocatedStateMenu"></div>
       -->
       <div class="chart-controls" style="display:flex; flex-wrap:wrap; gap:10px;">
+        <select id="chartVariable" style="max-width:380px;"></select>
+
         <select id="entityId">
+            <option>State...</option>
             <option value="geoId/01">Alabama</option>
             <option value="geoId/02">Alaska</option>
             <option value="geoId/04">Arizona</option>
@@ -583,7 +586,7 @@ p.set('rs_dcid', list.join(','));
             <option value="geoId/10">Delaware</option>
             <option value="geoId/11">District of Columbia</option>
             <option value="geoId/12">Florida</option>
-            <option value="geoId/13" selected>Georgia</option>
+            <option value="geoId/13">Georgia</option>
             <option value="geoId/15">Hawaii</option>
             <option value="geoId/16">Idaho</option>
             <option value="geoId/17">Illinois</option>
@@ -627,18 +630,16 @@ p.set('rs_dcid', list.join(','));
             <option value="geoId/72">Puerto Rico</option>
         </select>
      
-       <!--
-          Adjust to per capita (and SqMiles) using our nav filter file:
-          https://github.com/ModelEarth/localsite/blob/main/info/data/map-filters/us-states.csv
+           <!--
+              Adjust to per capita (and SqMiles) using our nav filter file:
+              https://github.com/ModelEarth/localsite/blob/main/info/data/map-filters/us-states.csv
 
-          Or call the API directly for the additional info (population and sq miles)
+              Or call the API directly for the additional info (population and sq miles)
 
-          show=Count_Person
+              show=Count_Person
 
-          Convert 2-char state to geoId/01 in earthscape.js
-      -->
-
-        <select id="chartVariable" style="max-width:380px;"></select>
+              Convert 2-char state to geoId/01 in earthscape.js
+          -->
       </div>
   
         <br>

@@ -881,7 +881,7 @@ function loadLocalTemplate() {
         $(".stateFilters").hide();
       }
       if (typeof relocatedScopeMenu != "undefined") {
-        relocatedScopeMenu.appendChild(selectScope); // For apps hero
+        // DROPDOWN #selectScope was REMOVED  relocatedScopeMenu.appendChild(selectScope); // For apps hero
       }
       waitForElm('#filterClickLocation').then((elm) => {
         if (param.showstates != "false") {
