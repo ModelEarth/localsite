@@ -2235,7 +2235,7 @@ function showSectorTabulatorList(attempts) {
             movableColumns:true,      //allow column order to be changed
             resizableRows:true,       //allow row order to be changed
             initialSort:[             //set the initial sort order of the data
-                {column:"index", dir:"asc"},
+                {column:"name", dir:"asc"},
             ],
             maxHeight:"500px", // For frozenRows
             columns:[

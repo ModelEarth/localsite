@@ -113,14 +113,11 @@
       padding:2px 0 0px 10px; /* Moves filters to right of left icon(s) */
   }
   .filterFieldsHolderFixed #filterFieldsMain {
-    padding-left: 20px;
-    padding-left: 62px; /* Allows for menu icon to the left */
-  }
-  #locationFilterHolder #filterLocations {
-    padding-left: 60px; /* Margin for menu icon */
+    padding-leftX: 20px;
+    padding-leftX: 62px; /* Allows for menu icon to the left */
   }
   .bodyLeftMargin #locationFilterHolder #filterLocations {
-    padding-left: 20px;
+    padding-leftX: 20px;
   }
 }
 @media (min-width: 600px AND max-width: 1100px) {
@@ -193,11 +190,69 @@ input.filterClick[type="text"] {
   }
 }
 .filterClickText {
+    float: left;
     font-size: 11pt;
     line-height: 12pt;
     white-space: nowrap;
     padding-top:8px;
     padding-right:23px;
+}
+.geoviewSelectText {
+    cursor: pointer;
+}
+.geoviewSelectText:focus {
+    outline: 2px solid #cfcfcf;
+    outline-offset: 1px;
+}
+#geoviewSelectHolder {
+    float: left;
+    position: relative;
+    margin-right: 4px;
+}
+.geoviewSelectText {
+    display: inline-block;
+}
+#geoview_container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    z-index: 1001;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 4px 6px;
+    min-width: 160px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+#geoview_state_holder {
+    padding: 2px 0 2px 6px;
+    border-left: 1px solid #eee;
+}
+#geoview_state_holder select {
+    max-width: 220px;
+}
+.geoviewSelectList {
+    padding: 4px 0;
+}
+.geoviewSelectOption {
+    padding: 6px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 11pt;
+    line-height: 12pt;
+    color: #686868;
+}
+.geoviewSelectOption:hover {
+    background: #f3f3f3;
+}
+.geoviewSelectOption.selected {
+    background: #eee;
+}
+.geoviewSelectOption.focused {
+    background: #e6e6e6;
 }
 .filterClickActive {
     border-top: 1px solid #eee;
@@ -738,4 +793,3 @@ input.filterClick[type="text"] {
   color: #fff;
   background-color: rgba(33,33,33,0.3);
 }
-

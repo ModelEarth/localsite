@@ -74,7 +74,30 @@
 
               overflow:auto; causes vertical scroll to appear here:
             -->
-            <div style="position:relative;">
+              <div style="position:relative;">
+                <div id="geoviewSelectHolder" style="display:none;">
+
+                  <div id="geoview_select" class="filterClick filterClickText geoviewSelectText" style="min-width:120px" data-value="none" tabindex="0" role="button" aria-haspopup="listbox" aria-expanded="false">
+
+                    <div id="geoview_select_open" style="float:left; display:none">Locations</div>
+                    <div id="geoview_select_text" style="float:left">Locations</div>
+                    <div class="select-menu-arrow-holder show-on-load" style="display:none">
+                      <i id="showLocations" class="material-icons" style="font-size:24px;display:none">&#xE313;</i>
+                      <i id="hideLocations"  class="material-icons" style="font-size:24px;cursor:pointer;">&#xE409;</i>
+                    </div>
+                  </div>
+
+                  <div id="geoview_container" class="geoviewSelectList" style="display:none;">
+                    <div id="geoview_select_list" role="listbox">
+                      <div class="geoviewSelectOption" role="option" data-value="none">Geoview...</div>
+                      <div class="geoviewSelectOption" role="option" data-value="earth">Earth</div>
+                      <div class="geoviewSelectOption" role="option" data-value="countries">Countries</div>
+                      <div class="geoviewSelectOption" role="option" data-value="country">United States</div>
+                      <div class="geoviewSelectOption" role="option" data-value="state">State</div>
+                    </div>
+                    <div id="geoview_state_holder"></div>
+                  </div>
+                </div>
               <!-- State Name Tab - Shows state dropdown when clicked -->
               <div class="filterClick" id="filterClickState" style="display:none; float:left; margin-right: 4px;">
                 <div class="filterClickText locationTabText">Countries</div>
@@ -88,10 +111,9 @@
                 <div class="select-menu-arrow-holder show-on-load" style="display:none">
                   <!-- We could place over all select menus
                     https://fabriceleven.com/design/clever-way-to-change-the-drop-down-selector-arrow-icon/ -->
-                  <i id="showLocations" class="material-icons" style="font-size:24px;display:none">&#xE313;</i>
-                  <i id="hideLocations"  class="material-icons" style="font-size:24px;cursor:pointer;">&#xE409;</i>
+                  
                 </div>
-                <div class="filterClickText countiesTabText">Counties</div><!-- Changed from Locations to Counties -->
+                <div class="filterClickText countiesTabText">Counties</div>
               </div>
             </div>
           </div>
@@ -307,4 +329,3 @@
       </div><!-- overflow:auto -->
       </div><!-- /filterFields -->
 </div>
-

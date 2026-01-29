@@ -885,7 +885,7 @@ function loadLocalTemplate() {
       }
       waitForElm('#filterClickLocation').then((elm) => {
         if (param.showstates != "false") {
-            $("#filterClickState").show();  // Show state name tab
+            $("#geoviewSelectHolder").show();
             $("#filterClickLocation").show(); // Show counties tab
         }
         $("#mapFilters").prependTo("#main-content");
