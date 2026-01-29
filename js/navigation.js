@@ -724,6 +724,16 @@ function hashChanged() {
         */
         //loadGeomap = true; // No longer showing map when just geo.
     }
+    if (hash.country != priorHash.country && hash.geoview == "countries") {
+        let countryDeselect = "";
+        if (priorHash.country) {
+            const priorList = priorHash.country.split(",");
+            const currentList = hash.country ? hash.country.split(",") : [];
+            countryDeselect = priorList.filter(value => !currentList.includes(value)).join(",");
+        }
+        updateSelectedCountryRows(hash.country || "", countryDeselect);
+        refreshSelectedGeoStyles("geomap");
+    }
 
     $(".locationTabText").attr("title",$(".locationTabText").text());
     if (hash.cat != priorHash.cat) {
@@ -828,7 +838,15 @@ function hashChanged() {
         }
     }
     if (hash.geoview != priorHash.geoview) {
-        filterLocationChange();
+        if (hash.geoview == "earth") {
+            if ($("#filterLocations").is(':visible')) {
+                closeLocationFilter();
+            }
+            $("#geoPicker").hide();
+            $(".stateFilters").hide();
+        } else {
+            filterLocationChange();
+        }
     }
     if (hash.sidetab != priorHash.sidetab) {
         showSideTabs();
@@ -857,7 +875,7 @@ function hashChanged() {
             }
         }
         waitForElm('#state_select').then((elm) => {
-            if (!hash.geoview || hash.geoview == "none") {
+            if (!hash.geoview || hash.geoview == "none" || hash.geoview == "earth") {
                 if (location.host.indexOf('localhost') >= 0) {
                     testAlert("geoPicker hide in hashChanged: hash.geoview='" + (hash.geoview || "") + "' priorHash.geoview='" + (priorHash.geoview || "") + "' hash.state='" + (hash.state || "") + "'");
                 }
@@ -4258,6 +4276,16 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                 let stateList = newPrimaryState(hash.state, primaryState)
                 goHash({'geo':param.geo, 'state':stateList});
 
+              } else if (layer.feature.properties["Alpha-2"] && hash.geoview == "countries") {
+                  let latestHash = getHash();
+                  let countryCode = layer.feature.properties["Alpha-2"];
+                  let countryList = latestHash.country ? latestHash.country.split(",").filter(Boolean) : [];
+                  if (countryList.includes(countryCode)) {
+                      countryList = countryList.filter(function(code){ return code !== countryCode; });
+                  } else {
+                      countryList.push(countryCode);
+                  }
+                  goHash({'country':countryList.join(",")});
               } else if (layer.feature.properties.name) { // Full state name
                   //alert("layer.feature.properties.name: " + layer.feature.properties.name);
                   let hash = getHash();
@@ -4960,6 +4988,18 @@ function getGeoTableInstance() {
     }
     return null;
 }
+function getStateTableInstance() {
+    if (statetable && typeof statetable.getRows === "function") {
+        return statetable;
+    }
+    if (typeof Tabulator !== "undefined" && typeof Tabulator.findTable === "function") {
+        const tables = Tabulator.findTable("#tabulator-statetable");
+        if (tables && tables.length) {
+            return tables[0];
+        }
+    }
+    return null;
+}
 var currentRowIDs = [];
 var currentCountryIDs = [];
 var programmaticSelection = false; // Flag to prevent goHash() during programmatic selections
@@ -5047,6 +5087,7 @@ function showTabulatorList(element, attempts) {
 
                 setTimeout( function() { //  2 tenth second. (1 tenth still had issue)
 
+                    const statetableIndex = (hash.geoview == "countries") ? "Country" : "State";
                     statetable = new Tabulator("#tabulator-statetable", {
                         data:dataForTabulator,    //load row data from array of objects
                         layout:"fitColumns",      //fit columns to width of table
@@ -5058,7 +5099,7 @@ function showTabulatorList(element, attempts) {
                         resizableRows:true,       //allow row order to be changed
                         maxHeight:"500px",        // For frozenRows
                         paginationSize:10000,
-                        index:"State",
+                        index:statetableIndex,
                         columns:element.columns,
                         selectable:true,
                         autoResize:false,         //disable auto resize to prevent infinite loop
@@ -5076,6 +5117,14 @@ function showTabulatorList(element, attempts) {
                             //alert("currentStateIDs " + currentStateIDs)
                             programmaticSelection = true;
                             statetable.selectRow(currentStateIDs);
+                            programmaticSelection = false;
+                        });
+                    }
+                    if (hash.country && hash.geoview == "countries") {
+                        let currentCountryIDs = hash.country.split(',');
+                        statetable.on("tableBuilt", function() {
+                            programmaticSelection = true;
+                            statetable.selectRow(currentCountryIDs);
                             programmaticSelection = false;
                         });
                     }
@@ -5107,21 +5156,25 @@ function showTabulatorList(element, attempts) {
                         
                         // Only trigger goHash if this is a user-initiated selection, not programmatic
                         if (!programmaticSelection) {
-                            if (!hash.geoview || hash.geoview == "state") { // Clicking on counties for a state
+                            const latestHash = getHash();
+                            if (!latestHash.geoview || latestHash.geoview == "state") { // Clicking on counties for a state
                                 if (hash.geo != currentRowIDs.toString()) {
                                     hash.geo = currentRowIDs.toString();
                                     console.log("Got hash.geo " + hash.geo);
                                     goHash({'geo':hash.geo}); // Update URL hash with selected counties
                                 }
-                            } else if (hash.geoview == "countries") {
+                            } else if (latestHash.geoview == "countries") {
                                 //alert("row._row.data.id " + row._row.data["Country Code"])
                                 //let countryCode = convertCountry3to2char(row._row.data["Country Code"]);
                                 
                                 let countryCode = row._row.data["Country"];
-                                if (countryCode && !currentCountryIDs.includes(countryCode)) {
-                                    currentCountryIDs.push(countryCode);
+                                if (countryCode) {
+                                    let countryList = latestHash.country ? latestHash.country.split(",").filter(Boolean) : [];
+                                    if (!countryList.includes(countryCode)) {
+                                        countryList.push(countryCode);
+                                    }
+                                    goHash({'country':countryList.join(",")});
                                 }
-                                goHash({'country':currentCountryIDs.toString()});
                             }
                         }
                         
@@ -5188,10 +5241,12 @@ function showTabulatorList(element, attempts) {
                         
                         // Only trigger goHash if this is a user-initiated deselection, not programmatic
                         if (!programmaticSelection) {
+                            const latestHash = getHash();
                             let countryCode = row._row.data["Country"];
-                            let filteredCountryArray = currentCountryIDs.filter(item => item !== countryCode);
-                            if (hash.geoview == "countries") {
-                                goHash({'country':filteredCountryArray.toString()});
+                            if (latestHash.geoview == "countries") {
+                                let countryList = latestHash.country ? latestHash.country.split(",").filter(Boolean) : [];
+                                countryList = countryList.filter(function(code){ return code !== countryCode; });
+                                goHash({'country':countryList.join(",")});
                                 return;
                             }
 
@@ -5217,12 +5272,39 @@ function showTabulatorList(element, attempts) {
                             refreshSelectedGeoStyles("geomap");
                         }
                     });
+                    function checkStateTableCheckbox(row, check) {
+                        if (typeof row.getCell !== "function") {
+                            console.warn("Invalid row object passed:", row);
+                            return;
+                        }
+
+                        const cell = row.getCell(0);
+                        if (!cell) {
+                            console.warn("Cell not found in the first column of the row:", row);
+                            return;
+                        }
+
+                        const cellElement = cell.getElement();
+                        const checkbox = cellElement.querySelector("input[type='checkbox']");
+                        if (checkbox) {
+                            checkbox.checked = check;
+                        }
+                    }
                     statetable.on("rowClick", function(e, row) {
+                        const hash = getHash();
+                        if (hash.geoview == "countries") {
+                            if (e.target.type === 'checkbox') {
+                                e.stopPropagation();
+                                return;
+                            }
+                            row.toggleSelect();
+                            checkStateTableCheckbox(row, row.isSelected());
+                            return;
+                        }
                         const rowData = row.getData();
                         const stateId = rowData.id || rowData.State || rowData.state;
                         testAlert("statetable row clicked " + stateId);
                         if (stateId && stateId.length === 2) {
-                            const hash = getHash();
                             let stateList = hash.state ? hash.state.split(",").filter(Boolean) : [];
                             if (stateList.includes(stateId)) {
                                 stateList = stateList.filter(function(stateAbbr){ return stateAbbr !== stateId; });
@@ -5669,6 +5751,35 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
     }
 }
 
+function updateSelectedCountryRows(countryList, countryDeselect) {
+    const table = getStateTableInstance();
+    if (!table || typeof table.getRows !== "function") {
+        waitForElm('#tabulator-statetable').then(() => {
+            const pendingTable = getStateTableInstance();
+            if (pendingTable) {
+                pendingTable.on("tableBuilt", function() {
+                    updateSelectedCountryRows(countryList, countryDeselect);
+                });
+            }
+        });
+        return;
+    }
+    programmaticSelection = true;
+    if (countryList) {
+        const current = countryList.split(",").filter(Boolean);
+        if (current.length) {
+            table.selectRow(current);
+        }
+    }
+    if (countryDeselect) {
+        const removeList = countryDeselect.split(",").filter(Boolean);
+        if (removeList.length) {
+            table.deselectRow(removeList);
+        }
+    }
+    programmaticSelection = false;
+}
+
 function updateMapColorsOld(whichmap) {
     waitForElm('#' + whichmap + " .leaflet-pane").then((elm) => {
         //alert("updateMapColors #" + whichmap)
@@ -5706,6 +5817,7 @@ function updateMapColors(whichmap) {
         
         let hash = getHash();
         const selectedGeoList = hash.geo ? hash.geo.split(",") : [];
+        const selectedCountryList = hash.country ? hash.country.split(",") : [];
         if (hash.geo) {
             testAlert("updateMapColors: applying choropleth to selected geo values: " + hash.geo);
         }
@@ -5763,11 +5875,21 @@ function updateMapColors(whichmap) {
             //console.log(layer.feature.properties)
             let data = [];
             let fullLocation = layer.feature.properties.name; // State name
+            const countryAlpha2 = layer.feature.properties["Alpha-2"];
             
             if (location) {
                 fullLocation = "US" + stateFP + location;
                 data = localObject.geo.find(row => row.id === fullLocation);
             } else if (hash.geoview == "countries") {
+                if (selectedCountryList.length && (!countryAlpha2 || !selectedCountryList.includes(countryAlpha2))) {
+                    layer.setStyle({
+                        fillColor: '#ccc',
+                        fillOpacity: 0.1,
+                        color: '#77a',
+                        weight: 1
+                    });
+                    return;
+                }
                 //console.log("fullLocation: " + fullLocation)
                 if(fullLocation=="United States of America") fullLocation = "United States";
                 if(fullLocation=="Republic of the Congo") fullLocation = "Congo [Republic]";
@@ -6367,18 +6489,14 @@ function styleShape(feature) { // Called FOR EACH topojson row
       fillOpacity = 0.6;
 
     } else if (hash.geoview == "countries") {
-      let theValue = 2;
-      //console.log("country: " + (feature.properties.name));
-      if (localObject.countries && localObject.countries[feature.id]) {
-        //alert("Country 2020 " + localObject.countries[feature.id]["2020"]);
-        theValue = localObject.countries[feature.id]["2020"];
+      const selectedCountries = hash.country ? hash.country.split(",") : [];
+      const countryAlpha2 = feature.properties["Alpha-2"];
+      if (selectedCountries.length && countryAlpha2 && selectedCountries.includes(countryAlpha2)) {
+        fillColor = '#3a74d6';
+        fillOpacity = 0.6;
+      } else {
+        fillOpacity = .05;
       }
-      // TO DO - Adjust for 2e-7
-      theValue = theValue/10000000;
-      //fillColor = colorTheCountry(theValue);
-      //fillColor = colorTheCountry;
-      //console.log("fillColor: " + fillColor + "; theValue: " + theValue + " " + feature.properties.name);
-      fillOpacity = .5;
     } else if ((hash.geoview == "country" || (hash.geoview == "state" && !hash.state)) && typeof localObject.state != 'undefined') {
       let theValue = 2;
       console.log("localObject.state2")
