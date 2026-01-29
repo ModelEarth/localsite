@@ -77,7 +77,11 @@ document.addEventListener('hashChangeEvent', function (elem) {
 let industryTitleFile = "/localsite/info/naics/lookup/6-digit_2012_Codes.csv"; // Source: https://www.census.gov/eos/www/naics/downloadables/downloadables.html
 function getIndustryLocFileString(catsize) {
     //return local_app.community_data_root() + "industries/naics/US/country/US-2021-Q1-naics-" + catsize + "-digits.csv"; // Removed
-    return local_app.community_data_root() + "industries/naics/US/country/US-census-naics" + catsize + "-2021.csv";
+    if (location.host.indexOf('localhost') >= 0) {
+        return "/community-data/industries/naics/US/country-update/US-naics" + catsize + "-country-2021.csv";
+    } else {
+        return local_app.community_data_root() + "industries/naics/US/country/US-census-naics" + catsize + "-2021.csv";
+    }
     //return local_app.community_data_root() + "industries/naics/US/country/US-census-naics" + catsize + "-2021.csv";
 }
 // Copied from v2 - Not yet implemented
@@ -309,7 +313,6 @@ function refreshNaicsWidget(initialLoad) {
 
         // v2
         if ((location.host.indexOf('localhost') >= 0 || hash.beta == "true") || location.href.indexOf('/info/naics/') >= 0 || location.host.indexOf('github.io') >= 0) {
-
             $("#industryTableHolder").show();
             $("#sectorTableHolder").show();
             if (hash.catsize == "6") {
@@ -317,6 +320,7 @@ function refreshNaicsWidget(initialLoad) {
             }
             let industryLocDataFile = getIndustryLocFileString(hash.catsize);
             if (location.host.indexOf('localhost') >= 0) {
+                //alert("industryLocDataFile " + industryLocDataFile)
                 waitForElm('#tabulator-industrytable-intro').then((elm) => {
                     // Occurs everytime state or county changes.
                     //$("#tabulator-industrytable-datalink").html("<a href='" + industryLocDataFile + "''>" + industryLocDataFile + "</a><br>");
@@ -2382,7 +2386,8 @@ function showIndustryTabulatorList(attempts) {
         // ToDo: Replace width on Industry with a cell that fills any excess space.
 
         // {title:"Population", field:"Population", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                
+        
+        // Area Industries
         industrytable = new Tabulator("#tabulator-industrytable", {
             data:localObject.industryCounties,     //load row data from array of objects
             layout:"fitColumns",      //fit columns to width of table
@@ -2399,12 +2404,12 @@ function showIndustryTabulatorList(attempts) {
             paginationX:true, //enable.
             paginationSizeX:10,
             columns:[
-                {title:"Naics", field:"Naics", minWidth:60},
-                {title:"Industry", field:"Industry", minWidth:300},
-                {title:"Payroll", field:"Payroll", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
-                {title:"Locations", field:"Establishments", hozAlign:"right", minWidth:80, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                {title:"Employees", field:"Employees", hozAlign:"right", minWidth:100, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                {title:"County FIPS", field:"Fips", hozAlign:"right", minWidth:100, headerSortStartingDir:"desc", sorter:"number" }
+                {title:"State", field:"State", minWidth:60, maxWidth:80, headerSortStartingDir:"desc"},
+                {title:"Naics", field:"Naics", minWidth:60, maxWidth:80},
+                {title:"Industry", field:"Industry", widthGrow: 1},
+                {title:"Payroll", field:"Payroll", hozAlign:"right", minWidth:220, maxWidth:240, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"}, headerHozAlign: "right" },
+                {title:"Locations", field:"Establishments", hozAlign:"right", minWidth:80, maxWidth:140, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false}, headerHozAlign: "right" },
+                {title:"Employees", field:"Employees", hozAlign:"right", minWidth:100, maxWidth:140, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false}, headerHozAlign: "right" }
             ],
             rowClick:function(e, row) {
                 row.toggleSelect(); //toggle row selected state on row click
@@ -2470,6 +2475,8 @@ function showIndustryTabulatorList(attempts) {
                 }
             },
         });
+
+        // {title:"County FIPS", field:"Fips", hozAlign:"right", minWidth:100, headerSortStartingDir:"desc", sorter:"number" }
 
         //industrytable.selectRow(industrytable.getRows().filter(row => row.getData().name == 'Fulton County, GA'));
         //industrytable.selectRow(industrytable.getRows().filter(row => row.getData().name.includes('Ba')));

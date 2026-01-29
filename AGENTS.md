@@ -37,7 +37,7 @@ Use these functions from localsite/js/localsite.js for hash-based state manageme
 #### Hash Reading and Manipulation
 - **getHash()**: Returns hash parameters as an object
   ```javascript
-  const hash = getHash(); // Returns {param1: 'value1', param2: 'value2'}
+  let hash = getHash(); // Returns {param1: 'value1', param2: 'value2'}
   ```
 
 - **goHash(object)**: Updates hash with new parameters and triggers hashChangeEvent
@@ -52,7 +52,7 @@ Use these functions from localsite/js/localsite.js for hash-based state manageme
 
 #### Hash Change Listening
 - **hashChangeEvent**: Custom event that fires when hash changes via goHash() and when URL hash is changed directly by the user.
-- **Use on multiple page**: Allows multiple widgets in a page to independently responde to changing URL hash values.
+- **Use on multiple page**: Allows multiple widgets in a page to independently respond to changing URL hash values.
   ```javascript
   document.addEventListener('hashChangeEvent', function (elem) {
       const hash = getHash();

@@ -341,9 +341,8 @@ function hashChanged() {
             
             element.columns = [
                 {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                {title:"State", field:"State", width:68},
                 {title:"State", field:"StateName"},
-                {title:"Pop", field:"Population", width:80, hozAlign:"right", headerSortStartingDir:"desc", formatterParams:{precision:false}
+                {title:"Pop", field:"Population", width:80, hozAlign:"right", headerSortStartingDir:"desc", headerHozAlign: "right", formatterParams:{precision:false}
                 ,formatter: function(cell, formatterParams) {
                     let value = formatCell(cell.getValue());
                     //return value >= 0 ? `` : value;
@@ -361,7 +360,7 @@ function hashChanged() {
                 */
 
                 },
-                {title:"CO<sub>2</sub>", field:"CO2", hozAlign:"right", formatter:"money", formatterParams:{precision:false}
+                {title:"CO<sub>2</sub>", field:"CO2", hozAlign:"right", formatter:"money", headerHozAlign: "right", formatterParams:{precision:false}
                 ,formatter: function(cell, formatterParams) {
                     let value = formatCell(cell.getValue());
                     /*
@@ -374,12 +373,12 @@ function hashChanged() {
                     return value;  // No suffix if the value is 0
                 }
                 },
-                {title:"Methane", field:"Methane", hozAlign:"right", formatter:"money", formatterParams:{precision:false},formatter: function(cell, formatterParams) {
+                {title:"Methane", field:"Methane", hozAlign:"right", formatter:"money", headerHozAlign: "right", formatterParams:{precision:false},formatter: function(cell, formatterParams) {
                     let value = formatCell(cell.getValue());
                     //return value > 0 ? `${value}K` : value;
                     return value;
                 }},
-                {title:"SqMiles", field:"SqMiles", hozAlign:"right", headerSortStartingDir:"desc",formatter: function(cell, formatterParams) {
+                {title:"SqMiles", field:"SqMiles", hozAlign:"right", headerHozAlign: "right", headerSortStartingDir:"desc",formatter: function(cell, formatterParams) {
                     let value = formatCell(cell.getValue());
                     //return value > 0 ? `${value}K` : value;
                     return value;
@@ -406,23 +405,24 @@ function hashChanged() {
             element.key = "Country";
             element.columns = [
                     {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerHozAlign:"center", width:10, headerSort:false},
-                    {title:"Country Name", field:"CountryName", minWidth:140},
-                    {title:"Pop", field:"Population", minWidth:70, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
+                    {title:"Country", field:"CountryName", minWidth:140},
+                    {title:"Pop", field:"Population", minWidth:70, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", headerHozAlign: "right", formatterParams:{precision:false},formatter: function(cell, 
                     formatterParams) {
                         let value = formatCell(cell.getValue());
                         return value;
                     }},
-                    {title:"CO<sub>2</sub>", field:"CO2", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                    {title:"CO<sub>2</sub>", field:"CO2", minWidth:90, hozAlign:"right", sorter:"number", headerHozAlign: "right", formatter: function(cell, formatterParams) {
                         if (cell.getValue() === '') {return}
                         let value = formatCell(cell.getValue());
                         return value;
                     }},
-                    {title:"Per Person", field:"co2percap", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                        let value = formatCell(cell.getValue());
-                        if (value != '') {value = value+" tons"}
-                        return value;
+                    {title:"Per Person", field:"co2percap", minWidth:90, hozAlign:"right", sorter:"number", headerHozAlign: "right", formatter: function(cell, formatterParams) {
+                        const rawValue = Number(cell.getValue());
+                        if (isNaN(rawValue)) {return}
+                        let value = rawValue.toFixed(2);
+                        return value + " tons";
                     }},
-                    {title:"Sq Miles", field:"SqMiles", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                    {title:"Sq Miles", field:"SqMiles", minWidth:90, hozAlign:"right", sorter:"number", headerHozAlign: "right", formatter: function(cell, formatterParams) {
                         let value = formatCell(cell.getValue());
                         return value;
                     }},
@@ -433,7 +433,62 @@ function hashChanged() {
 
             // Fetch just once, otherwise recall from localObject.
             if (Object.keys(localObject[element.scope]).length <= 0) {
-                d3.csv(csvFilePath).then(function(myData) {
+                function parseCsvRows(csvText) {
+                    const rows = [];
+                    let row = [];
+                    let current = "";
+                    let inQuotes = false;
+                    for (let i = 0; i < csvText.length; i++) {
+                        const char = csvText[i];
+                        if (char === '"') {
+                            if (inQuotes && csvText[i + 1] === '"') {
+                                current += '"';
+                                i++;
+                            } else {
+                                inQuotes = !inQuotes;
+                            }
+                        } else if (char === "," && !inQuotes) {
+                            row.push(current);
+                            current = "";
+                        } else if ((char === "\n" || char === "\r") && !inQuotes) {
+                            if (char === "\r" && csvText[i + 1] === "\n") {
+                                i++;
+                            }
+                            row.push(current);
+                            rows.push(row);
+                            row = [];
+                            current = "";
+                        } else {
+                            current += char;
+                        }
+                    }
+                    if (current.length > 0 || row.length > 0) {
+                        row.push(current);
+                        rows.push(row);
+                    }
+                    return rows;
+                }
+
+                fetch(csvFilePath)
+                  .then(response => {
+                      if (!response.ok) {
+                          throw new Error("Failed to load CSV: " + response.status);
+                      }
+                      return response.text();
+                  })
+                  .then(csvText => {
+                      const rows = parseCsvRows(csvText);
+                      if (!rows.length) {
+                          return;
+                      }
+                      const headers = rows[0].map(cell => (cell || "").trim());
+                      const myData = rows.slice(1).filter(row => row && row.length).map(row => {
+                          const obj = {};
+                          headers.forEach((header, index) => {
+                              obj[header] = (row[index] || "").trim();
+                          });
+                          return obj;
+                      });
                     // Add PerCapita field to each row
                     const processedData = myData.map(row => {
                         const population = parseFloat(row.Population); // Ensure Population is treated as a number
@@ -462,7 +517,11 @@ function hashChanged() {
                     console.log(localObject[element.scope]);
 
                     showTabulatorList(element, 0);
-                });
+                    //alert("Countries CSV loaded");
+                  })
+                  .catch(error => {
+                      console.log("Error loading countries CSV: " + error);
+                  });
             } else {
                 // Data already exists, but still need to show the tabulator on reload
                 console.log("localObject[element.scope] already exists, showing tabulator with existing data");
@@ -5386,33 +5445,33 @@ function showTabulatorList(element, attempts) {
                         },
                         // See geoElement.pop etc above
                         {title:"County", field:"name", minWidth:140},
-                        {title:"Pop", field:"pop", minWidth:50, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
+                        {title:"Pop", field:"pop", minWidth:50, hozAlign:"right", headerHozAlign: "right", headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false},formatter: function(cell, 
                         formatterParams) {
                             let value = formatCell(cell.getValue());
                             return value;
                         }},
-                        {title:"CO<sub>2</sub>", field:"CO2", minWidth:80, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        {title:"CO<sub>2</sub>", field:"CO2", minWidth:80, hozAlign:"right", headerHozAlign: "right", sorter:"number", formatter: function(cell, formatterParams) {
                             if (cell.getValue() === '') {return}
                             let value = formatCell(cell.getValue());
                             return value;
                         }},
-                        {title:"Per Person", field:"co2percap", minWidth:70, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                            if (isNaN(cell.getValue())) {return}
-                            let value = formatCell(cell.getValue());
-                            if (value != '') {value = value+" tons"}
-                            return value;
+                        {title:"Per Person", field:"co2percap", minWidth:70, hozAlign:"right", headerHozAlign: "right", sorter:"number", formatter: function(cell, formatterParams) {
+                            const rawValue = Number(cell.getValue());
+                            if (isNaN(rawValue)) {return}
+                            let value = rawValue.toFixed(2);
+                            return value + " tons";
                         }},
-                        {title:"Methane", field:"methane", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        {title:"Methane", field:"methane", minWidth:90, hozAlign:"right", headerHozAlign: "right", sorter:"number", formatter: function(cell, formatterParams) {
                             if (cell.getValue() === '') {return}
                             let value = formatCell(cell.getValue());
                             return value;
                         }},
-                        {title:"Per Capita", field:"methanepercap", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
-                            if (isNaN(cell.getValue())) {return}
-                            let value = formatCell(cell.getValue());
-                            return value;
+                        {title:"Per Capita", field:"methanepercap", minWidth:90, hozAlign:"right", headerHozAlign: "right", sorter:"number", formatter: function(cell, formatterParams) {
+                            const rawValue = Number(cell.getValue());
+                            if (isNaN(rawValue)) {return}
+                            return rawValue.toFixed(2);
                         }},
-                        {title:"Sq Miles", field:"sqmiles", minWidth:90, hozAlign:"right", sorter:"number", formatter: function(cell, formatterParams) {
+                        {title:"Sq Miles", field:"sqmiles", minWidth:90, hozAlign:"right", headerHozAlign: "right", sorter:"number", formatter: function(cell, formatterParams) {
                             let value = formatCell(cell.getValue());
                             return value;
                         }},

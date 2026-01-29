@@ -1986,9 +1986,22 @@ h2 .num {
 .tabulator .tabulator-header .tabulator-col {
     border-right: none !important;
 }
-
-
-
+.tabulator-col {
+  line-height: 1.55em; /* Allos for consisten heaer arro position*/
+}
+/* Arrow on left of column titles, applied only when prior title div has text-align: left */
+.tabulator-col:not(:has(.tabulator-col-title[style*="text-align: right"])) .tabulator-col-title {
+  padding-right: 5px !important;
+  position: relative !important;
+  float: left !important;
+  width: auto !important;
+}
+.tabulator-col:not(:has(.tabulator-col-title[style*="text-align: right"])) .tabulator-col-sorter {
+  position:relative !important;
+  float:left !important;
+  padding: 5px !important;
+  padding-top: 7px !important;
+}
 
 /* Nav.css */
 
