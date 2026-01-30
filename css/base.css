@@ -1456,6 +1456,21 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   border-bottom: 1px solid rgb(238,238,238);
   background-color: #eee;
 }
+.showSideTabs:hover,
+.showSideTabs:hover i {
+  background-color: transparent !important;
+  color: #555;
+  box-shadow: none;
+  text-shadow: none;
+  filter: none;
+}
+.showSideTabs.iconPadding:hover {
+  background-color: transparent !important;
+}
+.dark .showSideTabs:hover,
+.dark .showSideTabs:hover i {
+  color: #fff;
+}
 .dark .headerbar {
   background: #222;
   border-bottom: 1px solid #333;
