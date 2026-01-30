@@ -3188,6 +3188,51 @@ catArray = [];
             });
         });
     }
+    function getActiveFilterSection() {
+        const hash = getHash();
+        if (!hash.geoview) {
+            return "";
+        }
+        if (hash.geoview === "country") {
+            return "state";
+        }
+        return hash.geoview;
+    }
+    function setFilterToggleIcon(iconName) {
+        if (!$("#filterFieldToggleIcon").length) {
+            return;
+        }
+        $("#filterFieldToggleIcon").text(iconName);
+    }
+    function refreshFilterToggleIcon() {
+        if (!$("#filterFieldToggleIcon").length) {
+            return;
+        }
+        if ($("#filterFieldMenu").is(":visible")) {
+            setFilterToggleIcon("arrow_drop_down_circle");
+            return;
+        }
+        const activeSection = getActiveFilterSection();
+        if (activeSection) {
+            setFilterToggleIcon("arrow_drop_down_circle");
+        } else {
+            setFilterToggleIcon("arrow_right");
+        }
+    }
+    function updateFilterMenuState() {
+        const hash = getHash();
+        const activeSection = getActiveFilterSection();
+        const hasGeoview = !!activeSection;
+        const hasAppview = !!hash.appview;
+        $("#filterFieldMenuClose").toggle(hasGeoview);
+        $("#filterFieldMenuCloseApps").toggle(hasAppview);
+        $("#filterFieldMenu .filterFieldMenuItem[data-action='county']").toggle(!!hash.state);
+        $("#filterFieldMenu .filterFieldMenuItem[data-action]").each(function() {
+            const action = $(this).data("action");
+            const isActive = (action === activeSection) || (action === "topics" && hasAppview);
+            $(this).toggleClass("is-active", isActive);
+        });
+    }
     function applyGeoviewSelection(value) {
         if (value == "earth" && $("#nullschoolHeader").is(":visible")) {
             goHash({"geoview":""});
@@ -3215,6 +3260,7 @@ catArray = [];
         options.removeClass("focused");
         focused.addClass("focused");
         $("#geoview_select_list").data("focusIndex", options.index(focused));
+        refreshFilterToggleIcon();
     }
     function closeGeoviewList() {
         $("#geoview_container").hide();
@@ -3224,6 +3270,7 @@ catArray = [];
         $("#geoview_select_open").hide();
         $("#geoview_select_text").show();
         getGeoviewOptions().removeClass("focused");
+        refreshFilterToggleIcon();
     }
     function moveGeoviewFocus(direction) {
         const options = getGeoviewOptions();
@@ -3294,6 +3341,95 @@ catArray = [];
                 closeGeoviewList();
             }
         }
+    });
+
+    $(document).on("click", "#filterFieldToggleHolder", function(event) {
+        $("#filterFieldMenu").toggle();
+        updateFilterMenuState();
+        refreshFilterToggleIcon();
+        event.stopPropagation();
+    });
+
+    $(document).on("click", "#filterFieldMenu .filterFieldMenuItem", function(event) {
+        const action = $(this).data("action");
+        if (!action) {
+            return;
+        }
+        const hash = getHash();
+        const activeSection = getActiveFilterSection();
+        $("#filterFieldMenu").hide();
+        if (action === "aboutfilters") {
+            window.location = "/localsite/info/data/map-filters/";
+            refreshFilterToggleIcon();
+            event.stopPropagation();
+            return;
+        }
+        if (action === "hidefilters") {
+            if (typeof showSearchFilter === "function") {
+                showSearchFilter();
+            } else {
+                $(".showSearch").trigger("click");
+            }
+            refreshFilterToggleIcon();
+            event.stopPropagation();
+            return;
+        }
+        if (action === activeSection) {
+            if (hash.appview) {
+                goHash({"appview":""});
+            } else {
+                goHash({"geoview":""});
+            }
+            refreshFilterToggleIcon();
+            event.stopPropagation();
+            return;
+        }
+        if (action === "topics") {
+            showApps("#bigThumbMenu");
+            refreshFilterToggleIcon();
+            event.stopPropagation();
+            return;
+        }
+        if (typeof setGeoviewSelect === "function") {
+            setGeoviewSelect(action);
+        }
+        if (typeof applyGeoviewSelection === "function") {
+            applyGeoviewSelection(action);
+        }
+        refreshFilterToggleIcon();
+        event.stopPropagation();
+    });
+    $(document).on("click", "#filterFieldMenu .filterFieldMenuLink", function() {
+        $("#filterFieldMenu").hide();
+        refreshFilterToggleIcon();
+    });
+    $(document).on("click", "#filterFieldMenuClose", function(event) {
+        $("#filterFieldMenu").hide();
+        goHash({"geoview":""});
+        refreshFilterToggleIcon();
+        event.stopPropagation();
+    });
+    $(document).on("click", "#filterFieldMenuCloseApps", function(event) {
+        $("#filterFieldMenu").hide();
+        goHash({"appview":""});
+        refreshFilterToggleIcon();
+        event.stopPropagation();
+    });
+
+    $(document).on("click", function(event) {
+        if (!$(event.target).closest("#filterFieldMenu, #filterFieldToggleHolder").length) {
+            $("#filterFieldMenu").hide();
+            refreshFilterToggleIcon();
+        }
+    });
+
+    document.addEventListener('hashChangeEvent', function () {
+        updateFilterMenuState();
+        refreshFilterToggleIcon();
+    });
+    waitForElm('#filterFieldToggleIcon').then(() => {
+        updateFilterMenuState();
+        refreshFilterToggleIcon();
     });
 
     waitForElm('#geoview_state_holder').then((elm) => {
@@ -5202,7 +5338,7 @@ function showTabulatorList(element, attempts) {
                         history:true,             //allow undo and redo actions on the table
                         movableColumns:true,      //allow column order to be changed
                         resizableRows:true,       //allow row order to be changed
-                        maxHeight:"500px",        // For frozenRows
+                        maxHeight:"520px",        // For frozenRows
                         paginationSize:10000,
                         index:statetableIndex,
                         columns:element.columns,

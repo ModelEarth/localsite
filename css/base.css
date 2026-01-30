@@ -622,13 +622,13 @@ summary::-webkit-details-marker {
   padding-right: 30px;
   padding-bottom: 30px;
 }
-.content a, .contentfull a {
+.content a, .contentfull a, .content-color a {
   text-decoration: none;
 }
-.content a:link, .content a:visited, .contentfull a:link, .contentfull a:visited {
+.content a:link, .content a:visited, .contentfull a:link, .contentfull a:visited, .content-color a:link, .content-color a:visited {
   color: #0366d6;
 }
-.dark .content a:link, .dark .content a:visited {
+.dark .content a:link, .dark .content a:visited, .dark .content-color a:link, .dark .content-color a:visited  {
   color: #acb;
 }
 .lite { /* Also in DS */
@@ -1456,6 +1456,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   border-bottom: 1px solid rgb(238,238,238);
   background-color: #eee;
 }
+/*
 .showSideTabs:hover,
 .showSideTabs:hover i {
   background-color: transparent !important;
@@ -1471,6 +1472,8 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .dark .showSideTabs:hover i {
   color: #fff;
 }
+*/
+
 .dark .headerbar {
   background: #222;
   border-bottom: 1px solid #333;
@@ -1535,7 +1538,8 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   margin-top:14px;
 }
 #headerIcons:hover {
-  background-color: #ddd;
+  background-colorX: #ddd;
+  background-color: transparent !important; /* temp to override bootstrap until #headerIcons is renamed */
 }
 :root {
   --header-offset-height: 79px; /* Default header offset height */

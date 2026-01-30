@@ -83,6 +83,89 @@
     overflowX: hidden;
     position: relative;
 }
+#filterFieldContent {
+  position: relative;
+}
+.filterFieldToggleHolder {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  cursor: pointer;
+  padding: 6px;
+  z-index: 3;
+}
+.filterFieldToggleHolder .material-icons {
+  font-size: 28px;
+  color: #777;
+}
+.dark .filterFieldToggleHolder .material-icons {
+  color: #ddd;
+}
+.filterFieldMenu {
+  position: absolute;
+  right: 10px;
+  top: 48px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  min-width: 180px;
+  padding: 6px 0;
+  z-index: 1001;
+}
+.dark .filterFieldMenu {
+  background: #333;
+  border-color: #555;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+.filterFieldMenuItem {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #444;
+  display: block;
+  text-decoration: none;
+  position: relative;
+  line-height: 1;
+}
+.filterFieldMenuCheck {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #888;
+  display: none !important;
+}
+.filterFieldMenuItem.is-active .filterFieldMenuCheck {
+  display: inline-block !important;
+}
+.filterFieldMenuItem:hover {
+  background: #f2f2f2;
+  color: #111;
+}
+.filterFieldMenuDivider {
+  border-top: 1px solid #eee;
+  margin: 4px 0;
+}
+.filterFieldMenuLink {
+  color: inherit;
+}
+.dark .filterFieldMenuItem {
+  color: #eee;
+}
+.dark .filterFieldMenuCheck {
+  color: #aaa;
+}
+.dark .filterFieldMenuItem:hover {
+  background: #444;
+  color: #fff;
+}
+.dark .filterFieldMenuLink {
+  color: inherit;
+}
+.dark .filterFieldMenuDivider {
+  border-top-color: #555;
+}
 #stateFiltersHolder {
   padding-right: 40px;
   max-height: 52px;
@@ -368,8 +451,6 @@ input.filterClick[type="text"] {
 }
 #geoListHolder {
     overflow: hidden;
-    height: 530px;
-    border: 10px solid blue;
 }
 .listHolderFooterX {
   position:absolute;

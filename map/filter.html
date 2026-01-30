@@ -27,6 +27,23 @@
         <!--div class='closeSideTabs expandSlider iconPadding' style='float:left;border:0px;'><i class='material-icons menuTopIcon' style='font-size:38px;opacity:0.6;margin-top:-4px'>&#xE5D0;</i></div--><div class='closeSideTabs reduceSlider iconPadding' style='display:none;float:left;border:0px;padding-top:4px'><i class='material-icons menuTopIcon' style='font-size:42px;opacity:0.7;margin-top:-4px'>&#xE5D1;</i></div>
 
       </div>
+
+      <div id="filterFieldToggleHolder" class="filterFieldToggleHolder" title="Filter sections">
+        <i id="filterFieldToggleIcon" class="material-icons">arrow_right</i>
+      </div>
+      <div id="filterFieldMenu" class="filterFieldMenu" style="display:none">
+        <div class="filterFieldMenuItem" data-action="earth">Earth<span class="material-icons filterFieldMenuCheck">check</span></div>
+        <div class="filterFieldMenuItem" data-action="countries">Countries<span class="material-icons filterFieldMenuCheck">check</span></div>
+        <div class="filterFieldMenuItem" data-action="state">States<span class="material-icons filterFieldMenuCheck">check</span></div>
+        <div class="filterFieldMenuItem" data-action="county">Counties<span class="material-icons filterFieldMenuCheck">check</span></div>
+        <!-- <div class="filterFieldMenuItem" data-action="zip">Zip Codes<span class="material-icons filterFieldMenuCheck">check</span></div> -->
+        <div class="filterFieldMenuItem" data-action="topics">Topics<span class="material-icons filterFieldMenuCheck">check</span></div>
+        <div class="filterFieldMenuDivider"></div>
+        <div class="filterFieldMenuItem filterFieldMenuLink" data-action="aboutfilters">About Filters</div>
+        <div id="filterFieldMenuHide" class="filterFieldMenuItem" data-action="hidefilters">Hide Filter Bar</div>
+        <div id="filterFieldMenuClose" class="filterFieldMenuItem filterFieldMenuClose" style="display:none">Close Map View</div>
+        <div id="filterFieldMenuCloseApps" class="filterFieldMenuItem filterFieldMenuClose" style="display:none">Close App View</div>
+      </div>
        
       <div id='main-nav-closed' class='noprint' style='float:left'><div class="earth" style="display:none"></div></div>
 
