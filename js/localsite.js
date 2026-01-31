@@ -3783,8 +3783,9 @@ function showAuthModal() {
   if (typeof window.authModal !== 'undefined' && window.authModal) {
     window.authModal.show();
   } else {
-    // Lazy load the auth modal script
-    const authModalPath = local_app.localsite_root() + 'js/auth-modal.js';
+    // Lazy load the auth modal script from better-auth-system (single source of truth)
+    // Use configurable path or default to better-auth-system
+    const authModalPath = window.AUTH_MODAL_PATH || (window.appBaseUrl || '/') + 'better-auth-system/public/js/auth-modal.js';
     loadScript(authModalPath, function() {
       // Modal initializes immediately when script loads, so show it
       if (window.authModal) {
