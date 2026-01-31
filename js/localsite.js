@@ -3804,7 +3804,10 @@ async function updateAuthUI() {
 
   // Check session via Better Auth API
   try {
-    const authApiUrl = window.AUTH_API_URL || 'http://localhost:3002/api';
+    const authApiUrl = window.AUTH_API_URL ||
+      (['localhost', '127.0.0.1', '::1'].includes(location.hostname)
+        ? 'http://localhost:3002/api'
+        : 'https://api.model.earth/api');
     const response = await fetch(`${authApiUrl}/auth/get-session`, {
       credentials: 'include' // Send httpOnly cookies
     });
@@ -3874,7 +3877,10 @@ async function handleSignOut() {
   consoleLog('[Auth] Signing out user');
   try {
     // Call Better Auth sign-out endpoint
-    const authApiUrl = window.AUTH_API_URL || 'http://localhost:3002/api';
+    const authApiUrl = window.AUTH_API_URL ||
+      (['localhost', '127.0.0.1', '::1'].includes(location.hostname)
+        ? 'http://localhost:3002/api'
+        : 'https://api.model.earth/api');
     await fetch(`${authApiUrl}/auth/sign-out`, {
       method: 'POST',
       credentials: 'include'
