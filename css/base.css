@@ -28,7 +28,7 @@ Used in localsite, modelearth, io, neighborhood, trees
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 #side-nav {
-  width: 67px;
+  width: 62px;
   flex-shrink: 0;
 }
 .main-nav {
@@ -419,7 +419,9 @@ h2 {
   visibility: hidden; 
   pointer-events: none;
 }
-.flexmain section::before { /* Prevents hashtag section links from being covered by site header */
+/* Prevents hashtag section links from being covered by site header */
+/* test and maybe reactivate */
+.flexmain section::before { 
   display: block; 
   content: " "; 
   margin-top: -120px; 
@@ -789,6 +791,9 @@ summary::-webkit-details-marker {
   margin-bottom: 16px;
 }
 @media (max-width:980px) {
+  .topcolumns {
+    margin-bottom: 20px;
+  }
   .pageColumn, .two .pageColumn {
     width:100%;
     float:none;
@@ -798,6 +803,8 @@ summary::-webkit-details-marker {
   }
   .pageColumnInside {
     margin-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
   }
 }
 .contentArea {

@@ -667,7 +667,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .catList>div {
 	cursor: pointer;
 	padding-left: 3px;
-	font-size: 15px;
+	font-size: 13px;
 	line-height: 1.1em;
 	padding-top: 8px;
 	padding-bottom: 8px;
@@ -722,6 +722,10 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     flex-direction: row;
     margin: 0 auto;
     width: 100%;
+}
+#main-content {
+	flex: 1 1 auto;
+	min-width: 0; /* Allow map/filter bar to shrink when sidebar opens */
 }
 .dark #main-container  a:link, .dark #main-container  a:visited {
   color: #acb;

@@ -192,11 +192,6 @@ function showIndustryList() {
 					The US Census does not provide stats for 2-digit manufacturing NAICS 31, 32&nbsp;and&nbsp;33.<br><br>
 				-->
 				<div id="detail_selection">
-					<div id="show_industry_settings" style="float:right;cursor:pointer" onclick="$('.industry_filter_settings').toggle();">
-						<span class="material-icons" style="font-size:24px;color:#777">
-						settings
-						</span>
-					</div>
 					<select id="catsort" class="picklist" onchange="goHash({'catsort':this.value});">
 			          <option value="payann" selected>By Annual Payroll</option>
 			          <option value="emp" >By Employee Count</option>
@@ -209,6 +204,27 @@ function showIndustryList() {
 			          <!--option value="4">NAICS Industry - 5 digits</option-->
 			          <option value="6" selected>Industries - 6 digits</option>
 			        </select>
+			        <div style="display:inline-flex; align-items:center; gap:6px; margin-left:6px;">
+						<div id="show_industry_settings" style="cursor:pointer" onclick="$('.industry_filter_settings').toggle();">
+							<span class="material-icons" style="font-size:24px;color:#777">
+							settings
+							</span>
+						</div>
+					</div>
+			        <div id="widgetToggleContainer" style="position: relative; min-height: 24px; float:right;">
+			          <div id="widgetToggleHolder" class="menuToggleHolder" title="Widget list">
+			            <i id="widgetToggleIcon" class="material-icons">arrow_drop_down_circle</i>
+			          </div>
+			          <div id="widgetList" class="menuToggleMenu" style="display:none">
+		            <div class="menuToggleItem" data-section="industries">Industry List<span class="material-icons menuToggleCheck">check</span></div>
+		            <div class="menuToggleItem" data-section="industryTableHolder">Area Industries<span class="material-icons menuToggleCheck">check</span></div>
+		            <div class="menuToggleItem" data-section="supply">Supply Chain<span class="material-icons menuToggleCheck">check</span></div>
+		            <div class="menuToggleItem" data-section="impact">Impact Levels<span class="material-icons menuToggleCheck">check</span></div>
+		            <div class="menuToggleItem" data-section="bubble">Bubble Chart<span class="material-icons menuToggleCheck">check</span></div>
+		            <div class="menuToggleItem" data-section="sectors">Sectors<span class="material-icons menuToggleCheck">check</span></div>
+			            <div id="widgetListShowAll" class="menuToggleItem" data-action="show-all" style="display:none">Show All Section</div>
+			          </div>
+			        </div>
 			        <div style="clear:both;margin-bottom:2px"></div>
 
 			        <div class="industry_filter_settings" style="display:none" style="margin:10px 0 0 10px">
@@ -261,7 +277,7 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 
 
 <!-- INDICATOR SETS -->
-<div id="supply" class="anchor"></div>
+<section id="supply" class="anchor">
 <div style="position:relative; width:100%">
     <!--  
     <div class="lazy bgimg bgimg-notfixed" data-src="img/bkgd.jpg" style="opacity:.85">
@@ -405,11 +421,12 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
         </div>
     </div>
 </div>
+</section>
 <!-- /INDICATOR SETS -->
 
 
 <!-- v2 -->
-<div id="industryTableHolder" style="display:none;">
+<section id="industryTableHolder" style="display:none;">
 <div class="contentpadding" style="padding-top:0px">
 	<div id="tabulator-industrytable-intro"><b>Area Industries</b> (Visible on localhost) <!-- FIPS and NAICS case sensitive--></div>
 	<div id="tabulator-industrytable-datalink"></div>
@@ -417,7 +434,7 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
     <div id="tabulator-industrytable"></div><br>
     <div id="tabulator-industrytable-count"></div>
 </div>
-</div>
+</section>
 
 <!-- INPUT OUTPUT -->
 <!-- See: "For older 3 column IO layout" below -->
@@ -505,9 +522,6 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 </div>
 <div style="clear:both;"></div>
 <!-- /INPUT OUTPUT -->
-
-
-
 <style>
 .impactIcons div {
     float: left;
@@ -656,54 +670,54 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 </style>
 
 <section id="impact">
-<div class="contentpadding" style="min-height:200px;border-bottom:1px solid #ccc;overflow:auto">
+	<div class="contentpadding" style="min-height:200px;border-bottom:1px solid #ccc;overflow:auto">
 
-	<div id="sectorListTitles" style="margin-bottom:20px">
-		<h1 style="margin-bottom: 0px">Impact Levels</h1>
-		<span class="region_service"></span>
-	</div>
-	<div id="sector-list" class="sector-list"></div>
-	<!--
-	JOBS and VADD are excluded from the default sort
-	https://github.com/USEPA/useeio-widgets/issues/35
-	-->
-</div>
-
-<!-- /MOSAIC HEATMAP -->
-
-
-<!--
-config.withDefaults({
-  view: ['mosaic'],
-  count: 20,
-});
-config.join(sectorList);
--->
-
-
-
-<div style="margin:0 30px 0 30px; max-width: 2000px;">
-	
-	<!--
-	<h1 class="module_h1">My Local Area</h1>
-
-	Click columns to sort. Choose geo to define your local area. (Activating shortly.)<br><br>
-
-	<div style="width:100%" class="output_table2 rotateHeader"></div>
-	<br>
-	-->
-
-	<!--
-		<div style="padding:40px">
-		5-digit NAICS are the same in Canada, Mexico and the US.<br>
-		6-digit NAICS are country-specific. 
+		<div id="sectorListTitles" style="margin-bottom:20px">
+			<h1 style="margin-bottom: 0px">Impact Levels</h1>
+			<span class="region_service"></span>
 		</div>
+		<div id="sector-list" class="sector-list"></div>
+		<!--
+		JOBS and VADD are excluded from the default sort
+		https://github.com/USEPA/useeio-widgets/issues/35
+		-->
+	</div>
+
+	<!-- /MOSAIC HEATMAP -->
+
+
+	<!--
+	config.withDefaults({
+	  view: ['mosaic'],
+	  count: 20,
+	});
+	config.join(sectorList);
 	-->
 
-	<div id="bioenergySummaryDiv"></div>
 
-</div>
-<br>
+
+	<div style="margin:0 30px 0 30px; max-width: 2000px;">
+		
+		<!--
+		<h1 class="module_h1">My Local Area</h1>
+
+		Click columns to sort. Choose geo to define your local area. (Activating shortly.)<br><br>
+
+		<div style="width:100%" class="output_table2 rotateHeader"></div>
+		<br>
+		-->
+
+		<!--
+			<div style="padding:40px">
+			5-digit NAICS are the same in Canada, Mexico and the US.<br>
+			6-digit NAICS are country-specific. 
+			</div>
+		-->
+
+		<div id="bioenergySummaryDiv"></div>
+
+	</div>
+	<br>
 </section><!-- /impact -->
 
 
@@ -729,11 +743,12 @@ config.join(sectorList);
 
 </div>
 
-<br><br><br>
+
 
 
 <!-- Bubble Chart - Moved to appear after other charts per Loren's request -->
-<div class="contentpadding" style="padding-top:0px">
+<section id="bubble" class="contentpadding" style="padding-top:0px">
+	<br><br><br>
 
 	<link rel="stylesheet" type="text/css" href="/io/charts/bubble/css/bubble.css"/>
 
@@ -818,7 +833,7 @@ config.join(sectorList);
 
   	<div style="clear:both"></div>
 
-</div>
+</section>
 
 
 <script type="text/javascript">
@@ -950,14 +965,15 @@ document.getElementById('showValues').onclick = function() {
 </style>
 
 <!-- v2 -->
-<div id="sectorTableHolder" style="display:none;">
-<div class="content contentpadding">
-	<div id="tabulator-sectortable-intro">Sectors (upcoming) - Visible only on localhost</div>
-	<div id="tabulator-sectortable"></div><br>
-	<div id="tabulator-sectortable-count"></div>
-</div>
-</div>
-
+<section id="sector">
+	<div id="sectorTableHolder" style="display:none;">
+	<div class="content contentpadding">
+		<div id="tabulator-sectortable-intro">Sectors (upcoming) - Visible only on localhost</div>
+		<div id="tabulator-sectortable"></div><br>
+		<div id="tabulator-sectortable-count"></div>
+	</div>
+	</div>
+</section>
 
 <!-- /INFO TEMPLATE -->
 </div>

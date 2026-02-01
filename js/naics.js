@@ -383,7 +383,8 @@ function getNaics_setHiddenHash2(go) {
     let naicsArrays = {};
 
     // NAICS FROM community/projects/biotech
-    naicsArrays.computers = [541511,541512,551114,611310]
+    naicsArrays.aerospace = [336411,336412,336413,336414,336415,336419,481111,481112,481211,481212,481219,488111,488119,611512,488190,811310,61151];
+    naicsArrays.computers = [541511,541512,551114,611310];
     naicsArrays.bio_input = [113000,321113,113310,32121,32191,562213,322121,322110]; // Omitted 541620
     naicsArrays.bio_output = [325211,325991,3256,335991,325120,326190];
     naicsArrays.green_energy = [221117,221111,221113,221114,221115,221116,221118];
@@ -470,6 +471,9 @@ function getNaics_setHiddenHash2(go) {
         } else if (go == "vehicles") {
             showtab = "Automotive"
             showtitle = "Vehicles and Vehicle Parts";
+        } else if (go == "aerospace") {
+            showtab = "Aerospace";
+            showtitle = "Aerospace";
         } else if (go == "recycling") {
             showtab = "Recycling";
             showtitle = "Recycling Processors (B2B)";
