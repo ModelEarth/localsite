@@ -86,7 +86,7 @@
 #filterFieldContent {
   position: relative;
 }
-.filterFieldToggleHolder {
+.menuToggleHolder {
   position: absolute;
   right: 10px;
   top: 8px;
@@ -94,14 +94,14 @@
   padding: 6px;
   z-index: 3;
 }
-.filterFieldToggleHolder .material-icons {
+.menuToggleHolder .material-icons {
   font-size: 28px;
   color: #777;
 }
-.dark .filterFieldToggleHolder .material-icons {
+.dark .menuToggleHolder .material-icons {
   color: #ddd;
 }
-.filterFieldMenu {
+.menuToggleMenu {
   position: absolute;
   right: 10px;
   top: 48px;
@@ -113,12 +113,12 @@
   padding: 6px 0;
   z-index: 1001;
 }
-.dark .filterFieldMenu {
+.dark .menuToggleMenu {
   background: #333;
   border-color: #555;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
-.filterFieldMenuItem {
+.menuToggleItem {
   padding: 8px 12px;
   cursor: pointer;
   color: #444;
@@ -127,7 +127,7 @@
   position: relative;
   line-height: 1;
 }
-.filterFieldMenuCheck {
+.menuToggleCheck {
   position: absolute;
   right: 10px;
   top: 50%;
@@ -136,34 +136,34 @@
   color: #888;
   display: none !important;
 }
-.filterFieldMenuItem.is-active .filterFieldMenuCheck {
+.menuToggleItem.is-active .menuToggleCheck {
   display: inline-block !important;
 }
-.filterFieldMenuItem:hover {
+.menuToggleItem:hover {
   background: #f2f2f2;
   color: #111;
 }
-.filterFieldMenuDivider {
+.menuToggleDivider {
   border-top: 1px solid #eee;
   margin: 4px 0;
 }
-.filterFieldMenuLink {
+.menuToggleLink {
   color: inherit;
 }
-.dark .filterFieldMenuItem {
+.dark .menuToggleItem {
   color: #eee;
 }
-.dark .filterFieldMenuCheck {
+.dark .menuToggleCheck {
   color: #aaa;
 }
-.dark .filterFieldMenuItem:hover {
+.dark .menuToggleItem:hover {
   background: #444;
   color: #fff;
 }
-.dark .filterFieldMenuLink {
+.dark .menuToggleLink {
   color: inherit;
 }
-.dark .filterFieldMenuDivider {
+.dark .menuToggleDivider {
   border-top-color: #555;
 }
 #stateFiltersHolder {
@@ -468,6 +468,16 @@ input.filterClick[type="text"] {
 }
 #geomapHolder {
   float:left;
+  position: relative;
+}
+#geomapHolder .hideAdvanced.close-X {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  color: #555;
 }
 @media (max-width: 1350px) {
   #geomapHolder, #geomap {

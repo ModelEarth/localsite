@@ -3236,8 +3236,8 @@ catArray = [];
         const hasAppview = !!hash.appview;
         $("#filterFieldMenuClose").toggle(hasGeoview);
         $("#filterFieldMenuCloseApps").toggle(hasAppview);
-        $("#filterFieldMenu .filterFieldMenuItem[data-action='county']").toggle(!!hash.state);
-        $("#filterFieldMenu .filterFieldMenuItem[data-action]").each(function() {
+        $("#filterFieldMenu .menuToggleItem[data-action='county']").toggle(!!hash.state);
+        $("#filterFieldMenu .menuToggleItem[data-action]").each(function() {
             const action = $(this).data("action");
             const isActive = (action === activeSection) || (action === "topics" && hasAppview);
             $(this).toggleClass("is-active", isActive);
@@ -3360,7 +3360,7 @@ catArray = [];
         event.stopPropagation();
     });
 
-    $(document).on("click", "#filterFieldMenu .filterFieldMenuItem", function(event) {
+    $(document).on("click", "#filterFieldMenu .menuToggleItem", function(event) {
         const action = $(this).data("action");
         if (!action) {
             return;
@@ -3409,14 +3409,18 @@ catArray = [];
         refreshFilterToggleIcon();
         event.stopPropagation();
     });
-    $(document).on("click", "#filterFieldMenu .filterFieldMenuLink", function() {
+    $(document).on("click", "#filterFieldMenu .menuToggleLink", function() {
         $("#filterFieldMenu").hide();
         refreshFilterToggleIcon();
     });
     $(document).on("click", "#filterFieldMenuClose", function(event) {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
         $("#filterFieldMenu").hide();
         goHash({"geoview":""});
         refreshFilterToggleIcon();
+        requestAnimationFrame(() => {
+            window.scrollTo(0, scrollTop);
+        });
         event.stopPropagation();
     });
     $(document).on("click", "#filterFieldMenuCloseApps", function(event) {
@@ -3432,6 +3436,96 @@ catArray = [];
             refreshFilterToggleIcon();
         }
     });
+
+    function getWidgetSectionElement(sectionId) {
+        if (!sectionId) {
+            return $();
+        }
+        if (sectionId === "sectors") {
+            if ($("#sectors").length) {
+                return $("#sectors");
+            }
+            return $("#sector");
+        }
+        return $("#" + sectionId);
+    }
+
+    function widgetSectionIsHidden(sectionId) {
+        const target = getWidgetSectionElement(sectionId);
+        if (!target.length) {
+            return false;
+        }
+        return !target.is(":visible");
+    }
+
+    function updateWidgetMenuState() {
+        if (!$("#widgetList").length) {
+            return;
+        }
+        let anyHidden = false;
+        $("#widgetList .menuToggleItem[data-section]").each(function() {
+            const sectionId = $(this).data("section");
+            const isHidden = widgetSectionIsHidden(sectionId);
+            $(this).toggleClass("is-active", !isHidden);
+            if (isHidden) {
+                anyHidden = true;
+            }
+        });
+        $("#widgetListShowAll").toggle(anyHidden);
+    }
+
+    $(document).on("click", "#widgetToggleHolder", function(event) {
+        $("#widgetList").toggle();
+        updateWidgetMenuState();
+        event.stopPropagation();
+    });
+
+    $(document).on("click", "#widgetList .menuToggleItem", function(event) {
+        const action = $(this).data("action");
+        const sectionId = $(this).data("section");
+        if (action === "show-all") {
+            $("#widgetList .menuToggleItem[data-section]").each(function() {
+                const targetSection = $(this).data("section");
+                const target = getWidgetSectionElement(targetSection);
+                if (target.length) {
+                    target.show();
+                }
+            });
+            updateWidgetMenuState();
+            $("#widgetList").hide();
+            event.stopPropagation();
+            return;
+        }
+        if (!sectionId) {
+            return;
+        }
+        const target = getWidgetSectionElement(sectionId);
+        if (target.length) {
+            if (target.is(":visible")) {
+                target.hide();
+            } else {
+                target.show();
+            }
+        }
+        updateWidgetMenuState();
+        $("#widgetList").hide();
+        event.stopPropagation();
+    });
+
+    $(document).on("click", function(event) {
+        if (!$(event.target).closest("#widgetList, #widgetToggleHolder").length) {
+            $("#widgetList").hide();
+        }
+    });
+
+    document.addEventListener('hashChangeEvent', function () {
+        updateWidgetMenuState();
+    });
+    if (typeof waitForElm === "function") {
+        waitForElm('#widgetToggleIcon').then(() => {
+            updateWidgetMenuState();
+        });
+    }
 
     document.addEventListener('hashChangeEvent', function () {
         updateFilterMenuState();

@@ -160,7 +160,7 @@ function loadMap1(calledBy, show, dp_incoming) {
 
   if (show == "farmfresh") { // In naics.js we also default to GA for this one topic // && theState
     if (!theState) {
-      theState = "NY"; // Since there is not yet a national dataset for map. Using NY for shorter topics menu.
+      theState = "GA"; // Since there is not yet a national dataset for map. Using NY for shorter topics menu.
       updateHash({"state":theState});
     }
     dp.listTitle = "USDA Farm Produce";
@@ -203,7 +203,7 @@ function loadMap1(calledBy, show, dp_incoming) {
     dp.stateRequired = "true";
     dp.addlisting = "https://www.ams.usda.gov/services/local-regional/food-directories-update";
     // community/farmfresh/ 
-    dp.mapInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community/farmfresh/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
+    dp.mapInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community-data/process/python/farmfresh/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
   } else if (show == "buses") {
     dp.listTitle = "Bus Locations";
     dp.dataset = "https://api.marta.io/buses";
@@ -498,7 +498,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website", "Type": "tag"};
         dp.datastates = ["GA"];
       } else if (show == "aerospace") {
-        dp.listTitle = "Georgia Aerospace Directory";
+        dp.listTitle = "Georgia Aerospace";
         dp.dataTitle = "Aerospace Directory";
         dp.mapInfo = "The Aerospace Directory is a free listing service provided by the Center of Innovation for Aerospace for any aerospace-related company or organization in Georgia. <a href='https://www.cognitoforms.com/GDECD1/GeorgiaDirectory' target='_blank'>Add and Update Listings</a>";
         // Participating in this directory gives a company/organization visibility to national, regional, and state partners who are looking for local suppliers or potential suppliers for new economic development prospects. 
