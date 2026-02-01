@@ -31,7 +31,7 @@ DONE: Output countries.csv file with 2-char country codes and similar columns to
 TO DO: Create a GitHub Action for our [State Filters CoLab](https://colab.research.google.com/drive/1CsIjLujiiBoGJlIHCBvDZit3QSVg07zR?usp=sharing).  
 Run annually for both states and countries.
 
-DONE: Document how to add a private Github token to push from CoLab. Documented below. - Ivy
+DONE: Documented [how to add a Github token to push from CoLab](/localsite/start/steps/github-token/). - Ivy
 
 
 Also see our [UN Goal Timelines Javascript API display and Python API Data Pull](/localsite/timeline/)
@@ -43,6 +43,4 @@ Data merged for [Carbon Cycle - State Comparison](/apps/carbon/#state=CA) within
 
 The original BeyondCarbon.org state comparison data seems to be removed from their site.
 
-[BeyondCarbon.org](https://BeyondCarbon.org) data was originally pulled into [fused/result.json](https://model.earth/beyond-carbon-scraper/fused/result.json) by [beyond-carbon-scraper](https://github.com/modelearth/beyond-carbon-scraper/)
-
-<br>
+[BeyondCarbon.org](https://BeyondCarbon.org) data was originally pulled into [fused/result.json](https://model.earth/beyond-carbon-scraper/fused/result.json) by [beyond-carbon-scraper](https://github.com/modelearth/beyond-carbon-scraper/)  

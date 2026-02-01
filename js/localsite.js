@@ -434,11 +434,14 @@ function getHashOnly() {
 
 function updateHash(addToHash, addToExisting, removeFromHash) {
     //alert("updateHash object: " + JSON.stringify(addToHash))
+    //let debugMsg = "updateHash called with: " + JSON.stringify(addToHash) + " addToExisting: " + addToExisting + " isPopstateNavigation: " + (typeof isPopstateNavigation !== 'undefined' ? isPopstateNavigation : "undefined");
+    //alert(debugMsg);
+    console.log("updateHash called with:", JSON.stringify(addToHash), "addToExisting:", addToExisting);
     let hash = {}; // Limited to this function
     if (addToExisting != false) {
       hash = getHashOnly(); // Include all existing. Excludes hiddenhash.
     }
-    console.log(addToHash)
+    console.log("updateHash addToHash:", addToHash)
     const newObj = {}; // For removal of blank keys in addToHash
     Object.entries(addToHash).forEach(([k, v]) => {
       if (v != null) {
@@ -478,14 +481,33 @@ function updateHash(addToHash, addToExisting, removeFromHash) {
     if (window.location.search) { // Existing, for parameters that are retained as hash changes.
       queryString += window.location.search; // Contains question mark (?)
     }
-    if (hashString) { // Remove the hash here if adding to other 
+    if (hashString) { // Remove the hash here if adding to other
       queryString += "#" + hashString;
     }
     let searchTitle = 'Page ' + hashString;
-    //alert(queryString)
-    window.history.pushState("", searchTitle, pathname + queryString);
+    let newURL = pathname + queryString;
+    let currentURL = window.location.pathname + window.location.search + window.location.hash;
+    console.log("pushState - Old URL:", currentURL, "New URL:", newURL);
+
+    // Only push to history if the URL is actually changing
+    if (currentURL !== newURL) {
+      // Use replaceState during back/forward navigation to avoid creating new history entries
+      if (typeof isPopstateNavigation !== 'undefined' && isPopstateNavigation) {
+        // alert("Using REPLACESTATE\nOld: " + currentURL + "\nNew: " + newURL); // Temp for testing
+        window.history.replaceState("", searchTitle, newURL);
+        console.log("replaceState executed - history entry updated (popstate navigation)");
+      } else {
+        //alert("Using PUSHSTATE\nOld: " + currentURL + "\nNew: " + newURL); // Temp for testing
+        window.history.pushState("", searchTitle, newURL);
+        console.log("pushState executed - new history entry created");
+      }
+    } else {
+      console.log("SKIPPING history update - URL unchanged\nURL: " + currentURL); // Temp for testing
+      console.log("pushState/replaceState skipped - URL unchanged");
+    }
 }
 function goHash(addToHash,removeFromHash) {
+  //alert("goHash called with: " + JSON.stringify(addToHash) + "\nremoveFromHash: " + removeFromHash);
   consoleLog("goHash\n" + JSON.stringify(addToHash, null, 2));
   // Get and normalize the current hash
   const currentHash = normalizeHash(window.location.hash);
@@ -494,7 +516,10 @@ function goHash(addToHash,removeFromHash) {
   const newHash = normalizeHash(window.location.hash);
   // Only trigger the event if the normalized hash actually changed
   if (currentHash !== newHash) {
+    consoleLog("goHash triggering hashChangeEvent\nOld hash: " + currentHash + "\nNew hash: " + newHash);
     triggerHashChangeEvent();
+  } else {
+    consoleLog("goHash NOT triggering hashChangeEvent - hash unchanged");
   }
 }
 function go(addToHash) {
@@ -535,6 +560,7 @@ if(typeof priorHash == 'undefined') {
 }
 //let nextPriorHash = {};
 let nextPriorHash = structuredClone(param); // Param values set in pages and the include URL are passed forward as a hiddenhash.
+var isPopstateNavigation = false; // Flag to track if we're in a back/forward navigation. Temp for testing
 // Triggers custom hashChangeEvent in multiple widgets.
 // Exception, React widgets use a different process.
 var triggerHashChangeEvent = function () {
@@ -698,56 +724,34 @@ var theroot = local_app.localsite_root(); // Use local_app.localsite_root to get
 
 //   // let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js - Doesn't work for embedded widgets - returns cloudflare
 
-//   let hostnameAndPort = window.location.protocol + '//' + window.location.host; // The base, which includes the port.
-//   let myScript;
-//   for (var i = 0; i < scripts.length; ++i) { // Using current script
-//       if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
-//         myScript = scripts[i];
-//       }
-//   }
+  let hostnameAndPort = window.location.protocol + '//' + window.location.host; // The base, which includes the port.
+  let myScript;
+  for (var i = 0; i < scripts.length; ++i) { // Using current script
+      if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
+        myScript = scripts[i];
+      }
+  }
+  if (myScript) {
+      hostnameAndPort = extractHostnameAndPort(myScript.src);
+      consoleLog("hostnameAndPort from " + myScript.src + " is " + hostnameAndPort);
+  }
+  let theroot = location.protocol + '//' + location.host + '/localsite/';
 
-//   // --- START MODIFICATION FOR GITHUB PAGES ---
-//   let basePath = '/'; // Default to root path
-//   // Check if it's a GitHub Pages Project site (e.g., username.github.io/repo-name/)
-//   // And the pathname is not just '/' (which would be a User/Organization page)
-//   if (location.host.endsWith('.github.io') && window.location.pathname.length > 1) {
-//     // Extract the /repo-name/ part from the pathname
-//     // Example: /webroot-earth/some/page.html => /webroot-earth/
-//     // Example: /webroot-earth => /webroot-earth/
-//     let pathSegments = window.location.pathname.split('/').filter(s => s.length > 0);
-//     if (pathSegments.length > 0) {
-//       basePath = '/' + pathSegments[0] + '/';
-//     }
-//   }
-//   // --- END MODIFICATION FOR GITHUB PAGES ---
-
-//   if (myScript) {
-//       hostnameAndPort = extractHostnameAndPort(myScript.src);
-//       consoleLog("hostnameAndPort from " + myScript.src + " is " + hostnameAndPort);
-//   }
-
-//   // Construct theroot, incorporating basePath
-//   // The goal is to get: https://harimayooram.github.io/webroot-earth/localsite/
-//   let theroot = location.protocol + '//' + location.host + basePath + 'localsite/'; // Modified line
-
-//   if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
-//     //theroot = "https://map.georgia.org/localsite/";
-//     theroot = hostnameAndPort + basePath + "localsite/"; // Modified line
-//   }
-//   if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-//     theroot = hostnameAndPort + basePath + "localsite/"; // Modified line
-//     console.log("theroot from remotely called localsite: " + theroot);
-//     //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
-//   }
-//   if (location.host.indexOf('localhost') >= 0) {
-//     // For localhost, we generally want relative paths without the repo name in the root part
-//     // e.g., http://localhost:PORT/localsite/
-//     // The previous logic here would make theroot = "https://model.earth/localsite/" which is wrong for local testing
-//     // So, explicitly set it for localhost to be consistent.
-//     theroot = location.protocol + '//' + location.host + '/localsite/';
-//   }
-//   localsite_repo3 = theroot; // Save to reduce DOM hits
-//   return (theroot);
+  if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
+    theroot = hostnameAndPort + "/localsite/";
+  }
+  if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+    theroot = hostnameAndPort + "/localsite/";
+    console.log("theroot from remotely called localsite: " + theroot);
+    //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
+  }
+  if (location.host.indexOf('localhost') >= 0) {
+    // Enable to test embedding without locathost repo in site theroot. Rename your localsite folder.
+    //theroot = "https://model.earth/localsite/";
+  }
+  localsite_repo3 = theroot; // Save to reduce DOM hits
+  return (theroot);
+}
 
 function clearHash(toClear) {
   let hash = getHashOnly(); // Include all existing
@@ -849,11 +853,12 @@ function loadLocalTemplate() {
         $(".stateFilters").hide();
       }
       if (typeof relocatedScopeMenu != "undefined") {
-        relocatedScopeMenu.appendChild(selectScope); // For apps hero
+        // DROPDOWN #selectScope was REMOVED  relocatedScopeMenu.appendChild(selectScope); // For apps hero
       }
       waitForElm('#filterClickLocation').then((elm) => {
         if (param.showstates != "false") {
-            $("#filterClickLocation").show();
+            $("#geoviewSelectHolder").show();
+            $("#filterClickLocation").show(); // Show counties tab
         }
         $("#mapFilters").prependTo("#main-content");
         // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
@@ -1100,7 +1105,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
                 let userImg = $.gravatar(email);
                 if (userImg) {
                   localStorage.userImg = userImg;
-                  $("#gravatarImg").html("<img src='" + localStorage.userImg + "' style='width:100%;max-width:220px;border-radius:30px;'><br><br>");
+                  $("#gravatarImg").html("<img src='" + localStorage.userImg + "' style='width:100%;max-width:100px;border-radius:50px;'><br><br>");
                 }
               });
             } else {
@@ -1117,8 +1122,10 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
                 $(".uIn").hide();
                 if (isValid(email)) {
                   Cookies.set('golog', window.location.href);
-                  //alert("valid email")
-                  window.location = "/explore/menu/login/azure/";
+                  if (location.host.indexOf('localhost') >= 0) {
+                    alert("Redirect to explore - invalid email")
+                  }
+                  window.location = "/explore";
                   return;
                 }
 
@@ -1215,7 +1222,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         
       });
 
-      $(window).on('hashchange', function() { // Avoid window.onhashchange since overridden by map and widget embeds  
+      $(window).on('hashchange', function() { // Avoid window.onhashchange since overridden by map and widget embeds
+        //alert("HASHCHANGE event fired!\nNew URL: " + window.location.href);
         consoleLog("window hashchange");
         consoleLog("delete hiddenhash.name");
         delete hiddenhash.name; // Not sure where this is set.
@@ -1223,6 +1231,25 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         //delete hiddenhash.geo; // Not sure where this is set.
 
         triggerHashChangeEvent();
+      });
+
+      // Handle browser back/forward button navigation
+      window.addEventListener('popstate', function(event) {
+        console.log("popstate event, back/forward button navigation - URL:", window.location.href);
+        isPopstateNavigation = true;
+        // The hashchange event should handle the actual hash change,
+        // but we trigger it explicitly to ensure it fires
+        triggerHashChangeEvent();
+
+        // Temp for testing
+        // Reset flag after a short delay to allow hash change handlers to complete
+        /*
+        setTimeout(function() {
+          isPopstateNavigation = false;
+          console.log("isPopstateNavigation reset to false");
+        }, 100);
+        */
+
       });
       //MutationObserver.observe(hiddenhash, triggerHashChangeEvent);
 
@@ -1455,6 +1482,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   $(document).on("click", "#earthClose", function(event) { // ZOOM IN
     $("#nullschoolHeader").hide();
     $("#hero_holder").show();
+    if (typeof goHash === "function") {
+      goHash({"geoview":""});
+    }
     event.stopPropagation();
   });
   $(document).on("click", "#earthZoom .leaflet-control-zoom-in", function(event) { // ZOOM IN
@@ -2744,9 +2774,13 @@ function useSet() {
         if (uAcc < 5) {
           Cookies.set('golog', window.location.href);
           if (param.minred) {
-            window.location = param.minred;
+            //window.location = param.minred;
+            window.location.replace(param.minred); // So backing up skips the redirecting page.
           } else {
-            window.location = "/explore/menu/login/azure";
+            if (location.host.indexOf('localhost') >= 0) {
+                alert("Redirect to explore 4")
+            }
+            window.location = "/explore";
           }
           return;
         }

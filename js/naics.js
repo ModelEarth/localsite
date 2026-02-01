@@ -77,7 +77,11 @@ document.addEventListener('hashChangeEvent', function (elem) {
 let industryTitleFile = "/localsite/info/naics/lookup/6-digit_2012_Codes.csv"; // Source: https://www.census.gov/eos/www/naics/downloadables/downloadables.html
 function getIndustryLocFileString(catsize) {
     //return local_app.community_data_root() + "industries/naics/US/country/US-2021-Q1-naics-" + catsize + "-digits.csv"; // Removed
-    return local_app.community_data_root() + "industries/naics/US/country/US-census-naics" + catsize + "-2021.csv";
+    if (location.host.indexOf('localhost') >= 0) {
+        return "/community-data/industries/naics/US/country-update/US-naics" + catsize + "-country-2021.csv";
+    } else {
+        return local_app.community_data_root() + "industries/naics/US/country/US-census-naics" + catsize + "-2021.csv";
+    }
     //return local_app.community_data_root() + "industries/naics/US/country/US-census-naics" + catsize + "-2021.csv";
 }
 // Copied from v2 - Not yet implemented
@@ -97,7 +101,6 @@ function refreshNaicsWidget(initialLoad) {
     //alert("refreshNaicsWidget() hiddenhash.naics: " + hiddenhash.naics);
 
     let hash = getHash(); // Includes hiddenhash
-    console.log("refreshNaicsWidget hash.naics: " + hash.naics + " and prior naics: " + priorHash_naicspage.naics);
 
     if (hash.set != priorHash_naicspage.set) {
         if (!hash.set) {
@@ -130,7 +133,6 @@ function refreshNaicsWidget(initialLoad) {
     // Exit if no change to: county (geo) or state.
     if (!initialLoad) {
         if (!(hash.geo != priorHash_naicspage.geo || hash.state != priorHash_naicspage.state)) {
-            console.log("No geo change for refreshNaicsWidget()");
             priorHash_naicspage = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
             initialNaicsLoad = false;
             return;
@@ -209,7 +211,9 @@ function refreshNaicsWidget(initialLoad) {
         loadNAICS = true;
     } else if (hash.geo != priorHash_naicspage.geo) {
         loadNAICS = true;
-    } else if ((hash.naics != priorHash_naicspage.naics) && hash.naics && hash.naics.indexOf(",") > 0) { // Skip if only one naics
+    } else if ((hash.naics != priorHash_naicspage.naics) && hash.naics) {
+        // Load when NAICS changes (both single and multiple NAICS codes)
+        // This ensures the Industry Detail Dashboard displays for single NAICS
         loadNAICS = true;
     } else if (hash.catsize != priorHash_naicspage.catsize) {
         loadNAICS = true;
@@ -263,12 +267,28 @@ function refreshNaicsWidget(initialLoad) {
     //alert("naics " + hash.naics)
     if (loadNAICS) {
         if (hash.state && hash.naics && hash.naics.indexOf(",") < 0) { // Hide when viewing just 1 naics within a state.
+            // Show parent container first (required for visibility)
+            $("#list_main").show();
+
+            // Hide industry list, show detail dashboard
             $("#industryListHolder").hide();
             $("#industryDetail").show();
+
+            // Load industry detail with products
+            if (typeof showIndustryDetail === 'function') {
+                // Try to get sector data from USEEIO if available
+                let sectorData = null;
+                if (typeof epaSectors !== 'undefined' && epaSectors.get) {
+                    sectorData = epaSectors.get(hash.naics);
+                }
+                showIndustryDetail(hash.naics, sectorData);
+
+                // Note: Stats are populated later when dataSet.industryCounties loads (see line ~2029)
+            }
         } else if (!hash.state) {
             $("#industryListHolder").show();
             //$("#industries").html("<div class='contentpadding' style='padding-top:10px; padding-bottom:10px'>Select a location above for industry and impact details.</div>");
-        
+
             $("#econ_list").hide(); // Hides loading icon when no state
 
             // Replaces loading icon
@@ -279,6 +299,8 @@ function refreshNaicsWidget(initialLoad) {
             $("#industryListHolder").show();
             $("#industryDetail").hide();
         }
+
+        // Common logic for all branches of if (loadNAICS)
         if (!hash.catsort) {
             hash.catsort = "payann";
         }
@@ -290,8 +312,7 @@ function refreshNaicsWidget(initialLoad) {
         }
 
         // v2
-        if ((location.host.indexOf('localhost') >= 0 || hash.beta == "true") || location.href.indexOf('/info/naics/') >= 0) {
-
+        if ((location.host.indexOf('localhost') >= 0 || hash.beta == "true") || location.href.indexOf('/info/naics/') >= 0 || location.host.indexOf('github.io') >= 0) {
             $("#industryTableHolder").show();
             $("#sectorTableHolder").show();
             if (hash.catsize == "6") {
@@ -299,6 +320,7 @@ function refreshNaicsWidget(initialLoad) {
             }
             let industryLocDataFile = getIndustryLocFileString(hash.catsize);
             if (location.host.indexOf('localhost') >= 0) {
+                //alert("industryLocDataFile " + industryLocDataFile)
                 waitForElm('#tabulator-industrytable-intro').then((elm) => {
                     // Occurs everytime state or county changes.
                     //$("#tabulator-industrytable-datalink").html("<a href='" + industryLocDataFile + "''>" + industryLocDataFile + "</a><br>");
@@ -307,7 +329,7 @@ function refreshNaicsWidget(initialLoad) {
             }
             d3.csv(industryLocDataFile).then( function(county_data) {
                 // Loads Tabulator via showIndustryTabulatorList()
-                callPromises(industryLocDataFile); 
+                callPromises(industryLocDataFile);
             });
         }
         loadIndustryData(hash);
@@ -524,7 +546,14 @@ function getNaics_setHiddenHash2(go) {
 
     //delete hash.naics; // Since show value invokes new hiddenhash
 
-    updateHash({'naics':''})
+    // Only clear naics from URL if user didn't explicitly provide it
+    // Check if naics exists in the URL hash (not just in hiddenhash)
+    let currentUrlHash = getHashOnly(); // Gets only URL hash, excludes hiddenhash
+    if (!currentUrlHash.naics) {
+        // User didn't provide naics in URL, safe to clear it
+        updateHash({'naics':''})
+    }
+    // If currentUrlHash.naics exists, preserve it in the URL (don't clear it)
 
     // If states are not available yet, wait for DOM.
     if(!$("#state_select").length) {
@@ -1960,6 +1989,42 @@ function topRatesInFipsNew(dataSet, fips) {
 
     console.log("dataSet.industries v2")
     console.log(dataSet.industries);
+
+    // Update industry stats if we're viewing a specific NAICS
+    let currentHash = getHash();
+    if (currentHash.naics && typeof updateIndustryStats === 'function') {
+        // Aggregate county-level data for this NAICS code
+        if (localObject.industryCounties && localObject.industryCounties.length > 0) {
+            let totalEmployees = 0;
+            let totalEstablishments = 0;
+            let totalPayroll = 0;
+            let countyCount = 0;
+
+            for (let i = 0; i < localObject.industryCounties.length; i++) {
+                // Property is "Naics" not "NAICS"
+                if (localObject.industryCounties[i].Naics === currentHash.naics || localObject.industryCounties[i].Naics === String(currentHash.naics)) {
+                    totalEmployees += Number(localObject.industryCounties[i]['Employees']) || 0;
+                    totalEstablishments += Number(localObject.industryCounties[i]['Establishments']) || 0;
+                    totalPayroll += Number(localObject.industryCounties[i]['Payroll']) || 0;
+                    countyCount++;
+                }
+            }
+
+            if (countyCount > 0) {
+                console.log('[IndustryStats] Aggregated data from', countyCount, 'counties for NAICS', currentHash.naics);
+                updateIndustryStats({
+                    employment: totalEmployees,
+                    establishments: totalEstablishments,
+                    payroll: totalPayroll
+                });
+            } else {
+                console.warn('[IndustryStats] No county data found for NAICS', currentHash.naics);
+            }
+        } else {
+            console.warn('[IndustryStats] localObject.industryCounties not available');
+        }
+    }
+
     return;
 
     for (var j = 0; j < fips.length; j++) { 
@@ -2174,7 +2239,7 @@ function showSectorTabulatorList(attempts) {
             movableColumns:true,      //allow column order to be changed
             resizableRows:true,       //allow row order to be changed
             initialSort:[             //set the initial sort order of the data
-                {column:"index", dir:"asc"},
+                {column:"name", dir:"asc"},
             ],
             maxHeight:"500px", // For frozenRows
             columns:[
@@ -2321,7 +2386,8 @@ function showIndustryTabulatorList(attempts) {
         // ToDo: Replace width on Industry with a cell that fills any excess space.
 
         // {title:"Population", field:"Population", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                
+        
+        // Area Industries
         industrytable = new Tabulator("#tabulator-industrytable", {
             data:localObject.industryCounties,     //load row data from array of objects
             layout:"fitColumns",      //fit columns to width of table
@@ -2338,12 +2404,12 @@ function showIndustryTabulatorList(attempts) {
             paginationX:true, //enable.
             paginationSizeX:10,
             columns:[
-                {title:"Naics", field:"Naics", minWidth:60},
-                {title:"Industry", field:"Industry", minWidth:300},
-                {title:"Payroll", field:"Payroll", hozAlign:"right", minWidth:120, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"} },
-                {title:"Locations", field:"Establishments", hozAlign:"right", minWidth:80, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                {title:"Employees", field:"Employees", hozAlign:"right", minWidth:100, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false} },
-                {title:"County FIPS", field:"Fips", hozAlign:"right", minWidth:100, headerSortStartingDir:"desc", sorter:"number" }
+                {title:"State", field:"State", minWidth:60, maxWidth:80, headerSortStartingDir:"desc"},
+                {title:"Naics", field:"Naics", minWidth:60, maxWidth:80},
+                {title:"Industry", field:"Industry", widthGrow: 1},
+                {title:"Payroll", field:"Payroll", hozAlign:"right", minWidth:220, maxWidth:240, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false,symbol:"$"}, headerHozAlign: "right" },
+                {title:"Locations", field:"Establishments", hozAlign:"right", minWidth:80, maxWidth:140, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false}, headerHozAlign: "right" },
+                {title:"Employees", field:"Employees", hozAlign:"right", minWidth:100, maxWidth:140, headerSortStartingDir:"desc", sorter:"number", formatter:"money", formatterParams:{precision:false}, headerHozAlign: "right" }
             ],
             rowClick:function(e, row) {
                 row.toggleSelect(); //toggle row selected state on row click
@@ -2409,6 +2475,8 @@ function showIndustryTabulatorList(attempts) {
                 }
             },
         });
+
+        // {title:"County FIPS", field:"Fips", hozAlign:"right", minWidth:100, headerSortStartingDir:"desc", sorter:"number" }
 
         //industrytable.selectRow(industrytable.getRows().filter(row => row.getData().name == 'Fulton County, GA'));
         //industrytable.selectRow(industrytable.getRows().filter(row => row.getData().name.includes('Ba')));
