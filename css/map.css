@@ -105,9 +105,9 @@
 }
 .leaflet-touch .leaflet-bar a, .earthZoom .leaflet-bar a {
   display: block; /* Allows icons to be stacked */
-  width:36px !important;
-  height:36px !important;
-  font-size: 26px !important;
+  width:36px;
+  height:36px;
+  font-size: 26px;
   color: #fff !important;
   background-color: #555 !important;
   border: 0px !important;
