@@ -113,7 +113,6 @@
   border: 0px !important;
   border-radius: 6px !important;
   margin-left: 4px;
-  padding: 0 10px;
   text-decoration: none;
 }
 .leaflet-control-layers-overlays label div span, .leaflet-control-layers-selector {
@@ -122,11 +121,11 @@
 .leaflet-control-zoom-in {
   margin-bottom:6px;
   border:#bbb 2px solid !important;
-  line-height: 34px !important;
+  line-height: 26px !important;
 }
 .leaflet-control-zoom-out {
   border:#bbb 2px solid !important;
-  line-height: 32px !important;
+  line-height: 26px !important;
 }
 .leaflet-top > .info {
   background-color: rgba(33, 33, 33, 0.5);
