@@ -1398,7 +1398,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       fullsite = true;
       includeCSS3(theroot + 'css/map.css',theroot); // Before naics.js so #industries can be overwritten.
-      includeCSS3(theroot + '../team/projects/map/location.css',theroot);
+      //includeCSS3(theroot + '../team/projects/map/location.css',theroot);
 
       // TODO - Try limiting to param.display == "everything"
       //includeCSS3(theroot + 'css/naics.css',theroot);
