@@ -546,13 +546,11 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .rightIcons {
 	position: absolute;
 	right: 0px;
+	top: 0px;
+	bottom: 0px;
 	z-index: 999;
-	font-size: 44px;
-	text-shadow: 1px 1px 4px #fff;
-	padding-right: 16px;
-}
-.dark .rightIcons {
-	text-shadow: none;
+	display: flex;
+	align-items: center;
 }
 .bothSideIcons {
   top:0px;

@@ -1612,8 +1612,6 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .iconPadding {
   height: 64px;
   min-width: 58px;
-  text-align: center;
-  /* padding: 5px 26px 2px 12px; */
   cursor: pointer;
   color: #888;
 }

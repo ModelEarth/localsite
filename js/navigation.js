@@ -3203,6 +3203,16 @@ catArray = [];
             return;
         }
         $("#filterFieldToggleIcon").text(iconName);
+        const $holder = $("#filterFieldToggleHolder");
+        if (iconName === "arrow_drop_down_circle") {
+            // arrow_drop_down_circle has its own circle, hide the background circle
+            $holder.find(".material-icons:first").hide();
+            $("#filterFieldToggleIcon").css("font-size", "24px");
+        } else {
+            // arrow_right needs the background circle
+            $holder.find(".material-icons:first").show();
+            $("#filterFieldToggleIcon").css("font-size", "18px");
+        }
     }
     function refreshFilterToggleIcon() {
         if (!$("#filterFieldToggleIcon").length) {
