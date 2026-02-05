@@ -1610,8 +1610,6 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 
 /* .upperIcons > */
 .iconPadding {
-  height: 64px;
-  min-width: 58px;
   cursor: pointer;
   color: #888;
 }
@@ -3029,4 +3027,175 @@ body.sidebar-hidden #openNav {
     min-height: 32px;
     justify-content: center;
     box-sizing: border-box;
+}
+
+/* Panel Menu Toggle Styles - Reusable across panels */
+.menuToggleMenu {
+  position: absolute;
+  right: 10px;
+  top: 48px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  min-width: 180px;
+  padding: 6px 0;
+  z-index: 1001;
+}
+.menuToggleMenuInline {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  min-width: 180px;
+  padding: 6px 0;
+}
+.dark .menuToggleMenu {
+  background: #333;
+  border-color: #555;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+.dark .menuToggleMenuInline {
+  background: #333;
+  border-color: #555;
+}
+.menuToggleItem {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #444;
+  display: block;
+  text-decoration: none;
+  position: relative;
+  line-height: 1;
+}
+.menuToggleItem .material-icons {
+  font-size: 16px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.menuToggleCheck {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #888;
+  display: none !important;
+}
+.menuToggleItem.is-active .menuToggleCheck {
+  display: inline-block !important;
+}
+.menuToggleItem:hover {
+  background: #f2f2f2;
+  color: #111;
+}
+.menuToggleDivider {
+  border-top: 1px solid #eee;
+  margin: 4px 0;
+}
+.menuToggleLink {
+  color: inherit;
+}
+.dark .menuToggleItem {
+  color: #eee;
+}
+.dark .menuToggleCheck {
+  color: #aaa;
+}
+.dark .menuToggleItem:hover {
+  background: #444;
+  color: #fff;
+}
+.dark .menuToggleLink {
+  color: inherit;
+}
+.dark .menuToggleDivider {
+  border-top-color: #555;
+}
+.menuToggleHolderInline {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: 100%;
+  min-height: 34px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  transition: all 0.2s;
+}
+.menuToggleHolderInline .material-icons {
+  transition: none;
+}
+.menuToggleHolderInline:hover {
+  border-color: #007bff;
+  background: #f8f9fa;
+}
+.dark .menuToggleHolderInline {
+  background: #333;
+  border-color: #555;
+}
+.dark .menuToggleHolderInline:hover {
+  border-color: #007bff;
+  background: #444;
+}
+.menuToggleHolderMap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+}
+.menuToggleHolderMap .material-icons {
+  transition: none;
+}
+.menuToggleHolderMap .material-icons.circle-bg {
+  color: white;
+  font-size: 32px;
+}
+.dark .menuToggleHolderMap .material-icons.circle-bg {
+  color: rgba(255, 255, 255, 0.9);
+}
+/* Ensure icon positioning is stable */
+#widgetDetailsMenuToggleHolder .material-icons,
+#widgetmapWrapperMenuToggleHolder .material-icons,
+#pageGalleryMenuToggleHolder .material-icons,
+#location-sectionMenuToggleHolder .material-icons {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+#widgetDetailsMenuToggleHolder .material-icons[id$="MenuToggleIcon"],
+#widgetmapWrapperMenuToggleHolder .material-icons[id$="MenuToggleIcon"],
+#pageGalleryMenuToggleHolder .material-icons[id$="MenuToggleIcon"],
+#location-sectionMenuToggleHolder .material-icons[id$="MenuToggleIcon"] {
+  position: absolute !important;
+}
+/* Fade transition for location-section during tour */
+.location-section {
+  transition: opacity 0.2s ease-in-out;
+}
+.location-section.fading {
+  opacity: 0.5;
+}
+/* Wider clickable area for location-section menu toggle */
+#location-sectionMenuToggleHolder {
+  padding: 8px 12px !important;
+}
+/* Add left and right padding to filter field toggle holder */
+#filterFieldToggleHolder {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+/* Orange color for pause icon during tour */
+#location-sectionMenuToggleIcon.pause-icon {
+  color: #ff6b35 !important;
 }
