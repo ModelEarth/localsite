@@ -7076,6 +7076,10 @@ function showNavColumn() {
         $('#locations-content').append($('#legend-content'));
         $('#legend-content').css('font-size', '12px');
         $('#legend-content').css('line-height', '1em');
+        const cloneLeftTarget = document.getElementById('cloneLeftTarget');
+        if (cloneLeftTarget) {
+            cloneLeftTarget.style.display = 'none';
+        }
     }
     $('#floating-legend').hide();
     $('#floating-legend').css('opacity', '0');
@@ -7118,6 +7122,10 @@ function hideNavColumn() {
     // Move legend content back to floating legend and show it when nav is closed
     if ($('#legend-content').length && $('#floating-legend').length) {
         $('#floating-legend').append($('#legend-content'));
+    }
+    const cloneLeftTarget = document.getElementById('cloneLeftTarget');
+    if (cloneLeftTarget) {
+        cloneLeftTarget.style.display = '';
     }
     $('#floating-legend').show();
     $('#floating-legend').css('opacity', '1');

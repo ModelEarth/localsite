@@ -4118,7 +4118,8 @@ function startTour(panelId, isReload = false) {
       }
 
       if (typeof goHash === 'function') {
-        goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true' });
+        const currentHash = getHash();
+        goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true', view: currentHash.view || '' });
       }
     }, 5000);
   } else {
@@ -4142,7 +4143,8 @@ function startTour(panelId, isReload = false) {
     }
 
     if (typeof goHash === 'function') {
-      goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true' });
+      const currentHash = getHash();
+      goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true', view: currentHash.view || '' });
     }
 
     // Start interval for subsequent items (6 seconds)
@@ -4163,7 +4165,8 @@ function startTour(panelId, isReload = false) {
       }
 
       if (typeof goHash === 'function') {
-        goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true' });
+        const currentHash = getHash();
+        goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true', view: currentHash.view || '' });
       }
     }, 6000);
   }
@@ -4486,6 +4489,11 @@ function setupPanelMenuEvents(panelId, panelType) {
   // Toggle menu on holder click
   $(document).on('click', `#${holderId}`, function(e) {
     e.stopPropagation();
+
+    // Close any open search popup
+    if (window.listingsApp && typeof window.listingsApp.closeSearchPopup === 'function') {
+      window.listingsApp.closeSearchPopup();
+    }
 
     // If tour is playing, clicking the holder toggles pause
     if (tourState.isPlaying && tourState.panelId === panelId) {

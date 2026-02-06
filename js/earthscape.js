@@ -182,60 +182,81 @@ let allCountriesCache = null;
 
 //Timelinechart for scopes country, state, and county
 let geoValues = {};
-const MIN_YEAR = 1960; // Minimum year to filter data
+let MIN_YEAR = 1960; // Minimum year to filter data
+function setTimelineMinYear(year) {
+    const parsedYear = parseInt(year, 10);
+    if (!Number.isNaN(parsedYear)) {
+        MIN_YEAR = parsedYear;
+        window._timelineMinYear = parsedYear;
+    }
+}
+function updateTimelineMinYearFromSelect(selectEl) {
+    if (!selectEl || !selectEl.options || !selectEl.options.length) {
+        return;
+    }
+    const opt = selectEl.options[selectEl.selectedIndex];
+    const startYear = opt && opt.dataset ? opt.dataset.startYear : null;
+    if (startYear) {
+        setTimelineMinYear(startYear);
+    }
+}
+window.setTimelineMinYear = setTimelineMinYear;
+window.updateTimelineMinYearFromSelect = updateTimelineMinYearFromSelect;
 async function getTimelineChart(scope, chartVariable, entityId, showAll, chartText) {
     //alert("getTimelineChart chartVariable: " + chartVariable + ", scope: " + scope)
-    let hash = getHash(); // Add hash check at top of function
-    geoValues = {}; // Clear prior
-    const defaultCountries3Char = defaultCountries.map(code => countryCodeMap[code] || code);
-    const userSelected = hash.country ? hash.country.split(',').map(code => countryCodeMap[code.trim()] || code.trim()) : [];
-    const selectedCountries3Char = [...new Set([...defaultCountries3Char, ...userSelected])];
-    const selectedCountries = []; // top-level
-    let response, data, geoIds;
-    let whichPer = document.querySelector('input[name="whichPer"]:checked')?.value || 'totals';
+    document.body.classList.add('timeline-loading');
+    try {
+        let hash = getHash(); // Add hash check at top of function
+        geoValues = {}; // Clear prior
+        const defaultCountries3Char = defaultCountries.map(code => countryCodeMap[code] || code);
+        const userSelected = hash.country ? hash.country.split(',').map(code => countryCodeMap[code.trim()] || code.trim()) : [];
+        const selectedCountries3Char = [...new Set([...defaultCountries3Char, ...userSelected])];
+        const selectedCountries = []; // top-level
+        let response, data, geoIds;
+        let whichPer = document.querySelector('input[name="whichPer"]:checked')?.value || 'totals';
 
-    if (scope === "county") {
-        // Fetch county data
-        response = await fetch(`https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&entity.expression=${entityId}%3C-containedInPlace%2B%7BtypeOf%3ACounty%7D&select=date&select=entity&select=value&select=variable&variable.dcids=${chartVariable}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "dates": ""
-            })
-        });
-        data = await response.json();
-        geoIds = Object.keys(data.byVariable[chartVariable].byEntity);
+        if (scope === "county") {
+            // Fetch county data
+            response = await fetch(`https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&entity.expression=${entityId}%3C-containedInPlace%2B%7BtypeOf%3ACounty%7D&select=date&select=entity&select=value&select=variable&variable.dcids=${chartVariable}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "dates": ""
+                })
+            });
+            data = await response.json();
+            geoIds = Object.keys(data.byVariable[chartVariable].byEntity);
 
-        // Fetch county and state names
-        const response2 = await fetch('https://api.datacommons.org/v2/node?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "nodes": geoIds,
-                "property": "->[containedInPlace, name]"
-            })
-        });
-        const data2 = await response2.json();
+            // Fetch county and state names
+            const response2 = await fetch('https://api.datacommons.org/v2/node?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "nodes": geoIds,
+                    "property": "->[containedInPlace, name]"
+                })
+            });
+            const data2 = await response2.json();
 
-        Object.keys(data2.data).forEach(geoId => {
-            const node = data2.data[geoId].arcs;
-            const stateName = node.containedInPlace.nodes[0]['name'];
-            const countyName = node.name.nodes[0]['value'];
-            geoValues[geoId] = {
-                name: countyName,
-                state: stateName
-            };
-        });
-    } else if (scope === "state") {
-        // Fetch state data
-        const statesList = [
-            'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 
-            'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
-            'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
+            Object.keys(data2.data).forEach(geoId => {
+                const node = data2.data[geoId].arcs;
+                const stateName = node.containedInPlace.nodes[0]['name'];
+                const countyName = node.name.nodes[0]['value'];
+                geoValues[geoId] = {
+                    name: countyName,
+                    state: stateName
+                };
+            });
+        } else if (scope === "state") {
+            // Fetch state data
+            const statesList = [
+                'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 
+                'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
+                'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
             'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
             'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri',
             'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
@@ -592,6 +613,13 @@ dataCopy.forEach(location => {
         options: {
             responsive: true,
             maintainAspectRatio: true,
+            elements: {
+                point: {
+                    radius: 0,
+                    hoverRadius: 0,
+                    hitRadius: 6
+                }
+            },
             
             plugins: {
                 // Use a floating DOM legend instead of the built-in Chart.js legend
@@ -650,6 +678,13 @@ dataCopy.forEach(location => {
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
+                elements: {
+                    point: {
+                        radius: 0,
+                        hoverRadius: 0,
+                        hitRadius: 6
+                    }
+                },
                  // Important for fluid resizing
                 plugins: {
                   title: {
@@ -787,7 +822,10 @@ dataCopy.forEach(location => {
         // Remove existing listener to avoid duplicates
         window.removeEventListener('resize', handleChartResize);
         window.addEventListener('resize', handleChartResize);
-    } 
+        }
+    } finally {
+        document.body.classList.remove('timeline-loading');
+    }
 }
 
 // Chart resize handler function
@@ -940,6 +978,7 @@ function resetChartSize() {
 }
 
 function refreshTimeline() {
+    document.body.classList.add('timeline-loading');
     let hash = getHash();
     let scope = "country";
     if (hash.scope) {
@@ -1089,10 +1128,14 @@ async function updateDcidSelectFromSheet(scope) {
     filteredOptions.forEach(row => {
         const value = row[valueIndex]?.trim();
         const text = row[textIndex]?.trim();
+        const startYearValue = startYearIndex > -1 ? row[startYearIndex]?.trim() : '';
         if (value && text) {
             const opt = document.createElement('option');
             opt.value = value;
             opt.text = text;
+            if (startYearValue) {
+                opt.dataset.startYear = startYearValue;
+            }
             dcidSelect.add(opt);
         }
     });
@@ -1100,6 +1143,9 @@ async function updateDcidSelectFromSheet(scope) {
     // Set default selection if options exist
     if (filteredOptions.length > 0) {
         dcidSelect.value = filteredOptions[0][valueIndex].trim(); // Set to the first option's value
+        if (typeof updateTimelineMinYearFromSelect === 'function') {
+            updateTimelineMinYearFromSelect(dcidSelect);
+        }
         refreshTimeline();
     } else {
         alert("No datasets in the Google Sheet for scope \"" + normalizedScope + "\" with the goal \"" + hash.goal + "\"");

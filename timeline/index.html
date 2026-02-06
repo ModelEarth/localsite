@@ -16,6 +16,24 @@
 <script>
 loadMarkdown("README.md", "readmeDiv", "_parent");
 
+function applyPerCapitaGoalSettings() {
+    const hash = getHash();
+    const perCapitaOptions = document.getElementById('perCapitaOptions');
+    if (perCapitaOptions) {
+        if (hash.goal === "health") {
+            perCapitaOptions.style.display = 'none';
+        } else {
+            perCapitaOptions.style.display = 'block';
+        }
+    }
+    if (hash.goal === "population") {
+        const totalsRadio = document.querySelector('input[name="whichPer"][value="totals"]');
+        if (totalsRadio && !totalsRadio.checked) {
+            totalsRadio.checked = true;
+        }
+    }
+}
+
 /* Also update home/index.html */
 document.addEventListener('hashChangeEvent', function (elem) {
     console.log("Timeline page detects URL hashChangeEvent");
@@ -30,6 +48,9 @@ document.addEventListener('hashChangeEvent', function (elem) {
         }
         updateDcidSelectFromSheet(hash.scope); // In localsite/js/earthscape.js
     }
+    waitForElm('#perCapitaOptions').then(() => {
+        applyPerCapitaGoalSettings();
+    });
 }, false);
 document.addEventListener('DOMContentLoaded', () => {
     let hash = getHash();
@@ -38,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     //alert(hash.scope)
     updateDcidSelectFromSheet(hash.scope);
+    applyPerCapitaGoalSettings();
     
     document.addEventListener('change', function(event) {
         if (event.target.name === 'whichLines') {
@@ -47,6 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('chartVariable').addEventListener('change', (event) => {
+        if (typeof updateTimelineMinYearFromSelect === 'function') {
+            updateTimelineMinYearFromSelect(event.target);
+        }
         refreshTimeline();
     });
 
@@ -82,6 +107,36 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 .active {
     display: block;
+}
+/* Subtle loading overlay for chart updates */
+.timeline-loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 5;
+}
+.timeline-loading-overlay .loading-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6b7280;
+  margin: 0 4px;
+  animation: timelinePulse 0.9s ease-in-out infinite;
+}
+.timeline-loading-overlay .loading-dot:nth-child(2) { animation-delay: 0.15s; }
+.timeline-loading-overlay .loading-dot:nth-child(3) { animation-delay: 0.3s; }
+body.timeline-loading .timeline-loading-overlay {
+  opacity: 1;
+}
+@keyframes timelinePulse {
+  0%, 100% { transform: translateY(0); opacity: 0.35; }
+  50% { transform: translateY(-6px); opacity: 0.9; }
 }
 /* Floating legend for timeline chart (fixed viewport position so it doesn't jump around)
     The legend will be fixed in the viewport (top-right by default) regardless of canvas updates.
@@ -788,6 +843,11 @@ p.set('rs_dcid', list.join(','));
         </script>
 
         <div id="div1" class="toogleDiv" chart-wrapper>
+            <div class="timeline-loading-overlay" aria-hidden="true">
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+            </div>
             <canvas id="timelineChart" ></canvas>
             <div id="floating-legend" aria-hidden="false" style="display:none">
                 <div id="floating-legend-header">
@@ -801,6 +861,11 @@ p.set('rs_dcid', list.join(','));
             </div>
         </div>
         <div id="div2" class="toogleDiv" chart-wrapper>
+            <div class="timeline-loading-overlay" aria-hidden="true">
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+            </div>
             <canvas id="lineAreaChart" ></canvas>
         </div>
 
@@ -824,17 +889,7 @@ p.set('rs_dcid', list.join(','));
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        let hash = getHash(); // Defaulted to country above.
-        const perCapitaOptions = document.getElementById('perCapitaOptions');
-        //const perCapitaTableSection = document.getElementById('perCapitaTableSection');
-        
-        if (hash.goal === "health") {
-            perCapitaOptions.style.display = 'none'; // Hide Per Capita options for health
-            //perCapitaTableSection.style.display = 'none'; // Hide Per Capita table for health
-        } else {
-            perCapitaOptions.style.display = 'block'; // Show Per Capita options for other pages
-            //perCapitaTableSection.style.display = 'block'; // Show Per Capita table for other pages
-        }
+        applyPerCapitaGoalSettings();
     });
 </script>
 <script>

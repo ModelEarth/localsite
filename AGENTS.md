@@ -21,7 +21,7 @@ material-icons are available to pages that include localsite/js/localsite.js
 
 ### Alert Messages
 
-Avoid including \n line breaks in alert popups since they prevent text from being copied.
+Avoid including \n line breaks in alerts since they prevent text from being copied.
 
 ### DOM Element Waiting
 - **NEVER use setTimeout() for waiting for DOM elements**
@@ -65,6 +65,37 @@ Use these functions from localsite/js/localsite.js for hash-based state manageme
 - **Use updateHash()**: When you want to update the hash without triggering reactions
 - **Use hashChangeEvent**: To listen for hash changes triggered by goHash()
 - **Always check function existence**: `if (typeof getHash === 'function')`
+
+#### Detecting Hash Changes with priorHash
+The `window.priorHash` object stores the previous hash state and is automatically maintained by localsite.js:
+
+- **Automatically updated**: Updated by localsite.js whenever the hash changes (via goHash() or direct URL edit)
+- **NOT updated by updateHash()**: Silent updates don't change priorHash, allowing intentional bypassing of change detection
+- **Use for change detection**: Compare current hash with priorHash to detect actual changes and prevent unnecessary updates
+
+Example usage pattern (from localsite/js/navigation.js):
+```javascript
+function handleHashChange() {
+    const hash = getHash();
+    const priorHashValue = window.priorHash?.paramName;
+
+    // Only process if the parameter actually changed
+    if (hash.paramName !== priorHashValue) {
+        // Parameter changed, update the view
+        updateView(hash.paramName);
+    }
+}
+
+document.addEventListener('hashChangeEvent', handleHashChange);
+```
+
+**Why use priorHash?**
+- Prevents double-processing when hash change handlers are called multiple times
+- Avoids re-rendering when the same item is selected repeatedly
+- Ensures map updates only happen when coordinates actually change
+- Critical for preventing "every-other-click" bugs where caching happens before comparison
+
+**Important**: Always use goHash() (not updateHash()) when you want priorHash to be updated and change detection to work properly.
 
 #### Dual-Purpose Menu System (Food and Product Views)
 The profile/item/menu.html page demonstrates hash-based view switching:
