@@ -3981,6 +3981,103 @@ function refreshPanelToggleIcon(holderId, panelId) {
 }
 
 /**
+ * Finds and expands/collapses sibling panels
+ * @param {string} panelId - ID of the panel that was toggled
+ * @param {boolean} isExpanding - True if expanding, false if collapsing
+ */
+function toggleSiblingPanels(panelId, isExpanding) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+
+  const myparent = panel.getAttribute('myparent');
+  if (!myparent) return;
+
+  const parentContainer = document.getElementById(myparent);
+  if (!parentContainer) return;
+
+  // Find all sibling panels with myparent attribute in the same parent
+  const allPanelsWithParent = document.querySelectorAll(`[myparent="${myparent}"]`);
+  const siblingPanels = Array.from(allPanelsWithParent).filter(sibling => sibling.id !== panelId);
+
+  siblingPanels.forEach(sibling => {
+    const siblingId = sibling.id;
+
+    // Check if sibling is already in the correct state
+    const siblingMyparent = sibling.getAttribute('myparent');
+    const siblingOriginalParent = siblingMyparent ? document.getElementById(siblingMyparent) : null;
+    const siblingIsExpanded = siblingOriginalParent && !siblingOriginalParent.contains(sibling);
+
+    // Only toggle if sibling is in opposite state
+    if (isExpanding && !siblingIsExpanded) {
+      // Expand sibling
+      if (window.listingsApp && typeof window.listingsApp.myHero === 'function') {
+        const mockButton = document.createElement('button');
+        mockButton.setAttribute('mywidgetpanel', siblingId);
+        mockButton.className = 'fullscreen-toggle-btn';
+
+        const syntheticEvent = new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        });
+
+        Object.defineProperty(syntheticEvent, 'target', {
+          value: mockButton,
+          enumerable: true
+        });
+
+        const originalEvent = window.event;
+        window.event = syntheticEvent;
+
+        window.listingsApp.myHero();
+
+        window.event = originalEvent;
+      }
+    } else if (!isExpanding && siblingIsExpanded) {
+      // Collapse sibling
+      if (window.listingsApp && typeof window.listingsApp.myHero === 'function') {
+        const mockButton = document.createElement('button');
+        mockButton.setAttribute('mywidgetpanel', siblingId);
+        mockButton.className = 'fullscreen-toggle-btn';
+
+        const syntheticEvent = new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        });
+
+        Object.defineProperty(syntheticEvent, 'target', {
+          value: mockButton,
+          enumerable: true
+        });
+
+        const originalEvent = window.event;
+        window.event = syntheticEvent;
+
+        window.listingsApp.myHero();
+
+        window.event = originalEvent;
+      }
+    }
+
+    // Update sibling menu labels
+    setTimeout(() => {
+      const siblingMenu = document.getElementById(siblingId + 'Menu');
+      if (siblingMenu) {
+        // Determine panel type from menu or default to generic
+        let siblingType = 'Panel';
+        if (siblingId.includes('map')) siblingType = 'Map';
+        else if (siblingId.includes('Details')) siblingType = 'List';
+        else if (siblingId.includes('Gallery')) siblingType = 'Content';
+
+        updateMenuLabels(siblingId + 'Menu', siblingId, siblingType);
+        refreshPanelToggleIcon(siblingId + 'MenuToggleHolder', siblingId);
+      }
+    }, 100);
+  });
+}
+
+/**
  * Updates menu labels based on panel state
  * @param {string} menuId - ID of the menu element
  * @param {string} panelId - ID of the panel element
@@ -3999,9 +4096,17 @@ function updateMenuLabels(menuId, panelId, panelType) {
     isExpanded = document.body.classList.contains('fullscreenMode') ||
                  document.documentElement.classList.contains('fullscreenMode');
   } else {
-    // For other types, check if in hero container
-    const heroContainer = document.getElementById('widgetHero');
-    isExpanded = heroContainer && heroContainer.contains(panel) && heroContainer.style.display !== 'none';
+    // Generic approach: check if panel has been moved from its original parent
+    const myparent = panel.getAttribute('myparent');
+    if (myparent) {
+      const originalParent = document.getElementById(myparent);
+      // Panel is expanded if it's NOT in its original parent
+      isExpanded = originalParent && !originalParent.contains(panel);
+    } else {
+      // Fallback: check if in any hero container (for panels without myparent attribute)
+      const heroContainers = ['widgetHero', 'detailHero'].map(id => document.getElementById(id)).filter(Boolean);
+      isExpanded = heroContainers.some(hero => hero.contains(panel) && hero.style.display !== 'none');
+    }
   }
 
   // Find expand/collapse menu item
@@ -4258,6 +4363,15 @@ function handlePanelAction(action, panelId, panelType) {
       if (window.listingsApp && typeof window.listingsApp.toggleDetailMapHero === 'function') {
         window.listingsApp.toggleDetailMapHero();
 
+        // Determine if we're expanding or collapsing (use wrapper for detailmap)
+        const wrapper = document.getElementById('detailmapWrapper');
+        const myparent = wrapper ? wrapper.getAttribute('myparent') : null;
+        const originalParent = myparent ? document.getElementById(myparent) : null;
+        const isExpanding = originalParent && !originalParent.contains(wrapper);
+
+        // Toggle sibling panels (use wrapper id for detailmap siblings)
+        toggleSiblingPanels('detailmapWrapper', isExpanding);
+
         // Update menu labels after state change
         setTimeout(() => {
           updateMenuLabels(panelId + 'Menu', panelId, panelType);
@@ -4308,6 +4422,15 @@ function handlePanelAction(action, panelId, panelType) {
 
         // Restore original event
         window.event = originalEvent;
+
+        // Determine if we're expanding or collapsing
+        const panel = document.getElementById(panelId);
+        const myparent = panel ? panel.getAttribute('myparent') : null;
+        const originalParent = myparent ? document.getElementById(myparent) : null;
+        const isExpanding = originalParent && !originalParent.contains(panel);
+
+        // Toggle sibling panels
+        toggleSiblingPanels(panelId, isExpanding);
 
         // Update menu labels after state change
         setTimeout(() => {

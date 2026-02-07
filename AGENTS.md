@@ -15,6 +15,12 @@ The template .html includes localsite.js and base.css
 
 **Exceptions**: Do not add charset declarations to redirect pages, or to html template fragments that are included in other pages, as they inherit encoding from their parent documents.
 
+### Design
+
+Use a modern, clean response design that has rounded corners on boarderless panels.
+Each new panel should use the "Panel Menu Toggle System" from localsite/js/localsite.js to place a cirlce icon in its upper right with options for Expand, Close, etc.
+Include .dark mode css. Set responsive layouts based on parent div widths rather than browser width. When possible, reuse common css from localsite/css/base.css
+
 ### Icons
 
 material-icons are available to pages that include localsite/js/localsite.js

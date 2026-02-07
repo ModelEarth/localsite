@@ -101,6 +101,7 @@
 .dark .menuToggleHolder .material-icons {
   color: #ddd;
 }
+/*
 .menuToggleMenu {
   position: absolute;
   right: 10px;
@@ -166,6 +167,7 @@
 .dark .menuToggleDivider {
   border-top-color: #555;
 }
+*/
 #stateFiltersHolder {
   padding-right: 40px;
   max-height: 52px;

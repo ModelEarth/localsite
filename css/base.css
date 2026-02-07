@@ -3033,7 +3033,7 @@ body.sidebar-hidden #openNav {
 .menuToggleMenu {
   position: absolute;
   right: 10px;
-  top: 48px;
+  top: 32px;
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
