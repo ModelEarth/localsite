@@ -313,11 +313,11 @@ input.filterClick[type="text"] {
     min-width: 160px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
-#geoview_state_holder {
+#geoview_statelist {
     padding: 2px 0 2px 6px;
     border-left: 1px solid #eee;
 }
-#geoview_state_holder select {
+#geoview_statelist select {
     max-width: 220px;
 }
 .geoviewSelectList {

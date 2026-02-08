@@ -854,7 +854,9 @@ function consoleLog(text,value) {
 function loadLocalTemplate() {
   consoleLog("loadLocalTemplate()");
   let datascapeFile = theroot + "info/template-main.html";
-  let datascapeFileDiv = "#datascape";
+  // Use body if #datascape doesn't exist
+  let datascapeFileDiv = $("#datascape").length ? "#datascape" : "body";
+
   waitForElm(datascapeFileDiv).then((elm) => {
 
     $.get(datascapeFile, function(theTemplate) { // Get and append template-main.html to #datascape

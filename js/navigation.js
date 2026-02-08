@@ -3536,11 +3536,62 @@ catArray = [];
         refreshFilterToggleIcon();
     });
 
-    waitForElm('#geoview_state_holder').then((elm) => {
+    waitForElm('#geoview_statelist').then((elm) => {
         if ($("#state_select_holder").length) {
-            $("#state_select_holder").appendTo("#geoview_state_holder").show();
+            $("#state_select_holder").appendTo("#geoview_statelist").show();
         }
     });
+
+    // Move state select to relocatedStateMenu if it exists
+    if ($("#relocatedStateMenu").length) {
+        waitForElm('#state_select').then((elm) => {
+            $("#state_select").appendTo("#relocatedStateMenu").show();
+            $("#relocatedStateMenu").parent().show();
+        });
+    }
+
+    // Watch for state_select_holder visibility and move state_select between locations
+    waitForElm('#state_select_holder').then((holderElm) => {
+        function checkAndMove() {
+            const holderVisible = $("#state_select_holder").is(':visible');
+            const stateSelectParent = $("#state_select").parent().attr('id');
+
+            if (holderVisible && stateSelectParent !== 'state_select_holder') {
+                // Move to holder and hide relocatedStateMenu parent
+                $("#state_select").appendTo("#state_select_holder");
+                if ($("#relocatedStateMenu").length) {
+                    $("#relocatedStateMenu").parent().hide();
+                }
+            } else if (!holderVisible && $("#relocatedStateMenu").length && stateSelectParent !== 'relocatedStateMenu') {
+                // Move to relocatedStateMenu and show its parent
+                $("#state_select").appendTo("#relocatedStateMenu").show();
+                $("#relocatedStateMenu").parent().show();
+            }
+        }
+
+        // Initial check
+        checkAndMove();
+
+        // Watch for visibility changes
+        const stateSelectObserver = new MutationObserver(checkAndMove);
+
+        // Observe the holder and its parent containers
+        stateSelectObserver.observe(holderElm, {
+            attributes: true,
+            attributeFilter: ['style', 'class']
+        });
+
+        // Also observe parent elements for visibility changes
+        let parent = holderElm.parentElement;
+        while (parent && parent !== document.body) {
+            stateSelectObserver.observe(parent, {
+                attributes: true,
+                attributeFilter: ['style', 'class']
+            });
+            parent = parent.parentElement;
+        }
+    });
+
     $(document).on("change", "#selectScope", function(event) {
         goHash({"scope":this.value});
     });
@@ -8855,6 +8906,13 @@ $(document).on("change", "#state_select", function(event) {
     $("#geoview_container").hide();
     closeAppsMenu();
     let hash = getHash();
+
+    // Temporary 300ms delay when #state_select is inside #geoview_container
+    // Allows time for hash listeners to read state properties before #state_select moves to #relocatedStateMenu
+    // TODO: Remove delay once state list properties (state names etc) are fetched from page cache variable instead of #state_select
+    const isInContainer = $(this).closest('#geoview_container').length > 0;
+    const delay = isInContainer ? 300 : 0;
+
     if (this.value) {
         $("#region_select").val("");
         // Later a checkbox could be added to retain geo values across multiple states
@@ -8864,8 +8922,11 @@ $(document).on("change", "#state_select", function(event) {
         } else {
             goHash({'state':this.value,'geo':'','name':'','regiontitle':''}); // triggers renderGeomapShapes("geomap", hash); // County select map
         }
-        setGeoviewTitleFromState();
-        //$("#filterLocations").hide(); // So state appears on map immediately
+
+        setTimeout(() => {
+            setGeoviewTitleFromState();
+            //$("#filterLocations").hide(); // So state appears on map immediately
+        }, delay);
     } else { // US selected
         hiddenhash.state = ""; // BugFix - Without this prior state stays in dropdown when choosing no state using top option.
         goHash({'geoview':'country','state':'','geo':''});
