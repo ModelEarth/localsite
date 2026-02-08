@@ -3124,9 +3124,9 @@ body.sidebar-hidden #openNav {
   cursor: pointer;
   width: 100%;
   min-height: 34px;
-  border: 1px solid #ddd;
+  /* border: 1px solid #ddd; */
   border-radius: 8px;
-  background: white;
+  /* background: white; */
   transition: all 0.2s;
 }
 .menuToggleHolderInline .material-icons {

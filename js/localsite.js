@@ -4089,7 +4089,7 @@ function updateMenuLabels(menuId, panelId, panelType) {
   if (!menu || !panel) return;
 
   // Check if panel is in hero container (expanded) or fullscreen mode
-  let isExpanded = false;
+  let isExpanded = panel.dataset && panel.dataset.menuExpanded === 'true' ? true : false;
 
   if (panelType === 'View') {
     // For View type, check if in fullscreen mode (body has fullscreenMode class or similar)
@@ -4101,11 +4101,15 @@ function updateMenuLabels(menuId, panelId, panelType) {
     if (myparent) {
       const originalParent = document.getElementById(myparent);
       // Panel is expanded if it's NOT in its original parent
-      isExpanded = originalParent && !originalParent.contains(panel);
+      if (!panel.dataset || panel.dataset.menuExpanded === undefined) {
+        isExpanded = originalParent && !originalParent.contains(panel);
+      }
     } else {
       // Fallback: check if in any hero container (for panels without myparent attribute)
       const heroContainers = ['widgetHero', 'detailHero'].map(id => document.getElementById(id)).filter(Boolean);
-      isExpanded = heroContainers.some(hero => hero.contains(panel) && hero.style.display !== 'none');
+      if (!panel.dataset || panel.dataset.menuExpanded === undefined) {
+        isExpanded = heroContainers.some(hero => hero.contains(panel) && hero.style.display !== 'none');
+      }
     }
   }
 
@@ -4476,7 +4480,8 @@ function addPanelMenu(options) {
     menuItems,
     datasourcePath = '',
     inline = false,
-    menuPopupHolder = ''
+    menuPopupHolder = '',
+    onAction = null
   } = options;
 
   const items = menuItems || buildMenuConfig(panelType, targetPanelId, datasourcePath);
@@ -4597,6 +4602,11 @@ function addPanelMenu(options) {
     refreshPanelToggleIcon(targetPanelId + 'MenuToggleHolder', targetPanelId);
   };
 
+  if (typeof onAction === 'function') {
+    if (!window.panelMenuCallbacks) window.panelMenuCallbacks = {};
+    window.panelMenuCallbacks[targetPanelId] = onAction;
+  }
+
   return { render, destroy, updateState };
 }
 
@@ -4610,7 +4620,9 @@ function setupPanelMenuEvents(panelId, panelType) {
   const menuId = panelId + 'Menu';
 
   // Toggle menu on holder click
-  $(document).on('click', `#${holderId}`, function(e) {
+  document.addEventListener('click', function(e) {
+    const holder = e.target.closest(`#${holderId}`);
+    if (!holder) return;
     e.stopPropagation();
 
     // Close any open search popup
@@ -4645,27 +4657,47 @@ function setupPanelMenuEvents(panelId, panelType) {
   });
 
   // Handle menu item clicks
-  $(document).on('click', `#${menuId} .menuToggleItem[data-action]`, function(e) {
-    const action = $(this).attr('data-action');
-    const href = $(this).attr('href');
+  const menuClickHandler = function(e) {
+    const target = e.target.closest(`#${menuId} .menuToggleItem[data-action]`);
+    if (!target) return;
+    const action = target.getAttribute('data-action');
+    const href = target.getAttribute('href');
 
     if (action && !href) {
       e.preventDefault();
-      handlePanelAction(action, panelId, panelType);
-
-      // Close menu unless it's a toggle action that needs to stay open
-      if (action !== 'expand' && action !== 'collapse') {
-        const menu = document.getElementById(menuId);
-        if (menu) menu.style.display = 'none';
-        refreshPanelToggleIcon(holderId, panelId);
+      let handled = false;
+      if (window.panelMenuCallbacks && typeof window.panelMenuCallbacks[panelId] === 'function') {
+        handled = window.panelMenuCallbacks[panelId](action, panelId, panelType) === true;
       }
+      if (!handled) {
+        handlePanelAction(action, panelId, panelType);
+      }
+
+      if (action === 'expand') {
+        const panel = document.getElementById(panelId);
+        if (panel) panel.dataset.menuExpanded = 'true';
+      }
+      if (action === 'collapse') {
+        const panel = document.getElementById(panelId);
+        if (panel) panel.dataset.menuExpanded = 'false';
+      }
+
+      // Close menu after action
+      const menu = document.getElementById(menuId);
+      if (menu) menu.style.display = 'none';
+      // Refresh icon after action (expand/collapse may update layout)
+      setTimeout(() => {
+        refreshPanelToggleIcon(holderId, panelId);
+        updateMenuLabels(menuId, panelId, panelType);
+      }, 50);
     }
     // If href exists, let the link navigate normally
-  });
+  };
+  document.addEventListener('click', menuClickHandler);
 
   // Close menu when clicking outside
-  $(document).on('click', function(e) {
-    if (!$(e.target).closest(`#${holderId}, #${menuId}`).length) {
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest(`#${holderId}, #${menuId}`)) {
       const menu = document.getElementById(menuId);
       if (menu && menu.style.display !== 'none') {
         menu.style.display = 'none';
