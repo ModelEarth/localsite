@@ -141,8 +141,10 @@ function hashChanged() {
                 $(".showApps").removeClass("filterClickActive");
             });
         }
-        if (hash.show != "cities") { // Hack to prevent older maps on new tabs page.
+        // Prevents older top maps on new tab pages, where details reside at top.
+        if (param.showtopmap != "false") {
             loadScript(theroot + 'js/map.js', function(results) {
+                console.log("navigation.js loaded map.js");
             });
         }
         //if (hash.show == priorHash.show) {

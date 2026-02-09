@@ -4473,6 +4473,28 @@ function handlePanelAction(action, panelId, panelType) {
     const isInspectMode = window.listingsApp.inspectMode || false;
     window.listingsApp.inspectMode = !isInspectMode;
 
+    // Show placeholder immediately BEFORE any other processing
+    if (window.listingsApp.inspectMode) {
+      const listingsGrid = document.querySelector('.listings-grid');
+      if (listingsGrid && !document.getElementById('inspect-debug-card')) {
+        // Insert empty placeholder immediately
+        const placeholderHtml = `
+          <div class="listing-card" id="inspect-debug-card" style="background: #1a1a1a; color: #00ff00; border: 2px solid #00ff00; position: relative;">
+            <div class="listing-content">
+              <h3 class="listing-title" style="color: #00ff00; display: flex; justify-content: space-between; align-items: center;">
+                <span>Debug Messages</span>
+                <button id="close-inspect-debug" style="background: none; border: none; color: #00ff00; font-size: 24px; cursor: pointer; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;" title="Close debug messages">&times;</button>
+              </h3>
+              <div id="inspect-debug-messages" style="font-family: 'Courier New', monospace; font-size: 12px; max-height: 400px; overflow-y: auto;">
+                <div style="color: #00ff00; padding: 8px;">Loading messages...</div>
+              </div>
+            </div>
+          </div>
+        `;
+        listingsGrid.insertAdjacentHTML('afterbegin', placeholderHtml);
+      }
+    }
+
     // Update menu item check state
     const menu = document.getElementById(panelId + 'Menu');
     if (menu) {
@@ -4483,14 +4505,15 @@ function handlePanelAction(action, panelId, panelType) {
       }
     }
 
-    // Show/hide debug messages immediately
+    // Populate with actual messages after showing placeholder
     if (window.listingsApp.inspectMode) {
-      // Show debug card immediately
-      if (window.listingsApp.showDebugCard) {
-        window.listingsApp.showDebugCard();
-      }
+      setTimeout(() => {
+        if (window.listingsApp.populateDebugCard) {
+          window.listingsApp.populateDebugCard();
+        }
+      }, 0);
     } else {
-      // Hide debug card immediately (already handled in close button)
+      // Hide debug card immediately
       const debugCard = document.getElementById('inspect-debug-card');
       if (debugCard) {
         debugCard.remove();

@@ -988,6 +988,14 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   border-radius: 1.5rem;
   padding: 0.375rem 1.3rem;
 }
+.btn-sm {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  padding: 0.2rem 0.55rem;
+  border-radius: 2rem;
+  display: inline-flex;
+  width: auto;
+}
 
 /* color is !important so surrounding a href color from menu.css does not override */
 .btn-primary {
@@ -1077,6 +1085,10 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 @media (max-width: 500px) {
   .btn {
     width:100%;
+  }
+  .btn-sm {
+    width: auto;
+    display: inline-flex;
   }
 }
 .nav {

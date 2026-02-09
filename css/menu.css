@@ -734,9 +734,6 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .dark #main-container h1, .dark #main-container h2, .dark #main-container h3, .dark #main-container h4, .dark #main-container h5, .dark #main-container h6 {
   color: #ccc;
 }
-.dark .btn {
-	color: #fff !important;
-}
 .navLinks a {
   height: 42px;
   /* Causes DS footer to mis-align
