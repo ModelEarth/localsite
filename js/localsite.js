@@ -3902,8 +3902,14 @@ function buildMenuConfig(panelType, panelId, datasourcePath = '') {
     menuItems.push({ label: 'Close Map View', action: 'closemapview', icon: '', display: 'none', class: 'filterFieldMenuClose' });
     menuItems.push({ label: 'Close App View', action: 'closeappview', icon: '', display: 'none', class: 'filterFieldMenuClose' });
   } else if (panelType === 'List') {
-    // Add separator then List Insights link (local only)
+    // Add separator then Inspect and List Insights
     menuItems.push({ divider: true });
+    menuItems.push({
+      label: 'Inspect',
+      action: 'inspect',
+      icon: 'bug_report',
+      hasCheck: true
+    });
     menuItems.push({
       label: `${panelType} Insights`,
       action: 'link',
@@ -4460,6 +4466,36 @@ function handlePanelAction(action, panelId, panelType) {
     const menu = document.getElementById(panelId + 'Menu');
     if (menu) menu.style.display = 'none';
     refreshPanelToggleIcon(panelId + 'MenuToggleHolder', panelId);
+  } else if (action === 'inspect') {
+    // Toggle inspect mode
+    if (!window.listingsApp) return;
+
+    const isInspectMode = window.listingsApp.inspectMode || false;
+    window.listingsApp.inspectMode = !isInspectMode;
+
+    // Update menu item check state
+    const menu = document.getElementById(panelId + 'Menu');
+    if (menu) {
+      const inspectItem = menu.querySelector('[data-action="inspect"]');
+      const checkMark = inspectItem?.querySelector('.menuToggleCheck');
+      if (checkMark) {
+        checkMark.style.display = window.listingsApp.inspectMode ? 'inline' : 'none';
+      }
+    }
+
+    // Show/hide debug messages immediately
+    if (window.listingsApp.inspectMode) {
+      // Show debug card immediately
+      if (window.listingsApp.showDebugCard) {
+        window.listingsApp.showDebugCard();
+      }
+    } else {
+      // Hide debug card immediately (already handled in close button)
+      const debugCard = document.getElementById('inspect-debug-card');
+      if (debugCard) {
+        debugCard.remove();
+      }
+    }
   }
 }
 

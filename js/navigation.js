@@ -141,9 +141,10 @@ function hashChanged() {
                 $(".showApps").removeClass("filterClickActive");
             });
         }
-        loadScript(theroot + 'js/map.js', function(results) {
-        });
-
+        if (hash.show != "cities") { // Hack to prevent older maps on new tabs page.
+            loadScript(theroot + 'js/map.js', function(results) {
+            });
+        }
         //if (hash.show == priorHash.show) {
         //  hash.show = ""; // Clear the suppliers display
         //}
@@ -881,6 +882,10 @@ function hashChanged() {
                     imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/" + theStateNameLowercase.replace(/\s+/g, '-') + ".jpg";
                     if (theStateNameLowercase == "georgia") {
                         imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
+                    }
+                    if (theStateNameLowercase == "district of columbia") {
+                        // DC doesn't have a hero image, use default stars image
+                        imageUrl = "../localsite/img/hero/stars.jpg";
                     }
                     if (theStateName.length == 0) {
                         imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
