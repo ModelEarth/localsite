@@ -4126,7 +4126,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
           if(location.host.indexOf('localhost') >= 0) {
               if (!hash.state) {
-                alert("localhost: Loading ALL US Counties topo - UX not yet fully implemented")
+                alert("localhost only loads ALL US Counties topo - UX not yet fully implemented")
                 // All counties in US
                 url = local_app.topojson_root() + "/topojson/countries/united-states/us-albers-counties.json";
                 topoObjName = "topoob.objects.collection";
@@ -7541,7 +7541,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         // min-height allows header to serve as #filterbaroffset when header.html not loaded
         // pointer-events:none; // Avoid because sub-divs inherite and settings dropdowns are then not clickable.
         if(document.getElementById("datascape") == null) {
-            $("#main-content").prepend("<div id='datascape' class='datascape'></div>\r");
+            $("#main-content").prepend("<div id='datascape' class='datascape' style='displayX:none'></div>\r");
         }
         //// Move main-nav back to immediately in body
         //const sideNav = document.getElementById("side-nav");
@@ -7976,9 +7976,9 @@ waitForElm('#bodyloaded').then((elm) => {
     // Consider pulling in HTML before DOM is loaded, then send to page once #datascape is available.
 
    if (param.insertafter && $("#" + param.insertafter).length) {
-      $("#" + param.insertafter).append("<div id='datascape'></div>");
+      $("#" + param.insertafter).append("<div id='datascape' style='display:none'></div>");
     } else if(document.getElementById("datascape") == null) {
-      $('body').prepend("<div id='datascape'></div>");
+      $('body').prepend("<div id='datascape' style='display:none'></div>");
     }
 
     if (param.showLeftIcon != false) { // && param.showheader == "true"

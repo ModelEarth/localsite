@@ -145,6 +145,9 @@ body {
   color: #333;
   line-heightX:0; /* prevents gaps betweet images, but 0 caused text to overlap on start and nav icons. */
 }
+#datascape {
+  font-size: 0; /* prevents 19px tall blank space */
+}
 .dark {
   color: #eee;
   background-color: #333;
