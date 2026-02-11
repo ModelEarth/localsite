@@ -101,6 +101,9 @@ let dp = {}; // So available on .detail click for popMapPoint() and zoomMapPoint
 
 // TO DO: Can we avoid calling outside of the localsite repo by files in community, including community/map/starter/embed-map.js 
 function loadMap1(calledBy, show, dp_incoming) {
+  if (param["showtopmap"] != "true") { // Prevents older map from appearing at top of new team repo maps
+    return;
+  }
   // Calls loadDataset
   let hash = getHash();
   let showDirectory = true;

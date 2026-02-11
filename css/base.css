@@ -820,6 +820,9 @@ summary::-webkit-details-marker {
     background-color: #eee; /* also set .litePanelFadeOut 238 */
     overflow:auto;
 }
+.dark .litePanel {
+  background-color: #444;
+}
 .litePanelFadeOut {
   margin-top:10px;
   position:absolute;
@@ -1484,9 +1487,6 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   text-shadow: none;
   filter: none;
 }
-.showSideTabs.iconPadding:hover {
-  background-color: transparent !important;
-}
 .dark .showSideTabs:hover,
 .dark .showSideTabs:hover i {
   color: #fff;
@@ -1621,30 +1621,6 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 }
 
 /* .upperIcons > */
-.iconPadding {
-  cursor: pointer;
-  color: #888;
-}
-.iconPadding:hover {
-  color: #222;
-}
-.dark .iconPadding {
-  color: #ccc;
-}
-.dark .iconPadding:hover {
-  color: #fff;
-}
-.darkDivText .iconPadding:hover {
-  color: #fff;
-}
-
-#goatIcons .iconPadding {
-    height: 64px;
-    min-width: 58px;
-    text-align: center;
-    padding: 16px 12px 2px 12px;
-    cursor: pointer;
-}
 
 .upperIcons > div:hover {
   cursor: pointer;
@@ -3136,9 +3112,8 @@ body.sidebar-hidden #openNav {
   cursor: pointer;
   width: 100%;
   min-height: 34px;
-  /* border: 1px solid #ddd; */
+  border: 1px solid #ddd; /* For #widgetDetailsControls (which is not the detail panel) */
   border-radius: 8px;
-  /* background: white; */
   transition: all 0.2s;
 }
 .menuToggleHolderInline .material-icons {
@@ -3166,15 +3141,61 @@ body.sidebar-hidden #openNav {
   height: 40px;
   background: transparent;
 }
-.menuToggleHolderMap .material-icons {
-  transition: none;
+/* Add white transparent circle behind map icons */
+.menuToggleHolderMap::before {
+  content: '';
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  transition: background 0.2s ease;
 }
-.menuToggleHolderMap .material-icons.circle-bg {
+.menuToggleHolderMap:hover::before {
+  background: #333;
+}
+.dark .menuToggleHolderMap::before {
+  background: rgba(255, 255, 255, 0.5);
+}
+.dark .menuToggleHolderMap:hover::before {
+  background: rgba(255, 255, 255, 0.7);
+}
+.menuToggleHolderMap .material-icons {
+  transition: color 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+.menuToggleHolderMap:hover .menu-toggle-arrow {
   color: white;
-  font-size: 32px;
+}
+.dark .menuToggleHolderMap:hover .menu-toggle-arrow {
+  color: #aaa;
+}
+/* Common circle background styling for menu toggle icons */
+.menuToggleHolderMap .material-icons.circle-bg {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 34px;
 }
 .dark .menuToggleHolderMap .material-icons.circle-bg {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.5);
+}
+/* Circle background for non-map panels */
+.menuIconHolder:not(.menuToggleHolderMap) .material-icons.circle-bg {
+  color: #ddd;
+  font-size: 32px;
+}
+.dark .menuIconHolder:not(.menuToggleHolderMap) .material-icons.circle-bg {
+  color: rgba(255, 255, 255, 0.7);
+}
+/* Common arrow icon styling for all MenuToggleHolder arrows */
+.menu-toggle-arrow {
+  font-size: 28px;
+  font-weight: 500;
+  color: #aaa;
 }
 /* Ensure icon positioning is stable */
 #widgetDetailsMenuToggleHolder .material-icons,
