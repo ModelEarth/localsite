@@ -2,7 +2,8 @@
 // Optimized loading strategy: parallel JS batches, non-blocking CSS
 (function() {
 // Create or ensure local_app exists
-var local_app = local_app || {}; // Same as localsite.js
+window.local_app = window.local_app || {}; // Same as localsite.js
+var local_app = window.local_app; // Reference to global local_app
 
 // Extract hostname and port from the script src (like localsite.js does)
 function extractHostnameAndPort(url) {
@@ -134,12 +135,11 @@ if (typeof window.param == 'undefined') {
 
     // Apparently the above overwrites param values sent via localsite.js below, but that's okay
 
-} else if (typeof window.param.map == 'undefined') { // Localsite.js was loaded outside embed.js, but we still need to get the map.
-    
+} else if (typeof window.param.show == 'undefined') { // Localsite.js was loaded outside embed.js, but we still need to get the map.
+
     // BUT this might not be okay.
     // BUGBUG - Currently this will probably overwrites param values when localsite.js is declared outside, prior to embed.js
     window.param = initializeParamFromEmbedScript();
-
 
     //window.param.map = "liaisons"; // TEMP
     //alert("Set param.map to: " + window.param.map)

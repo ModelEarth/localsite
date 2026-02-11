@@ -76,14 +76,15 @@ function findScript(scriptName = 'localsite.js') {
 }
 
 // Ensure local_app exists and extend it with all required methods
-var local_app = local_app || {};
+window.local_app = window.local_app || {};
 
 // Add localsite methods to local_app (extending existing object if it already has web_root)
 (function(module) {
     let _args = {}; // private, also worked as []
     let localsite_repo;
     let modelearth_repo;
-    
+    let local_app = window.local_app; // Reference to global local_app
+
     // Extend local_app with localsite methods
     local_app.init = local_app.init || function(Args) {
         _args = Args;
@@ -235,8 +236,8 @@ var local_app = local_app || {};
             }
             return (theroot);
     };
-    
-})(); // End of extending local_app
+
+})(local_app); // End of extending local_app
 
 //local_app.loctitle = "what"
 //alert(local_app.loctitle);
@@ -2189,8 +2190,8 @@ function showSearchFilter() {
     }
 
     let expandIcon = '<div class="hideNarrow" style="position:absolute;z-index:10000">' +
-            '<div class="closeSideTabs expandToFullscreen iconPadding" style="border:0px;"><i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D0;</i></div>' +
-            '<div class="closeSideTabs reduceFromFullscreen iconPadding" style="display:none; border:0px;"><i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D1;</i></div>' +
+            '<div class="closeSideTabs expandToFullscreen" style="border:0px;"><i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D0;</i></div>' +
+            '<div class="closeSideTabs reduceFromFullscreen" style="display:none; border:0px;"><i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D1;</i></div>' +
         '</div>';
     //$('#datascape').prepend(expandIcon);
 
@@ -4559,7 +4560,7 @@ function addPanelMenu(options) {
     if (inline) {
       // For inline containers (like search-fields-control), don't add positioning wrapper
       toggleHtml = `
-        <div id="${targetPanelId}MenuToggleHolder" class="iconPadding menuToggleHolderInline"
+        <div id="${targetPanelId}MenuToggleHolder" class="menuIconHolder menuToggleHolderInline"
              title="Panel menu">
           <i class="material-icons" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:24px;">circle</i>
           <i id="${targetPanelId}MenuToggleIcon" class="material-icons"
@@ -4568,15 +4569,15 @@ function addPanelMenu(options) {
       `;
     } else {
       // For absolute positioned containers
-      const holderClass = panelType === 'Map' ? 'iconPadding menuToggleHolderMap' : 'iconPadding';
+      const holderClass = panelType === 'Map' ? 'menuIconHolder menuToggleHolderMap' : 'menuIconHolder';
       toggleHtml = `
         <div style="position:absolute; right:8px; top:8px; z-index:1000;">
           <div id="${targetPanelId}MenuToggleHolder" class="${holderClass}"
                style="position:relative; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;"
                title="Panel menu">
-            <i class="material-icons circle-bg" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:24px;">circle</i>
-            <i id="${targetPanelId}MenuToggleIcon" class="material-icons"
-               style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:18px;">arrow_right</i>
+            <i class="material-icons circle-bg" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);">circle</i>
+            <i id="${targetPanelId}MenuToggleIcon" class="material-icons menu-toggle-arrow"
+               style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);">arrow_right</i>
           </div>
         </div>
       `;

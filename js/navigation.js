@@ -16,7 +16,8 @@
 
 // TO DO: Unselecting county on map is not unchecking tabulator checkbox
 
-if(typeof local_app == 'undefined') { var local_app = {}; console.log("BUG: Move navigation.js after localsite.js"); } // In case navigation.js included before localsite.js
+if(typeof window.local_app == 'undefined') { window.local_app = {}; console.log("BUG: Move navigation.js after localsite.js"); } // In case navigation.js included before localsite.js
+var local_app = window.local_app; // Reference to global local_app
 if(typeof layerControls=='undefined') { var layerControls = {}; } // Object containing one control for each map on page.
 if(typeof dataObject == 'undefined') { var dataObject = {}; }
 if(typeof localObject == 'undefined') { var localObject = {};} // localObject.geo will save a list of loaded counties for multiple states
