@@ -312,14 +312,14 @@ Promise.all(scriptPromises).then(() => {
         }
     }
     
-    // Check if #mapwidget exists, if not create it at script location
-    let localwidgetExists = document.getElementById('mapwidget');
+    // Check if #listwidget exists, if not create it at script location
+    let localwidgetExists = document.getElementById('listwidget');
     if (!localwidgetExists && currentScript) {
-        console.log('Creating #mapwidget at script location');
+        console.log('Creating #listwidget at script location');
         const localwidgetDiv = document.createElement('div');
-        localwidgetDiv.id = 'mapwidget';
-        
-        // Insert the mapwidget div right after the script tag
+        localwidgetDiv.id = 'listwidget';
+
+        // Insert the listwidget div right after the script tag
         currentScript.parentNode.insertBefore(localwidgetDiv, currentScript.nextSibling);
     }
     
