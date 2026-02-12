@@ -13,17 +13,13 @@
 <script type="text/javascript" src="../../../js/localsite.js?showheader=true"></script>
 
 <script>
-// A jQuery form for choosing API Providers and entering API keys for each provider 
-// using a repeating form that initially shows one section panel followed by an "Add API" button. 
-// As changes are made, updates an object stored in localStorage call aPro.
-// when reloading the html page, aPro object is used to repopulate form content.
+// Single input row: user selects provider and enters API key, then clicks Add.
+// The key is saved to aPro and shown in the YAML box below; the input row clears for the next key.
 
 $(document).ready(function() {
 	// An object containing API Providers and API Keys as key-value pairs
 	var aPro = {};
 	var undoTimer = null;
-	// Track which aPro key each panel corresponds to
-	var panelToKeyMap = {}; // panelIndex -> aProKey
 	
 	function isValidJSON(str) {
 		try {
@@ -62,29 +58,12 @@ $(document).ready(function() {
 		}
 	}
 	
-	// Build aPro object in the same order as the form panels
+	// Build aPro for YAML display (preserve key order)
 	function buildOrderedAPro() {
 		let orderedObj = {};
-		
-		// Get all panel indices in order
-		let panelIndices = [];
-		$('.repeating-section').each(function() {
-			let panelId = $(this).attr('id');
-			let index = parseInt(panelId.replace('panel', ''));
-			panelIndices.push(index);
+		Object.keys(aPro).forEach(function(k) {
+			orderedObj[k] = aPro[k];
 		});
-		
-		// Sort indices numerically
-		panelIndices.sort((a, b) => a - b);
-		
-		// Build ordered object based on panel order
-		panelIndices.forEach(index => {
-			let aProKey = panelToKeyMap[index];
-			if (aProKey && aPro.hasOwnProperty(aProKey)) {
-				orderedObj[aProKey] = aPro[aProKey];
-			}
-		});
-		
 		return orderedObj;
 	}
 
@@ -156,230 +135,60 @@ $(document).ready(function() {
 	  return html;
 	}
 
-	// Apply key-value pairs from the local storage object to the panels
+	// Ensure exactly one input row exists (empty). All stored keys are shown in the YAML box below.
+	function ensureSingleInputRow() {
+		$('#formContainer').empty();
+		$('#formContainer').append(generateRepeatingSection(1));
+	}
+
+	function clearInputRow() {
+		$('#apiProvider1').val("");
+		$('#apiKey1').val("");
+		$('#apiProviderOther1').val("").hide();
+		// Reset eye toggle to masked state if visible
+		var keyInput = document.getElementById('apiKey1');
+		if (keyInput && keyInput.className.indexOf('hiddenInput') === -1) {
+			keyInput.className = 'textInput hiddenInput';
+		}
+	}
+
+	// Kept for call sites; now just ensures one row and refreshes YAML
 	function populateRepeatingSections() {
-		// Clear existing mappings
-		panelToKeyMap = {};
-		
-		// Clears form and re-renders panels
-	  $('#formContainer').empty();
-	  let index = 1;
-	  for (var key in aPro) {
-	    $('#formContainer').append(generateRepeatingSection(index)); // Add blank panel to populate
-	    
-	    // Store the mapping between panel and aPro key
-	    panelToKeyMap[index] = key;
-	    
-	    let keyOnly = key.replace(/\s*\(\d+\)$/, ""); // Remove number in parenthesis at end.
-	    if (apiKeys.includes(keyOnly)) {
-		    $('#apiProvider' + index).val(keyOnly);
-		} else {
-			$('#apiProvider' + index).val('Other');
-			$('#apiProviderOther' + index).val(key).show();
-		}
-	    
-	    if ($('#apiProvider' + index).val() == 'Other') {
-	    	$('#apiProviderOther' + index).show();
-	    }
-
-	    $('#apiKey' + index).val(aPro[key]);
-	    
-	    index++;
-	  }
-	  
-	  if (JSON.stringify(aPro) === "{}") {
-	  	$('#aProOutput').val("");
-	  	$('#aProOutputYaml').val("");
-	  } else {
-		  $('#aProOutput').val(JSON.stringify(aPro, null, 2));
-		  if (typeof jsyaml != "undefined") {
-		  	let orderedAPro = buildOrderedAPro();
-		  	let yamlString = jsyaml.dump(orderedAPro);
-			  $('#aProOutputYaml').val(yamlString);
-			  $('#copyBtn').show();
-			}
-		}
-	}
-
-	// INIT
-	populateRepeatingSections();
-	if ($('.repeating-section').length == 0) {
-	  $('#formContainer').append(generateRepeatingSection(1));
-	}
-
-	$('#addApi').click(function() {
-	  var newIndex = $('.repeating-section').length + 1;
-	  $('#formContainer').append(generateRepeatingSection(newIndex));
-	});
-
-	$(document).on('change', 'select[id^="apiProvider"]', function() { // Changing provider dropdown
-	  var index = $(this).attr('id').match(/\d+/)[0];
-	  console.log("Change index " + index);
-	  
-	  var oldKey = $(this).data('previous-value'); // Get previous value
-	  var newKey = $(this).val(); // Get new value
-	  var currentApiKey = $("#apiKey" + index).val();
-	  
-	  // If changing from "Other" to a dropdown option, we need to clean up
-	  if ($(this).data('was-other') === true && newKey !== 'Other') {
-	    // Find and delete the old "other" entry from aPro using our mapping
-	    var oldAProKey = panelToKeyMap[index];
-	    if (oldAProKey) {
-	      delete aPro[oldAProKey];
-	      delete panelToKeyMap[index]; // Clear the mapping
-	    }
-	    
-	    // Clear the API key field
-	    $("#apiKey" + index).val('');
-	    currentApiKey = '';
-	    
-	    // Hide the "other" input field
-	    $('#apiProviderOther' + index).hide();
-	  }
-	  
-	  // Update data attributes for next time
-	  $(this).data('previous-value', newKey);
-	  $(this).data('was-other', newKey === 'Other');
-	  
-	  if (newKey == 'Other') {
-	    $('#apiProviderOther' + index).show();
-	  } else {
-	    $('#apiProviderOther' + index).hide();
-	  }
-	  
-	  // Only update if there's an API key value
-	  if (currentApiKey) {
-	    updateApiRow(index, newKey, currentApiKey);
-	  } else {
-	    // Update storage to reflect the deletion
-	    updateLocalStorage();
-	  }
-	});
-
-	// Initialize data attributes when sections are created
-	$(document).on('focus', 'select[id^="apiProvider"]', function() {
-	  if (!$(this).data('previous-value')) {
-	    $(this).data('previous-value', $(this).val());
-	    $(this).data('was-other', $(this).val() === 'Other');
-	  }
-	});
-
-	// Auto-update on blur for API key fields
-	$(document).on('blur', 'input[id^="apiKey"]', function(e) {
-		// Check if the user clicked on the Update button - if so, avoid double update
-		if (e.relatedTarget && e.relatedTarget.id === 'updateBtn') {
-			return;
-		}
-		
-		let index = $(this).attr('id').match(/\d+/)[0];
-		let key = $("#apiProvider" + index).val();
-		let value = $(this).val();
-		
-		console.log("Blur event - index:", index, "key:", key, "value:", value);
-		
-		if (key) {
-			if (key == 'Other') {
-				key = $("#apiProviderOther" + index).val();
-			}
-			
-			saveUndoState();
-			
-			if (!value) { // Deleting Row by clearing API Key
-				console.log("Delete apiProvider " + key);
-				// Use mapping to find the correct key to delete
-				var oldAProKey = panelToKeyMap[index];
-				if (oldAProKey) {
-					delete aPro[oldAProKey];
-					delete panelToKeyMap[index];
-				}
-				$('#panel' + index).remove();
-			} else {
-				updateApiRow(index, key, value);
-			}
-			
-			updateLocalStorage();
-		}
-	});
-
-	// Handle typing in API key field
-	$(document).on('input', 'input[id^="apiKey"]', function() {
-	  let index = $(this).attr('id').match(/\d+/)[0];
-	  let key = $("#apiProvider" + index).val();
-	  let value = $(this).val();
-	  
-	  if (key) {
-		if (key == 'Other') {
-			key = $("#apiProviderOther" + index).val();
-		}
-		
-		if (!value) { // Deleting Row by clearing API Key
-			console.log("Delete apiProvider " + key);
-			// Use mapping to find the correct key to delete
-			var oldAProKey = panelToKeyMap[index];
-			if (oldAProKey) {
-				delete aPro[oldAProKey];
-				delete panelToKeyMap[index];
-			}
-			updateLocalStorage();
-			$('#panel' + index).remove();
-		} else {
-			updateApiRow(index, key, value);
-		}
-	  }
-	});
-
-	// Handle typing in "Other" provider name field
-	$(document).on('input', 'input[id^="apiProviderOther"]', function() {
-		let index = $(this).attr('id').match(/\d+/)[0];
-		let key = $(this).val();
-		let value = $("#apiKey" + index).val();
-		
-		if (key && value) {
-			updateApiRow(index, key, value);
-		}
-	});
-
-	function updateApiRow(index, key, value) {
-		let apiProviderStr = $('#apiProvider' + index).val();
-		if (apiProviderStr === 'Other') {
-			apiProviderStr = $('#apiProviderOther' + index).val();
-		}
-		
-		if (!apiProviderStr || !value) {
-			return; // Don't update if key or value is empty
-		}
-		
-		// Clean the provider string
-		apiProviderStr = apiProviderStr.replace(/\s*\(\d+\)$/, ""); // Remove number in parenthesis at end.
-		
-		// Check if we're updating an existing entry
-		var existingAProKey = panelToKeyMap[index];
-		
-		if (existingAProKey) {
-			// We're updating an existing entry
-			// If the provider name changed, we need to update the key
-			if (existingAProKey !== apiProviderStr && !existingAProKey.startsWith(apiProviderStr + ' (')) {
-				// Provider name changed, delete old entry
-				delete aPro[existingAProKey];
-				
-				// Create new key with proper numbering
-				let finalKey = generateUniqueKey(apiProviderStr);
-				aPro[finalKey] = value;
-				panelToKeyMap[index] = finalKey;
-			} else {
-				// Same provider, just update the value
-				aPro[existingAProKey] = value;
-			}
-		} else {
-			// This is a new entry
-			let finalKey = generateUniqueKey(apiProviderStr);
-			aPro[finalKey] = value;
-			panelToKeyMap[index] = finalKey;
-		}
-		
+		ensureSingleInputRow();
 		updateLocalStorage();
 	}
-	
+
+	// INIT: one empty input row; YAML box shows stored keys
+	ensureSingleInputRow();
+	updateLocalStorage();
+
+	$('#addApi').click(function() {
+		var provider = $('#apiProvider1').val();
+		if (provider === 'Other') {
+			provider = $('#apiProviderOther1').val().trim();
+		}
+		var keyVal = $('#apiKey1').val().trim();
+		if (!provider || !keyVal) {
+			return;
+		}
+		provider = provider.replace(/\s*\(\d+\)$/, "");
+		saveUndoState();
+		var finalKey = generateUniqueKey(provider);
+		aPro[finalKey] = keyVal;
+		updateLocalStorage();
+		clearInputRow();
+	});
+
+	$(document).on('change', 'select[id^="apiProvider"]', function() {
+		var index = $(this).attr('id').match(/\d+/)[0];
+		var newKey = $(this).val();
+		if (newKey == 'Other') {
+			$('#apiProviderOther' + index).show();
+		} else {
+			$('#apiProviderOther' + index).hide();
+		}
+	});
+
 	function generateUniqueKey(baseKey) {
 		// Check if this exact key already exists
 		if (!aPro.hasOwnProperty(baseKey)) {
@@ -463,15 +272,10 @@ $(document).ready(function() {
 			try {
 				const parsed = JSON.parse(undoData);
 				aPro = JSON.parse(parsed.aPro);
-				$('#aProOutputYaml').val(parsed.yamlString);
-				
 				updateLocalStorage();
-				populateRepeatingSections();
-				
-				// Clear undo data and hide button
+				ensureSingleInputRow();
 				localStorage.removeItem('localStoragePrior');
 				$('#undoBtn').hide();
-				
 				if (undoTimer) {
 					clearTimeout(undoTimer);
 				}
@@ -512,15 +316,9 @@ $(document).ready(function() {
 		if (hasDuplicateKeys($('#aProOutputYaml').val())) {
 			alert("Duplicate provides. Please add (2) after second instance.");
 		} else {
-			aPro = jsyaml.load($('#aProOutputYaml').val()); // From yaml textbox.
+			aPro = jsyaml.load($('#aProOutputYaml').val()) || {};
 			updateLocalStorage();
-			if (countKeyValuePairs(aPro) == 0) {
-				if ($('#formContainer').is(':empty')) {
-					$('#formContainer').append(generateRepeatingSection(1));
-				}
-			} else {
-			  populateRepeatingSections();
-			}
+			ensureSingleInputRow();
 		}
 	}
 	
@@ -570,12 +368,12 @@ $(document).ready(function() {
 	});
 
 	$('#clearAll').click(function() {
-		saveUndoState(); // Save state before clearing
+		saveUndoState();
 		localStorage.removeItem('aPro');
-	    aPro = {};
-	    panelToKeyMap = {}; // Clear mappings
-	    populateRepeatingSections();
-	    $('#formContainer').append(generateRepeatingSection(1));
+		aPro = {};
+		updateLocalStorage();
+		ensureSingleInputRow();
+		clearInputRow();
 	});
 	
 });
@@ -601,7 +399,7 @@ function toggleVisibility(fieldId) {
 	Keys reside in local browser storage.<br><br>
 
 	<div id="formContainer"></div>
-	<button id="addApi" class="button button-green">Add API</button>
+	<button id="addApi" class="button button-green">Add</button>
 	<button id="clearAll" class="button">Clear All</button>
 	<button id="undoBtn" class="button button-undo" style="display: none;">Undo</button>
 
