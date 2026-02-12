@@ -4147,13 +4147,14 @@ function updateMenuLabels(menuId, panelId, panelType) {
 }
 
 // Tour state management
-let tourState = {
+window.tourState = {
   isPlaying: false,
   currentIndex: -1,
   listingIds: [],
-  intervalId: null,
+  timeoutId: null,
   panelId: null
 };
+const tourState = window.tourState;
 
 /**
  * Toggles tour play/pause
@@ -4184,10 +4185,10 @@ function startTour(panelId, isReload = false) {
     return;
   }
 
-  // Clear any existing interval first to prevent multiple intervals
-  if (tourState.intervalId) {
-    clearInterval(tourState.intervalId);
-    tourState.intervalId = null;
+  // Clear any existing timeout first to prevent multiple timers
+  if (tourState.timeoutId) {
+    clearTimeout(tourState.timeoutId);
+    tourState.timeoutId = null;
   }
 
   tourState.isPlaying = true;
@@ -4218,8 +4219,9 @@ function startTour(panelId, isReload = false) {
     }
 
     // Don't navigate - already on the correct id
-    // Start interval with 5 second delay for first advance
-    tourState.intervalId = setInterval(() => {
+    // Set timeout for 8 seconds to advance to next slide
+    // Each slide sets its own timeout when it loads
+    tourState.timeoutId = setTimeout(() => {
       // Check if detailplay is still in hash (user might have removed it)
       const currentHash = (typeof getHash === 'function') ? getHash() : {};
       if (!currentHash.detailplay || currentHash.detailplay !== 'true') {
@@ -4239,7 +4241,7 @@ function startTour(panelId, isReload = false) {
         const currentHash = getHash();
         goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true', view: currentHash.view || '' });
       }
-    }, 5000);
+    }, 8000);
   } else {
     // Fresh start from clicking "Start Tour" - continue from current position
     const hash = (typeof getHash === 'function') ? getHash() : {};
@@ -4265,30 +4267,13 @@ function startTour(panelId, isReload = false) {
       goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true', view: currentHash.view || '' });
     }
 
-    // Start interval for subsequent items (6 seconds)
-    tourState.intervalId = setInterval(() => {
-      // Check if detailplay is still in hash (user might have removed it)
-      const currentHash = (typeof getHash === 'function') ? getHash() : {};
-      if (!currentHash.detailplay || currentHash.detailplay !== 'true') {
-        // User removed detailplay, stop the tour
-        stopTour(panelId);
-        return;
-      }
-
-      tourState.currentIndex++;
-
-      if (tourState.currentIndex >= tourState.listingIds.length) {
-        // Tour completed, loop back to start
-        tourState.currentIndex = 0;
-      }
-
-      if (typeof goHash === 'function') {
-        const currentHash = getHash();
-        goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true', view: currentHash.view || '' });
-      }
-    }, 6000);
+    // Note: The page reload will trigger startTour(panelId, true) which will set the timeout
+    // No need to set timeout here as the reload case handles it
   }
 }
+
+// Make startTour globally accessible
+window.startTour = startTour;
 
 /**
  * Stops the tour
@@ -4297,9 +4282,9 @@ function startTour(panelId, isReload = false) {
 function stopTour(panelId) {
   tourState.isPlaying = false;
 
-  if (tourState.intervalId) {
-    clearInterval(tourState.intervalId);
-    tourState.intervalId = null;
+  if (tourState.timeoutId) {
+    clearTimeout(tourState.timeoutId);
+    tourState.timeoutId = null;
   }
 
   // Update icon back to arrow
@@ -4310,6 +4295,9 @@ function stopTour(panelId) {
     goHash({ detailplay: '' });
   }
 }
+
+// Make stopTour globally accessible
+window.stopTour = stopTour;
 
 /**
  * Updates the tour icon
