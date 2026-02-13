@@ -223,6 +223,29 @@
 	margin-right: 6px;
 	float: left;
 }
+.keywordField {
+	overflow: auto;
+	clear: none;
+	max-width: 100%;
+}
+.keywordField .searchField {
+	display: flex;
+	align-items: flex-start;
+	gap: 6px;
+	width: min(100%, 400px);
+	overflow: visible !important;
+}
+.keywordField .searchField > div:first-child {
+	order: 2;
+	float: none !important;
+	flex: 0 0 auto;
+}
+.keywordField .searchField > div:last-child {
+	float: none !important;
+	flex: 1 1 auto;
+	min-width: 100px;
+	padding-right: 0 !important;
+}
 @media (max-width: 600px) {
   .filterFieldXX {
     float: none;
@@ -278,6 +301,18 @@ input.filterClick[type="text"] {
     white-space: nowrap;
     padding-top:8px;
     padding-right:23px;
+}
+#filterClickLocation {
+    min-width: 120px;
+    max-width: 100%;
+    overflow: hidden;
+}
+#filterClickLocation .countiesTabText {
+    display: block;
+    float: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 .geoviewSelectText {
     cursor: pointer;
@@ -394,11 +429,22 @@ input.filterClick[type="text"] {
 
 #keywordsTB {
     width:100%;
-    max-width:400px;
+    min-width: 100px;
+    max-width:100%;
 }
 @media (max-width: 800px) {
     #keywordsTB {
-        max-width:100px;
+        min-width: 100px;
+    }
+}
+@container (max-width: 400px) {
+    #catSearchHolder {
+        min-width: 245px;
+    }
+}
+@container (max-width: 320px) {
+    .filterField {
+        width: 100%;
     }
 }
 #goSearch {

@@ -3207,23 +3207,30 @@ catArray = [];
         return hash.geoview;
     }
     function setFilterToggleIcon(iconName) {
-        if (!$("#filterFieldToggleIcon").length) {
+        const holders = $("#filterFieldToggleHolder, #filterFieldToggleInHeader");
+        if (!holders.length) {
             return;
         }
-        $("#filterFieldToggleIcon").text(iconName);
-        const $holder = $("#filterFieldToggleHolder");
-        if (iconName === "arrow_drop_down_circle") {
-            // arrow_drop_down_circle has its own circle, hide the background circle
-            $holder.find(".material-icons:first").hide();
-            $("#filterFieldToggleIcon").css("font-size", "24px");
-        } else {
-            // arrow_right needs the background circle
-            $holder.find(".material-icons:first").show();
-            $("#filterFieldToggleIcon").css("font-size", "18px");
-        }
+        holders.each(function() {
+            const $holder = $(this);
+            const $toggleIcon = $holder.find(".filter-field-toggle-icon");
+            if (!$toggleIcon.length) {
+                return;
+            }
+            $toggleIcon.text(iconName);
+            if (iconName === "arrow_drop_down_circle") {
+                // arrow_drop_down_circle has its own circle, hide the background circle
+                $holder.find(".material-icons:first").hide();
+                $holder.removeClass("filter-toggle-forward");
+            } else {
+                // arrow_right needs the background circle
+                $holder.find(".material-icons:first").show();
+                $holder.addClass("filter-toggle-forward");
+            }
+        });
     }
     function refreshFilterToggleIcon() {
-        if (!$("#filterFieldToggleIcon").length) {
+        if (!$("#filterFieldToggleHolder, #filterFieldToggleInHeader").length) {
             return;
         }
         if ($("#filterFieldMenu").is(":visible")) {
@@ -3361,11 +3368,31 @@ catArray = [];
         }
     });
 
-    $(document).on("click", "#filterFieldToggleHolder", function(event) {
+    $(document).on("click", "#filterFieldToggleHolder, #filterFieldToggleInHeader", function(event) {
         $("#filterFieldMenu").toggle();
         updateFilterMenuState();
         refreshFilterToggleIcon();
         event.stopPropagation();
+    });
+    $(document).on("click", "#filterFieldsDropdownToggle", function(event) {
+        if (!$("#filteFieldsDropdowns").length) {
+            return;
+        }
+        const isOpen = $("#filteFieldsDropdowns").toggleClass("auto-hide-narrow").hasClass("auto-hide-narrow") === false;
+        $(this).attr("aria-expanded", isOpen ? "true" : "false");
+        event.stopPropagation();
+    });
+    waitForElm("#filterFieldsDropdownToggle").then(() => {
+        if ($("#headerIcons").length) {
+            $("#filterFieldsDropdownToggle").prependTo("#headerIcons");
+            if ($("#filterFieldToggleHolder").length && !$("#filterFieldToggleInHeader").length) {
+                const headerToggle = $("#filterFieldToggleHolder").clone();
+                headerToggle.attr("id", "filterFieldToggleInHeader");
+                headerToggle.find("#filterFieldToggleIcon").attr("id", "filterFieldToggleIconInHeader");
+                headerToggle.prependTo("#headerIcons");
+                refreshFilterToggleIcon();
+            }
+        }
     });
 
     $(document).on("click", "#filterFieldMenu .menuToggleItem", function(event) {
@@ -4278,8 +4305,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
               var mbAttr = '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="https://www.openstreetmap.org/">OpenStreetMap</a> | ' +
                   '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                  'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-                  mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZWUyZGV2IiwiYSI6ImNqaWdsMXJvdTE4azIzcXFscTB1Nmcwcm4ifQ.hECfwyQtM7RtkBtydKpc5g';
+                  'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+              const mapboxToken = (typeof window !== "undefined" && typeof window.mapboxAccessToken === "string") ? window.mapboxAccessToken : "";
+              const mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png' + (mapboxToken ? ('?access_token=' + mapboxToken) : '');
 
               var grayscale = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
                   satellite = L.tileLayer(mbUrl, {id: 'mapbox.satellite',   attribution: mbAttr}),
@@ -9048,6 +9076,19 @@ $(document).on("click", ".showApps, .hideApps", function(event) {
     event.stopPropagation();
 });
 
+function setLocationTabArrow(isOpen) {
+    const locationArrowIcons = $("#filterClickLocation .select-menu-arrow-holder .material-icons");
+    if (!locationArrowIcons.length) {
+        return;
+    }
+    locationArrowIcons.hide();
+    if (isOpen) {
+        $("#filterClickLocation .select-menu-arrow-holder .material-icons:nth-of-type(2)").show();
+    } else {
+        $("#filterClickLocation .select-menu-arrow-holder .material-icons:first-of-type").show();
+    }
+}
+
 function showApps(menuDiv) {
     loadScript(theroot + 'js/navigation.js', function(results) {
         let modelsite;
@@ -9193,6 +9234,7 @@ function openMapLocationFilter() {
     $("#topPanel").hide();
     $("#showLocations").show();
     $("#hideLocations").hide();
+    setLocationTabArrow(true);
 
     // Move state_select to location filter holder when Counties panel opens
     waitForElm('#locationFilterHolder').then((elm) => {
@@ -9240,6 +9282,7 @@ function closeLocationFilter() {
     
     $("#showLocations").hide();
     $("#hideLocations").show();
+    setLocationTabArrow(false);
     $("#locationFilterHolder").hide();
     $("#filterLocations").hide(); // Not sure why this was still needed.
     $("#imagineBar").hide();

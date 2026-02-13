@@ -544,13 +544,16 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	top: 0px;
 }
 .rightIcons {
+	/*
 	position: absolute;
 	right: 0px;
 	top: 0px;
 	bottom: 0px;
 	z-index: 999;
-	display: flex;
-	align-items: center;
+	*/
+	float: right;
+	displayX: flex;
+	align-itemsX: center;
 }
 .bothSideIcons {
   top:0px;
