@@ -330,6 +330,13 @@ input.filterClick[type="text"] {
     position: relative;
     margin-right: 4px;
 }
+#mapFilters,
+#filterFieldsHolder,
+#filterFieldsMain,
+#filteFieldsDropdowns,
+#geoviewSelectHolder {
+    overflow: visible !important;
+}
 .geoviewSelectText {
     display: inline-block;
 }
