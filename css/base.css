@@ -766,6 +766,9 @@ summary::-webkit-details-marker {
   padding-right: 55px;
   */
 }
+.container a {
+  text-decoration: none;
+}
 .lead {
     font-family: 'PT Sans', sans-serif;
     font-weight: normal;
