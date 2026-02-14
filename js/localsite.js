@@ -200,7 +200,7 @@ window.local_app = window.local_app || {};
                     }
                 });
                 // Return default for immediate use
-                alert(theroot)
+                console.log("There was an alert here for months, but it wasn't reached (displayed) to my knowledge - LH. theroot: " + theroot)
                 return theroot;
             }
             
