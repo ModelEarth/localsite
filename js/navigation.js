@@ -7270,11 +7270,14 @@ function hideNavColumn() {
         $('#floating-legend').css('opacity', '0');
         $('#floating-legend').css('display', 'none');
     }
-    // Rebuild legend content if empty
+    // Rebuild legend only when content is actually missing.
     if (typeof window.buildFloatingLegendFromChart === 'function') {
-        setTimeout(() => {
-            try { window.buildFloatingLegendFromChart(); } catch(e) {}
-        }, 100);
+        const hasLegendRows = document.querySelector('#legend-content .legend-item, #legend-content .region-section, #legend-content .locations-flat-list');
+        if (!hasLegendRows) {
+            setTimeout(() => {
+                try { window.buildFloatingLegendFromChart(); } catch(e) {}
+            }, 100);
+        }
     }
     try {
         if (typeof window.updateBottomLegendVisibility === 'function') {
@@ -7363,6 +7366,40 @@ function setupSidebarViewToggle() {
     const continentsBtn = document.getElementById('sidebar-continents-btn');
 
     if (!locationsBtn || !continentsBtn) return;
+    const setAllRegionSectionsOpen = (open) => {
+        try {
+            const state = {};
+            document.querySelectorAll('#legend-content .region-section').forEach((section) => {
+                const key = section.getAttribute('data-continent') || '';
+                const panel = section.querySelector('.country-buttons-region');
+                const toggle = section.querySelector('.region-toggle');
+                const arrow = section.querySelector('.toggle-arrow');
+                if (panel) panel.style.display = open ? 'block' : 'none';
+                if (arrow) arrow.style.transform = open ? 'rotate(0deg)' : 'rotate(-90deg)';
+                if (toggle) toggle.style.background = open ? 'rgba(248,249,250,0.9)' : 'rgba(232,236,240,0.9)';
+                if (key) state[key] = !!open;
+            });
+            window._legendContinentSectionState = state;
+            window._legendContinentAllOpen = !!open;
+            if (typeof window.syncLegendContinentStateFromDom === 'function') window.syncLegendContinentStateFromDom();
+        } catch (e) { /* ignore */ }
+    };
+    const toggleAllRegionSections = () => {
+        try {
+            let panels = Array.from(document.querySelectorAll('#legend-content .country-buttons-region'));
+            if (panels.length === 0) {
+                if (typeof buildFloatingLegendFromChart === 'function') {
+                    buildFloatingLegendFromChart();
+                }
+                panels = Array.from(document.querySelectorAll('#legend-content .country-buttons-region'));
+                if (panels.length === 0) return;
+                setAllRegionSectionsOpen(true);
+                return;
+            }
+            const anyClosed = panels.some((panel) => panel.style.display === 'none');
+            setAllRegionSectionsOpen(anyClosed);
+        } catch (e) { /* ignore */ }
+    };
 
     const updateToggleState = () => {
         const mode = window._legendViewMode || 'locations';
@@ -7406,6 +7443,8 @@ function setupSidebarViewToggle() {
             if (typeof buildFloatingLegendFromChart === 'function') {
                 buildFloatingLegendFromChart();
             }
+        } else {
+            toggleAllRegionSections();
         }
     });
 
