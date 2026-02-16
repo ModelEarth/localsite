@@ -1065,8 +1065,16 @@ function refreshTimeline() {
             let showAll = document.querySelector('input[name="whichLines"]:checked').value;
             if(!showAll) {showAll = 'showTop5';}
 
-            let entityIdSelect = document.getElementById('entityId');
-            let entityId = entityIdSelect.options[entityIdSelect.selectedIndex].value;
+            let entityId = '';
+            const entityIdSelect = document.getElementById('entityId');
+            if (entityIdSelect && entityIdSelect.selectedIndex >= 0) {
+            entityId = entityIdSelect.options[entityIdSelect.selectedIndex].value;
+            }
+
+            // Only required for county scope
+            if (scope === 'county' && !entityId) {
+            entityId = 'geoId/26'; // pick a default, or whatever makes sense
+            }
             let chartText = document.getElementById('chartVariable').options[document.getElementById('chartVariable').selectedIndex].text;
 
             //alert(chartVariable + " " + chartText)

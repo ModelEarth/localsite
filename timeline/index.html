@@ -79,6 +79,7 @@ document.addEventListener('hashChangeEvent', function (elem) {
     waitForElm('#perCapitaOptions').then(() => {
         applyPerCapitaGoalSettings();
     });
+    updateStateMenuVisibility();
 }, false);
 document.addEventListener('DOMContentLoaded', () => {
     let hash = getHash();
@@ -104,10 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // State menu change
-    document.getElementById('entityId').addEventListener('change', (event) => {
-        //entityId = event.target.value;
-        refreshTimeline();
-     });
+    const entitySel = document.getElementById('entityId');
+            if (entitySel) {
+            entitySel.addEventListener('change', () => refreshTimeline());
+            }
     document.querySelectorAll('input[name="whichPer"]').forEach((radio) => {
         radio.addEventListener('change', () => {
             try { localStorage.setItem(WHICH_PER_STORAGE_KEY, radio.value); } catch (e) { /* ignore */ }
@@ -115,6 +116,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+function updateStateMenuVisibility() {
+  const hash = getHash();
+  const wrap = document.getElementById('stateMenuWrap');
+  if (!wrap) return;
+
+  // Show state selector when scope involves states
+  wrap.style.display = (hash.scope === 'state' || hash.scope === 'county') ? 'block' : 'none';
+}
+
 </script>
 
 <style>
@@ -742,11 +753,21 @@ p.set('rs_dcid', list.join(','));
       <div id="template-container"></div>
       <div id="templateLoaded"></div>
      
-      <!-- We might not use the same state menu as the search filter.
+      <!-- We might not use the same state menu as the search filter. 
+
       <div id="relocatedStateMenu"></div>
       -->
+
+    <div id="stateMenuWrap" style="display:none;">
+        <div id="relocatedStateMenu"></div>
+    </div>
+
       <div class="chart-controls" style="display:flex; flex-wrap:wrap; gap:10px;">
         <select id="chartVariable" style="max-width:380px;"></select>
+
+
+
+    <!--    
 
         <select id="entityId">
             <option>State...</option>
@@ -804,6 +825,8 @@ p.set('rs_dcid', list.join(','));
             <option value="geoId/72">Puerto Rico</option>
         </select>
      
+      
+-->
            <!--
               Adjust to per capita (and SqMiles) using our nav filter file:
               https://github.com/ModelEarth/localsite/blob/main/info/data/map-filters/us-states.csv
@@ -918,6 +941,8 @@ p.set('rs_dcid', list.join(','));
                 });
             });
             // Initial legend build is triggered by chart creation flow (earthscape.js).
+
+            updateStateMenuVisibility();
         });
         
         function moveLegendToLeft(ev) {
