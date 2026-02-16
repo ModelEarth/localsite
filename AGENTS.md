@@ -28,6 +28,7 @@ material-icons are available to pages that include localsite/js/localsite.js
 ### Alert Messages
 
 Avoid including \n line breaks in alerts since they prevent text from being copied.
+For debugging multi-step behavior, prefer combining all trace steps into one final alert string instead of multiple sequential alerts.
 
 ### DOM Element Waiting
 - **NEVER use setTimeout() for waiting for DOM elements**

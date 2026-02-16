@@ -3890,8 +3890,10 @@ function buildMenuConfig(panelType, panelId, datasourcePath = '') {
 
   // Panel-specific items
   if (panelType === 'Content') {
-    // Add separator then all existing filter menu items
+    // Put close action at top, followed by a separator
+    menuItems.push({ label: 'Close Map View', action: 'closemapview', icon: '', display: 'none', class: 'filterFieldMenuClose' });
     menuItems.push({ divider: true });
+    // Then all existing filter menu items
     menuItems.push({ label: 'Earth', action: 'earth', icon: '', hasCheck: true });
     menuItems.push({ label: 'Countries', action: 'countries', icon: '', hasCheck: true });
     menuItems.push({ label: 'States', action: 'state', icon: '', hasCheck: true });
@@ -3900,7 +3902,6 @@ function buildMenuConfig(panelType, panelId, datasourcePath = '') {
     menuItems.push({ divider: true });
     menuItems.push({ label: 'About Filters', action: 'aboutfilters', icon: '', isLink: true });
     menuItems.push({ label: 'Hide Filter Bar', action: 'hidefilters', icon: '' });
-    menuItems.push({ label: 'Close Map View', action: 'closemapview', icon: '', display: 'none', class: 'filterFieldMenuClose' });
     menuItems.push({ label: 'Close App View', action: 'closeappview', icon: '', display: 'none', class: 'filterFieldMenuClose' });
   } else if (panelType === 'List') {
     // Add separator then Inspect and List Insights

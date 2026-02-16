@@ -1651,7 +1651,12 @@ class StandaloneNavigation {
             $("#main-container").prepend(navHTML);
             waitForElm('#legend-content').then((elm) => { // On timeline page
                  setTimeout(() => { // Temp until Leaflet load timing is resolved.
-                    toggleShowNavColumn();
+                    if (window._timelineLegendAllowSidebar) {
+                        showNavColumn();
+                    } else {
+                        hideNavColumn();
+                        return;
+                    }
                     // First add header with toggle, then legend content after it
                     if (!$('#locations-header').length) {
                         $('#listLeft').prepend(`
@@ -1842,20 +1847,52 @@ class StandaloneNavigation {
                 document.getElementById('main-nav').style.display = 'none';
                 document.body.classList.add('main-nav-hidden');
                 $("#side-nav").removeClass("main-nav").removeClass("main-nav-full");
-                
-                // Show floating legend when main-nav is closed
-                $('#floating-legend').show();
-                $('#floating-legend').css('opacity', '1');
-                $('#floating-legend').css('display', 'block');
+
+                // Exiting left-nav legend mode: restore "On Left" controls in all legend placements.
+                window._timelineLegendAllowSidebar = false;
+                if (typeof window.updateOnLeftButtonsVisibility === 'function') {
+                    try { window.updateOnLeftButtonsVisibility(); } catch (e) {}
+                }
+                const wasInLeftNavLegend = $('#legend-content').length && $('#legend-content').closest('#locations-content').length > 0;
+                const bottomLegendVisible = $('#bottom-legend').length && $('#bottom-legend').is(':visible');
+                try {
+                    const newPosition = wasInLeftNavLegend ? 'below' : (bottomLegendVisible ? 'below' : 'right');
+                    localStorage.setItem('legendPosition', newPosition);
+                    window._cachedLegendPosition = newPosition;
+                    window._floatingLegendManuallyClosed = (newPosition === 'below');
+                } catch (e) {}
+                if (typeof window.updateOnRightButtonsVisibility === 'function') {
+                    try { window.updateOnRightButtonsVisibility(); } catch (e) {}
+                }
+
                 // Move legend content back to floating legend if needed
                 if ($('#legend-content').length && $('#floating-legend').length) {
                     if ($('#legend-content').parent().attr('id') !== 'floating-legend') {
                         $('#floating-legend').append($('#legend-content'));
                     }
                 }
-                // Rebuild legend if needed
-                if (typeof window.buildFloatingLegendFromChart === 'function') {
-                    setTimeout(() => { try { window.buildFloatingLegendFromChart(); } catch(e) {} }, 100);
+
+                // When left-nav legend is closed, switch to horizontal legend (keep floating hidden).
+                if (wasInLeftNavLegend) {
+                    $('#floating-legend').hide();
+                    $('#floating-legend').css('opacity', '0');
+                    $('#floating-legend').css('display', 'none');
+                    const bottomLegend = document.getElementById('bottom-legend');
+                    if (bottomLegend) {
+                        bottomLegend.style.display = 'flex';
+                        bottomLegend.setAttribute('aria-hidden', 'false');
+                    }
+                // Otherwise restore floating legend only when horizontal legend is not visible.
+                } else if (!bottomLegendVisible) {
+                    $('#floating-legend').show();
+                    $('#floating-legend').css('opacity', '1');
+                    $('#floating-legend').css('display', 'block');
+                    if (typeof window.buildFloatingLegendFromChart === 'function') {
+                        setTimeout(() => { try { window.buildFloatingLegendFromChart(); } catch(e) {} }, 100);
+                    }
+                } else {
+                    $('#floating-legend').hide();
+                    $('#floating-legend').css('opacity', '0');
                 }
                 
                 // Mobile behavior: if browser is 600px or less and #side-nav-content is visible, 
@@ -3251,6 +3288,8 @@ catArray = [];
         const hasAppview = !!hash.appview;
         $("#filterFieldMenuClose").toggle(hasGeoview);
         $("#filterFieldMenuCloseApps").toggle(hasAppview);
+        // The first divider sits below "Close Map View" and should only show when a close action is visible.
+        $("#filterFieldMenu .menuToggleDivider").first().toggle(hasGeoview || hasAppview);
         $("#filterFieldMenu .menuToggleItem[data-action='county']").toggle(!!hash.state);
         $("#filterFieldMenu .menuToggleItem[data-action]").each(function() {
             const action = $(this).data("action");
@@ -7138,8 +7177,9 @@ function showNavColumn() {
     $("body").removeClass("sidebar-hidden");
     $("body").removeClass("main-nav-hidden");
     $("#showSideFromBar").hide();
-    // Move legend content to sidebar and hide floating legend
-    if ($('#legend-content').length && $('#listLeft').length) {
+    // Move legend content to sidebar and hide floating legend only when timeline requests it.
+    const allowTimelineLegendSidebar = !!window._timelineLegendAllowSidebar;
+    if ($('#legend-content').length && $('#listLeft').length && allowTimelineLegendSidebar) {
         // Ensure header with toggle exists at top of listLeft
         if (!$('#locations-header').length) {
             $('#listLeft').prepend(`
@@ -7168,8 +7208,10 @@ function showNavColumn() {
             cloneLeftTarget.style.display = 'none';
         }
     }
-    $('#floating-legend').hide();
-    $('#floating-legend').css('opacity', '0');
+    if (allowTimelineLegendSidebar) {
+        $('#floating-legend').hide();
+        $('#floating-legend').css('opacity', '0');
+    }
     
     // Refresh feather icons when showing navigation
     if (window.standaloneNav && window.standaloneNav.replaceFeatherIcons) {
@@ -7214,15 +7256,34 @@ function hideNavColumn() {
     if (cloneLeftTarget) {
         cloneLeftTarget.style.display = '';
     }
-    $('#floating-legend').show();
-    $('#floating-legend').css('opacity', '1');
-    $('#floating-legend').css('display', 'block');
-    // Rebuild legend content if empty
-    if (typeof window.buildFloatingLegendFromChart === 'function') {
-        setTimeout(() => {
-            try { window.buildFloatingLegendFromChart(); } catch(e) {}
-        }, 100);
+    let preferredLegendPosition = 'right';
+    try {
+        preferredLegendPosition = window._cachedLegendPosition || localStorage.getItem('legendPosition') || 'right';
+    } catch (e) { /* ignore */ }
+    const shouldForceFloating = preferredLegendPosition === 'right' && !window._floatingLegendManuallyClosed && !window._timelineLegendAllowSidebar;
+    if (shouldForceFloating) {
+        $('#floating-legend').show();
+        $('#floating-legend').css('opacity', '1');
+        $('#floating-legend').css('display', 'block');
+    } else {
+        $('#floating-legend').hide();
+        $('#floating-legend').css('opacity', '0');
+        $('#floating-legend').css('display', 'none');
     }
+    // Rebuild legend only when content is actually missing.
+    if (typeof window.buildFloatingLegendFromChart === 'function') {
+        const hasLegendRows = document.querySelector('#legend-content .legend-item, #legend-content .region-section, #legend-content .locations-flat-list');
+        if (!hasLegendRows) {
+            setTimeout(() => {
+                try { window.buildFloatingLegendFromChart(); } catch(e) {}
+            }, 100);
+        }
+    }
+    try {
+        if (typeof window.updateBottomLegendVisibility === 'function') {
+            setTimeout(() => window.updateBottomLegendVisibility(), 130);
+        }
+    } catch (e) { /* ignore */ }
     // Trigger overlay legend visibility update for timeline page
     if (typeof window.updateOverlayLegendVisibility === 'function') {
         setTimeout(() => window.updateOverlayLegendVisibility(), 150);
@@ -7305,6 +7366,40 @@ function setupSidebarViewToggle() {
     const continentsBtn = document.getElementById('sidebar-continents-btn');
 
     if (!locationsBtn || !continentsBtn) return;
+    const setAllRegionSectionsOpen = (open) => {
+        try {
+            const state = {};
+            document.querySelectorAll('#legend-content .region-section').forEach((section) => {
+                const key = section.getAttribute('data-continent') || '';
+                const panel = section.querySelector('.country-buttons-region');
+                const toggle = section.querySelector('.region-toggle');
+                const arrow = section.querySelector('.toggle-arrow');
+                if (panel) panel.style.display = open ? 'block' : 'none';
+                if (arrow) arrow.style.transform = open ? 'rotate(0deg)' : 'rotate(-90deg)';
+                if (toggle) toggle.style.background = open ? 'rgba(248,249,250,0.9)' : 'rgba(232,236,240,0.9)';
+                if (key) state[key] = !!open;
+            });
+            window._legendContinentSectionState = state;
+            window._legendContinentAllOpen = !!open;
+            if (typeof window.syncLegendContinentStateFromDom === 'function') window.syncLegendContinentStateFromDom();
+        } catch (e) { /* ignore */ }
+    };
+    const toggleAllRegionSections = () => {
+        try {
+            let panels = Array.from(document.querySelectorAll('#legend-content .country-buttons-region'));
+            if (panels.length === 0) {
+                if (typeof buildFloatingLegendFromChart === 'function') {
+                    buildFloatingLegendFromChart();
+                }
+                panels = Array.from(document.querySelectorAll('#legend-content .country-buttons-region'));
+                if (panels.length === 0) return;
+                setAllRegionSectionsOpen(true);
+                return;
+            }
+            const anyClosed = panels.some((panel) => panel.style.display === 'none');
+            setAllRegionSectionsOpen(anyClosed);
+        } catch (e) { /* ignore */ }
+    };
 
     const updateToggleState = () => {
         const mode = window._legendViewMode || 'locations';
@@ -7348,6 +7443,8 @@ function setupSidebarViewToggle() {
             if (typeof buildFloatingLegendFromChart === 'function') {
                 buildFloatingLegendFromChart();
             }
+        } else {
+            toggleAllRegionSections();
         }
     });
 

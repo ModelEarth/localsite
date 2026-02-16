@@ -15,6 +15,32 @@
 
 <script>
 loadMarkdown("README.md", "readmeDiv", "_parent");
+(() => {
+    let cachedLegendPosition = 'right';
+    try {
+        cachedLegendPosition = localStorage.getItem('legendPosition') || 'right';
+    } catch (e) { /* ignore */ }
+    window._cachedLegendPosition = cachedLegendPosition;
+    window._timelineLegendAllowSidebar = (cachedLegendPosition === 'left');
+})();
+const WHICH_PER_STORAGE_KEY = 'timelineWhichPer';
+function getStoredWhichPerOption() {
+    try {
+        const stored = localStorage.getItem(WHICH_PER_STORAGE_KEY);
+        if (stored === 'totals' || stored === 'percapita' || stored === 'perarea') return stored;
+    } catch (e) { /* ignore */ }
+    return null;
+}
+function applyStoredWhichPerOption() {
+    try {
+        const hash = getHash();
+        if (hash.goal === 'population') return;
+        const stored = getStoredWhichPerOption();
+        if (!stored) return;
+        const radio = document.querySelector(`input[name="whichPer"][value="${stored}"]`);
+        if (radio && !radio.checked) radio.checked = true;
+    } catch (e) { /* ignore */ }
+}
 
 function applyPerCapitaGoalSettings() {
     const hash = getHash();
@@ -31,6 +57,8 @@ function applyPerCapitaGoalSettings() {
         if (totalsRadio && !totalsRadio.checked) {
             totalsRadio.checked = true;
         }
+    } else {
+        applyStoredWhichPerOption();
     }
 }
 
@@ -57,9 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!hash.scope) {
         hash.scope = document.getElementById('selectScope').options[document.getElementById('selectScope').selectedIndex].text;
     }
+    applyPerCapitaGoalSettings();
     //alert(hash.scope)
     updateDcidSelectFromSheet(hash.scope);
-    applyPerCapitaGoalSettings();
     
     document.addEventListener('change', function(event) {
         if (event.target.name === 'whichLines') {
@@ -82,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
      });
     document.querySelectorAll('input[name="whichPer"]').forEach((radio) => {
         radio.addEventListener('change', () => {
+            try { localStorage.setItem(WHICH_PER_STORAGE_KEY, radio.value); } catch (e) { /* ignore */ }
             refreshTimeline(); // This will re-fetch emissions and population and update the chart
         });
     });
@@ -164,7 +193,7 @@ body.timeline-loading .timeline-loading-overlay {
 }
 #floating-legend {
      position: absolute;
-     top: 320px;
+     top: 126px;
      right: 20px;
      left: auto;
      background: rgba(255,255,255,0.98);
@@ -173,35 +202,46 @@ body.timeline-loading .timeline-loading-overlay {
      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
      backdrop-filter: blur(6px);
      border: 1px solid rgba(0,0,0,0.04);
-     z-index: 99999;
+     z-index: 999;
      min-width: 160px;
      font-size: 13px;
      pointer-events: auto;
 }
 #floating-legend #legend-content {
-    padding: 5px 10px;
+    padding: 3px 10px 5px;
+}
+#floating-legend-drag-handle {
+    height: 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+    background-color: #4c5969;
+    background-image:
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.08)),
+        repeating-linear-gradient(135deg, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.08) 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 5px);
+    border-radius: 8px 8px 0 0;
+    cursor: grab;
+    user-select: none;
+}
+#floating-legend-drag-handle:active {
+    cursor: grabbing;
 }
 #floating-legend-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 10px;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
-    background: rgba(240,240,240,0.5);
-    border-radius: 8px 8px 0 0;
+    padding: 6px 12px 3px 12px;
+    min-height: 34px;
+    border-bottom: none;
+    background: rgba(76,89,105,0.12);
     font-weight: 600;
     font-size: 14px;
-    color: #333;
-    cursor: grab;
-    user-select: none;
-}
-#floating-legend-header:active {
-    cursor: grabbing;
+    color: #223246;
+    cursor: default;
+    user-select: auto;
 }
 #floating-legend.dragging {
     opacity: 0.9;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    z-index: 999999;
+    z-index: 999;
 }
 #floating-legend-close {
     background: none;
@@ -209,19 +249,19 @@ body.timeline-loading .timeline-loading-overlay {
     font-size: 20px;
     line-height: 1;
     cursor: pointer;
-    color: #666;
+    color: #41556b;
     padding: 0 4px;
     margin: -4px -4px -4px 8px;
     border-radius: 4px;
     transition: background 0.15s, color 0.15s;
 }
 #floating-legend-close:hover {
-    background: rgba(0,0,0,0.1);
-    color: #333;
+    background: rgba(76,89,105,0.16);
+    color: #223246;
 }
 #legend-view-toggle {
     display: flex;
-    background: rgba(0,0,0,0.06);
+    background: rgba(76,89,105,0.12);
     border-radius: 6px;
     padding: 2px;
     gap: 2px;
@@ -233,22 +273,48 @@ body.timeline-loading .timeline-loading-overlay {
     border-radius: 4px;
     font-size: 12px;
     font-weight: 500;
-    color: #666;
+    color: #33485f;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 .view-toggle-btn:hover {
-    color: #333;
-    background: rgba(255,255,255,0.5);
+    color: #223246;
+    background: rgba(76,89,105,0.16);
 }
 .view-toggle-btn.active {
-    background: #fff;
-    color: #333;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background: #ffffff;
+    color: #223246;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.24);
+}
+/* Sidebar toggle dark mode (left nav legend). */
+.dark #sidebar-view-toggle {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+}
+.dark #sidebar-view-toggle .view-toggle-btn {
+    color: #d8e2f0;
+}
+.dark #sidebar-view-toggle .view-toggle-btn:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.16);
+}
+.dark #sidebar-view-toggle .view-toggle-btn.active {
+    background: rgba(255,255,255,0.94);
+    color: #1d2e42;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
 }
 #legend-content {
     overflow-y: auto;
     max-height: 400px;
+}
+/* Keep floating legend text dark in dark mode (left-nav legend remains unchanged). */
+.dark #floating-legend,
+.dark #floating-legend #legend-content,
+.dark #floating-legend .legend-item,
+.dark #floating-legend .legend-label,
+.dark #floating-legend .legend-value,
+.dark #floating-legend .region-toggle {
+    color: #223246;
 }
 /* Show floating legend when sidebar is hidden (nav closed) AND chart is visible */
 body.sidebar-hidden #floating-legend.chart-visible,
@@ -328,11 +394,64 @@ body.main-nav-hidden #floating-legend.chart-visible {
 .legend-more-btn:active {
     transform: translateY(0);
 }
+.legend-cache-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    margin-bottom: 2px;
+    align-items: center;
+    pointer-events: auto;
+}
+.legend-cache-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: rgba(255,255,255,0.95);
+    color: #33485f;
+    font-size: 12px;
+    font-weight: 400;
+    cursor: pointer;
+    user-select: none;
+}
+.legend-cache-btn:hover {
+    background: rgba(76,89,105,0.1);
+}
+.dark .legend-cache-btn {
+    background: #2b3341;
+    color: #ffffff;
+    border-color: rgba(255,255,255,0.22);
+}
+.dark .legend-cache-btn:hover {
+    background: #384458;
+}
 
 /* Menu styling */
 .floating-legend-menu-list {
     max-height: 300px;
     overflow-y: auto;
+}
+#legend-content.legend-list-pending .locations-flat-list,
+#legend-content.legend-list-pending .region-section,
+#legend-content.legend-list-pending > .legend-item {
+    display: none !important;
+}
+.legend-more-inline-panel {
+    margin-top: 6px;
+    padding: 6px 4px;
+    border: 1px solid rgba(0,0,0,0.09);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.95);
+}
+.legend-more-inline-input {
+    width: calc(100% - 16px);
+    margin: 8px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
 }
 /* Value small text shown aligned to the right edge of the legend item */
 .legend-value { margin-left: auto; flex: 0 0 auto; color: rgba(0,0,0,0.7); font-weight: 600; padding-left: 8px; }
@@ -341,8 +460,8 @@ body.main-nav-hidden #floating-legend.chart-visible {
 <style>
 /* Keep the whichLinesHolder controls above the floating legend so radios remain clickable */
 /* Ensure per-capita option radios are above the legend (prevents legend items from intercepting clicks) */
-#perCapitaOptions { position: relative; z-index: 10002; }
-.whichLinesHolder { position: relative; z-index: 10001; }
+#perCapitaOptions { position: relative; z-index: 902; }
+.whichLinesHolder { position: relative; z-index: 901; }
 </style>
 
 <style>
@@ -356,7 +475,7 @@ body.main-nav-hidden #floating-legend.chart-visible {
 .region-icon { font-size: 14px; flex-shrink: 0; }
 .toggle-arrow { font-size: 10px; transition: transform 0.2s; flex-shrink: 0; }
 .country-buttons-region { padding: 4px 6px; }
-.country-buttons-region .legend-item { margin: 2px 0; padding: 4px 8px; font-size: 11px; }
+.country-buttons-region .legend-item { margin: 2px 0; padding: 4px 8px; font-size: 13px; }
 
 </style>
 
@@ -776,9 +895,14 @@ p.set('rs_dcid', list.join(','));
         // Legend Position Handler
         document.addEventListener('DOMContentLoaded', function() {
             const legendRadios = document.querySelectorAll('input[name="legendPosition"]');
+            window._legendListDirty = false;
             
             // Load saved position from localStorage
-            const savedPosition = localStorage.getItem('legendPosition') || 'right';
+            const storedPosition = localStorage.getItem('legendPosition');
+            const validPositions = ['left', 'right', 'below'];
+            const savedPosition = validPositions.includes(storedPosition) ? storedPosition : 'right';
+            window._cachedLegendPosition = savedPosition;
+            localStorage.setItem('legendPosition', savedPosition);
             const savedRadio = document.querySelector(`input[name="legendPosition"][value="${savedPosition}"]`);
             if (savedRadio) {
                 savedRadio.checked = true;
@@ -793,51 +917,473 @@ p.set('rs_dcid', list.join(','));
                     localStorage.setItem('legendPosition', position);
                 });
             });
+            // Initial legend build is triggered by chart creation flow (earthscape.js).
         });
         
+        function moveLegendToLeft(ev) {
+            if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+            try {
+                localStorage.setItem('legendPosition', 'left');
+                window._cachedLegendPosition = 'left';
+                window._timelineLegendAllowSidebar = true;
+                window._floatingLegendManuallyClosed = false;
+                updateOnLeftButtonsVisibility();
+                updateOnRightButtonsVisibility();
+                if (typeof window.showNavColumn === 'function') {
+                    window.showNavColumn();
+                } else {
+                    updateLegendPosition('left');
+                }
+                const bottomLegend = document.getElementById('bottom-legend');
+                if (bottomLegend) {
+                    bottomLegend.style.display = 'none';
+                    bottomLegend.setAttribute('aria-hidden', 'true');
+                }
+            } catch (e) {}
+        }
+
+        function moveLegendToRight(ev) {
+            if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+            try {
+                localStorage.setItem('legendPosition', 'right');
+                window._cachedLegendPosition = 'right';
+                window._timelineLegendAllowSidebar = false;
+                window._floatingLegendManuallyClosed = false;
+                updateOnLeftButtonsVisibility();
+                updateOnRightButtonsVisibility();
+                if (typeof window.hideNavColumn === 'function') {
+                    window.hideNavColumn();
+                } else {
+                    updateLegendPosition('right');
+                }
+                const floatingLegend = document.getElementById('floating-legend');
+                if (floatingLegend) {
+                    floatingLegend.style.position = 'fixed';
+                    floatingLegend.style.left = 'auto';
+                    floatingLegend.style.right = '20px';
+                    floatingLegend.style.top = '126px';
+                    floatingLegend.style.display = 'block';
+                    floatingLegend.style.opacity = '1';
+                    floatingLegend.setAttribute('aria-hidden', 'false');
+                    floatingLegend.classList.add('chart-visible');
+                }
+                const bottomLegend = document.getElementById('bottom-legend');
+                if (bottomLegend) {
+                    bottomLegend.style.display = 'none';
+                    bottomLegend.setAttribute('aria-hidden', 'true');
+                }
+            } catch (e) {}
+        }
+
+        function updateOnLeftButtonsVisibility() {
+            const hideOnLeft = !!window._timelineLegendAllowSidebar;
+            const leftButtons = document.querySelectorAll('.legend-on-left-btn');
+            leftButtons.forEach((btn) => {
+                btn.style.display = hideOnLeft ? 'none' : 'inline-flex';
+            });
+        }
+        function updateOnRightButtonsVisibility() {
+            let currentPosition = 'right';
+            try { currentPosition = window._cachedLegendPosition || localStorage.getItem('legendPosition') || 'right'; } catch (e) { /* ignore */ }
+            const showOnRight = currentPosition !== 'right' || !!window._floatingLegendManuallyClosed;
+            const rightButtons = document.querySelectorAll('.legend-on-right-btn');
+            rightButtons.forEach((btn) => {
+                btn.style.display = showOnRight ? 'inline-flex' : 'none';
+            });
+        }
+        function getAddableCountriesForMenu(query) {
+            const q = (query || '').toLowerCase();
+            const labelsInLegend = new Set();
+            document.querySelectorAll('#legend-content .legend-item').forEach((el) => {
+                const label = (el.getAttribute('data-legend-label') || el.title || el.textContent || '').trim();
+                if (!label) return;
+                const isHidden = el.classList.contains('hidden');
+                // Only currently visible legend items should be excluded from More Locations.
+                if (!isHidden) labelsInLegend.add(label);
+            });
+            const allMap = window._timelineCountryDataByName || {};
+            return Object.keys(allMap).filter((n) => n && !labelsInLegend.has(n) && (!q || n.toLowerCase().indexOf(q) >= 0));
+        }
+        function renderMoreLocationsMenuList(list, panel, query, options) {
+            if (!list) return;
+            const opts = options || {};
+            const limit = Number.isFinite(opts.limit) ? opts.limit : 40;
+            const rowStyle = String(opts.rowStyle || '');
+            const hoverBg = opts.hoverBg || null;
+            const closeOnSelect = opts.closeOnSelect !== false;
+            const closeTarget = opts.closeTarget || panel;
+            list.innerHTML = '';
+            const addable = getAddableCountriesForMenu(query).slice(0, limit);
+            if (addable.length > 0) {
+                const addAllRow = document.createElement('div');
+                addAllRow.className = 'bottom-legend-menu-item';
+                addAllRow.textContent = 'Add All';
+                addAllRow.setAttribute('role', 'menuitem');
+                addAllRow.tabIndex = 0;
+                addAllRow.style.fontWeight = '600';
+                if (rowStyle) addAllRow.style.cssText = rowStyle + '; font-weight: 600;';
+                addAllRow.addEventListener('click', () => {
+                    try {
+                        if (typeof window.addCountryToCharts === 'function') {
+                            addable.forEach((name) => window.addCountryToCharts(name));
+                        }
+                        if (closeOnSelect && closeTarget) closeTarget.style.display = 'none';
+                    } catch (e) { /* ignore */ }
+                });
+                list.appendChild(addAllRow);
+                const divider = document.createElement('div');
+                divider.style.cssText = 'border-top: 1px solid rgba(0,0,0,0.14); margin: 4px 6px;';
+                list.appendChild(divider);
+            }
+            addable.forEach((name) => {
+                const row = document.createElement('div');
+                row.className = 'bottom-legend-menu-item';
+                row.textContent = name;
+                row.setAttribute('role', 'menuitem');
+                row.tabIndex = 0;
+                if (rowStyle) row.style.cssText = rowStyle;
+                if (hoverBg) {
+                    row.addEventListener('mouseenter', () => { row.style.background = hoverBg; });
+                    row.addEventListener('mouseleave', () => { row.style.background = 'transparent'; });
+                }
+                row.addEventListener('click', () => {
+                    try { if (typeof window.addCountryToCharts === 'function') window.addCountryToCharts(name); } catch (e) {}
+                    try { if (closeOnSelect && closeTarget) closeTarget.style.display = 'none'; } catch (e) {}
+                });
+                list.appendChild(row);
+            });
+        }
+        function openMoreLocationsPanel(anchorBtn, panel, listSelector, options) {
+            if (!anchorBtn || !panel) return;
+            try {
+                const inp = panel.querySelector('input');
+                const list = panel.querySelector(listSelector);
+                if (inp && list) {
+                    renderMoreLocationsMenuList(list, panel, inp.value, options);
+                }
+                const rect = anchorBtn.getBoundingClientRect();
+                panel.style.left = (rect.left + window.scrollX) + 'px';
+                panel.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+                panel.style.display = 'block';
+            } catch (e) { /* ignore */ }
+        }
+        function getLegendScopeAndCountry() {
+            let scope = 'country';
+            let country = 'US';
+            try {
+                const hash = (typeof getHash === 'function') ? getHash() : {};
+                const rawScope = String(hash.scope || hash.geoview || '').toLowerCase();
+                if (rawScope.indexOf('zip') >= 0) scope = 'zip';
+                else if (rawScope.indexOf('county') >= 0) scope = 'county';
+                else if (rawScope.indexOf('state') >= 0) scope = 'state';
+                else scope = 'country';
+
+                const candidates = [hash.country, hash.geo, hash.iso, hash.nation];
+                for (let i = 0; i < candidates.length; i++) {
+                    const val = String(candidates[i] || '').trim();
+                    if (/^[A-Za-z]{2}$/.test(val)) { country = val.toUpperCase(); break; }
+                    const prefixed = val.match(/^([A-Za-z]{2})\d/);
+                    if (prefixed && prefixed[1]) { country = prefixed[1].toUpperCase(); break; }
+                }
+            } catch (e) { /* ignore */ }
+            return { scope, country };
+        }
+        function getLegendCacheKey() {
+            const info = getLegendScopeAndCountry();
+            if (info.scope === 'country') return 'timelineLegendList_country';
+            return `timelineLegendList_${info.country}_${info.scope}`;
+        }
+        function getActiveLegendLabelsFromCharts() {
+            // Prefer authoritative legend DOM visibility when available.
+            try {
+                const domItems = Array.from(document.querySelectorAll('#legend-content .legend-item'));
+                if (domItems.length > 0) {
+                    return domItems
+                        .filter((el) => !el.classList.contains('hidden'))
+                        .map((el) => (el.getAttribute('data-legend-label') || el.title || el.textContent || '').trim())
+                        .filter(Boolean);
+                }
+            } catch (e) { /* ignore */ }
+            const labels = new Set();
+            const charts = [];
+            if (window.timelineChart) charts.push(window.timelineChart);
+            if (window.lineAreaChart) charts.push(window.lineAreaChart);
+            try { if (typeof timelineChart !== 'undefined' && timelineChart) charts.push(timelineChart); } catch (e) { /* ignore */ }
+            try { if (typeof lineAreaChart !== 'undefined' && lineAreaChart) charts.push(lineAreaChart); } catch (e) { /* ignore */ }
+            charts.forEach((chart) => {
+                try {
+                    (chart.data?.datasets || []).forEach((ds, idx) => {
+                        if (!ds || !ds.label) return;
+                        const hidden = !!chart.getDatasetMeta(idx).hidden;
+                        if (!hidden) labels.add(ds.label);
+                    });
+                } catch (e) { /* ignore */ }
+            });
+            return Array.from(labels);
+        }
+        function getDefaultLegendLabels() {
+            try {
+                return Array.isArray(window._timelineSelectedLabels) ? window._timelineSelectedLabels.slice() : [];
+            } catch (e) { return []; }
+        }
+        function isLegendListChangedFromBaseline() {
+            try {
+                let currentLabels = [];
+                const domItems = Array.from(document.querySelectorAll('#legend-content .legend-item'));
+                if (domItems.length > 0) {
+                    currentLabels = domItems
+                        .filter((el) => !el.classList.contains('hidden'))
+                        .map((el) => (el.getAttribute('data-legend-label') || el.title || el.textContent || '').trim())
+                        .filter(Boolean);
+                } else {
+                    currentLabels = getActiveLegendLabelsFromCharts();
+                }
+                const current = new Set(currentLabels.map((s) => String(s)));
+                const key = getLegendCacheKey();
+                let baselineLabels = null;
+                try {
+                    const raw = localStorage.getItem(key);
+                    const parsed = raw ? JSON.parse(raw) : null;
+                    if (Array.isArray(parsed)) baselineLabels = parsed;
+                } catch (e) { /* ignore */ }
+                if (!Array.isArray(baselineLabels)) {
+                    baselineLabels = getDefaultLegendLabels();
+                }
+                const baseline = new Set((baselineLabels || []).map((s) => String(s)));
+                if (baseline.size === 0) return current.size > 0;
+                if (current.size !== baseline.size) return true;
+                for (const label of current) {
+                    if (!baseline.has(label)) return true;
+                }
+                return false;
+            } catch (e) { return false; }
+        }
+        function saveLegendListToCache() {
+            try {
+                const key = getLegendCacheKey();
+                const labels = getActiveLegendLabelsFromCharts();
+                localStorage.setItem(key, JSON.stringify(labels));
+                window._legendSavedListAppliedKey = key;
+                window._legendListJustSaved = true;
+                window._legendListDirty = false;
+                updateLegendCacheButtonsVisibility();
+            } catch (e) { /* ignore */ }
+        }
+        function hasLegendListCache() {
+            try {
+                const key = getLegendCacheKey();
+                const raw = localStorage.getItem(key);
+                if (!raw) return false;
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) && parsed.length > 0;
+            } catch (e) { return false; }
+        }
+        function isLegendCachePendingApply() {
+            try {
+                if (window._legendListDirty) return false;
+                const key = getLegendCacheKey();
+                const raw = localStorage.getItem(key);
+                if (!raw) return false;
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed) || parsed.length === 0) return false;
+                const sameKeyApplied = window._legendSavedListAppliedKey === key;
+                const cycle = Number(window._legendBuildCycle || 0);
+                const cycleApplied = Number(window._legendSavedListAppliedCycle || -1);
+                return !(sameKeyApplied && cycleApplied === cycle);
+            } catch (e) { return false; }
+        }
+        function updateLegendCacheButtonsVisibility() {
+            const showClear = hasLegendListCache();
+            const showSave = !!window._legendListDirty && isLegendListChangedFromBaseline() && !window._legendListJustSaved;
+            document.querySelectorAll('.legend-cache-clear-btn').forEach((btn) => {
+                btn.style.display = showClear ? 'inline-flex' : 'none';
+                btn.textContent = (showClear && showSave) ? 'Defaults' : 'Restore Defaults';
+            });
+            document.querySelectorAll('.legend-cache-save-btn').forEach((btn) => {
+                btn.style.display = showSave ? 'inline-flex' : 'none';
+                btn.textContent = (showSave && !showClear) ? 'Save Locations' : 'Save';
+            });
+        }
+        function applySavedLegendListToCharts(charts) {
+            try {
+                // User made unsaved legend edits (toggle/add/remove): don't override with cached list.
+                if (window._legendListDirty) return;
+                const cacheKey = getLegendCacheKey();
+                const raw = localStorage.getItem(cacheKey);
+                const saved = raw ? JSON.parse(raw) : null;
+                if (!Array.isArray(saved) || saved.length === 0) return;
+                const savedSet = new Set(saved.map((s) => String(s)));
+
+                // Re-add any saved labels missing from current datasets.
+                const datasetLabels = new Set();
+                charts.forEach((chartObj) => {
+                    try {
+                        (chartObj?.data?.datasets || []).forEach((ds) => {
+                            if (ds && ds.label) datasetLabels.add(String(ds.label));
+                        });
+                    } catch (e) { /* ignore */ }
+                });
+                const missing = saved.filter((label) => !datasetLabels.has(String(label)));
+                if (missing.length > 0 && typeof window.addCountryToCharts === 'function' && !window._applyingSavedLegendList) {
+                    const dataReady = window._timelineCountryDataByName && Object.keys(window._timelineCountryDataByName).length > 0;
+                    if (!dataReady && typeof waitForElm === 'function') {
+                        waitForElm('#legend-content').then(() => {
+                            try {
+                                if (typeof window.buildFloatingLegendFromChart === 'function') {
+                                    window.buildFloatingLegendFromChart();
+                                }
+                            } catch (e) { /* ignore */ }
+                        });
+                        return;
+                    }
+                    window._applyingSavedLegendList = true;
+                    try {
+                        missing.forEach((label) => {
+                            try { window.addCountryToCharts(label); } catch (e) { /* ignore */ }
+                        });
+                    } finally {
+                        window._applyingSavedLegendList = false;
+                    }
+                    // Rebuild once after all missing series are added; avoids per-item flash.
+                    try {
+                        window._forceLegendRebuild = true;
+                        if (!window._legendRebuildQueuedAfterCacheApply) {
+                            window._legendRebuildQueuedAfterCacheApply = true;
+                            Promise.resolve().then(() => {
+                                window._legendRebuildQueuedAfterCacheApply = false;
+                                try {
+                                    if (typeof window.buildFloatingLegendFromChart === 'function') {
+                                        window.buildFloatingLegendFromChart();
+                                    }
+                                } catch (e) { /* ignore */ }
+                            });
+                        }
+                    } catch (e) { /* ignore */ }
+                }
+
+                // Apply hidden state from saved list.
+                charts.forEach((chartObj) => {
+                    try {
+                        (chartObj?.data?.datasets || []).forEach((ds, idx) => {
+                            if (!ds || !ds.label) return;
+                            const meta = chartObj.getDatasetMeta(idx);
+                            if (meta) meta.hidden = !savedSet.has(String(ds.label));
+                        });
+                        chartObj.update('none');
+                    } catch (e) { /* ignore */ }
+                });
+                window._legendSavedListAppliedKey = cacheKey;
+                window._legendSavedListAppliedCycle = Number(window._legendBuildCycle || 0);
+            } catch (e) { /* ignore */ }
+        }
+        function clearLegendListCache() {
+            try {
+                const key = getLegendCacheKey();
+                localStorage.removeItem(key);
+                window._legendSavedListAppliedKey = null;
+                window._legendSavedListAppliedCycle = -1;
+                window._legendListJustSaved = false;
+                window._legendListDirty = false;
+                window._legendCachePending = false;
+                updateLegendCacheButtonsVisibility();
+                const defaults = new Set(getDefaultLegendLabels().map((s) => String(s)));
+                const charts = [];
+                try { if (window.timelineChart) charts.push(window.timelineChart); } catch (e) { /* ignore */ }
+                try { if (window.lineAreaChart) charts.push(window.lineAreaChart); } catch (e) { /* ignore */ }
+                try { if (typeof timelineChart !== 'undefined' && timelineChart) charts.push(timelineChart); } catch (e) { /* ignore */ }
+                try { if (typeof lineAreaChart !== 'undefined' && lineAreaChart) charts.push(lineAreaChart); } catch (e) { /* ignore */ }
+                charts.forEach((chartObj) => {
+                    try {
+                        (chartObj?.data?.datasets || []).forEach((ds, idx) => {
+                            if (!ds || !ds.label) return;
+                            const meta = chartObj.getDatasetMeta(idx);
+                            if (!meta) return;
+                            if (defaults.size > 0) {
+                                meta.hidden = !defaults.has(String(ds.label));
+                            } else {
+                                meta.hidden = false;
+                            }
+                        });
+                        chartObj.update('none');
+                    } catch (e) { /* ignore */ }
+                });
+                window._forceLegendRebuild = true;
+                if (typeof buildFloatingLegendFromChart === 'function') {
+                    buildFloatingLegendFromChart();
+                }
+                if (typeof refreshTimeline === 'function') {
+                    refreshTimeline();
+                }
+            } catch (e) { /* ignore */ }
+        }
+        window.updateOnLeftButtonsVisibility = updateOnLeftButtonsVisibility;
+        window.updateOnRightButtonsVisibility = updateOnRightButtonsVisibility;
+        window.updateLegendCacheButtonsVisibility = updateLegendCacheButtonsVisibility;
+
         // Function to update legend position
         function updateLegendPosition(position) {
+            const validPositions = ['left', 'right', 'below'];
+            const nextPosition = validPositions.includes(position) ? position : 'right';
+            try {
+                localStorage.setItem('legendPosition', nextPosition);
+                window._cachedLegendPosition = nextPosition;
+            } catch (e) {}
             const floatingLegend = document.getElementById('floating-legend');
             const bottomLegend = document.getElementById('bottom-legend');
             const overlayLegends = document.querySelectorAll('.overlay-legend');
             
             // Hide all legends first
-            if (floatingLegend) floatingLegend.style.display = 'none';
+            if (floatingLegend) {
+                floatingLegend.style.display = 'none';
+                floatingLegend.setAttribute('aria-hidden', 'true');
+                floatingLegend.classList.remove('chart-visible');
+            }
             if (bottomLegend) bottomLegend.style.display = 'none';
             overlayLegends.forEach(ol => ol.style.display = 'none');
             
             // Show selected legend position
-            switch(position) {
+            switch(nextPosition) {
                 case 'left':
                     // Left Nav - show floating legend on left
                     if (floatingLegend) {
-                        floatingLegend.style.display = 'block';
-                        floatingLegend.style.position = 'fixed';
-                        floatingLegend.style.left = '20px';
-                        floatingLegend.style.right = 'auto';
-                        floatingLegend.style.top = '120px';
+                        window._timelineLegendAllowSidebar = true;
+                        if (typeof window.showNavColumn === 'function') {
+                            window.showNavColumn();
+                            floatingLegend.style.display = 'none';
+                            floatingLegend.setAttribute('aria-hidden', 'true');
+                        } else {
+                            floatingLegend.style.display = 'block';
+                            floatingLegend.style.position = 'fixed';
+                            floatingLegend.style.left = '20px';
+                            floatingLegend.style.right = 'auto';
+                            floatingLegend.style.top = '120px';
+                        }
                     }
                     break;
                     
                 case 'right':
                     // Float Right - show floating legend on right (default)
+                    window._floatingLegendManuallyClosed = false;
+                    window._timelineLegendAllowSidebar = false;
                     if (floatingLegend) {
                         floatingLegend.style.display = 'block';
                         floatingLegend.style.position = 'fixed';
                         floatingLegend.style.right = '20px';
                         floatingLegend.style.left = 'auto';
-                        floatingLegend.style.top = '120px';
+                        floatingLegend.style.top = '126px';
                     }
                     break;
                     
                 case 'below':
                     // Below - show bottom legend
+                    window._timelineLegendAllowSidebar = false;
                     if (bottomLegend) {
                         bottomLegend.style.display = 'flex';
                     }
                     break;
             }
-            
+            updateOnLeftButtonsVisibility();
+            updateOnRightButtonsVisibility();
             console.log('Legend position changed to:', position);
         }
         </script>
@@ -850,6 +1396,7 @@ p.set('rs_dcid', list.join(','));
             </div>
             <canvas id="timelineChart" ></canvas>
             <div id="floating-legend" aria-hidden="false" style="display:none">
+                <div id="floating-legend-drag-handle" aria-label="Drag legend" title="Drag legend"></div>
                 <div id="floating-legend-header">
                     <div id="legend-view-toggle">
                         <button id="view-locations-btn" class="view-toggle-btn active" title="Show flat list of locations">Locations</button>
@@ -869,15 +1416,20 @@ p.set('rs_dcid', list.join(','));
             <canvas id="lineAreaChart" ></canvas>
         </div>
 
-        <label>
-            <input type="radio" name="toogleChartType" value="div1" checked> Line Chart
-        </label>
-        <label>
-            <input type="radio" name="toogleChartType" value="div2"> Area Chart
-        </label>
-        <label>
-            <input type="radio" name="toogleChartType" value="both"> Both
-        </label>
+        <div id="timelineChartFormats">
+            <div id="timelineChartTypeRadios">
+                <label>
+                    <input type="radio" name="toogleChartType" value="div1" checked> Line Chart
+                </label>
+                <label>
+                    <input type="radio" name="toogleChartType" value="div2"> Area Chart
+                </label>
+                <label>
+                    <input type="radio" name="toogleChartType" value="both"> Both
+                </label>
+            </div>
+            <div id="timelineChartFormatActions"></div>
+        </div>
     </div>
 
 </div>
@@ -987,22 +1539,12 @@ function getContinentForCountry(countryName) {
     return "Other";
 }
 
-// Continent display order and icons
+// Continent display order
 const continentOrder = ["North America", "Central America", "Caribbean", "South America", "Europe", "Asia", "Africa", "Oceania", "Other"];
-const continentIcons = {
-    "North America": "🌎",
-    "Central America": "🌎",
-    "Caribbean": "🌴",
-    "South America": "🌎",
-    "Europe": "🇪🇺",
-    "Asia": "🌏",
-    "Africa": "🌍",
-    "Oceania": "🌏",
-    "Other": "🌐"
-};
 
 // Floating legend helper for Chart.js timelineChart
 function buildFloatingLegendFromChart() {
+    window._legendBuildCycle = Number(window._legendBuildCycle || 0) + 1;
     const canvas = document.getElementById('timelineChart');
     if (!canvas || typeof Chart === 'undefined') return false;
     // Decide which chart(s) to build the legend for based on the chart-type toggle
@@ -1030,6 +1572,27 @@ function buildFloatingLegendFromChart() {
     const legendContent = document.getElementById('legend-content');
     if (!legendContent) return true;
     legendContent.innerHTML = '';
+    // Hide legend content during rebuild to prevent flashing
+    legendContent.style.visibility = 'hidden';
+    function syncLegendContinentStateFromDom() {
+        try {
+            const state = {};
+            let hasAny = false;
+            let allOpen = true;
+            document.querySelectorAll('#legend-content .region-section').forEach((section) => {
+                const key = section.getAttribute('data-continent') || '';
+                const panel = section.querySelector('.country-buttons-region');
+                if (!key || !panel) return;
+                const open = panel.style.display !== 'none';
+                state[key] = open;
+                hasAny = true;
+                if (!open) allOpen = false;
+            });
+            window._legendContinentSectionState = state;
+            if (hasAny) window._legendContinentAllOpen = allOpen;
+        } catch (e) { /* ignore */ }
+    }
+    window.syncLegendContinentStateFromDom = syncLegendContinentStateFromDom;
 
     // Count datasets across available charts for diagnostics
     const timelineCount = (timelineChartObj && timelineChartObj.data && timelineChartObj.data.datasets) ? timelineChartObj.data.datasets.length : 0;
@@ -1234,6 +1797,7 @@ function buildFloatingLegendFromChart() {
 
     // Unified legend: merge dataset labels across both charts so each country appears once
     const labelMap = new Map(); // label -> { color, charts: [{chart, index}] }
+    const initiallySelectedLabels = new Set((window._timelineSelectedLabels || []).map((s) => String(s)));
     function collectFromChart(chartObj) {
         if (!chartObj || !chartObj.data || !chartObj.data.datasets) return;
         chartObj.data.datasets.forEach((ds, i) => {
@@ -1245,6 +1809,14 @@ function buildFloatingLegendFromChart() {
     }
     collectFromChart(timelineChartObj);
     collectFromChart(lineAreaChartObj);
+    // Apply cached custom list for the current scope key on each rebuild.
+    try { applySavedLegendListToCharts([timelineChartObj, lineAreaChartObj]); } catch (e) { /* ignore */ }
+    const cachePendingApply = isLegendCachePendingApply();
+    window._legendCachePending = cachePendingApply;
+    try {
+        if (cachePendingApply) legendContent.classList.add('legend-list-pending');
+        else legendContent.classList.remove('legend-list-pending');
+    } catch (e) { /* ignore */ }
 
     // Initialize legend view mode (default to flat 'locations' view)
     if (typeof window._legendViewMode === 'undefined') {
@@ -1264,6 +1836,7 @@ function buildFloatingLegendFromChart() {
     function createLegendItem(label, info) {
         const item = document.createElement('div');
         item.className = 'legend-item';
+        item.classList.add('hidden');
         item.title = label;
         const cb = document.createElement('input');
         cb.type = 'checkbox';
@@ -1282,8 +1855,9 @@ function buildFloatingLegendFromChart() {
         if (whichLinesModeLocal !== 'showAll' && !visible) {
             return null; // don't add this legend item
         }
-        setItemSelectionStyle(item, info.color, visible);
-        try { cb.checked = visible; } catch (e) {}
+        const revealInitially = visible && !cachePendingApply;
+        setItemSelectionStyle(item, info.color, revealInitially);
+        try { cb.checked = revealInitially; } catch (e) {}
 
         // Toggle handler: toggles the dataset in all charts where it exists
         item.addEventListener('click', (ev) => {
@@ -1295,6 +1869,9 @@ function buildFloatingLegendFromChart() {
             const nowVisible = info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden);
             setItemSelectionStyle(item, info.color, nowVisible);
             try { cb.checked = nowVisible; } catch (e) {}
+            window._legendListJustSaved = false;
+            window._legendListDirty = true;
+            try { if (typeof updateLegendCacheButtonsVisibility === 'function') updateLegendCacheButtonsVisibility(); } catch (e) {}
         });
         cb.addEventListener('click', (ev) => { try { ev.stopPropagation(); } catch (e) {} try { item.dispatchEvent(new MouseEvent('click', { bubbles: true })); } catch (e) {} });
 
@@ -1309,6 +1886,7 @@ function buildFloatingLegendFromChart() {
         });
 
         item.setAttribute('data-legend-label', label);
+        item.setAttribute('data-initial-selected', initiallySelectedLabels.has(label) ? '1' : '0');
         return item;
     }
 
@@ -1322,17 +1900,13 @@ function buildFloatingLegendFromChart() {
             // Create continent section
             const section = document.createElement('div');
             section.className = 'region-section';
+            section.setAttribute('data-continent', continent);
             section.style.cssText = 'margin-bottom: 4px; border-radius: 6px; overflow: hidden; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.08);';
 
             // Create toggle button for continent
             const toggle = document.createElement('button');
             toggle.className = 'region-toggle';
             toggle.style.cssText = 'width: 100%; display: flex; align-items: center; gap: 6px; padding: 8px 10px; background: rgba(248,249,250,0.9); border: none; cursor: pointer; font-size: 12px; font-weight: 600; color: #333; transition: background 0.2s;';
-
-            const icon = document.createElement('span');
-            icon.className = 'region-icon';
-            icon.textContent = continentIcons[continent] || '🌐';
-            icon.style.cssText = 'font-size: 14px;';
 
             const nameSpan = document.createElement('span');
             nameSpan.style.cssText = 'flex: 1; text-align: left;';
@@ -1341,16 +1915,19 @@ function buildFloatingLegendFromChart() {
             const arrow = document.createElement('span');
             arrow.className = 'toggle-arrow';
             arrow.textContent = '▼';
-            arrow.style.cssText = 'font-size: 10px; transition: transform 0.2s;';
+            const remembered = window._legendContinentSectionState && typeof window._legendContinentSectionState[continent] === 'boolean'
+                ? !!window._legendContinentSectionState[continent]
+                : !!window._legendContinentAllOpen;
+            arrow.style.cssText = `font-size: 10px; transition: transform 0.2s; transform: ${remembered ? 'rotate(0deg)' : 'rotate(-90deg)'};`;
 
-            toggle.appendChild(icon);
             toggle.appendChild(nameSpan);
             toggle.appendChild(arrow);
 
             // Create country list container
             const countryList = document.createElement('div');
             countryList.className = 'country-buttons-region';
-            countryList.style.cssText = 'padding: 4px 6px; display: block;'; // First section expanded by default
+            countryList.style.cssText = `padding: 4px 6px; display: ${remembered ? 'block' : 'none'};`;
+            toggle.style.background = remembered ? 'rgba(248,249,250,0.9)' : 'rgba(232,236,240,0.9)';
 
             // Add country items to the list
             countries.forEach(({ label, info }) => {
@@ -1367,6 +1944,7 @@ function buildFloatingLegendFromChart() {
                 countryList.style.display = isHidden ? 'block' : 'none';
                 arrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
                 toggle.style.background = isHidden ? 'rgba(248,249,250,0.9)' : 'rgba(232,236,240,0.9)';
+                syncLegendContinentStateFromDom();
             });
 
             toggle.addEventListener('mouseenter', () => { toggle.style.background = 'rgba(240,242,244,1)'; });
@@ -1399,7 +1977,7 @@ function buildFloatingLegendFromChart() {
         allItems.forEach(({ label, info }) => {
             const item = createLegendItem(label, info);
             if (item) {
-                item.style.cssText += 'margin: 2px 0; padding: 4px 8px; font-size: 11px;';
+                item.style.cssText += 'margin: 2px 0; padding: 4px 8px; font-size: 13px;';
                 flatContainer.appendChild(item);
             }
         });
@@ -1413,26 +1991,17 @@ function buildFloatingLegendFromChart() {
     try {
         const legendContent = document.getElementById('legend-content');
         if (legendContent) {
-            // Check if More Locations button already exists
-            let existingMoreBtn = legendContent.querySelector('.legend-more-btn');
-
-            if (existingMoreBtn) {
-                existingMoreBtn.remove();
-            }
+            // Remove existing action/cache rows before rebuilding them
+            legendContent.querySelectorAll('.legend-actions-row').forEach((row) => row.remove());
+            legendContent.querySelectorAll('.legend-cache-row').forEach((row) => row.remove());
             
             // Get list of countries already displayed
             const existingLabels = new Set(
                 Array.from(labelMap.keys())
             );
             
-            // Get all available countries
-            const allCountries = window._timelineCountryDataByName || {};
-            const addableCountries = Object.keys(allCountries).filter(
-                name => name && !existingLabels.has(name)
-            );
-            
-            // Only show button if there are countries to add
-            if (addableCountries.length > 0) {
+            // Only show "More Locations" actions if there are countries to add
+            if (getAddableCountriesForMenu('').length > 0) {
                 const moreBtn = document.createElement('div');
                 moreBtn.className = 'legend-more-btn';
                 moreBtn.style.cssText = `
@@ -1450,123 +2019,50 @@ function buildFloatingLegendFromChart() {
                 moreBtn.textContent = `More Locations`;
                 moreBtn.setAttribute('role', 'button');
                 moreBtn.tabIndex = 0;
+
+                const onLeftBtn = document.createElement('div');
+                onLeftBtn.className = 'legend-more-btn legend-on-left-btn';
+                onLeftBtn.id = 'floating-legend-on-left-btn';
+                onLeftBtn.textContent = 'On Left';
+                onLeftBtn.setAttribute('role', 'button');
+                onLeftBtn.tabIndex = 0;
+                onLeftBtn.style.cssText = moreBtn.style.cssText + '; background: #5f6f84;';
                 
-                // Create popup menu (same as bottom legend)
-                let panel = document.getElementById('floating-legend-more-menu');
-                if (!panel) {
-                    panel = document.createElement('div');
-                    panel.id = 'floating-legend-more-menu';
-                    panel.className = 'bottom-legend-menu';
-                    panel.style.cssText = `
-                        position: fixed;
-                        display: none;
-                        min-width: 200px;
-                        max-height: 400px;
-                        overflow-y: auto;
-                        background: white;
-                        border: 1px solid rgba(0,0,0,0.09);
-                        border-radius: 6px;
-                        box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-                        padding: 6px 4px;
-                        z-index: 99999;
-                    `;
-                    
-                    const inp = document.createElement('input');
-                    inp.type = 'text';
-                    inp.placeholder = 'Search countries...';
-                    inp.style.cssText = `
-                        width: calc(100% - 16px);
-                        margin: 8px;
-                        padding: 8px;
-                        border: 1px solid #ddd;
-                        border-radius: 4px;
-                        font-size: 13px;
-                    `;
-                    panel.appendChild(inp);
-                    
-                    const list = document.createElement('div');
-                    list.className = 'floating-legend-menu-list';
-                    panel.appendChild(list);
-                    
-                    document.body.appendChild(panel);
-                    
-                    const render = (query) => {
-                        list.innerHTML = '';
-                        const q = (query || '').toLowerCase();
-                        addableCountries.filter((n) => {
-                            // Only show countries that have actual timeline data
-                            const hasData = window._timelineCountryDataByName && window._timelineCountryDataByName[n];
-                            const matchesQuery = !q || n.toLowerCase().indexOf(q) >= 0;
-                            return hasData && matchesQuery;
-                        }).slice(0, 50).forEach((n) => {
-                            const row = document.createElement('div');
-                            row.className = 'bottom-legend-menu-item';
-                            row.textContent = n;
-                            row.style.cssText = `
-                                padding: 8px 12px;
-                                cursor: pointer;
-                                border-radius: 4px;
-                            `;
-                            row.setAttribute('role', 'menuitem');
-                            row.tabIndex = 0;
-                            
-                            row.addEventListener('mouseenter', () => {
-                                row.style.background = 'rgba(0,102,255,0.1)';
-                            });
-                            row.addEventListener('mouseleave', () => {
-                                row.style.background = 'transparent';
-                            });
-                            
-                            row.addEventListener('click', () => {
-                                try {
-                                    if (typeof window.addCountryToCharts === 'function') {
-                                        window.addCountryToCharts(n);
-                                    }
-                                    panel.style.display = 'none';
-                                } catch (e) {
-                                    console.error('Error adding country:', e);
-                                }
-                            });
-                            list.appendChild(row);
-                        });
-                    };
-                    
-                    inp.addEventListener('input', () => render(inp.value));
-                    render('');
-                }
-                
-                const openPanel = () => {
-                    try {
-                        const rect = moreBtn.getBoundingClientRect();
-                        panel.style.left = (rect.left + window.scrollX) + 'px';
-                        panel.style.top = (rect.bottom + window.scrollY + 6) + 'px';
-                        panel.style.display = 'block';
-                        
-                        // Close panel when clicking outside
-                        setTimeout(() => {
-                            const closePanel = (e) => {
-                                if (!panel.contains(e.target) && e.target !== moreBtn) {
-                                    panel.style.display = 'none';
-                                    document.removeEventListener('click', closePanel);
-                                }
-                            };
-                            document.addEventListener('click', closePanel);
-                        }, 100);
-                    } catch (e) {
-                        console.error('Error opening panel:', e);
-                    }
+                const inlinePanel = document.createElement('div');
+                inlinePanel.id = 'floating-legend-more-inline';
+                inlinePanel.className = 'legend-more-inline-panel';
+                inlinePanel.style.display = 'none';
+                const inlineInput = document.createElement('input');
+                inlineInput.type = 'text';
+                inlineInput.placeholder = 'Search countries...';
+                inlineInput.className = 'legend-more-inline-input';
+                inlinePanel.appendChild(inlineInput);
+                const inlineList = document.createElement('div');
+                inlineList.className = 'floating-legend-menu-list';
+                inlinePanel.appendChild(inlineList);
+                const renderInlinePanel = () => {
+                    renderMoreLocationsMenuList(inlineList, inlinePanel, inlineInput.value, {
+                        limit: 50,
+                        rowStyle: 'padding: 8px 12px; cursor: pointer; border-radius: 4px;',
+                        hoverBg: 'rgba(0,102,255,0.1)',
+                        closeOnSelect: false
+                    });
                 };
-                
+                inlineInput.addEventListener('input', renderInlinePanel);
+                const toggleInlinePanel = () => {
+                    const nextVisible = inlinePanel.style.display === 'none';
+                    inlinePanel.style.display = nextVisible ? 'block' : 'none';
+                    if (nextVisible) renderInlinePanel();
+                };
                 moreBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    openPanel();
+                    toggleInlinePanel();
                 });
-                
                 moreBtn.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        openPanel();
+                        toggleInlinePanel();
                     }
                 });
                 
@@ -1579,9 +2075,56 @@ function buildFloatingLegendFromChart() {
                     moreBtn.style.background = '#0066ff';
                     moreBtn.style.transform = 'none';
                 });
-                
-                legendContent.appendChild(moreBtn);
+
+                onLeftBtn.addEventListener('mouseenter', () => {
+                    onLeftBtn.style.background = '#516175';
+                    onLeftBtn.style.transform = 'translateY(-1px)';
+                });
+
+                onLeftBtn.addEventListener('mouseleave', () => {
+                    onLeftBtn.style.background = '#5f6f84';
+                    onLeftBtn.style.transform = 'none';
+                });
+
+                onLeftBtn.addEventListener('click', moveLegendToLeft);
+                onLeftBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        moveLegendToLeft(e);
+                    }
+                });
+
+                const actionsRow = document.createElement('div');
+                actionsRow.className = 'legend-actions-row';
+                actionsRow.style.cssText = 'display:flex; gap:8px; margin-top:8px; align-items:center;';
+                moreBtn.style.marginTop = '0';
+                onLeftBtn.style.marginTop = '0';
+                actionsRow.appendChild(moreBtn);
+                actionsRow.appendChild(onLeftBtn);
+                legendContent.appendChild(actionsRow);
+                legendContent.appendChild(inlinePanel);
+                updateOnLeftButtonsVisibility();
             }
+            const cacheRow = document.createElement('div');
+            cacheRow.className = 'legend-cache-row';
+            const saveBtn = document.createElement('div');
+            saveBtn.className = 'legend-cache-btn legend-cache-save-btn';
+            saveBtn.textContent = 'Save';
+            saveBtn.setAttribute('role', 'button');
+            saveBtn.tabIndex = 0;
+            saveBtn.addEventListener('click', saveLegendListToCache);
+            saveBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); saveLegendListToCache(); } });
+
+            const clearBtn = document.createElement('div');
+            clearBtn.className = 'legend-cache-btn legend-cache-clear-btn';
+            clearBtn.textContent = 'Restore Defaults';
+            clearBtn.setAttribute('role', 'button');
+            clearBtn.tabIndex = 0;
+            clearBtn.addEventListener('click', clearLegendListCache);
+            clearBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); clearLegendListCache(); } });
+            cacheRow.appendChild(saveBtn);
+            cacheRow.appendChild(clearBtn);
+            legendContent.appendChild(cacheRow);
+            updateLegendCacheButtonsVisibility();
         }
     } catch (e) {
         console.error('Error adding More Locations to floating legend:', e);
@@ -1608,6 +2151,11 @@ function buildFloatingLegendFromChart() {
                 } catch (e) { /* ignore per-item */ }
             });
         } catch (e) { /* ignore */ }
+
+    // Reveal legend content after all items are created and filtered
+    setTimeout(() => {
+        if (legendContent) legendContent.style.visibility = 'visible';
+    }, 0);
 
     // Populate per-chart overlay legends by cloning authoritative items
     // Map of scope keys to human-readable overlay title
@@ -1665,12 +2213,16 @@ function buildFloatingLegendFromChart() {
     if (!window._lastLegendState) window._lastLegendState = {};
     const last = window._lastLegendState;
     // If toggle and selectedCount match previous and legend already has expected children, skip rebuild
-    if (last.toggle === toggle && last.selectedCount === selectedCount && last.whichLines === whichLinesMode && legendContent.children.length === last.itemsCount) {
+    if (!window._forceLegendRebuild && last.toggle === toggle && last.selectedCount === selectedCount && last.whichLines === whichLinesMode && legendContent.children.length === last.itemsCount) {
         console.log('buildFloatingLegendFromChart: no change detected, skipping rebuild');
         // Ensure visibility still correct
-        const shouldShow = selectedCount > 0 && legendContent.children.length > 0;
+        let preferredPosition = 'right';
+        try { preferredPosition = window._cachedLegendPosition || localStorage.getItem('legendPosition') || 'right'; } catch (e) { /* ignore */ }
+        const suppressFloating = !!window._floatingLegendManuallyClosed || !!window._timelineLegendAllowSidebar || preferredPosition === 'left' || preferredPosition === 'below';
+        const shouldShow = selectedCount > 0 && legendContent.children.length > 0 && !suppressFloating;
         legend.style.display = shouldShow ? 'block' : 'none';
         legend.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+        if (!shouldShow) legend.classList.remove('chart-visible');
         // Refresh selection visuals on existing legend items in case dataset visibility changed
         try {
             Array.from(legendContent.children).forEach((child) => {
@@ -1685,6 +2237,7 @@ function buildFloatingLegendFromChart() {
         } catch (e) { /* ignore */ }
         return true;
     }
+    window._forceLegendRebuild = false;
     // Unified legend already built above (labelMap). Record last state for future short-circuiting.
     last.toggle = toggle;
     last.selectedCount = selectedCount;
@@ -1702,28 +2255,37 @@ function buildFloatingLegendFromChart() {
     } catch (e) { /* ignore */ }
 
     if (visible) {
-        legend.style.display = 'block';
-        legend.setAttribute('aria-hidden', 'false');
-        // Add chart-visible class so CSS rules can show legend when nav is closed
-        legend.classList.add('chart-visible');
-        try { clearOverlayClosed('floating'); } catch (e) {}
-                // Place the legend at a fixed viewport location so it stays put even when canvases resize/update.
-                // Small screens still get the legend inside the content area for better UX.
-                try {
-                    // fixed viewport placement
-                    if (window.innerWidth <= 700) {
-                        legend.style.position = 'fixed';
-                        legend.style.left = '12px';
-                        legend.style.top = '12px';
-                        legend.style.right = 'auto';
-                    } else {
-                        legend.style.position = 'fixed';
-                        legend.style.top = '320px';
-                        legend.style.right = '20px';
-                        legend.style.left = 'auto';
-                    }
-                    legend.style.zIndex = 99999;
-                } catch (e) { console.warn('Could not set legend position:', e); }
+        let preferredPosition = 'right';
+        try { preferredPosition = window._cachedLegendPosition || localStorage.getItem('legendPosition') || 'right'; } catch (e) { /* ignore */ }
+        const suppressFloating = !!window._floatingLegendManuallyClosed || !!window._timelineLegendAllowSidebar || preferredPosition === 'left' || preferredPosition === 'below';
+        if (suppressFloating) {
+            legend.style.display = 'none';
+            legend.setAttribute('aria-hidden', 'true');
+            legend.classList.remove('chart-visible');
+        } else {
+            legend.style.display = 'block';
+            legend.setAttribute('aria-hidden', 'false');
+            // Add chart-visible class so CSS rules can show legend when nav is closed
+            legend.classList.add('chart-visible');
+            try { clearOverlayClosed('floating'); } catch (e) {}
+                    // Place the legend at a fixed viewport location so it stays put even when canvases resize/update.
+                    // Small screens still get the legend inside the content area for better UX.
+                    try {
+                        // fixed viewport placement
+                        if (window.innerWidth <= 700) {
+                            legend.style.position = 'fixed';
+                            legend.style.left = '12px';
+                            legend.style.top = '12px';
+                            legend.style.right = 'auto';
+                        } else {
+                            legend.style.position = 'fixed';
+                            legend.style.top = '126px';
+                            legend.style.right = '20px';
+                            legend.style.left = 'auto';
+                        }
+                        legend.style.zIndex = 999;
+                    } catch (e) { console.warn('Could not set legend position:', e); }
+        }
     } else {
         legend.style.display = 'none';
         legend.setAttribute('aria-hidden', 'true');
@@ -1752,6 +2314,10 @@ function buildFloatingLegendFromChart() {
             const insertAfter = document.getElementById('div2') || document.getElementById('div1');
             if (insertAfter && insertAfter.parentElement) insertAfter.parentElement.insertBefore(bottom, insertAfter.nextSibling);
             else document.body.appendChild(bottom);
+        }
+        const formatActionsHolder = document.getElementById('timelineChartFormatActions');
+        if (formatActionsHolder) {
+            formatActionsHolder.querySelectorAll('.timeline-format-action').forEach((node) => node.remove());
         }
         // Clear and repopulate with collapse/expand behavior when many items
         bottom.innerHTML = '';
@@ -1866,12 +2432,24 @@ function buildFloatingLegendFromChart() {
                 // modes: left, right, full, below
                 try {
                     window._timelineLegendMode = mode;
+                    if (mode === 'left' || mode === 'right' || mode === 'below') {
+                        try {
+                            localStorage.setItem('legendPosition', mode);
+                            window._cachedLegendPosition = mode;
+                        } catch (e) { /* ignore */ }
+                        window._timelineLegendAllowSidebar = (mode === 'left');
+                        window._floatingLegendManuallyClosed = (mode === 'below');
+                        try {
+                            if (typeof window.updateOnLeftButtonsVisibility === 'function') window.updateOnLeftButtonsVisibility();
+                            if (typeof window.updateOnRightButtonsVisibility === 'function') window.updateOnRightButtonsVisibility();
+                        } catch (e) { /* ignore */ }
+                    }
                     const legendEl = document.getElementById('floating-legend');
                     const canvas = document.getElementById('timelineChart') || document.getElementById('lineAreaChart');
                     if (!legendEl || !canvas) return;
                     const rect = canvas.getBoundingClientRect();
                     legendEl.style.position = 'absolute';
-                    legendEl.style.zIndex = 9999;
+                    legendEl.style.zIndex = 999;
                     legendEl.style.width = '';
                     if (mode === 'left') {
                         legendEl.style.left = Math.max(8, rect.left + window.scrollX - (legendEl.offsetWidth || 220) - 18) + 'px';
@@ -2019,9 +2597,26 @@ function buildFloatingLegendFromChart() {
                 const existingLabels = new Set(authItems.map((el) => (el.getAttribute('data-legend-label') || el.title || el.textContent.trim())));
                 const allMap = window._timelineCountryDataByName || {};
                 const addable = Object.keys(allMap).filter((n) => n && !existingLabels.has(n));
+                const onLeftBtn = document.createElement('div');
+                onLeftBtn.className = 'bottom-legend-more legend-on-left-btn';
+                onLeftBtn.classList.add('timeline-format-action');
+                onLeftBtn.textContent = 'On Left';
+                onLeftBtn.setAttribute('role','button');
+                onLeftBtn.tabIndex = 0;
+                const onRightBtn = document.createElement('div');
+                onRightBtn.className = 'bottom-legend-more legend-on-right-btn';
+                onRightBtn.classList.add('timeline-format-action');
+                onRightBtn.textContent = 'On Right';
+                onRightBtn.setAttribute('role','button');
+                onRightBtn.tabIndex = 0;
+                onLeftBtn.addEventListener('click', moveLegendToLeft);
+                onLeftBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') moveLegendToLeft(ev); });
+                onRightBtn.addEventListener('click', moveLegendToRight);
+                onRightBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') moveLegendToRight(ev); });
                 if (addable.length > 0) {
                     const addBtn = document.createElement('div');
                     addBtn.className = 'bottom-legend-more';
+                    addBtn.classList.add('timeline-format-action');
                     addBtn.textContent = 'More Locations';
                     addBtn.setAttribute('role','button');
                     addBtn.tabIndex = 0;
@@ -2042,36 +2637,26 @@ function buildFloatingLegendFromChart() {
                         panel.appendChild(list);
                         document.body.appendChild(panel);
                         const render = (query) => {
-                            list.innerHTML = '';
-                            const q = (query||'').toLowerCase();
-                            addable.filter((n) => !q || n.toLowerCase().indexOf(q) >= 0).slice(0, 40).forEach((n) => {
-                                const row = document.createElement('div');
-                                row.className = 'bottom-legend-menu-item';
-                                row.textContent = n;
-                                row.setAttribute('role','menuitem');
-                                row.tabIndex = 0;
-                                row.addEventListener('click', () => {
-                                    try { if (typeof window.addCountryToCharts === 'function') window.addCountryToCharts(n); } catch (e) {}
-                                    try { panel.style.display = 'none'; } catch (e) {}
-                                });
-                                list.appendChild(row);
-                            });
+                            renderMoreLocationsMenuList(list, panel, query, { limit: 40 });
                         };
                         inp.addEventListener('input', () => render(inp.value));
                         render('');
                     }
                     const openPanel = () => {
-                        try {
-                            const rect = addBtn.getBoundingClientRect();
-                            panel.style.left = (rect.left + window.scrollX) + 'px';
-                            panel.style.top = (rect.bottom + window.scrollY + 6) + 'px';
-                            panel.style.display = 'block';
-                        } catch (e) {}
+                        openMoreLocationsPanel(addBtn, panel, '.bottom-legend-menu-list', { limit: 40 });
                     };
                     addBtn.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); openPanel(); });
                     addBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openPanel(); } });
-                    bottom.appendChild(addBtn);
+                    if (formatActionsHolder) {
+                        formatActionsHolder.appendChild(addBtn);
+                    }
                 }
+                if (formatActionsHolder) {
+                    formatActionsHolder.appendChild(onLeftBtn);
+                    formatActionsHolder.appendChild(onRightBtn);
+                }
+                updateOnLeftButtonsVisibility();
+                updateOnRightButtonsVisibility();
             } catch (e) {}
         } else {
             bottom.classList.remove('bottom-legend-collapsed');
@@ -2080,9 +2665,26 @@ function buildFloatingLegendFromChart() {
                 const existingLabels = new Set(authItems.map((el) => (el.getAttribute('data-legend-label') || el.title || el.textContent.trim())));
                 const allMap = window._timelineCountryDataByName || {};
                 const addable = Object.keys(allMap).filter((n) => n && !existingLabels.has(n));
+                const onLeftBtn = document.createElement('div');
+                onLeftBtn.className = 'bottom-legend-more legend-on-left-btn';
+                onLeftBtn.classList.add('timeline-format-action');
+                onLeftBtn.textContent = 'On Left';
+                onLeftBtn.setAttribute('role','button');
+                onLeftBtn.tabIndex = 0;
+                const onRightBtn = document.createElement('div');
+                onRightBtn.className = 'bottom-legend-more legend-on-right-btn';
+                onRightBtn.classList.add('timeline-format-action');
+                onRightBtn.textContent = 'On Right';
+                onRightBtn.setAttribute('role','button');
+                onRightBtn.tabIndex = 0;
+                onLeftBtn.addEventListener('click', moveLegendToLeft);
+                onLeftBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') moveLegendToLeft(ev); });
+                onRightBtn.addEventListener('click', moveLegendToRight);
+                onRightBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') moveLegendToRight(ev); });
                 if (addable.length > 0) {
                     const addBtn = document.createElement('div');
                     addBtn.className = 'bottom-legend-more';
+                    addBtn.classList.add('timeline-format-action');
                     addBtn.textContent = 'More Locations';
                     addBtn.setAttribute('role','button');
                     addBtn.tabIndex = 0;
@@ -2103,36 +2705,26 @@ function buildFloatingLegendFromChart() {
                         panel.appendChild(list);
                         document.body.appendChild(panel);
                         const render = (query) => {
-                            list.innerHTML = '';
-                            const q = (query||'').toLowerCase();
-                            addable.filter((n) => !q || n.toLowerCase().indexOf(q) >= 0).slice(0, 40).forEach((n) => {
-                                const row = document.createElement('div');
-                                row.className = 'bottom-legend-menu-item';
-                                row.textContent = n;
-                                row.setAttribute('role','menuitem');
-                                row.tabIndex = 0;
-                                row.addEventListener('click', () => {
-                                    try { if (typeof window.addCountryToCharts === 'function') window.addCountryToCharts(n); } catch (e) {}
-                                    try { panel.style.display = 'none'; } catch (e) {}
-                                });
-                                list.appendChild(row);
-                            });
+                            renderMoreLocationsMenuList(list, panel, query, { limit: 40 });
                         };
                         inp.addEventListener('input', () => render(inp.value));
                         render('');
                     }
                     const openPanel = () => {
-                        try {
-                            const rect = addBtn.getBoundingClientRect();
-                            panel.style.left = (rect.left + window.scrollX) + 'px';
-                            panel.style.top = (rect.bottom + window.scrollY + 6) + 'px';
-                            panel.style.display = 'block';
-                        } catch (e) {}
+                        openMoreLocationsPanel(addBtn, panel, '.bottom-legend-menu-list', { limit: 40 });
                     };
                     addBtn.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); openPanel(); });
                     addBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openPanel(); } });
-                    bottom.appendChild(addBtn);
+                    if (formatActionsHolder) {
+                        formatActionsHolder.appendChild(addBtn);
+                    }
                 }
+                if (formatActionsHolder) {
+                    formatActionsHolder.appendChild(onLeftBtn);
+                    formatActionsHolder.appendChild(onRightBtn);
+                }
+                updateOnLeftButtonsVisibility();
+                updateOnRightButtonsVisibility();
             } catch (e) {}
         }
         // Defer visibility decision to updateBottomLegendVisibility (driven by user X clicks)
@@ -2141,16 +2733,8 @@ function buildFloatingLegendFromChart() {
     return true;
 }
 
-// Try to build legend on page load for charts created later
+// Legend build is primarily triggered by chart creation flow (earthscape.js).
 document.addEventListener('DOMContentLoaded', () => {
-    let attempts = 0;
-    const maxAttempts = 12;
-    const intId = setInterval(() => {
-        attempts += 1;
-        const ok = buildFloatingLegendFromChart();
-        if (ok || attempts >= maxAttempts) clearInterval(intId);
-    }, 500);
-    window.addEventListener('focus', () => buildFloatingLegendFromChart());
     window.addEventListener('resize', () => setTimeout(buildFloatingLegendFromChart, 300));
     // Install visibility observer so legend only appears when chart area is visible in viewport
     try {
@@ -2166,14 +2750,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Initially check if chart is visible and add class
                 const checkInitialVisibility = () => {
                     const hasItems = document.getElementById('legend-content')?.children?.length > 0;
+                    let preferredPosition = 'right';
+                    try { preferredPosition = window._cachedLegendPosition || localStorage.getItem('legendPosition') || 'right'; } catch (e) { /* ignore */ }
+                    const allowFloating = preferredPosition === 'right' && !window._timelineLegendAllowSidebar && !window._floatingLegendManuallyClosed;
                     if (hasItems) {
                         // Check if any chart container is in viewport
                         const anyVisible = chartContainers.some(c => {
                             const rect = c.getBoundingClientRect();
                             return rect.top < window.innerHeight && rect.bottom > 0;
                         });
-                        if (anyVisible) {
+                        if (anyVisible && allowFloating) {
                             legend.classList.add('chart-visible');
+                        } else {
+                            legend.classList.remove('chart-visible');
                         }
                     }
                 };
@@ -2186,7 +2775,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const anyVisible = entries.some(e => e.isIntersecting && e.intersectionRatio > 0.05);
                     // Only show legend if it has content (built) and chart datasets exist
                     const hasItems = document.getElementById('legend-content')?.children?.length > 0;
-                    if (anyVisible && hasItems) {
+                    let preferredPosition = 'right';
+                    try { preferredPosition = window._cachedLegendPosition || localStorage.getItem('legendPosition') || 'right'; } catch (e) { /* ignore */ }
+                    const allowFloating = preferredPosition === 'right' && !window._timelineLegendAllowSidebar && !window._floatingLegendManuallyClosed;
+                    if (allowFloating && anyVisible && hasItems) {
                         legend.classList.add('chart-visible');
                     } else {
                         legend.classList.remove('chart-visible');
@@ -2221,12 +2813,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 legend.classList.remove('chart-visible');
                 // Mark that user manually closed floating legend
                 window._floatingLegendManuallyClosed = true;
+                try {
+                    localStorage.setItem('legendPosition', 'below');
+                    window._cachedLegendPosition = 'below';
+                } catch (e) { /* ignore */ }
             }
             // Show bottom legend when floating legend is closed
             const bottomLegend = document.getElementById('bottom-legend');
             if (bottomLegend) {
                 bottomLegend.style.display = 'flex';
             }
+            try {
+                if (typeof window.updateOnRightButtonsVisibility === 'function') {
+                    window.updateOnRightButtonsVisibility();
+                }
+            } catch (e) { /* ignore */ }
         });
     }
 
@@ -2234,6 +2835,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const locationsBtn = document.getElementById('view-locations-btn');
     const continentsBtn = document.getElementById('view-continents-btn');
     if (locationsBtn && continentsBtn) {
+        const setAllContinentPanels = (open) => {
+            try {
+                const state = {};
+                document.querySelectorAll('#legend-content .country-buttons-region').forEach((panel) => {
+                    panel.style.display = open ? 'block' : 'none';
+                });
+                document.querySelectorAll('#legend-content .region-section').forEach((section) => {
+                    const key = section.getAttribute('data-continent') || '';
+                    const toggle = section.querySelector('.region-toggle');
+                    const arrow = section.querySelector('.toggle-arrow');
+                    if (arrow) arrow.style.transform = open ? 'rotate(0deg)' : 'rotate(-90deg)';
+                    if (toggle) toggle.style.background = open ? 'rgba(248,249,250,0.9)' : 'rgba(232,236,240,0.9)';
+                    if (key) state[key] = !!open;
+                });
+                window._legendContinentSectionState = state;
+                window._legendContinentAllOpen = !!open;
+                if (typeof window.syncLegendContinentStateFromDom === 'function') window.syncLegendContinentStateFromDom();
+            } catch (e) { /* ignore */ }
+        };
+        const toggleAllContinentPanels = () => {
+            try {
+                const panels = Array.from(document.querySelectorAll('#legend-content .country-buttons-region'));
+                if (panels.length === 0) {
+                    buildFloatingLegendFromChart();
+                    setAllContinentPanels(true);
+                    return;
+                }
+                const anyClosed = panels.some((panel) => panel.style.display === 'none');
+                setAllContinentPanels(anyClosed);
+            } catch (e) { /* ignore */ }
+        };
         const updateToggleState = () => {
             if (window._legendViewMode === 'continents') {
                 locationsBtn.classList.remove('active');
@@ -2256,40 +2888,54 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        locationsBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent drag
-            if (window._legendViewMode !== 'locations') {
-                window._legendViewMode = 'locations';
-                updateToggleState();
-                buildFloatingLegendFromChart();
+        const handleLegendViewToggleClick = (targetBtn, e) => {
+            if (!targetBtn) return;
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
             }
-        });
-
-        continentsBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent drag
-            if (window._legendViewMode !== 'continents') {
-                window._legendViewMode = 'continents';
-                updateToggleState();
-                buildFloatingLegendFromChart();
+            const targetId = targetBtn.id;
+            if (targetId === 'view-locations-btn') {
+                if (window._legendViewMode !== 'locations') {
+                    window._legendViewMode = 'locations';
+                    updateToggleState();
+                    buildFloatingLegendFromChart();
+                }
+                return;
             }
-        });
+            if (targetId === 'view-continents-btn') {
+                if (window._legendViewMode !== 'continents') {
+                    window._legendViewMode = 'continents';
+                    updateToggleState();
+                    buildFloatingLegendFromChart();
+                } else {
+                    toggleAllContinentPanels();
+                }
+            }
+        };
+        if (!window._legendViewToggleDelegatedBound) {
+            document.addEventListener('click', (e) => {
+                const btn = e.target && e.target.closest ? e.target.closest('#view-locations-btn, #view-continents-btn') : null;
+                if (!btn) return;
+                handleLegendViewToggleClick(btn, e);
+            }, true);
+            window._legendViewToggleDelegatedBound = true;
+        }
+        locationsBtn.addEventListener('click', (e) => handleLegendViewToggleClick(locationsBtn, e));
+        continentsBtn.addEventListener('click', (e) => handleLegendViewToggleClick(continentsBtn, e));
 
         // Initialize toggle state
         updateToggleState();
     }
 
     // Setup drag functionality for floating legend
-    const legendHeader = document.getElementById('floating-legend-header');
+    const legendHeader = document.getElementById('floating-legend-drag-handle');
     const legend = document.getElementById('floating-legend');
     if (legendHeader && legend) {
         let isDragging = false;
         let startX, startY, startLeft, startTop;
 
         legendHeader.addEventListener('mousedown', (e) => {
-            // Don't drag if clicking on close button or toggle buttons
-            if (e.target.id === 'floating-legend-close') return;
-            if (e.target.classList.contains('view-toggle-btn')) return;
-            
             isDragging = true;
             legend.classList.add('dragging');
             
@@ -2339,9 +2985,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Touch support for mobile
         legendHeader.addEventListener('touchstart', (e) => {
-            if (e.target.id === 'floating-legend-close') return;
-            if (e.target.classList.contains('view-toggle-btn')) return;
-
             isDragging = true;
             legend.classList.add('dragging');
             
@@ -2554,7 +3197,7 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
             }
             legend.style.position = 'absolute';
             legend.style.right = 'auto';
-            legend.style.zIndex = 9999;
+            legend.style.zIndex = 999;
         } catch (e) { /* ignore */ }
     };
 
@@ -2606,6 +3249,36 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
     border-radius: 6px;
     margin-top: 12px;
     overflow-x: auto;
+}
+.timeline-format-action {
+    display: inline-flex;
+}
+#timelineChartFormats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 6px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+#timelineChartTypeRadios {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+#timelineChartFormatActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    flex-wrap: wrap;
+}
+#timelineChartFormatActions .bottom-legend-more {
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 400;
 }
 .bottom-legend-item {
     display: inline-flex;
@@ -2680,6 +3353,54 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
 .bottom-legend-menu-item.selected {
     background: rgba(0,102,255,0.12);
     font-weight: 700;
+}
+.dark #more-countries-menu {
+    background: #1e2430;
+    border-color: rgba(255,255,255,0.16);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    color: #e8edf5;
+}
+.dark #more-countries-menu input {
+    background: #141a24;
+    color: #e8edf5;
+    border-color: rgba(255,255,255,0.22);
+}
+.dark #more-countries-menu input::placeholder {
+    color: rgba(232,237,245,0.68);
+}
+.dark #more-countries-menu .bottom-legend-menu-item {
+    color: #e8edf5;
+}
+.dark #more-countries-menu .bottom-legend-menu-item:hover,
+.dark #more-countries-menu .bottom-legend-menu-item:focus {
+    background: rgba(105,165,255,0.22);
+}
+.dark #more-countries-menu .bottom-legend-menu-item.selected {
+    background: rgba(105,165,255,0.3);
+}
+.dark #floating-legend-more-inline {
+    background: #1e2430 !important;
+    border-color: rgba(255,255,255,0.16) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45) !important;
+    color: #e8edf5;
+}
+.dark #floating-legend-more-inline input {
+    background: #141a24 !important;
+    color: #e8edf5 !important;
+    border-color: rgba(255,255,255,0.22) !important;
+}
+.dark #floating-legend-more-inline input::placeholder {
+    color: rgba(232,237,245,0.68);
+}
+.dark #floating-legend-more-inline .bottom-legend-menu-item {
+    color: #e8edf5;
+}
+.dark #floating-legend-more-inline .bottom-legend-menu-item:hover,
+.dark #floating-legend-more-inline .bottom-legend-menu-item:focus {
+    background: rgba(105,165,255,0.22);
+}
+.dark #floating-legend-more-inline .bottom-legend-menu-item.selected {
+    background: rgba(105,165,255,0.3);
 }
 
 </style>

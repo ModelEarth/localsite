@@ -789,6 +789,13 @@ dataCopy.forEach(location => {
     window._timelineSelectedLabels = selectedData.map(function(loc){ return loc.name; });
     window.addCountryToCharts = function(name){
         try {
+            // Force legend DOM rebuild so re-enabled hidden items appear immediately.
+            window._forceLegendRebuild = true;
+            if (!window._applyingSavedLegendList) {
+                window._legendListDirty = true;
+                window._legendListJustSaved = false;
+                try { if (typeof window.updateLegendCacheButtonsVisibility === 'function') window.updateLegendCacheButtonsVisibility(); } catch (e) {}
+            }
             var loc = window._timelineCountryDataByName && window._timelineCountryDataByName[name];
             if (!loc) return;
             var yrs = window._timelineYears || [];
@@ -803,6 +810,17 @@ dataCopy.forEach(location => {
                     timelineChart.data.datasets.push({ label: name, data: dataArr, borderColor: border, backgroundColor: 'rgba(0, 0, 0, 0)' });
                     timelineChart.update();
                 } catch (e) {}
+            } else if (timelineChart && existsLine) {
+                // Restore an existing hidden series when selected from More Locations.
+                try {
+                    timelineChart.data.datasets.forEach(function(ds, idx){
+                        if (ds && ds.label === name) {
+                            var meta = timelineChart.getDatasetMeta(idx);
+                            if (meta) meta.hidden = false;
+                        }
+                    });
+                    timelineChart.update();
+                } catch (e) {}
             }
             if (lineAreaChart && !existsArea) {
                 try {
@@ -810,8 +828,22 @@ dataCopy.forEach(location => {
                     lineAreaChart.data.datasets.push({ label: name, data: dataArr, backgroundColor: bg, borderColor: 'rgba(0,0,0,0)', fill: true });
                     lineAreaChart.update();
                 } catch (e) {}
+            } else if (lineAreaChart && existsArea) {
+                // Restore an existing hidden area series when selected from More Locations.
+                try {
+                    lineAreaChart.data.datasets.forEach(function(ds, idx){
+                        if (ds && ds.label === name) {
+                            var meta = lineAreaChart.getDatasetMeta(idx);
+                            if (meta) meta.hidden = false;
+                        }
+                    });
+                    lineAreaChart.update();
+                } catch (e) {}
             }
-            try { if (typeof window.buildFloatingLegendFromChart === 'function') window.buildFloatingLegendFromChart(); } catch (e) {}
+            // Avoid intermediate legend flashes while cached legend list is being applied.
+            if (!window._applyingSavedLegendList) {
+                try { if (typeof window.buildFloatingLegendFromChart === 'function') window.buildFloatingLegendFromChart(); } catch (e) {}
+            }
         } catch (e) {}
     };
 
