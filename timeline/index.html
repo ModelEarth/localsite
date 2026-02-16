@@ -15,6 +15,7 @@
 
 <script>
 loadMarkdown("README.md", "readmeDiv", "_parent");
+window._timelineLegendAllowSidebar = false;
 
 function applyPerCapitaGoalSettings() {
     const hash = getHash();
@@ -164,7 +165,7 @@ body.timeline-loading .timeline-loading-overlay {
 }
 #floating-legend {
      position: absolute;
-     top: 320px;
+     top: 126px;
      right: 20px;
      left: auto;
      background: rgba(255,255,255,0.98);
@@ -173,35 +174,46 @@ body.timeline-loading .timeline-loading-overlay {
      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
      backdrop-filter: blur(6px);
      border: 1px solid rgba(0,0,0,0.04);
-     z-index: 99999;
+     z-index: 999;
      min-width: 160px;
      font-size: 13px;
      pointer-events: auto;
 }
 #floating-legend #legend-content {
-    padding: 5px 10px;
+    padding: 3px 10px 5px;
+}
+#floating-legend-drag-handle {
+    height: 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+    background-color: #4c5969;
+    background-image:
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.08)),
+        repeating-linear-gradient(135deg, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.08) 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 5px);
+    border-radius: 8px 8px 0 0;
+    cursor: grab;
+    user-select: none;
+}
+#floating-legend-drag-handle:active {
+    cursor: grabbing;
 }
 #floating-legend-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 10px;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
-    background: rgba(240,240,240,0.5);
-    border-radius: 8px 8px 0 0;
+    padding: 6px 12px 3px 12px;
+    min-height: 34px;
+    border-bottom: none;
+    background: rgba(76,89,105,0.12);
     font-weight: 600;
     font-size: 14px;
-    color: #333;
-    cursor: grab;
-    user-select: none;
-}
-#floating-legend-header:active {
-    cursor: grabbing;
+    color: #223246;
+    cursor: default;
+    user-select: auto;
 }
 #floating-legend.dragging {
     opacity: 0.9;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    z-index: 999999;
+    z-index: 999;
 }
 #floating-legend-close {
     background: none;
@@ -209,19 +221,19 @@ body.timeline-loading .timeline-loading-overlay {
     font-size: 20px;
     line-height: 1;
     cursor: pointer;
-    color: #666;
+    color: #41556b;
     padding: 0 4px;
     margin: -4px -4px -4px 8px;
     border-radius: 4px;
     transition: background 0.15s, color 0.15s;
 }
 #floating-legend-close:hover {
-    background: rgba(0,0,0,0.1);
-    color: #333;
+    background: rgba(76,89,105,0.16);
+    color: #223246;
 }
 #legend-view-toggle {
     display: flex;
-    background: rgba(0,0,0,0.06);
+    background: rgba(76,89,105,0.12);
     border-radius: 6px;
     padding: 2px;
     gap: 2px;
@@ -233,18 +245,18 @@ body.timeline-loading .timeline-loading-overlay {
     border-radius: 4px;
     font-size: 12px;
     font-weight: 500;
-    color: #666;
+    color: #33485f;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 .view-toggle-btn:hover {
-    color: #333;
-    background: rgba(255,255,255,0.5);
+    color: #223246;
+    background: rgba(76,89,105,0.16);
 }
 .view-toggle-btn.active {
-    background: #fff;
-    color: #333;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background: #ffffff;
+    color: #223246;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.24);
 }
 #legend-content {
     overflow-y: auto;
@@ -341,8 +353,8 @@ body.main-nav-hidden #floating-legend.chart-visible {
 <style>
 /* Keep the whichLinesHolder controls above the floating legend so radios remain clickable */
 /* Ensure per-capita option radios are above the legend (prevents legend items from intercepting clicks) */
-#perCapitaOptions { position: relative; z-index: 10002; }
-.whichLinesHolder { position: relative; z-index: 10001; }
+#perCapitaOptions { position: relative; z-index: 902; }
+.whichLinesHolder { position: relative; z-index: 901; }
 </style>
 
 <style>
@@ -778,7 +790,11 @@ p.set('rs_dcid', list.join(','));
             const legendRadios = document.querySelectorAll('input[name="legendPosition"]');
             
             // Load saved position from localStorage
-            const savedPosition = localStorage.getItem('legendPosition') || 'right';
+            const storedPosition = localStorage.getItem('legendPosition');
+            const savedPosition = (storedPosition && storedPosition !== 'left') ? storedPosition : 'right';
+            if (storedPosition === 'left') {
+                localStorage.setItem('legendPosition', 'right');
+            }
             const savedRadio = document.querySelector(`input[name="legendPosition"][value="${savedPosition}"]`);
             if (savedRadio) {
                 savedRadio.checked = true;
@@ -795,6 +811,29 @@ p.set('rs_dcid', list.join(','));
             });
         });
         
+        function moveLegendToLeft(ev) {
+            if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+            try {
+                window._timelineLegendAllowSidebar = true;
+                updateOnLeftButtonsVisibility();
+                if (typeof window.showNavColumn === 'function') {
+                    window.showNavColumn();
+                } else {
+                    localStorage.setItem('legendPosition', 'left');
+                    updateLegendPosition('left');
+                }
+            } catch (e) {}
+        }
+
+        function updateOnLeftButtonsVisibility() {
+            const hideOnLeft = !!window._timelineLegendAllowSidebar;
+            const leftButtons = document.querySelectorAll('.legend-on-left-btn');
+            leftButtons.forEach((btn) => {
+                btn.style.display = hideOnLeft ? 'none' : 'inline-flex';
+            });
+        }
+        window.updateOnLeftButtonsVisibility = updateOnLeftButtonsVisibility;
+
         // Function to update legend position
         function updateLegendPosition(position) {
             const floatingLegend = document.getElementById('floating-legend');
@@ -811,6 +850,7 @@ p.set('rs_dcid', list.join(','));
                 case 'left':
                     // Left Nav - show floating legend on left
                     if (floatingLegend) {
+                        window._timelineLegendAllowSidebar = true;
                         floatingLegend.style.display = 'block';
                         floatingLegend.style.position = 'fixed';
                         floatingLegend.style.left = '20px';
@@ -822,22 +862,24 @@ p.set('rs_dcid', list.join(','));
                 case 'right':
                     // Float Right - show floating legend on right (default)
                     if (floatingLegend) {
+                        window._timelineLegendAllowSidebar = false;
                         floatingLegend.style.display = 'block';
                         floatingLegend.style.position = 'fixed';
                         floatingLegend.style.right = '20px';
                         floatingLegend.style.left = 'auto';
-                        floatingLegend.style.top = '120px';
+                        floatingLegend.style.top = '126px';
                     }
                     break;
                     
                 case 'below':
                     // Below - show bottom legend
                     if (bottomLegend) {
+                        window._timelineLegendAllowSidebar = false;
                         bottomLegend.style.display = 'flex';
                     }
                     break;
             }
-            
+            updateOnLeftButtonsVisibility();
             console.log('Legend position changed to:', position);
         }
         </script>
@@ -850,6 +892,7 @@ p.set('rs_dcid', list.join(','));
             </div>
             <canvas id="timelineChart" ></canvas>
             <div id="floating-legend" aria-hidden="false" style="display:none">
+                <div id="floating-legend-drag-handle" aria-label="Drag legend" title="Drag legend"></div>
                 <div id="floating-legend-header">
                     <div id="legend-view-toggle">
                         <button id="view-locations-btn" class="view-toggle-btn active" title="Show flat list of locations">Locations</button>
@@ -1413,12 +1456,8 @@ function buildFloatingLegendFromChart() {
     try {
         const legendContent = document.getElementById('legend-content');
         if (legendContent) {
-            // Check if More Locations button already exists
-            let existingMoreBtn = legendContent.querySelector('.legend-more-btn');
-
-            if (existingMoreBtn) {
-                existingMoreBtn.remove();
-            }
+            // Remove existing action row before rebuilding it
+            legendContent.querySelectorAll('.legend-actions-row').forEach((row) => row.remove());
             
             // Get list of countries already displayed
             const existingLabels = new Set(
@@ -1450,6 +1489,14 @@ function buildFloatingLegendFromChart() {
                 moreBtn.textContent = `More Locations`;
                 moreBtn.setAttribute('role', 'button');
                 moreBtn.tabIndex = 0;
+
+                const onLeftBtn = document.createElement('div');
+                onLeftBtn.className = 'legend-more-btn legend-on-left-btn';
+                onLeftBtn.id = 'floating-legend-on-left-btn';
+                onLeftBtn.textContent = 'On Left';
+                onLeftBtn.setAttribute('role', 'button');
+                onLeftBtn.tabIndex = 0;
+                onLeftBtn.style.cssText = moreBtn.style.cssText + '; background: #5f6f84;';
                 
                 // Create popup menu (same as bottom legend)
                 let panel = document.getElementById('floating-legend-more-menu');
@@ -1579,8 +1626,33 @@ function buildFloatingLegendFromChart() {
                     moreBtn.style.background = '#0066ff';
                     moreBtn.style.transform = 'none';
                 });
-                
-                legendContent.appendChild(moreBtn);
+
+                onLeftBtn.addEventListener('mouseenter', () => {
+                    onLeftBtn.style.background = '#516175';
+                    onLeftBtn.style.transform = 'translateY(-1px)';
+                });
+
+                onLeftBtn.addEventListener('mouseleave', () => {
+                    onLeftBtn.style.background = '#5f6f84';
+                    onLeftBtn.style.transform = 'none';
+                });
+
+                onLeftBtn.addEventListener('click', moveLegendToLeft);
+                onLeftBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        moveLegendToLeft(e);
+                    }
+                });
+
+                const actionsRow = document.createElement('div');
+                actionsRow.className = 'legend-actions-row';
+                actionsRow.style.cssText = 'display:flex; gap:8px; margin-top:8px; align-items:center;';
+                moreBtn.style.marginTop = '0';
+                onLeftBtn.style.marginTop = '0';
+                actionsRow.appendChild(moreBtn);
+                actionsRow.appendChild(onLeftBtn);
+                legendContent.appendChild(actionsRow);
+                updateOnLeftButtonsVisibility();
             }
         }
     } catch (e) {
@@ -1718,11 +1790,11 @@ function buildFloatingLegendFromChart() {
                         legend.style.right = 'auto';
                     } else {
                         legend.style.position = 'fixed';
-                        legend.style.top = '320px';
+                        legend.style.top = '126px';
                         legend.style.right = '20px';
                         legend.style.left = 'auto';
                     }
-                    legend.style.zIndex = 99999;
+                    legend.style.zIndex = 999;
                 } catch (e) { console.warn('Could not set legend position:', e); }
     } else {
         legend.style.display = 'none';
@@ -1871,7 +1943,7 @@ function buildFloatingLegendFromChart() {
                     if (!legendEl || !canvas) return;
                     const rect = canvas.getBoundingClientRect();
                     legendEl.style.position = 'absolute';
-                    legendEl.style.zIndex = 9999;
+                    legendEl.style.zIndex = 999;
                     legendEl.style.width = '';
                     if (mode === 'left') {
                         legendEl.style.left = Math.max(8, rect.left + window.scrollX - (legendEl.offsetWidth || 220) - 18) + 'px';
@@ -2025,6 +2097,11 @@ function buildFloatingLegendFromChart() {
                     addBtn.textContent = 'More Locations';
                     addBtn.setAttribute('role','button');
                     addBtn.tabIndex = 0;
+                    const onLeftBtn = document.createElement('div');
+                    onLeftBtn.className = 'bottom-legend-more legend-on-left-btn';
+                    onLeftBtn.textContent = 'On Left';
+                    onLeftBtn.setAttribute('role','button');
+                    onLeftBtn.tabIndex = 0;
                     let panel = document.getElementById('more-countries-menu');
                     if (!panel) {
                         panel = document.createElement('div');
@@ -2070,7 +2147,11 @@ function buildFloatingLegendFromChart() {
                     };
                     addBtn.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); openPanel(); });
                     addBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openPanel(); } });
+                    onLeftBtn.addEventListener('click', moveLegendToLeft);
+                    onLeftBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') moveLegendToLeft(ev); });
                     bottom.appendChild(addBtn);
+                    bottom.appendChild(onLeftBtn);
+                    updateOnLeftButtonsVisibility();
                 }
             } catch (e) {}
         } else {
@@ -2086,6 +2167,11 @@ function buildFloatingLegendFromChart() {
                     addBtn.textContent = 'More Locations';
                     addBtn.setAttribute('role','button');
                     addBtn.tabIndex = 0;
+                    const onLeftBtn = document.createElement('div');
+                    onLeftBtn.className = 'bottom-legend-more legend-on-left-btn';
+                    onLeftBtn.textContent = 'On Left';
+                    onLeftBtn.setAttribute('role','button');
+                    onLeftBtn.tabIndex = 0;
                     let panel = document.getElementById('more-countries-menu');
                     if (!panel) {
                         panel = document.createElement('div');
@@ -2131,7 +2217,11 @@ function buildFloatingLegendFromChart() {
                     };
                     addBtn.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); openPanel(); });
                     addBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openPanel(); } });
+                    onLeftBtn.addEventListener('click', moveLegendToLeft);
+                    onLeftBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') moveLegendToLeft(ev); });
                     bottom.appendChild(addBtn);
+                    bottom.appendChild(onLeftBtn);
+                    updateOnLeftButtonsVisibility();
                 }
             } catch (e) {}
         }
@@ -2279,17 +2369,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Setup drag functionality for floating legend
-    const legendHeader = document.getElementById('floating-legend-header');
+    const legendHeader = document.getElementById('floating-legend-drag-handle');
     const legend = document.getElementById('floating-legend');
     if (legendHeader && legend) {
         let isDragging = false;
         let startX, startY, startLeft, startTop;
 
         legendHeader.addEventListener('mousedown', (e) => {
-            // Don't drag if clicking on close button or toggle buttons
-            if (e.target.id === 'floating-legend-close') return;
-            if (e.target.classList.contains('view-toggle-btn')) return;
-            
             isDragging = true;
             legend.classList.add('dragging');
             
@@ -2339,9 +2425,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Touch support for mobile
         legendHeader.addEventListener('touchstart', (e) => {
-            if (e.target.id === 'floating-legend-close') return;
-            if (e.target.classList.contains('view-toggle-btn')) return;
-
             isDragging = true;
             legend.classList.add('dragging');
             
@@ -2554,7 +2637,7 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
             }
             legend.style.position = 'absolute';
             legend.style.right = 'auto';
-            legend.style.zIndex = 9999;
+            legend.style.zIndex = 999;
         } catch (e) { /* ignore */ }
     };
 

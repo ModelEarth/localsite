@@ -1652,6 +1652,7 @@ class StandaloneNavigation {
             waitForElm('#legend-content').then((elm) => { // On timeline page
                  setTimeout(() => { // Temp until Leaflet load timing is resolved.
                     toggleShowNavColumn();
+                    if (!window._timelineLegendAllowSidebar) return;
                     // First add header with toggle, then legend content after it
                     if (!$('#locations-header').length) {
                         $('#listLeft').prepend(`
@@ -1842,20 +1843,33 @@ class StandaloneNavigation {
                 document.getElementById('main-nav').style.display = 'none';
                 document.body.classList.add('main-nav-hidden');
                 $("#side-nav").removeClass("main-nav").removeClass("main-nav-full");
-                
-                // Show floating legend when main-nav is closed
-                $('#floating-legend').show();
-                $('#floating-legend').css('opacity', '1');
-                $('#floating-legend').css('display', 'block');
+
+                // Exiting left-nav legend mode: restore "On Left" controls in all legend placements.
+                window._timelineLegendAllowSidebar = false;
+                if (typeof window.updateOnLeftButtonsVisibility === 'function') {
+                    try { window.updateOnLeftButtonsVisibility(); } catch (e) {}
+                }
+
+                const bottomLegendVisible = $('#bottom-legend').length && $('#bottom-legend').is(':visible');
+
                 // Move legend content back to floating legend if needed
                 if ($('#legend-content').length && $('#floating-legend').length) {
                     if ($('#legend-content').parent().attr('id') !== 'floating-legend') {
                         $('#floating-legend').append($('#legend-content'));
                     }
                 }
-                // Rebuild legend if needed
-                if (typeof window.buildFloatingLegendFromChart === 'function') {
-                    setTimeout(() => { try { window.buildFloatingLegendFromChart(); } catch(e) {} }, 100);
+
+                // Restore floating legend only when horizontal legend is not visible.
+                if (!bottomLegendVisible) {
+                    $('#floating-legend').show();
+                    $('#floating-legend').css('opacity', '1');
+                    $('#floating-legend').css('display', 'block');
+                    if (typeof window.buildFloatingLegendFromChart === 'function') {
+                        setTimeout(() => { try { window.buildFloatingLegendFromChart(); } catch(e) {} }, 100);
+                    }
+                } else {
+                    $('#floating-legend').hide();
+                    $('#floating-legend').css('opacity', '0');
                 }
                 
                 // Mobile behavior: if browser is 600px or less and #side-nav-content is visible, 
@@ -3251,6 +3265,8 @@ catArray = [];
         const hasAppview = !!hash.appview;
         $("#filterFieldMenuClose").toggle(hasGeoview);
         $("#filterFieldMenuCloseApps").toggle(hasAppview);
+        // The first divider sits below "Close Map View" and should only show when a close action is visible.
+        $("#filterFieldMenu .menuToggleDivider").first().toggle(hasGeoview || hasAppview);
         $("#filterFieldMenu .menuToggleItem[data-action='county']").toggle(!!hash.state);
         $("#filterFieldMenu .menuToggleItem[data-action]").each(function() {
             const action = $(this).data("action");
@@ -7138,8 +7154,9 @@ function showNavColumn() {
     $("body").removeClass("sidebar-hidden");
     $("body").removeClass("main-nav-hidden");
     $("#showSideFromBar").hide();
-    // Move legend content to sidebar and hide floating legend
-    if ($('#legend-content').length && $('#listLeft').length) {
+    // Move legend content to sidebar and hide floating legend only when timeline requests it.
+    const allowTimelineLegendSidebar = !!window._timelineLegendAllowSidebar;
+    if ($('#legend-content').length && $('#listLeft').length && allowTimelineLegendSidebar) {
         // Ensure header with toggle exists at top of listLeft
         if (!$('#locations-header').length) {
             $('#listLeft').prepend(`
@@ -7168,8 +7185,10 @@ function showNavColumn() {
             cloneLeftTarget.style.display = 'none';
         }
     }
-    $('#floating-legend').hide();
-    $('#floating-legend').css('opacity', '0');
+    if (allowTimelineLegendSidebar) {
+        $('#floating-legend').hide();
+        $('#floating-legend').css('opacity', '0');
+    }
     
     // Refresh feather icons when showing navigation
     if (window.standaloneNav && window.standaloneNav.replaceFeatherIcons) {
