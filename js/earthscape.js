@@ -5,6 +5,8 @@
 let timelineChart;
 let lineAreaChart;
 let manualSizingActive = false; // Flag to track if manual sizing is being used
+const api_key = "AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI";
+
 
 function loadEarthScape(my) {
     loadScript(theroot + 'js/d3.v5.min.js', function (results) {
@@ -202,6 +204,46 @@ function updateTimelineMinYearFromSelect(selectEl) {
 }
 window.setTimelineMinYear = setTimelineMinYear;
 window.updateTimelineMinYearFromSelect = updateTimelineMinYearFromSelect;
+
+/**
+ * Fetches time-series data from Google Data Commons and renders
+ * a multi-line timeline chart and stacked area chart using Chart.js.
+ *
+ * This function:
+ *  - Resolves geographic entities based on the selected scope (country, state, county)
+ *  - Fetches observations for a given Statistical Variable (SV / DCID)
+ *  - Optionally converts values to per-capita
+ *  - Filters data by minimum year
+ *  - Determines which locations to display (Top 5, Bottom 5, Selected, All)
+ *  - Builds and renders both the line chart and area chart
+ *
+ * param {string} scope
+ *   Geographic level of analysis. Determines which entities are queried.
+ *   Possible values: "country", "state", "county".
+ *
+ * param {string} chartVariable
+ *   The Data Commons Statistical Variable DCID (SV) to fetch.
+ *   Example: "Count_Person", "Amount_Emissions_CarbonDioxide".
+ *
+ * param {string} entityId
+ *   Parent entity DCID used when scope is "county".
+ *   Used to retrieve all counties contained within this entity.
+ *   (Not used for country/state scope.)
+ *
+ * param {string} showAll
+ *   Controls which locations are displayed on the chart.
+ *   Possible values:
+ *     - "showAll"      → show all valid locations
+ *     - "showTop5"     → show top 5 by latest value
+ *     - "showBottom5"  → show bottom 5 by latest value
+ *     - "showSelected" → show only selected countries from URL hash
+ *
+ * param {string} chartText
+ *   Human-readable title of the selected metric.
+ *   Used for chart titles and axis labels.
+ */
+
+
 async function getTimelineChart(scope, chartVariable, entityId, showAll, chartText) {
     //alert("getTimelineChart chartVariable: " + chartVariable + ", scope: " + scope)
     document.body.classList.add('timeline-loading');
@@ -217,7 +259,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
 
         if (scope === "county") {
             // Fetch county data
-            response = await fetch(`https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&entity.expression=${entityId}%3C-containedInPlace%2B%7BtypeOf%3ACounty%7D&select=date&select=entity&select=value&select=variable&variable.dcids=${chartVariable}`, {
+            response = await fetch(`https://api.datacommons.org/v2/observation?key=${api_key}&entity.expression=${entityId}%3C-containedInPlace%2B%7BtypeOf%3ACounty%7D&select=date&select=entity&select=value&select=variable&variable.dcids=${chartVariable}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -230,7 +272,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             geoIds = Object.keys(data.byVariable[chartVariable].byEntity);
 
             // Fetch county and state names
-            const response2 = await fetch('https://api.datacommons.org/v2/node?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
+            const response2 = await fetch(`https://api.datacommons.org/v2/node?key=${api_key}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -265,7 +307,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
             'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
           ];
-        response = await fetch('https://api.datacommons.org/v2/resolve?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
+        response = await fetch(`https://api.datacommons.org/v2/resolve?key=${api_key}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -279,7 +321,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         geoIds = data.entities.map(entity => entity.candidates[0].dcid);
 
         // Fetch state names
-        const response2 = await fetch('https://api.datacommons.org/v2/node?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
+        const response2 = await fetch(`https://api.datacommons.org/v2/node?key=${api_key}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -328,7 +370,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         console.log("Selected Countries:", selectedCountries); // Debug log
 
         // Fetch country dcids using ISO codes
-        response = await fetch('https://api.datacommons.org/v2/resolve?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
+        response = await fetch(`https://api.datacommons.org/v2/resolve?key=${api_key}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -346,7 +388,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             .filter(Boolean); // remove undefined/null
 
         // Fetch country names
-        const response2 = await fetch('https://api.datacommons.org/v2/node?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
+        const response2 = await fetch(`https://api.datacommons.org/v2/node?key=${api_key}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -372,7 +414,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
     }
 
     // Fetch observational data using geoIds list
-    const url = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=${chartVariable}&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
+    const url = `https://api.datacommons.org/v2/observation?key=${api_key}&variable.dcids=${chartVariable}&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
     console.log("url data:",url)
     const response3 = await fetch(url, {
         method: 'POST',
@@ -388,7 +430,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
     console.log("timeline obsevational data for country:",timelineData)
     let populationData = {};
 if (whichPer === 'percapita') {
-  const popUrl = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=Count_Person&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
+  const popUrl = `https://api.datacommons.org/v2/observation?key=${api_key}&variable.dcids=Count_Person&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
 
   const popResponse = await fetch(popUrl, {
     method: 'POST',
