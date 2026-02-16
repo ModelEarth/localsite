@@ -1651,8 +1651,12 @@ class StandaloneNavigation {
             $("#main-container").prepend(navHTML);
             waitForElm('#legend-content').then((elm) => { // On timeline page
                  setTimeout(() => { // Temp until Leaflet load timing is resolved.
-                    toggleShowNavColumn();
-                    if (!window._timelineLegendAllowSidebar) return;
+                    if (window._timelineLegendAllowSidebar) {
+                        showNavColumn();
+                    } else {
+                        hideNavColumn();
+                        return;
+                    }
                     // First add header with toggle, then legend content after it
                     if (!$('#locations-header').length) {
                         $('#listLeft').prepend(`
@@ -1849,8 +1853,15 @@ class StandaloneNavigation {
                 if (typeof window.updateOnLeftButtonsVisibility === 'function') {
                     try { window.updateOnLeftButtonsVisibility(); } catch (e) {}
                 }
-
                 const bottomLegendVisible = $('#bottom-legend').length && $('#bottom-legend').is(':visible');
+                try {
+                    const newPosition = bottomLegendVisible ? 'below' : 'right';
+                    localStorage.setItem('legendPosition', newPosition);
+                    window._cachedLegendPosition = newPosition;
+                } catch (e) {}
+                if (typeof window.updateOnRightButtonsVisibility === 'function') {
+                    try { window.updateOnRightButtonsVisibility(); } catch (e) {}
+                }
 
                 // Move legend content back to floating legend if needed
                 if ($('#legend-content').length && $('#floating-legend').length) {

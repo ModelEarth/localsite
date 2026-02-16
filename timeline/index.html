@@ -15,7 +15,14 @@
 
 <script>
 loadMarkdown("README.md", "readmeDiv", "_parent");
-window._timelineLegendAllowSidebar = false;
+(() => {
+    let cachedLegendPosition = 'right';
+    try {
+        cachedLegendPosition = localStorage.getItem('legendPosition') || 'right';
+    } catch (e) { /* ignore */ }
+    window._cachedLegendPosition = cachedLegendPosition;
+    window._timelineLegendAllowSidebar = (cachedLegendPosition === 'left');
+})();
 
 function applyPerCapitaGoalSettings() {
     const hash = getHash();
@@ -258,9 +265,35 @@ body.timeline-loading .timeline-loading-overlay {
     color: #223246;
     box-shadow: 0 1px 4px rgba(0,0,0,0.24);
 }
+/* Sidebar toggle dark mode (left nav legend). */
+.dark #sidebar-view-toggle {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+}
+.dark #sidebar-view-toggle .view-toggle-btn {
+    color: #d8e2f0;
+}
+.dark #sidebar-view-toggle .view-toggle-btn:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.16);
+}
+.dark #sidebar-view-toggle .view-toggle-btn.active {
+    background: rgba(255,255,255,0.94);
+    color: #1d2e42;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+}
 #legend-content {
     overflow-y: auto;
     max-height: 400px;
+}
+/* Keep floating legend text dark in dark mode (left-nav legend remains unchanged). */
+.dark #floating-legend,
+.dark #floating-legend #legend-content,
+.dark #floating-legend .legend-item,
+.dark #floating-legend .legend-label,
+.dark #floating-legend .legend-value,
+.dark #floating-legend .region-toggle {
+    color: #223246;
 }
 /* Show floating legend when sidebar is hidden (nav closed) AND chart is visible */
 body.sidebar-hidden #floating-legend.chart-visible,
@@ -368,7 +401,7 @@ body.main-nav-hidden #floating-legend.chart-visible {
 .region-icon { font-size: 14px; flex-shrink: 0; }
 .toggle-arrow { font-size: 10px; transition: transform 0.2s; flex-shrink: 0; }
 .country-buttons-region { padding: 4px 6px; }
-.country-buttons-region .legend-item { margin: 2px 0; padding: 4px 8px; font-size: 11px; }
+.country-buttons-region .legend-item { margin: 2px 0; padding: 4px 8px; font-size: 13px; }
 
 </style>
 
@@ -791,10 +824,10 @@ p.set('rs_dcid', list.join(','));
             
             // Load saved position from localStorage
             const storedPosition = localStorage.getItem('legendPosition');
-            const savedPosition = (storedPosition && storedPosition !== 'left') ? storedPosition : 'right';
-            if (storedPosition === 'left') {
-                localStorage.setItem('legendPosition', 'right');
-            }
+            const validPositions = ['left', 'right', 'below'];
+            const savedPosition = validPositions.includes(storedPosition) ? storedPosition : 'right';
+            window._cachedLegendPosition = savedPosition;
+            localStorage.setItem('legendPosition', savedPosition);
             const savedRadio = document.querySelector(`input[name="legendPosition"][value="${savedPosition}"]`);
             if (savedRadio) {
                 savedRadio.checked = true;
@@ -814,13 +847,43 @@ p.set('rs_dcid', list.join(','));
         function moveLegendToLeft(ev) {
             if (ev) { ev.preventDefault(); ev.stopPropagation(); }
             try {
+                localStorage.setItem('legendPosition', 'left');
+                window._cachedLegendPosition = 'left';
                 window._timelineLegendAllowSidebar = true;
                 updateOnLeftButtonsVisibility();
                 if (typeof window.showNavColumn === 'function') {
                     window.showNavColumn();
                 } else {
-                    localStorage.setItem('legendPosition', 'left');
                     updateLegendPosition('left');
+                }
+            } catch (e) {}
+        }
+
+        function moveLegendToRight(ev) {
+            if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+            try {
+                localStorage.setItem('legendPosition', 'right');
+                window._cachedLegendPosition = 'right';
+                window._timelineLegendAllowSidebar = false;
+                window._floatingLegendManuallyClosed = false;
+                updateOnLeftButtonsVisibility();
+                updateOnRightButtonsVisibility();
+                if (typeof window.hideNavColumn === 'function') {
+                    window.hideNavColumn();
+                } else {
+                    updateLegendPosition('right');
+                }
+                const floatingLegend = document.getElementById('floating-legend');
+                if (floatingLegend) {
+                    floatingLegend.style.display = 'block';
+                    floatingLegend.style.opacity = '1';
+                    floatingLegend.setAttribute('aria-hidden', 'false');
+                    floatingLegend.classList.add('chart-visible');
+                }
+                const bottomLegend = document.getElementById('bottom-legend');
+                if (bottomLegend) {
+                    bottomLegend.style.display = 'none';
+                    bottomLegend.setAttribute('aria-hidden', 'true');
                 }
             } catch (e) {}
         }
@@ -832,10 +895,26 @@ p.set('rs_dcid', list.join(','));
                 btn.style.display = hideOnLeft ? 'none' : 'inline-flex';
             });
         }
+        function updateOnRightButtonsVisibility() {
+            let currentPosition = 'right';
+            try { currentPosition = window._cachedLegendPosition || localStorage.getItem('legendPosition') || 'right'; } catch (e) { /* ignore */ }
+            const showOnRight = currentPosition !== 'right' || !!window._floatingLegendManuallyClosed;
+            const rightButtons = document.querySelectorAll('.legend-on-right-btn');
+            rightButtons.forEach((btn) => {
+                btn.style.display = showOnRight ? 'inline-flex' : 'none';
+            });
+        }
         window.updateOnLeftButtonsVisibility = updateOnLeftButtonsVisibility;
+        window.updateOnRightButtonsVisibility = updateOnRightButtonsVisibility;
 
         // Function to update legend position
         function updateLegendPosition(position) {
+            const validPositions = ['left', 'right', 'below'];
+            const nextPosition = validPositions.includes(position) ? position : 'right';
+            try {
+                localStorage.setItem('legendPosition', nextPosition);
+                window._cachedLegendPosition = nextPosition;
+            } catch (e) {}
             const floatingLegend = document.getElementById('floating-legend');
             const bottomLegend = document.getElementById('bottom-legend');
             const overlayLegends = document.querySelectorAll('.overlay-legend');
@@ -846,22 +925,29 @@ p.set('rs_dcid', list.join(','));
             overlayLegends.forEach(ol => ol.style.display = 'none');
             
             // Show selected legend position
-            switch(position) {
+            switch(nextPosition) {
                 case 'left':
                     // Left Nav - show floating legend on left
                     if (floatingLegend) {
                         window._timelineLegendAllowSidebar = true;
-                        floatingLegend.style.display = 'block';
-                        floatingLegend.style.position = 'fixed';
-                        floatingLegend.style.left = '20px';
-                        floatingLegend.style.right = 'auto';
-                        floatingLegend.style.top = '120px';
+                        if (typeof window.showNavColumn === 'function') {
+                            window.showNavColumn();
+                            floatingLegend.style.display = 'none';
+                            floatingLegend.setAttribute('aria-hidden', 'true');
+                        } else {
+                            floatingLegend.style.display = 'block';
+                            floatingLegend.style.position = 'fixed';
+                            floatingLegend.style.left = '20px';
+                            floatingLegend.style.right = 'auto';
+                            floatingLegend.style.top = '120px';
+                        }
                     }
                     break;
                     
                 case 'right':
                     // Float Right - show floating legend on right (default)
                     if (floatingLegend) {
+                        window._floatingLegendManuallyClosed = false;
                         window._timelineLegendAllowSidebar = false;
                         floatingLegend.style.display = 'block';
                         floatingLegend.style.position = 'fixed';
@@ -880,6 +966,7 @@ p.set('rs_dcid', list.join(','));
                     break;
             }
             updateOnLeftButtonsVisibility();
+            updateOnRightButtonsVisibility();
             console.log('Legend position changed to:', position);
         }
         </script>
@@ -912,15 +999,20 @@ p.set('rs_dcid', list.join(','));
             <canvas id="lineAreaChart" ></canvas>
         </div>
 
-        <label>
-            <input type="radio" name="toogleChartType" value="div1" checked> Line Chart
-        </label>
-        <label>
-            <input type="radio" name="toogleChartType" value="div2"> Area Chart
-        </label>
-        <label>
-            <input type="radio" name="toogleChartType" value="both"> Both
-        </label>
+        <div id="timelineChartFormats">
+            <div id="timelineChartTypeRadios">
+                <label>
+                    <input type="radio" name="toogleChartType" value="div1" checked> Line Chart
+                </label>
+                <label>
+                    <input type="radio" name="toogleChartType" value="div2"> Area Chart
+                </label>
+                <label>
+                    <input type="radio" name="toogleChartType" value="both"> Both
+                </label>
+            </div>
+            <div id="timelineChartFormatActions"></div>
+        </div>
     </div>
 
 </div>
@@ -1442,7 +1534,7 @@ function buildFloatingLegendFromChart() {
         allItems.forEach(({ label, info }) => {
             const item = createLegendItem(label, info);
             if (item) {
-                item.style.cssText += 'margin: 2px 0; padding: 4px 8px; font-size: 11px;';
+                item.style.cssText += 'margin: 2px 0; padding: 4px 8px; font-size: 13px;';
                 flatContainer.appendChild(item);
             }
         });
@@ -1740,9 +1832,13 @@ function buildFloatingLegendFromChart() {
     if (last.toggle === toggle && last.selectedCount === selectedCount && last.whichLines === whichLinesMode && legendContent.children.length === last.itemsCount) {
         console.log('buildFloatingLegendFromChart: no change detected, skipping rebuild');
         // Ensure visibility still correct
-        const shouldShow = selectedCount > 0 && legendContent.children.length > 0;
+        let preferredPosition = 'right';
+        try { preferredPosition = window._cachedLegendPosition || localStorage.getItem('legendPosition') || 'right'; } catch (e) { /* ignore */ }
+        const suppressFloating = !!window._floatingLegendManuallyClosed || !!window._timelineLegendAllowSidebar || preferredPosition === 'left' || preferredPosition === 'below';
+        const shouldShow = selectedCount > 0 && legendContent.children.length > 0 && !suppressFloating;
         legend.style.display = shouldShow ? 'block' : 'none';
         legend.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+        if (!shouldShow) legend.classList.remove('chart-visible');
         // Refresh selection visuals on existing legend items in case dataset visibility changed
         try {
             Array.from(legendContent.children).forEach((child) => {
@@ -1774,28 +1870,37 @@ function buildFloatingLegendFromChart() {
     } catch (e) { /* ignore */ }
 
     if (visible) {
-        legend.style.display = 'block';
-        legend.setAttribute('aria-hidden', 'false');
-        // Add chart-visible class so CSS rules can show legend when nav is closed
-        legend.classList.add('chart-visible');
-        try { clearOverlayClosed('floating'); } catch (e) {}
-                // Place the legend at a fixed viewport location so it stays put even when canvases resize/update.
-                // Small screens still get the legend inside the content area for better UX.
-                try {
-                    // fixed viewport placement
-                    if (window.innerWidth <= 700) {
-                        legend.style.position = 'fixed';
-                        legend.style.left = '12px';
-                        legend.style.top = '12px';
-                        legend.style.right = 'auto';
-                    } else {
-                        legend.style.position = 'fixed';
-                        legend.style.top = '126px';
-                        legend.style.right = '20px';
-                        legend.style.left = 'auto';
-                    }
-                    legend.style.zIndex = 999;
-                } catch (e) { console.warn('Could not set legend position:', e); }
+        let preferredPosition = 'right';
+        try { preferredPosition = window._cachedLegendPosition || localStorage.getItem('legendPosition') || 'right'; } catch (e) { /* ignore */ }
+        const suppressFloating = !!window._floatingLegendManuallyClosed || !!window._timelineLegendAllowSidebar || preferredPosition === 'left' || preferredPosition === 'below';
+        if (suppressFloating) {
+            legend.style.display = 'none';
+            legend.setAttribute('aria-hidden', 'true');
+            legend.classList.remove('chart-visible');
+        } else {
+            legend.style.display = 'block';
+            legend.setAttribute('aria-hidden', 'false');
+            // Add chart-visible class so CSS rules can show legend when nav is closed
+            legend.classList.add('chart-visible');
+            try { clearOverlayClosed('floating'); } catch (e) {}
+                    // Place the legend at a fixed viewport location so it stays put even when canvases resize/update.
+                    // Small screens still get the legend inside the content area for better UX.
+                    try {
+                        // fixed viewport placement
+                        if (window.innerWidth <= 700) {
+                            legend.style.position = 'fixed';
+                            legend.style.left = '12px';
+                            legend.style.top = '12px';
+                            legend.style.right = 'auto';
+                        } else {
+                            legend.style.position = 'fixed';
+                            legend.style.top = '126px';
+                            legend.style.right = '20px';
+                            legend.style.left = 'auto';
+                        }
+                        legend.style.zIndex = 999;
+                    } catch (e) { console.warn('Could not set legend position:', e); }
+        }
     } else {
         legend.style.display = 'none';
         legend.setAttribute('aria-hidden', 'true');
@@ -1824,6 +1929,10 @@ function buildFloatingLegendFromChart() {
             const insertAfter = document.getElementById('div2') || document.getElementById('div1');
             if (insertAfter && insertAfter.parentElement) insertAfter.parentElement.insertBefore(bottom, insertAfter.nextSibling);
             else document.body.appendChild(bottom);
+        }
+        const formatActionsHolder = document.getElementById('timelineChartFormatActions');
+        if (formatActionsHolder) {
+            formatActionsHolder.querySelectorAll('.timeline-format-action').forEach((node) => node.remove());
         }
         // Clear and repopulate with collapse/expand behavior when many items
         bottom.innerHTML = '';
@@ -2091,17 +2200,29 @@ function buildFloatingLegendFromChart() {
                 const existingLabels = new Set(authItems.map((el) => (el.getAttribute('data-legend-label') || el.title || el.textContent.trim())));
                 const allMap = window._timelineCountryDataByName || {};
                 const addable = Object.keys(allMap).filter((n) => n && !existingLabels.has(n));
+                const onLeftBtn = document.createElement('div');
+                onLeftBtn.className = 'bottom-legend-more legend-on-left-btn';
+                onLeftBtn.classList.add('timeline-format-action');
+                onLeftBtn.textContent = 'On Left';
+                onLeftBtn.setAttribute('role','button');
+                onLeftBtn.tabIndex = 0;
+                const onRightBtn = document.createElement('div');
+                onRightBtn.className = 'bottom-legend-more legend-on-right-btn';
+                onRightBtn.classList.add('timeline-format-action');
+                onRightBtn.textContent = 'On Right';
+                onRightBtn.setAttribute('role','button');
+                onRightBtn.tabIndex = 0;
+                onLeftBtn.addEventListener('click', moveLegendToLeft);
+                onLeftBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') moveLegendToLeft(ev); });
+                onRightBtn.addEventListener('click', moveLegendToRight);
+                onRightBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') moveLegendToRight(ev); });
                 if (addable.length > 0) {
                     const addBtn = document.createElement('div');
                     addBtn.className = 'bottom-legend-more';
+                    addBtn.classList.add('timeline-format-action');
                     addBtn.textContent = 'More Locations';
                     addBtn.setAttribute('role','button');
                     addBtn.tabIndex = 0;
-                    const onLeftBtn = document.createElement('div');
-                    onLeftBtn.className = 'bottom-legend-more legend-on-left-btn';
-                    onLeftBtn.textContent = 'On Left';
-                    onLeftBtn.setAttribute('role','button');
-                    onLeftBtn.tabIndex = 0;
                     let panel = document.getElementById('more-countries-menu');
                     if (!panel) {
                         panel = document.createElement('div');
@@ -2147,12 +2268,16 @@ function buildFloatingLegendFromChart() {
                     };
                     addBtn.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); openPanel(); });
                     addBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openPanel(); } });
-                    onLeftBtn.addEventListener('click', moveLegendToLeft);
-                    onLeftBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') moveLegendToLeft(ev); });
-                    bottom.appendChild(addBtn);
-                    bottom.appendChild(onLeftBtn);
-                    updateOnLeftButtonsVisibility();
+                    if (formatActionsHolder) {
+                        formatActionsHolder.appendChild(addBtn);
+                    }
                 }
+                if (formatActionsHolder) {
+                    formatActionsHolder.appendChild(onLeftBtn);
+                    formatActionsHolder.appendChild(onRightBtn);
+                }
+                updateOnLeftButtonsVisibility();
+                updateOnRightButtonsVisibility();
             } catch (e) {}
         } else {
             bottom.classList.remove('bottom-legend-collapsed');
@@ -2161,17 +2286,29 @@ function buildFloatingLegendFromChart() {
                 const existingLabels = new Set(authItems.map((el) => (el.getAttribute('data-legend-label') || el.title || el.textContent.trim())));
                 const allMap = window._timelineCountryDataByName || {};
                 const addable = Object.keys(allMap).filter((n) => n && !existingLabels.has(n));
+                const onLeftBtn = document.createElement('div');
+                onLeftBtn.className = 'bottom-legend-more legend-on-left-btn';
+                onLeftBtn.classList.add('timeline-format-action');
+                onLeftBtn.textContent = 'On Left';
+                onLeftBtn.setAttribute('role','button');
+                onLeftBtn.tabIndex = 0;
+                const onRightBtn = document.createElement('div');
+                onRightBtn.className = 'bottom-legend-more legend-on-right-btn';
+                onRightBtn.classList.add('timeline-format-action');
+                onRightBtn.textContent = 'On Right';
+                onRightBtn.setAttribute('role','button');
+                onRightBtn.tabIndex = 0;
+                onLeftBtn.addEventListener('click', moveLegendToLeft);
+                onLeftBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') moveLegendToLeft(ev); });
+                onRightBtn.addEventListener('click', moveLegendToRight);
+                onRightBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') moveLegendToRight(ev); });
                 if (addable.length > 0) {
                     const addBtn = document.createElement('div');
                     addBtn.className = 'bottom-legend-more';
+                    addBtn.classList.add('timeline-format-action');
                     addBtn.textContent = 'More Locations';
                     addBtn.setAttribute('role','button');
                     addBtn.tabIndex = 0;
-                    const onLeftBtn = document.createElement('div');
-                    onLeftBtn.className = 'bottom-legend-more legend-on-left-btn';
-                    onLeftBtn.textContent = 'On Left';
-                    onLeftBtn.setAttribute('role','button');
-                    onLeftBtn.tabIndex = 0;
                     let panel = document.getElementById('more-countries-menu');
                     if (!panel) {
                         panel = document.createElement('div');
@@ -2217,12 +2354,16 @@ function buildFloatingLegendFromChart() {
                     };
                     addBtn.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); openPanel(); });
                     addBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openPanel(); } });
-                    onLeftBtn.addEventListener('click', moveLegendToLeft);
-                    onLeftBtn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') moveLegendToLeft(ev); });
-                    bottom.appendChild(addBtn);
-                    bottom.appendChild(onLeftBtn);
-                    updateOnLeftButtonsVisibility();
+                    if (formatActionsHolder) {
+                        formatActionsHolder.appendChild(addBtn);
+                    }
                 }
+                if (formatActionsHolder) {
+                    formatActionsHolder.appendChild(onLeftBtn);
+                    formatActionsHolder.appendChild(onRightBtn);
+                }
+                updateOnLeftButtonsVisibility();
+                updateOnRightButtonsVisibility();
             } catch (e) {}
         }
         // Defer visibility decision to updateBottomLegendVisibility (driven by user X clicks)
@@ -2276,7 +2417,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const anyVisible = entries.some(e => e.isIntersecting && e.intersectionRatio > 0.05);
                     // Only show legend if it has content (built) and chart datasets exist
                     const hasItems = document.getElementById('legend-content')?.children?.length > 0;
-                    if (anyVisible && hasItems) {
+                    if (!window._floatingLegendManuallyClosed && anyVisible && hasItems) {
                         legend.classList.add('chart-visible');
                     } else {
                         legend.classList.remove('chart-visible');
@@ -2317,6 +2458,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (bottomLegend) {
                 bottomLegend.style.display = 'flex';
             }
+            try {
+                if (typeof window.updateOnRightButtonsVisibility === 'function') {
+                    window.updateOnRightButtonsVisibility();
+                }
+            } catch (e) { /* ignore */ }
         });
     }
 
@@ -2690,6 +2836,36 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
     margin-top: 12px;
     overflow-x: auto;
 }
+.timeline-format-action {
+    display: inline-flex;
+}
+#timelineChartFormats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 6px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+#timelineChartTypeRadios {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+#timelineChartFormatActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    flex-wrap: wrap;
+}
+#timelineChartFormatActions .bottom-legend-more {
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 400;
+}
 .bottom-legend-item {
     display: inline-flex;
     align-items: center;
@@ -2763,6 +2939,54 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
 .bottom-legend-menu-item.selected {
     background: rgba(0,102,255,0.12);
     font-weight: 700;
+}
+.dark #more-countries-menu {
+    background: #1e2430;
+    border-color: rgba(255,255,255,0.16);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    color: #e8edf5;
+}
+.dark #more-countries-menu input {
+    background: #141a24;
+    color: #e8edf5;
+    border-color: rgba(255,255,255,0.22);
+}
+.dark #more-countries-menu input::placeholder {
+    color: rgba(232,237,245,0.68);
+}
+.dark #more-countries-menu .bottom-legend-menu-item {
+    color: #e8edf5;
+}
+.dark #more-countries-menu .bottom-legend-menu-item:hover,
+.dark #more-countries-menu .bottom-legend-menu-item:focus {
+    background: rgba(105,165,255,0.22);
+}
+.dark #more-countries-menu .bottom-legend-menu-item.selected {
+    background: rgba(105,165,255,0.3);
+}
+.dark #floating-legend-more-menu {
+    background: #1e2430 !important;
+    border-color: rgba(255,255,255,0.16) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45) !important;
+    color: #e8edf5;
+}
+.dark #floating-legend-more-menu input {
+    background: #141a24 !important;
+    color: #e8edf5 !important;
+    border-color: rgba(255,255,255,0.22) !important;
+}
+.dark #floating-legend-more-menu input::placeholder {
+    color: rgba(232,237,245,0.68);
+}
+.dark #floating-legend-more-menu .bottom-legend-menu-item {
+    color: #e8edf5;
+}
+.dark #floating-legend-more-menu .bottom-legend-menu-item:hover,
+.dark #floating-legend-more-menu .bottom-legend-menu-item:focus {
+    background: rgba(105,165,255,0.22);
+}
+.dark #floating-legend-more-menu .bottom-legend-menu-item.selected {
+    background: rgba(105,165,255,0.3);
 }
 
 </style>
