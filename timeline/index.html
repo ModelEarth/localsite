@@ -850,11 +850,18 @@ p.set('rs_dcid', list.join(','));
                 localStorage.setItem('legendPosition', 'left');
                 window._cachedLegendPosition = 'left';
                 window._timelineLegendAllowSidebar = true;
+                window._floatingLegendManuallyClosed = false;
                 updateOnLeftButtonsVisibility();
+                updateOnRightButtonsVisibility();
                 if (typeof window.showNavColumn === 'function') {
                     window.showNavColumn();
                 } else {
                     updateLegendPosition('left');
+                }
+                const bottomLegend = document.getElementById('bottom-legend');
+                if (bottomLegend) {
+                    bottomLegend.style.display = 'none';
+                    bottomLegend.setAttribute('aria-hidden', 'true');
                 }
             } catch (e) {}
         }
@@ -875,6 +882,10 @@ p.set('rs_dcid', list.join(','));
                 }
                 const floatingLegend = document.getElementById('floating-legend');
                 if (floatingLegend) {
+                    floatingLegend.style.position = 'fixed';
+                    floatingLegend.style.left = 'auto';
+                    floatingLegend.style.right = '20px';
+                    floatingLegend.style.top = '126px';
                     floatingLegend.style.display = 'block';
                     floatingLegend.style.opacity = '1';
                     floatingLegend.setAttribute('aria-hidden', 'false');
@@ -920,7 +931,11 @@ p.set('rs_dcid', list.join(','));
             const overlayLegends = document.querySelectorAll('.overlay-legend');
             
             // Hide all legends first
-            if (floatingLegend) floatingLegend.style.display = 'none';
+            if (floatingLegend) {
+                floatingLegend.style.display = 'none';
+                floatingLegend.setAttribute('aria-hidden', 'true');
+                floatingLegend.classList.remove('chart-visible');
+            }
             if (bottomLegend) bottomLegend.style.display = 'none';
             overlayLegends.forEach(ol => ol.style.display = 'none');
             
@@ -2047,6 +2062,18 @@ function buildFloatingLegendFromChart() {
                 // modes: left, right, full, below
                 try {
                     window._timelineLegendMode = mode;
+                    if (mode === 'left' || mode === 'right' || mode === 'below') {
+                        try {
+                            localStorage.setItem('legendPosition', mode);
+                            window._cachedLegendPosition = mode;
+                        } catch (e) { /* ignore */ }
+                        window._timelineLegendAllowSidebar = (mode === 'left');
+                        window._floatingLegendManuallyClosed = (mode === 'below');
+                        try {
+                            if (typeof window.updateOnLeftButtonsVisibility === 'function') window.updateOnLeftButtonsVisibility();
+                            if (typeof window.updateOnRightButtonsVisibility === 'function') window.updateOnRightButtonsVisibility();
+                        } catch (e) { /* ignore */ }
+                    }
                     const legendEl = document.getElementById('floating-legend');
                     const canvas = document.getElementById('timelineChart') || document.getElementById('lineAreaChart');
                     if (!legendEl || !canvas) return;
@@ -2397,14 +2424,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Initially check if chart is visible and add class
                 const checkInitialVisibility = () => {
                     const hasItems = document.getElementById('legend-content')?.children?.length > 0;
+                    let preferredPosition = 'right';
+                    try { preferredPosition = window._cachedLegendPosition || localStorage.getItem('legendPosition') || 'right'; } catch (e) { /* ignore */ }
+                    const allowFloating = preferredPosition === 'right' && !window._timelineLegendAllowSidebar && !window._floatingLegendManuallyClosed;
                     if (hasItems) {
                         // Check if any chart container is in viewport
                         const anyVisible = chartContainers.some(c => {
                             const rect = c.getBoundingClientRect();
                             return rect.top < window.innerHeight && rect.bottom > 0;
                         });
-                        if (anyVisible) {
+                        if (anyVisible && allowFloating) {
                             legend.classList.add('chart-visible');
+                        } else {
+                            legend.classList.remove('chart-visible');
                         }
                     }
                 };
@@ -2417,7 +2449,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const anyVisible = entries.some(e => e.isIntersecting && e.intersectionRatio > 0.05);
                     // Only show legend if it has content (built) and chart datasets exist
                     const hasItems = document.getElementById('legend-content')?.children?.length > 0;
-                    if (!window._floatingLegendManuallyClosed && anyVisible && hasItems) {
+                    let preferredPosition = 'right';
+                    try { preferredPosition = window._cachedLegendPosition || localStorage.getItem('legendPosition') || 'right'; } catch (e) { /* ignore */ }
+                    const allowFloating = preferredPosition === 'right' && !window._timelineLegendAllowSidebar && !window._floatingLegendManuallyClosed;
+                    if (allowFloating && anyVisible && hasItems) {
                         legend.classList.add('chart-visible');
                     } else {
                         legend.classList.remove('chart-visible');
@@ -2452,6 +2487,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 legend.classList.remove('chart-visible');
                 // Mark that user manually closed floating legend
                 window._floatingLegendManuallyClosed = true;
+                try {
+                    localStorage.setItem('legendPosition', 'below');
+                    window._cachedLegendPosition = 'below';
+                } catch (e) { /* ignore */ }
             }
             // Show bottom legend when floating legend is closed
             const bottomLegend = document.getElementById('bottom-legend');
