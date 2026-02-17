@@ -1002,6 +1002,15 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     margin-right:6px;
     margin-bottom:8px;
 }
+.btn-med {
+  font-size: 0.9rem;
+  line-height: 1.35;
+  padding: 0.3rem 0.8rem;
+  border-radius: 2rem;
+  display: inline-flex;
+  width: auto;
+  border: 1px solid var(--border-light);
+}
 .btn:link, .btn:visited, .contentpadding .btn:link, .contentpadding .btn:visited {
   /* color: #fff !important; */
   text-decoration: none;
@@ -3224,36 +3233,36 @@ body.sidebar-hidden #openNav {
 .dark .menuIconHolder:not(.menuToggleHolderMap) .material-icons.circle-bg {
   color: rgba(255, 255, 255, 0.7);
 }
-/* Common arrow icon styling for all MenuToggleHolder arrows */
+/* Common arrow icon styling for all MenuControl arrows */
 .menu-toggle-arrow {
   font-size: 28px;
   font-weight: 500;
   color: #aaa;
 }
 /* Ensure icon positioning is stable */
-#widgetDetailsMenuToggleHolder .material-icons,
-#widgetmapWrapperMenuToggleHolder .material-icons,
-#pageGalleryMenuToggleHolder .material-icons,
-#location-sectionMenuToggleHolder .material-icons {
+#widgetDetailsMenuControl .material-icons,
+#widgetmapWrapperMenuControl .material-icons,
+#pageGalleryMenuControl .material-icons,
+#locationDetailsMenuControl .material-icons {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 }
-#widgetDetailsMenuToggleHolder .material-icons[id$="MenuToggleIcon"],
-#widgetmapWrapperMenuToggleHolder .material-icons[id$="MenuToggleIcon"],
-#pageGalleryMenuToggleHolder .material-icons[id$="MenuToggleIcon"],
-#location-sectionMenuToggleHolder .material-icons[id$="MenuToggleIcon"] {
+#widgetDetailsMenuControl .material-icons[id$="MenuToggleIcon"],
+#widgetmapWrapperMenuControl .material-icons[id$="MenuToggleIcon"],
+#pageGalleryMenuControl .material-icons[id$="MenuToggleIcon"],
+#locationDetailsMenuControl .material-icons[id$="MenuToggleIcon"] {
   position: absolute !important;
 }
-/* Fade transition for location-section during tour */
-.location-section {
+/* Fade transition for locationDetails during tour */
+.locationDetails {
   transition: opacity 0.2s ease-in-out;
 }
-.location-section.fading {
+.locationDetails.fading {
   opacity: 0.5;
 }
-/* Wider clickable area for location-section menu toggle */
-#location-sectionMenuToggleHolder {
+/* Wider clickable area for locationDetails menu toggle */
+#locationDetailsMenuControl {
   padding: 8px 12px !important;
 }
 #rightIcons {
@@ -3368,6 +3377,6 @@ body.sidebar-hidden #openNav {
   }
 }
 /* Orange color for pause icon during tour */
-#location-sectionMenuToggleIcon.pause-icon {
+#locationDetailsMenuToggleIcon.pause-icon {
   color: #ff6b35 !important;
 }

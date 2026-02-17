@@ -3871,20 +3871,20 @@ function showAuthModal() {
  * @param {string} datasourcePath - Path for datasource insights link (optional)
  * @returns {Array} Array of menu item objects
  */
-function buildMenuConfig(panelType, panelId, datasourcePath = '') {
+function buildMenuConfig(panelType, panelId, datasourcePath = '', panelLabel = '') {
   const menuItems = [];
-  const panelLabel = (panelType === 'View' && panelId === 'location-section') ? 'Details' : panelType;
+  const effectivePanelLabel = panelLabel || panelType;
 
   // Expand/Collapse item (label updated dynamically)
   menuItems.push({
-    label: `Expand ${panelLabel}`,
+    label: `Expand ${effectivePanelLabel}`,
     action: 'expand',
     icon: 'open_in_full'
   });
 
   // Hide item
   menuItems.push({
-    label: `Hide ${panelLabel}`,
+    label: `Hide ${effectivePanelLabel}`,
     action: 'hide',
     icon: 'visibility_off'
   });
@@ -3992,6 +3992,27 @@ function refreshPanelToggleIcon(holderId, panelId) {
 }
 
 /**
+ * Gets panel menu options for a panel ID
+ * @param {string} panelId - ID of the panel element
+ * @returns {Object} Panel menu options
+ */
+function getPanelMenuOptions(panelId) {
+  if (!window.panelMenuOptions) return {};
+  return window.panelMenuOptions[panelId] || {};
+}
+
+/**
+ * Gets panel label for menu text
+ * @param {string} panelId - ID of the panel element
+ * @param {string} panelType - Type of panel (Content, List, Map)
+ * @returns {string} Panel label for text
+ */
+function getPanelLabel(panelId, panelType) {
+  const options = getPanelMenuOptions(panelId);
+  return options.panelLabel || panelType;
+}
+
+/**
  * Finds and expands/collapses sibling panels
  * @param {string} panelId - ID of the panel that was toggled
  * @param {boolean} isExpanding - True if expanding, false if collapsing
@@ -4082,7 +4103,7 @@ function toggleSiblingPanels(panelId, isExpanding) {
         else if (siblingId.includes('Gallery')) siblingType = 'Content';
 
         updateMenuLabels(siblingId + 'Menu', siblingId, siblingType);
-        refreshPanelToggleIcon(siblingId + 'MenuToggleHolder', siblingId);
+        refreshPanelToggleIcon(siblingId + 'MenuControl', siblingId);
       }
     }, 100);
   });
@@ -4098,12 +4119,16 @@ function updateMenuLabels(menuId, panelId, panelType) {
   const menu = document.getElementById(menuId);
   const panel = document.getElementById(panelId);
   if (!menu || !panel) return;
-  const panelLabel = (panelType === 'View' && panelId === 'location-section') ? 'Details' : panelType;
+  const panelLabel = getPanelLabel(panelId, panelType);
+  const menuOptions = getPanelMenuOptions(panelId);
+  const expandBehavior = menuOptions.expandBehavior || (panelType === 'View' ? 'fullscreen' : 'hero');
 
   // Check if panel is in hero container (expanded) or fullscreen mode
   let isExpanded = panel.dataset && panel.dataset.menuExpanded === 'true' ? true : false;
 
-  if (panelType === 'View' || panelType === 'Details' || panelId === 'location-section') {
+  if (typeof menuOptions.isExpanded === 'function') {
+    isExpanded = !!menuOptions.isExpanded(panel, panelId, panelType);
+  } else if (expandBehavior === 'fullscreen') {
     // For fullscreen-style panels, use fullscreen state and fullscreen button visibility.
     const reduceBtn = document.querySelector('.reduceFromFullscreen');
     const reduceBtnVisible = !!(reduceBtn && getComputedStyle(reduceBtn).display !== 'none');
@@ -4313,7 +4338,7 @@ window.stopTour = stopTour;
  */
 function updateTourIcon(panelId, iconType) {
   const iconElement = document.getElementById(panelId + 'MenuToggleIcon');
-  const circleElement = document.querySelector(`#${panelId}MenuToggleHolder .material-icons:not([id])`);
+  const circleElement = document.querySelector(`#${panelId}MenuControl .material-icons:not([id])`);
 
   if (!iconElement) return;
 
@@ -4362,33 +4387,37 @@ function updateTourIcon(panelId, iconType) {
 function handlePanelAction(action, panelId, panelType) {
   const panel = document.getElementById(panelId);
   if (!panel) return;
+  const menuOptions = getPanelMenuOptions(panelId);
+  const expandBehavior = menuOptions.expandBehavior || (panelType === 'View' ? 'fullscreen' : 'hero');
 
   if (action === 'starttour') {
     toggleTour(panelId);
   } else if (action === 'expand' || action === 'collapse') {
-    // Special handling for detailmap - call toggleDetailMapHero
-    if (panelId === 'detailmap') {
-      if (window.listingsApp && typeof window.listingsApp.toggleDetailMapHero === 'function') {
-        window.listingsApp.toggleDetailMapHero();
+    // Per-panel custom toggle behavior via passed options
+    if (typeof menuOptions.toggleExpand === 'function') {
+      menuOptions.toggleExpand(action, panelId, panelType);
 
-        // Determine if we're expanding or collapsing (use wrapper for detailmap)
-        const wrapper = document.getElementById('detailmapWrapper');
-        const myparent = wrapper ? wrapper.getAttribute('myparent') : null;
-        const originalParent = myparent ? document.getElementById(myparent) : null;
-        const isExpanding = originalParent && !originalParent.contains(wrapper);
-
-        // Toggle sibling panels (use wrapper id for detailmap siblings)
-        toggleSiblingPanels('detailmapWrapper', isExpanding);
-
-        // Update menu labels after state change
-        setTimeout(() => {
-          updateMenuLabels(panelId + 'Menu', panelId, panelType);
-          refreshPanelToggleIcon(panelId + 'MenuToggleHolder', panelId);
-        }, 50);
+      const siblingPanelId = menuOptions.siblingPanelId || panelId;
+      const siblingPanel = document.getElementById(siblingPanelId);
+      const siblingParentId = siblingPanel ? siblingPanel.getAttribute('myparent') : null;
+      const siblingOriginalParent = siblingParentId ? document.getElementById(siblingParentId) : null;
+      let isExpanding = false;
+      if (typeof menuOptions.isExpanded === 'function') {
+        isExpanding = !!menuOptions.isExpanded(panel, panelId, panelType);
+      } else if (siblingOriginalParent && siblingPanel) {
+        isExpanding = !siblingOriginalParent.contains(siblingPanel);
       }
+      if (menuOptions.toggleSiblings !== false) {
+        toggleSiblingPanels(siblingPanelId, isExpanding);
+      }
+
+      setTimeout(() => {
+        updateMenuLabels(panelId + 'Menu', panelId, panelType);
+        refreshPanelToggleIcon(panelId + 'MenuControl', panelId);
+      }, 50);
     }
-    // Special handling for fullscreen-style panels
-    else if (panelType === 'View' || panelType === 'Details' || panelId === 'location-section') {
+    // Fullscreen behavior for panels configured as fullscreen mode
+    else if (expandBehavior === 'fullscreen') {
       const expandBtn = document.querySelector('.expandToFullscreen');
       const reduceBtn = document.querySelector('.reduceFromFullscreen');
       const expandVisible = !!(expandBtn && getComputedStyle(expandBtn).display !== 'none');
@@ -4407,7 +4436,7 @@ function handlePanelAction(action, panelId, panelType) {
       // Update menu labels after state change
       setTimeout(() => {
         updateMenuLabels(panelId + 'Menu', panelId, panelType);
-        refreshPanelToggleIcon(panelId + 'MenuToggleHolder', panelId);
+        refreshPanelToggleIcon(panelId + 'MenuControl', panelId);
       }, 50);
     } else {
       // Original behavior for other panel types
@@ -4452,7 +4481,7 @@ function handlePanelAction(action, panelId, panelType) {
         // Update menu labels after state change
         setTimeout(() => {
           updateMenuLabels(panelId + 'Menu', panelId, panelType);
-          refreshPanelToggleIcon(panelId + 'MenuToggleHolder', panelId);
+          refreshPanelToggleIcon(panelId + 'MenuControl', panelId);
         }, 50);
       }
     }
@@ -4470,7 +4499,7 @@ function handlePanelAction(action, panelId, panelType) {
     // Close menu
     const menu = document.getElementById(panelId + 'Menu');
     if (menu) menu.style.display = 'none';
-    refreshPanelToggleIcon(panelId + 'MenuToggleHolder', panelId);
+    refreshPanelToggleIcon(panelId + 'MenuControl', panelId);
   } else if (action === 'inspect') {
     // Toggle inspect mode
     if (!window.listingsApp) return;
@@ -4547,10 +4576,18 @@ function addPanelMenu(options) {
     datasourcePath = '',
     inline = false,
     menuPopupHolder = '',
-    onAction = null
+    onAction = null,
+    panelLabel = '',
+    expandBehavior = '',
+    isExpanded = null,
+    toggleExpand = null,
+    siblingPanelId = '',
+    toggleSiblings = true
   } = options;
 
-  const items = menuItems || buildMenuConfig(panelType, targetPanelId, datasourcePath);
+  const resolvedExpandBehavior = expandBehavior || (panelType === 'View' ? 'fullscreen' : 'hero');
+  const resolvedPanelLabel = panelLabel || panelType;
+  const items = menuItems || buildMenuConfig(panelType, targetPanelId, datasourcePath, resolvedPanelLabel);
 
   const render = () => {
     const container = document.querySelector(containerSelector);
@@ -4564,7 +4601,7 @@ function addPanelMenu(options) {
     if (inline) {
       // For inline containers (like search-fields-control), don't add positioning wrapper
       toggleHtml = `
-        <div id="${targetPanelId}MenuToggleHolder" class="menuIconHolder menuToggleHolderInline"
+        <div id="${targetPanelId}MenuControl" class="menuIconHolder menuToggleHolderInline"
              title="Panel menu">
           <i class="material-icons" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:24px;">circle</i>
           <i id="${targetPanelId}MenuToggleIcon" class="material-icons"
@@ -4576,7 +4613,7 @@ function addPanelMenu(options) {
       const holderClass = panelType === 'Map' ? 'menuIconHolder menuToggleHolderMap' : 'menuIconHolder';
       toggleHtml = `
         <div style="position:absolute; right:8px; top:8px; z-index:1000;">
-          <div id="${targetPanelId}MenuToggleHolder" class="${holderClass}"
+          <div id="${targetPanelId}MenuControl" class="${holderClass}"
                style="position:relative; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;"
                title="Panel menu">
             <i class="material-icons circle-bg" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);">circle</i>
@@ -4644,7 +4681,7 @@ function addPanelMenu(options) {
   };
 
   const destroy = () => {
-    const holder = document.getElementById(targetPanelId + 'MenuToggleHolder');
+    const holder = document.getElementById(targetPanelId + 'MenuControl');
     const menu = document.getElementById(targetPanelId + 'Menu');
 
     // Remove holder
@@ -4665,13 +4702,23 @@ function addPanelMenu(options) {
 
   const updateState = () => {
     updateMenuLabels(targetPanelId + 'Menu', targetPanelId, panelType);
-    refreshPanelToggleIcon(targetPanelId + 'MenuToggleHolder', targetPanelId);
+    refreshPanelToggleIcon(targetPanelId + 'MenuControl', targetPanelId);
   };
 
   if (typeof onAction === 'function') {
     if (!window.panelMenuCallbacks) window.panelMenuCallbacks = {};
     window.panelMenuCallbacks[targetPanelId] = onAction;
   }
+  if (!window.panelMenuOptions) window.panelMenuOptions = {};
+  window.panelMenuOptions[targetPanelId] = {
+    panelType,
+    panelLabel: resolvedPanelLabel,
+    expandBehavior: resolvedExpandBehavior,
+    isExpanded,
+    toggleExpand,
+    siblingPanelId,
+    toggleSiblings
+  };
 
   return { render, destroy, updateState };
 }
@@ -4682,7 +4729,7 @@ function addPanelMenu(options) {
  * @param {string} panelType - Type of panel (Content, List, Map)
  */
 function setupPanelMenuEvents(panelId, panelType) {
-  const holderId = panelId + 'MenuToggleHolder';
+  const holderId = panelId + 'MenuControl';
   const menuId = panelId + 'Menu';
 
   // Toggle menu on holder click
