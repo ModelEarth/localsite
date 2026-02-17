@@ -79,6 +79,9 @@ document.addEventListener('hashChangeEvent', function (elem) {
     waitForElm('#perCapitaOptions').then(() => {
         applyPerCapitaGoalSettings();
     });
+    if (hash.scope != priorHash.scope && typeof updateScopeNav === 'function') {
+        updateScopeNav();
+    }
     updateStateMenuVisibility();
 }, false);
 document.addEventListener('DOMContentLoaded', () => {
@@ -89,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyPerCapitaGoalSettings();
     //alert(hash.scope)
     updateDcidSelectFromSheet(hash.scope);
+    updateStateMenuVisibility();
     
     document.addEventListener('change', function(event) {
         if (event.target.name === 'whichLines') {
@@ -119,11 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updateStateMenuVisibility() {
   const hash = getHash();
-  const wrap = document.getElementById('stateMenuWrap');
-  if (!wrap) return;
-
-  // Show state selector when scope involves states
-  wrap.style.display = (hash.scope === 'state' || hash.scope === 'county') ? 'block' : 'none';
+  const scope = String(hash.scope || '').toLowerCase();
+  const entitySelect = document.getElementById('entityId');
+  if (entitySelect) {
+    entitySelect.style.display = (scope === 'county' || scope.indexOf('zip') >= 0) ? '' : 'none';
+  }
 }
 
 </script>
@@ -613,9 +617,72 @@ body.main-nav-hidden #floating-legend.chart-visible {
 
 <div class="content contentpadding large-list">
   <!-- Also update in home repo -->
+  <div id="scope-nav" style="margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid rgba(0,0,0,0.18); font-family: Arial, sans-serif;"></div>
   <div id="timeline-nav" style="margin-bottom: 8px; font-family: Arial, sans-serif;"><!-- Links are populated here --></div>
   
   <script>
+    function updateScopeNav() {
+      const scopes = [
+        { scope: "country", name: "Countries" },
+        { scope: "state", name: "States" },
+        { scope: "county", name: "Counties" }
+      ];
+      const hash = getHash();
+      const currentScope = (hash.scope || "country").toLowerCase();
+      const container = document.getElementById('scope-nav');
+      if (!container) return;
+      container.innerHTML = '';
+      scopes.forEach((item, index) => {
+        if (index > 0) container.appendChild(document.createTextNode(' | '));
+        if (item.scope === currentScope) {
+          const boldText = document.createElement('b');
+          boldText.textContent = item.name;
+          boldText.style.marginLeft = '2px';
+          boldText.style.marginRight = '2px';
+          container.appendChild(boldText);
+        } else {
+          const link = document.createElement('a');
+          link.href = '#';
+          link.textContent = item.name;
+          link.style.marginLeft = '2px';
+          link.style.marginRight = '2px';
+          link.style.textDecoration = 'none';
+          link.className = 'timeline-link';
+          link.onclick = function(e) {
+            e.preventDefault();
+            goHash({ scope: item.scope });
+          };
+          container.appendChild(link);
+        }
+      });
+
+      const zipWrap = document.createElement('span');
+      zipWrap.className = 'local';
+      zipWrap.style.display = 'none';
+      zipWrap.appendChild(document.createTextNode(' | '));
+      if (currentScope === 'zip') {
+        const boldText = document.createElement('b');
+        boldText.textContent = 'Zip Codes';
+        boldText.style.marginLeft = '2px';
+        boldText.style.marginRight = '2px';
+        zipWrap.appendChild(boldText);
+      } else {
+        const zipLink = document.createElement('a');
+        zipLink.href = '#';
+        zipLink.textContent = 'Zip Codes';
+        zipLink.style.marginLeft = '2px';
+        zipLink.style.marginRight = '2px';
+        zipLink.style.textDecoration = 'none';
+        zipLink.className = 'timeline-link';
+        zipLink.onclick = function(e) {
+          e.preventDefault();
+          goHash({ scope: 'zip' });
+        };
+        zipWrap.appendChild(zipLink);
+      }
+      container.appendChild(zipWrap);
+    }
+
     function updateTimelineNav() {
       // Define all goals with their display names
       const goals = [
@@ -678,7 +745,16 @@ body.main-nav-hidden #floating-legend.chart-visible {
     }
   
     // Run on load and hash change
+    document.addEventListener('DOMContentLoaded', updateScopeNav);
     document.addEventListener('DOMContentLoaded', updateTimelineNav);
+    document.addEventListener('hashChangeEvent', function () {
+      const hash = getHash();
+      const priorScope = ((window.priorHash && window.priorHash.scope) || "country").toLowerCase();
+      const currentScope = (hash.scope || "country").toLowerCase();
+      if (currentScope !== priorScope) {
+        updateScopeNav();
+      }
+    });
     window.addEventListener('hashchange', updateTimelineNav);
   </script>
 
@@ -749,7 +825,10 @@ p.set('rs_dcid', list.join(','));
   </div>
   <div style="overflow:visible;">
 
+      <!-- Old: DROPDOWN #selectScope -->
       <div id="relocatedScopeMenu" style="float:left"></div>
+
+
       <div id="template-container"></div>
       <div id="templateLoaded"></div>
      
@@ -758,18 +837,18 @@ p.set('rs_dcid', list.join(','));
       <div id="relocatedStateMenu"></div>
       -->
 
+      <!--
     <div id="stateMenuWrap" style="display:none;">
         <div id="relocatedStateMenu"></div>
     </div>
+        -->
 
       <div class="chart-controls" style="display:flex; flex-wrap:wrap; gap:10px;">
         <select id="chartVariable" style="max-width:380px;"></select>
 
 
 
-    <!--    
-
-        <select id="entityId">
+        <select id="entityId" style="display:none;">
             <option>State...</option>
             <option value="geoId/01">Alabama</option>
             <option value="geoId/02">Alaska</option>
@@ -826,7 +905,6 @@ p.set('rs_dcid', list.join(','));
         </select>
      
       
--->
            <!--
               Adjust to per capita (and SqMiles) using our nav filter file:
               https://github.com/ModelEarth/localsite/blob/main/info/data/map-filters/us-states.csv

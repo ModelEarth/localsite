@@ -867,9 +867,15 @@ dataCopy.forEach(location => {
         const ctx = document.getElementById('timelineChart').getContext('2d');
         timelineChart = new Chart(ctx, config);
 
-        // Trigger floating legend build in the page (if the function exists).
-        // The legend builder lives in the HTML page and may not be defined yet,
-        // so retry a few times with small delays to avoid race conditions.
+        if (lineAreaChart instanceof Chart) {
+            lineAreaChart.destroy();
+        }
+        const ctx1 = document.getElementById('lineAreaChart');
+        lineAreaChart = new Chart(ctx1, config1);
+
+        // Trigger floating legend build only after BOTH charts are rebuilt.
+        // This avoids mixing stale labels from the previous scope during transitions
+        // (for example switching from state -> country).
         (function tryBuildLegend(attempt) {
             attempt = attempt || 0;
             if (typeof window.buildFloatingLegendFromChart === 'function') {
@@ -882,12 +888,6 @@ dataCopy.forEach(location => {
                 setTimeout(() => tryBuildLegend(attempt + 1), 250);
             }
         })();
-
-        if (lineAreaChart instanceof Chart) {
-            lineAreaChart.destroy();
-        }
-        const ctx1 = document.getElementById('lineAreaChart');
-        lineAreaChart = new Chart(ctx1, config1);
 
         // Handle window resize to ensure charts adjust correctly when the window size changes
         // Chart.js automatically handles shrinking, but to handle expansion properly, 
@@ -1071,9 +1071,13 @@ function refreshTimeline() {
             entityId = entityIdSelect.options[entityIdSelect.selectedIndex].value;
             }
 
-            // Only required for county scope
-            if (scope === 'county' && !entityId) {
-            entityId = 'geoId/26'; // pick a default, or whatever makes sense
+            // Only required for county scope.
+            // Treat placeholder/non-geoId values (like "State...") as empty.
+            if (scope === 'county' && (!entityId || !String(entityId).startsWith('geoId/'))) {
+            entityId = 'geoId/26';
+            if (entityIdSelect) {
+                entityIdSelect.value = entityId;
+            }
             }
             let chartText = document.getElementById('chartVariable').options[document.getElementById('chartVariable').selectedIndex].text;
 
