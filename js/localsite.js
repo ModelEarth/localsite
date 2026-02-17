@@ -3873,17 +3873,18 @@ function showAuthModal() {
  */
 function buildMenuConfig(panelType, panelId, datasourcePath = '') {
   const menuItems = [];
+  const panelLabel = (panelType === 'View' && panelId === 'location-section') ? 'Details' : panelType;
 
   // Expand/Collapse item (label updated dynamically)
   menuItems.push({
-    label: `Expand ${panelType}`,
+    label: `Expand ${panelLabel}`,
     action: 'expand',
     icon: 'open_in_full'
   });
 
   // Hide item
   menuItems.push({
-    label: `Hide ${panelType}`,
+    label: `Hide ${panelLabel}`,
     action: 'hide',
     icon: 'visibility_off'
   });
@@ -3920,7 +3921,7 @@ function buildMenuConfig(panelType, panelId, datasourcePath = '') {
       display: 'none',
       class: 'local'
     });
-  } else if (panelType === 'View') {
+  } else if (panelType === 'View' || panelType === 'Details') {
     // Add Start Tour first
     menuItems.unshift({
       label: 'Start Tour',
@@ -4097,14 +4098,19 @@ function updateMenuLabels(menuId, panelId, panelType) {
   const menu = document.getElementById(menuId);
   const panel = document.getElementById(panelId);
   if (!menu || !panel) return;
+  const panelLabel = (panelType === 'View' && panelId === 'location-section') ? 'Details' : panelType;
 
   // Check if panel is in hero container (expanded) or fullscreen mode
   let isExpanded = panel.dataset && panel.dataset.menuExpanded === 'true' ? true : false;
 
-  if (panelType === 'View') {
-    // For View type, check if in fullscreen mode (body has fullscreenMode class or similar)
-    isExpanded = document.body.classList.contains('fullscreenMode') ||
-                 document.documentElement.classList.contains('fullscreenMode');
+  if (panelType === 'View' || panelType === 'Details' || panelId === 'location-section') {
+    // For fullscreen-style panels, use fullscreen state and fullscreen button visibility.
+    const reduceBtn = document.querySelector('.reduceFromFullscreen');
+    const reduceBtnVisible = !!(reduceBtn && getComputedStyle(reduceBtn).display !== 'none');
+    isExpanded = !!document.fullscreenElement ||
+                 document.body.classList.contains('fullscreenMode') ||
+                 document.documentElement.classList.contains('fullscreenMode') ||
+                 reduceBtnVisible;
   } else {
     // Generic approach: check if panel has been moved from its original parent
     const myparent = panel.getAttribute('myparent');
@@ -4130,7 +4136,7 @@ function updateMenuLabels(menuId, panelId, panelType) {
     if (isExpanded) {
       expandItem.childNodes.forEach(node => {
         if (node.nodeType === 3) { // Text node
-          node.textContent = `Collapse ${panelType}`;
+          node.textContent = `Collapse ${panelLabel}`;
         }
       });
       if (iconElement) iconElement.textContent = 'close_fullscreen';
@@ -4138,7 +4144,7 @@ function updateMenuLabels(menuId, panelId, panelType) {
     } else {
       expandItem.childNodes.forEach(node => {
         if (node.nodeType === 3) { // Text node
-          node.textContent = `Expand ${panelType}`;
+          node.textContent = `Expand ${panelLabel}`;
         }
       });
       if (iconElement) iconElement.textContent = 'open_in_full';
@@ -4381,13 +4387,22 @@ function handlePanelAction(action, panelId, panelType) {
         }, 50);
       }
     }
-    // Special handling for View type - click .expandToFullscreen and .closeSideTabs
-    else if (panelType === 'View') {
+    // Special handling for fullscreen-style panels
+    else if (panelType === 'View' || panelType === 'Details' || panelId === 'location-section') {
       const expandBtn = document.querySelector('.expandToFullscreen');
-      const closeSideTabsBtn = document.querySelector('.closeSideTabs');
+      const reduceBtn = document.querySelector('.reduceFromFullscreen');
+      const expandVisible = !!(expandBtn && getComputedStyle(expandBtn).display !== 'none');
+      const reduceVisible = !!(reduceBtn && getComputedStyle(reduceBtn).display !== 'none');
 
-      if (expandBtn) expandBtn.click();
-      if (closeSideTabsBtn) closeSideTabsBtn.click();
+      if (action === 'expand') {
+        if (expandBtn && expandVisible) {
+          expandBtn.click();
+        }
+      } else if (action === 'collapse') {
+        if (reduceBtn && reduceVisible) {
+          reduceBtn.click();
+        }
+      }
 
       // Update menu labels after state change
       setTimeout(() => {
