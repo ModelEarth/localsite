@@ -985,7 +985,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 }
 .btn {
     display: inline-block;
-    font-weight: 400;
+    font-weight: 550;
     color: #343434;
     background-color: rgb(239, 239, 239); /* matches useragent buttonface */
     text-align: center;
@@ -1043,14 +1043,11 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 /* color is !important so surrounding a href color from menu.css does not override */
 .btn-primary {
     color: #fff !important;
-    background-color: #6fa1d8; /* med baby blue */
-    background-color: #375a7f; /* akin to blueberry */
-    background-colorX: #579; /* faded blue */
-    border-color: #6fa1d8;
-    border-colorX: #375a7f;
+    background-color: #137AD1;
+    border-color: #137AD1;
 }
 .dark .btn-primary {
-  background-color: #084975; /* darker = blueberry */
+  background-color: #137AD1;
 }
 .btn-primary:visited {
     color: #fff !important;
