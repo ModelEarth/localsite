@@ -1039,7 +1039,7 @@ function hashChanged() {
 
 // Standalone Navigation System - JavaScript
 
-class StandaloneNavigation {
+var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNavigation {
     constructor(options = {}) {
         // Singleton pattern to prevent multiple instances
         if (StandaloneNavigation.instance) {

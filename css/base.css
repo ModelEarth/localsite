@@ -23,6 +23,7 @@ Used in localsite, modelearth, io, neighborhood, trees
     --radius-sm: 6px;
     --radius-md: 8px;
     --radius-lg: 12px;
+    --border-radius: 12px;
     --sidebar-width-expanded: 67px;
     --sidebar-collapsed: 64px;
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2893,11 +2894,11 @@ body.sidebar-hovered {
 
 .basePanel {
     background: white;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
 }
 .basePanelTop {
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
 }
 .dark .basePanel {
     background: #333;
