@@ -2856,6 +2856,7 @@ function showSideTabs() {
         let hash = getHash();
 
         if (hash.sidetab) {
+            $("#showSideTabs").hide();
             $('body').addClass('bodyRightMargin'); // Creates margin on right for fixed rightSideTabs.
             $('body').addClass('mobileView');
             $(".rightTopMenuInner div").removeClass("active");
@@ -2888,6 +2889,7 @@ function showSideTabs() {
             }
             $("#rightSideTabs").show();
         } else {
+            $("#showSideTabs").show();
             $('body').removeClass('bodyRightMargin'); // Creates margin on right for fixed rightSideTabs.
             $('body').removeClass('mobileView');
             //updateHash({"sidetab":""}); // Commented out since we're checking the hash above.
