@@ -65,27 +65,31 @@ function exploreFiles(param) {
                 const csvFiles = data.tree.filter(file => /\.(csv)$/i.test(file.path));
                 const otherFiles = data.tree.filter(file => !/\.(jpg|jpeg|png|gif|md|htm|html|csv)$/i.test(file.path));
                 // Now you have the list of image files with their details
-                imageFiles.forEach(function(file) {
-                    // You can use file.path, file.url, file.size, file.type, etc.
-                    const imagePath = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
-                    const createdAt = file.created_at; // Date created
-                    const updatedAt = file.updated_at; // Date updated
+                if (imageFiles.length) {
+                    let thumbnailList = '';
+                    imageFiles.forEach(function(file) {
+                        // You can use file.path, file.url, file.size, file.type, etc.
+                        const imagePath = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
+                        const createdAt = file.created_at; // Date created
+                        const updatedAt = file.updated_at; // Date updated
 
-                    // Create thumbnail and add to gallery
-                    const thumbnail = `<div class="thumbnail">
-                        <a href="${imagePath}" alt="${file.path}"><img src="${imagePath}" alt="${file.path}"></a>
+                        // Create thumbnail and add to gallery
+                        const thumbnail = `<div class="thumbnail">
+                            <a href="${imagePath}" alt="${file.path}"><img src="${imagePath}" alt="${file.path}"></a>
 
-                        <!--
-                        <p>Created: ${createdAt}</p>
-                        <p>Updated: ${updatedAt}</p>
-                        -->
-                    </div>`;
-                    $('#exploreOutput').append(thumbnail);
-                });
+                            <!--
+                            <p>Created: ${createdAt}</p>
+                            <p>Updated: ${updatedAt}</p>
+                            -->
+                        </div>`;
+                        thumbnailList += thumbnail;
+                    });
+                    $('#exploreOutput').append(`<div class="tableSurround">${thumbnailList}</div>`);
+                }
                 if (csvFiles) {
                     loadScript(theroot + 'js/earthscape.js', function(results) {
                         //$('#exploreOutput').append("<h2>Reports (CSV Files)</h2>");
-                        $('#exploreOutput').append("<style>.tableSurround{border:1px solid #aaa;border-radius:20px;background:#fff;padding:20px}.dark .tableSurround{background:#313131}</style");
+                        $('#exploreOutput').append("<style>.tableSurround{border:1px solid #aaa;border-radius:20px;background:#fff;padding:18px 8px 18px 18px;display:flow-root} .dark .tableSurround{background:#313131}</style");
                         csvFiles.forEach(function(file, index) {
                             // You can use file.path, file.url, file.size, file.type, etc.
                             const fileURL = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
@@ -106,7 +110,7 @@ function exploreFiles(param) {
 
                             // Create thumbnail and add to gallery
                             const fileoutput = `<div style="margin-bottom:30px" class="tableSurround">
-                                <div style="font-size:18px;margin-bottom:6px">${my.title}</div>
+                                <div style="font-size:18px;margin-bottom:6px;clear:both">${my.title}</div>
                                 <div id="${my.elementID}"></div>
                                 <div style="font-size:11px;margin-top:8px">&nbsp;<a href="${githubURL}">${file.path}</a> | <a href="${fileURL}">raw</a></div>
                                 <!--
@@ -146,7 +150,6 @@ function exploreFiles(param) {
             }
         });
 }
-
 
 // Enhanced chart display for ML reports - Updated per Loren's request
 // Shows ALL files in folder: charts, CSVs, and links to everything else
@@ -247,7 +250,8 @@ function displayCharts(param) {
                         border: 1px solid #aaa;
                         border-radius: 20px;
                         background: #fff;
-                        padding: 20px;
+                        padding: 18px 8px 18px 18px;
+                        display: flow-root;
                         margin-bottom: 30px;
                     }
                     .file-list {
@@ -341,7 +345,7 @@ function displayCharts(param) {
 
                     const fileoutput = `
                         <div class="tableSurround">
-                            <div style="font-size:18px;margin-bottom:6px;font-weight:600">${my.title}</div>
+                            <div style="font-size:18px;margin-bottom:6px;clear:both;font-weight:600">${my.title}</div>
                             <div id="${my.elementID}"></div>
                             <div style="font-size:11px;margin-top:8px;color:#666">
                                 <a href="${githubURL}">${file.path}</a> | <a href="${fileURL}">download</a>
