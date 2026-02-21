@@ -83,37 +83,39 @@ function exploreFiles(param) {
                     $('#exploreOutput').append(thumbnail);
                 });
                 if (csvFiles) {
-                    //$('#exploreOutput').append("<h2>Reports (CSV Files)</h2>");
-                    $('#exploreOutput').append("<style>.tableSurround{border:1px solid #aaa;border-radius:20px;background:#fff;padding:20px}.dark .tableSurround{background:#313131}</style");
-                    csvFiles.forEach(function(file, index) {
-                        // You can use file.path, file.url, file.size, file.type, etc.
-                        const fileURL = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
-                        const githubURL = `https://github.com/${owner}/${repo}/tree/${branch}/${file.path}`;
-                        const createdAt = file.created_at; // Date created
-                        const updatedAt = file.updated_at; // Date updated
+                    loadScript(theroot + 'js/earthscape.js', function(results) {
+                        //$('#exploreOutput').append("<h2>Reports (CSV Files)</h2>");
+                        $('#exploreOutput').append("<style>.tableSurround{border:1px solid #aaa;border-radius:20px;background:#fff;padding:20px}.dark .tableSurround{background:#313131}</style");
+                        csvFiles.forEach(function(file, index) {
+                            // You can use file.path, file.url, file.size, file.type, etc.
+                            const fileURL = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file.path}`;
+                            const githubURL = `https://github.com/${owner}/${repo}/tree/${branch}/${file.path}`;
+                            const createdAt = file.created_at; // Date created
+                            const updatedAt = file.updated_at; // Date updated
 
-                        my = {}; // Drops entanglement
-                        my.dataset = fileURL;
-                        my.elementID = "exploreTable" + (index + 1);
-                        loadEarthScape(my);
+                            my = {}; // Drops entanglement
+                            my.dataset = fileURL;
+                            my.elementID = "exploreTable" + (index + 1);
+                            loadEarthScape(my);
 
-                        my.title = file.path
-                          .split('/').pop()           // Get filename after last slash
-                          .split('.').slice(0, -1).join('.') // Remove file extension
-                          .replace(/[_-]/g, ' ')      // Replace underscores and dashes with spaces
-                          .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize first letter of each word
+                            my.title = file.path
+                              .split('/').pop()           // Get filename after last slash
+                              .split('.').slice(0, -1).join('.') // Remove file extension
+                              .replace(/[_-]/g, ' ')      // Replace underscores and dashes with spaces
+                              .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize first letter of each word
 
-                        // Create thumbnail and add to gallery
-                        const fileoutput = `<div style="margin-bottom:30px" class="tableSurround">
-                            <div style="font-size:18px;margin-bottom:6px">${my.title}</div>
-                            <div id="${my.elementID}"></div>
-                            <div style="font-size:11px;margin-top:8px">&nbsp;<a href="${githubURL}">${file.path}</a> | <a href="${fileURL}">raw</a></div>
-                            <!--
-                            <p>Created: ${createdAt}</p>
-                            <p>Updated: ${updatedAt}</p>
-                            -->
-                        </div>`;
-                        $('#exploreOutput').append(fileoutput);
+                            // Create thumbnail and add to gallery
+                            const fileoutput = `<div style="margin-bottom:30px" class="tableSurround">
+                                <div style="font-size:18px;margin-bottom:6px">${my.title}</div>
+                                <div id="${my.elementID}"></div>
+                                <div style="font-size:11px;margin-top:8px">&nbsp;<a href="${githubURL}">${file.path}</a> | <a href="${fileURL}">raw</a></div>
+                                <!--
+                                <p>Created: ${createdAt}</p>
+                                <p>Updated: ${updatedAt}</p>
+                                -->
+                            </div>`;
+                            $('#exploreOutput').append(fileoutput);
+                        });
                     });
                 }
                 if (param.showother) { // Non image files

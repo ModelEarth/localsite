@@ -17,6 +17,7 @@ Used in localsite, modelearth, io, neighborhood, trees
     --accent-orange: #F59E0B;
     --border-light: #E5E7EB;
     --border-medium: #D1D5DB;
+    --input-border: #cbd5e1;
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -1149,6 +1150,31 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     display: inline-flex;
   }
 }
+
+.btn-nice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #4a90e2 0%, #5ba3f5 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.35);
+}
+a.btn-nice:link,
+a.btn-nice:visited {
+  text-decoration: none !important;
+  color: #fff !important;
+}
+.dark a.btn-nice:link,
+.dark a.btn-nice:visited {
+  color: #fff !important;
+}
+
 .nav {
   list-style: none;
   font-size: 13.5px;
@@ -1377,6 +1403,23 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   -moz-appearance: none;
   background: white url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 5px center; /* Custom arrow */
   background-size: 24px; /* Size of the custom arrow */
+}
+.config-field input, .config-field select {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--input-border, var(--border-medium, #D1D5DB));
+  font-size: 14px;
+  font-family: "Lato", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin-bottom: 7px;
+}
+.dark .config-field input,
+body.dark .config-field input,
+.dark .config-field select,
+body.dark .config-field select {
+  background: #0b1120;
+  color: #e2e8f0;
+  border-color: rgba(148, 163, 184, 0.35);
 }
 .dark select {
   background-color: #000;

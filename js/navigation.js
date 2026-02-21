@@ -8320,6 +8320,7 @@ $(document).on("change", "#globecenter", function(event) { // Map center
 });
 $(document).on("change", "#modelsite", function(event) {
     if (typeof Cookies != 'undefined') {
+        updateHash({"show":""});
         Cookies.set('modelsite', $("#modelsite").val());
 
         closeSideTabs();
