@@ -1014,7 +1014,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   border: 1px solid var(--border-light);
 }
 .btn:link, .btn:visited, .contentpadding .btn:link, .contentpadding .btn:visited {
-  /* color: #fff !important; */
+  color: #fff;
   text-decoration: none;
 }
 #hero-rect .btn:link, #hero-rect .btn:visited {
@@ -1023,7 +1023,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .btn:hover {
     background-color: #b9da79;
     border-color: #b9da79;
-    color: #111;
+    color: #fff;
     text-decoration: none;
 }
 .dark .btn {
@@ -1175,7 +1175,9 @@ a.btn-nice:visited {
 .dark a.btn-nice:visited {
   color: #fff !important;
 }
-
+.noborder, .dark .noborder, .noborder:hover, .dark .noborder:hover {
+  border: 0px;
+}
 .nav {
   list-style: none;
   font-size: 13.5px;
