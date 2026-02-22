@@ -79,7 +79,7 @@
   content: url("/localsite/img/icon/hamburger-lite.png");
 }
 #filterFieldsMain {
-    min-height:54px;
+    /* min-height:54px; caused blank space narrow */
     overflowX: hidden;
     position: relative;
 }
