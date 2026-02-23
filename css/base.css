@@ -1071,27 +1071,47 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     border-color: #91bbef;
     border-color: #6fa1d8;
 }
-.btn-blackish {
+.btn-black {
     color: #fff !important;
     background-color: #0e121a;
     border-color: #0e121a;
 }
-.btn-blackish:visited {
+.btn-black:visited {
     color: #fff !important;
 }
-.btn-blackish:hover {
+.btn-black:hover {
     background-color: #333;
     border-color: #1b252d;
 }
 .btn-magenta {
+  color: #fff !important;
   /* Closest websafe color is: #cc66cc. https://www.colorhexa.com/b455b4 */
   background-color: #b455b4;
   border-color: #b455b4;
-  color: #fff !important;
 }
 .btn-magenta:hover {
   background-color: purple !important;
   text-decoration: none;
+}
+.btn-periwinkle {
+  color: #fff !important;
+  background-color: rgb(152, 139, 252);
+  border: 1px solid rgb(152, 139, 252);
+}
+.btn-periwinkle:hover,
+.btn-periwinkle:focus {
+  background-color: rgb(173, 162, 255);
+  border: 1px solid rgb(152, 139, 252);
+}
+.btn-indigo {
+  color: #fff !important;
+  background-color: rgb(58, 62, 130);
+  border: 1px solid rgb(58, 62, 130);
+}
+.btn-indigo:hover,
+.btn-indigo:focus {
+  background-color: rgb(82, 88, 168);
+  border: 1px solid rgb(82, 88, 168);
 }
 .btn-white {
     color: #333 !important;
