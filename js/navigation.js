@@ -34,6 +34,50 @@ document.addEventListener('hashChangeEvent', function (elem) {
 if(typeof hiddenhash == 'undefined') {
     var hiddenhash = {};
 }
+function updateCountiesTabText() {
+    let hash = getHash();
+    if (!hash.geo) {
+        $(".countiesTabText").text(hash.state ? "Counties" : "States");
+        return;
+    }
+    let geoIds = hash.geo.split(",").filter(Boolean);
+    if (geoIds.length === 1) {
+        let match = localObject.geo && localObject.geo.find(function(row) { return row.id === geoIds[0]; });
+        $(".countiesTabText").text(match && match.name ? match.name : "1 County");
+    } else if (geoIds.length > 1) {
+        $(".countiesTabText").text(geoIds.length + " Counties");
+    } else {
+        $(".countiesTabText").text("Counties");
+    }
+}
+function updateGeoviewSelectText() {
+    let hash = getHash();
+    let updated = false;
+    if ((hash.geoview == "country" || hash.geoview == "state" || !hash.geoview) && hash.state) {
+        let states = hash.state.split(",").filter(Boolean);
+        if (states.length === 1 && typeof getState === 'function') {
+            $("#geoview_select_text").text(getState(states[0]) || states[0]);
+            updated = true;
+        } else if (states.length > 1) {
+            $("#geoview_select_text").text(states.length + " States");
+            updated = true;
+        }
+    } else if (hash.geoview == "countries" && hash.country) {
+        let countries = hash.country.split(",").filter(Boolean);
+        if (countries.length === 1 && localObject["countries"]) {
+            let match = localObject["countries"][countries[0]];
+            $("#geoview_select_text").text(match ? match.CountryName : countries[0]);
+            updated = true;
+        } else if (countries.length > 1) {
+            $("#geoview_select_text").text(countries.length + " Countries");
+            updated = true;
+        }
+    }
+    if (updated) {
+        $("#geoview_select_text").show();
+        $("#geoview_select_open").hide();
+    }
+}
 function hashChanged() {
 
     let loadGeomap = false;
@@ -41,15 +85,35 @@ function hashChanged() {
     const validGeoviews = ["state", "country", "countries", "county", "zip", "city", "earth"];
     const isValidGeoview = !hash.geoview || validGeoviews.includes(hash.geoview);
     console.log("hashChanged() navigation.js");
-    if (hash.geo != priorHash.geo && location.pathname.indexOf('/localsite/info/') >= 0) {
-        let earlyGeoDeselect = "";
-        if (priorHash.geo) {
-            const priorGeoArray = priorHash.geo.split(",");
-            const hashGeoArray = hash.geo ? hash.geo.split(",") : [];
-            earlyGeoDeselect = priorGeoArray.filter(value => !hashGeoArray.includes(value)).join(",");
+    if (hash.state != priorHash.state || hash.country != priorHash.country || hash.geoview != priorHash.geoview) {
+        updateGeoviewSelectText();
+        updateCountiesTabText();
+    }
+    // Clear geo values that don't belong to the current single state
+    if (hash.geo && hash.state && !hash.state.includes(",")) {
+        let stateFips = localObject.us_stateIDs[hash.state.toUpperCase()];
+        if (stateFips) {
+            let prefix = "US" + String(stateFips).padStart(2, "0");
+            let geoIds = hash.geo.split(",").filter(Boolean);
+            let valid = geoIds.filter(function(id) { return id.startsWith(prefix); });
+            if (valid.length < geoIds.length) {
+                goHash({"geo": valid.join(",")});
+                return;
+            }
         }
-        if (hash.geoview != "country") {
-            updateSelectedTableRows(hash.geo, earlyGeoDeselect, 0);
+    }
+    if (hash.geo != priorHash.geo) {
+        updateCountiesTabText();
+        if (location.pathname.indexOf('/localsite/info/') >= 0) {
+            let earlyGeoDeselect = "";
+            if (priorHash.geo) {
+                const priorGeoArray = priorHash.geo.split(",");
+                const hashGeoArray = hash.geo ? hash.geo.split(",") : [];
+                earlyGeoDeselect = priorGeoArray.filter(value => !hashGeoArray.includes(value)).join(",");
+            }
+            if (hash.geoview != "country") {
+                updateSelectedTableRows(hash.geo, earlyGeoDeselect, 0);
+            }
         }
     }
     if (hash.geoview == "state" && !hash.state) { // When deleting state in URL
@@ -544,7 +608,7 @@ function hashChanged() {
                     console.log("localObject[element.scope] ");
                     console.log(localObject[element.scope]);
 
-                    showTabulatorList(element, 0);
+                    showTabulatorList(element);
                     //alert("Countries CSV loaded");
                   })
                   .catch(error => {
@@ -553,7 +617,7 @@ function hashChanged() {
             } else {
                 // Data already exists, but still need to show the tabulator on reload
                 console.log("localObject[element.scope] already exists, showing tabulator with existing data");
-                showTabulatorList(element, 0);
+                showTabulatorList(element);
             }
         } else { // For backing up within apps
         
@@ -590,6 +654,15 @@ function hashChanged() {
         closeLocationFilter();
     } else if (!hash.geoview && priorHash.geoview) {
         closeLocationFilter();
+    }
+
+    // Hide Counties tab until sub-selections exist
+    let showCountiesTab = hash.geo || hash.state || hash.geoview == "countries" || hash.geoview == "earth";
+    let hideForNoSelection = (hash.geoview == "country" && !hash.state) || (hash.geoview == "state" && !hash.geo);
+    if (hideForNoSelection) {
+        $("#filterClickLocation").hide();
+    } else if (showCountiesTab) {
+        $("#filterClickLocation").show();
     }
 
     //Resides before geo
@@ -832,6 +905,9 @@ function hashChanged() {
     }
     if (hash.catsort) {
         $("#catsort").val(hash.catsort);
+    }
+    if (hash.catyear) {
+        $("#catyear").val(hash.catyear);
     }
     if (hash.catsize) {
         $("#catsize").val(hash.catsize);
@@ -3214,12 +3290,13 @@ catArray = [];
             $("#geoview_select_text")
                 .text(stateText)
                 .data("value", safeValue);
-            $(".countiesTabText").text("Counties");
+            updateCountiesTabText();
         } else {
             $("#geoview_select_text")
                 .text(getGeoviewLabel(safeValue))
                 .data("value", safeValue);
         }
+        updateGeoviewSelectText();
         const options = getGeoviewOptions();
         options.removeClass("selected").attr("aria-selected", "false");
         options.filter("[data-value='" + safeValue + "']").addClass("selected").attr("aria-selected", "true");
@@ -3307,6 +3384,13 @@ catArray = [];
         if (value == "countries" || value == "earth") {
             hiddenhash.state = "";
             goHash({"geoview":value,"state":"",});
+        } else if (value == "state" && !getHash().state) {
+            let modelsite = Cookies.get('modelsite');
+            if (modelsite == "model.georgia") {
+                goHash({"geoview":value,"state":"GA"});
+            } else {
+                goHash({"geoview":value});
+            }
         } else {
             goHash({"geoview":value});
         }
@@ -4180,7 +4264,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
           layerName = "States";
           url = local_app.web_root() + "/localsite/map/topo/states-10m.json"; // name parameter is full state name
           topoObjName = "topoob.objects.states";
-        } else if (stateAbbr && stateAbbr.length <= 2) { // COUNTIES
+        } else if (stateAbbr && stateAbbr.length <= 2 && hash.geoview != "countries") { // COUNTIES
           layerName = stateAbbr + " Counties";
           let stateNameLowercase = getStateNameFromID(stateAbbr).toLowerCase();
           let countyFileTerm = "-counties.json";
@@ -4193,16 +4277,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
           url = local_app.topojson_root() + "/topojson/countries/us-states/" + stateAbbr + "-" + state2char + "-" + stateNameLowercase.replace(/\s+/g, '-') + countyFileTerm;
           topoObjName = "topoob.objects.cb_2015_" + stateNameLowercase.replace(/\s+/g, '_') + countyTopoTerm;
 
-          if(location.host.indexOf('localhost') >= 0) {
-              if (!hash.state) {
-                alert("localhost only loads ALL US Counties topo - UX not yet fully implemented")
-                // All counties in US
-                url = local_app.topojson_root() + "/topojson/countries/united-states/us-albers-counties.json";
-                topoObjName = "topoob.objects.collection";
-              }
-          }
           //url = local_app.topojson_root_root() + "/topojson/countries/us-states/GA-13-georgia-counties.json";
-          // IMPORTANT: ALSO change localhost setting that uses cb_2015_alabama_county_20m below
         } else { // ALL COUNTRIES
           layerName = "Countries";
           url = local_app.topojson_root() + "/topojson/world-countries-sans-antarctica.json";
@@ -4335,6 +4410,10 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                 zoom = 4
                 lat = "39.5"
                 lon = "-96"
+              } else if (hash.geoview == "countries") {
+                zoom = 2
+                lat = "25"
+                lon = "0"
               } else if ($("#state_select").find(":selected").attr("lat")) {
                 let kilometers_wide = $("#state_select").find(":selected").attr("km");
                 zoom = zoomFromKm(kilometers_wide,theState);
@@ -4795,8 +4874,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                       } else {
                         hash.state = theStateID;
                       }
-                      //alert("go hash.state " + hash.state)
-                      goHash({'state':hash.state,'geoview':'state'});
+                      var currentGeoview = getHash().geoview;
+                      var nextGeoview = (currentGeoview == "country") ? "country" : "state";
+                      goHash({'state':hash.state,'geoview':nextGeoview});
                 }
               }
             }
@@ -5288,7 +5368,7 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                     //console.log(myData);
 
                     //alert("showTabulatorList 1 loadStateCounties element.scope: " + element.scope + " (geo is counties)")
-                    showTabulatorList(element, 0);
+                    showTabulatorList(element);
                     $(".geoListCounties").show();
                 }, function(error, rows) {
                     console.log("ERROR fetching csv file for TabulatorList (counties or zip). " + error);
@@ -5354,7 +5434,7 @@ function loadObjectData(element, attempts) {
                     }
                     //alert("showTabulatorList from initial load off loadObjectData element.scope: " + element.scope)
                     console.log("initial loadObjectData for element.scope: " + element.scope)
-                    showTabulatorList(element, 0);
+                    showTabulatorList(element);
                 })
             } else {
                 d3.json(element.datasource).then(function(json,error) {
@@ -5405,14 +5485,14 @@ function loadObjectData(element, attempts) {
                         //console.log(localObject[element.scope])
                         console.log(localObject.state)
                         //alert("showTabulatorList 3")
-                        showTabulatorList(element, 0);
+                        showTabulatorList(element);
                 });
             }
 
         } else { // Already loaded, reuse
             console.log("Reuse localObject element.scope: " + element.scope);
             //alert("showTabulatorList - From existing Object element.scope " + element.scope)
-            showTabulatorList(element, 0);
+            showTabulatorList(element);
         }
 
     } else {
@@ -5477,9 +5557,9 @@ var currentRowIDs = [];
 var currentCountryIDs = [];
 var programmaticSelection = false; // Flag to prevent goHash() during programmatic selections
 
-function showTabulatorList(element, attempts) {
+function showTabulatorList(element) {
     // currentRowIDs and currentCountryIDs are now global variables
-    console.log("showTabulatorList scope: " + element.scope + ". Length: " + Object.keys(element).length + ". Attempt: " + attempts);
+    console.log("showTabulatorList scope: " + element.scope + ". Length: " + Object.keys(element).length);
     let hash = getHash();
     let theState = "";
     if (hash.state) {
@@ -5526,21 +5606,8 @@ function showTabulatorList(element, attempts) {
             consoleLog("LOAD TABULATOR (country)");
 
             waitForElm('#tabulator-statetable').then((elm) => {
-                //alert("element.scope " + element.scope);
-                //alert("element.columns.length inside " + element.columns.length);
                 $("#tabulator-geotable").hide();
                 $("#tabulator-statetable").show();
-                
-                // This occurs when adding a state to the url hash.
-                // Example: http://localhost:8887/apps/ev/#geoview=country  then add &state=NY
-                
-                // Warning: Cannot remove event, no events set on: rowSelected
-                // Earlier error was TypeError: Cannot read properties of undefined (reading 'slice') -  With prior error, element.columns were gone
-
-                // Was called twice when clicking state checkbox. Seems to update map (select state) on second pass only.
-                if(location.host.indexOf('localhost') >= 0) {
-                    //alert("Localhost alert (was called twice when clicking state checkbox.) element.columns " + element.columns);
-                }
 
                 // Remove rows with blank population
                 dataForTabulator = dataForTabulator
@@ -5798,10 +5865,6 @@ function showTabulatorList(element, attempts) {
             consoleLog("LOAD TABULATOR (state counties) " + theState);
 
             waitForElm('#tabulator-geotable').then((elm) => {
-
-            // Don't use. Never triggered
-            //document.addEventListener("#tabulator-geotable", function(event) { // Wait for #tabulator-geotable div availability.
-
                 console.log("#tabulator-geotable available. State: " + hash.state + " element.scope: " + element.scope);
                 const stateKey = theState.toUpperCase();
                 if (geotableInitInProgress && geotableInitState === stateKey) {
@@ -6112,13 +6175,6 @@ function showTabulatorList(element, attempts) {
             }); // End waitForLayout
             }); // End wait for element #tabulator-geotable
         }
-        //geotable.selectRow(geotable.getRows().filter(row => row.getData().name == 'Fulton County, GA'));
-        //geotable.selectRow(geotable.getRows().filter(row => row.getData().name.includes('Ba')));
-
-        // Place click-through on checkbox - allows hashchange to update row.
-        //$('.tabulator-row input:checkbox').prop('pointer-events', 'none'); // Bug - this only checks visible
-        
-
     } else {
       console.log("Tabulator JS not available after loadTabulator() resolved for " + element.scope);
     }
@@ -9035,7 +9091,8 @@ $(document).on("change", "#state_select", function(event) {
         // Later a checkbox could be added to retain geo values across multiple states
         // Omitting for BC apps page  ,'geoview':'state'
         if (hash.geoview) {
-            goHash({'state':this.value,'geo':'','name':'','regiontitle':'','geoview':'state'}); // triggers renderGeomapShapes("geomap", hash); // County select map
+            var nextGeoview = (hash.geoview == "country") ? "country" : "state";
+            goHash({'state':this.value,'geo':'','name':'','regiontitle':'','geoview':nextGeoview}); // triggers renderGeomapShapes("geomap", hash); // County select map
         } else {
             goHash({'state':this.value,'geo':'','name':'','regiontitle':''}); // triggers renderGeomapShapes("geomap", hash); // County select map
         }
@@ -9071,6 +9128,13 @@ $(document).on("click", "#filterClickLocation", function(event) {
         $("#filterLocations").hide();
     }
     closeGeoviewList();
+    // When geoview=country and a state is selected, switch to geoview=state
+    var clickHash = getHash();
+    if (clickHash.geoview == "country" && clickHash.state) {
+        goHash({"geoview": "state"});
+        event.stopPropagation();
+        return;
+    }
     filterClickLocation();
     event.stopPropagation();
     return;
@@ -9305,12 +9369,7 @@ function openMapLocationFilter() {
     // Keep state name, don't revert to "Locations"
     // $(".locationTabText").text("Locations"); // REMOVED - keep state name
     
-    // Change filterClickLocation text based on state selection when panel is open
-    if (hash.state && String(hash.state).length >= 2) {
-        $(".countiesTabText").text("Counties");
-    } else {
-        $(".countiesTabText").text("States");
-    }
+    updateCountiesTabText();
     
     $("#topPanel").hide();
     $("#showLocations").show();
@@ -9358,8 +9417,7 @@ function closeLocationFilter() {
     // Keep state name in locationTabText (don't revert)
     // $(".locationTabText").text($(".locationTabText").attr("title")); // REMOVED
     
-    // Change countiesTabText back to "Counties"
-    $(".countiesTabText").text("Counties");
+    updateCountiesTabText();
     
     $("#showLocations").hide();
     $("#hideLocations").show();

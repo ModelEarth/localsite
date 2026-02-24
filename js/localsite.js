@@ -889,7 +889,12 @@ function loadLocalTemplate() {
       waitForElm('#filterClickLocation').then((elm) => {
         if (param.showstates != "false") {
             $("#geoviewSelectHolder").show();
-            $("#filterClickLocation").show(); // Show counties tab
+            // Only show counties tab if sub-selections exist
+            let hash = getHash();
+            let hideCountiesTab = (hash.geoview == "country" && !hash.state) || (hash.geoview == "state" && !hash.geo);
+            if (!hideCountiesTab) {
+                $("#filterClickLocation").show(); // Show counties tab
+            }
         }
         $("#mapFilters").prependTo("#main-content");
         // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)

@@ -153,31 +153,100 @@ function showIndustryList() {
 </div>
 
 <div id="industryListHolder" style="display:none; padding-top:0; padding-bottom:0">
+
+<div id="industryHeader" class="contentpadding" style="clear:both;padding-bottom:0px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px">
+	<div style="flex:1;min-width:200px">
+		<h1 id="pageTitle" class="h1-home" style="margin-bottom:0px;"></h1><!-- For 6 impact sets -->
+		<h1 class="region_service" style="margin-top:0;padding-top:0;"></h1>
+		<h2 class="location_titles" style="font-size:24px;padding-top:0px;display:none"></h2>
+	</div>
+	<div id="detail_selection" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;line-height:normal">
+		<div class="georgia local" style="display:none"><select id="catyear" class="picklist" onchange="goHash({'catyear':this.value});">
+		  <option value="2016">2016</option>
+		  <option value="2017">2017</option>
+		  <option value="2018">2018</option>
+		  <option value="2019">2019</option>
+		  <option value="2020">2020</option>
+		  <option value="2021">2021</option>
+		  <option value="2022">2022</option>
+		  <option value="2023" selected>2023</option>
+		</select></div>
+		<select id="catsize" class="picklist" onchange="goHash({'catsize':this.value});">
+		  <option value="2">Sectors - 2 digits</option>
+		  <!--option value="2">Subsectors - 3 digits</option-->
+		  <option value="4">Industry Groups - 4 digits</option>
+		  <!--option value="4">NAICS Industry - 5 digits</option-->
+		  <option value="6" selected>Industries - 6 digits</option>
+		</select>
+		<div id="show_industry_settings" style="cursor:pointer;flex-shrink:0;line-height:normal" onclick="$('.industry_filter_settings').toggle();">
+			<span class="material-icons" style="font-size:24px;color:#777">settings</span>
+		</div>
+		<div id="widgetToggleContainer" style="position:relative; min-height:24px; line-height:normal; flex-shrink:0;">
+		  <div id="widgetToggleHolder" class="menuToggleHolder" title="Widget list" style="position:relative;right:auto;top:auto;">
+		    <i id="widgetToggleIcon" class="material-icons">arrow_drop_down_circle</i>
+		  </div>
+		  <div id="widgetList" class="menuToggleMenu" style="display:none">
+		    <div class="menuToggleItem" data-section="industryTableHolder">Area Industries<span class="material-icons menuToggleCheck">check</span></div>
+		    <div class="menuToggleItem" data-section="industries">Industry List<span class="material-icons menuToggleCheck">check</span></div>
+		    <div class="menuToggleItem" data-section="supply">Supply Chain<span class="material-icons menuToggleCheck">check</span></div>
+		    <div class="menuToggleItem" data-section="impact">Impact Levels<span class="material-icons menuToggleCheck">check</span></div>
+		    <div class="menuToggleItem" data-section="bubble">Bubble Chart<span class="material-icons menuToggleCheck">check</span></div>
+		    <div class="menuToggleItem" data-section="sectors">Sectors<span class="material-icons menuToggleCheck">check</span></div>
+		    <div id="widgetListShowAll" class="menuToggleItem" data-action="show-all" style="display:none">Show All Section</div>
+		  </div>
+		</div>
+	</div>
+	<div class="industry_filter_settings" style="display:none;width:100%;margin-top:6px">
+		<div class="state-view" style="margin:20px 0 20px 30px">
+			To view filter settings, choose a location (county or region) above.
+			<a href="/localsite/info/naics/" class="local" style="display:none">View upcoming industry list</a>
+		</div>
+		<div class="county-view" style="display:none">
+			<select id="catmethod" class="picklist" onchange="goHash({'catmethod':this.value});">
+			  <option value="1" selected>Use average of payrolls not assigned to counties</option>
+			  <option value="2">Use average of all state payrolls (less accurate)</option>
+			  <option value="0">Leave unpublished values blank</option>
+			</select>
+		</div>
+	</div>
+</div>
+
+<!-- v2 -->
+<section id="industryTableHolder" style="display:none;">
+<div class="contentpadding" style="padding-top:0px">
+	<div id="tabulator-industrytable-intro"><b>Area Industries</b> (Visible on localhost) <!-- FIPS and NAICS case sensitive--></div>
+	<div id="tabulator-industrytable-datalink"></div>
+	<div style="clear:both"></div>
+	<div id="tabulator-industrytable"></div><br>
+	<div id="tabulator-industrytable-count"></div>
+</div>
+</section>
+
 <section id="industries">
-<div id="top-content-columns" class="contentX contentpadding noprint" style="margin-top:20px; padding-top:0; padding-bottom:0">
+<div id="top-content-columns" class="contentX contentpadding noprint" style="padding-top:0; padding-bottom:0">
 
 	<!--
-	"Life Cycle Assessment (also known as life cycle analysis, or cradle-to-grave analysis) is a method of assessing environmental impacts associated with all stages of a product's life. For example, it measures impact from raw material extraction to materials processing, manufacturing, distribution, use, repair and maintenance, and disposal or recycling. The goal of LCA is to compare the full range of environmental effects assignable to products and services by quantifying all inputs and outputs of material flows, and then assessing how these material flows impact the environment. This information is used to improve processes, support policy, and provide a sound basis for informed decisions." - 
+	"Life Cycle Assessment (also known as life cycle analysis, or cradle-to-grave analysis) is a method of assessing environmental impacts associated with all stages of a product's life. For example, it measures impact from raw material extraction to materials processing, manufacturing, distribution, use, repair and maintenance, and disposal or recycling. The goal of LCA is to compare the full range of environmental effects assignable to products and services by quantifying all inputs and outputs of material flows, and then assessing how these material flows impact the environment. This information is used to improve processes, support policy, and provide a sound basis for informed decisions." -
 	<a href="https://data.nal.usda.gov/life-cycle-assessment" target="USDA">USDA</a><br><br>
 	-->
 
 			<div id="infoColumn" class="mainColumnX mainColumn1X" style="display:none; font-size: 15px; position: relative">
-				
+
 				<div id="aboutToolsDiv" style="position: relative;"></div>
-				
+
 			</div>
-			
+
 			<div id="industryFilters" class="mainColumn mainColumn2 input-output">
-			
+
 				<div style="float:right; font-size: 11px">
 					Data source: U.S. Bureau of Economic Analysis
 				</div>
 
-				<div style="clear:both">
-					<h1 id="pageTitle" class="h1-home" style="margin-bottom:0px;"></h1><!-- For 6 impact sets -->
-					<h1 class="region_service" style="margin-top:0;padding-top:0;"></h1>
-					<h2 class="location_titles" style="font-size:24px;padding-top:0px;display:none"></h2>
-				</div>
+				<select id="catsort" class="picklist" onchange="goHash({'catsort':this.value});">
+				  <option value="payann" selected>By Annual Payroll</option>
+				  <option value="emp">By Employee Count</option>
+				  <option value="estab">By Establishments</option>
+				</select>
 
 				<div id="topMessage" style="clear:both"></div>
 
@@ -191,60 +260,7 @@ function showIndustryList() {
 				<!--
 					The US Census does not provide stats for 2-digit manufacturing NAICS 31, 32&nbsp;and&nbsp;33.<br><br>
 				-->
-				<div id="detail_selection">
-					<select id="catsort" class="picklist" onchange="goHash({'catsort':this.value});">
-			          <option value="payann" selected>By Annual Payroll</option>
-			          <option value="emp" >By Employee Count</option>
-			          <option value="estab">By Establishments</option>
-			        </select>
-			        <select id="catsize" class="picklist" onchange="goHash({'catsize':this.value});">
-			          <option value="2">Sectors - 2 digits</option>
-			          <!--option value="2">Subsectors - 3 digits</option-->
-			          <option value="4">Industry Groups - 4 digits</option>
-			          <!--option value="4">NAICS Industry - 5 digits</option-->
-			          <option value="6" selected>Industries - 6 digits</option>
-			        </select>
-			        <div style="display:inline-flex; align-items:center; gap:6px; margin-left:6px;">
-						<div id="show_industry_settings" style="cursor:pointer" onclick="$('.industry_filter_settings').toggle();">
-							<span class="material-icons" style="font-size:24px;color:#777">
-							settings
-							</span>
-						</div>
-					</div>
-			        <div id="widgetToggleContainer" style="position: relative; min-height: 24px; float:right;">
-			          <div id="widgetToggleHolder" class="menuToggleHolder" title="Widget list">
-			            <i id="widgetToggleIcon" class="material-icons">arrow_drop_down_circle</i>
-			          </div>
-			          <div id="widgetList" class="menuToggleMenu" style="display:none">
-		            <div class="menuToggleItem" data-section="industries">Industry List<span class="material-icons menuToggleCheck">check</span></div>
-		            <div class="menuToggleItem" data-section="industryTableHolder">Area Industries<span class="material-icons menuToggleCheck">check</span></div>
-		            <div class="menuToggleItem" data-section="supply">Supply Chain<span class="material-icons menuToggleCheck">check</span></div>
-		            <div class="menuToggleItem" data-section="impact">Impact Levels<span class="material-icons menuToggleCheck">check</span></div>
-		            <div class="menuToggleItem" data-section="bubble">Bubble Chart<span class="material-icons menuToggleCheck">check</span></div>
-		            <div class="menuToggleItem" data-section="sectors">Sectors<span class="material-icons menuToggleCheck">check</span></div>
-			            <div id="widgetListShowAll" class="menuToggleItem" data-action="show-all" style="display:none">Show All Section</div>
-			          </div>
-			        </div>
-			        <div style="clear:both;margin-bottom:2px"></div>
 
-			        <div class="industry_filter_settings" style="display:none" style="margin:10px 0 0 10px">
-				        <div class="state-view" style="margin:20px 0 20px 30px">
-				        	To view filter settings, choose a location (county or region) above.
-				        	<a href="/localsite/info/naics/" class="local" style="display:none">View upcoming industry list</a>
-				        </div>
-				        <div class="county-view" style="display:none">
-					        <select id="catmethod" class="picklist" onchange="goHash({'catmethod':this.value});">
-					          <option value="1" selected>Use average of payrolls not assigned to counties</option>
-					          <option value="2" >Use average of all state payrolls (less accurate)</option>
-					          <option value="0" >Leave unpublished values blank</option>
-					        </select>
-					    </div>
-					</div>
-				</div>
-
-				
-				
-				
 				<div class="mock-up" style="display:none">
 					Change scales to view the impact of different industry mixes. (Not yet activated)<br>
 				</div>
@@ -261,6 +277,7 @@ function showIndustryList() {
 			<div id="econ_list"></div><br>
 
 </section><!-- /industries -->
+
 </div>
 
 
@@ -424,17 +441,6 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 </section>
 <!-- /INDICATOR SETS -->
 
-
-<!-- v2 -->
-<section id="industryTableHolder" style="display:none;">
-<div class="contentpadding" style="padding-top:0px">
-	<div id="tabulator-industrytable-intro"><b>Area Industries</b> (Visible on localhost) <!-- FIPS and NAICS case sensitive--></div>
-	<div id="tabulator-industrytable-datalink"></div>
-	<div style="clear:both"></div>
-    <div id="tabulator-industrytable"></div><br>
-    <div id="tabulator-industrytable-count"></div>
-</div>
-</section>
 
 <!-- INPUT OUTPUT -->
 <!-- See: "For older 3 column IO layout" below -->
