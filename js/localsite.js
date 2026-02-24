@@ -2017,13 +2017,58 @@ function extend () {
   return extended;
 };
 
+var _tabulatorReadyPromise = null;
 function loadTabulator() {
-  if (typeof Tabulator === 'undefined') {
-    includeCSS3(theroot + 'css/tabulator.min.css',theroot);
+  if (_tabulatorReadyPromise) {
+    return _tabulatorReadyPromise;
+  }
+  if (typeof Tabulator !== 'undefined') {
+    _tabulatorReadyPromise = Promise.resolve();
+    return _tabulatorReadyPromise;
+  }
+  _tabulatorReadyPromise = new Promise(function(resolve) {
+    var cssLoaded = false;
+    var jsLoaded = false;
+    function checkReady() {
+      if (cssLoaded && jsLoaded) {
+        resolve();
+      }
+    }
+    // Load CSS with onload detection
+    var cssUrl = theroot + 'css/tabulator.min.css';
+    var cssUrlID = getUrlID3(cssUrl);
+    var existingLink = document.getElementById(cssUrlID);
+    if (existingLink) {
+      cssLoaded = true;
+    } else {
+      var link = document.createElement('link');
+      link.id = cssUrlID;
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = cssUrl;
+      link.media = 'all';
+      link.onload = function() {
+        cssLoaded = true;
+        checkReady();
+      };
+      link.onerror = function() {
+        cssLoaded = true;
+        checkReady();
+      };
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
     includeCSS3(theroot + 'css/base-tabulator.css',theroot);
     // Be aware that including observablehq/runtime@4/dist/runtime.js in page breaks nav location filter's topojson and tabulator
-    loadScript(theroot + 'js/tabulator.min.js', function(results) {});
-  }
+    loadScript(theroot + 'js/tabulator.min.js', function(results) {
+      jsLoaded = true;
+      checkReady();
+    });
+    // If CSS was already loaded, just wait for JS
+    if (cssLoaded) {
+      checkReady();
+    }
+  });
+  return _tabulatorReadyPromise;
 }
 
 // Serialize a key/value object.
@@ -2327,6 +2372,26 @@ function waitForElmKickoff(selector, resolve) {
   observer.observe(document.body, {
       childList: true, //This is a must have for the observer with subtree
       subtree: true //Set to true if changes must also be observed in descendants.
+  });
+}
+
+// Like waitForElm but waits for the element to have non-zero dimensions (layout complete).
+// Uses ResizeObserver to detect when the browser finishes layout for the element.
+function waitForLayout(elm) {
+  return new Promise(function(resolve) {
+    if (elm.offsetWidth > 0) {
+      consoleLog("waitForLayout: element already has width " + elm.offsetWidth);
+      return resolve(elm);
+    }
+    consoleLog("waitForLayout: waiting for element to get dimensions");
+    var observer = new ResizeObserver(function(entries) {
+      if (elm.offsetWidth > 0) {
+        observer.disconnect();
+        consoleLog("waitForLayout: element now has width " + elm.offsetWidth);
+        resolve(elm);
+      }
+    });
+    observer.observe(elm);
   });
 }
 

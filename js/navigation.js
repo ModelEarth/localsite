@@ -5491,11 +5491,7 @@ function showTabulatorList(element, attempts) {
     }
     
     if(typeof param=='undefined'){ var param={}; } // In case navigation.js included before localsite.js
-    if (param.display != "everything") { // Since it's already loaded for "everything" in localsite.js
-        loadTabulator();
-    }
-
-    // This loop could be replaced with a wait for Tabulator
+    loadTabulator().then(function() {
     if (typeof Tabulator !== 'undefined') {
         // Convert key-value object to a flat array (like a spreadsheet)
         let dataForTabulator = [];
@@ -5529,8 +5525,6 @@ function showTabulatorList(element, attempts) {
         if (hash.geoview == "country" || (!theState && onlineApp )) {
             consoleLog("LOAD TABULATOR (country)");
 
-            //console.log("element.columns: ");
-            //console.log(element.columns);
             waitForElm('#tabulator-statetable').then((elm) => {
                 //alert("element.scope " + element.scope);
                 //alert("element.columns.length inside " + element.columns.length);
@@ -5555,11 +5549,8 @@ function showTabulatorList(element, attempts) {
                 console.log("dataForTabulator");
                 console.log(dataForTabulator);
 
-                // 20% of the time tabulator rows are not loaded even though dataForTabulator is available.
-                // Adding delay until we figure out why dataForTabulator is not displayed as rows.
-
-                setTimeout( function() { //  2 tenth second. (1 tenth still had issue)
-
+                // Wait for the container to have layout dimensions before creating Tabulator
+                waitForLayout(elm).then(function() {
                     const statetableIndex = (hash.geoview == "countries") ? "Country" : "State";
                     statetable = new Tabulator("#tabulator-statetable", {
                         data:dataForTabulator,    //load row data from array of objects
@@ -5799,7 +5790,7 @@ function showTabulatorList(element, attempts) {
                             });
                         }
                     }
-                }, 200 );
+                }); // End waitForLayout
             }); // End wait for element #tabulator-statetable
 
         } else if (theState) { // EACH STATE'S COUNTIES
@@ -5807,10 +5798,6 @@ function showTabulatorList(element, attempts) {
             consoleLog("LOAD TABULATOR (state counties) " + theState);
 
             waitForElm('#tabulator-geotable').then((elm) => {
-
-            // 0.1 sec delay - A delay is needed when initially opening Locations tab for tablator rows to be populated from rowData, not sure why.  
-            // Header columns get populated and rowData is, but needs delay to populate .tabulator-tableholder div.  http://localhost:8887/localsite/map/#show=farmfresh&state=GA
-            setTimeout( function() { //  Two tenth second.
 
             // Don't use. Never triggered
             //document.addEventListener("#tabulator-geotable", function(event) { // Wait for #tabulator-geotable div availability.
@@ -5828,6 +5815,9 @@ function showTabulatorList(element, attempts) {
 
                 $("#tabulator-statetable").hide();
                 $("#tabulator-geotable").show();
+
+                // Wait for the container to have layout dimensions before creating Tabulator
+                waitForLayout(elm).then(function() {
 
                 // Prevented up-down scrolling:
                 // maxHeight:"100%",
@@ -6119,7 +6109,7 @@ function showTabulatorList(element, attempts) {
                     });
                 }
 
-            }, 200 );
+            }); // End waitForLayout
             }); // End wait for element #tabulator-geotable
         }
         //geotable.selectRow(geotable.getRows().filter(row => row.getData().name == 'Fulton County, GA'));
@@ -6130,18 +6120,9 @@ function showTabulatorList(element, attempts) {
         
 
     } else {
-      attempts = attempts + 1;
-      loadTabulator();
-      if (attempts < 25) {
-        // To do: Add a loading image after a couple seconds. 5 attempts waits about 2 seconds.
-        setTimeout( function() {
-          showTabulatorList(element, attempts);
-        }, 10 );
-      } else {
-        console.log("INFINITE LOOP PREVENTION: Exiting showTabulatorList after " + attempts + " attempts (limit: 25)");
-        // alert("Tabulator JS not available for displaying " + element.scope + ". (25 attempts by navigation.js)")
-      }
+      console.log("Tabulator JS not available after loadTabulator() resolved for " + element.scope);
     }
+    }); // End loadTabulator().then()
 }
 function updateSelectedTableRows(geo, geoDeselect, attempts) {
 
