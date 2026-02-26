@@ -2466,7 +2466,7 @@ function showIndustryTabulatorList(attempts) {
         // Already sent to console
         //console.log("data:localObject.industries");
 
-        // $("#tabulator-industrytable-count").append(totalcount_div);
+        // $("#tabulator-industrytable-links").append(totalcount_div);
 
         // ToDo: Replace width on Industry with a cell that fills any excess space.
 
@@ -2478,7 +2478,10 @@ function showIndustryTabulatorList(attempts) {
             ? localObject.industryCounties.filter(function(row) { return row.Fips === stateFips; })
             : localObject.industryCounties;
         industrytable = new Tabulator("#tabulator-industrytable", {
-            data:tabulatorData.slice(0, 10),     //load first 10 rows
+            data:tabulatorData,
+            pagination:true,
+            paginationSize:10,
+            paginationButtonCount:0,
             layout:"fitColumns",      //fit columns to width of table
             responsiveLayout:"hide",  //hide columns that dont fit on the table
             tooltips:true,            //show tool tips on cells
@@ -2564,6 +2567,73 @@ function showIndustryTabulatorList(attempts) {
             },
         });
 
+        var pageInput, rowsInput;
+        industrytable.on("tableBuilt", function() {
+            var footer = document.querySelector("#tabulator-industrytable .tabulator-footer");
+            if (footer) {
+                // Page input to the right of the last paginator button
+                var paginator = footer.querySelector(".tabulator-paginator");
+                if (paginator) {
+                    pageInput = document.createElement("input");
+                    pageInput.type = "text";
+                    pageInput.value = "1";
+                    pageInput.style.cssText = "width:" + ("1".length + 2) + "ch; text-align:center; border:1px solid #aaa; border-radius:3px;";
+                    pageInput.addEventListener("input", function() {
+                        this.style.width = (this.value.length + 2) + "ch";
+                    });
+                    pageInput.addEventListener("change", function() {
+                        var page = parseInt(this.value) || 1;
+                        var maxPage = industrytable.getPageMax();
+                        if (page > maxPage) { page = maxPage; this.value = maxPage; }
+                        if (page < 1) { page = 1; this.value = 1; }
+                        this.style.width = (this.value.toString().length + 2) + "ch";
+                        industrytable.setPage(page);
+                    });
+                    var nextBtn = paginator.querySelector(".tabulator-page[data-page='next']");
+                    paginator.insertBefore(pageInput, nextBtn || null);
+                }
+
+                // Rows input on the left side of the tabulator footer
+                var rowsWrap = document.createElement("div");
+                rowsWrap.style.cssText = "float:left; display:flex; align-items:center; gap:4px; padding:4px 8px;";
+                var showingLabel = document.createElement("span");
+                showingLabel.textContent = "Showing";
+                rowsInput = document.createElement("input");
+                rowsInput.type = "text";
+                rowsInput.value = "10";
+                rowsInput.style.cssText = "width:" + ("10".length + 2) + "ch; text-align:center; border:1px solid #aaa; border-radius:3px;";
+                rowsInput.addEventListener("input", function() {
+                    this.style.width = (this.value.length + 2) + "ch";
+                });
+                rowsInput.addEventListener("change", function() {
+                    var rows = parseInt(this.value) || 10;
+                    var totalRows = industrytable.getDataCount();
+                    if (rows > totalRows) { rows = totalRows; this.value = totalRows; }
+                    this.style.width = (this.value.toString().length + 2) + "ch";
+                    industrytable.setPageSize(rows);
+                });
+                var rowsLabel = document.createElement("span");
+                rowsLabel.textContent = "rows of " + industrytable.getDataCount() + " records";
+                rowsWrap.appendChild(showingLabel);
+                rowsWrap.appendChild(rowsInput);
+                rowsWrap.appendChild(rowsLabel);
+                footer.insertBefore(rowsWrap, footer.firstChild);
+            }
+        });
+
+        function updateIndustryPagination(pageno) {
+            if (pageInput) {
+                pageInput.value = pageno;
+                pageInput.style.width = (pageno.toString().length + 2) + "ch";
+            }
+            ["first", "prev", "next", "last"].forEach(function(name) {
+                var btn = document.querySelector("#tabulator-industrytable .tabulator-page[data-page='" + name + "']");
+                if (btn) btn.style.display = btn.disabled ? "none" : "";
+            });
+        }
+        industrytable.on("pageLoaded", updateIndustryPagination);
+        industrytable.on("tableBuilt", function() { updateIndustryPagination(1); });
+
         // {title:"County FIPS", field:"Fips", hozAlign:"right", minWidth:100, headerSortStartingDir:"desc", sorter:"number" }
 
         //industrytable.selectRow(industrytable.getRows().filter(row => row.getData().name == 'Fulton County, GA'));
@@ -2576,7 +2646,7 @@ function showIndustryTabulatorList(attempts) {
             industrytable.on("dataLoaded", function(data){
                 $("#industries_totalcount").remove(); // Prevent dup - this will also remove events bound to the element.
                 let totalcount_div = Object.assign(document.createElement('div'),{id:"industries_totalcount",style:"margin-bottom:10px"})
-                $("#tabulator-industrytable-count").append(totalcount_div);
+                $("#tabulator-industrytable-links").append(totalcount_div);
                 totalcount_div.innerHTML = data.length + " industries";  
             });
         }
@@ -2649,12 +2719,11 @@ function callPromises(industryLocDataFile) { // From naics2.js
         $("#industries_details").append(industriesDetails);
 
         let industries_details= Object.assign(document.createElement('div'),{id:"industries_details",style:"margin-bottom:10px"})
-        $("#tabulator-industrytable-count").append(industries_details);
+        $("#tabulator-industrytable-links").append(industries_details);
         
         // Display count and data links
         let githubPath = industryLocDataFile.replace("https://model.earth/community-data/", "https://github.com/ModelEarth/community-data/blob/master/");
-        industries_details.innerHTML = localObject.industryCounties.length + " industries"
-            + " | <a href='" + githubPath + "' target='_blank'>View on GitHub</a>"
+        industries_details.innerHTML = "<a href='" + githubPath + "' target='_blank'>View on GitHub</a>"
             + " | <a href='" + industryLocDataFile + "' target='_blank'>Raw Data</a>";
 
         // Returns Logging

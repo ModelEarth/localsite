@@ -25,6 +25,10 @@
     background-color: transparent;
     border-right: 1px solid #fff;
 }
+.tabulator .tabulator-footer .tabulator-footer-contents {
+    padding-left: 0;
+    padding-right: 0;
+}
 .tabulator-row.tabulator-row-even {
     background-color: transparent;
 }
