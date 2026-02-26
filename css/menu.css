@@ -803,6 +803,13 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     padding-right: 30px;
     border: 0px !important;
 }
+#rightTopMenu select:focus,
+#rightTopMenu select:active,
+#rightTopMenu select:focus-visible {
+    border: 0px !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
 .dark #rightTopMenu select {
 	color: #eee !important;
 }

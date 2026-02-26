@@ -3065,7 +3065,6 @@ function loadUse(use) {
 
 // Copied from setting.js initElements()
 function initSitelook() {
-    let sitemode;
     let sitesource;
     let sitelook;
     let devmode;
@@ -3078,9 +3077,6 @@ function initSitelook() {
         if (Cookies.get('sitelook')) {
           $("#sitelook").val(Cookies.get('sitelook'));
           sitelook = Cookies.get('sitelook');
-        }
-        if (Cookies.get('sitemode')) {
-            $(".sitemode").val(Cookies.get('sitemode'));
         }
         if (Cookies.get('sitesource')) {
             $("#sitesource").val(Cookies.get('sitesource'));

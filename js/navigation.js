@@ -8303,19 +8303,6 @@ function showLocale() {
 }
 
 // SETTINGS
-$(document).on("change", ".sitemode", function(event) {
-    if ($(".sitemode").val() == "fullnav" && $('#siteHeader').is(':empty')) { // #siteHeader exists. This will likely need to be changed later.
-        layerName = getLayerName();
-        window.location = "./#" + layerName;
-    }
-    sitemode = $(".sitemode").val();
-    setSiteMode($(".sitemode").val());
-    Cookies.set('sitemode', $(".sitemode").val());
-    if ($(".sitemode").val() == "fullnav") {
-        $('.showSearchClick').trigger("click");
-    }
-    //event.stopPropagation();
-});
 $(document).on("change", "#sitesource", function(event) {
     // Options: Overview or Directory
     sitesource = $("#sitesource").val();
