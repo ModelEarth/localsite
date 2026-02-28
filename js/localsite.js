@@ -2627,6 +2627,35 @@ function formatBuckets(htmlText) {
   return tempDiv.innerHTML;
 }
 
+function addBrInSpans(html) {
+  // Remove <p> wrappers around standalone <span> elements at the top level.
+  // showdown wraps inline tags like <span> in <p>, unlike block tags like <div>.
+  html = html.replace(/<p>(\s*<span\b[^>]*>(?:(?!<\/span>)[\s\S])*<\/span>\s*)<\/p>/gi, '$1');
+
+  // simpleLineBreaks doesn't apply inside HTML elements, so add <br> for single newlines within <span> tags
+  return html.replace(/<span(\b[^>]*)>([\s\S]*?)<\/span>/gi, function(match, attrs, content) {
+    // Temporarily replace HTML comments to avoid affecting their contents
+    var comments = [];
+    content = content.replace(/<!--[\s\S]*?-->/g, function(comment) {
+      comments.push(comment);
+      return '\x00COMMENT' + (comments.length - 1) + '-->';
+    });
+    // Strip any <p> and </p> tags from span content.
+    // <span> is inline and cannot contain block-level <p> elements. When a multiline HTML
+    // comment interrupts a paragraph, showdown splits the span across paragraph boundaries,
+    // inserting stray </p> and <p> tags. The browser's innerHTML parser then auto-closes
+    // the span at the first block element, causing </span> to be lost.
+    content = content.replace(/<\/?p\b[^>]*>/gi, '');
+    // Add <br> for single newlines, but not after </div>, </span>, or --> (comment close)
+    content = content.replace(/(?<=[^\n])(?<!<\/div>|<\/span>|-->)\n(?=[^\n])/g, '<br>\n');
+    // Restore HTML comments
+    content = content.replace(/\x00COMMENT(\d+)-->/g, function(m, i) {
+      return comments[parseInt(i)];
+    });
+    return '<span' + attrs + '>' + content + '</span>';
+  });
+}
+
 function loadMarkdown(pagePath, divID, target, attempts, callback) {
   if (typeof attempts === 'undefined') {
     attempts = 1;
@@ -2718,6 +2747,7 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
 
       var converter = new showdown.Converter({tables:true, metadata:true, simpleLineBreaks: true}),
       html = editReadme + converter.makeHtml(data);
+      html = addBrInSpans(html);
 
       var metadata = converter.getMetadata(true); // returns a string with the raw metadata
       var metadataFormat = converter.getMetadataFormat(); // returns the format of the metadata
