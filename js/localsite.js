@@ -3093,6 +3093,168 @@ function loadUse(use) {
 
 // End: explore/js/embed.js
 
+function defaultModelsiteOptions() {
+    return [
+        { value: "tools", label: "PartnerTools (tools)" },
+        { value: "model.earth", label: "Model Earth (model.earth)", selected: true }
+    ];
+}
+
+function parseYamlScalar(value) {
+    if (value === undefined || value === null) {
+        return "";
+    }
+    let parsed = String(value).trim();
+    if (
+        (parsed.startsWith('"') && parsed.endsWith('"')) ||
+        (parsed.startsWith("'") && parsed.endsWith("'"))
+    ) {
+        parsed = parsed.slice(1, -1);
+    }
+    if (/^(true|false)$/i.test(parsed)) {
+        return parsed.toLowerCase() === "true";
+    }
+    return parsed;
+}
+
+function parseModelsiteYaml(yamlText) {
+    const options = [];
+    const lines = yamlText.split(/\r?\n/);
+    let current = null;
+
+    function pushCurrent() {
+        if (!current) {
+            return;
+        }
+        if (!current.value || !current.label) {
+            current = null;
+            return;
+        }
+        options.push(current);
+        current = null;
+    }
+
+    for (let i = 0; i < lines.length; i += 1) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        if (!trimmed || trimmed.startsWith("#")) {
+            continue;
+        }
+        if (trimmed === "modelsites:" || trimmed === "sites:") {
+            continue;
+        }
+
+        const listStart = line.match(/^\s*-\s*(.*)$/);
+        if (listStart) {
+            pushCurrent();
+            current = {};
+            const inline = listStart[1].trim();
+            if (inline) {
+                const inlinePair = inline.match(/^([A-Za-z0-9_-]+)\s*:\s*(.+)$/);
+                if (inlinePair) {
+                    current[inlinePair[1]] = parseYamlScalar(inlinePair[2]);
+                }
+            }
+            continue;
+        }
+
+        const pair = line.match(/^\s*([A-Za-z0-9_-]+)\s*:\s*(.+)\s*$/);
+        if (pair && current) {
+            current[pair[1]] = parseYamlScalar(pair[2]);
+        }
+    }
+    pushCurrent();
+    return options;
+}
+
+function renderModelsiteOptions(selectElm, options) {
+    if (!selectElm) {
+        return;
+    }
+    selectElm.innerHTML = "";
+    for (let i = 0; i < options.length; i += 1) {
+        const config = options[i];
+        if (!config || !config.value || !config.label) {
+            continue;
+        }
+        const optionElm = document.createElement("option");
+        optionElm.value = String(config.value);
+        optionElm.textContent = String(config.label);
+        if (config.class) {
+            optionElm.className = String(config.class);
+        }
+        if (config.style) {
+            optionElm.style.cssText = String(config.style);
+        }
+        if (config.selected === true || String(config.selected).toLowerCase() === "true") {
+            optionElm.selected = true;
+        }
+        selectElm.appendChild(optionElm);
+    }
+}
+
+async function loadModelsiteOptions() {
+    const fallbackOptions = defaultModelsiteOptions();
+    const webRoot = (window.local_app && typeof window.local_app.web_root === "function")
+        ? String(window.local_app.web_root()).replace(/\/+$/, "")
+        : (location.protocol + "//" + location.host);
+    const currentOriginRoot = location.protocol + "//" + location.host;
+    const candidatePaths = Array.from(new Set([
+        webRoot + "/modelsite.yaml",
+        currentOriginRoot + "/modelsite.yaml"
+    ]));
+
+    for (let i = 0; i < candidatePaths.length; i += 1) {
+        const modelsiteYamlPath = candidatePaths[i];
+        try {
+            const response = await fetch(modelsiteYamlPath, { cache: "no-store" });
+            if (!response.ok) {
+                continue;
+            }
+            const yamlText = await response.text();
+            const parsedOptions = parseModelsiteYaml(yamlText);
+            if (parsedOptions.length) {
+                return parsedOptions;
+            }
+            consoleLog("No valid entries in " + modelsiteYamlPath + ". Using fallback modelsite options.");
+        } catch (error) {}
+    }
+    consoleLog("modelsite.yaml not found. Using fallback modelsite options.");
+    return fallbackOptions;
+}
+
+function setupModelsiteSelect() {
+    waitForElm("#modelsite").then(async function(selectElm) {
+        const options = await loadModelsiteOptions();
+        renderModelsiteOptions(selectElm, options);
+
+        let selectedValue = "";
+        if (typeof Cookies !== "undefined" && Cookies.get("modelsite")) {
+            selectedValue = Cookies.get("modelsite");
+        }
+        if (!selectedValue) {
+            const selectedOption = options.find(function(option) {
+                return option && (option.selected === true || String(option.selected).toLowerCase() === "true");
+            });
+            if (selectedOption && selectedOption.value) {
+                selectedValue = String(selectedOption.value);
+            }
+        }
+        if (!selectedValue && options.length) {
+            selectedValue = String(options[0].value);
+        }
+        if (selectedValue) {
+            const hasMatch = Array.from(selectElm.options).some(function(optionElm) {
+                return optionElm.value === selectedValue;
+            });
+            if (hasMatch) {
+                selectElm.value = selectedValue;
+            }
+        }
+    });
+}
+
 // Copied from setting.js initElements()
 function initSitelook() {
     let sitesource;
@@ -3145,6 +3307,7 @@ function initSitelook() {
     setGitrepo(modelsite);
     setOnlinemode(onlinemode);
     setGlobecenter(globecenter);
+    setupModelsiteSelect();
     if (localStorage.email) {
       $("#input123").val(localStorage.email);
       $(".uIn").hide();$(".uOut").show();
