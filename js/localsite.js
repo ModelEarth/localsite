@@ -2629,7 +2629,7 @@ function formatBuckets(htmlText) {
 
 function addBrInSpans(html) {
   // Remove <p> wrappers around standalone <span> elements at the top level.
-  // showdown wraps inline tags like <span> in <p>, unlike block tags like <div>.
+  // Because showdown wraps inline tags like <span> in <p>, unlike block tags like <div>.
   html = html.replace(/<p>(\s*<span\b[^>]*>(?:(?!<\/span>)[\s\S])*<\/span>\s*)<\/p>/gi, '$1');
 
   // simpleLineBreaks doesn't apply inside HTML elements, so add <br> for single newlines within <span> tags

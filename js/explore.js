@@ -84,7 +84,11 @@ function exploreFiles(param) {
                         </div>`;
                         thumbnailList += thumbnail;
                     });
-                    $('#exploreOutput').append(`<div class="tableSurround">${thumbnailList}</div>`);
+                    if (param.tableSurround === false) {
+                        $('#exploreOutput').append(thumbnailList);
+                    } else {
+                        $('#exploreOutput').append(`<div class="tableSurround">${thumbnailList}</div>`);
+                    }
                 }
                 if (csvFiles) {
                     loadScript(theroot + 'js/earthscape.js', function(results) {
