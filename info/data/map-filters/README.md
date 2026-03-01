@@ -28,19 +28,19 @@ Copy population lookups [from this CoLab](https://colab.research.google.com/driv
 DONE: Output countries.csv file with 2-char country codes and similar columns to [us-states.csv](https://github.com/ModelEarth/localsite/blob/main/info/data/map-filters/us-states.csv). - Abhishek L
 
 
-TO DO: Create a GitHub Action for our [State Filters CoLab](https://colab.research.google.com/drive/1CsIjLujiiBoGJlIHCBvDZit3QSVg07zR?usp=sharing).  
-Run annually for both states and countries.
+TO DO: Move python from our [State Filters CoLab](https://colab.research.google.com/drive/1CsIjLujiiBoGJlIHCBvDZit3QSVg07zR?usp=sharing) into our [data-pipeline admin](../../../../data-pipeline/admin) to annually for both states and countries.
 
-DONE: Documented [how to add a Github token to push from CoLab](/localsite/start/steps/github-token/). - Ivy
-
-
-Also see our [UN Goal Timelines Javascript API display and Python API Data Pull](/localsite/timeline/)
+[How to add a Github token to push from CoLab](/localsite/start/steps/github-token/)
 
 
+Also see our [UN Goal Timelines Javascript API pull](/localsite/timeline/)
+
+<!--
 ## Previous: State Carbon Comparison
 
 Data merged for [Carbon Cycle - State Comparison](/apps/carbon/#state=CA) within apps/js/bc.js
 
 The original BeyondCarbon.org state comparison data seems to be removed from their site.
 
-[BeyondCarbon.org](https://BeyondCarbon.org) data was originally pulled into [fused/result.json](https://model.earth/beyond-carbon-scraper/fused/result.json) by [beyond-carbon-scraper](https://github.com/modelearth/beyond-carbon-scraper/)  
+[BeyondCarbon.org](https://BeyondCarbon.org) data was originally pulled into [fused/result.json](https://model.earth/beyond-carbon-scraper/fused/result.json) by [beyond-carbon-scraper](https://github.com/modelearth/beyond-carbon-scraper/)
+-->
