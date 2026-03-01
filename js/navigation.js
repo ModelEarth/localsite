@@ -1711,7 +1711,7 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
                         </div>
                         <div id="side-nav-footer">
                             <button class="sidebar-toggle" id="sidebar-toggle">
-                                <i data-feather="chevrons-left"></i>
+                                <i data-feather="chevrons-right"></i>
                             </button>
                         </div>
                     </div>
@@ -7255,6 +7255,7 @@ function showNavColumn() {
     // Refresh feather icons when showing navigation
     if (window.standaloneNav && window.standaloneNav.replaceFeatherIcons) {
         window.standaloneNav.replaceFeatherIcons();
+        window.standaloneNav.debouncedUpdateToggleIcon();
     }
 
     if ($("#main-content > .datascape").is(":visible")) { // When NOT embedded.

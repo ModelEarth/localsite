@@ -2206,6 +2206,14 @@ h2 .num {
   padding: 8px;
   border-bottom: 1px solid var(--border-light);
 }
+.collapsed #side-nav-header {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+.collapsed #side-nav-header .nav-x {
+  float: none;
+}
 @media (max-width: 600px) {
   .collapsed #side-nav-header {
     display: none;
