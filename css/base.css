@@ -1171,7 +1171,6 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   align-items: center;
   gap: 8px;
   padding: 4px 10px;
-  margin-bottom: 10px;
   background: linear-gradient(135deg, #4a90e2 0%, #5ba3f5 100%);
   color: #fff;
   border: none;
