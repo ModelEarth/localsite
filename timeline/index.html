@@ -175,6 +175,12 @@ function updateStateMenuVisibility() {
 }
 .timeline-loading-overlay .loading-dot:nth-child(2) { animation-delay: 0.15s; }
 .timeline-loading-overlay .loading-dot:nth-child(3) { animation-delay: 0.3s; }
+.timeline-loading-overlay .loading-text {
+  margin-left: 10px;
+  font-size: 13px;
+  color: #6b7280;
+  letter-spacing: 0.02em;
+}
 body.timeline-loading .timeline-loading-overlay {
   opacity: 1;
 }
@@ -610,7 +616,7 @@ body.main-nav-hidden #floating-legend.chart-visible {
 
 </head>
 
-<body>
+<body class="timeline-loading">
 
 
 <div class="heroTransparent notdark">
@@ -1496,6 +1502,7 @@ p.set('rs_dcid', list.join(','));
                 <span class="loading-dot"></span>
                 <span class="loading-dot"></span>
                 <span class="loading-dot"></span>
+                <span class="loading-text">Fetching API Data</span>
             </div>
             <canvas id="timelineChart" ></canvas>
             <div id="floating-legend" aria-hidden="false" style="display:none">
@@ -1515,6 +1522,7 @@ p.set('rs_dcid', list.join(','));
                 <span class="loading-dot"></span>
                 <span class="loading-dot"></span>
                 <span class="loading-dot"></span>
+                <span class="loading-text">Fetching API Data</span>
             </div>
             <canvas id="lineAreaChart" ></canvas>
         </div>

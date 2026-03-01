@@ -898,6 +898,9 @@ dataCopy.forEach(location => {
         window.addEventListener('resize', handleChartResize);
         }
     } finally {
+        document.querySelectorAll('.timeline-loading-overlay .loading-text').forEach(el => {
+            el.textContent = 'Timeline Display';
+        });
         document.body.classList.remove('timeline-loading');
     }
 }
