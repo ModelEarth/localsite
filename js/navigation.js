@@ -1516,7 +1516,7 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
                                             <i class="subnav-icon" data-feather="smile"></i>
                                             <span>Welcome</span>
                                         </a>
-                                        <a href="${teamPath}#home/documentation" class="subnav-link">
+                                        <a href="${rootPath}team/admin/" class="subnav-link">
                                             <i class="subnav-icon" data-feather="book"></i>
                                             <span>Getting Started</span>
                                         </a>
@@ -1536,13 +1536,13 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
                                             <i class="subnav-icon" data-feather="globe"></i>
                                             <span>Active Projects</span>
                                         </a>
-                                        <a href="https://github.com/modelearth/projects/issues/" class="subnav-link">
-                                            <i class="subnav-icon" data-feather="check-square"></i>
-                                            <span>ToDos (GitHub)</span>
-                                        </a>
                                         <a href="${rootPath}projects/hub/" class="subnav-link">
                                             <i class="subnav-icon" data-feather="target"></i>
                                             <span>Our Project Hub</span>
+                                        </a>
+                                        <a href="https://github.com/modelearth/projects/issues/" class="subnav-link">
+                                            <i class="subnav-icon" data-feather="check-square"></i>
+                                            <span>GitHub Issues</span>
                                         </a>
                                         <a href="https://www.democracylab.org/projects/834" class="subnav-link">
                                             <i class="subnav-icon" data-feather="code"></i>
@@ -1630,6 +1630,20 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
                                     </button>
                                     <div class="subnav">
                                         
+                                        <div style="display:none" class="earth">
+                                        <a href="${rootPath}projects/about/" class="subnav-link">
+                                            <i class="subnav-icon" data-feather="bar-chart-2"></i>
+                                            <span>About our Projects</span>
+                                        </a>
+                                        </div>
+
+                                        <div style="display:none" class="earth">
+                                        <a href="${rootPath}team/projects/#list=all" class="subnav-link">
+                                            <i class="subnav-icon" data-feather="bar-chart-2"></i>
+                                            <span>Dataset Analysis</span>
+                                        </a>
+                                        </div>
+
                                         <div style="display:none" class="geo">
                                         <a href="${teamPath}projects/map/#list=cities" class="subnav-link">
                                             <i class="subnav-icon" data-feather="map"></i>
