@@ -532,21 +532,599 @@ setSwiperOpts();
 	</div>
   
 
-  <h2 style="clear:both">Browser LocalStorage</h2>
-  The following values reside in your browser's localStorage for persistance across site visits:<br><br>
-
-  <div id="displayStorage" style="overflow-y: scroll;"></div>
-  <script>
-  // View localStorage values
-  for(var i=0, len=localStorage.length; i<len; i++) {
-      var key = localStorage.key(i);
-      var value = localStorage[key];
-      if (value.indexOf("<svg") > 0) {
-        $("#displayStorage").append("<b>" + key + ":</b> [svg]<br><br>");
-      } else {
-        $("#displayStorage").append("<b>" + key + ":</b> " + value + "<br><br>");
-      }
+  <style>
+  #cacheViewerSection { container-type: inline-size; clear: both; }
+  .cache-header-row {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 8px; margin-bottom: 10px; clear: both;
   }
+  .cache-header-row h2 { margin: 0; }
+  .cache-tabs {
+    display: flex; gap: 3px;
+    background: #ebebeb; padding: 3px; border-radius: 9px;
+  }
+  .dark .cache-tabs { background: #2a2a2a; }
+  .cache-tab {
+    padding: 5px 16px; border-radius: 7px; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 500; background: transparent; color: #666;
+    transition: all 0.14s ease; font-family: inherit;
+  }
+  .cache-tab.active { background: #fff; color: #222; box-shadow: 0 1px 4px rgba(0,0,0,0.13); }
+  .dark .cache-tab { color: #999; }
+  .dark .cache-tab.active { background: #3a3a3a; color: #eee; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+  .cache-controls {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px;
+  }
+  .cache-search-wrap { position: relative; flex: 1; min-width: 140px; }
+  .cache-search-wrap .material-icons {
+    position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
+    font-size: 16px; color: #bbb; pointer-events: none;
+  }
+  .cache-search-box {
+    width: 100%; box-sizing: border-box;
+    padding: 7px 10px 7px 32px;
+    border: 1px solid #ddd; border-radius: 8px;
+    font-size: 13px; background: #fff; outline: none;
+    transition: border-color 0.14s; font-family: inherit;
+  }
+  .cache-search-box:focus { border-color: #aaa; }
+  .dark .cache-search-box { background: #222; border-color: #444; color: #eee; }
+  .cache-select {
+    padding: 7px 10px; border: 1px solid #ddd; border-radius: 8px;
+    font-size: 13px; background: #fff; cursor: pointer; outline: none; font-family: inherit;
+  }
+  .dark .cache-select { background: #222; border-color: #444; color: #eee; }
+  .cache-stats { font-size: 12px; color: #999; margin-bottom: 8px; }
+  .cache-shortlist {
+    display: none; flex-direction: row; align-items: center; gap: 10px;
+    background: #f4f6fb; border-radius: 10px;
+    padding: 8px 14px; margin-bottom: 12px;
+  }
+  .cache-shortlist.has-items { display: flex; }
+  .dark .cache-shortlist { background: #1e2230; }
+  .cache-shortlist-title {
+    font-size: 11px; font-weight: 700; color: #999; text-transform: uppercase;
+    letter-spacing: 0.06em; flex-shrink: 0; margin-left: auto; padding: 3px 9px;
+    border-radius: 20px; cursor: pointer; border: 1px solid transparent; transition: all 0.14s;
+  }
+  .cache-shortlist-title:hover { background: #e8eef8; color: #1a5fd6; }
+  .cache-shortlist-title.active { background: #1a5fd6; color: #fff; border-color: #1a5fd6; }
+  .dark .cache-shortlist-title:hover { background: #1a2f5a; color: #7caff8; }
+  .dark .cache-shortlist-title.active { background: #1a5fd6; color: #fff; }
+  .cache-shortlist-tags { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+  .cache-shortlist-tag {
+    display: flex; align-items: center; gap: 4px;
+    padding: 3px 10px; background: #dde8fb; color: #1a5fd6;
+    border-radius: 20px; font-size: 12px; cursor: pointer; transition: all 0.14s;
+  }
+  .cache-shortlist-tag:hover { background: #c8dafc; }
+  .cache-shortlist-tag.active { background: #1a5fd6; color: #fff; }
+  .cache-shortlist-tag.active .sl-remove { color: #fff; }
+  .dark .cache-shortlist-tag { background: #1a2f5a; color: #7caff8; }
+  .dark .cache-shortlist-tag:hover { background: #22396e; }
+  .dark .cache-shortlist-tag.active { background: #1a5fd6; color: #fff; }
+  .cache-shortlist-tag .sl-remove {
+    cursor: pointer; font-size: 15px; line-height: 1; opacity: 0.6;
+    margin-left: 2px; transition: opacity 0.1s;
+  }
+  .cache-shortlist-tag .sl-remove:hover { opacity: 1; }
+  .cache-param-list { display: flex; flex-direction: column; gap: 5px; }
+  .cache-param-item {
+    display: flex; align-items: center; gap: 10px;
+    background: #fff; border: 1px solid #eee; border-radius: 10px;
+    padding: 9px 12px; position: relative;
+    transition: box-shadow 0.14s, border-color 0.14s;
+  }
+  .cache-param-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+  .dark .cache-param-item { background: #1a1a1a; border-color: #2e2e2e; }
+  .dark .cache-param-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.35); }
+  .cache-param-item.is-pinned { border-left: 3px solid #f5a623; }
+  .cache-param-item.in-shortlist { border-left: 3px solid #1a73e8; }
+  .cache-param-key {
+    font-weight: 600; font-size: 13px; color: #333;
+    min-width: 80px; word-break: break-all; flex-shrink: 0;
+  }
+  .dark .cache-param-key { color: #ddd; }
+  .cache-param-value {
+    flex: 1; font-size: 12px; color: #777; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap; font-family: monospace;
+  }
+  .dark .cache-param-value { color: #999; }
+  .cache-param-type {
+    font-size: 10px; padding: 2px 7px; border-radius: 10px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0;
+  }
+  .cpt-json  { background: #e8f5e9; color: #2e7d32; }
+  .cpt-svg   { background: #fce4ec; color: #b71c1c; }
+  .cpt-string{ background: #e3f2fd; color: #1565c0; }
+  .cpt-number{ background: #fff3e0; color: #e65100; }
+  .cpt-empty { background: #f5f5f5; color: #9e9e9e; }
+  .dark .cpt-json  { background: #1a3320; color: #81c784; }
+  .dark .cpt-svg   { background: #3a1820; color: #ef9a9a; }
+  .dark .cpt-string{ background: #1a2a3a; color: #90caf9; }
+  .dark .cpt-number{ background: #3a2810; color: #ffcc80; }
+  .dark .cpt-empty { background: #252525; color: #757575; }
+  .cache-pin-icon { font-size: 13px !important; color: #f5a623; flex-shrink: 0; }
+  .cache-menu-btn {
+    background: none; border: none; cursor: pointer; padding: 4px; border-radius: 50%;
+    color: #555; display: flex; align-items: center; flex-shrink: 0; transition: all 0.12s;
+  }
+  .cache-menu-btn:hover { background: #e0e0e0; color: #222; }
+  .dark .cache-menu-btn { color: #555; }
+  .dark .cache-menu-btn:hover { background: #2e2e2e; color: #bbb; }
+  .cache-dropdown {
+    position: absolute; right: 10px; top: calc(100% + 2px);
+    background: #fff; border: 1px solid #e8e8e8; border-radius: 11px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.14); min-width: 195px;
+    z-index: 1000; overflow: hidden; animation: cddIn 0.12s ease;
+  }
+  @keyframes cddIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
+  .dark .cache-dropdown { background: #242424; border-color: #3a3a3a; box-shadow: 0 6px 24px rgba(0,0,0,0.5); }
+  .cache-dd-section { padding: 5px 0; border-bottom: 1px solid #f2f2f2; }
+  .cache-dd-section:last-child { border-bottom: none; }
+  .dark .cache-dd-section { border-color: #333; }
+  .cache-dd-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 8px 14px; font-size: 13px; color: #333; cursor: pointer; transition: background 0.1s;
+  }
+  .cache-dd-item:hover { background: #f5f5f5; }
+  .dark .cache-dd-item { color: #ddd; }
+  .dark .cache-dd-item:hover { background: #2e2e2e; }
+  .cache-dd-item .material-icons { font-size: 16px; opacity: 0.75; flex-shrink: 0; }
+  .cache-dd-item.danger { color: #c62828; }
+  .cache-dd-item.danger:hover { background: #fce4ec; }
+  .dark .cache-dd-item.danger { color: #ef9a9a; }
+  .dark .cache-dd-item.danger:hover { background: #3a1820; }
+  .cache-modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.48);
+    z-index: 10000; display: flex; align-items: center; justify-content: center;
+    animation: cmoIn 0.15s ease;
+  }
+  @keyframes cmoIn { from { opacity: 0; } to { opacity: 1; } }
+  .cache-modal {
+    background: #fff; border-radius: 16px; padding: 24px;
+    max-width: 580px; width: 92%; max-height: 82vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.22); animation: cmmIn 0.15s ease;
+  }
+  @keyframes cmmIn { from { transform: translateY(8px); } to { transform: translateY(0); } }
+  .dark .cache-modal { background: #1e1e1e; }
+  .cache-modal-title { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 12px; font-family: monospace; }
+  .dark .cache-modal-title { color: #eee; }
+  .cache-modal-body {
+    flex: 1; overflow-y: auto; font-family: monospace; font-size: 12px; color: #555;
+    background: #f7f7f7; border-radius: 8px; padding: 12px;
+    white-space: pre-wrap; word-break: break-all; max-height: 340px;
+  }
+  .dark .cache-modal-body { background: #252525; color: #bbb; }
+  .cache-modal-footer { display: flex; gap: 8px; margin-top: 14px; justify-content: flex-end; }
+  .cache-modal-btn {
+    padding: 7px 18px; border-radius: 8px; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 500; transition: background 0.13s; font-family: inherit;
+  }
+  .cache-modal-btn.primary { background: #1a73e8; color: #fff; }
+  .cache-modal-btn.primary:hover { background: #1558c0; }
+  .cache-modal-btn.secondary { background: #efefef; color: #333; }
+  .cache-modal-btn.secondary:hover { background: #e0e0e0; }
+  .dark .cache-modal-btn.secondary { background: #333; color: #ddd; }
+  .dark .cache-modal-btn.secondary:hover { background: #3e3e3e; }
+  .cache-empty-state { text-align: center; padding: 38px 16px; color: #bbb; font-size: 14px; }
+  .cache-empty-state .material-icons { font-size: 44px; color: #ddd; display: block; margin-bottom: 8px; }
+  .dark .cache-empty-state { color: #555; }
+  .dark .cache-empty-state .material-icons { color: #333; }
+  .cache-toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #222; color: #fff; padding: 8px 20px; border-radius: 22px;
+    font-size: 13px; z-index: 99999; box-shadow: 0 4px 14px rgba(0,0,0,0.28);
+    animation: cddIn 0.2s ease; pointer-events: none;
+  }
+  #cacheRawView {
+    font-family: monospace; font-size: 13px; padding: 14px;
+    background: #f7f7f7; border-radius: 10px; overflow-y: auto; max-height: 500px;
+  }
+  .dark #cacheRawView { background: #1a1a1a; }
+  @container (max-width: 480px) {
+    .cache-header-row { flex-direction: column; align-items: flex-start; }
+  }
+  </style>
+
+  <div id="cacheViewerSection">
+    <div class="cache-header-row">
+      <h2 style="margin:0">Browser LocalStorage</h2>
+      <div class="cache-tabs">
+        <button class="cache-tab active" data-tab="param">Cache</button>
+        <button class="cache-tab" data-tab="raw">Raw</button>
+      </div>
+    </div>
+    <p style="margin-top:6px;margin-bottom:14px">The following values reside in your browser's localStorage for persistence across site visits:</p>
+
+    <!-- Cache view (default) -->
+    <div id="cacheParamView">
+      <div class="cache-shortlist" id="cacheShortlist">
+        <div class="cache-shortlist-title">&#9733; Short List</div>
+        <div class="cache-shortlist-tags" id="cacheShortlistTags"></div>
+      </div>
+      <div class="cache-controls">
+        <div class="cache-search-wrap">
+          <span class="material-icons">search</span>
+          <input type="text" class="cache-search-box" id="cacheSearch" placeholder="Search keys or values&hellip;">
+        </div>
+        <select class="cache-select" id="cacheFilterType" title="Filter by type">
+          <option value="">All types</option>
+          <option value="json">JSON</option>
+          <option value="svg">SVG</option>
+          <option value="string">String</option>
+          <option value="number">Number</option>
+          <option value="empty">Empty</option>
+        </select>
+        <select class="cache-select" id="cacheSortBy" title="Sort order">
+          <option value="default">Default order</option>
+          <option value="alpha-asc">A &#8594; Z</option>
+          <option value="alpha-desc">Z &#8594; A</option>
+          <option value="size-asc">Smallest first</option>
+          <option value="size-desc">Largest first</option>
+          <option value="pinned">Pinned first</option>
+        </select>
+      </div>
+      <div class="cache-stats" id="cacheStats"></div>
+      <div class="cache-param-list" id="cacheParamList"></div>
+    </div>
+
+    <!-- Raw view (hidden by default) -->
+    <div id="cacheRawView" style="display:none">
+      <div id="displayStorage"></div>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    var shortList = [];
+    var pinned = [];
+    var activeDropdown = null;
+    var filterGroup = '';
+    var filterTagKey = '';
+    try { shortList = JSON.parse(localStorage.getItem('_cacheShortList') || '[]'); } catch(e) {}
+    try { pinned    = JSON.parse(localStorage.getItem('_cachePinned')    || '[]'); } catch(e) {}
+
+    function saveState() {
+      localStorage.setItem('_cacheShortList', JSON.stringify(shortList));
+      localStorage.setItem('_cachePinned',    JSON.stringify(pinned));
+    }
+
+    function getType(val) {
+      if (!val || val === '') return 'empty';
+      if (val.indexOf('<svg') >= 0) return 'svg';
+      if (!isNaN(val) && val.trim() !== '') return 'number';
+      try { JSON.parse(val); return 'json'; } catch(e) {}
+      return 'string';
+    }
+
+    function getItems() {
+      var items = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k === '_cacheShortList' || k === '_cachePinned') continue;
+        items.push({ key: k, value: localStorage.getItem(k) });
+      }
+      return items;
+    }
+
+    function trunc(s, n) {
+      if (!s) return '';
+      return s.length > n ? s.substring(0, n) + '\u2026' : s;
+    }
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.className = 'cache-toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function(){ t.remove(); }, 2200);
+    }
+
+    // ---------- Short List ----------
+    function renderShortList() {
+      var tags = document.getElementById('cacheShortlistTags');
+      var sec  = document.getElementById('cacheShortlist');
+      if (!tags) return;
+      tags.innerHTML = '';
+      var title = sec.querySelector('.cache-shortlist-title');
+      if (title) {
+        title.classList.toggle('active', filterGroup === 'shortlist');
+        title.onclick = function() {
+          filterGroup = filterGroup === 'shortlist' ? '' : 'shortlist';
+          if (filterGroup) filterTagKey = '';
+          title.classList.toggle('active', filterGroup === 'shortlist');
+          renderParamList();
+        };
+      }
+      shortList.forEach(function(k) {
+        var tag = document.createElement('div');
+        tag.className = 'cache-shortlist-tag' + (filterTagKey === k ? ' active' : '');
+        tag.innerHTML = '<span>' + esc(k) + '</span><span class="sl-remove" title="Remove">\xd7</span>';
+        tag.addEventListener('click', function(e) {
+          if (e.target.classList.contains('sl-remove')) {
+            shortList = shortList.filter(function(x){ return x !== k; });
+            if (filterTagKey === k) filterTagKey = '';
+            saveState(); renderShortList(); renderParamList();
+          } else {
+            filterTagKey = filterTagKey === k ? '' : k;
+            if (filterTagKey) filterGroup = '';
+            renderShortList(); renderParamList();
+          }
+        });
+        tags.appendChild(tag);
+      });
+      sec.classList.toggle('has-items', shortList.length > 0);
+    }
+
+    // ---------- Param list ----------
+    function renderParamList() {
+      var listEl  = document.getElementById('cacheParamList');
+      var statsEl = document.getElementById('cacheStats');
+      if (!listEl) return;
+
+      var items  = getItems();
+      var search = (document.getElementById('cacheSearch') || {}).value || '';
+      var ftype  = (document.getElementById('cacheFilterType') || {}).value || '';
+      var sort   = (document.getElementById('cacheSortBy') || {}).value || 'default';
+      var total  = items.length;
+      search = search.toLowerCase();
+
+      if (search) items = items.filter(function(it){
+        return it.key.toLowerCase().indexOf(search) >= 0 ||
+               it.value.toLowerCase().indexOf(search) >= 0;
+      });
+      if (ftype) items = items.filter(function(it){ return getType(it.value) === ftype; });
+      if (filterGroup === 'shortlist') items = items.filter(function(it){ return shortList.indexOf(it.key) >= 0; });
+      if (filterTagKey) items = items.filter(function(it){ return it.key === filterTagKey; });
+
+      if (sort === 'alpha-asc')  items.sort(function(a,b){ return a.key.localeCompare(b.key); });
+      else if (sort === 'alpha-desc') items.sort(function(a,b){ return b.key.localeCompare(a.key); });
+      else if (sort === 'size-asc')  items.sort(function(a,b){ return a.value.length - b.value.length; });
+      else if (sort === 'size-desc') items.sort(function(a,b){ return b.value.length - a.value.length; });
+      else if (sort === 'pinned') items.sort(function(a,b){
+        return (pinned.indexOf(b.key) >= 0 ? 1 : 0) - (pinned.indexOf(a.key) >= 0 ? 1 : 0);
+      });
+      else items.sort(function(a,b){
+        var av = (pinned.indexOf(a.key)>=0?2:(shortList.indexOf(a.key)>=0?1:0));
+        var bv = (pinned.indexOf(b.key)>=0?2:(shortList.indexOf(b.key)>=0?1:0));
+        return bv - av;
+      });
+
+      if (statsEl) statsEl.textContent = items.length + ' of ' + total +
+        ' item' + (total !== 1 ? 's' : '') + (ftype || search ? ' (filtered)' : '');
+
+      if (items.length === 0) {
+        listEl.innerHTML = '<div class="cache-empty-state"><span class="material-icons">inventory_2</span>No items found</div>';
+        return;
+      }
+
+      listEl.innerHTML = '';
+      items.forEach(function(item) {
+        var type   = getType(item.value);
+        var isSL   = shortList.indexOf(item.key) >= 0;
+        var isPin  = pinned.indexOf(item.key) >= 0;
+        var disp   = type === 'svg' ? '[SVG image]' : trunc(item.value, 90);
+        var el = document.createElement('div');
+        el.className = 'cache-param-item' + (isPin ? ' is-pinned' : '') + (isSL ? ' in-shortlist' : '');
+        el.dataset.key = item.key;
+        el.innerHTML =
+          '<div class="cache-param-key" title="' + esc(item.key) + '">' + esc(item.key) + '</div>' +
+          '<div class="cache-param-value" title="' + (type==='svg'?'SVG image':esc(item.value)) + '">' + esc(disp) + '</div>' +
+          '<span class="cache-param-type cpt-' + type + '">' + type + '</span>' +
+          (isPin ? '<span class="material-icons cache-pin-icon" title="Pinned">push_pin</span>' : '') +
+          '<button class="cache-menu-btn" title="More options"><span class="material-icons" style="font-size:20px">more_vert</span></button>';
+        el.querySelector('.cache-menu-btn').addEventListener('click', function(e) {
+          e.stopPropagation();
+          openDropdown(item.key, item.value, type, isSL, isPin, el);
+        });
+        listEl.appendChild(el);
+      });
+    }
+
+    // ---------- Dropdown ----------
+    function closeDropdown() {
+      if (activeDropdown) { activeDropdown.remove(); activeDropdown = null; }
+    }
+
+    function openDropdown(key, value, type, isSL, isPin, itemEl) {
+      closeDropdown();
+      var dd = document.createElement('div');
+      dd.className = 'cache-dropdown';
+      dd.innerHTML =
+        '<div class="cache-dd-section">' +
+          '<div class="cache-dd-item" data-act="view"><span class="material-icons">open_in_full</span>View full value</div>' +
+          '<div class="cache-dd-item" data-act="copy-key"><span class="material-icons">content_copy</span>Copy key</div>' +
+          '<div class="cache-dd-item" data-act="copy-val"><span class="material-icons">content_paste</span>Copy value</div>' +
+        '</div>' +
+        '<div class="cache-dd-section">' +
+          '<div class="cache-dd-item" data-act="shortlist"><span class="material-icons">' + (isSL?'star':'star_border') + '</span>' + (isSL?'Remove from Short List':'Add to Short List') + '</div>' +
+          '<div class="cache-dd-item" data-act="pin"><span class="material-icons">push_pin</span>' + (isPin?'Unpin':'Pin to top') + '</div>' +
+        '</div>' +
+        '<div class="cache-dd-section">' +
+          '<div class="cache-dd-item" data-act="edit"><span class="material-icons">edit</span>Edit value</div>' +
+          '<div class="cache-dd-item" data-act="filter-type"><span class="material-icons">filter_list</span>Filter by type: ' + type + '</div>' +
+          '<div class="cache-dd-item" data-act="size"><span class="material-icons">straighten</span>Size: ' + value.length + ' chars</div>' +
+        '</div>' +
+        '<div class="cache-dd-section">' +
+          '<div class="cache-dd-item danger" data-act="delete"><span class="material-icons">delete_outline</span>Delete item</div>' +
+        '</div>';
+      dd.addEventListener('click', function(e) {
+        var it = e.target.closest('[data-act]');
+        if (!it) return;
+        closeDropdown();
+        handleAction(it.dataset.act, key, value, type);
+      });
+      itemEl.appendChild(dd);
+      activeDropdown = dd;
+      setTimeout(function(){
+        document.addEventListener('click', closeDropdown, { once: true });
+      }, 0);
+    }
+
+    function handleAction(act, key, value, type) {
+      if (act === 'view') {
+        openModal(key, value, type, false);
+      } else if (act === 'copy-key') {
+        navigator.clipboard.writeText(key).then(function(){ showToast('Key copied!'); });
+      } else if (act === 'copy-val') {
+        navigator.clipboard.writeText(value).then(function(){ showToast('Value copied!'); });
+      } else if (act === 'shortlist') {
+        if (shortList.indexOf(key) >= 0) {
+          shortList = shortList.filter(function(k){ return k !== key; });
+          showToast('Removed from Short List');
+        } else {
+          shortList.push(key);
+          showToast('Added to Short List \u2605');
+        }
+        saveState(); renderShortList(); renderParamList();
+      } else if (act === 'pin') {
+        if (pinned.indexOf(key) >= 0) {
+          pinned = pinned.filter(function(k){ return k !== key; });
+          showToast('Unpinned');
+        } else {
+          pinned.push(key);
+          showToast('Pinned \ud83d\udccc');
+        }
+        saveState(); renderParamList();
+      } else if (act === 'edit') {
+        openModal(key, value, type, true);
+      } else if (act === 'filter-type') {
+        var sel = document.getElementById('cacheFilterType');
+        if (sel) { sel.value = type; renderParamList(); }
+      } else if (act === 'size') {
+        showToast(key + ': ' + value.length + ' chars (' + (value.length / 1024).toFixed(2) + ' KB)');
+      } else if (act === 'delete') {
+        if (confirm('Delete localStorage item "' + key + '"?')) {
+          localStorage.removeItem(key);
+          showToast('Deleted \u2713');
+          renderParamList();
+        }
+      }
+    }
+
+    // ---------- Modal ----------
+    function openModal(key, value, type, editable) {
+      var display = value;
+      if (!editable && type === 'json') {
+        try { display = JSON.stringify(JSON.parse(value), null, 2); } catch(e) {}
+      }
+      var ov = document.createElement('div');
+      ov.className = 'cache-modal-overlay';
+      var bodyTag = editable
+        ? '<textarea class="cache-modal-body" id="cacheModalBody" style="resize:vertical;min-height:120px;font-family:monospace">' + esc(value) + '</textarea>'
+        : '<div class="cache-modal-body">' + esc(display) + '</div>';
+      ov.innerHTML =
+        '<div class="cache-modal">' +
+          '<div class="cache-modal-title">' + esc(key) + '</div>' +
+          bodyTag +
+          '<div class="cache-modal-footer">' +
+            (!editable ? '<button class="cache-modal-btn secondary" id="cmodalCopy">Copy</button>' : '') +
+            (editable  ? '<button class="cache-modal-btn secondary" id="cmodalCancel">Cancel</button>' : '') +
+            (editable  ? '<button class="cache-modal-btn primary"   id="cmodalSave">Save</button>'    :
+                         '<button class="cache-modal-btn primary"   id="cmodalClose">Close</button>') +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(ov);
+      ov.addEventListener('click', function(e){ if (e.target === ov) ov.remove(); });
+      var closeBtn = ov.querySelector('#cmodalClose');
+      if (closeBtn) closeBtn.addEventListener('click', function(){ ov.remove(); });
+      var cancelBtn = ov.querySelector('#cmodalCancel');
+      if (cancelBtn) cancelBtn.addEventListener('click', function(){ ov.remove(); });
+      var copyBtn = ov.querySelector('#cmodalCopy');
+      if (copyBtn) copyBtn.addEventListener('click', function(){
+        navigator.clipboard.writeText(value).then(function(){ showToast('Copied!'); });
+      });
+      var saveBtn = ov.querySelector('#cmodalSave');
+      if (saveBtn) saveBtn.addEventListener('click', function(){
+        var newVal = ov.querySelector('#cacheModalBody').value;
+        localStorage.setItem(key, newVal);
+        ov.remove(); showToast('Saved \u2713'); renderParamList();
+      });
+    }
+
+    // ---------- Raw view ----------
+    function renderRawView() {
+      var el = document.getElementById('displayStorage');
+      if (!el) return;
+      el.innerHTML = '';
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        var v = localStorage.getItem(k);
+        if (v && v.indexOf('<svg') >= 0) {
+          el.innerHTML += '<b>' + esc(k) + ':</b> [svg]<br><br>';
+        } else {
+          el.innerHTML += '<b>' + esc(k) + ':</b> ' + esc(v) + '<br><br>';
+        }
+      }
+    }
+
+    // ---------- Tab / hash switching ----------
+    function setView(view) {
+      var pv = document.getElementById('cacheParamView');
+      var rv = document.getElementById('cacheRawView');
+      document.querySelectorAll('.cache-tab').forEach(function(t){
+        t.classList.toggle('active', t.dataset.tab === view);
+      });
+      if (view === 'raw') {
+        if (pv) pv.style.display = 'none';
+        if (rv) rv.style.display = '';
+        renderRawView();
+      } else {
+        if (pv) pv.style.display = '';
+        if (rv) rv.style.display = 'none';
+        renderParamList();
+      }
+    }
+
+    // ---------- Init ----------
+    function init() {
+      document.querySelectorAll('.cache-tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          if (typeof goHash === 'function') {
+            goHash({ cacheview: tab.dataset.tab });
+          } else {
+            setView(tab.dataset.tab);
+          }
+        });
+      });
+
+      var search = document.getElementById('cacheSearch');
+      if (search) search.addEventListener('input', renderParamList);
+      var ftype = document.getElementById('cacheFilterType');
+      if (ftype) ftype.addEventListener('change', renderParamList);
+      var fsort = document.getElementById('cacheSortBy');
+      if (fsort) fsort.addEventListener('change', renderParamList);
+
+      document.addEventListener('hashChangeEvent', function() {
+        if (typeof getHash === 'function') {
+          var h = getHash();
+          setView(h.cacheview === 'raw' ? 'raw' : 'param');
+        }
+      });
+
+      // Initial view from hash
+      if (typeof getHash === 'function') {
+        var h = getHash();
+        setView(h.cacheview === 'raw' ? 'raw' : 'param');
+      } else {
+        setView('param');
+      }
+
+      renderShortList();
+    }
+
+    if (typeof waitForElm === 'function') {
+      waitForElm('#cacheParamList').then(init);
+    } else {
+      document.addEventListener('DOMContentLoaded', init);
+    }
+  })();
   </script>
 
   <div id="cookieList" style="overflow-y: scroll;"></div>
