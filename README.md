@@ -4,11 +4,11 @@ The&nbsp;[localsite&nbsp;repo](https://github.com/modelearth/localsite/) provide
 
 ## Get Involved
 
-[PartnerTools](https://github.com/PartnerTools/webroot) - Webroot Starter
-[iTeam](https://github.com/PartnerTools/iteam) - Internal Team Starter
-[DreamStudio](https://dreamstudio.com) - Collaborative Data Science  
-[Model.Earth](https://model.earth) - Environmental Impacts  
-[Webroot Setup](https://model.earth/localsite/start/) - Starter Samples  
+[DreamStudio](https://dreamstudio.com) - Collaborative Data Science, Machine Learning and AI Insights  
+[Webroot Setup](https://model.earth/webroot/) - Localsite Starter Steps, simple push/pull cmds
+[PartnerTools](https://github.com/PartnerTools/webroot) - Base webroot with Rust Team and Vercel Chat
+[Model.Earth](https://model.earth) - Environmental Impacts, International Tradeflow data
+
 
 ## Embed Datascapes
 
