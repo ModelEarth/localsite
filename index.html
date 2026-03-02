@@ -646,12 +646,23 @@ setSwiperOpts();
   .dark .cpt-empty { background: #252525; color: #757575; }
   .cache-pin-icon { font-size: 13px !important; color: #f5a623; flex-shrink: 0; }
   .cache-menu-btn {
-    background: none; border: none; cursor: pointer; padding: 4px; border-radius: 50%;
+    background: #e0e0e0; border: none; cursor: pointer; padding: 4px; border-radius: 50%;
     color: #555; display: flex; align-items: center; flex-shrink: 0; transition: all 0.12s;
   }
-  .cache-menu-btn:hover { background: #e0e0e0; color: #222; }
-  .dark .cache-menu-btn { color: #555; }
-  .dark .cache-menu-btn:hover { background: #2e2e2e; color: #bbb; }
+  .cache-menu-btn:hover { background: #b8b8b8; color: #222; }
+  .dark .cache-menu-btn { background: #2e2e2e; color: #999; }
+  .dark .cache-menu-btn:hover { background: #484848; color: #ccc; }
+  .cache-param-value.expandable { cursor: pointer; }
+  .cache-param-value.expandable:hover { color: #444; text-decoration: underline dotted #bbb; }
+  .dark .cache-param-value.expandable:hover { color: #ccc; }
+  .cache-param-value.expanded { white-space: pre-wrap; overflow: visible; text-overflow: unset; word-break: break-all; }
+  .cache-value-collapse {
+    display: inline; margin-left: 8px; font-size: 11px; color: #bbb; cursor: pointer;
+    border-bottom: 1px dashed #ccc; white-space: nowrap; font-family: sans-serif;
+  }
+  .cache-value-collapse:hover { color: #888; border-color: #888; }
+  .cache-pin-icon { cursor: pointer; }
+  .cache-pin-icon:hover { opacity: 0.6; }
   .cache-dropdown {
     position: absolute; right: 10px; top: calc(100% + 2px);
     background: #fff; border: 1px solid #e8e8e8; border-radius: 11px;
@@ -913,16 +924,40 @@ setSwiperOpts();
         var el = document.createElement('div');
         el.className = 'cache-param-item' + (isPin ? ' is-pinned' : '') + (isSL ? ' in-shortlist' : '');
         el.dataset.key = item.key;
+        var isTruncated = type !== 'svg' && item.value.length > 90;
         el.innerHTML =
           '<div class="cache-param-key" title="' + esc(item.key) + '">' + esc(item.key) + '</div>' +
-          '<div class="cache-param-value" title="' + (type==='svg'?'SVG image':esc(item.value)) + '">' + esc(disp) + '</div>' +
+          '<div class="cache-param-value' + (isTruncated ? ' expandable' : '') + '" title="' + (isTruncated ? 'Click to expand' : (type==='svg'?'SVG image':esc(item.value))) + '">' + esc(disp) + '</div>' +
           '<span class="cache-param-type cpt-' + type + '">' + type + '</span>' +
-          (isPin ? '<span class="material-icons cache-pin-icon" title="Pinned">push_pin</span>' : '') +
+          (isPin ? '<span class="material-icons cache-pin-icon" title="Click to unpin">push_pin</span>' : '') +
           '<button class="cache-menu-btn" title="More options"><span class="material-icons" style="font-size:20px">more_vert</span></button>';
         el.querySelector('.cache-menu-btn').addEventListener('click', function(e) {
           e.stopPropagation();
           openDropdown(item.key, item.value, type, isSL, isPin, el);
         });
+        var pinEl = el.querySelector('.cache-pin-icon');
+        if (pinEl) pinEl.addEventListener('click', function(e) {
+          e.stopPropagation();
+          pinned = pinned.filter(function(k){ return k !== item.key; });
+          saveState(); renderParamList();
+        });
+        if (isTruncated) {
+          var valEl = el.querySelector('.cache-param-value');
+          valEl.addEventListener('click', function() {
+            if (valEl.classList.contains('expanded')) return;
+            valEl.classList.add('expanded');
+            valEl.classList.remove('expandable');
+            valEl.removeAttribute('title');
+            valEl.innerHTML = esc(item.value) + '<span class="cache-value-collapse" title="Collapse"> collapse \u2191</span>';
+            valEl.querySelector('.cache-value-collapse').addEventListener('click', function(e) {
+              e.stopPropagation();
+              valEl.textContent = disp;
+              valEl.classList.remove('expanded');
+              valEl.classList.add('expandable');
+              valEl.title = 'Click to expand';
+            });
+          });
+        }
         listEl.appendChild(el);
       });
     }
