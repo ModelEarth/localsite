@@ -7887,7 +7887,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                                         } else if (location.href.indexOf("dreamstudio") >= 0 || location.href.indexOf("planet.live") >= 0) {
                                             storiesFile = "/seasons/episodes.md";
                                         }
-                                        waitForElm('#storiesDiv').then((elm) => {
+                                        waitForElm('#resourcesPanel').then((elm) => {
                                             // TO DO - Lazy load elsewhere, and avoid if already loaded
                                             loadMarkdown(storiesFile, "storiesDiv", "_parent");
                                             //alert("after storiesFile")

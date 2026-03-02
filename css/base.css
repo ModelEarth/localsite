@@ -560,9 +560,10 @@ summary { /* a button */
 summary::-webkit-details-marker {
   display: none
 }
-@media print 
+@media print
 {
   .noprint {display: none; }
+  #showSideFromHeader {display: none; }
   .pagebreak {
       clear: both;
       page-break-after: always;
