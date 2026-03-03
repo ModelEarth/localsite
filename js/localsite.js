@@ -2847,19 +2847,22 @@ function loadIntoDiv(pageFolder,divID,html,callback) {
     */
 
     links.forEach(function(currentElement) {
-      // Check if the link is a relative link
-      if (currentElement.getAttribute("href").toLowerCase().indexOf("http") < 0) {
-        // Update the href attribute with the pageFolder
-        currentElement.setAttribute("href", pageFolder + currentElement.getAttribute('href'));
-        //console.log("Showdown link update: " + pageFolder + " plus " + currentElement.getAttribute('href'));
+      var href = currentElement.getAttribute("href");
+      // Skip absolute URLs and root-relative paths (starting with /)
+      if (/^http/i.test(href) || href.startsWith('/')) {
+        return;
       }
-      // Check if the link is not a full URL
-      else if (!/^http/.test(currentElement.getAttribute("href"))) {
-        console.log("ALERT Adjust: " + currentElement.getAttribute('href'));
-        // Update the href attribute with the pageFolder
-        currentElement.setAttribute("href", pageFolder + currentElement.getAttribute('href'));
-        //console.log("Showdown link update2: " + pageFolder + " plus " + currentElement.getAttribute('href'));
+      currentElement.setAttribute("href", pageFolder + href);
+    });
+
+    // Update relative image src attributes to be relative to the markdown file's folder
+    let images = element.querySelectorAll('img[src]');
+    images.forEach(function(currentElement) {
+      var src = currentElement.getAttribute("src");
+      if (/^http/i.test(src) || src.startsWith('/') || src.startsWith('data:')) {
+        return;
       }
+      currentElement.setAttribute("src", pageFolder + src);
     });
 
 
