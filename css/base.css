@@ -415,7 +415,7 @@ h1 {
   line-height: 1.3;
   margin-top: 10px;
   font-size: 31px;
-  font-family: Georgia, "Amaze", "Helvetica Neue", Helvetica, "Lato", sans-serif;
+  font-family: "Amaze", "Helvetica Neue", Helvetica, "Lato", sans-serif;
   font-weight: 500;
 }
 @container (max-width: 400px) {
