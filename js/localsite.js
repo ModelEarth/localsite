@@ -2666,11 +2666,13 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
   loadScript(theroot + 'js/showdown.min.js', function(results) {
 
   if (typeof customD3loaded !== 'undefined' && typeof showdownLoaded !== 'undefined') { // Ready
-  } else if (attempts < 300) { // Wait and try again
+  } else if (attempts < 100) { // Wait and try again
+    if (attempts % 20 === 0) { // Every 2 seconds (20 * 100ms)
+      console.warn("loadMarkdown waiting for scripts (" + (attempts / 10) + "s): customD3loaded=" + (typeof customD3loaded !== 'undefined') + ", showdownLoaded=" + (typeof showdownLoaded !== 'undefined'));
+    }
     setTimeout( function() {
-      //consoleLog("try loadMarkdown again")
       loadMarkdown(pagePath, divID, target, attempts+1, callback);
-    }, 30 );
+    }, 100 );
     return;
   } else {
     consoleLog("ERROR: loadMarkdown exceeded " + attempts + " attempts.");
@@ -3095,8 +3097,8 @@ function loadUse(use) {
 
 function defaultModelsiteOptions() {
     return [
-        { value: "tools", label: "PartnerTools (tools)" },
-        { value: "model.earth", label: "Model Earth (model.earth)", selected: true }
+        { value: "tools", label: "PartnerTools" },
+        { value: "model.earth", label: "Model Earth", selected: true }
     ];
 }
 
