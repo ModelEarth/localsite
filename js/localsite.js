@@ -3304,7 +3304,14 @@ function initSitelook() {
         }
     }
     if (param["sitelook"]) { // From URL
-        sitelook = param["sitelook"]; 
+        sitelook = param["sitelook"];
+    }
+    if (param["modelsite"]) { // From page param - set cookie so navigation to other pages uses same modelsite
+        modelsite = param["modelsite"];
+        $("#modelsite").val(modelsite);
+        if (typeof Cookies != 'undefined') {
+            Cookies.set('modelsite', modelsite);
+        }
     }
     setSitelook(sitelook);
     setDevmode(devmode);
