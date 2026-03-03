@@ -2062,6 +2062,10 @@ input:checked + .slider:before {
 .large-list {
   font-size: 16px;
 }
+.large-list strong, .content strong {
+  font-weight: 550;
+  opacity: .9;
+}
 .large-list h1 {
   font-weight: 700;
   font-family: Roboto,Inter,-apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
