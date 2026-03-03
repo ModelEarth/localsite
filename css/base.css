@@ -5,7 +5,6 @@ Used in localsite, modelearth, io, neighborhood, trees
 :root {
     --header-height: 80px;  /* Define header height as CSS variable */
     --side-nav-width: 67px;
-
     --bg-primary: #F9FAFB;
     --bg-secondary: #FFFFFF;
     --bg-tertiary: #F3F4F6;
@@ -416,7 +415,8 @@ h1 {
   line-height: 1.3;
   margin-top: 10px;
   font-size: 31px;
-  font-family: "Amaze", "Helvetica Neue", Helvetica, "Lato", sans-serif;
+  font-family: Georgia, "Amaze", "Helvetica Neue", Helvetica, "Lato", sans-serif;
+  font-weight: 500;
 }
 @container (max-width: 400px) {
   h1 {
@@ -425,21 +425,22 @@ h1 {
 }
 .h1-home {
   font-size: 28pt;
-  font-family: "Helvetica Neue", Helvetica, "Lato", sans-serif;
+  font-family: Georgia, "Helvetica Neue", Helvetica, "Lato", sans-serif;
   font-weight: 200;
 }
 h2 {
   margin-top: 0px;
   font-weight: 500;
   font-weight: 800;
-  font-size: 1.4em;
+  font-size: 1.25em;
   padding-top: 12px;
-  padding-bottom: 5px;
+  padding-bottom: 4px;
   border-bottom: 1px solid #ddd;
   margin-bottom: 18px;
   color: rgb(77, 82, 89);
   color: #333;
   overflow: auto;
+  opacity: .85;
 }
 .flexmain h2::before { /* Prevents hashtag h2 links from being covered by site header */
   display: block; 
@@ -2063,12 +2064,16 @@ input:checked + .slider:before {
   font-size: 16px;
 }
 .large-list strong, .content strong {
-  font-weight: 550;
+  font-weight: 510;
+  letter-spacing: 0.02em;
   opacity: .9;
 }
 .large-list h1 {
   font-weight: 700;
-  font-family: Roboto,Inter,-apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+  font-family: Georgia,Roboto,Inter,-apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+
+  font-weight: 500;
+  font-size: 40px;
 }
 .large-list h2 {
   position: relative;
