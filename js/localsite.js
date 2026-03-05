@@ -951,7 +951,7 @@ function hideHeaderBar() {
 function showHeaderBar() {
   waitForElm('#headerbar').then((elm) => {
     console.log("showHeaderBar")
-    //$('.headerOffset').show(); 
+    //$('.headerOffset').show();
     $('#headerbar').show();
     $('#headerbar').removeClass("headerbarhide");
     $('.bothSideIcons').addClass('sideIconsLower');
