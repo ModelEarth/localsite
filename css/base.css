@@ -2077,6 +2077,7 @@ input:checked + .slider:before {
 }
 .large-list h2 {
   position: relative;
+  font-size: 24px;
   font-weight: 400;
 }
 .large-list h3 {

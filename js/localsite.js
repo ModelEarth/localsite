@@ -1051,7 +1051,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           sitelook = param.sitelook;
         }
         if (sitelook == "light") {
-          removeElement(theroot + 'css/bootstrap.darkly.min.css');
+          ////removeElement(theroot + 'css/bootstrap.darkly.min.css');
           removeElement(theroot + '../explore/css/site-dark.css');
           //includeCSS3(theroot + 'css/light.css',theroot);
           if (typeof Cookies != 'undefined') {
@@ -3387,7 +3387,7 @@ function setSitelook(siteLook) {
         //toggleVideo("show","nochange");
         document.body.classList.add("dark");
         //removeElement('/localsite/css/light.css');
-        includeCSS3(theroot + 'css/bootstrap.darkly.min.css');
+        ////includeCSS3(theroot + 'css/bootstrap.darkly.min.css');
   
         // Move search text elements
         const searchTextHolder = document.querySelector('.searchTextHolder');
@@ -3397,10 +3397,10 @@ function setSitelook(siteLook) {
         }
     } else if (siteLook == "default") {
         document.body.classList.remove("dark");
-        removeElement(theroot + 'css/bootstrap.darkly.min.css');
+        ////removeElement(theroot + 'css/bootstrap.darkly.min.css');
     } else { // Light
         document.body.classList.remove("dark");
-        removeElement(theroot + 'css/bootstrap.darkly.min.css');
+        ////removeElement(theroot + 'css/bootstrap.darkly.min.css');
         //const sitebasemapElements = document.querySelectorAll('.sitebasemap');
         //sitebasemapElements.forEach(element => {
         //    element.value = "positron_light_nolabels";
