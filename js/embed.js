@@ -298,10 +298,10 @@ Promise.all(scriptPromises).then(() => {
     } else if (currentScript && currentScript.src.includes('?')) {
         // Only if map= is not available in hash, check for list= in script URL and convert to map=
         const url = new URL(currentScript.src);
-        const listFromScript = urlParams.get('list') || url.searchParams.get('list');
+        const listFromScript = url.searchParams.get('map') || urlParams.get('list') || url.searchParams.get('list');
         if (listFromScript) {
             mapParam = '?showmap=true&map=' + listFromScript;
-            console.log('embed.js: Converting list parameter to map:', listFromScript);
+            console.log('embed.js: Converting map/list parameter to map:', listFromScript);
         }
     }
     

@@ -458,7 +458,7 @@ function getHashOnly() {
   })(window.location.hash.substr(1).split('&'));
 }
 
-// Avoids triggering hash change event. 
+// updateHash avoids triggering hash change event.
 // Also called by goHash, which does trigger hash change event.
 
 function updateHash(addToHash, addToExisting, removeFromHash) {
@@ -545,7 +545,7 @@ function goHash(addToHash,removeFromHash) {
   const newHash = normalizeHash(window.location.hash);
   // Only trigger the event if the normalized hash actually changed
   if (currentHash !== newHash) {
-    consoleLog("goHash triggering hashChangeEvent\nOld hash: " + currentHash + "\nNew hash: " + newHash);
+    //console.log("goHash triggering hashChangeEvent\nOld hash: " + currentHash + "\nNew hash: " + newHash);
     triggerHashChangeEvent();
   } else {
     consoleLog("goHash NOT triggering hashChangeEvent - hash unchanged");
@@ -1277,14 +1277,10 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         // but we trigger it explicitly to ensure it fires
         triggerHashChangeEvent();
 
-        // Temp for testing
         // Reset flag after a short delay to allow hash change handlers to complete
-        /*
         setTimeout(function() {
           isPopstateNavigation = false;
-          console.log("isPopstateNavigation reset to false");
         }, 100);
-        */
 
       });
       //MutationObserver.observe(hiddenhash, triggerHashChangeEvent);
@@ -3409,12 +3405,19 @@ function setSitelook(siteLook) {
     }
 }
 function setDevmode(devmode) {
+  const devCssUrl = theroot + 'css/dev.css';
   if (devmode == "dev") {
     //includeCSS3(local_app.localsite_root() + 'css/dev.css');
-    includeCSS3(theroot + 'css/dev.css');
+    includeCSS3(devCssUrl);
   } else {
     //removeElement('/localsite/css/dev.css');
-    removeElement(theroot + 'css/dev.css');
+    removeElement(getUrlID3(devCssUrl, theroot));
+    // Fallback for legacy/alternate link IDs that may already exist in the DOM.
+    //document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+    //  if (link.href && link.href.indexOf('/localsite/css/dev.css') >= 0) {
+    //    link.remove();
+    //  }
+    //});
   }
 }
 function setOnlinemode(onlinemode) {

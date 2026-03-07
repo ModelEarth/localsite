@@ -318,6 +318,7 @@ function refreshNaicsWidget(initialLoad) {
             // catyear or catsize changed - fetch new CSV and update tabulator
             let industryLocDataFile = getIndustryLocFileString(hash.catsize);
             d3.csv(industryLocDataFile).then(function(county_data) {
+                if (!localObject.industries) return;
                 const industryMap = new Map(localObject.industries.map(function(ind) { return [ind.id, ind.title]; }));
                 localObject.industryCounties = county_data.map(function(row) {
                     return Object.assign({}, row, { Industry: industryMap.get(row.Naics) });
@@ -327,7 +328,7 @@ function refreshNaicsWidget(initialLoad) {
                     let filtered = stateFips
                         ? localObject.industryCounties.filter(function(row) { return row.Fips === stateFips; })
                         : localObject.industryCounties;
-                    industrytable.replaceData(filtered.slice(0, 10));
+                    industrytable.replaceData(filtered);
                 }
                 // Update data links
                 let githubPath = industryLocDataFile.replace("https://model.earth/community-data/", "https://github.com/ModelEarth/community-data/blob/master/");

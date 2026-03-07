@@ -8335,7 +8335,16 @@ $(document).on("change", "#devmode", function(event) { // Public or Dev
     if (typeof Cookies != 'undefined') {
         Cookies.set('devmode', $("#devmode").val());
     }
-    setDevmode($("#devmode").val());
+    const devmode = $("#devmode").val();
+    setDevmode(devmode);
+    if (devmode != "dev") {
+        let hash = getHash();
+        if (hash.sidetab == "settings") {
+            updateHash({"sidetab":""}, true, "settings");
+        } else {
+            updateHash({}, true, "settings");
+        }
+    }
 });
 $(document).on("change", "#onlinemode", function(event) { // Online or Offline
     if (typeof Cookies != 'undefined') {
@@ -8460,14 +8469,16 @@ $(document).on("click", ".showSideTabs", function(event) {
     let hash = getHash();
     let modelsite = Cookies.get('modelsite');
     if (hash.sidetab) {
-        goHash({'sidetab':''});
+        updateHash({'sidetab':''});
+        showSideTabs();
     } else {
         // && location.host.indexOf("planet.live") >= 0 && modelsite != "planet.live"
         if(location.href.indexOf("/seasons") >= 0) {
-            goHash({'sidetab':'seasons'});
+            updateHash({'sidetab':'seasons'});
         } else {
-            goHash({'sidetab':'sections'});
+            updateHash({'sidetab':'sections'});
         }
+        showSideTabs();
     }
 });
 
@@ -8476,8 +8487,7 @@ $(document).on('click', '.closeParent', function () {
     event.stopPropagation();
 });
 $(document).on("click", ".closeSideTabs", function(event) {
-    goHash({'sidetab':''});
-    //closeSideTabs();
+    closeSideTabs();
     event.stopPropagation();
 });
 // Function to auto-close right navigation on narrow screens
