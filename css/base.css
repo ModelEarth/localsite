@@ -201,10 +201,41 @@ body {
   .content ol {
     margin-left: 0;
     padding-left: 0;
-    list-style-position: inside;
+    list-style: none;
   }
   .content li {
-    text-indent: -0.2em;
+    margin-left: 0;
+    padding-left: 0;
+  }
+  .content ul li {
+    position: relative;
+    padding-left: 0.72em; /* keeps a small gap after custom bullet */
+  }
+  .content ul li::before,
+  .content ol li::before {
+    line-height: 1;
+    vertical-align: middle;
+  }
+  .content ul li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.58em; /* align with first text line without altering line height */
+    width: 0.42em; /* bigger bullet */
+    height: 0.42em;
+    border-radius: 50%;
+    background: #9ca3af; /* lighter gray bullet */
+  }
+  .content ol {
+    counter-reset: mobileListCounter;
+  }
+  .content ol li {
+    counter-increment: mobileListCounter;
+  }
+  .content ol li::before {
+    content: counter(mobileListCounter) ".";
+    font-size: 1.4em;
+    margin-right: 0.12em;
   }
 }
 @media (max-width: 1450px) { /* 1250px */
@@ -1559,7 +1590,7 @@ body.dark .config-field select {
 }
 @media (max-width: 600px) {
   #headerLogo img {
-    max-width: 120px;
+    max-width: 400px;
   }
 }
 /* phase out? */
