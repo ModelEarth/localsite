@@ -223,6 +223,35 @@ body {
     float: none;
   }
 }
+/* Shared select dropdown — shielded arrow prevents long text overlapping the chevron */
+.ls-select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-color: #fff;
+  background-size: 10px;
+  padding: 4px 30px 4px 8px;
+  min-height: 34px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ls-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+.dark .ls-select {
+  background-color: #2a2a2a;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23aaa'/%3E%3C/svg%3E");
+  border-color: #555;
+  color: #eee;
+}
+
 @media (max-width: 1500px) {
   .mobileView .hideMobileSooner {
     display: none;
@@ -547,19 +576,6 @@ sup {
 hr {
     border: 0px;
     border-top: 1px solid #ddd;
-}
-details {
-  display:inline;
-}
-summary { /* a button */
-  display: inline;
-  padding:0 5px;
-  floatX:left;
-  margin-right:8px;
-  border: 1px solid #ccc;
-}
-summary::-webkit-details-marker {
-  display: none
 }
 @media print
 {
@@ -1182,6 +1198,51 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   transition: all 0.2s;
   box-shadow: 0 2px 8px rgba(74, 144, 226, 0.35);
 }
+
+/* Reusable circular icon control */
+.icon-circle-btn {
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  border: 1px solid #aaa;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  padding: 0;
+  box-sizing: border-box;
+  box-shadow: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 14px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  transition: all 0.2s;
+}
+.icon-circle-btn.material-icons {
+  font-size: 14px !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+}
+.icon-circle-btn:hover {
+  background: none;
+  color: #666;
+  border-color: #888;
+}
+.dark .icon-circle-btn {
+  color: #aaa;
+  border-color: #aaa;
+}
+.dark .icon-circle-btn:hover {
+  color: #ccc;
+  border-color: #ccc;
+}
+
 a.btn-nice:link,
 a.btn-nice:visited {
   text-decoration: none !important;
