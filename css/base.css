@@ -2328,6 +2328,7 @@ h2 .num {
   display: flex;
   flex-direction: column;
   background: var(--bg-secondary, #ffffff);
+  background-colorX: var(--bg-primary);
 }
 #side-nav-content {
   z-index: 4000;
@@ -2499,7 +2500,8 @@ body.sidebar-hovered {
     display: flex;
     flex-direction: row;
     overflow-y: auto;
-    background-color: #efefef;
+    background-colorX: #efefef;
+    background-colorX: rgb(250, 250, 250);
     z-index: 10050;
 }
 .dark #side-nav-absolute {

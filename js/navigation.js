@@ -7604,6 +7604,12 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
 
     // Skips pages with custom site titles in param.titleArray
     } else if ((modelsite=="model.georgia" && location.host.indexOf('localhost') >= 0 && !Array.isArray(param.titleArray)) || (defaultState == "GA" && !Array.isArray(param.titleArray) && location.host.indexOf('localhost') >= 0 && navigator && navigator.brave)   || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
+        if (!modelsite) {
+            modelsite = "model.georgia";
+        }
+
+        setModelsite(modelsite); // Sets universal
+        Cookies.set('modelsite', modelsite); // Sets cookie to match - for team div display
 
         // To show locally for Brave Browser only - insert before:  ) || false
         // && navigator && navigator.brave
@@ -8369,6 +8375,7 @@ $(document).on("change", "#globecenter", function(event) { // Map center
     }
 });
 $(document).on("change", "#modelsite", function(event) {
+    setModelsite($("#modelsite").val());
     if (typeof Cookies != 'undefined') {
         updateHash({"show":""});
         Cookies.set('modelsite', $("#modelsite").val());
@@ -8377,8 +8384,6 @@ $(document).on("change", "#modelsite", function(event) {
         // Apply the cookie
         location.reload();
     }
-    // Not currently used
-    //setModelsite($("#modelsite").val());
 });
 $(document).on("change", ".sitebasemap", function(event) {
     sitebasemap = $(".sitebasemap").val();
@@ -8860,7 +8865,7 @@ function showClassInline(theclass) {
     // Append -hide to hide a div for a site.
     waitForElm('head').then((elm) => { // -omit
         var div = $("<style />", {
-            html: theclass + ' {display: inline !important} ' + theclass + '-hide {display:none}'
+            html: theclass + ' {display: inline !important} ' + theclass + '-hide {display:none}' + theclass + '-x {display:none}'
         }).appendTo("head");
     });
 }

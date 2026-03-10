@@ -28,6 +28,10 @@ let defaultState = "";
 if (location.host.indexOf('localhost') >= 0) {
   defaultState = "";  // Set to GA to include additional map layers in top nav.
 }
+if (typeof modelsiteUniversal == 'undefined') {
+  // Universal modelsite fallback for pages that run before the cookie exists.
+  var modelsiteUniversal = "";
+}
 consoleLog("start localsite");
 
 // Common function to find script with delay handling for DOM recognition
@@ -3483,10 +3487,23 @@ function geoSuccess(pos) {
 }
 
 function setModelsite(modelsite) {
-  if (modelsite != "") {
-    console.log("setModelsite() is not currently used.");
-    // Avoid calling refresh here since runs when page loads.
+  const nextModelsite = (typeof modelsite === 'string' && modelsite) ? modelsite : "";
+  const priorModelsite = (typeof window !== 'undefined' && typeof window.modelsiteUniversal === 'string')
+    ? window.modelsiteUniversal
+    : modelsiteUniversal;
+
+  modelsiteUniversal = nextModelsite;
+  if (typeof window !== 'undefined') {
+    window.modelsiteUniversal = nextModelsite;
   }
+
+  if (typeof document !== 'undefined' && priorModelsite !== nextModelsite) {
+    document.dispatchEvent(new CustomEvent('modelsiteChanged', {
+      detail: { modelsite: nextModelsite }
+    }));
+  }
+
+  return nextModelsite;
 }
 function setGitrepo(gitrepo) {
   if (gitrepo != "") {
