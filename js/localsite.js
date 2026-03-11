@@ -1466,6 +1466,13 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     !function() {
       // Setting up listener for font checking
       var font = "1rem 'Material Icons'";
+      var canTrackFontLoad = !!(document.fonts && document.fonts.load);
+      function markMaterialIconsLoaded() {
+        document.documentElement.classList.add('material-icons-loaded');
+        if (typeof document.dispatchEvent === 'function') {
+          document.dispatchEvent(new CustomEvent('materialIconsLoaded'));
+        }
+      }
 
       // Not sure why we had this. It renders on load, and then again each time browser is resized.
       //document.fonts.addEventListener('loadingdone', function(event) {
@@ -1477,6 +1484,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           head = document.getElementsByTagName('head')[0];
 
       link.addEventListener('load', function() {
+          if (!canTrackFontLoad) {
+            markMaterialIconsLoaded();
+          }
           //alert('Font loaded');
           $(document).ready(function () {
             //$(".show-on-load").show(); // This might only get applied to first instance of class.
@@ -1498,7 +1508,16 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           //body.appendChild(link); // Doesn't get appended. Error: body is not defined
         });
       } else {
+        if (document.fonts && document.fonts.check && document.fonts.check(font)) {
+          markMaterialIconsLoaded();
+        }
         console.log("link.id " + link.id);
+      }
+
+      if (canTrackFontLoad) {
+        document.fonts.load(font).then(function() {
+          markMaterialIconsLoaded();
+        }).catch(function() {});
       }
     }();
   }
