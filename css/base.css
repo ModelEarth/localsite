@@ -1072,8 +1072,8 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   color: #fff;
 }
 .btn:hover, .btn-med:hover, .btn-lg:hover {
-    background-color: #b9da79;
-    border-color: #b9da79;
+    background-color: #555; /* #b9da79 */
+    border-color: #555;
     color: #fff;
     text-decoration: none;
 }
@@ -2605,7 +2605,7 @@ body.sidebar-hovered {
     height: 40px;
     min-width: 40px !important;
     marginX: 4px auto;
-    margin-left:20px;
+    margin-left:10px;
     justify-content: center;
     padding: 12px;
 }
