@@ -2274,7 +2274,11 @@ function showSearchFilter() {
 }
 function closeSideTabs() {
   console.log("closeSideTabs()");
-  updateHash({"sidetab":""});
+  if (typeof goHash === 'function') {
+    goHash({'sidetab':''});
+  } else {
+    updateHash({"sidetab":""});
+  }
   $("#rightSideTabs").hide();
   $("body").removeClass("bodyRightMargin");
   if (!$('body').hasClass('bodyLeftMargin')) {

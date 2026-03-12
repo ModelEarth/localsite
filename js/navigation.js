@@ -8256,43 +8256,43 @@ $(document).ready(function () {
 
 // Since we may sometimes load before JQuery avoiding $(document).on("click", ".showSections", function(event) { etc.
 document.addEventListener('click', function(event) {
-    if (event.target.classList.contains('showSections')) {
+    if (event.target.closest('.showSections')) {
         goHash({'sidetab':'sections'});
         event.stopPropagation();
     }
-    if (event.target.classList.contains('showResources')) {
+    if (event.target.closest('.showResources')) {
         goHash({'sidetab':'resources'});
         event.stopPropagation();
     }
-    if (event.target.classList.contains('showTopics')) {
+    if (event.target.closest('.showTopics')) {
         goHash({'sidetab':'topics'});
         event.stopPropagation();
     }
-    if (event.target.classList.contains('showLocale')) {
+    if (event.target.closest('.showLocale')) {
         goHash({'sidetab':'locale'});
         event.stopPropagation();
     }
-    if (event.target.classList.contains('showSettings')) {
+    if (event.target.closest('.showSettings')) {
         goHash({'sidetab':'settings'});
         event.stopPropagation();
     }
-    if (event.target.classList.contains('showAccount')) {
+    if (event.target.closest('.showAccount')) {
         goHash({'sidetab':'account'});
         event.stopPropagation();
     }
-    if (event.target.classList.contains('contactUs')) {
+    if (event.target.closest('.contactUs')) {
         alert("The Contact Us link is not active.")
         event.stopPropagation();
     }
-    if (event.target.classList.contains('shareThis')) {
+    if (event.target.closest('.shareThis')) {
         window.location = "https://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4a9818987bca104e";
         event.stopPropagation();
     }
-    if (event.target.classList.contains('showSeasons')) {
+    if (event.target.closest('.showSeasons')) {
         goHash({'sidetab':'seasons'});
         event.stopPropagation();
     }
-    if (event.target.classList.contains('showDesktop')) { // Was .showDesktopNav
+    if (event.target.closest('.showDesktop')) { // Was .showDesktopNav
         goHash({'sidetab':'home'});
         event.stopPropagation();
     }
@@ -8346,7 +8346,11 @@ $(document).on("change", "#devmode", function(event) { // Public or Dev
     if (devmode != "dev") {
         let hash = getHash();
         if (hash.sidetab == "settings") {
-            updateHash({"sidetab":""}, true, "settings");
+            if (typeof goHash === 'function') {
+                goHash({"sidetab":""}, "settings");
+            } else {
+                updateHash({"sidetab":""}, true, "settings");
+            }
         } else {
             updateHash({}, true, "settings");
         }
@@ -8474,10 +8478,15 @@ $(document).on("click", ".showSideTabs", function(event) {
     let hash = getHash();
     let modelsite = Cookies.get('modelsite');
     if (hash.sidetab) {
-        updateHash({'sidetab':''});
-        showSideTabs();
-    } else {
+        closeSideTabs();
+    } else if (typeof goHash === 'function') {
         // && location.host.indexOf("planet.live") >= 0 && modelsite != "planet.live"
+        if(location.href.indexOf("/seasons") >= 0) {
+            goHash({'sidetab':'seasons'});
+        } else {
+            goHash({'sidetab':'sections'});
+        }
+    } else {
         if(location.href.indexOf("/seasons") >= 0) {
             updateHash({'sidetab':'seasons'});
         } else {
