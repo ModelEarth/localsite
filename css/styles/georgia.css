@@ -97,6 +97,8 @@
   --heatmap-warm-3: #6e9fc0;
   --heatmap-warm-4: #4f7ca2;
   --heatmap-warm-5: #084975;
+  --bg-footer: #dce8f0;
+  --bg-footer-swatch: #dce8f0;
 }
 
 .georgia .palette-title,
@@ -120,6 +122,7 @@
 
 .dark.georgia,
 .dark .georgia {
+  --bg-footer: #141d26;
   --bg-card: #1d2832;
   --color-light: #375a7f;
   --color-light-hover: #304454;

@@ -27,6 +27,8 @@ Used in localsite, modelearth, io, neighborhood, trees
     --sidebar-width-expanded: 67px;
     --sidebar-collapsed: 64px;
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --bg-footer: #dae8eb;
+    --bg-footer-swatch: #dae8eb;
 }
 #side-nav {
   width: 62px;
@@ -76,6 +78,7 @@ Used in localsite, modelearth, io, neighborhood, trees
     --text-primary: #eee;
     --border-light: #aaa;
     --border-medium: #666;
+    --bg-footer: #222;
 }
 @media (max-width: 600px) {
   :root {
@@ -1431,12 +1434,18 @@ a:hover {
   padding: 16px;
   background: var(--bg-card);
   box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease;
+}
+.typography-toggle.typography-toggle-hidden {
+  transform: translateY(-100%);
 }
 .typography-toggle select {
   -webkit-appearance: none;
   appearance: none;
+  width: 150px;
+  max-width: 100%;
   padding: 6px 12px;
-  padding-right: 36px;
+  padding-right: 31px;
   font-size: 14px;
   font-weight: 500;
   color: var(--text-main);
@@ -1464,6 +1473,33 @@ a:hover {
   font-weight: 500;
   color: var(--text-main);
 }
+.typography-dark-toggle {
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 48px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--bg-footer-swatch);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: filter 0.15s ease;
+}
+.typography-dark-toggle:hover {
+  filter: brightness(0.92);
+}
+.dark .typography-dark-toggle {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.typography-dark-toggle .material-icons {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1;
+  user-select: none;
+}
 .btn {
   padding: 10px 20px;
   background: var(--chip-bg);
@@ -1488,6 +1524,25 @@ a:hover {
   border-color: var(--accent);
   color: var(--chip-text);
   box-shadow: var(--button-shadow-hover);
+}
+.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white) {
+  background: color-mix(in srgb, var(--bg-card) 82%, var(--text-main) 18%);
+  border-color: color-mix(in srgb, var(--border-subtle) 70%, var(--text-main) 30%);
+  color: var(--chip-text);
+}
+.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):hover,
+.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):focus {
+  background: color-mix(in srgb, var(--bg-card) 70%, var(--accent) 30%);
+  border-color: var(--accent);
+  color: var(--chip-text);
+}
+.dark.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white),
+.dark .cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white),
+.dark.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):hover,
+.dark.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):focus,
+.dark .cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):hover,
+.dark .cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):focus {
+  border-color: transparent;
 }
 .btn-black {
   background-color: #0e121a;
@@ -1568,6 +1623,21 @@ a:hover {
   background: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
 }
+.cv-theme .btn-primary,
+.dark.cv-theme .btn-primary,
+.dark .cv-theme .btn-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.cv-theme .btn-primary:hover,
+.cv-theme .btn-primary:focus,
+.dark.cv-theme .btn-primary:hover,
+.dark.cv-theme .btn-primary:focus,
+.dark .cv-theme .btn-primary:hover,
+.dark .cv-theme .btn-primary:focus {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
 .btn-secondary {
   background: var(--color-secondary);
   border-color: var(--color-secondary);
@@ -1618,12 +1688,22 @@ a:hover {
   border-color: var(--border-subtle);
   color: var(--color-light-text) !important;
 }
+.cv-theme .btn-light {
+  background: color-mix(in srgb, var(--bg-card) 74%, var(--text-main) 26%);
+  border-color: color-mix(in srgb, var(--border-subtle) 60%, var(--text-main) 40%);
+  color: var(--color-light-text);
+}
 .dark .btn-light,
 .dark .btn-dark {
   border-color: transparent;
 }
 .btn-light:hover {
   background: var(--color-light-hover);
+}
+.cv-theme .btn-light:hover,
+.cv-theme .btn-light:focus {
+  background: color-mix(in srgb, var(--bg-card) 62%, var(--text-main) 38%);
+  border-color: color-mix(in srgb, var(--border-subtle) 50%, var(--text-main) 50%);
 }
 .btn-dark {
   background: var(--color-dark);
@@ -1737,9 +1817,6 @@ a:hover {
 .card-text {
   color: var(--text-muted);
   margin-bottom: 16px;
-}
-.samples-section {
-  margin-top: 60px;
 }
 .samples-title {
   font-size: 24px;

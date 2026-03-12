@@ -8337,6 +8337,21 @@ $(document).on("change", "#sitelook", function(event) { // Dark mode
     }
     setSitelook($("#sitelook").val());
 });
+$(document).on("change", "#styleLook", function(event) { // Style theme
+    if (typeof goHash === 'function') {
+        goHash({ style: $("#styleLook").val() });
+    }
+});
+waitForElm('#styleLook').then(function(elm) {
+    const hash = typeof getHash === 'function' ? getHash() : {};
+    if (hash.style) elm.value = hash.style;
+});
+document.addEventListener('hashChangeEvent', function() {
+    const el = document.getElementById('styleLook');
+    if (!el) return;
+    const hash = typeof getHash === 'function' ? getHash() : {};
+    if (hash.style !== undefined) el.value = hash.style || '';
+});
 $(document).on("change", "#devmode", function(event) { // Public or Dev
     if (typeof Cookies != 'undefined') {
         Cookies.set('devmode', $("#devmode").val());

@@ -101,6 +101,8 @@
   --heatmap-warm-3: #8dbadd;
   --heatmap-warm-4: #67a3d2;
   --heatmap-warm-5: #487ca5;
+  --bg-footer: #e8e7e3;
+  --bg-footer-swatch: #e8e7e3;
 }
 
 .notion .palette-title,
@@ -123,6 +125,7 @@
 
 .dark.notion,
 .dark .notion {
+  --bg-footer: #1c1b19;
   --bg-card: #2b2926;
   --color-light: #375a7f;
   --color-light-hover: #304454;

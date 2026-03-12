@@ -13,31 +13,78 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="palette.css">
 <link rel="stylesheet" href="heatmap.css">
+<link rel="stylesheet" href="claude.css">
+<link rel="stylesheet" href="openai.css">
+<link rel="stylesheet" href="codex.css">
+<link rel="stylesheet" href="grok.css">
+<link rel="stylesheet" href="xai.css">
 <link rel="stylesheet" href="georgia.css">
 <link rel="stylesheet" href="notion.css">
+<link rel="stylesheet" id="cvThemeStylesheet">
+<script>
+function updateStyleAbout(typographyValue) {
+  const aboutStyleDivHolder = document.getElementById('aboutStyleDivHolder');
+  const aboutStyleDiv = document.getElementById('aboutStyleDiv');
+  const markdownStyles = ['grok', 'codex', 'xai', 'openai'];
+
+  if (!aboutStyleDivHolder || !aboutStyleDiv) {
+    return;
+  }
+
+  if (markdownStyles.includes(typographyValue)) {
+    const theStyle = `${typographyValue}.md`;
+    aboutStyleDivHolder.style.display = 'block';
+    aboutStyleDiv.innerHTML = '';
+    loadMarkdown(theStyle, "aboutStyleDiv", "_parent");
+  } else {
+    aboutStyleDivHolder.style.display = 'none';
+    aboutStyleDiv.innerHTML = '';
+  }
+}
+</script>
 </head>
 <body class="georgia">
 
 <div class="typography-toggle">
   <select id="typographySelect">
     <option value="notion">Notion Style</option>
+    <option value="claude">Claude Style</option>
+    <option value="openai">OpenAI Style</option>
+    <option value="codex">Codex Style</option>
+    <option value="grok">Grok Style</option>
+    <option value="xai">XAI Style</option>
     <option value="georgia">Georgia Style</option>
     <option value="none">Base Style</option>
+    <option disabled>──────── CV Themes ────────</option>
+    <option value="creative-studio">Creative Style</option>
+    <option value="data-driven">Data Style</option>
+    <option value="elegant">Elegant Style</option>
+    <option value="executive-slate">Executive Style</option>
+    <option value="kendall">Kendall Style</option>
+    <option value="macchiato">Macchiato Style</option>
+    <option value="minimalist">Minimalist Style</option>
+    <option value="modern-classic">Classic Style</option>
+    <option value="onepage">OnePage Style</option>
+    <option value="professional">Professional Style</option>
+    <option value="pumpkin">Pumpkin Style</option>
+    <option value="striking">Striking Style</option>
   </select>
 </div>
 
-<div class="content contentpadding">
-<div class="palette-section">
-  <div class="palette-title">Primary Color</div>
-  <div class="color-row" id="primaryColor"></div>
-  
-  <div class="palette-title">Main Colors</div>
-  <div class="color-row" id="mainColors"></div>
-  
-  <div class="palette-title">Supporting Colors</div>
-  <div class="color-row" id="supportingColors"></div>
+<div class="content contentpadding hideWhenThemes">
+  <div class="palette-section">
+    <div class="palette-title">Primary Color</div>
+    <div class="color-row" id="primaryColor"></div>
+    
+    <div class="palette-title">Main Colors</div>
+    <div class="color-row" id="mainColors"></div>
+    
+    <div class="palette-title">Supporting Colors</div>
+    <div class="color-row" id="supportingColors"></div>
+  </div>
 </div>
 
+<div class="content contentpadding">
 <div class="samples-section">
   <div class="samples-title">Component Samples</div>
   
@@ -140,7 +187,7 @@
     </div>
   </div>
 
-  <div class="component-group">
+  <div class="component-group hideWhenThemes">
     <div class="component-label" id="colorPaletteTitle">Soft Background Colors</div>
     <div class="color-row" id="softBackgroundPalette">
       <!-- Very soft background colors with title above and hex below -->
@@ -208,6 +255,146 @@ const notionColorPalette = {
   ]
 };
 
+const claudeColorPalette = {
+  primaryColor: [
+    { name: "Terracotta", hex: "#C96432" }
+  ],
+  mainColors: [
+    { name: "Ink", hex: "#1A1815" },
+    { name: "Clay", hex: "#C96432" },
+    { name: "Honey", hex: "#B8860B" },
+    { name: "River", hex: "#2563A8" },
+    { name: "Moss", hex: "#2E7D52" },
+    { name: "Berry", hex: "#B5426E" },
+    { name: "Stone", hex: "#7A6D5E" },
+    { name: "Porcelain", hex: "#F0EDE8" }
+  ],
+  supportingColors: [
+    { name: "Ember", hex: "#A8502A" },
+    { name: "Sand", hex: "#F5E8DC" },
+    { name: "Mist", hex: "#E8F2FA" },
+    { name: "Fern", hex: "#EAF5EE" },
+    { name: "Gold", hex: "#F0CE66" },
+    { name: "Rose", hex: "#FAEEF4" },
+    { name: "Plum", hex: "#7C4DBD" },
+    { name: "Paper", hex: "#FAF9F7" }
+  ]
+};
+
+const openaiColorPalette = {
+  primaryColor: [
+    { name: "Signal", hex: "#10A37F" }
+  ],
+  mainColors: [
+    { name: "Graphite", hex: "#1F1F1F" },
+    { name: "Signal", hex: "#10A37F" },
+    { name: "Forest", hex: "#0D8A6B" },
+    { name: "Slate", hex: "#565869" },
+    { name: "Cloud", hex: "#F0F0EA" },
+    { name: "Mist", hex: "#E8F3EF" },
+    { name: "Blue", hex: "#2563EB" },
+    { name: "Paper", hex: "#FFFFFF" }
+  ],
+  supportingColors: [
+    { name: "Charcoal", hex: "#111111" },
+    { name: "Sage", hex: "#DCEEE7" },
+    { name: "Mint", hex: "#8FE0CA" },
+    { name: "Pebble", hex: "#D9D9D2" },
+    { name: "Steel", hex: "#7A7F87" },
+    { name: "Sky", hex: "#DCE9FF" },
+    { name: "Rose", hex: "#F4DEDF" },
+    { name: "Sand", hex: "#F7F7F2" }
+  ]
+};
+
+const codexColorPalette = {
+  primaryColor: [
+    { name: "Terminal Green", hex: "#10A37F" }
+  ],
+  mainColors: [
+    { name: "Ink", hex: "#0D0D0D" },
+    { name: "Terminal Green", hex: "#10A37F" },
+    { name: "Blue", hex: "#2563EB" },
+    { name: "Violet", hex: "#7C3AED" },
+    { name: "Slate", hex: "#6E6E80" },
+    { name: "Paper", hex: "#FFFFFF" },
+    { name: "Mist", hex: "#F0F0F0" },
+    { name: "Rose", hex: "#FDF0F5" }
+  ],
+  supportingColors: [
+    { name: "Graphite", hex: "#212121" },
+    { name: "Mint", hex: "#E8F7F3" },
+    { name: "Sky", hex: "#EEF4FF" },
+    { name: "Amber", hex: "#FEFCE8" },
+    { name: "Redline", hex: "#DC2626" },
+    { name: "Brown", hex: "#7C5C3E" },
+    { name: "Pink", hex: "#BE185D" },
+    { name: "Lilac", hex: "#F5F0FF" }
+  ]
+};
+
+const grokColorPalette = {
+  primaryColor: [
+    { name: "Violet", hex: "#7C3AED" }
+  ],
+  mainColors: [
+    { name: "Obsidian", hex: "#0A0A0A" },
+    { name: "Violet", hex: "#7C3AED" },
+    { name: "Blue", hex: "#1D4ED8" },
+    { name: "Pink", hex: "#BE185D" },
+    { name: "Silver", hex: "#6B7280" },
+    { name: "Paper", hex: "#FFFFFF" },
+    { name: "Mist", hex: "#F3F4F6" },
+    { name: "Lilac", hex: "#F5F3FF" }
+  ],
+  supportingColors: [
+    { name: "Carbon", hex: "#141414" },
+    { name: "Mint", hex: "#F0FDF4" },
+    { name: "Sky", hex: "#EFF6FF" },
+    { name: "Amber", hex: "#FEFCE8" },
+    { name: "Rose", hex: "#FFF1F2" },
+    { name: "Ember", hex: "#BE123C" },
+    { name: "Deep Violet", hex: "#4C1D95" },
+    { name: "Graphite", hex: "#9CA3AF" }
+  ]
+};
+
+const xaiColorPalette = {
+  primaryColor: [
+    { name: "Orbit", hex: "#4B6BFB" }
+  ],
+  mainColors: [
+    { name: "Cosmos", hex: "#0B1020" },
+    { name: "Orbit", hex: "#4B6BFB" },
+    { name: "Ice", hex: "#D7E3FF" },
+    { name: "Steel", hex: "#5B6475" },
+    { name: "Photon", hex: "#B8D8FF" },
+    { name: "Cloud", hex: "#F5F7FB" },
+    { name: "Signal", hex: "#19A2FF" },
+    { name: "Paper", hex: "#FFFFFF" }
+  ],
+  supportingColors: [
+    { name: "Midnight", hex: "#111827" },
+    { name: "Nova", hex: "#8FA5FF" },
+    { name: "Mist", hex: "#E9EEF9" },
+    { name: "Slate", hex: "#8B94A7" },
+    { name: "Teal", hex: "#4CC9F0" },
+    { name: "Silver", hex: "#C9D1E2" },
+    { name: "Aurora", hex: "#EEF3FF" },
+    { name: "Void", hex: "#020617" }
+  ]
+};
+
+const colorPalettes = {
+  notion: notionColorPalette,
+  claude: claudeColorPalette,
+  openai: openaiColorPalette,
+  codex: codexColorPalette,
+  grok: grokColorPalette,
+  xai: xaiColorPalette,
+  georgia: georgiaColorPalette
+};
+
 // Function to render color swatches
 function renderColors(colors, containerId) {
   const container = document.getElementById(containerId);
@@ -238,7 +425,7 @@ function renderColors(colors, containerId) {
 
 // Function to render color palette based on typography style
 function renderColorPalette(typographyValue) {
-  const palette = (typographyValue === 'notion') ? notionColorPalette : georgiaColorPalette;
+  const palette = colorPalettes[typographyValue] || notionColorPalette;
   renderColors(palette.primaryColor, 'primaryColor');
   renderColors(palette.mainColors, 'mainColors');
   renderColors(palette.supportingColors, 'supportingColors');
@@ -246,13 +433,12 @@ function renderColorPalette(typographyValue) {
 
 // Function to show/hide palette section
 function togglePaletteSection(show) {
-  const paletteSection = document.querySelector('.palette-section');
-  if (paletteSection) {
-    paletteSection.style.display = show ? 'block' : 'none';
-  }
+  document.querySelectorAll('.hideWhenThemes').forEach(function(section) {
+    section.style.display = show ? 'block' : 'none';
+  });
 }
 
-// Prefer localsite.js hash helpers and fall back only if they are unavailable.
+// Hash helpers — use localsite.js functions when available, fall back otherwise.
 const readHash = typeof getHash === 'function' ? getHash : function() {
   const hash = window.location.hash.substring(1);
   const params = {};
@@ -265,6 +451,7 @@ const readHash = typeof getHash === 'function' ? getHash : function() {
   return params;
 };
 
+// Silent update (no event) — used only for initial load.
 const writeHash = typeof updateHash === 'function' ? updateHash : function(updates) {
   const current = readHash();
   const merged = { ...current, ...updates };
@@ -275,9 +462,30 @@ const writeHash = typeof updateHash === 'function' ? updateHash : function(updat
   window.location.hash = hashString;
 };
 
+// Triggering update — fires hashChangeEvent so back/forward navigation works.
+const pushHash = typeof goHash === 'function' ? goHash : writeHash;
+
 // Typography toggle functionality
 const typographySelect = document.getElementById('typographySelect');
 const bodyElement = document.body;
+const cvThemeStylesheet = document.getElementById('cvThemeStylesheet');
+const localThemeClasses = ['georgia', 'notion', 'claude', 'openai', 'codex', 'grok', 'xai'];
+const localTypographyThemes = localThemeClasses.concat(['none']);
+const cvTypographyThemes = [
+  'creative-studio',
+  'data-driven',
+  'elegant',
+  'executive-slate',
+  'kendall',
+  'macchiato',
+  'minimalist',
+  'modern-classic',
+  'onepage',
+  'professional',
+  'pumpkin',
+  'striking'
+];
+const allTypographyThemes = localTypographyThemes.concat(cvTypographyThemes);
 
 // Initialize with Notion style (default)
 //bodyElement.classList.remove('custom-typography');
@@ -290,6 +498,41 @@ const softBackgroundPalettes = {
     { name: "Soft Amber", hex: "#FDF9F4", var: "--soft-bg-yellow" },
     { name: "Soft Coral", hex: "#FDF8F7", var: "--soft-bg-red" },
     { name: "Soft Lavender", hex: "#F9F8FB", var: "--soft-bg-purple" }
+  ],
+  claude: [
+    { name: "Soft Moss", hex: "#F2F8F4", var: "--soft-bg-green" },
+    { name: "Soft River", hex: "#F0F6FC", var: "--soft-bg-blue" },
+    { name: "Soft Honey", hex: "#FEF9EF", var: "--soft-bg-yellow" },
+    { name: "Soft Terracotta", hex: "#FEF3F0", var: "--soft-bg-red" },
+    { name: "Soft Plum", hex: "#F7F3FC", var: "--soft-bg-purple" }
+  ],
+  openai: [
+    { name: "Soft Mint", hex: "#ECF7F3", var: "--soft-bg-green" },
+    { name: "Soft Blue", hex: "#EFF5FF", var: "--soft-bg-blue" },
+    { name: "Soft Sand", hex: "#FCF7EA", var: "--soft-bg-yellow" },
+    { name: "Soft Rose", hex: "#FAF0F0", var: "--soft-bg-red" },
+    { name: "Soft Lilac", hex: "#F6F3FB", var: "--soft-bg-purple" }
+  ],
+  codex: [
+    { name: "Soft Mint", hex: "#EDFAF5", var: "--soft-bg-green" },
+    { name: "Soft Blue", hex: "#EEF4FF", var: "--soft-bg-blue" },
+    { name: "Soft Amber", hex: "#FEFCE8", var: "--soft-bg-yellow" },
+    { name: "Soft Red", hex: "#FFF1F0", var: "--soft-bg-red" },
+    { name: "Soft Violet", hex: "#F5F0FF", var: "--soft-bg-purple" }
+  ],
+  grok: [
+    { name: "Soft Mint", hex: "#F0FDF4", var: "--soft-bg-green" },
+    { name: "Soft Blue", hex: "#EFF6FF", var: "--soft-bg-blue" },
+    { name: "Soft Amber", hex: "#FEFCE8", var: "--soft-bg-yellow" },
+    { name: "Soft Rose", hex: "#FFF1F2", var: "--soft-bg-red" },
+    { name: "Soft Violet", hex: "#F5F3FF", var: "--soft-bg-purple" }
+  ],
+  xai: [
+    { name: "Soft Aurora", hex: "#EFF6FF", var: "--soft-bg-green" },
+    { name: "Soft Orbit", hex: "#EEF3FF", var: "--soft-bg-blue" },
+    { name: "Soft Ice", hex: "#F6F8FD", var: "--soft-bg-yellow" },
+    { name: "Soft Silver", hex: "#F3F5FA", var: "--soft-bg-red" },
+    { name: "Soft Nova", hex: "#F1F3FF", var: "--soft-bg-purple" }
   ],
   georgia: [
     { name: "Soft Pine", hex: "#F4F8F5", var: "--soft-bg-green" },
@@ -315,6 +558,41 @@ const softColorPalettes = {
     { name: "Amber", hex: "#FDF2E3", var: "--notion-yellow" },
     { name: "Coral", hex: "#FBEEED", var: "--notion-red" },
     { name: "Lavender", hex: "#F0EEF5", var: "--notion-purple" }
+  ],
+  claude: [
+    { name: "Moss", hex: "#EAF5EE", var: "--notion-green" },
+    { name: "River", hex: "#E8F2FA", var: "--notion-blue" },
+    { name: "Honey", hex: "#FEF8E1", var: "--notion-yellow" },
+    { name: "Terracotta", hex: "#FDEEED", var: "--notion-red" },
+    { name: "Plum", hex: "#F3EEF9", var: "--notion-purple" }
+  ],
+  openai: [
+    { name: "Mint", hex: "#E8F3EF", var: "--notion-green" },
+    { name: "Blue", hex: "#EAF1FF", var: "--notion-blue" },
+    { name: "Sand", hex: "#F7F1DF", var: "--notion-yellow" },
+    { name: "Rose", hex: "#F4DEDF", var: "--notion-red" },
+    { name: "Lilac", hex: "#EEE9F8", var: "--notion-purple" }
+  ],
+  codex: [
+    { name: "Mint", hex: "#E8F7F3", var: "--notion-green" },
+    { name: "Blue", hex: "#EEF4FF", var: "--notion-blue" },
+    { name: "Amber", hex: "#FEFCE8", var: "--notion-yellow" },
+    { name: "Red", hex: "#FFF1F0", var: "--notion-red" },
+    { name: "Violet", hex: "#F5F0FF", var: "--notion-purple" }
+  ],
+  grok: [
+    { name: "Mint", hex: "#F0FDF4", var: "--notion-green" },
+    { name: "Blue", hex: "#EFF6FF", var: "--notion-blue" },
+    { name: "Amber", hex: "#FEFCE8", var: "--notion-yellow" },
+    { name: "Rose", hex: "#FFF1F2", var: "--notion-red" },
+    { name: "Violet", hex: "#F5F3FF", var: "--notion-purple" }
+  ],
+  xai: [
+    { name: "Aurora", hex: "#EAF4FF", var: "--notion-green" },
+    { name: "Orbit", hex: "#E6EEFF", var: "--notion-blue" },
+    { name: "Ice", hex: "#F5F7FB", var: "--notion-yellow" },
+    { name: "Silver", hex: "#EFF2F8", var: "--notion-red" },
+    { name: "Nova", hex: "#EEF0FF", var: "--notion-purple" }
   ],
   georgia: [
     { name: "Soft Pine", hex: "#E8F5E8", var: "--notion-green" },
@@ -393,106 +671,132 @@ function updateSectionTitle(typographyValue) {
   colorPaletteTitle.textContent = 'Soft Background Colors';
 }
 
-// Get initial typography value from hash, localStorage, or default
-const hashParams = readHash();
-let initialValue = hashParams.style || localStorage.getItem('typographySelection') || 'georgia';
-
-// Validate the value
-if (!['georgia', 'notion', 'none'].includes(initialValue)) {
-  initialValue = 'georgia';
-}
-
-// Set the select value
-typographySelect.value = initialValue;
-
-// Apply the typography class
-bodyElement.classList.remove('georgia', 'notion');
-if (initialValue === 'georgia') {
-  bodyElement.classList.add('georgia');
-} else if (initialValue === 'notion') {
-  bodyElement.classList.add('notion');
-}
-
-// Handle color palette display for "none" option
-if (initialValue === 'none') {
-  // Get the most recent Georgia/Notion selection
-  const lastStyled = localStorage.getItem('lastStyledTypography');
-  if (lastStyled && (lastStyled === 'georgia' || lastStyled === 'notion')) {
-    // Use the most recent palette but don't apply the class
-    renderColorPalette(lastStyled);
-    updateSectionTitle(lastStyled);
-    renderSoftBackgroundPalette(lastStyled);
-    renderSoftColorPalette(lastStyled);
+function setCvThemeStylesheet(typographyValue) {
+  if (cvTypographyThemes.includes(typographyValue)) {
+    cvThemeStylesheet.href = `/cv/common/themes/${typographyValue}/style.css`;
   } else {
-    // No recent cache - hide the palette section
-    togglePaletteSection(false);
+    cvThemeStylesheet.removeAttribute('href');
   }
-} else {
-  // For Georgia or Notion, show the palette and render it
-  togglePaletteSection(true);
-  renderColorPalette(initialValue);
-  updateSectionTitle(initialValue);
-  renderSoftBackgroundPalette(initialValue);
-  renderSoftColorPalette(initialValue);
-
-  // Save as the most recent styled typography
-  localStorage.setItem('lastStyledTypography', initialValue);
 }
 
-// Update hash if not already set
-if (!hashParams.style) {
-  writeHash({ style: initialValue });
-}
+function applyTypographySelection(typographyValue) {
+  bodyElement.classList.remove(...localThemeClasses, 'cv-theme');
+  setCvThemeStylesheet(typographyValue);
+  updateStyleAbout(typographyValue);
 
-typographySelect.addEventListener('change', function() {
-  console.log('Typography changed:', this.value);
+  if (localThemeClasses.includes(typographyValue)) {
+    bodyElement.classList.add(typographyValue);
+  } else if (cvTypographyThemes.includes(typographyValue)) {
+    bodyElement.classList.add('cv-theme');
+  }
 
-  // Save selection to localStorage
-  localStorage.setItem('typographySelection', this.value);
-
-  // Update hash with new style
-  writeHash({ style: this.value });
-
-  // Remove all typography classes
-  bodyElement.classList.remove('georgia', 'notion');
-
-  // Handle typography application and palette display
-  if (this.value === 'none') {
-    // For 'none', use the most recent Georgia/Notion palette if available
+  if (typographyValue === 'none') {
     const lastStyled = localStorage.getItem('lastStyledTypography');
-    if (lastStyled && (lastStyled === 'georgia' || lastStyled === 'notion')) {
-      // Show palette from most recent styled selection
+    if (lastStyled && localThemeClasses.includes(lastStyled)) {
       togglePaletteSection(true);
       renderColorPalette(lastStyled);
       updateSectionTitle(lastStyled);
       renderSoftBackgroundPalette(lastStyled);
       renderSoftColorPalette(lastStyled);
     } else {
-      // No recent cache - hide the palette section
       togglePaletteSection(false);
     }
-  } else {
-    // For Georgia or Notion
-    togglePaletteSection(true);
-
-    // Add the selected class
-    if (this.value === 'georgia') {
-      bodyElement.classList.add('georgia');
-    } else if (this.value === 'notion') {
-      bodyElement.classList.add('notion');
-    }
-
-    // Save as the most recent styled typography
-    localStorage.setItem('lastStyledTypography', this.value);
-
-    // Update section title and all palettes
-    renderColorPalette(this.value);
-    updateSectionTitle(this.value);
-    renderSoftBackgroundPalette(this.value);
-    renderSoftColorPalette(this.value);
+    return;
   }
+
+  if (cvTypographyThemes.includes(typographyValue)) {
+    togglePaletteSection(false);
+    return;
+  }
+
+  togglePaletteSection(true);
+  renderColorPalette(typographyValue);
+  updateSectionTitle(typographyValue);
+  renderSoftBackgroundPalette(typographyValue);
+  renderSoftColorPalette(typographyValue);
+  localStorage.setItem('lastStyledTypography', typographyValue);
+}
+
+// Get initial typography value from hash, localStorage, or default
+const hashParams = readHash();
+let initialValue = hashParams.style || localStorage.getItem('typographySelection') || 'georgia';
+
+// Validate the value
+if (!allTypographyThemes.includes(initialValue)) {
+  initialValue = 'georgia';
+}
+
+// Set the select value and apply — silent hash update on first load
+typographySelect.value = initialValue;
+applyTypographySelection(initialValue);
+if (!hashParams.style) {
+  writeHash({ style: initialValue });
+}
+
+// Respond to hash changes (back/forward navigation and goHash() calls)
+document.addEventListener('hashChangeEvent', function() {
+  const hash = readHash();
+  const newStyle = hash.style;
+  if (!newStyle || newStyle === (window.priorHash && window.priorHash.style)) return;
+  const validated = allTypographyThemes.includes(newStyle) ? newStyle : 'georgia';
+  if (typographySelect.value !== validated) {
+    typographySelect.value = validated;
+  }
+  localStorage.setItem('typographySelection', validated);
+  applyTypographySelection(validated);
+});
+
+// Dark mode toggle injected into .typography-dark-toggle swatch
+(function() {
+  function updateToggleIcon(btn) {
+    const icon = btn.querySelector('.material-icons');
+    if (icon) icon.textContent = document.body.classList.contains('dark') ? 'light_mode' : 'dark_mode';
+  }
+  document.querySelectorAll('.typography-toggle').forEach(function(bar) {
+    const btn = document.createElement('button');
+    btn.className = 'typography-dark-toggle';
+    btn.title = 'Toggle dark mode';
+    const icon = document.createElement('i');
+    icon.className = 'material-icons';
+    icon.textContent = document.body.classList.contains('dark') ? 'light_mode' : 'dark_mode';
+    btn.appendChild(icon);
+    bar.appendChild(btn);
+    btn.addEventListener('click', function() {
+      const newLook = document.body.classList.contains('dark') ? 'default' : 'dark';
+      if (typeof Cookies !== 'undefined') Cookies.set('sitelook', newLook);
+      if (typeof setSitelook === 'function') setSitelook(newLook);
+      updateToggleIcon(btn);
+    });
+  });
+})();
+
+// Hide typography-toggle on scroll down, reveal on scroll up (fixed at top via sticky)
+(function() {
+  const bar = document.querySelector('.typography-toggle');
+  if (!bar) return;
+  let lastY = window.scrollY;
+  window.addEventListener('scroll', function() {
+    const currentY = window.scrollY;
+    if (currentY < lastY) {
+      bar.classList.remove('typography-toggle-hidden');
+    } else if (currentY > lastY && currentY > bar.offsetHeight) {
+      bar.classList.add('typography-toggle-hidden');
+    }
+    lastY = currentY;
+  }, { passive: true });
+})();
+
+typographySelect.addEventListener('change', function() {
+  const val = this.value;
+  localStorage.setItem('typographySelection', val);
+  pushHash({ style: val });
+  applyTypographySelection(val);
 });
 </script>
+
+<div id="aboutStyleDivHolder" class="content contentpadding">
+  <div id="aboutStyleDiv"></div>
+</div>
 
 </body>
 </html>
