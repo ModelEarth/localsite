@@ -3230,7 +3230,8 @@ async function loadModelsiteOptions() {
     const currentOriginRoot = location.protocol + "//" + location.host;
     const candidatePaths = Array.from(new Set([
         webRoot + "/modelsite.yaml",
-        currentOriginRoot + "/modelsite.yaml"
+        currentOriginRoot + "/modelsite.yaml",
+        "https://raw.githubusercontent.com/ModelEarth/webroot/main/modelsite.yaml"
     ]));
 
     for (let i = 0; i < candidatePaths.length; i += 1) {
@@ -3287,6 +3288,7 @@ function setupModelsiteSelect() {
 function initSitelook() {
     let sitesource;
     let sitelook;
+    let stylelook;
     let devmode;
     let onlinemode;
     let globecenter;
@@ -3297,6 +3299,10 @@ function initSitelook() {
         if (Cookies.get('sitelook')) {
           $("#sitelook").val(Cookies.get('sitelook'));
           sitelook = Cookies.get('sitelook');
+        }
+        if (Cookies.get('stylelook')) {
+            $("#stylelook").val(Cookies.get('stylelook'));
+            stylelook = Cookies.get('stylelook');
         }
         if (Cookies.get('sitesource')) {
             $("#sitesource").val(Cookies.get('sitesource'));
@@ -3328,6 +3334,13 @@ function initSitelook() {
     }
     if (param["sitelook"]) { // From URL
         sitelook = param["sitelook"];
+    }
+    if (param["style"] !== undefined) { // From URL
+        stylelook = param["style"];
+        $("#stylelook").val(stylelook);
+        if (typeof Cookies != 'undefined') {
+            Cookies.set('stylelook', stylelook);
+        }
     }
     if (param["modelsite"]) { // From page param - set cookie so navigation to other pages uses same modelsite
         modelsite = param["modelsite"];

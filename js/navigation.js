@@ -8337,20 +8337,42 @@ $(document).on("change", "#sitelook", function(event) { // Dark mode
     }
     setSitelook($("#sitelook").val());
 });
-$(document).on("change", "#styleLook", function(event) { // Style theme
-    if (typeof goHash === 'function') {
-        goHash({ style: $("#styleLook").val() });
+function shouldSyncStylelookToHash() {
+    const pathname = (window.location && window.location.pathname ? window.location.pathname : '').replace(/\\/g, '/');
+    return pathname.indexOf('/localsite/css/styles/') >= 0;
+}
+$(document).on("change", "#stylelook", function(event) { // Style theme
+    if (typeof Cookies != 'undefined') {
+        Cookies.set('stylelook', $("#stylelook").val());
+    }
+    if (shouldSyncStylelookToHash() && typeof goHash === 'function') {
+        goHash({ style: $("#stylelook").val() });
     }
 });
-waitForElm('#styleLook').then(function(elm) {
+waitForElm('#stylelook').then(function(elm) {
     const hash = typeof getHash === 'function' ? getHash() : {};
-    if (hash.style) elm.value = hash.style;
+    if (hash.style !== undefined) {
+        elm.value = hash.style || '';
+        if (typeof Cookies != 'undefined') {
+            Cookies.set('stylelook', hash.style || '');
+        }
+    } else if (typeof Cookies != 'undefined' && Cookies.get('stylelook')) {
+        elm.value = Cookies.get('stylelook');
+        if (shouldSyncStylelookToHash() && typeof goHash === 'function') {
+            goHash({ style: Cookies.get('stylelook') });
+        }
+    }
 });
 document.addEventListener('hashChangeEvent', function() {
-    const el = document.getElementById('styleLook');
+    const el = document.getElementById('stylelook');
     if (!el) return;
     const hash = typeof getHash === 'function' ? getHash() : {};
-    if (hash.style !== undefined) el.value = hash.style || '';
+    if (hash.style !== undefined) {
+        el.value = hash.style || '';
+        if (typeof Cookies != 'undefined') {
+            Cookies.set('stylelook', hash.style || '');
+        }
+    }
 });
 $(document).on("change", "#devmode", function(event) { // Public or Dev
     if (typeof Cookies != 'undefined') {
