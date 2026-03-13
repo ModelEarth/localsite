@@ -27,35 +27,44 @@ localObject.us_stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,
 // Later: localObject.stateZipsLoaded
 
 window.localsiteStylelookMenu = [
-    { type: "option", settingsValue: "none", settingsLabel: "Base", typographyValue: "none", typographyLabel: "Base Style" },
+    { type: "option", settingsValue: "base", settingsLabel: "Base", typographyValue: "base", typographyLabel: "Base Style" },
     { type: "option", settingsValue: "notion", settingsLabel: "Notion", typographyValue: "notion", typographyLabel: "Notion Style" },
     { type: "option", settingsValue: "georgia", settingsLabel: "Georgia", typographyValue: "georgia", typographyLabel: "Georgia Style" },
     { type: "option", settingsValue: "claude", settingsLabel: "Claude", typographyValue: "claude", typographyLabel: "Claude Style" },
     { type: "option", settingsValue: "openai", settingsLabel: "OpenAI", typographyValue: "openai", typographyLabel: "OpenAI Style" },
-    { type: "option", settingsValue: "codex", settingsLabel: "Codex", typographyValue: "codex", typographyLabel: "Codex Style" },
-    { type: "option", settingsValue: "grok", settingsLabel: "Grok", typographyValue: "grok", typographyLabel: "Grok Style" },
     { type: "option", settingsValue: "xai", settingsLabel: "XAI", typographyValue: "xai", typographyLabel: "XAI Style" },
     { type: "divider", settingsLabel: "── CV Themes ──", typographyLabel: "──────── CV Themes ────────" },
+    { type: "option", settingsValue: "elegant", settingsLabel: "Elegant", typographyValue: "elegant", typographyLabel: "Surfer Style" },
+    { type: "option", settingsValue: "macchiato", settingsLabel: "Macchiato", typographyValue: "macchiato", typographyLabel: "Macchiato Style" }
+];
+window.localsiteStylelookMenuX = [
+    { type: "option", settingsValue: "grok", settingsLabel: "Grok", typographyValue: "grok", typographyLabel: "Grok Style" },
+    { type: "option", settingsValue: "codex", settingsLabel: "Codex", typographyValue: "codex", typographyLabel: "Codex Style" },
+    
+    { type: "option", settingsValue: "kendall", settingsLabel: "Kendall", typographyValue: "kendall", typographyLabel: "Kendall Style" },
     { type: "option", settingsValue: "creative-studio", settingsLabel: "Creative", typographyValue: "creative-studio", typographyLabel: "Creative Style" },
     { type: "option", settingsValue: "data-driven", settingsLabel: "Data", typographyValue: "data-driven", typographyLabel: "Data Style" },
-    { type: "option", settingsValue: "elegant", settingsLabel: "Elegant", typographyValue: "elegant", typographyLabel: "Elegant Style" },
     { type: "option", settingsValue: "executive-slate", settingsLabel: "Executive", typographyValue: "executive-slate", typographyLabel: "Executive Style" },
-    { type: "option", settingsValue: "kendall", settingsLabel: "Kendall", typographyValue: "kendall", typographyLabel: "Kendall Style" },
-    { type: "option", settingsValue: "macchiato", settingsLabel: "Macchiato", typographyValue: "macchiato", typographyLabel: "Macchiato Style" },
     { type: "option", settingsValue: "minimalist", settingsLabel: "Minimalist", typographyValue: "minimalist", typographyLabel: "Minimalist Style" },
     { type: "option", settingsValue: "modern-classic", settingsLabel: "Classic", typographyValue: "modern-classic", typographyLabel: "Classic Style" },
     { type: "option", settingsValue: "onepage", settingsLabel: "OnePage", typographyValue: "onepage", typographyLabel: "OnePage Style" },
     { type: "option", settingsValue: "professional", settingsLabel: "Professional", typographyValue: "professional", typographyLabel: "Professional Style" },
-    { type: "option", settingsValue: "pumpkin", settingsLabel: "Pumpkin", typographyValue: "pumpkin", typographyLabel: "Pumpkin Style" },
-    { type: "option", settingsValue: "striking", settingsLabel: "Striking", typographyValue: "striking", typographyLabel: "Striking Style" }
+    { type: "option", settingsValue: "striking", settingsLabel: "Striking", typographyValue: "striking", typographyLabel: "Striking Style" },
+        { type: "option", settingsValue: "pumpkin", settingsLabel: "Pumpkin", typographyValue: "pumpkin", typographyLabel: "Pumpkin Style" }
+
 ];
+function normalizeSharedStylelookValue(value, fallbackValue) {
+    return value || fallbackValue;
+}
 window.populateStylelookSelect = function(selectElement, mode) {
     if (!selectElement || !window.localsiteStylelookMenu) {
         return;
     }
 
-    const selectedValue = selectElement.value;
     const isTypography = mode == "typography";
+    const selectedValue = isTypography
+        ? normalizeSharedStylelookValue(selectElement.value, "")
+        : normalizeSharedStylelookValue(selectElement.value, "base");
 
     selectElement.innerHTML = "";
 
@@ -85,8 +94,8 @@ window.populateStylelookSelect = function(selectElement, mode) {
     });
 
     selectElement.value = selectedValue;
-    if (selectedValue && selectElement.value !== selectedValue) {
-        const fallbackValue = isTypography ? "georgia" : "";
+    if (selectElement.value !== selectedValue) {
+        const fallbackValue = isTypography ? "georgia" : "base";
         selectElement.value = fallbackValue;
     }
 };
@@ -8411,7 +8420,7 @@ function shouldSyncStylelookToHash() {
     return pathname.indexOf('/localsite/css/styles/') >= 0;
 }
 $(document).on("change", "#stylelook", function(event) { // Style theme
-    const nextStylelook = $("#stylelook").val() == "none" ? "" : $("#stylelook").val();
+    const nextStylelook = normalizeSharedStylelookValue($("#stylelook").val(), "base");
     if (typeof Cookies != 'undefined') {
         Cookies.set('stylelook', nextStylelook);
     }
@@ -8428,14 +8437,14 @@ waitForElm('#stylelook').then(function(elm) {
     }
     const hash = typeof getHash === 'function' ? getHash() : {};
     if (hash.style !== undefined) {
-        elm.value = hash.style || '';
+        elm.value = normalizeSharedStylelookValue(hash.style, 'base');
         if (typeof Cookies != 'undefined') {
-            Cookies.set('stylelook', (hash.style == "none") ? '' : (hash.style || ''));
+            Cookies.set('stylelook', normalizeSharedStylelookValue(hash.style, 'base'));
         }
     } else if (typeof Cookies != 'undefined' && Cookies.get('stylelook')) {
-        elm.value = Cookies.get('stylelook');
+        elm.value = normalizeSharedStylelookValue(Cookies.get('stylelook'), 'base');
         if (shouldSyncStylelookToHash() && typeof goHash === 'function') {
-            goHash({ style: Cookies.get('stylelook') });
+            goHash({ style: elm.value });
         }
     }
 });
@@ -8444,9 +8453,9 @@ document.addEventListener('hashChangeEvent', function() {
     if (!el) return;
     const hash = typeof getHash === 'function' ? getHash() : {};
     if (hash.style !== undefined) {
-        el.value = hash.style || '';
+        el.value = normalizeSharedStylelookValue(hash.style, 'base');
         if (typeof Cookies != 'undefined') {
-            Cookies.set('stylelook', (hash.style == "none") ? '' : (hash.style || ''));
+            Cookies.set('stylelook', normalizeSharedStylelookValue(hash.style, 'base'));
         }
         if (typeof setStylelook === 'function') {
             setStylelook(hash.style || '');

@@ -3359,9 +3359,9 @@ function initSitelook() {
     }
     if (param["style"] !== undefined) { // From URL
         stylelook = param["style"];
-        $("#stylelook").val(stylelook == "none" ? "" : stylelook);
+        $("#stylelook").val(stylelook || "base");
         if (typeof Cookies != 'undefined') {
-            Cookies.set('stylelook', stylelook == "none" ? "" : stylelook);
+            Cookies.set('stylelook', stylelook || "base");
         }
     }
     if (param["modelsite"]) { // From page param - set cookie so navigation to other pages uses same modelsite
@@ -3426,8 +3426,12 @@ const cvStylelookThemes = [
   'pumpkin',
   'striking'
 ];
+function normalizeStylelookValue(styleLook) {
+    return styleLook;
+}
 function getStylelookThemeUrl(styleLook) {
-    if (!styleLook || styleLook == "none") {
+    styleLook = normalizeStylelookValue(styleLook);
+    if (!styleLook || styleLook == "base") {
       return "";
     }
     if (localStylelookThemes.includes(styleLook)) {
@@ -3466,7 +3470,8 @@ function setStylelook(styleLook) {
     if (!document.body) {
       return;
     }
-    if (styleLook == "none") {
+    styleLook = normalizeStylelookValue(styleLook);
+    if (styleLook == "base") {
       styleLook = "";
     }
     if (!styleLook) {
@@ -3475,7 +3480,10 @@ function setStylelook(styleLook) {
 
     const stylelookElement = document.getElementById("stylelook");
     if (stylelookElement) {
-        stylelookElement.value = styleLook;
+        stylelookElement.value = styleLook || "base";
+        if (stylelookElement.value !== (styleLook || "base")) {
+            stylelookElement.value = "base";
+        }
     }
 
     document.body.classList.remove(...localStylelookThemes, 'cv-theme');

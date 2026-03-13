@@ -1056,9 +1056,51 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     line-height: 1.5;
     border-radius: 2rem;
     cursor: pointer;
-    margin-right:6px;
-    margin-bottom:8px;
 }
+.btn {
+  padding: 10px 20px;
+  background: var(--chip-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--button-radius);
+  color: var(--chip-text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s ease-in, border-color 0.12s ease-in, box-shadow 0.12s ease-in;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: var(--button-shadow);
+}
+.btn:link,
+.btn:visited {
+  color: var(--chip-text);
+}
+.btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--chip-text);
+  box-shadow: var(--button-shadow-hover);
+}
+.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white) {
+  background: color-mix(in srgb, var(--bg-card) 82%, var(--text-main) 18%);
+  border-color: color-mix(in srgb, var(--border-subtle) 70%, var(--text-main) 30%);
+  color: var(--chip-text);
+}
+.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):hover,
+.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):focus {
+  background: color-mix(in srgb, var(--bg-card) 70%, var(--accent) 30%);
+  border-color: var(--accent);
+  color: var(--chip-text);
+}
+.dark.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white),
+.dark .cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white),
+.dark.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):hover,
+.dark.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):focus,
+.dark .cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):hover,
+.dark .cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):focus {
+  border-color: transparent;
+}
+
 .btn-med {
   font-size: 0.9rem;
   line-height: 1.35;
@@ -1092,24 +1134,6 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   border-color: #304454;
   color: #fff;
 }
-.btn-lg {
-  height: 46px;
-  font-size: 1.1rem;
-  line-height: 2;
-  border-radius: 1.5rem;
-  padding: 0.375rem 1.3rem;
-  border: 1px solid var(--border-light);
-  font-weight: 550;
-  font-weight: 550;
-}
-.btn-sm {
-  font-size: 0.75rem;
-  line-height: 1.2;
-  padding: 0.2rem 0.55rem;
-  border-radius: 2rem;
-  display: inline-flex;
-  width: auto;
-}
 
 /* color is !important so surrounding a href color from menu.css does not override */
 .btn-primary {
@@ -1119,6 +1143,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 }
 .dark .btn-primary {
   background-color: #137AD1;
+  border-color: #137AD1;
 }
 .btn-primary:visited {
     color: #fff !important;
@@ -1506,49 +1531,24 @@ a:hover {
   line-height: 1;
   user-select: none;
 }
-.btn {
-  padding: 10px 20px;
-  background: var(--chip-bg);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--button-radius);
-  color: var(--chip-text);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.12s ease-in, border-color 0.12s ease-in, box-shadow 0.12s ease-in;
-  margin: 4px;
+
+.btn-lg {
+  height: 46px;
+  font-size: 1.1rem;
+  line-height: 2;
+  border-radius: 1.5rem;
+  padding: 0.375rem 1.3rem;
+  border: 1px solid var(--border-light);
+  font-weight: 550;
+  font-weight: 550;
+}
+.btn-sm {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  padding: 0.2rem 0.55rem;
+  border-radius: 2rem;
   display: inline-flex;
-  align-items: center;
-  box-shadow: var(--button-shadow);
-}
-.btn:link,
-.btn:visited {
-  color: var(--chip-text);
-}
-.btn:hover {
-  background: var(--accent-soft);
-  border-color: var(--accent);
-  color: var(--chip-text);
-  box-shadow: var(--button-shadow-hover);
-}
-.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white) {
-  background: color-mix(in srgb, var(--bg-card) 82%, var(--text-main) 18%);
-  border-color: color-mix(in srgb, var(--border-subtle) 70%, var(--text-main) 30%);
-  color: var(--chip-text);
-}
-.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):hover,
-.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):focus {
-  background: color-mix(in srgb, var(--bg-card) 70%, var(--accent) 30%);
-  border-color: var(--accent);
-  color: var(--chip-text);
-}
-.dark.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white),
-.dark .cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white),
-.dark.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):hover,
-.dark.cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):focus,
-.dark .cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):hover,
-.dark .cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):focus {
-  border-color: transparent;
+  width: auto;
 }
 .btn-black {
   background-color: #0e121a;
@@ -2133,9 +2133,6 @@ a.btn-nice:visited {
   min-height: 32px;
   padding: 0 5px 0 10px;
   padding-top: 4px; /* Firefox */
-  margin-right: 5px;
-  margin-bottom: 10px;
-
   padding-right: 28px; /* Applies when text reaches right side */
   appearance: none; /* Remove default arrow */
   -webkit-appearance: none;
@@ -2354,7 +2351,7 @@ body.dark .config-field select {
   }
 }
 .headerLeftIcon i {
-  font-size:24px;
+  font-size:26px;
   min-width:28px; 
   opacity:1;
   color:#333;
@@ -2369,6 +2366,7 @@ body.dark .config-field select {
 }
 #showSideFromHeader i:hover {
   color: #000 !important;
+  font-weight: bolder;
 }
 #showSideFromHeader:hover i {
   color: #000 !important;
@@ -3626,15 +3624,9 @@ body.sidebar-hovered {
 .dark .sidebar.collapsed .nav-link.active {
     background: #6b7280; /* Lighter grey circle around active icon */
     border-radius: 50%;
-    left:-8px;
-
-    widthX: 40px;
-    heightX: 40px;
-    displayX: flex;
     align-itemsX: center;
     justify-contentX: center;
 }
-
 .dark .sidebar.collapsed .nav-link.active .nav-icon {
     color: var(--text-primary);
     font-weight: bold;

@@ -452,7 +452,7 @@ const pushHash = typeof goHash === 'function' ? goHash : writeHash;
 // Typography toggle functionality
 const typographySelect = document.getElementById('typographySelect');
 const localThemeClasses = ['georgia', 'notion', 'claude', 'openai', 'codex', 'grok', 'xai'];
-const localTypographyThemes = localThemeClasses.concat(['none']);
+const localTypographyThemes = localThemeClasses.concat(['base']);
 const cvTypographyThemes = [
   'creative-studio',
   'data-driven',
@@ -468,6 +468,10 @@ const cvTypographyThemes = [
   'striking'
 ];
 const allTypographyThemes = localTypographyThemes.concat(cvTypographyThemes);
+
+function normalizeTypographyStyleValue(value) {
+  return value;
+}
 
 function initializeTypographySelect() {
   if (!typographySelect || typeof populateStylelookSelect !== 'function') {
@@ -531,7 +535,7 @@ const softBackgroundPalettes = {
     { name: "Soft Peach", hex: "#FDF4F3", var: "--soft-bg-red" },
     { name: "Soft Blossom", hex: "#F7F5F8", var: "--soft-bg-purple" }
   ],
-  none: [
+  base: [
     { name: "Soft Pine", hex: "#F4F7F6", var: "--soft-bg-green" },
     { name: "Soft Blueberry", hex: "#F1F5F8", var: "--soft-bg-blue" },
     { name: "Soft Honey", hex: "#FDF8F0", var: "--soft-bg-yellow" },
@@ -591,7 +595,7 @@ const softColorPalettes = {
     { name: "Soft Peach", hex: "#FFEBEE", var: "--notion-red" },
     { name: "Soft Blossom", hex: "#F3E5F5", var: "--notion-purple" }
   ],
-  none: [
+  base: [
     { name: "Soft Pine", hex: "#E8F5E8", var: "--notion-green" },
     { name: "Soft Blueberry", hex: "#E3F2FD", var: "--notion-blue" },
     { name: "Soft Honey", hex: "#FFF8E1", var: "--notion-yellow" },
@@ -677,11 +681,12 @@ function updateSamplesTitle(typographyValue) {
 }
 
 function syncSharedStylelook(typographyValue, persistCookie) {
+  const normalizedValue = normalizeTypographyStyleValue(typographyValue);
   if (persistCookie && typeof Cookies !== 'undefined') {
-    Cookies.set('stylelook', typographyValue === 'none' ? '' : typographyValue);
+    Cookies.set('stylelook', normalizedValue);
   }
   if (typeof setStylelook === 'function') {
-    setStylelook(typographyValue);
+    setStylelook(normalizedValue);
   }
 }
 
@@ -690,7 +695,9 @@ function applyTypographySelection(typographyValue, persistCookie) {
   updateStyleAbout(typographyValue);
   updateSamplesTitle(typographyValue);
 
-  if (typographyValue === 'none') {
+  typographyValue = normalizeTypographyStyleValue(typographyValue);
+
+  if (typographyValue === 'base') {
     const lastStyled = localStorage.getItem('lastStyledTypography');
     if (lastStyled && localThemeClasses.includes(lastStyled)) {
       togglePaletteSection(true);
@@ -723,8 +730,10 @@ function initializeTypographyDemo() {
   }
 
   const hashParams = readHash();
-  const cookieStylelook = typeof Cookies !== 'undefined' ? Cookies.get('stylelook') : '';
+  const cookieStylelook = typeof Cookies !== 'undefined' ? normalizeTypographyStyleValue(Cookies.get('stylelook')) : '';
   let initialValue = hashParams.style || cookieStylelook || localStorage.getItem('typographySelection') || 'georgia';
+
+  initialValue = normalizeTypographyStyleValue(initialValue);
 
   if (!allTypographyThemes.includes(initialValue)) {
     initialValue = 'georgia';
@@ -740,7 +749,8 @@ function initializeTypographyDemo() {
     const hash = readHash();
     const newStyle = hash.style;
     if (!newStyle || newStyle === (window.priorHash && window.priorHash.style)) return;
-    const validated = allTypographyThemes.includes(newStyle) ? newStyle : 'georgia';
+    const normalizedStyle = normalizeTypographyStyleValue(newStyle);
+    const validated = allTypographyThemes.includes(normalizedStyle) ? normalizedStyle : 'georgia';
     if (typographySelect.value !== validated) {
       typographySelect.value = validated;
     }
