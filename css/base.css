@@ -1641,7 +1641,7 @@ a:hover {
 .btn-secondary {
   background: var(--color-secondary);
   border-color: var(--color-secondary);
-  color: #fff !important;
+  color: #fff;
 }
 .btn-secondary:hover {
   background: var(--color-secondary-hover);
