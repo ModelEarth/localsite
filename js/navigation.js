@@ -1691,9 +1691,9 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
                             
                             <div class="nav-section">
                                 <div class="nav-item">
-                                    <button class="nav-link ${this.options.currentPage === 'admin' ? 'active' : ''}" data-section="admin" data-href="${teamPath}admin">
+                                    <button class="nav-link ${this.options.currentPage === 'admin' ? 'active' : ''}" data-section="admin" data-href="${teamPath}">
                                         <i class="nav-icon" data-feather="tool"></i>
-                                        <span class="nav-text">Partner Tools</span>
+                                        <span class="nav-text">Team Tools</span>
                                         <i class="nav-arrow" data-feather="chevron-right"></i>
                                     </button>
                                     <div class="subnav">

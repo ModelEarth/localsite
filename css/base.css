@@ -4189,3 +4189,13 @@ body.sidebar-hidden #openNav {
 #locationDetailsMenuToggleIcon.pause-icon {
   color: #ff6b35 !important;
 }
+.content-edges {
+  margin-left: 18px;
+  margin-right: 18px;
+}
+@media (max-width: 600px) {
+  .content-edges {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
