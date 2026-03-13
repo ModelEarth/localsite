@@ -1712,7 +1712,7 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
                                         <div style="display:none" class="geo">
                                         <a href="${teamPath}projects/map/#list=cities" class="subnav-link">
                                             <i class="subnav-icon" data-feather="map"></i>
-                                            <span>Location Visits Map</span>
+                                            <span>Georgia Cities Map</span>
                                         </a>
                                         </div>
 
@@ -1726,7 +1726,7 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
                                         -->
 
                                         <div style="display:none" class="geo">
-                                        <a href="${teamPath}projects/#list=film-liaisons" class="subnav-link">
+                                        <a href="${teamPath}projects/#list=liaisons" class="subnav-link">
                                             <i class="subnav-icon" data-feather="film"></i>
                                             <span>Film Community Insights</span>
                                         </a>
