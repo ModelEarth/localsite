@@ -555,6 +555,22 @@ function goHash(addToHash,removeFromHash) {
     consoleLog("goHash NOT triggering hashChangeEvent - hash unchanged");
   }
 }
+// Like goHash but uses replaceState so the change does not create a browser history entry.
+// Use when toggling UI state (e.g. opening a settings panel) so the user can press Back
+// without the panel reopening.
+function goHashNoHistory(addToHash,removeFromHash) {
+  consoleLog("goHashNoHistory\n" + JSON.stringify(addToHash, null, 2));
+  const currentHash = normalizeHash(window.location.hash);
+  isPopstateNavigation = true; // Causes updateHash to use replaceState instead of pushState
+  updateHash(addToHash,true,removeFromHash);
+  isPopstateNavigation = false;
+  const newHash = normalizeHash(window.location.hash);
+  if (currentHash !== newHash) {
+    triggerHashChangeEvent();
+  } else {
+    consoleLog("goHashNoHistory NOT triggering hashChangeEvent - hash unchanged");
+  }
+}
 function go(addToHash) {
   consoleLog("go ")
   // Get and normalize the current hash
@@ -2274,7 +2290,9 @@ function showSearchFilter() {
 }
 function closeSideTabs() {
   console.log("closeSideTabs()");
-  if (typeof goHash === 'function') {
+  if (typeof goHashNoHistory === 'function') {
+    goHashNoHistory({'sidetab':''});
+  } else if (typeof goHash === 'function') {
     goHash({'sidetab':''});
   } else {
     updateHash({"sidetab":""});
@@ -3295,6 +3313,10 @@ function initSitelook() {
     let modelsite;
     let gitrepo;
 
+    if (typeof populateStylelookSelect === 'function') {
+        populateStylelookSelect(document.getElementById("stylelook"), 'settings');
+    }
+
     if(typeof Cookies != 'undefined') {
         if (Cookies.get('sitelook')) {
           $("#sitelook").val(Cookies.get('sitelook'));
@@ -3337,9 +3359,9 @@ function initSitelook() {
     }
     if (param["style"] !== undefined) { // From URL
         stylelook = param["style"];
-        $("#stylelook").val(stylelook);
+        $("#stylelook").val(stylelook == "none" ? "" : stylelook);
         if (typeof Cookies != 'undefined') {
-            Cookies.set('stylelook', stylelook);
+            Cookies.set('stylelook', stylelook == "none" ? "" : stylelook);
         }
     }
     if (param["modelsite"]) { // From page param - set cookie so navigation to other pages uses same modelsite
@@ -3350,6 +3372,7 @@ function initSitelook() {
         }
     }
     setSitelook(sitelook);
+    setStylelook(stylelook);
     setDevmode(devmode);
     setModelsite(modelsite);
     setGitrepo(modelsite);
@@ -3387,6 +3410,100 @@ waitForBody(applyColorSchemeClass);
 
 function setSitemode(sitemode) {
   // Not copied over from settings.js
+}
+const localStylelookThemes = ['notion', 'claude', 'openai', 'codex', 'grok', 'xai', 'georgia'];
+const cvStylelookThemes = [
+  'creative-studio',
+  'data-driven',
+  'elegant',
+  'executive-slate',
+  'kendall',
+  'macchiato',
+  'minimalist',
+  'modern-classic',
+  'onepage',
+  'professional',
+  'pumpkin',
+  'striking'
+];
+function getStylelookThemeUrl(styleLook) {
+    if (!styleLook || styleLook == "none") {
+      return "";
+    }
+    if (localStylelookThemes.includes(styleLook)) {
+      return local_app.localsite_root() + 'css/styles/' + encodeURIComponent(styleLook) + '.css';
+    }
+    if (cvStylelookThemes.includes(styleLook)) {
+      const cvThemeRoot = (location.host.indexOf('localhost') >= 0 || location.host.indexOf('127.0.0.1') >= 0)
+        ? local_app.web_root()
+        : 'https://model.earth';
+      return cvThemeRoot + '/cv/common/themes/' + encodeURIComponent(styleLook) + '/style.css';
+    }
+    return "";
+}
+function pageHasStylesheet(url) {
+    if (!url) {
+      return false;
+    }
+    let targetUrl;
+    try {
+      targetUrl = new URL(url, window.location.href).href;
+    } catch (err) {
+      return false;
+    }
+    return Array.from(document.querySelectorAll('link[rel="stylesheet"]')).some(function(link) {
+      if (link.id == "stylelookThemeStylesheet") {
+        return false;
+      }
+      try {
+        return link.href && new URL(link.href, window.location.href).href == targetUrl;
+      } catch (err) {
+        return false;
+      }
+    });
+}
+function setStylelook(styleLook) {
+    if (!document.body) {
+      return;
+    }
+    if (styleLook == "none") {
+      styleLook = "";
+    }
+    if (!styleLook) {
+      styleLook = "";
+    }
+
+    const stylelookElement = document.getElementById("stylelook");
+    if (stylelookElement) {
+        stylelookElement.value = styleLook;
+    }
+
+    document.body.classList.remove(...localStylelookThemes, 'cv-theme');
+
+    let themeUrl = getStylelookThemeUrl(styleLook);
+    if (localStylelookThemes.includes(styleLook)) {
+      document.body.classList.add(styleLook);
+    } else if (cvStylelookThemes.includes(styleLook)) {
+      document.body.classList.add('cv-theme');
+    }
+
+    let themeLink = document.getElementById("stylelookThemeStylesheet");
+    if (!themeUrl || pageHasStylesheet(themeUrl)) {
+      if (themeLink) {
+        themeLink.parentNode.removeChild(themeLink);
+      }
+      return;
+    }
+
+    if (!themeLink) {
+      themeLink = document.createElement('link');
+      themeLink.id = "stylelookThemeStylesheet";
+      themeLink.rel = 'stylesheet';
+      themeLink.type = 'text/css';
+      themeLink.media = 'all';
+      document.getElementsByTagName('head')[0].appendChild(themeLink);
+    }
+    themeLink.href = themeUrl;
 }
 function setSitelook(siteLook) {
     //let root = "/explore/"; // TEMP

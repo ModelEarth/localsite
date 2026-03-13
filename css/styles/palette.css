@@ -1,6 +1,7 @@
 /* Palette preview styles extracted from localsite/css/base.css */
 .palette-section {
-  margin-bottom: 50px;
+  margin-bottom: 0;
+  container-type: inline-size;
 }
 
 .palette-title {
@@ -13,11 +14,39 @@
   text-transform: uppercase;
 }
 
+.palette-title-center {
+  text-align: center;
+}
+
+.palette-overview {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  margin-bottom: 48px;
+}
+
+.palette-primary-group {
+  flex: 0 0 auto;
+}
+
+.palette-main-group {
+  flex: 1 1 420px;
+  min-width: 0;
+}
+
+.palette-overview .color-row {
+  margin-bottom: 0;
+}
+
 .color-row {
   display: flex;
   gap: 24px;
   margin-bottom: 48px;
   flex-wrap: wrap;
+}
+
+.palette-section > .color-row:last-child {
+  margin-bottom: 16px;
 }
 
 .color-swatch {
@@ -103,4 +132,16 @@
 
 #colorPaletteTitle {
   margin-bottom: 24px;
+}
+
+@container (max-width: 720px) {
+  .palette-overview {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .palette-main-group {
+    flex-basis: auto;
+    width: 100%;
+  }
 }

@@ -6,9 +6,9 @@
   --font-subheadline: 'Gotham', 'Nunito Sans', sans-serif;
 
   --bg-card: #ffffff;
-  --accent: #084975;
-  --accent-hover: #003d82;
-  --accent-soft: #e3f2fd;
+  --accent: #235d39;
+  --accent-hover: #1b4a2d;
+  --accent-soft: #e8f5e8;
   --text-main: #212721;
   --text-muted: #666666;
   --border-subtle: #cfd2d3;
@@ -44,7 +44,7 @@
   --notion-pink-text: #aa483e;
   --notion-red-text: #aa483e;
   --color-primary: var(--accent);
-  --color-primary-hover: #003d82;
+  --color-primary-hover: #1b4a2d;
   --color-secondary: #aa483e;
   --color-secondary-hover: #8b3a31;
   --color-success: #235d39;
@@ -124,6 +124,8 @@
 .dark .georgia {
   --bg-footer: #141d26;
   --bg-card: #1d2832;
+  --color-primary: #084975;
+  --color-primary-hover: #063a5d;
   --color-light: #375a7f;
   --color-light-hover: #304454;
   --color-light-text: #d1d5db;

@@ -26,6 +26,71 @@ if(typeof localObject.geo == 'undefined') { localObject.geo = []; } // Holds cou
 localObject.us_stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,HI:15,ID:16,IL:17,IN:18,IA:19,KS:20,KY:21,LA:22,ME:23,MD:24,MA:25,MI:26,MN:27,MS:28,MO:29,MT:30,NE:31,NV:32,NH:33,NJ:34,NM:35,NY:36,NC:37,ND:38,OH:39,OK:40,OR:41,PA:42,RI:44,SC:45,SD:46,TN:47,TX:48,UT:49,VT:50,VA:51,WA:53,WV:54,WI:55,WY:56,AS:60,GU:66,MP:69,PR:72,VI:78};
 // Later: localObject.stateZipsLoaded
 
+window.localsiteStylelookMenu = [
+    { type: "option", settingsValue: "none", settingsLabel: "Base", typographyValue: "none", typographyLabel: "Base Style" },
+    { type: "option", settingsValue: "notion", settingsLabel: "Notion", typographyValue: "notion", typographyLabel: "Notion Style" },
+    { type: "option", settingsValue: "georgia", settingsLabel: "Georgia", typographyValue: "georgia", typographyLabel: "Georgia Style" },
+    { type: "option", settingsValue: "claude", settingsLabel: "Claude", typographyValue: "claude", typographyLabel: "Claude Style" },
+    { type: "option", settingsValue: "openai", settingsLabel: "OpenAI", typographyValue: "openai", typographyLabel: "OpenAI Style" },
+    { type: "option", settingsValue: "codex", settingsLabel: "Codex", typographyValue: "codex", typographyLabel: "Codex Style" },
+    { type: "option", settingsValue: "grok", settingsLabel: "Grok", typographyValue: "grok", typographyLabel: "Grok Style" },
+    { type: "option", settingsValue: "xai", settingsLabel: "XAI", typographyValue: "xai", typographyLabel: "XAI Style" },
+    { type: "divider", settingsLabel: "── CV Themes ──", typographyLabel: "──────── CV Themes ────────" },
+    { type: "option", settingsValue: "creative-studio", settingsLabel: "Creative", typographyValue: "creative-studio", typographyLabel: "Creative Style" },
+    { type: "option", settingsValue: "data-driven", settingsLabel: "Data", typographyValue: "data-driven", typographyLabel: "Data Style" },
+    { type: "option", settingsValue: "elegant", settingsLabel: "Elegant", typographyValue: "elegant", typographyLabel: "Elegant Style" },
+    { type: "option", settingsValue: "executive-slate", settingsLabel: "Executive", typographyValue: "executive-slate", typographyLabel: "Executive Style" },
+    { type: "option", settingsValue: "kendall", settingsLabel: "Kendall", typographyValue: "kendall", typographyLabel: "Kendall Style" },
+    { type: "option", settingsValue: "macchiato", settingsLabel: "Macchiato", typographyValue: "macchiato", typographyLabel: "Macchiato Style" },
+    { type: "option", settingsValue: "minimalist", settingsLabel: "Minimalist", typographyValue: "minimalist", typographyLabel: "Minimalist Style" },
+    { type: "option", settingsValue: "modern-classic", settingsLabel: "Classic", typographyValue: "modern-classic", typographyLabel: "Classic Style" },
+    { type: "option", settingsValue: "onepage", settingsLabel: "OnePage", typographyValue: "onepage", typographyLabel: "OnePage Style" },
+    { type: "option", settingsValue: "professional", settingsLabel: "Professional", typographyValue: "professional", typographyLabel: "Professional Style" },
+    { type: "option", settingsValue: "pumpkin", settingsLabel: "Pumpkin", typographyValue: "pumpkin", typographyLabel: "Pumpkin Style" },
+    { type: "option", settingsValue: "striking", settingsLabel: "Striking", typographyValue: "striking", typographyLabel: "Striking Style" }
+];
+window.populateStylelookSelect = function(selectElement, mode) {
+    if (!selectElement || !window.localsiteStylelookMenu) {
+        return;
+    }
+
+    const selectedValue = selectElement.value;
+    const isTypography = mode == "typography";
+
+    selectElement.innerHTML = "";
+
+    window.localsiteStylelookMenu.forEach(function(item) {
+        const value = isTypography ? item.typographyValue : item.settingsValue;
+        const label = isTypography ? item.typographyLabel : item.settingsLabel;
+
+        if (item.type == "divider") {
+            if (!label) {
+                return;
+            }
+            const option = document.createElement("option");
+            option.disabled = true;
+            option.textContent = label;
+            selectElement.appendChild(option);
+            return;
+        }
+
+        if (value === null || label === null) {
+            return;
+        }
+
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
+        selectElement.appendChild(option);
+    });
+
+    selectElement.value = selectedValue;
+    if (selectedValue && selectElement.value !== selectedValue) {
+        const fallbackValue = isTypography ? "georgia" : "";
+        selectElement.value = fallbackValue;
+    }
+};
+
 /* Allows map to remove selected shapes when backing up. */
 document.addEventListener('hashChangeEvent', function (elem) {
     console.log("navigation.js detects URL hashChangeEvent");
@@ -8255,29 +8320,33 @@ $(document).ready(function () {
 });
 
 // Since we may sometimes load before JQuery avoiding $(document).on("click", ".showSections", function(event) { etc.
+// sidetab changes use goHashNoHistory so panel navigation never creates browser history entries.
+var _goSidetab = function(val) {
+    (typeof goHashNoHistory === 'function' ? goHashNoHistory : goHash)({'sidetab': val});
+};
 document.addEventListener('click', function(event) {
     if (event.target.closest('.showSections')) {
-        goHash({'sidetab':'sections'});
+        _goSidetab('sections');
         event.stopPropagation();
     }
     if (event.target.closest('.showResources')) {
-        goHash({'sidetab':'resources'});
+        _goSidetab('resources');
         event.stopPropagation();
     }
     if (event.target.closest('.showTopics')) {
-        goHash({'sidetab':'topics'});
+        _goSidetab('topics');
         event.stopPropagation();
     }
     if (event.target.closest('.showLocale')) {
-        goHash({'sidetab':'locale'});
+        _goSidetab('locale');
         event.stopPropagation();
     }
     if (event.target.closest('.showSettings')) {
-        goHash({'sidetab':'settings'});
+        _goSidetab('settings');
         event.stopPropagation();
     }
     if (event.target.closest('.showAccount')) {
-        goHash({'sidetab':'account'});
+        _goSidetab('account');
         event.stopPropagation();
     }
     if (event.target.closest('.contactUs')) {
@@ -8289,11 +8358,11 @@ document.addEventListener('click', function(event) {
         event.stopPropagation();
     }
     if (event.target.closest('.showSeasons')) {
-        goHash({'sidetab':'seasons'});
+        _goSidetab('seasons');
         event.stopPropagation();
     }
     if (event.target.closest('.showDesktop')) { // Was .showDesktopNav
-        goHash({'sidetab':'home'});
+        _goSidetab('home');
         event.stopPropagation();
     }
 });
@@ -8342,19 +8411,26 @@ function shouldSyncStylelookToHash() {
     return pathname.indexOf('/localsite/css/styles/') >= 0;
 }
 $(document).on("change", "#stylelook", function(event) { // Style theme
+    const nextStylelook = $("#stylelook").val() == "none" ? "" : $("#stylelook").val();
     if (typeof Cookies != 'undefined') {
-        Cookies.set('stylelook', $("#stylelook").val());
+        Cookies.set('stylelook', nextStylelook);
+    }
+    if (typeof setStylelook === 'function') {
+        setStylelook(nextStylelook);
     }
     if (shouldSyncStylelookToHash() && typeof goHash === 'function') {
-        goHash({ style: $("#stylelook").val() });
+        goHash({ style: nextStylelook });
     }
 });
 waitForElm('#stylelook').then(function(elm) {
+    if (typeof populateStylelookSelect === 'function') {
+        populateStylelookSelect(elm, 'settings');
+    }
     const hash = typeof getHash === 'function' ? getHash() : {};
     if (hash.style !== undefined) {
         elm.value = hash.style || '';
         if (typeof Cookies != 'undefined') {
-            Cookies.set('stylelook', hash.style || '');
+            Cookies.set('stylelook', (hash.style == "none") ? '' : (hash.style || ''));
         }
     } else if (typeof Cookies != 'undefined' && Cookies.get('stylelook')) {
         elm.value = Cookies.get('stylelook');
@@ -8370,7 +8446,10 @@ document.addEventListener('hashChangeEvent', function() {
     if (hash.style !== undefined) {
         el.value = hash.style || '';
         if (typeof Cookies != 'undefined') {
-            Cookies.set('stylelook', hash.style || '');
+            Cookies.set('stylelook', (hash.style == "none") ? '' : (hash.style || ''));
+        }
+        if (typeof setStylelook === 'function') {
+            setStylelook(hash.style || '');
         }
     }
 });
@@ -8516,12 +8595,12 @@ $(document).on("click", ".showSideTabs", function(event) {
     let modelsite = Cookies.get('modelsite');
     if (hash.sidetab) {
         closeSideTabs();
-    } else if (typeof goHash === 'function') {
-        // && location.host.indexOf("planet.live") >= 0 && modelsite != "planet.live"
+    } else if (typeof goHashNoHistory === 'function') {
+        // Use replaceState so opening Settings doesn't create a history entry the user must back through
         if(location.href.indexOf("/seasons") >= 0) {
-            goHash({'sidetab':'seasons'});
+            goHashNoHistory({'sidetab':'seasons'});
         } else {
-            goHash({'sidetab':'sections'});
+            goHashNoHistory({'sidetab':'sections'});
         }
     } else {
         if(location.href.indexOf("/seasons") >= 0) {
@@ -8544,7 +8623,7 @@ $(document).on("click", ".closeSideTabs", function(event) {
 // Function to auto-close right navigation on narrow screens
 function autoCloseRightNavOnNarrow() {
     if (window.innerWidth <= 1000) {
-        goHash({'sidetab':''});
+        (typeof goHashNoHistory === 'function' ? goHashNoHistory : goHash)({'sidetab':''});
     }
 }
 

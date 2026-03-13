@@ -1491,8 +1491,14 @@ a:hover {
 .typography-dark-toggle:hover {
   filter: brightness(0.92);
 }
+.typography-dark-toggle.dark,
 .dark .typography-dark-toggle {
-  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.typography-dark-toggle.dark .material-icons,
+.dark .typography-dark-toggle .material-icons {
+  color: var(--text-main);
 }
 .typography-dark-toggle .material-icons {
   font-size: 13px;

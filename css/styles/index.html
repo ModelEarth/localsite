@@ -20,7 +20,6 @@
 <link rel="stylesheet" href="xai.css">
 <link rel="stylesheet" href="georgia.css">
 <link rel="stylesheet" href="notion.css">
-<link rel="stylesheet" id="cvThemeStylesheet">
 <script>
 function updateStyleAbout(typographyValue) {
   const aboutStyleDivHolder = document.getElementById('aboutStyleDivHolder');
@@ -46,38 +45,23 @@ function updateStyleAbout(typographyValue) {
 <body class="georgia">
 
 <div class="typography-toggle">
-  <select id="typographySelect">
-    <option value="notion">Notion Style</option>
-    <option value="claude">Claude Style</option>
-    <option value="openai">OpenAI Style</option>
-    <option value="codex">Codex Style</option>
-    <option value="grok">Grok Style</option>
-    <option value="xai">XAI Style</option>
-    <option value="georgia">Georgia Style</option>
-    <option value="none">Base Style</option>
-    <option disabled>──────── CV Themes ────────</option>
-    <option value="creative-studio">Creative Style</option>
-    <option value="data-driven">Data Style</option>
-    <option value="elegant">Elegant Style</option>
-    <option value="executive-slate">Executive Style</option>
-    <option value="kendall">Kendall Style</option>
-    <option value="macchiato">Macchiato Style</option>
-    <option value="minimalist">Minimalist Style</option>
-    <option value="modern-classic">Classic Style</option>
-    <option value="onepage">OnePage Style</option>
-    <option value="professional">Professional Style</option>
-    <option value="pumpkin">Pumpkin Style</option>
-    <option value="striking">Striking Style</option>
-  </select>
+  <select id="typographySelect"></select>
 </div>
 
 <div class="content contentpadding hideWhenThemes">
+  <div class="samples-title" id="styleTitle">Georgia Style</div>
   <div class="palette-section">
-    <div class="palette-title">Primary Color</div>
-    <div class="color-row" id="primaryColor"></div>
-    
-    <div class="palette-title">Main Colors</div>
-    <div class="color-row" id="mainColors"></div>
+    <div class="palette-overview">
+      <div class="palette-primary-group">
+        <div class="palette-title palette-title-center">Primary</div>
+        <div class="color-row" id="primaryColor"></div>
+      </div>
+
+      <div class="palette-main-group">
+        <div class="palette-title">Main Colors</div>
+        <div class="color-row" id="mainColors"></div>
+      </div>
+    </div>
     
     <div class="palette-title">Supporting Colors</div>
     <div class="color-row" id="supportingColors"></div>
@@ -86,7 +70,7 @@ function updateStyleAbout(typographyValue) {
 
 <div class="content contentpadding">
 <div class="samples-section">
-  <div class="samples-title">Component Samples</div>
+  <div class="samples-title" id="samplesTitle">Georgia Elements</div>
   
   <div class="component-group">
     <div class="component-label">Buttons</div>
@@ -467,8 +451,6 @@ const pushHash = typeof goHash === 'function' ? goHash : writeHash;
 
 // Typography toggle functionality
 const typographySelect = document.getElementById('typographySelect');
-const bodyElement = document.body;
-const cvThemeStylesheet = document.getElementById('cvThemeStylesheet');
 const localThemeClasses = ['georgia', 'notion', 'claude', 'openai', 'codex', 'grok', 'xai'];
 const localTypographyThemes = localThemeClasses.concat(['none']);
 const cvTypographyThemes = [
@@ -486,6 +468,14 @@ const cvTypographyThemes = [
   'striking'
 ];
 const allTypographyThemes = localTypographyThemes.concat(cvTypographyThemes);
+
+function initializeTypographySelect() {
+  if (!typographySelect || typeof populateStylelookSelect !== 'function') {
+    return false;
+  }
+  populateStylelookSelect(typographySelect, 'typography');
+  return true;
+}
 
 // Initialize with Notion style (default)
 //bodyElement.classList.remove('custom-typography');
@@ -671,24 +661,34 @@ function updateSectionTitle(typographyValue) {
   colorPaletteTitle.textContent = 'Soft Background Colors';
 }
 
-function setCvThemeStylesheet(typographyValue) {
-  if (cvTypographyThemes.includes(typographyValue)) {
-    cvThemeStylesheet.href = `/cv/common/themes/${typographyValue}/style.css`;
-  } else {
-    cvThemeStylesheet.removeAttribute('href');
+function updateSamplesTitle(typographyValue) {
+  const samplesTitle = document.getElementById('samplesTitle');
+  const styleTitle = document.getElementById('styleTitle');
+  if (!samplesTitle || !typographySelect) {
+    return;
+  }
+
+  const selectedOption = typographySelect.querySelector(`option[value="${typographyValue}"]`);
+  const label = selectedOption ? selectedOption.textContent.replace(/\s+Style$/, '') : 'Style';
+  samplesTitle.textContent = `${label} Elements`;
+  if (styleTitle) {
+    styleTitle.textContent = `${label} Style`;
   }
 }
 
-function applyTypographySelection(typographyValue) {
-  bodyElement.classList.remove(...localThemeClasses, 'cv-theme');
-  setCvThemeStylesheet(typographyValue);
-  updateStyleAbout(typographyValue);
-
-  if (localThemeClasses.includes(typographyValue)) {
-    bodyElement.classList.add(typographyValue);
-  } else if (cvTypographyThemes.includes(typographyValue)) {
-    bodyElement.classList.add('cv-theme');
+function syncSharedStylelook(typographyValue, persistCookie) {
+  if (persistCookie && typeof Cookies !== 'undefined') {
+    Cookies.set('stylelook', typographyValue === 'none' ? '' : typographyValue);
   }
+  if (typeof setStylelook === 'function') {
+    setStylelook(typographyValue);
+  }
+}
+
+function applyTypographySelection(typographyValue, persistCookie) {
+  syncSharedStylelook(typographyValue, persistCookie);
+  updateStyleAbout(typographyValue);
+  updateSamplesTitle(typographyValue);
 
   if (typographyValue === 'none') {
     const lastStyled = localStorage.getItem('lastStyledTypography');
@@ -717,40 +717,74 @@ function applyTypographySelection(typographyValue) {
   localStorage.setItem('lastStyledTypography', typographyValue);
 }
 
-// Get initial typography value from hash, localStorage, or default
-const hashParams = readHash();
-let initialValue = hashParams.style || localStorage.getItem('typographySelection') || 'georgia';
-
-// Validate the value
-if (!allTypographyThemes.includes(initialValue)) {
-  initialValue = 'georgia';
-}
-
-// Set the select value and apply — silent hash update on first load
-typographySelect.value = initialValue;
-applyTypographySelection(initialValue);
-if (!hashParams.style) {
-  writeHash({ style: initialValue });
-}
-
-// Respond to hash changes (back/forward navigation and goHash() calls)
-document.addEventListener('hashChangeEvent', function() {
-  const hash = readHash();
-  const newStyle = hash.style;
-  if (!newStyle || newStyle === (window.priorHash && window.priorHash.style)) return;
-  const validated = allTypographyThemes.includes(newStyle) ? newStyle : 'georgia';
-  if (typographySelect.value !== validated) {
-    typographySelect.value = validated;
+function initializeTypographyDemo() {
+  if (!initializeTypographySelect()) {
+    return;
   }
-  localStorage.setItem('typographySelection', validated);
-  applyTypographySelection(validated);
-});
+
+  const hashParams = readHash();
+  const cookieStylelook = typeof Cookies !== 'undefined' ? Cookies.get('stylelook') : '';
+  let initialValue = hashParams.style || cookieStylelook || localStorage.getItem('typographySelection') || 'georgia';
+
+  if (!allTypographyThemes.includes(initialValue)) {
+    initialValue = 'georgia';
+  }
+
+  typographySelect.value = initialValue;
+  applyTypographySelection(initialValue, Boolean(hashParams.style !== undefined || cookieStylelook));
+  if (!hashParams.style) {
+    writeHash({ style: initialValue });
+  }
+
+  document.addEventListener('hashChangeEvent', function() {
+    const hash = readHash();
+    const newStyle = hash.style;
+    if (!newStyle || newStyle === (window.priorHash && window.priorHash.style)) return;
+    const validated = allTypographyThemes.includes(newStyle) ? newStyle : 'georgia';
+    if (typographySelect.value !== validated) {
+      typographySelect.value = validated;
+    }
+    localStorage.setItem('typographySelection', validated);
+    applyTypographySelection(validated, true);
+  });
+
+  typographySelect.addEventListener('change', function() {
+    const val = this.value;
+    localStorage.setItem('typographySelection', val);
+    pushHash({ style: val });
+    applyTypographySelection(val, true);
+  });
+}
 
 // Dark mode toggle injected into .typography-dark-toggle swatch
 (function() {
+  function isDarkToggleActive() {
+    if (document.body.classList.contains('dark')) {
+      return true;
+    }
+    if (typeof Cookies === 'undefined') {
+      return false;
+    }
+    const sitelook = Cookies.get('sitelook') || 'default';
+    if (sitelook === 'dark') {
+      return true;
+    }
+    if (sitelook === 'computer') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    if (sitelook === 'default') {
+      return Cookies.get('modelsite') === 'dreamstudio'
+        || location.host.indexOf('dreamstudio') >= 0
+        || location.host.indexOf('planet.live') >= 0;
+    }
+    return false;
+  }
+
   function updateToggleIcon(btn) {
     const icon = btn.querySelector('.material-icons');
-    if (icon) icon.textContent = document.body.classList.contains('dark') ? 'light_mode' : 'dark_mode';
+    const isDark = isDarkToggleActive();
+    btn.classList.toggle('dark', isDark);
+    if (icon) icon.textContent = isDark ? 'dark_mode' : 'light_mode';
   }
   document.querySelectorAll('.typography-toggle').forEach(function(bar) {
     const btn = document.createElement('button');
@@ -758,9 +792,12 @@ document.addEventListener('hashChangeEvent', function() {
     btn.title = 'Toggle dark mode';
     const icon = document.createElement('i');
     icon.className = 'material-icons';
-    icon.textContent = document.body.classList.contains('dark') ? 'light_mode' : 'dark_mode';
     btn.appendChild(icon);
     bar.appendChild(btn);
+    updateToggleIcon(btn);
+    waitForElm('#bodyloaded').then(function() {
+      updateToggleIcon(btn);
+    });
     btn.addEventListener('click', function() {
       const newLook = document.body.classList.contains('dark') ? 'default' : 'dark';
       if (typeof Cookies !== 'undefined') Cookies.set('sitelook', newLook);
@@ -786,11 +823,8 @@ document.addEventListener('hashChangeEvent', function() {
   }, { passive: true });
 })();
 
-typographySelect.addEventListener('change', function() {
-  const val = this.value;
-  localStorage.setItem('typographySelection', val);
-  pushHash({ style: val });
-  applyTypographySelection(val);
+loadScript(local_app.localsite_root() + 'js/navigation.js', function() {
+  initializeTypographyDemo();
 });
 </script>
 
