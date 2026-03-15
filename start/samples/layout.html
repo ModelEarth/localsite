@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+    <title>Standard Layout Structure</title>
+
+    <!-- Initially this sample did not includeing tbase.css -->
+    <link type="text/css" rel="stylesheet" href="../../../localsite/css/base.css" id="/localsite/css/base.css" />
+
+    <link type="text/css" rel="stylesheet" href="layout.css" />
+
+</head>
+<body class="flexbody">
+
+    <!-- Main Layout Container -->
+    <div id="main-layout">
+        <!-- Main Header -->
+        <header id="main-header">
+            <h1>#main-header</h1>
+        </header>
+
+        <!-- Main Container (holds section nav and main content) -->
+        <div id="main-container">
+
+            <!-- Side Navigation -->
+            <nav id="side-nav" class="sidebar collapsed">
+                <div id="side-nav-absolute">
+                    <div id="side-nav-content">
+
+                        <!-- MENU -->
+
+                        <div id="side-nav-menu">
+                            <div class="nav-section">
+                                <div class="nav-item">
+                                    <button class="nav-link" data-section="home" data-href=".//../team/">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home nav-icon"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                        <span class="nav-text">Welcome</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right nav-arrow"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                    </button>
+                                    <div class="subnav">
+                                        <a href=".//../team/#home" class="subnav-link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smile subnav-icon"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                                            <span>Welcome</span>
+                                        </a>
+                                        <a href=".//../team/#home/documentation" class="subnav-link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book subnav-icon"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                                            <span>Getting Started</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="nav-section earth">
+                                <div class="nav-item">
+                                    <button class="nav-link" data-section="projects" data-href=".//../projects">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder nav-icon"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                        <span class="nav-text">Projects</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right nav-arrow"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                    </button>
+                                    <div class="subnav">
+                                        <a href=".//../projects" class="subnav-link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe subnav-icon"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                                            <span>Active Projects</span>
+                                        </a>
+                                        <a href="https://github.com/modelearth/projects/issues/" class="subnav-link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-square subnav-icon"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                                            <span>ToDos (GitHub)</span>
+                                        </a>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="vertical-text-holder"><span class="vertical-text">#side-nav-content</span></div>
+
+                        </div>
+
+                        <!-- /MENU -->
+
+                        
+
+                        <div id="side-nav-footer">
+                            <button id="nav-toggle" onclick="toggleNav();//toggleNavAdjacent();">☰</button>
+                        </div>
+
+                    </div>
+
+
+                    
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main id="main-content">
+                
+                <!-- Section Navigation -->
+                <nav id="section-nav">
+                    <ul>
+                        <li><a href="#details">Details</a></li>
+                        <li><a href="#analytics">Analytics</a></li>
+                        <li><a href="#settings">Settings</a></li>
+                    </ul>
+                </nav>
+
+                <div class="content contentpadding">
+                    <h2>#main-content</h2>
+                    <p>This is where your primary content goes. The layout adjusts when the side navigation expands or collapses.</p>
+
+                    <p><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>Long text<br><br><br><br><br><br><br><br><br>Lower</p>
+                </div>
+            </main>
+        </div>
+
+        <!-- Main Footer -->
+        <footer id="main-footer">
+            <p>&copy; <script>document.write(new Date().getFullYear())</script> #main-footer<br><br>End Footer</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleNavAdjacent() { // Gets overlapped
+            const sideNav = document.getElementById('side-nav');
+            const mainLayout = document.getElementById('main-layout');
+            
+            sideNav.classList.toggle('expanded');
+            mainLayout.classList.toggle('nav-expanded');
+        }
+    </script>
+
+    <script>
+        function toggleNav() {
+            const sideNav = document.getElementById('side-nav');
+            const body = document.body;
+            
+            // Toggle between collapsed and expanded states
+            if (sideNav.classList.contains('collapsed')) {
+                sideNav.classList.remove('collapsed');
+                body.classList.remove('sidebar-collapsed');
+                body.classList.add('sidebar-expanded');
+            } else {
+                sideNav.classList.add('collapsed');
+                body.classList.remove('sidebar-expanded');
+                body.classList.add('sidebar-collapsed');
+            }
+        }
+
+        // Initialize body class based on sidebar state
+        document.addEventListener('DOMContentLoaded', function() {
+            const sideNav = document.getElementById('side-nav');
+            const body = document.body;
+            
+            if (sideNav.classList.contains('collapsed')) {
+                body.classList.add('sidebar-collapsed');
+            } else {
+                body.classList.add('sidebar-expanded');
+            }
+        });
+    </script>
+</body>
+</html>

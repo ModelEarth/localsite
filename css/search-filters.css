@@ -32,9 +32,6 @@
 .select-menu-arrow-holder {
     position:absolute; right:4px; top:4px;
 }
-.stateFilters {
-  padding-top:10px;
-}
 #appSelectHolder .showApps {
   padding-right:4px;
 }
@@ -46,10 +43,8 @@
 .showApps.active > .material-icons {
   color: #eee;
 }
-@media (prefers-color-scheme: dark) {
-  #filterFieldsHolder {
-    background-color: #333;
-  }
+.dark #filterFieldsHolder {
+  background-color: #333;
 }
 .filterFieldsHolderFixed {
   position: fixed;
@@ -84,10 +79,95 @@
   content: url("/localsite/img/icon/hamburger-lite.png");
 }
 #filterFieldsMain {
-    min-height:54px;
+    /* min-height:54px; caused blank space narrow */
     overflowX: hidden;
     position: relative;
 }
+#filterFieldContent {
+  position: relative;
+}
+.menuToggleHolder {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  cursor: pointer;
+  padding: 6px;
+  z-index: 3;
+}
+.menuToggleHolder .material-icons {
+  font-size: 18px;
+  color: #777;
+}
+.dark .menuToggleHolder .material-icons {
+  color: #ddd;
+}
+/*
+.menuToggleMenu {
+  position: absolute;
+  right: 10px;
+  top: 48px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  min-width: 180px;
+  padding: 6px 0;
+  z-index: 1001;
+}
+.dark .menuToggleMenu {
+  background: #333;
+  border-color: #555;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+.menuToggleItem {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #444;
+  display: block;
+  text-decoration: none;
+  position: relative;
+  line-height: 1;
+}
+.menuToggleCheck {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #888;
+  display: none !important;
+}
+.menuToggleItem.is-active .menuToggleCheck {
+  display: inline-block !important;
+}
+.menuToggleItem:hover {
+  background: #f2f2f2;
+  color: #111;
+}
+.menuToggleDivider {
+  border-top: 1px solid #eee;
+  margin: 4px 0;
+}
+.menuToggleLink {
+  color: inherit;
+}
+.dark .menuToggleItem {
+  color: #eee;
+}
+.dark .menuToggleCheck {
+  color: #aaa;
+}
+.dark .menuToggleItem:hover {
+  background: #444;
+  color: #fff;
+}
+.dark .menuToggleLink {
+  color: inherit;
+}
+.dark .menuToggleDivider {
+  border-top-color: #555;
+}
+*/
 #stateFiltersHolder {
   padding-right: 40px;
   max-height: 52px;
@@ -100,7 +180,10 @@
 }
 @media (max-width: 600px) {
   #mapFilters {
-    padding-left: 10px;
+    padding-left: 0px;
+  }
+  #filterFieldsHolder {
+    padding: 0px !important;
   }
   #stateFiltersHolder {
     padding-left: 12px;
@@ -108,18 +191,15 @@
   }
 }
 @media (min-width: 600px) {
-  #filterFieldsMain {
-      padding:2px 0 0px 60px; /* Moves filters to right of left icon(s) */
+  #filterFieldsMainXXX {
+      padding:2px 0 0px 10px; /* Moves filters to right of left icon(s) */
   }
   .filterFieldsHolderFixed #filterFieldsMain {
-    padding-left: 20px;
-    padding-left: 62px; /* Allows for menu icon to the left */
-  }
-  #locationFilterHolder #filterLocations {
-    padding-left: 60px; /* Margin for menu icon */
+    padding-leftX: 20px;
+    padding-leftX: 62px; /* Allows for menu icon to the left */
   }
   .bodyLeftMargin #locationFilterHolder #filterLocations {
-    padding-left: 20px;
+    padding-leftX: 20px;
   }
 }
 @media (min-width: 600px AND max-width: 1100px) {
@@ -142,6 +222,29 @@
 .filterField {
 	margin-right: 6px;
 	float: left;
+}
+.keywordField {
+	overflow: auto;
+	clear: none;
+	max-width: 100%;
+}
+.keywordField .searchField {
+	display: flex;
+	align-items: flex-start;
+	gap: 6px;
+	width: min(100%, 400px);
+	overflow: visible !important;
+}
+.keywordField .searchField > div:first-child {
+	order: 2;
+	float: none !important;
+	flex: 0 0 auto;
+}
+.keywordField .searchField > div:last-child {
+	float: none !important;
+	flex: 1 1 auto;
+	min-width: 100px;
+	padding-right: 0 !important;
 }
 @media (max-width: 600px) {
   .filterFieldXX {
@@ -192,21 +295,104 @@ input.filterClick[type="text"] {
   }
 }
 .filterClickText {
+    float: left;
     font-size: 11pt;
     line-height: 12pt;
     white-space: nowrap;
     padding-top:8px;
     padding-right:23px;
 }
+#filterClickLocation {
+    min-width: 120px;
+    max-width: 100%;
+    overflow: hidden;
+}
+#filterClickLocation .countiesTabText {
+    display: block;
+    float: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+.geoviewSelectText {
+    cursor: pointer;
+}
+.geoviewSelectText:focus {
+    outline: 2px solid #cfcfcf;
+    outline-offset: 1px;
+}
+#geoview_select:focus,
+#geoview_select:focus-visible {
+    outline: none;
+}
+#geoviewSelectHolder {
+    float: left;
+    position: relative;
+    margin-right: 4px;
+}
+#mapFilters,
+#filterFieldsHolder,
+#filterFieldsMain,
+#filteFieldsDropdowns,
+#geoviewSelectHolder {
+    overflow: visible !important;
+}
+.geoviewSelectText {
+    display: inline-block;
+}
+#geoview_container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    z-index: 1001;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 4px 6px;
+    min-width: 160px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+#geoview_statelist {
+    padding: 2px 0 2px 6px;
+    border-left: 1px solid #eee;
+}
+#geoview_statelist select {
+    max-width: 220px;
+}
+.geoviewSelectList {
+    padding: 4px 0;
+}
+.geoviewSelectOption {
+    padding: 6px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 11pt;
+    line-height: 12pt;
+    color: #686868;
+}
+.geoviewSelectOption:hover {
+    background: #f3f3f3;
+}
+.geoviewSelectOption.selected {
+    background: #eee;
+}
+.geoviewSelectOption.focused {
+    background: #e6e6e6;
+}
 .filterClickActive {
+  background-color: #eee;
+}
+.filterClickActiveTab { /* Not currently in use */
     border-top: 1px solid #eee;
     border-bottom: 0px solid #fff;
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
     margin-bottom:-12px;
     height: 46px; /* 45px to short for Locations tab due to unresolved height issue  */
-    background-color: #fcfcfc;
-    background-color: #eee; /* matches .lite */
+    background-color: #eee;
 }
 .dark .filterClickActive {
   background-color: #555;
@@ -250,11 +436,22 @@ input.filterClick[type="text"] {
 
 #keywordsTB {
     width:100%;
-    max-width:400px;
+    min-width: 100px;
+    max-width:100%;
 }
 @media (max-width: 800px) {
     #keywordsTB {
-        max-width:100px;
+        min-width: 100px;
+    }
+}
+@container (max-width: 400px) {
+    #catSearchHolder {
+        min-width: 245px;
+    }
+}
+@container (max-width: 320px) {
+    .filterField {
+        width: 100%;
     }
 }
 #goSearch {
@@ -308,12 +505,7 @@ input.filterClick[type="text"] {
   z-index: 1000;
 }
 #geoListHolder {
-    displayX: flex;
     overflow: hidden;
-    padding-left: 15px;
-    padding-right: 20px;
-    height: 530px;
-    border: 10px solid blue;
 }
 .listHolderFooterX {
   position:absolute;
@@ -331,6 +523,16 @@ input.filterClick[type="text"] {
 }
 #geomapHolder {
   float:left;
+  position: relative;
+}
+#geomapHolder .hideAdvanced.close-X {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  color: #555;
 }
 @media (max-width: 1350px) {
   #geomapHolder, #geomap {
@@ -535,8 +737,13 @@ input.filterClick[type="text"] {
 .bigThumbMenuInner {
   display: grid;
   overflow: auto;
-  padding: 20px;
+  padding: 15px;
   padding-bottom: 10px;
+}
+@media (max-width: 600px) {
+  .bigThumbMenuInner {
+    padding: 40px 0 0 0;
+  }
 }
 .contentpadding .bigThumbMenuInner {
   padding: 0px;
@@ -732,4 +939,3 @@ input.filterClick[type="text"] {
   color: #fff;
   background-color: rgba(33,33,33,0.3);
 }
-

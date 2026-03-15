@@ -4,6 +4,9 @@
 // Declare global chart variables so they can be accessed in resize handler
 let timelineChart;
 let lineAreaChart;
+let manualSizingActive = false; // Flag to track if manual sizing is being used
+const api_key = "AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI";
+
 
 function loadEarthScape(my) {
     loadScript(theroot + 'js/d3.v5.min.js', function (results) {
@@ -176,62 +179,126 @@ const countryCodeMap = {
   };
   const defaultCountries = ['IN', 'CN', 'US', 'GB', 'DE', 'JP', 'BR', 'RU', 'ZA', 'SA', 'AE'];
 
-//Timelinechart for scopes country, state, and county 
+// Cache for all countries data to avoid re-fetching
+let allCountriesCache = null;
+
+//Timelinechart for scopes country, state, and county
 let geoValues = {};
-const MIN_YEAR = 1960; // Minimum year to filter data
+let MIN_YEAR = 1960; // Minimum year to filter data
+function setTimelineMinYear(year) {
+    const parsedYear = parseInt(year, 10);
+    if (!Number.isNaN(parsedYear)) {
+        MIN_YEAR = parsedYear;
+        window._timelineMinYear = parsedYear;
+    }
+}
+function updateTimelineMinYearFromSelect(selectEl) {
+    if (!selectEl || !selectEl.options || !selectEl.options.length) {
+        return;
+    }
+    const opt = selectEl.options[selectEl.selectedIndex];
+    const startYear = opt && opt.dataset ? opt.dataset.startYear : null;
+    if (startYear) {
+        setTimelineMinYear(startYear);
+    }
+}
+window.setTimelineMinYear = setTimelineMinYear;
+window.updateTimelineMinYearFromSelect = updateTimelineMinYearFromSelect;
+
+/**
+ * Fetches time-series data from Google Data Commons and renders
+ * a multi-line timeline chart and stacked area chart using Chart.js.
+ *
+ * This function:
+ *  - Resolves geographic entities based on the selected scope (country, state, county)
+ *  - Fetches observations for a given Statistical Variable (SV / DCID)
+ *  - Optionally converts values to per-capita
+ *  - Filters data by minimum year
+ *  - Determines which locations to display (Top 5, Bottom 5, Selected, All)
+ *  - Builds and renders both the line chart and area chart
+ *
+ * param {string} scope
+ *   Geographic level of analysis. Determines which entities are queried.
+ *   Possible values: "country", "state", "county".
+ *
+ * param {string} chartVariable
+ *   The Data Commons Statistical Variable DCID (SV) to fetch.
+ *   Example: "Count_Person", "Amount_Emissions_CarbonDioxide".
+ *
+ * param {string} entityId
+ *   Parent entity DCID used when scope is "county".
+ *   Used to retrieve all counties contained within this entity.
+ *   (Not used for country/state scope.)
+ *
+ * param {string} showAll
+ *   Controls which locations are displayed on the chart.
+ *   Possible values:
+ *     - "showAll"      → show all valid locations
+ *     - "showTop5"     → show top 5 by latest value
+ *     - "showBottom5"  → show bottom 5 by latest value
+ *     - "showSelected" → show only selected countries from URL hash
+ *
+ * param {string} chartText
+ *   Human-readable title of the selected metric.
+ *   Used for chart titles and axis labels.
+ */
+
+
 async function getTimelineChart(scope, chartVariable, entityId, showAll, chartText) {
     //alert("getTimelineChart chartVariable: " + chartVariable + ", scope: " + scope)
-    let hash = getHash(); // Add hash check at top of function
-    geoValues = {}; // Clear prior
-    const defaultCountries3Char = defaultCountries.map(code => countryCodeMap[code] || code);
-    const userSelected = hash.country ? hash.country.split(',').map(code => countryCodeMap[code.trim()] || code.trim()) : [];
-    const selectedCountries3Char = [...new Set([...defaultCountries3Char, ...userSelected])];
-    const selectedCountries = []; // top-level
-    let response, data, geoIds;
-    let whichPer = document.querySelector('input[name="whichPer"]:checked')?.value || 'totals';
+    document.body.classList.add('timeline-loading');
+    try {
+        let hash = getHash(); // Add hash check at top of function
+        geoValues = {}; // Clear prior
+        const defaultCountries3Char = defaultCountries.map(code => countryCodeMap[code] || code);
+        const userSelected = hash.country ? hash.country.split(',').map(code => countryCodeMap[code.trim()] || code.trim()) : [];
+        const selectedCountries3Char = [...new Set([...defaultCountries3Char, ...userSelected])];
+        const selectedCountries = []; // top-level
+        let response, data, geoIds;
+        let whichPer = document.querySelector('input[name="whichPer"]:checked')?.value || 'totals';
 
-    if (scope === "county") {
-        // Fetch county data
-        response = await fetch(`https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&entity.expression=${entityId}%3C-containedInPlace%2B%7BtypeOf%3ACounty%7D&select=date&select=entity&select=value&select=variable&variable.dcids=${chartVariable}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "dates": ""
-            })
-        });
-        data = await response.json();
-        geoIds = Object.keys(data.byVariable[chartVariable].byEntity);
+        if (scope === "county") {
+            // Fetch county data
+            response = await fetch(`https://api.datacommons.org/v2/observation?key=${api_key}&entity.expression=${entityId}%3C-containedInPlace%2B%7BtypeOf%3ACounty%7D&select=date&select=entity&select=value&select=variable&variable.dcids=${chartVariable}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "dates": ""
+                })
+            });
+            data = await response.json();
+            geoIds = Object.keys(data.byVariable[chartVariable].byEntity);
 
-        // Fetch county and state names
-        const response2 = await fetch('https://api.datacommons.org/v2/node?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "nodes": geoIds,
-                "property": "->[containedInPlace, name]"
-            })
-        });
-        const data2 = await response2.json();
+            // Fetch county and state names
+            const response2 = await fetch(`https://api.datacommons.org/v2/node?key=${api_key}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "nodes": geoIds,
+                    "property": "->[containedInPlace, name]"
+                })
+            });
+            const data2 = await response2.json();
 
-        Object.keys(data2.data).forEach(geoId => {
-            const node = data2.data[geoId].arcs;
-            const stateName = node.containedInPlace.nodes[0]['name'];
-            const countyName = node.name.nodes[0]['value'];
-            geoValues[geoId] = {
-                name: countyName,
-                state: stateName
-            };
-        });
-    } else if (scope === "state") {
-        // Fetch state data
-        const statesList = [
-            'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 
-            'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
-            'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
+            Object.keys(data2.data).forEach(geoId => {
+                const node = data2.data[geoId].arcs;
+                const stateName = node.containedInPlace.nodes[0]['name'];
+                const countyName = node.name.nodes[0]['value'];
+                geoValues[geoId] = {
+                    name: countyName,
+                    state: stateName
+                };
+            });
+        } else if (scope === "state") {
+            // Fetch state data
+            const statesList = [
+                'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 
+                'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
+                'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
             'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
             'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri',
             'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
@@ -240,7 +307,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
             'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
           ];
-        response = await fetch('https://api.datacommons.org/v2/resolve?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
+        response = await fetch(`https://api.datacommons.org/v2/resolve?key=${api_key}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -254,7 +321,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         geoIds = data.entities.map(entity => entity.candidates[0].dcid);
 
         // Fetch state names
-        const response2 = await fetch('https://api.datacommons.org/v2/node?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
+        const response2 = await fetch(`https://api.datacommons.org/v2/node?key=${api_key}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -274,24 +341,36 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             };
         });
 
-    }/* else if (scope === "country") {// Fetch country ISO codes first
-        const restResponse = await fetch("https://restcountries.com/v3.1/all?fields=cca2,name"); // cca3 is also available
-    } */else if (scope === "country")
-        
-        {
-        // Fetch country ISO codes first
-        //const restResponse = await fetch("https://restcountries.com/v3.1/all");
-        const restResponse = await fetch("https://restcountries.com/v3.1/all?fields=cca2,name"); // cca3 is also available
-        const countriesData = await restResponse.json();
-    
-        // Get all ISO Alpha-2 codes
-        const selectedCountries = countriesData.map(country => country.cca2).filter(Boolean); // filter out undefined/null
-    
-        console.log("Selected Countries:", selectedCountries); // Debug log
-    
-        // Fetch country dcids using ISO codes
+    } else if (scope === "country") {
+        // Only fetch ALL countries if showAll === 'showAll'
+        // Otherwise use default countries for better performance
+        let selectedCountries;
 
-        response = await fetch('https://api.datacommons.org/v2/resolve?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
+        if (showAll === 'showAll') {
+            // Lazy load: Fetch all countries only when "All" is selected
+            if (!allCountriesCache) {
+                console.log("Fetching all countries from RESTCountries API...");
+                const restResponse = await fetch("https://restcountries.com/v3.1/all?fields=cca2,name");
+                const countriesData = await restResponse.json();
+
+                // Cache the result
+                allCountriesCache = countriesData.map(country => country.cca2).filter(Boolean);
+                console.log(`Loaded ${allCountriesCache.length} countries from API`);
+                // Note: Label will be updated later with actual count of countries that have data
+            } else {
+                console.log("Using cached country data");
+            }
+            selectedCountries = allCountriesCache;
+        } else {
+            // Use default countries for Top 5, Top Economics, Bottom 5
+            selectedCountries = defaultCountries;
+            console.log("Using default countries:", selectedCountries);
+        }
+
+        console.log("Selected Countries:", selectedCountries); // Debug log
+
+        // Fetch country dcids using ISO codes
+        response = await fetch(`https://api.datacommons.org/v2/resolve?key=${api_key}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -301,15 +380,15 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 "property": "<-description{typeOf:Country}->dcid"
             })
         });
-    
+
         data = await response.json();
-    
+
         geoIds = data.entities
             .map(entity => entity?.candidates?.[0]?.dcid)
             .filter(Boolean); // remove undefined/null
-    
+
         // Fetch country names
-        const response2 = await fetch('https://api.datacommons.org/v2/node?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI', {
+        const response2 = await fetch(`https://api.datacommons.org/v2/node?key=${api_key}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -319,9 +398,9 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 "property": "->name"
             })
         });
-    
+
         const data2 = await response2.json();
-    
+
         Object.keys(data2.data).forEach(geoId => {
             const countryName = data2.data[geoId]?.arcs?.name?.nodes?.[0]?.value;
             if (countryName) {
@@ -331,11 +410,11 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 };
             }
         });
-       
+
     }
 
     // Fetch observational data using geoIds list
-    const url = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=${chartVariable}&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
+    const url = `https://api.datacommons.org/v2/observation?key=${api_key}&variable.dcids=${chartVariable}&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
     console.log("url data:",url)
     const response3 = await fetch(url, {
         method: 'POST',
@@ -351,7 +430,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
     console.log("timeline obsevational data for country:",timelineData)
     let populationData = {};
 if (whichPer === 'percapita') {
-  const popUrl = `https://api.datacommons.org/v2/observation?key=AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI&variable.dcids=Count_Person&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
+  const popUrl = `https://api.datacommons.org/v2/observation?key=${api_key}&variable.dcids=Count_Person&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
 
   const popResponse = await fetch(popUrl, {
     method: 'POST',
@@ -506,40 +585,67 @@ dataCopy.forEach(location => {
                 : a.latestValue - b.latestValue
         )
         .slice(0, Math.min(5, validData.length));
-            
+
     } else {
         selectedData = dataCopy;
+        // Update label with actual count of countries that have data
+        if (scope === "country" && showAll === 'showAll') {
+            updateAllCountryLabel(selectedData.length);
+        }
     }
+
+    // Reset the "All" label when other modes are selected
+    if (scope === "country" && showAll !== 'showAll') {
+        resetAllCountryLabel();
+    }
+
      console.log("Filtered Countries:", selectedData);
 
     // Get datasets
+    // Deterministic color generator per label so line and area charts match
+    function colorForLabel(label, alpha) {
+        // Simple string hash
+        let hash = 0;
+        for (let i = 0; i < label.length; i++) {
+            hash = label.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const h = Math.abs(hash) % 360; // hue
+        const s = 62; // saturation
+        const l = 48; // lightness
+        if (typeof alpha === 'number') {
+            return `hsla(${h}, ${s}%, ${l}%, ${alpha})`;
+        }
+        return `hsl(${h}, ${s}%, ${l}%)`;
+    }
+
     const datasets = selectedData.map(location => {
+        const border = colorForLabel(location.name);
         return {
             label: location.name,
             data: years.map(year => {
-                const observation = location.observations.find(obs => 
-                obs.date.split('-')[0] === year
-            );
-            return observation ? observation.value : null;
-        }),
-            borderColor: 'rgb(' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ')',
+                const observation = location.observations.find(obs => obs.date.split('-')[0] === year);
+                return observation ? observation.value : null;
+            }),
+            borderColor: border,
             backgroundColor: 'rgba(0, 0, 0, 0)',
         };
     });
 
-    // For Area Chart
+    // For Area Chart - reuse the same colors (with alpha)
     const datasets1 = selectedData.map(location => {
+        const bg = colorForLabel(location.name, 0.18);
+        const border = colorForLabel(location.name);
         return {
             label: location.name,
             data: years.map(year => {
-                const observation = location.observations.find(obs => obs.date === year);
+                const observation = location.observations.find(obs => obs.date.split('-')[0] === year);
                 return observation ? observation.value : null;
             }),
-            backgroundColor: 'rgba(' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ',0.2)',
+            backgroundColor: bg,
             borderColor: 'rgba(0,0,0,0)',
             fill: true
         };
-    });      
+    });
     const config = {
         type: 'line',
         data: {
@@ -548,16 +654,19 @@ dataCopy.forEach(location => {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
+            elements: {
+                point: {
+                    radius: 0,
+                    hoverRadius: 0,
+                    hitRadius: 6
+                }
+            },
             
             plugins: {
+                // Use a floating DOM legend instead of the built-in Chart.js legend
                 legend: {
-                    position: 'bottom', //Better on small screens
-                    labels: {
-                        boxwidth: 12,
-                        font: {
-                            size: 13 // smaller text for legends
-                        }
-                    }
+                    display: false
                 },
                 title: {
                     display: true,
@@ -610,6 +719,14 @@ dataCopy.forEach(location => {
             data: data1,
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
+                elements: {
+                    point: {
+                        radius: 0,
+                        hoverRadius: 0,
+                        hitRadius: 6
+                    }
+                },
                  // Important for fluid resizing
                 plugins: {
                   title: {
@@ -622,15 +739,10 @@ dataCopy.forEach(location => {
                   tooltip: {
                     mode: 'index'
                   },
-                  legend: {
-                    position: 'bottom',
-                    labels: {
-                      boxWidth: 12,
-                      font: {
-                        size: 12
-                      }
-                    }
-                  }
+                                        // Disable built-in legend in favor of floating DOM legend
+                                        legend: {
+                                            display: false
+                                        }
                 },
                 interaction: {
                   mode: 'nearest',
@@ -671,6 +783,70 @@ dataCopy.forEach(location => {
               
     }
 
+    window._timelineYears = years;
+    window._timelineCountryDataByName = {};
+    formattedData.forEach(function(loc){ window._timelineCountryDataByName[loc.name] = loc; });
+    window._timelineSelectedLabels = selectedData.map(function(loc){ return loc.name; });
+    window.addCountryToCharts = function(name){
+        try {
+            // Force legend DOM rebuild so re-enabled hidden items appear immediately.
+            window._forceLegendRebuild = true;
+            if (!window._applyingSavedLegendList) {
+                window._legendListDirty = true;
+                window._legendListJustSaved = false;
+                try { if (typeof window.updateLegendCacheButtonsVisibility === 'function') window.updateLegendCacheButtonsVisibility(); } catch (e) {}
+            }
+            var loc = window._timelineCountryDataByName && window._timelineCountryDataByName[name];
+            if (!loc) return;
+            var yrs = window._timelineYears || [];
+            var existsLine = false;
+            var existsArea = false;
+            try { existsLine = Array.isArray(timelineChart?.data?.datasets) && timelineChart.data.datasets.some(function(ds){ return ds.label === name; }); } catch (e) {}
+            try { existsArea = Array.isArray(lineAreaChart?.data?.datasets) && lineAreaChart.data.datasets.some(function(ds){ return ds.label === name; }); } catch (e) {}
+            var border = colorForLabel(name);
+            var dataArr = yrs.map(function(year){ var observation = (loc.observations || []).find(function(obs){ return (obs.date.split('-')[0]) === year; }); return observation ? observation.value : null; });
+            if (timelineChart && !existsLine) {
+                try {
+                    timelineChart.data.datasets.push({ label: name, data: dataArr, borderColor: border, backgroundColor: 'rgba(0, 0, 0, 0)' });
+                    timelineChart.update();
+                } catch (e) {}
+            } else if (timelineChart && existsLine) {
+                // Restore an existing hidden series when selected from More Locations.
+                try {
+                    timelineChart.data.datasets.forEach(function(ds, idx){
+                        if (ds && ds.label === name) {
+                            var meta = timelineChart.getDatasetMeta(idx);
+                            if (meta) meta.hidden = false;
+                        }
+                    });
+                    timelineChart.update();
+                } catch (e) {}
+            }
+            if (lineAreaChart && !existsArea) {
+                try {
+                    var bg = colorForLabel(name, 0.18);
+                    lineAreaChart.data.datasets.push({ label: name, data: dataArr, backgroundColor: bg, borderColor: 'rgba(0,0,0,0)', fill: true });
+                    lineAreaChart.update();
+                } catch (e) {}
+            } else if (lineAreaChart && existsArea) {
+                // Restore an existing hidden area series when selected from More Locations.
+                try {
+                    lineAreaChart.data.datasets.forEach(function(ds, idx){
+                        if (ds && ds.label === name) {
+                            var meta = lineAreaChart.getDatasetMeta(idx);
+                            if (meta) meta.hidden = false;
+                        }
+                    });
+                    lineAreaChart.update();
+                } catch (e) {}
+            }
+            // Avoid intermediate legend flashes while cached legend list is being applied.
+            if (!window._applyingSavedLegendList) {
+                try { if (typeof window.buildFloatingLegendFromChart === 'function') window.buildFloatingLegendFromChart(); } catch (e) {}
+            }
+        } catch (e) {}
+    };
+
         if (hash.output === "json") {
         // Output JSON data to the page
         const jsonOutput = {
@@ -697,6 +873,22 @@ dataCopy.forEach(location => {
         const ctx1 = document.getElementById('lineAreaChart');
         lineAreaChart = new Chart(ctx1, config1);
 
+        // Trigger floating legend build only after BOTH charts are rebuilt.
+        // This avoids mixing stale labels from the previous scope during transitions
+        // (for example switching from state -> country).
+        (function tryBuildLegend(attempt) {
+            attempt = attempt || 0;
+            if (typeof window.buildFloatingLegendFromChart === 'function') {
+                try {
+                    window.buildFloatingLegendFromChart();
+                } catch (e) {
+                    console.warn('buildFloatingLegendFromChart failed:', e);
+                }
+            } else if (attempt < 10) {
+                setTimeout(() => tryBuildLegend(attempt + 1), 250);
+            }
+        })();
+
         // Handle window resize to ensure charts adjust correctly when the window size changes
         // Chart.js automatically handles shrinking, but to handle expansion properly, 
         // we need to manually trigger a resize on each chart instance.
@@ -704,20 +896,166 @@ dataCopy.forEach(location => {
         // Remove existing listener to avoid duplicates
         window.removeEventListener('resize', handleChartResize);
         window.addEventListener('resize', handleChartResize);
-    } 
+        }
+    } finally {
+        document.querySelectorAll('.timeline-loading-overlay .loading-text').forEach(el => {
+            el.textContent = 'Timeline Display';
+        });
+        document.body.classList.remove('timeline-loading');
+    }
 }
 
 // Chart resize handler function
 function handleChartResize() {
-    if (timelineChart instanceof Chart) {
-        timelineChart.resize();
-    }
-    if (lineAreaChart instanceof Chart) {
-        lineAreaChart.resize();
+    // Only auto-resize if manual sizing is not active
+    if (!manualSizingActive) {
+        if (timelineChart instanceof Chart) {
+            timelineChart.resize();
+        }
+        if (lineAreaChart instanceof Chart) {
+            lineAreaChart.resize();
+        }
     }
 }
 
+// Chart size control functions
+function updateChartSize() {
+    const widthSlider = document.getElementById('widthSlider');
+    const heightSlider = document.getElementById('heightSlider');
+    const widthValue = document.getElementById('widthValue');
+    const heightValue = document.getElementById('heightValue');
+    
+    if (!widthSlider || !heightSlider || !widthValue || !heightValue) {
+        return; // Elements not found, exit gracefully
+    }
+    
+    const width = widthSlider.value + 'px';
+    const height = heightSlider.value + 'px';
+    
+    // Update display values
+    widthValue.textContent = width;
+    heightValue.textContent = height;
+    
+    // Set manual sizing flag to prevent auto-resize
+    manualSizingActive = true;
+    
+    // Apply size ONLY to chart containers (divs that hold the canvases)
+    // Don't modify canvas attributes directly to avoid diagonal scaling
+    const timelineContainer = document.getElementById('div1');
+    const lineAreaContainer = document.getElementById('div2');
+    
+    if (timelineContainer) {
+        timelineContainer.style.width = width;
+        timelineContainer.style.height = height;
+        // Ensure container has proper positioning for chart sizing
+        timelineContainer.style.position = 'relative';
+    }
+    
+    if (lineAreaContainer) {
+        lineAreaContainer.style.width = width;
+        lineAreaContainer.style.height = height;
+        // Ensure container has proper positioning for chart sizing
+        lineAreaContainer.style.position = 'relative';
+    }
+    
+    // Update chart options to disable aspect ratio maintenance for manual sizing
+    if (timelineChart instanceof Chart) {
+        timelineChart.options.maintainAspectRatio = false;
+        timelineChart.options.responsive = true;
+        timelineChart.update('none'); // Update without animation
+    }
+    
+    if (lineAreaChart instanceof Chart) {
+        lineAreaChart.options.maintainAspectRatio = false;
+        lineAreaChart.options.responsive = true;
+        lineAreaChart.update('none'); // Update without animation
+    }
+    
+    // Force chart resize with manual sizing active
+    setTimeout(() => {
+        if (timelineChart instanceof Chart) {
+            timelineChart.resize();
+        }
+        if (lineAreaChart instanceof Chart) {
+            lineAreaChart.resize();
+        }
+    }, 100);
+}
+
+function resetChartSize() {
+    const widthSlider = document.getElementById('widthSlider');
+    const heightSlider = document.getElementById('heightSlider');
+    const widthValue = document.getElementById('widthValue');
+    const heightValue = document.getElementById('heightValue');
+    
+    if (!widthSlider || !heightSlider || !widthValue || !heightValue) {
+        return; // Elements not found, exit gracefully
+    }
+    
+    // Reset sliders to default values
+    widthSlider.value = 800;
+    heightSlider.value = 400;
+    
+    // Clear manual sizing flag to restore responsive behavior
+    manualSizingActive = false;
+    
+    // Reset chart containers to auto sizing
+    const timelineContainer = document.getElementById('div1');
+    const lineAreaContainer = document.getElementById('div2');
+    
+    if (timelineContainer) {
+        timelineContainer.style.width = '';
+        timelineContainer.style.height = '';
+    }
+    
+    if (lineAreaContainer) {
+        lineAreaContainer.style.width = '';
+        lineAreaContainer.style.height = '';
+    }
+    
+    // Reset canvases to auto sizing
+    const timelineCanvas = document.getElementById('timelineChart');
+    const lineAreaCanvas = document.getElementById('lineAreaChart');
+    
+    if (timelineCanvas) {
+        timelineCanvas.style.width = '';
+        timelineCanvas.style.height = '';
+        timelineCanvas.removeAttribute('width');
+        timelineCanvas.removeAttribute('height');
+    }
+    
+    if (lineAreaCanvas) {
+        lineAreaCanvas.style.width = '';
+        lineAreaCanvas.style.height = '';
+        lineAreaCanvas.removeAttribute('width');
+        lineAreaCanvas.removeAttribute('height');
+    }
+    
+    // Update display values
+    widthValue.textContent = '800px';
+    heightValue.textContent = '400px';
+    
+    // Restore chart options to default responsive behavior
+    if (timelineChart instanceof Chart) {
+        timelineChart.options.maintainAspectRatio = true;
+        timelineChart.options.responsive = true;
+        timelineChart.update('none'); // Update without animation
+    }
+    
+    if (lineAreaChart instanceof Chart) {
+        lineAreaChart.options.maintainAspectRatio = true;
+        lineAreaChart.options.responsive = true;
+        lineAreaChart.update('none'); // Update without animation
+    }
+    
+    // Trigger chart resize with responsive behavior restored
+    setTimeout(() => {
+        handleChartResize();
+    }, 100);
+}
+
 function refreshTimeline() {
+    document.body.classList.add('timeline-loading');
     let hash = getHash();
     let scope = "country";
     if (hash.scope) {
@@ -730,8 +1068,20 @@ function refreshTimeline() {
             let showAll = document.querySelector('input[name="whichLines"]:checked').value;
             if(!showAll) {showAll = 'showTop5';}
 
-            let entityIdSelect = document.getElementById('entityId');
-            let entityId = entityIdSelect.options[entityIdSelect.selectedIndex].value;
+            let entityId = '';
+            const entityIdSelect = document.getElementById('entityId');
+            if (entityIdSelect && entityIdSelect.selectedIndex >= 0) {
+            entityId = entityIdSelect.options[entityIdSelect.selectedIndex].value;
+            }
+
+            // Only required for county scope.
+            // Treat placeholder/non-geoId values (like "State...") as empty.
+            if (scope === 'county' && (!entityId || !String(entityId).startsWith('geoId/'))) {
+            entityId = 'geoId/26';
+            if (entityIdSelect) {
+                entityIdSelect.value = entityId;
+            }
+            }
             let chartText = document.getElementById('chartVariable').options[document.getElementById('chartVariable').selectedIndex].text;
 
             //alert(chartVariable + " " + chartText)
@@ -867,10 +1217,14 @@ async function updateDcidSelectFromSheet(scope) {
     filteredOptions.forEach(row => {
         const value = row[valueIndex]?.trim();
         const text = row[textIndex]?.trim();
+        const startYearValue = startYearIndex > -1 ? row[startYearIndex]?.trim() : '';
         if (value && text) {
             const opt = document.createElement('option');
             opt.value = value;
             opt.text = text;
+            if (startYearValue) {
+                opt.dataset.startYear = startYearValue;
+            }
             dcidSelect.add(opt);
         }
     });
@@ -878,6 +1232,9 @@ async function updateDcidSelectFromSheet(scope) {
     // Set default selection if options exist
     if (filteredOptions.length > 0) {
         dcidSelect.value = filteredOptions[0][valueIndex].trim(); // Set to the first option's value
+        if (typeof updateTimelineMinYearFromSelect === 'function') {
+            updateTimelineMinYearFromSelect(dcidSelect);
+        }
         refreshTimeline();
     } else {
         alert("No datasets in the Google Sheet for scope \"" + normalizedScope + "\" with the goal \"" + hash.goal + "\"");
@@ -974,34 +1331,90 @@ function parseCSV(csvText) {
     });
     return rows;
 }
+
+// Function to update the "All" radio button label with country count
+function updateAllCountryLabel(count) {
+    try {
+        // Find the "All" radio button's parent label
+        const allRadio = document.querySelector('input[name="whichLines"][value="showAll"]');
+        if (allRadio && allRadio.parentElement) {
+            // Update the label text to show count in parentheses
+            const labelText = allRadio.parentElement.childNodes;
+            // Find the text node and update it
+            for (let i = 0; i < labelText.length; i++) {
+                if (labelText[i].nodeType === Node.TEXT_NODE && labelText[i].textContent.includes('All')) {
+                    labelText[i].textContent = `All (${count}) `;
+                    console.log(`Updated "All" label to "All (${count})"`);
+                    break;
+                }
+            }
+        }
+    } catch (error) {
+        console.warn('Could not update All label:', error);
+    }
+}
+
+// Function to reset the "All" radio button label (remove count)
+function resetAllCountryLabel() {
+    try {
+        // Find the "All" radio button's parent label
+        const allRadio = document.querySelector('input[name="whichLines"][value="showAll"]');
+        if (allRadio && allRadio.parentElement) {
+            // Reset the label text to just "All"
+            const labelText = allRadio.parentElement.childNodes;
+            // Find the text node and reset it
+            for (let i = 0; i < labelText.length; i++) {
+                if (labelText[i].nodeType === Node.TEXT_NODE && (labelText[i].textContent.includes('All'))) {
+                    labelText[i].textContent = 'All ';
+                    console.log('Reset "All" label to just "All"');
+                    break;
+                }
+            }
+        }
+    } catch (error) {
+        console.warn('Could not reset All label:', error);
+    }
+}
+
 function toggleDivs() {
     // Get selected value from radio buttons
     const selectedValue = document.querySelector('input[name="toogleChartType"]:checked').value;
+    
+    const div1 = document.getElementById('div1');
+    const div2 = document.getElementById('div2');
+    
     if (selectedValue == "both") {
-        document.getElementById('div1').style.display = 'block';
-        document.getElementById('div2').style.display = 'block';
+        // Show both charts
+        div1.style.display = 'block';
+        div1.style.height = '';
+        div1.style.margin = '';
+        div1.style.padding = '';
+        
+        div2.style.display = 'block';
+        div2.style.height = '';
+        div2.style.margin = '';
+        div2.style.padding = '';
         return;
     }
-    // Hide both divs initially
-    document.getElementById('div1').style.display = 'none';
-    document.getElementById('div2').style.display = 'none';
-
-    // Show the selected div
-    document.getElementById(selectedValue).style.display = 'block';
-}
-//Population data for different scope
-
-function handleCountryListClick() {
-    // Store current hash before opening country selection
-    const currentHash = window.location.hash;
     
-    // Set up an interval to check when we return from country selection
-    const checkReturnInterval = setInterval(() => {
-        if (window.location.hash !== currentHash && 
-            !window.location.hash.includes('geoview=countries')) {
-            // We've returned from country selection
-            clearInterval(checkReturnInterval);
-            refreshTimeline();
-        }
-    }, 10);
+    // Hide both divs initially and remove all spacing
+    div1.style.display = 'none';
+    div1.style.height = '0';
+    div1.style.margin = '0';
+    div1.style.padding = '0';
+    div1.style.overflow = 'hidden';
+    
+    div2.style.display = 'none';
+    div2.style.height = '0';
+    div2.style.margin = '0';
+    div2.style.padding = '0';
+    div2.style.overflow = 'hidden';
+
+    // Show the selected div and restore its spacing
+    const selectedDiv = document.getElementById(selectedValue);
+    selectedDiv.style.display = 'block';
+    selectedDiv.style.height = '';
+    selectedDiv.style.margin = '';
+    selectedDiv.style.padding = '';
+    selectedDiv.style.overflow = '';
 }

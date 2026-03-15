@@ -95,7 +95,7 @@
       };
     };
     //YOUR TURN: add your Mapbox token
-    mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94LWNvbW11bml0eSIsImEiOiJja2Q3cXQ0cGUyMm95MnRudXdyYXhhcDR1In0.JNiOY6eSfuV0kqWX-beDNg'; //Mapbox token 
+    mapboxgl.accessToken = (typeof window !== "undefined" && typeof window.mapboxAccessToken === "string") ? window.mapboxAccessToken : "";
     var map = new mapboxgl.Map({
       container: 'map', // container id
       style: 'mapbox://styles/mapbox/streets-v11', //stylesheet location

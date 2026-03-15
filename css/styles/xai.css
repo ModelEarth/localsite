@@ -1,0 +1,230 @@
+/* xAI corporate style overrides for the shared theme layer in base.css */
+.xai {
+  --font-primary: 'Inter', 'Söhne', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-secondary: 'Inter', 'Söhne', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-headline: 'Inter', 'Söhne', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-subheadline: 'Inter', 'Söhne', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', 'Söhne', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --bg-page: #f6f8fc;
+  --bg-card: #ffffff;
+  --accent: #4b6bfb;
+  --accent-hover: #3552d8;
+  --accent-soft: #eef2ff;
+  --text-main: #0b1020;
+  --text-muted: #5b6475;
+  --border-subtle: rgba(11, 16, 32, 0.08);
+  --chip-bg: #eef2f7;
+  --chip-text: #5b6475;
+  --link-color: #3552d8;
+  --link-hover: #233aa6;
+  --panel-radius: 18px;
+  --button-radius: 999px;
+  --chip-radius: 999px;
+  --alert-radius: 18px;
+  --soft-bg-green: #f0f7ff;
+  --soft-bg-blue: #edf2ff;
+  --soft-bg-yellow: #f5f7fb;
+  --soft-bg-red: #f2f5fa;
+  --soft-bg-purple: #f1f3ff;
+  --notion-gray: #edf1f7;
+  --notion-brown: #edf1f7;
+  --notion-orange: #eaf2ff;
+  --notion-yellow: #f5f7fb;
+  --notion-green: #eaf4ff;
+  --notion-blue: #e6eeff;
+  --notion-purple: #eef0ff;
+  --notion-pink: #eef2ff;
+  --notion-red: #eff2f8;
+  --notion-gray-text: #5b6475;
+  --notion-brown-text: #4f5b73;
+  --notion-orange-text: #3552d8;
+  --notion-yellow-text: #5b6475;
+  --notion-green-text: #19a2ff;
+  --notion-blue-text: #4b6bfb;
+  --notion-purple-text: #5f6eea;
+  --notion-pink-text: #6b7ef6;
+  --notion-red-text: #6b7280;
+  --color-primary: var(--accent);
+  --color-primary-hover: var(--accent-hover);
+  --color-secondary: #5b6475;
+  --color-secondary-hover: #424a58;
+  --color-success: #19a2ff;
+  --color-success-hover: #1182d0;
+  --color-danger: #6b7280;
+  --color-danger-hover: #4b5563;
+  --color-warning: #8b94a7;
+  --color-warning-hover: #687386;
+  --color-info: var(--notion-blue-text);
+  --color-info-hover: #3552d8;
+  --color-info-text: #ffffff;
+  --color-light: #f2f5fb;
+  --color-light-hover: #e7ebf4;
+  --color-light-text: var(--text-main);
+  --color-dark: #0b1020;
+  --color-dark-hover: #020617;
+  --alert-primary-bg: rgba(75, 107, 251, 0.1);
+  --alert-primary-text: #3552d8;
+  --alert-primary-accent: #4b6bfb;
+  --alert-success-bg: rgba(25, 162, 255, 0.1);
+  --alert-success-text: #1182d0;
+  --alert-danger-bg: rgba(91, 100, 117, 0.1);
+  --alert-danger-text: #4b5563;
+  --alert-warning-bg: rgba(139, 148, 167, 0.1);
+  --alert-warning-text: #5b6475;
+  --alert-info-bg: rgba(75, 107, 251, 0.08);
+  --alert-info-text: #4b6bfb;
+  --alert-info-accent: #4b6bfb;
+  --badge-primary-bg: rgba(75, 107, 251, 0.12);
+  --badge-primary-text: #3552d8;
+  --badge-secondary-bg: rgba(91, 100, 117, 0.1);
+  --badge-secondary-text: #4f5b73;
+  --badge-success-bg: rgba(25, 162, 255, 0.12);
+  --badge-success-text: #1182d0;
+  --badge-danger-bg: rgba(107, 114, 128, 0.12);
+  --badge-danger-text: #4b5563;
+  --badge-warning-bg: rgba(139, 148, 167, 0.12);
+  --badge-warning-text: #5b6475;
+  --badge-info-bg: rgba(75, 107, 251, 0.12);
+  --badge-info-text: #3552d8;
+  --heatmap-0: #edf2ff;
+  --heatmap-1: #dbe5ff;
+  --heatmap-2: #b9cbff;
+  --heatmap-3: #90aaff;
+  --heatmap-4: #667efc;
+  --heatmap-5: #3552d8;
+  --heatmap-hot-0: #eef3ff;
+  --heatmap-hot-1: #dce8ff;
+  --heatmap-hot-2: #b8d8ff;
+  --heatmap-hot-3: #7fc3ff;
+  --heatmap-hot-4: #4daeff;
+  --heatmap-hot-5: #1182d0;
+  --heatmap-cool-0: #f3f6fb;
+  --heatmap-cool-1: #e5ebf5;
+  --heatmap-cool-2: #c9d1e2;
+  --heatmap-cool-3: #aab3c7;
+  --heatmap-cool-4: #8b94a7;
+  --heatmap-cool-5: #5b6475;
+  --heatmap-warm-0: #eef1ff;
+  --heatmap-warm-1: #e0e6ff;
+  --heatmap-warm-2: #c2cdff;
+  --heatmap-warm-3: #9eafff;
+  --heatmap-warm-4: #758cff;
+  --heatmap-warm-5: #4b6bfb;
+}
+
+.xai .palette-title,
+.xai .samples-title,
+.xai .component-label,
+.xai .card-title {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.xai .btn,
+.xai .badge {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.xai .card {
+  border-radius: 24px;
+  border: 1px solid rgba(11, 16, 32, 0.08);
+  box-shadow: 0 20px 50px rgba(11, 16, 32, 0.06);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 247, 251, 0.96));
+}
+
+.xai .alert,
+.xai .badge {
+  backdrop-filter: blur(10px);
+}
+
+.xai .alert::before {
+  border-radius: 999px;
+}
+
+.xai .color-name {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dark.xai,
+.dark .xai {
+  --bg-page: #020617;
+  --bg-card: #0b1020;
+  --accent: #8fa5ff;
+  --accent-hover: #6f86f5;
+  --accent-soft: rgba(143, 165, 255, 0.16);
+  --text-main: #e5ecff;
+  --text-muted: #8b94a7;
+  --border-subtle: rgba(143, 165, 255, 0.12);
+  --chip-bg: rgba(143, 165, 255, 0.08);
+  --chip-text: #b8c6ea;
+  --link-color: #b8d8ff;
+  --link-hover: #d7e3ff;
+  --color-secondary: #6b7792;
+  --color-secondary-hover: #7b88a5;
+  --color-success: #4cc9f0;
+  --color-success-hover: #2db4de;
+  --color-danger: #9aa3b5;
+  --color-danger-hover: #c9d1e2;
+  --color-warning: #8b94a7;
+  --color-warning-hover: #b0b8c7;
+  --color-light: rgba(143, 165, 255, 0.08);
+  --color-light-hover: rgba(143, 165, 255, 0.14);
+  --color-light-text: #e5ecff;
+  --color-info: #8fa5ff;
+  --color-info-hover: #6f86f5;
+  --color-info-text: #020617;
+  --soft-bg-green: rgba(76, 201, 240, 0.14);
+  --soft-bg-blue: rgba(143, 165, 255, 0.14);
+  --soft-bg-yellow: rgba(139, 148, 167, 0.14);
+  --soft-bg-red: rgba(107, 114, 128, 0.14);
+  --soft-bg-purple: rgba(95, 110, 234, 0.16);
+  --notion-gray: rgba(91, 100, 117, 0.22);
+  --notion-brown: rgba(91, 100, 117, 0.22);
+  --notion-orange: rgba(53, 82, 216, 0.22);
+  --notion-yellow: rgba(139, 148, 167, 0.22);
+  --notion-green: rgba(76, 201, 240, 0.22);
+  --notion-blue: rgba(143, 165, 255, 0.22);
+  --notion-purple: rgba(95, 110, 234, 0.22);
+  --notion-pink: rgba(107, 126, 246, 0.22);
+  --notion-red: rgba(107, 114, 128, 0.22);
+  --notion-green-text: #7fdcff;
+  --notion-blue-text: #b8d8ff;
+  --alert-primary-bg: rgba(143, 165, 255, 0.18);
+  --alert-primary-text: #d7e3ff;
+  --alert-primary-accent: #8fa5ff;
+  --alert-success-bg: rgba(76, 201, 240, 0.18);
+  --alert-success-text: #7fdcff;
+  --alert-danger-bg: rgba(107, 114, 128, 0.2);
+  --alert-danger-text: #c9d1e2;
+  --alert-warning-bg: rgba(139, 148, 167, 0.2);
+  --alert-warning-text: #d6dce8;
+  --alert-info-bg: rgba(143, 165, 255, 0.18);
+  --alert-info-text: #d7e3ff;
+  --alert-info-accent: #8fa5ff;
+  --badge-primary-bg: rgba(143, 165, 255, 0.22);
+  --badge-primary-text: #d7e3ff;
+  --badge-secondary-bg: rgba(91, 100, 117, 0.22);
+  --badge-secondary-text: #c9d1e2;
+  --badge-success-bg: rgba(76, 201, 240, 0.22);
+  --badge-success-text: #7fdcff;
+  --badge-danger-bg: rgba(107, 114, 128, 0.22);
+  --badge-danger-text: #c9d1e2;
+  --badge-warning-bg: rgba(139, 148, 167, 0.22);
+  --badge-warning-text: #d6dce8;
+  --badge-info-bg: rgba(143, 165, 255, 0.22);
+  --badge-info-text: #d7e3ff;
+}
+
+.dark.xai .color-name,
+.dark .xai .color-name {
+  color: #c9d6f2;
+}
+
+.dark.xai .samples-title,
+.dark .xai .samples-title {
+  color: #d7e3ff;
+}

@@ -20,18 +20,18 @@ h1, h2, h3, h4, h5, h6 {
 */
 
 /*
-#fullcolumn {
+#main-container {
 	background: #1a1a1a;
 	background-color: #1a1a1a;
 	color: #ccc;
 }
-#fullcolumn  a:link, #fullcolumn  a:visited {
+#main-container  a:link, #main-container  a:visited {
   color: #8899ee;
 }
-#fullcolumn  b a:link, #fullcolumn  b a:visited {
+#main-container  b a:link, #main-container  b a:visited {
   color: #ccc;
 }
-#fullcolumn h1, #fullcolumn h2, #fullcolumn h3, #fullcolumn h4, #fullcolumn h5, #fullcolumn h6 {
+#main-container h1, #main-container h2, #main-container h3, #main-container h4, #main-container h5, #main-container h6 {
 	color: #ccc;
 }
 */

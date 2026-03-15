@@ -1,1 +1,0 @@
-[View Details](github-token)

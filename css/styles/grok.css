@@ -1,0 +1,195 @@
+/* xAI Grok style overrides for the shared theme layer in base.css */
+.grok {
+  --font-primary: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-secondary: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-headline: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-subheadline: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --bg-page: #ffffff;
+  --bg-card: #f7f7f7;
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --accent-soft: #f3eeff;
+  --text-main: #0a0a0a;
+  --text-muted: #6b7280;
+  --border-subtle: rgba(10, 10, 10, 0.09);
+  --chip-bg: #f0f0f0;
+  --chip-text: #6b7280;
+  --link-color: #7c3aed;
+  --link-hover: #6d28d9;
+  --panel-radius: 8px;
+  --button-radius: 6px;
+  --chip-radius: 6px;
+  --alert-radius: 6px;
+  --soft-bg-green: #f0fdf4;
+  --soft-bg-blue: #eff6ff;
+  --soft-bg-yellow: #fefce8;
+  --soft-bg-red: #fff1f2;
+  --soft-bg-purple: #f5f3ff;
+  --notion-gray: #f3f4f6;
+  --notion-brown: #f5ebe0;
+  --notion-orange: #fff7ed;
+  --notion-yellow: #fefce8;
+  --notion-green: #f0fdf4;
+  --notion-blue: #eff6ff;
+  --notion-purple: #f5f3ff;
+  --notion-pink: #fdf2f8;
+  --notion-red: #fff1f2;
+  --notion-gray-text: #6b7280;
+  --notion-brown-text: #78350f;
+  --notion-orange-text: #c2410c;
+  --notion-yellow-text: #92400e;
+  --notion-green-text: #166534;
+  --notion-blue-text: #1d4ed8;
+  --notion-purple-text: #7c3aed;
+  --notion-pink-text: #be185d;
+  --notion-red-text: #be123c;
+  --color-primary: var(--accent);
+  --color-primary-hover: #6d28d9;
+  --color-secondary: var(--notion-pink-text);
+  --color-secondary-hover: #9d174d;
+  --color-success: var(--notion-green-text);
+  --color-success-hover: #14532d;
+  --color-danger: var(--notion-red-text);
+  --color-danger-hover: #9f1239;
+  --color-warning: var(--notion-yellow-text);
+  --color-warning-hover: #78350f;
+  --color-info: var(--notion-blue-text);
+  --color-info-hover: #1e40af;
+  --color-info-text: #ffffff;
+  --color-light: var(--notion-gray);
+  --color-light-hover: #e5e7eb;
+  --color-light-text: var(--text-main);
+  --color-dark: #0a0a0a;
+  --color-dark-hover: #000000;
+  --alert-primary-bg: rgba(124, 58, 237, 0.08);
+  --alert-success-bg: var(--notion-green);
+  --alert-danger-bg: var(--notion-red);
+  --alert-warning-bg: var(--notion-yellow);
+  --alert-info-bg: var(--notion-blue);
+  --badge-primary-bg: var(--notion-purple);
+  --badge-primary-text: var(--color-primary);
+  --badge-secondary-bg: var(--notion-pink);
+  --badge-success-bg: var(--notion-green);
+  --badge-danger-bg: var(--notion-red);
+  --badge-warning-bg: var(--notion-yellow);
+  --badge-info-bg: var(--notion-blue);
+  --heatmap-0: #ede9fe;
+  --heatmap-1: #ddd6fe;
+  --heatmap-2: #c4b5fd;
+  --heatmap-3: #a78bfa;
+  --heatmap-4: #7c3aed;
+  --heatmap-5: #4c1d95;
+  --heatmap-hot-0: #ffe4e6;
+  --heatmap-hot-1: #fecdd3;
+  --heatmap-hot-2: #fda4af;
+  --heatmap-hot-3: #fb7185;
+  --heatmap-hot-4: #e11d48;
+  --heatmap-hot-5: #881337;
+  --heatmap-cool-0: #fef9c3;
+  --heatmap-cool-1: #fef08a;
+  --heatmap-cool-2: #fde047;
+  --heatmap-cool-3: #facc15;
+  --heatmap-cool-4: #ca8a04;
+  --heatmap-cool-5: #713f12;
+  --heatmap-warm-0: #dbeafe;
+  --heatmap-warm-1: #bfdbfe;
+  --heatmap-warm-2: #93c5fd;
+  --heatmap-warm-3: #60a5fa;
+  --heatmap-warm-4: #2563eb;
+  --heatmap-warm-5: #1e3a8a;
+  --bg-footer: #eeedf4;
+  --bg-footer-swatch: #eeedf4;
+}
+
+.grok .palette-title,
+.grok .samples-title,
+.grok .component-label,
+.grok .card-title {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.grok .btn {
+  text-transform: none;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+.grok .color-name {
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+
+.dark.grok,
+.dark .grok {
+  --bg-footer: #050505;
+  --bg-page: #0a0a0a;
+  --bg-card: #141414;
+  --accent: #a78bfa;
+  --accent-hover: #8b5cf6;
+  --accent-soft: rgba(167, 139, 250, 0.12);
+  --text-main: #f5f5f5;
+  --text-muted: #9ca3af;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --chip-bg: rgba(255, 255, 255, 0.06);
+  --chip-text: #9ca3af;
+  --link-color: #a78bfa;
+  --link-hover: #8b5cf6;
+  --color-light: rgba(255, 255, 255, 0.06);
+  --color-light-hover: rgba(255, 255, 255, 0.1);
+  --color-light-text: #f5f5f5;
+  --color-info: #60a5fa;
+  --color-info-hover: #3b82f6;
+  --color-info-text: #0a0a0a;
+  --soft-bg-green: rgba(22, 101, 52, 0.15);
+  --soft-bg-blue: rgba(29, 78, 216, 0.15);
+  --soft-bg-yellow: rgba(146, 64, 14, 0.15);
+  --soft-bg-red: rgba(190, 18, 60, 0.15);
+  --soft-bg-purple: rgba(124, 58, 237, 0.15);
+  --notion-gray: rgba(107, 114, 128, 0.2);
+  --notion-brown: rgba(120, 53, 15, 0.2);
+  --notion-orange: rgba(194, 65, 12, 0.2);
+  --notion-yellow: rgba(146, 64, 14, 0.2);
+  --notion-green: rgba(22, 101, 52, 0.2);
+  --notion-blue: rgba(29, 78, 216, 0.2);
+  --notion-purple: rgba(124, 58, 237, 0.2);
+  --notion-pink: rgba(190, 24, 93, 0.2);
+  --notion-red: rgba(190, 18, 60, 0.2);
+  --notion-green-text: #86efac;
+  --notion-blue-text: #93c5fd;
+  --alert-primary-bg: rgba(167, 139, 250, 0.15);
+  --alert-primary-text: #c4b5fd;
+  --alert-primary-accent: #a78bfa;
+  --alert-success-bg: rgba(22, 101, 52, 0.22);
+  --alert-success-text: #86efac;
+  --alert-danger-bg: rgba(190, 18, 60, 0.22);
+  --alert-danger-text: #fda4af;
+  --alert-warning-bg: rgba(146, 64, 14, 0.22);
+  --alert-warning-text: #fde68a;
+  --alert-info-bg: rgba(29, 78, 216, 0.22);
+  --alert-info-text: #93c5fd;
+  --badge-primary-bg: rgba(124, 58, 237, 0.22);
+  --badge-primary-text: #c4b5fd;
+  --badge-secondary-bg: rgba(190, 24, 93, 0.22);
+  --badge-secondary-text: #f9a8d4;
+  --badge-success-bg: rgba(22, 101, 52, 0.22);
+  --badge-success-text: #86efac;
+  --badge-danger-bg: rgba(190, 18, 60, 0.22);
+  --badge-danger-text: #fda4af;
+  --badge-warning-bg: rgba(146, 64, 14, 0.22);
+  --badge-warning-text: #fde68a;
+  --badge-info-bg: rgba(29, 78, 216, 0.22);
+  --badge-info-text: #93c5fd;
+}
+
+.dark.grok .color-name,
+.dark .grok .color-name {
+  color: #d1d5db;
+}
+
+.dark.grok .samples-title,
+.dark .grok .samples-title {
+  color: #d1d5db;
+}

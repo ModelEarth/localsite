@@ -1,0 +1,181 @@
+/* Georgia style overrides for the shared theme layer in base.css */
+.georgia {
+  --font-primary: 'Gotham', 'Nunito Sans', sans-serif;
+  --font-secondary: Georgia, serif;
+  --font-headline: 'Gotham', 'Nunito Sans', sans-serif;
+  --font-subheadline: 'Gotham', 'Nunito Sans', sans-serif;
+
+  --bg-card: #ffffff;
+  --accent: #235d39;
+  --accent-hover: #1b4a2d;
+  --accent-soft: #e8f5e8;
+  --text-main: #212721;
+  --text-muted: #666666;
+  --border-subtle: #cfd2d3;
+  --chip-bg: #f2f6f9;
+  --chip-text: #084975;
+  --link-color: #084975;
+  --link-hover: #003d82;
+  --panel-radius: 12px;
+  --button-radius: 10px;
+  --chip-radius: 999px;
+  --alert-radius: 12px;
+  --soft-bg-green: #f4f8f5;
+  --soft-bg-blue: #f2f6f9;
+  --soft-bg-yellow: #fef9f1;
+  --soft-bg-red: #fdf4f3;
+  --soft-bg-purple: #f7f5f8;
+  --notion-gray: #f2f6f9;
+  --notion-brown: #f2e6df;
+  --notion-orange: #fef1dc;
+  --notion-yellow: #fff8e1;
+  --notion-green: #e8f5e8;
+  --notion-blue: #e3f2fd;
+  --notion-purple: #f3e5f5;
+  --notion-pink: #f8e8ec;
+  --notion-red: #ffebee;
+  --notion-gray-text: #666666;
+  --notion-brown-text: #6e4f47;
+  --notion-orange-text: #faa621;
+  --notion-yellow-text: #b8891a;
+  --notion-green-text: #235d39;
+  --notion-blue-text: #084975;
+  --notion-purple-text: #8b7b8f;
+  --notion-pink-text: #aa483e;
+  --notion-red-text: #aa483e;
+  --color-primary: var(--accent);
+  --color-primary-hover: #1b4a2d;
+  --color-secondary: #aa483e;
+  --color-secondary-hover: #8b3a31;
+  --color-success: #6aa442;
+  --color-success-hover: #5b8c38;
+  --color-danger: #aa483e;
+  --color-danger-hover: #8b3a31;
+  --color-warning: #b8891a;
+  --color-warning-hover: #9a6f12;
+  --color-info: #084975;
+  --color-info-hover: #063a5d;
+  --color-info-text: #ffffff;
+  --color-light: #fefbf9;
+  --color-light-hover: #f2ede8;
+  --color-light-text: var(--text-main);
+  --color-dark: #212721;
+  --color-dark-hover: #151a15;
+  --alert-primary-bg: rgba(59, 130, 246, 0.12);
+  --alert-success-bg: var(--notion-green);
+  --alert-danger-bg: var(--notion-red);
+  --alert-warning-bg: var(--notion-yellow);
+  --alert-info-bg: var(--notion-blue);
+  --badge-primary-bg: var(--notion-green);
+  --badge-primary-text: var(--color-primary);
+  --badge-secondary-bg: var(--notion-pink);
+  --badge-success-bg: var(--notion-green);
+  --badge-danger-bg: var(--notion-red);
+  --badge-warning-bg: var(--notion-yellow);
+  --badge-info-bg: var(--notion-blue);
+  --heatmap-0: #e8f1ea;
+  --heatmap-1: #d8e6dd;
+  --heatmap-2: #a8cdb5;
+  --heatmap-3: #6fa082;
+  --heatmap-4: #4a7a5e;
+  --heatmap-5: #235d39;
+  --heatmap-hot-0: #f2e0dc;
+  --heatmap-hot-1: #f5d4cd;
+  --heatmap-hot-2: #edb4a8;
+  --heatmap-hot-3: #d18b7e;
+  --heatmap-hot-4: #b86b5e;
+  --heatmap-hot-5: #aa483e;
+  --heatmap-cool-0: #f6ead3;
+  --heatmap-cool-1: #fbeccc;
+  --heatmap-cool-2: #f8dfa7;
+  --heatmap-cool-3: #f5d182;
+  --heatmap-cool-4: #e6be3d;
+  --heatmap-cool-5: #b8891a;
+  --heatmap-warm-0: #dee8ef;
+  --heatmap-warm-1: #c8d9e6;
+  --heatmap-warm-2: #9bbcd3;
+  --heatmap-warm-3: #6e9fc0;
+  --heatmap-warm-4: #4f7ca2;
+  --heatmap-warm-5: #084975;
+  --bg-footer: #dce8f0;
+  --bg-footer-swatch: #dce8f0;
+}
+
+.georgia .palette-title,
+.georgia .samples-title,
+.georgia .component-label,
+.georgia .card-title {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.georgia .btn {
+  letter-spacing: 0.2px;
+}
+
+.georgia .color-name {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.dark.georgia,
+.dark .georgia {
+  --bg-footer: #141d26;
+  --bg-card: #1d2832;
+  --color-primary: #084975;
+  --color-primary-hover: #063a5d;
+  --color-light: #375a7f;
+  --color-light-hover: #304454;
+  --color-light-text: #d1d5db;
+  --soft-bg-green: rgba(35, 93, 57, 0.18);
+  --soft-bg-blue: rgba(8, 73, 117, 0.18);
+  --soft-bg-yellow: rgba(184, 137, 26, 0.18);
+  --soft-bg-red: rgba(170, 72, 62, 0.18);
+  --soft-bg-purple: rgba(139, 123, 143, 0.18);
+  --notion-gray: rgba(102, 102, 102, 0.22);
+  --notion-brown: rgba(110, 79, 71, 0.22);
+  --notion-orange: rgba(250, 166, 33, 0.22);
+  --notion-yellow: rgba(184, 137, 26, 0.22);
+  --notion-green: rgba(35, 93, 57, 0.22);
+  --notion-blue: rgba(8, 73, 117, 0.22);
+  --notion-purple: rgba(139, 123, 143, 0.22);
+  --notion-pink: rgba(170, 72, 62, 0.22);
+  --notion-red: rgba(170, 72, 62, 0.22);
+  --notion-green-text: #9dbfab;
+  --notion-blue-text: #a6c7de;
+  --alert-primary-bg: rgba(59, 130, 246, 0.24);
+  --alert-primary-text: #93c5fd;
+  --alert-primary-accent: #60a5fa;
+  --alert-success-bg: rgba(35, 93, 57, 0.24);
+  --alert-success-text: #9dbfab;
+  --alert-danger-bg: rgba(170, 72, 62, 0.24);
+  --alert-danger-text: #e4b2ab;
+  --alert-warning-bg: rgba(184, 137, 26, 0.24);
+  --alert-warning-text: #e6cf93;
+  --alert-info-bg: rgba(72, 124, 165, 0.24);
+  --alert-info-text: #aac8df;
+  --badge-primary-bg: rgba(8, 73, 117, 0.24);
+  --badge-primary-text: var(--alert-primary-text);
+  --badge-secondary-bg: rgba(170, 72, 62, 0.24);
+  --badge-secondary-text: #e4b2ab;
+  --badge-success-bg: rgba(35, 93, 57, 0.24);
+  --badge-success-text: #9dbfab;
+  --badge-danger-bg: rgba(170, 72, 62, 0.24);
+  --badge-danger-text: #e4b2ab;
+  --badge-warning-bg: rgba(184, 137, 26, 0.24);
+  --badge-warning-text: #e6cf93;
+  --badge-info-bg: rgba(8, 73, 117, 0.24);
+  --badge-info-text: #a6c7de;
+}
+
+.dark.georgia .color-name,
+.dark .georgia .color-name {
+  color: #d1d5db;
+}
+
+.dark.georgia .samples-title,
+.dark .georgia .samples-title {
+  color: #d1d5db;
+}

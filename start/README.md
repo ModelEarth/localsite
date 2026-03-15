@@ -6,9 +6,9 @@
 
 ### Localsite Setup and Development
 
-[How to add a new localsite page](template).  View our [Active Projects](../../projects) and [Moonshots](../../community/projects).
+[How to add a new readme page (index.html)](template).  View our [Active Projects](../../projects) and [Moonshots](../../community/projects).
 
-Helpful tips for [Node, Python, pyenv, Conda and Docker](../../io/coders/python/).
+Helpful tips for [NVM, Node, npm, pyenv, Python, pip, Conda and Docker](cmds/).
 
 
 ## <span class="num">1</span><span class="txt">Site Install - Code globally, run locally</span>
@@ -20,7 +20,9 @@ Helpful tips for [Node, Python, pyenv, Conda and Docker](../../io/coders/python/
 &bullet; <a href="../challenge/how/">How to Create a Local Site Page</a><br>
 --> 
 
-<a href="../../localsite/start/steps/" class="btn btn-success">Start Site Install</a>
+We recommond using the Webroot install with Claude Code CLI<br>
+
+<a href="https://model.earth/webroot/" class="btn btn-success" style="float:left;margin:0px;margin-right:6px">Webroot Install</a><a href="../../localsite/start/steps/" class="btn btn-primary" style="margin:0px">Repo Install</a>
 
 ## <span class="num">2</span><span class="txt">Input-Output Widgets</span>
 <a href="../../io/charts/">Contribute to Impact Widgets</a> - Display based on [localsite parameters](../) 
@@ -28,7 +30,7 @@ Data from the US EPA and NAICS, Exiobase, Google Data Commons - [Data Pipelines]
 
 ## <span class="num">3</span><span class="txt">Integrate Machine Learning</span>
 Contribute to our machine learning [RealityStream](../../realitystream/)
-Contribute to UN goal data visualizations in our <a href="/data-commons/docs/data/">Google Data Commons Timelines</a>
+Contribute to UN goal data visualizations in our <a href="/localsite/timeline/">Google Data Commons Timelines</a>
 
 ## <span class="num">4</span><span class="txt">Chart Starter Ideas</span>
 [Chart Starters](../../community/start/charts) - Chord, Sankey, USEEIO Heatmap Mosaic and Input-Output Flow
@@ -42,7 +44,7 @@ Contribute to UN goal data visualizations in our <a href="/data-commons/docs/dat
 Environmentally Extended Input-Output (EEIO)
 
 [World Trade Profiles](../../profile/trade/)
-[State Impact Reports](../../useeio.js/footprint/)
+[US State Reports](../../profile/footprint/)
 [Inflow-Outflow Widgets](../../io/charts)
 
 <!--
@@ -95,8 +97,7 @@ Responsible sourcing allows manufacturers to...
 [Challenge.gov](https://www.challenge.gov) - Web Challenges created by US Government Agencies
 [OpenLCA](https://www.openlca.org/) - Downloadable app for Life Cycle Assessment
 [OECD - Organization for Economic Co-Operation and Development](https://www.oecd.org/sti/ind/measuring-trade-in-value-added.htm) - France
-[Leyla Acaroglu on Life Cycle Assessment](https://medium.com/disruptive-design/a-guide-to-life-cycle-thinking-b762ab49bce3)
-[Knoema Infographics](https://knoema.com/infographics) - [Data Coverage Matrix](https://knoema.com/atlas/matrix) - Global models which could be reproduced locally.  
+[Leyla Acaroglu on Life Cycle Assessment](https://medium.com/disruptive-design/a-guide-to-life-cycle-thinking-b762ab49bce3)   
 [World Input-Output Database (WOID)](http://www.wiod.org/otherdb)  
 [IMPLAN Impact Analysis](https://implanhelp.zendesk.com/hc/en-us/articles/360039284273-Environmental-Data) - 8 broad categories using USEEIO model data
 
@@ -106,7 +107,7 @@ Responsible sourcing allows manufacturers to...
 
 
 [Use our Lifecycle Tools for Research and Teaching](/io/learn/)
-Explore [the matrix](/io/about/matrix/) and tinker with our [Footprint Javascript](/useeio.js/footprint/)
+Explore [the matrix](/io/about/matrix/) and tinker with our [Open Footprint Javascript](/profile/)
 
 <!-- 
 Expensive European Exiobase

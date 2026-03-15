@@ -1,0 +1,196 @@
+/* OpenAI Codex / ChatGPT style overrides for the shared theme layer in base.css */
+.codex {
+  --font-primary: 'OpenAI Sans', 'Söhne', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-secondary: 'OpenAI Sans', 'Söhne', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-headline: 'OpenAI Sans', 'Söhne', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-subheadline: 'OpenAI Sans', 'Söhne', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'OpenAI Sans', 'Söhne', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --bg-page: #f9f9f9;
+  --bg-card: #ffffff;
+  --accent: #10a37f;
+  --accent-hover: #0d8c6c;
+  --accent-soft: #e8f7f3;
+  --text-main: #0d0d0d;
+  --text-muted: #6e6e80;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --chip-bg: #f0f0f0;
+  --chip-text: #6e6e80;
+  --link-color: #10a37f;
+  --link-hover: #0d8c6c;
+  --panel-radius: 12px;
+  --button-radius: 6px;
+  --chip-radius: 6px;
+  --alert-radius: 8px;
+  --soft-bg-green: #edfaf5;
+  --soft-bg-blue: #eef4ff;
+  --soft-bg-yellow: #fefce8;
+  --soft-bg-red: #fff1f0;
+  --soft-bg-purple: #f5f0ff;
+  --notion-gray: #f0f0f0;
+  --notion-brown: #f5ebe0;
+  --notion-orange: #fff0e0;
+  --notion-yellow: #fefce8;
+  --notion-green: #e8f7f3;
+  --notion-blue: #eef4ff;
+  --notion-purple: #f5f0ff;
+  --notion-pink: #fdf0f5;
+  --notion-red: #fff1f0;
+  --notion-gray-text: #6e6e80;
+  --notion-brown-text: #7c5c3e;
+  --notion-orange-text: #c2620c;
+  --notion-yellow-text: #8f6a10;
+  --notion-green-text: #10a37f;
+  --notion-blue-text: #2563eb;
+  --notion-purple-text: #7c3aed;
+  --notion-pink-text: #be185d;
+  --notion-red-text: #dc2626;
+  --color-primary: var(--accent);
+  --color-primary-hover: #0d8c6c;
+  --color-secondary: var(--notion-pink-text);
+  --color-secondary-hover: #9d1451;
+  --color-success: var(--notion-green-text);
+  --color-success-hover: #0d8c6c;
+  --color-danger: var(--notion-red-text);
+  --color-danger-hover: #b91c1c;
+  --color-warning: var(--notion-yellow-text);
+  --color-warning-hover: #715308;
+  --color-info: var(--notion-blue-text);
+  --color-info-hover: #1d4ed8;
+  --color-info-text: #ffffff;
+  --color-light: var(--notion-gray);
+  --color-light-hover: #e4e4e4;
+  --color-light-text: var(--text-main);
+  --color-dark: #0d0d0d;
+  --color-dark-hover: #000000;
+  --alert-primary-bg: rgba(16, 163, 127, 0.1);
+  --alert-success-bg: var(--notion-green);
+  --alert-danger-bg: var(--notion-red);
+  --alert-warning-bg: var(--notion-yellow);
+  --alert-info-bg: var(--notion-blue);
+  --badge-primary-bg: var(--notion-green);
+  --badge-primary-text: var(--color-primary);
+  --badge-secondary-bg: var(--notion-pink);
+  --badge-success-bg: var(--notion-green);
+  --badge-danger-bg: var(--notion-red);
+  --badge-warning-bg: var(--notion-yellow);
+  --badge-info-bg: var(--notion-blue);
+  --heatmap-0: #d1fae5;
+  --heatmap-1: #a7f3d0;
+  --heatmap-2: #6ee7b7;
+  --heatmap-3: #34d399;
+  --heatmap-4: #10b981;
+  --heatmap-5: #065f46;
+  --heatmap-hot-0: #fee2e2;
+  --heatmap-hot-1: #fecaca;
+  --heatmap-hot-2: #f87171;
+  --heatmap-hot-3: #ef4444;
+  --heatmap-hot-4: #dc2626;
+  --heatmap-hot-5: #7f1d1d;
+  --heatmap-cool-0: #fef9c3;
+  --heatmap-cool-1: #fef08a;
+  --heatmap-cool-2: #fde047;
+  --heatmap-cool-3: #facc15;
+  --heatmap-cool-4: #ca8a04;
+  --heatmap-cool-5: #78350f;
+  --heatmap-warm-0: #dbeafe;
+  --heatmap-warm-1: #bfdbfe;
+  --heatmap-warm-2: #93c5fd;
+  --heatmap-warm-3: #60a5fa;
+  --heatmap-warm-4: #3b82f6;
+  --heatmap-warm-5: #1e3a8a;
+  --bg-footer: #ebebeb;
+  --bg-footer-swatch: #ebebeb;
+}
+
+.codex .palette-title,
+.codex .samples-title,
+.codex .component-label,
+.codex .card-title {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.codex .btn {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.codex .color-name {
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.dark.codex,
+.dark .codex {
+  --bg-footer: #171717;
+  --bg-page: #212121;
+  --bg-card: #2f2f2f;
+  --accent: #19c37d;
+  --accent-hover: #15a86b;
+  --accent-soft: rgba(25, 195, 125, 0.15);
+  --text-main: #ececec;
+  --text-muted: #8e8ea0;
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --chip-bg: rgba(255, 255, 255, 0.07);
+  --chip-text: #8e8ea0;
+  --link-color: #19c37d;
+  --link-hover: #15a86b;
+  --color-light: rgba(255, 255, 255, 0.07);
+  --color-light-hover: rgba(255, 255, 255, 0.12);
+  --color-light-text: #ececec;
+  --color-success: #10a37f;
+  --color-info: #60a5fa;
+  --color-info-hover: #3b82f6;
+  --color-info-text: #0d0d0d;
+  --soft-bg-green: rgba(16, 163, 127, 0.15);
+  --soft-bg-blue: rgba(37, 99, 235, 0.15);
+  --soft-bg-yellow: rgba(202, 138, 4, 0.15);
+  --soft-bg-red: rgba(220, 38, 38, 0.15);
+  --soft-bg-purple: rgba(124, 58, 237, 0.15);
+  --notion-gray: rgba(110, 110, 128, 0.22);
+  --notion-brown: rgba(124, 92, 62, 0.22);
+  --notion-orange: rgba(194, 98, 12, 0.22);
+  --notion-yellow: rgba(143, 106, 16, 0.22);
+  --notion-green: rgba(16, 163, 127, 0.22);
+  --notion-blue: rgba(37, 99, 235, 0.22);
+  --notion-purple: rgba(124, 58, 237, 0.22);
+  --notion-pink: rgba(190, 24, 93, 0.22);
+  --notion-red: rgba(220, 38, 38, 0.22);
+  --notion-green-text: #6ee7b7;
+  --notion-blue-text: #93c5fd;
+  --alert-primary-bg: rgba(25, 195, 125, 0.18);
+  --alert-primary-text: #6ee7b7;
+  --alert-primary-accent: #19c37d;
+  --alert-success-bg: rgba(16, 163, 127, 0.22);
+  --alert-success-text: #6ee7b7;
+  --alert-danger-bg: rgba(220, 38, 38, 0.22);
+  --alert-danger-text: #fca5a5;
+  --alert-warning-bg: rgba(202, 138, 4, 0.22);
+  --alert-warning-text: #fde68a;
+  --alert-info-bg: rgba(37, 99, 235, 0.22);
+  --alert-info-text: #93c5fd;
+  --badge-primary-bg: rgba(16, 163, 127, 0.22);
+  --badge-primary-text: #6ee7b7;
+  --badge-secondary-bg: rgba(190, 24, 93, 0.22);
+  --badge-secondary-text: #f9a8d4;
+  --badge-success-bg: rgba(16, 163, 127, 0.22);
+  --badge-success-text: #6ee7b7;
+  --badge-danger-bg: rgba(220, 38, 38, 0.22);
+  --badge-danger-text: #fca5a5;
+  --badge-warning-bg: rgba(202, 138, 4, 0.22);
+  --badge-warning-text: #fde68a;
+  --badge-info-bg: rgba(37, 99, 235, 0.22);
+  --badge-info-text: #93c5fd;
+}
+
+.dark.codex .color-name,
+.dark .codex .color-name {
+  color: #acacbe;
+}
+
+.dark.codex .samples-title,
+.dark .codex .samples-title {
+  color: #acacbe;
+}

@@ -2,7 +2,7 @@
 
 # Google Data Commons (GDC)
 
-To pull from the [Google Data Commons](https://datacommons.org) API, we use [frontend javascript for timelines](/data-commons/docs/data/) and a [python colab](https://colab.research.google.com/drive/1CsIjLujiiBoGJlIHCBvDZit3QSVg07zR?usp=sharing) to pre-generate location filter data. We've also occasionally experimented with [Observable Data Loaders](/data-pipeline/timelines/observable/).  Learn about the [GDC API](https://docs.datacommons.org/api/).
+To pull from the [Google Data Commons](https://datacommons.org) API, we use [frontend javascript for timelines](/localsite/timeline/) and a [python colab](https://colab.research.google.com/drive/1CsIjLujiiBoGJlIHCBvDZit3QSVg07zR?usp=sharing) to pre-generate location filter data. We've also occasionally experimented with [Observable Data Loaders](/data-pipeline/timelines/observable/).  Learn about the [GDC API](https://docs.datacommons.org/api/).
 
 ## Install DataCommons.org website locally
 

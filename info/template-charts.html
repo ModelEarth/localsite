@@ -10,6 +10,31 @@
 <link type="text/css" rel="stylesheet" href="../css/base.css" />
 <link type="text/css" rel="stylesheet" href="../css/search-filters.css" />
 <link type="text/css" rel="stylesheet" href="../css/map-display.css" />
+<link type="text/css" rel="stylesheet" href="../css/industry-detail.css?v=3" />
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.view-epd-link:hover {
+    color: #0056b3 !important;
+}
+#loadMoreProducts button:hover:not(:disabled) {
+    background: #0056b3 !important;
+    box-shadow: 0 4px 8px rgba(0,123,255,0.3) !important;
+    transform: translateY(-1px);
+}
+#loadMoreProducts button:active:not(:disabled) {
+    transform: translateY(0);
+}
+.product-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+</style>
 </head>
 
 <body>
@@ -30,44 +55,198 @@ function showIndustryList() {
 </script>
 
 <div id="industryDetail" style="display:none">
-	<div class="contentX contentpadding">
-		<div style="float:right">
-			<a id="showIndustries" href="" class="btn btn-white" 
-			onclick="showIndustryList();">Show Industry List</a>
+	<!-- Industry Header -->
+	<div class="contentpadding">
+		<div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:15px;">
+			<div>
+				<a href="#" onclick="goHash({'naics':''});return false;" class="btn btn-outline" style="margin-bottom:10px;">
+					&larr; Back to Industries
+				</a>
+			</div>
+			<div id="industryNaicsCode" style="font-size:14px; color:#666; padding:8px 12px; background:#f5f5f5; border-radius:4px;"></div>
 		</div>
-		<h1 id="industryDetailTitle" class="h1-home">
+		
+		<h1 id="industryDetailTitle" class="h1-home" style="margin-top:20px; margin-bottom:5px;">
 			NAICS Industry
 		</h1>
+		<p id="industryDetailDescription" style="color:#666; margin-bottom:20px; font-size:15px;"></p>
+		
+		<!-- Industry Stats Grid -->
+		<div id="industryStats" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:15px; margin:25px 0;">
+			<div class="stat-card" style="background:#f8f9fa; padding:20px; border-radius:8px; text-align:center;">
+				<div style="font-size:12px; color:#666; text-transform:uppercase; margin-bottom:5px;">Employment</div>
+				<div id="industryEmployment" style="font-size:24px; font-weight:600; color:#333;">--</div>
+			</div>
+			<div class="stat-card" style="background:#f8f9fa; padding:20px; border-radius:8px; text-align:center;">
+				<div style="font-size:12px; color:#666; text-transform:uppercase; margin-bottom:5px;">Establishments</div>
+				<div id="industryEstablishments" style="font-size:24px; font-weight:600; color:#333;">--</div>
+			</div>
+			<div class="stat-card" style="background:#f8f9fa; padding:20px; border-radius:8px; text-align:center;">
+				<div style="font-size:12px; color:#666; text-transform:uppercase; margin-bottom:5px;">Annual Payroll</div>
+				<div id="industryPayroll" style="font-size:24px; font-weight:600; color:#333;">--</div>
+			</div>
+		</div>
 	</div>
-	<hr>
+	
+	<hr style="margin:0;">
+	
+	<!-- Related Products Section -->
+	<div class="contentpadding" style="padding-top:25px;">
+		<h2 style="margin-bottom:5px; display:flex; align-items:center; gap:10px;">
+			<span style="font-size:24px;">&#127981;</span>
+			<span>Related Products</span>
+			<span id="productCount" style="font-size:14px; color:#666; font-weight:normal;"></span>
+		</h2>
+		<p style="color:#666; margin-bottom:20px; font-size:14px;">
+			Environmental Product Declarations (EPDs) from <a href="https://buildingtransparency.org" target="_blank">BuildingTransparency.org</a>
+		</p>
+		
+		<div id="productGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px;">
+			<!-- Product cards dynamically inserted here -->
+		</div>
+		
+		<div id="productLoading" style="text-align:center; padding:40px; display:none;">
+			<div style="font-size:16px; color:#666;">Loading products...</div>
+		</div>
+		
+		<div id="loadMoreProducts" style="text-align:center; margin:30px 0; display:none;">
+			<button onclick="loadMoreProducts()" class="btn btn-primary" style="padding:12px 32px; font-size:14px; cursor:pointer; border-radius:6px; border:none; background:#007bff; color:white; font-weight:500; transition:all 0.2s ease; box-shadow:0 2px 4px rgba(0,123,255,0.2);">
+				Load More Products
+			</button>
+		</div>
+		
+		<div id="noProductsMessage" style="display:none; padding:40px; text-align:center; background:#f8f9fa; border-radius:12px; margin-top:20px;">
+			<div style="font-size:40px; margin-bottom:15px;">&#128230;</div>
+			<p style="font-size:18px; margin-bottom:10px; color:#333;">No products available yet for this industry.</p>
+			<p style="color:#666; margin-bottom:20px;">Product data comes from Environmental Product Declarations (EPDs) registered with BuildingTransparency.org</p>
+			<a href="https://buildingtransparency.org" target="_blank" class="btn btn-outline" style="padding:10px 20px; text-decoration:none;">
+				Learn More About EPDs
+			</a>
+		</div>
+	</div>
+	
+	<hr style="margin:30px 0 0 0;">
+	
+	<!-- Environmental Impact Section -->
+	<div class="contentpadding" style="padding-top:25px;">
+		<h2 style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+			<span style="font-size:24px;">&#127758;</span>
+			<span>Environmental Impact</span>
+		</h2>
+		<div id="industryImpactCharts">
+			<p style="color:#666;">Select a state above to view environmental impact data for this industry.</p>
+		</div>
+	</div>
+	
+	<hr style="margin:30px 0 0 0;">
+	
+	<!-- Supply Chain Section -->
+	<div class="contentpadding" style="padding-top:25px; padding-bottom:40px;">
+		<h2 style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+			<span style="font-size:24px;">&#128279;</span>
+			<span>Supply Chain</span>
+		</h2>
+		<div id="industrySupplyChain">
+			<p style="color:#666;">Supply chain analysis shows which industries provide inputs and receive outputs from this sector.</p>
+		</div>
+	</div>
 </div>
 
 <div id="industryListHolder" style="display:none; padding-top:0; padding-bottom:0">
+
+<div id="industryHeader" class="contentpadding" style="clear:both;padding-bottom:0px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px">
+	<div style="flex:1;min-width:200px">
+		<h1 id="pageTitle" class="h1-home" style="margin-bottom:0px;"></h1><!-- For 6 impact sets -->
+		<h1 class="region_service" style="margin-top:0;padding-top:0;"></h1>
+		<h2 class="location_titles" style="font-size:24px;padding-top:0px;display:none"></h2>
+	</div>
+	<div id="detail_selection" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;line-height:normal">
+		<div class="georgia local" style="display:none"><select id="catyear" class="picklist" onchange="goHash({'catyear':this.value});">
+		  <option value="2016">2016</option>
+		  <option value="2017">2017</option>
+		  <option value="2018">2018</option>
+		  <option value="2019">2019</option>
+		  <option value="2020">2020</option>
+		  <option value="2021">2021</option>
+		  <option value="2022">2022</option>
+		  <option value="2023" selected>2023</option>
+		</select></div>
+		<select id="catsize" class="picklist" onchange="goHash({'catsize':this.value});">
+		  <option value="2">Sectors - 2 digits</option>
+		  <!--option value="2">Subsectors - 3 digits</option-->
+		  <option value="4">Industry Groups - 4 digits</option>
+		  <!--option value="4">NAICS Industry - 5 digits</option-->
+		  <option value="6" selected>Industries - 6 digits</option>
+		</select>
+		<div id="show_industry_settings" style="cursor:pointer;flex-shrink:0;line-height:normal" onclick="$('.industry_filter_settings').toggle();">
+			<span class="material-icons" style="font-size:24px;color:#777">settings</span>
+		</div>
+		<div id="widgetToggleContainer" style="position:relative; min-height:24px; line-height:normal; flex-shrink:0;">
+		  <div id="widgetToggleHolder" class="menuToggleHolder" title="Widget list" style="position:relative;right:auto;top:auto;">
+		    <i id="widgetToggleIcon" class="material-icons" style="-webkit-text-stroke: 1.5px currentColor; border-radius: 50%; border: 2px solid currentColor; padding: 2px;">more_vert</i>
+		  </div>
+		  <div id="widgetList" class="menuToggleMenu" style="display:none">
+		    <div class="menuToggleItem" data-section="industryTableHolder">Area Industries<span class="material-icons menuToggleCheck">check</span></div>
+		    <div class="menuToggleItem" data-section="industries">Industry List<span class="material-icons menuToggleCheck">check</span></div>
+		    <div class="menuToggleItem" data-section="supply">Supply Chain<span class="material-icons menuToggleCheck">check</span></div>
+		    <div class="menuToggleItem" data-section="impact">Impact Levels<span class="material-icons menuToggleCheck">check</span></div>
+		    <div class="menuToggleItem" data-section="bubble">Bubble Chart<span class="material-icons menuToggleCheck">check</span></div>
+		    <div class="menuToggleItem" data-section="sectors">Sectors<span class="material-icons menuToggleCheck">check</span></div>
+		    <div id="widgetListShowAll" class="menuToggleItem" data-action="show-all" style="display:none">Show All Section</div>
+		  </div>
+		</div>
+	</div>
+	<div class="industry_filter_settings" style="display:none;width:100%;margin-top:6px">
+		<div class="state-view" style="margin:20px 0 20px 30px">
+			To view filter settings, choose a location (county or region) above.
+			<a href="/localsite/info/naics/" class="local" style="display:none">View upcoming industry list</a>
+		</div>
+		<div class="county-view" style="display:none">
+			<select id="catmethod" class="picklist" onchange="goHash({'catmethod':this.value});">
+			  <option value="1" selected>Use average of payrolls not assigned to counties</option>
+			  <option value="2">Use average of all state payrolls (less accurate)</option>
+			  <option value="0">Leave unpublished values blank</option>
+			</select>
+		</div>
+	</div>
+</div>
+
+<!-- v2 -->
+<section id="industryTableHolder" style="display:none;">
+<div class="contentpadding" style="padding-top:0px">
+	<div id="tabulator-industrytable-intro"><b>Area Industries</b> (Visible on localhost) <!-- FIPS and NAICS case sensitive--></div>
+	<div id="tabulator-industrytable-datalink"></div>
+	<div style="clear:both"></div>
+	<div id="tabulator-industrytable"></div><br>
+	<div id="tabulator-industrytable-links"></div>
+</div>
+</section>
+
 <section id="industries">
-<div id="top-content-columns" class="contentX contentpadding noprint" style="margin-top:20px; padding-top:0; padding-bottom:0">
+<div id="top-content-columns" class="contentX contentpadding noprint" style="padding-top:0; padding-bottom:0">
 
 	<!--
-	"Life Cycle Assessment (also known as life cycle analysis, or cradle-to-grave analysis) is a method of assessing environmental impacts associated with all stages of a product's life. For example, it measures impact from raw material extraction to materials processing, manufacturing, distribution, use, repair and maintenance, and disposal or recycling. The goal of LCA is to compare the full range of environmental effects assignable to products and services by quantifying all inputs and outputs of material flows, and then assessing how these material flows impact the environment. This information is used to improve processes, support policy, and provide a sound basis for informed decisions." - 
+	"Life Cycle Assessment (also known as life cycle analysis, or cradle-to-grave analysis) is a method of assessing environmental impacts associated with all stages of a product's life. For example, it measures impact from raw material extraction to materials processing, manufacturing, distribution, use, repair and maintenance, and disposal or recycling. The goal of LCA is to compare the full range of environmental effects assignable to products and services by quantifying all inputs and outputs of material flows, and then assessing how these material flows impact the environment. This information is used to improve processes, support policy, and provide a sound basis for informed decisions." -
 	<a href="https://data.nal.usda.gov/life-cycle-assessment" target="USDA">USDA</a><br><br>
 	-->
 
 			<div id="infoColumn" class="mainColumnX mainColumn1X" style="display:none; font-size: 15px; position: relative">
-				
+
 				<div id="aboutToolsDiv" style="position: relative;"></div>
-				
+
 			</div>
-			
+
 			<div id="industryFilters" class="mainColumn mainColumn2 input-output">
-			
+
 				<div style="float:right; font-size: 11px">
 					Data source: U.S. Bureau of Economic Analysis
 				</div>
 
-				<div style="clear:both">
-					<h1 id="pageTitle" class="h1-home" style="margin-bottom:0px;"></h1><!-- For 6 impact sets -->
-					<h1 class="region_service" style="margin-top:0;padding-top:0;"></h1>
-					<h2 class="location_titles" style="font-size:24px;padding-top:0px;display:none"></h2>
-				</div>
+				<select id="catsort" class="picklist" onchange="goHash({'catsort':this.value});">
+				  <option value="payann" selected>By Annual Payroll</option>
+				  <option value="emp">By Employee Count</option>
+				  <option value="estab">By Establishments</option>
+				</select>
 
 				<div id="topMessage" style="clear:both"></div>
 
@@ -81,44 +260,7 @@ function showIndustryList() {
 				<!--
 					The US Census does not provide stats for 2-digit manufacturing NAICS 31, 32&nbsp;and&nbsp;33.<br><br>
 				-->
-				<div id="detail_selection">
-					<div id="show_industry_settings" style="float:right;cursor:pointer" onclick="$('.industry_filter_settings').toggle();">
-						<span class="material-icons" style="font-size:24px;color:#777">
-						settings
-						</span>
-					</div>
-					<select id="catsort" class="picklist" onchange="goHash({'catsort':this.value});">
-			          <option value="payann" selected>By Annual Payroll</option>
-			          <option value="emp" >By Employee Count</option>
-			          <option value="estab">By Establishments</option>
-			        </select>
-			        <select id="catsize" class="picklist" onchange="goHash({'catsize':this.value});">
-			          <option value="2">Sectors - 2 digits</option>
-			          <!--option value="2">Subsectors - 3 digits</option-->
-			          <option value="4">Industry Groups - 4 digits</option>
-			          <!--option value="4">NAICS Industry - 5 digits</option-->
-			          <option value="6" selected>Industries - 6 digits</option>
-			        </select>
-			        <div style="clear:both;margin-bottom:2px"></div>
 
-			        <div class="industry_filter_settings" style="display:none" style="margin:10px 0 0 10px">
-				        <div class="state-view" style="margin:20px 0 20px 30px">
-				        	To view filter settings, choose a location (county or region) above.
-				        	<a href="/localsite/info/naics/" class="local" style="display:none">View upcoming industry list</a>
-				        </div>
-				        <div class="county-view" style="display:none">
-					        <select id="catmethod" class="picklist" onchange="goHash({'catmethod':this.value});">
-					          <option value="1" selected>Use average of payrolls not assigned to counties</option>
-					          <option value="2" >Use average of all state payrolls (less accurate)</option>
-					          <option value="0" >Leave unpublished values blank</option>
-					        </select>
-					    </div>
-					</div>
-				</div>
-
-				
-				
-				
 				<div class="mock-up" style="display:none">
 					Change scales to view the impact of different industry mixes. (Not yet activated)<br>
 				</div>
@@ -135,6 +277,7 @@ function showIndustryList() {
 			<div id="econ_list"></div><br>
 
 </section><!-- /industries -->
+
 </div>
 
 
@@ -151,7 +294,7 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 
 
 <!-- INDICATOR SETS -->
-<div id="supply" class="anchor"></div>
+<section id="supply" class="anchor">
 <div style="position:relative; width:100%">
     <!--  
     <div class="lazy bgimg bgimg-notfixed" data-src="img/bkgd.jpg" style="opacity:.85">
@@ -217,7 +360,7 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 				
             </style>
 
-            <select id="indicators" class="filterClickX form-selectX picklist" onchange="goHash({'set':'','indicators':this.value});" style="min-width:400px;font-size:18px; max-width:400px">
+            <select id="indicators" class="filterClickX form-selectX picklist" onchange="goHash({'set':'','indicators':this.value});" style="max-width:200px;font-size:18px;">
 
 			<option value="">Specific impact areas...</option>
 
@@ -295,19 +438,9 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
         </div>
     </div>
 </div>
+</section>
 <!-- /INDICATOR SETS -->
 
-
-<!-- v2 -->
-<div id="industryTableHolder" style="display:none;">
-<div class="content contentpadding">
-	<div id="tabulator-industrytable-intro"><b>County Industries</b> (Visible on localhost) <!-- FIPS and NAICS case sensitive--></div>
-	<div id="tabulator-industrytable-datalink"></div>
-	<div style="clear:both"></div>
-    <div id="tabulator-industrytable"></div><br>
-    <div id="tabulator-industrytable-count"></div>
-</div>
-</div>
 
 <!-- INPUT OUTPUT -->
 <!-- See: "For older 3 column IO layout" below -->
@@ -395,9 +528,6 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 </div>
 <div style="clear:both;"></div>
 <!-- /INPUT OUTPUT -->
-
-
-
 <style>
 .impactIcons div {
     float: left;
@@ -546,64 +676,89 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 </style>
 
 <section id="impact">
-<div class="contentpadding" style="min-height:200px;border-bottom:1px solid #ccc;overflow:auto">
+	<div class="contentpadding" style="min-height:200px;border-bottom:1px solid #ccc;overflow:auto">
 
-	<div id="sectorListTitles" style="margin-bottom:20px">
-		<h1 style="margin-bottom: 0px">Impact Levels</h1>
-		<span class="region_service"></span>
-	</div>
-	<div id="sector-list" class="sector-list"></div>
-	<!--
-	JOBS and VADD are excluded from the default sort
-	https://github.com/USEPA/useeio-widgets/issues/35
-	-->
-</div>
-
-<!-- /MOSAIC HEATMAP -->
-
-
-<!--
-config.withDefaults({
-  view: ['mosaic'],
-  count: 20,
-});
-config.join(sectorList);
--->
-
-
-
-<div style="margin:0 30px 0 30px; max-width: 2000px;">
-	
-	<!--
-	<h1 class="module_h1">My Local Area</h1>
-
-	Click columns to sort. Choose geo to define your local area. (Activating shortly.)<br><br>
-
-	<div style="width:100%" class="output_table2 rotateHeader"></div>
-	<br>
-	-->
-
-	<!--
-		<div style="padding:40px">
-		5-digit NAICS are the same in Canada, Mexico and the US.<br>
-		6-digit NAICS are country-specific. 
+		<div id="sectorListTitles" style="margin-bottom:20px">
+			<h1 style="margin-bottom: 0px">Impact Levels</h1>
+			<span class="region_service"></span>
 		</div>
+		<div id="sector-list" class="sector-list"></div>
+		<!--
+		JOBS and VADD are excluded from the default sort
+		https://github.com/USEPA/useeio-widgets/issues/35
+		-->
+	</div>
+
+	<!-- /MOSAIC HEATMAP -->
+
+
+	<!--
+	config.withDefaults({
+	  view: ['mosaic'],
+	  count: 20,
+	});
+	config.join(sectorList);
 	-->
 
-	<div id="bioenergySummaryDiv"></div>
 
-</div>
-<br>
+
+	<div style="margin:0 30px 0 30px; max-width: 2000px;">
+		
+		<!--
+		<h1 class="module_h1">My Local Area</h1>
+
+		Click columns to sort. Choose geo to define your local area. (Activating shortly.)<br><br>
+
+		<div style="width:100%" class="output_table2 rotateHeader"></div>
+		<br>
+		-->
+
+		<!--
+			<div style="padding:40px">
+			5-digit NAICS are the same in Canada, Mexico and the US.<br>
+			6-digit NAICS are country-specific. 
+			</div>
+		-->
+
+		<div id="bioenergySummaryDiv"></div>
+
+	</div>
+	<br>
 </section><!-- /impact -->
 
 
 
-<!-- Warning: adding content class causes popups to disappear because the absoulte top is using the top of page. -->
-<div class="contentpadding" style="padding-top:0px">
+<!-- impact bar chart not displayed -->
+<div class="content contentpadding" style="display:none; padding-top: 0px">
+	<!-- Saving for later -->
+	<div id="barchart" style="display:none"></div>
+
+	<div id="impactTextIntro" class="noprint">Click bubbles above to display a bar chart below for comparison.</div>
+
+	<div style="clear:both"></div>
+
+	<div class="io" style=" max-width: 850px; margin: auto;">
+	        <h1 class="text-center">Impact chart</h1>
+	        <p>
+	            The impact chart widget shows the environmental profile of one or more sectors.
+	        </p>
+	        <div id="impact-chart" class="impact-chart" style="display:none">
+	        	
+	        </div>
+	</div>
+
+</div>
+
+
+
+
+<!-- Bubble Chart - Moved to appear after other charts per Loren's request -->
+<section id="bubble" class="contentpadding" style="padding-top:0px">
+	<br><br><br>
 
 	<link rel="stylesheet" type="text/css" href="/io/charts/bubble/css/bubble.css"/>
 
-	<div id="bubble-graph-id" class="bubble-graph" style="display:none">
+	<div id="bubble-graph-id" class="bubble-graph">
 
 		<div style="float:right;margin-bottom:16px" class="noprint">
 			<a href="https://model.earth/io/charts/">About Bubble Chart</a>
@@ -684,30 +839,7 @@ config.join(sectorList);
 
   	<div style="clear:both"></div>
 
-</div>
-
-<!-- impact bar chart not displayed -->
-<div class="content contentpadding" style="display:none; padding-top: 0px">
-	<!-- Saving for later -->
-	<div id="barchart" style="display:none"></div>
-
-	<div id="impactTextIntro" class="noprint">Click bubbles above to display a bar chart below for comparison.</div>
-
-	<div style="clear:both"></div>
-
-	<div class="io" style=" max-width: 850px; margin: auto;">
-	        <h1 class="text-center">Impact chart</h1>
-	        <p>
-	            The impact chart widget shows the environmental profile of one or more sectors.
-	        </p>
-	        <div id="impact-chart" class="impact-chart" style="display:none">
-	        	
-	        </div>
-	</div>
-
-</div>
-
-<br><br><br>
+</section>
 
 
 <script type="text/javascript">
@@ -739,6 +871,64 @@ function hashChangedLocal() {
 	}
 	//priorHashLocal = getHash();
 	priorHashLocal = structuredClone($.extend(true, {}, getHash())); // Clone/copy object without entanglement
+	
+	// Show/hide bubble chart based on state selection
+	updateBubbleChartVisibility();
+}
+
+// Show bubble chart only when viewing US national data (no state selected)
+function updateBubbleChartVisibility() {
+	console.log("[VISIBILITY] updateBubbleChartVisibility called");
+	const bubbleChart = document.getElementById('bubble-graph-id');
+	console.log("[VISIBILITY] Bubble chart element:", bubbleChart);
+	
+	if (bubbleChart) {
+		// Get hash fresh each time
+		let hash = typeof getHash === 'function' ? getHash() : {};
+		console.log("[VISIBILITY] Current hash:", hash);
+		
+		if (!hash.state || hash.state === 'US') {
+			bubbleChart.style.display = 'block';
+			console.log("[VISIBILITY] Showing bubble chart for US national data");
+		} else {
+			bubbleChart.style.display = 'none';
+			console.log("[VISIBILITY] Hiding bubble chart for state: " + hash.state);
+		}
+	} else {
+		console.log("[VISIBILITY] Bubble chart element not found!");
+	}
+}
+
+console.log("[VISIBILITY] Bubble chart visibility script loaded");
+
+// Initialize bubble chart visibility on page load
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', function() {
+		setTimeout(updateBubbleChartVisibility, 500);
+	});
+} else {
+	setTimeout(updateBubbleChartVisibility, 500);
+}
+
+// Listen for hash changes to update bubble chart visibility
+window.addEventListener('hashchange', function() {
+	console.log("[VISIBILITY] window.hashchange fired");
+	// Run multiple times to override bubble.js
+	setTimeout(updateBubbleChartVisibility, 100);
+	setTimeout(updateBubbleChartVisibility, 500);
+	setTimeout(updateBubbleChartVisibility, 1000);
+	setTimeout(updateBubbleChartVisibility, 2000);
+});
+
+if (typeof document !== 'undefined') {
+	document.addEventListener('hashChangeEvent', function() {
+		console.log("[VISIBILITY] hashChangeEvent fired");
+		// Run multiple times to override bubble.js
+		setTimeout(updateBubbleChartVisibility, 100);
+		setTimeout(updateBubbleChartVisibility, 500);
+		setTimeout(updateBubbleChartVisibility, 1000);
+		setTimeout(updateBubbleChartVisibility, 2000);
+	});
 }
 /*
 document.getElementById('showValues').onclick = function() {
@@ -781,16 +971,20 @@ document.getElementById('showValues').onclick = function() {
 </style>
 
 <!-- v2 -->
-<div id="sectorTableHolder" style="display:none;">
-<div class="content contentpadding">
-	<div id="tabulator-sectortable-intro">Sectors (upcoming) - Visible only on localhost</div>
-	<div id="tabulator-sectortable"></div><br>
-	<div id="tabulator-sectortable-count"></div>
-</div>
-</div>
-
+<section id="sector">
+	<div id="sectorTableHolder" style="display:none;">
+	<div class="content contentpadding">
+		<div id="tabulator-sectortable-intro">Sectors (upcoming) - Visible only on localhost</div>
+		<div id="tabulator-sectortable"></div><br>
+		<div id="tabulator-sectortable-count"></div>
+	</div>
+	</div>
+</section>
 
 <!-- /INFO TEMPLATE -->
 </div>
+
+<!-- Industry Detail Controller -->
+<script src="../js/industry-detail.js"></script>
 
 </body>

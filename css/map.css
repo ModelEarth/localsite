@@ -105,15 +105,14 @@
 }
 .leaflet-touch .leaflet-bar a, .earthZoom .leaflet-bar a {
   display: block; /* Allows icons to be stacked */
-  width:36px !important;
-  height:36px !important;
-  font-size: 26px !important;
+  width:36px;
+  height:36px;
+  font-size: 26px;
   color: #fff !important;
   background-color: #555 !important;
   border: 0px !important;
   border-radius: 6px !important;
   margin-left: 4px;
-  padding: 0 10px;
   text-decoration: none;
 }
 .leaflet-control-layers-overlays label div span, .leaflet-control-layers-selector {
@@ -122,11 +121,11 @@
 .leaflet-control-zoom-in {
   margin-bottom:6px;
   border:#bbb 2px solid !important;
-  line-height: 34px !important;
+  line-height: 26px !important;
 }
 .leaflet-control-zoom-out {
   border:#bbb 2px solid !important;
-  line-height: 32px !important;
+  line-height: 26px !important;
 }
 .leaflet-top > .info {
   background-color: rgba(33, 33, 33, 0.5);
@@ -193,7 +192,7 @@
     position: absolute;
     top: 80px;
     left: 12px;
-    z-index: 1000;
+    z-index: 400;
 }
 
 .info.legend h4 {
@@ -319,7 +318,6 @@
   right:0px;
 }
 #listingMenu {
-  color: rgb(51, 51, 51);
   margin-top: 10px;
 }
 #listingMenu > div {
@@ -546,7 +544,7 @@ label { /* override Drupal */
   display: flex; /* For column footer #listInfo. Displays flex-items (children) inline */
   flex-direction: column; /* Stacks children vertically: listHeader, listmain, listInfo */
   box-shadow: 4px 2px 8px 1px rgba(0, 0, 0, 0.4);
-  z-index: 999;
+  z-index: 1000;
   min-width: 250px;
 }
 .dark #listcolumn, .dark #listcolumn .listTitle {

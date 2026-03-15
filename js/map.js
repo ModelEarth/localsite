@@ -34,7 +34,9 @@ if(typeof localObject.layerCategories == 'undefined') {
 // Set your own Mapbox access token below.
 // Restrict which domains your token is loaded through.
 // https://blog.mapbox.com/url-restrictions-for-access-tokens-5f7f7eb90092
-var mbAttr = '<a href="https://www.mapbox.com/">Mapbox</a>', mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZWUyZGV2IiwiYSI6ImNqaWdsMXJvdTE4azIzcXFscTB1Nmcwcm4ifQ.hECfwyQtM7RtkBtydKpc5g';
+var mbAttr = '<a href="https://www.mapbox.com/">Mapbox</a>';
+var mapboxToken = (typeof window !== "undefined" && typeof window.mapboxAccessToken === "string") ? window.mapboxAccessToken : "";
+var mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png' + (mapboxToken ? ('?access_token=' + mapboxToken) : '');
 
 //////////////////////////////////////////////////////////////////
 // Loads from JSON API, Google Sheet or CSV file
@@ -81,13 +83,6 @@ document.addEventListener('hashChangeEvent', function (elem) {
   console.log("map.js detects URL hashChangeEvent");
   hashChangedMap();
 }, false);
-document.addEventListener('hiddenhashChangeEvent', function (elem) {
-  console.log("Doing nothing: map.js detects hiddenhashChangeEvent, calls hashChangedMap()");
-  // Instead, we'll create a hash change event without changing the hash.
-  
-  // But needed for io center column red bars (not)
-  //hashChangedMap();
-}, false);
 
 // MAP 1
 // var map1 = {};
@@ -108,11 +103,18 @@ let dp = {}; // So available on .detail click for popMapPoint() and zoomMapPoint
 
 // TO DO: Can we avoid calling outside of the localsite repo by files in community, including community/map/starter/embed-map.js 
 function loadMap1(calledBy, show, dp_incoming) {
+  if (param["showtopmap"] != "true") { // Prevents older map from appearing at top of new team repo maps
+    return;
+  }
   // Calls loadDataset
   let hash = getHash();
   let showDirectory = true;
   if (!show && param["show"]) {
     show = param["show"];
+  }
+  let modelsite;
+  if (Cookies.get('modelsite')) {
+    modelsite = Cookies.get('modelsite');
   }
   console.log('loadMap1 start. CalledBy ' + calledBy + '. Show: ' + show + '. Cat: ' + hash.cat);
   dp = {}; // Clear prior
@@ -163,7 +165,7 @@ function loadMap1(calledBy, show, dp_incoming) {
 
   if (show == "farmfresh") { // In naics.js we also default to GA for this one topic // && theState
     if (!theState) {
-      theState = "NY"; // Since there is not yet a national dataset for map. Using NY for shorter topics menu.
+      theState = "GA"; // Since there is not yet a national dataset for map. Using NY for shorter topics menu.
       updateHash({"state":theState});
     }
     dp.listTitle = "USDA Farm Produce";
@@ -206,7 +208,7 @@ function loadMap1(calledBy, show, dp_incoming) {
     dp.stateRequired = "true";
     dp.addlisting = "https://www.ams.usda.gov/services/local-regional/food-directories-update";
     // community/farmfresh/ 
-    dp.mapInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community/farmfresh/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
+    dp.mapInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community-data/process/python/farmfresh/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
   } else if (show == "buses") {
     dp.listTitle = "Bus Locations";
     dp.dataset = "https://api.marta.io/buses";
@@ -471,7 +473,8 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.listTitle = "GDEcD Team Map";
         dp.dataTitle = "GDEcD Team Map";
         dp.datatype = "csv";
-        dp.dataset = "/display/team/map/cities.csv";
+        dp.dataset1 = "/display/team/map/cities.csv";
+        dp.dataset =  "/team/projects/map/cities.csv";
         dp.markerType = "google";
         dp.nameColumn = "city";
         dp.search = {"In City": "City", "In County Name": "County"};
@@ -500,7 +503,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.search = {"In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website", "Type": "tag"};
         dp.datastates = ["GA"];
       } else if (show == "aerospace") {
-        dp.listTitle = "Georgia Aerospace Directory";
+        dp.listTitle = "Georgia Aerospace";
         dp.dataTitle = "Aerospace Directory";
         dp.mapInfo = "The Aerospace Directory is a free listing service provided by the Center of Innovation for Aerospace for any aerospace-related company or organization in Georgia. <a href='https://www.cognitoforms.com/GDECD1/GeorgiaDirectory' target='_blank'>Add and Update Listings</a>";
         // Participating in this directory gives a company/organization visibility to national, regional, and state partners who are looking for local suppliers or potential suppliers for new economic development prospects. 
@@ -2091,7 +2094,7 @@ function showList(dp,map) {
     if (!$("#listcolumn").is(":visible")) { // #listcolumn may already be visible if icon clicked while page is loading.
         $("#showListInBar").show();
     }
-    //$("#showSideInBar").show(); // Added 2024 May 28
+    //$("#showSideFromBar").show(); // Added 2024 May 28
     $(".sidelistHolder").show();
 
     $('.detail').mouseenter(function(event){
@@ -2231,22 +2234,22 @@ function showList(dp,map) {
 
 $(document).on("click", ".showList", function(event) {
   $("#listcolumn").show();
-  if ($("#navcolumn").is(":hidden")) {
+  if ($("#main-nav").is(":hidden")) {
     // Display showNavColumn in bar
     $("#showNavColumn").hide();
-    $("#showSideInBar").show();
+    $("#showSideFromBar").show();
   }
   showListBodyMargin();
   $(".showList").hide();
   event.stopPropagation();
-  event.preventDefault(); // Prevents #navcolumn from being hidden.
+  event.preventDefault(); // Prevents #main-nav from being hidden.
 });
 function showListBodyMargin() {
-  if ($("#fullcolumn > .datascape").is(":visible")) { // When NOT embedded
+  if ($("#main-container > .datascape").is(":visible")) { // When NOT embedded
     $('body').addClass('bodyLeftMarginList');
-    if ($("#navcolumn").is(":visible") && $("#listcolumn").is(":visible")) {
+    if ($("#main-nav").is(":visible") && $("#listcolumn").is(":visible")) {
       $('#listcolumn').removeClass('listcolumnOnly');
-      $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed sidetabs.
+      $('body').addClass('bodyLeftMarginFull'); // Creates margin on left for both fixed rightSideTabs.
     } else if ($("#listcolumn").is(":visible")) {
       $('#listcolumn').addClass('listcolumnOnly');
       $('body').addClass('bodyLeftMarginList');
@@ -2351,9 +2354,20 @@ function renderCatList(catList,cat) {
     if (maxCatTitleChars <= 32) {
       $("#mainCatList").addClass("catListAddMargin");
     }
-    let fullcolumnWidth = $('#fullcolumn').width();
+    let fullcolumnWidth = $('#main-container').width();
     if (fullcolumnWidth > 500) {
       showNavColumn();
+      // Collapse #side-nav-content when #mainCatList has categories so #main-nav is visible
+      const sidenav = document.getElementById('side-nav');
+      if (sidenav && $("#mainCatList").children().length > 0) {
+        sidenav.classList.remove('expanded', 'hovered');
+        sidenav.classList.add('collapsed', 'locked');
+        if (window.standaloneNav) {
+          window.standaloneNav.isCollapsed = true;
+          window.standaloneNav.isLocked = true;
+          window.standaloneNav.updateToggleIcon();
+        }
+      }
     }
   }
 }
@@ -3049,15 +3063,18 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       //layerControls[whichmap].removeLayer(overlays["Georgia Solid Waste (2023)"])
 
       // Partially works! - Unchecked on second map.
-      //map.removeLayer(overlays[priorLayer]); // Remove overlay but not checkbox. 
+      //map.removeLayer(overlays[priorLayer]); // Remove overlay but not checkbox.
 
-      // Ooriginally only map1 was getting updated.
+      // Originally only map1 was getting updated.
 
-      console.log("BUGBUG - No icons show with, multiple states show without.")
-      // BUGBUG - No icons show with, multiple states show without.
-      //map1.removeLayer(overlays1[priorLayer]);
-
-      map2.removeLayer(overlays2[priorLayer]);
+      console.log("Removing prior layer:", priorLayer, "from both maps");
+      // Remove prior layer from both maps when switching topics
+      if (overlays1[priorLayer]) {
+        map1.removeLayer(overlays1[priorLayer]);
+      }
+      if (overlays2[priorLayer]) {
+        map2.removeLayer(overlays2[priorLayer]);
+      }
     }
     //alert("addOverlay - typeof overlays[dataTitle] " + typeof overlays[dataTitle])
 
@@ -3680,11 +3697,13 @@ function hashChangedMap() {
   }
 
   let whatChanged = "";
+  console.log("hashChangedMap: hash.show =", hash.show, ", priorHash.show =", priorHash.show);
   if (hash.layers !== priorHash.layers) {
     //applyIO(hiddenhash.naics);
     whatChanged = "hashChangedMap() in map.js layers";
   } else if (hash.show !== priorHash.show) {
     //applyIO(hiddenhash.naics);
+    console.log("Show value changed from", priorHash.show, "to", hash.show);
     whatChanged = "hash.show hashChangedMap() in map.js";
   } else if (hash.state && hash.state !== priorHash.state) {
     // Why are new map points not appearing
@@ -3759,6 +3778,11 @@ function hashChangedMap() {
 $(document).ready(function () {
   // INIT
   hashChangedMap();
+  // Initialize nextPriorHash with current hash values after initial load
+  // This ensures priorHash is set correctly on the next hash change
+  if (typeof nextPriorHash !== 'undefined') {
+    //nextPriorHash = getHash();
+  }
 });
 
 function zoomFromKm2(kilometers_wide, theState) {

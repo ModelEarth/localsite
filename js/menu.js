@@ -602,12 +602,6 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                 }
             } else {
                 alert("layerSectionClick click, no data-layer-section attr");
-                //$('.layerSection').hide();
-                //$(this).parent().parent().show();
-                //$(".listPanelHolder").show();// This shows list too.
-                
-                //$('.layerCbRow').hide(); // Hide All
-                //$(this).parent().parent().find('.layerSectionClick').show();
                 $(this).parent().find('.layerCbRow').toggle(); // Up to layerSection.
                 //$(this).parent().parent().find('.layerCbRow').show(); // Up to layerSectionAccess.
 

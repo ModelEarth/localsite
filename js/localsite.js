@@ -11,6 +11,10 @@ Localsite Path Library - A global namespace singleton
 Define a new object if localsite library does not exist yet.
 */
 
+//if (window.localsiteLoaded) { // Would need to make sure access to variables is not restricted.
+window.localsiteLoaded = true; // Used by embed.js to avoid double loading localsite.js
+
+let localsiteTitle = "Localsite";
 var localStart = Date.now(); // A var so waitForVariableNav detects in navigation.js.
 
 if(typeof onlineApp == 'undefined') {
@@ -19,129 +23,225 @@ if(typeof onlineApp == 'undefined') {
 } else {
   consoleLog("ALERT: Page loads localsite.js more than once.")
 }
-let localsiteTitle = "Localsite";
+
 let defaultState = "";
 if (location.host.indexOf('localhost') >= 0) {
   defaultState = "";  // Set to GA to include additional map layers in top nav.
 }
+if (typeof modelsiteUniversal == 'undefined') {
+  // Universal modelsite fallback for pages that run before the cookie exists.
+  var modelsiteUniversal = "";
+}
 consoleLog("start localsite");
-var local_app = local_app || (function(module) {
+
+// Common function to find script with delay handling for DOM recognition
+// NOTE: This Promise will NOT wait forever - it has a built-in 1-second timeout.
+// If script is not found immediately, it waits 1000ms then resolves with either 
+// the found script or null (never rejects, preventing infinite waiting).
+function findScript(scriptName = 'localsite.js') {
+    return new Promise((resolve, reject) => {
+        let scripts = document.getElementsByTagName('script'); 
+        let myScript;
+        
+        // Try to find the specified script
+        for (var i = 0; i < scripts.length; ++i) {
+            if(scripts[i].src && scripts[i].src.indexOf(scriptName) !== -1){
+                myScript = scripts[i];
+                break;
+            }
+        }
+        
+        if (!myScript) {
+            console.log(`%cALERT: ${scriptName} was not yet recognized in the DOM. Waiting for second attempt...`, 'color: red; background: yellow; font-size: 14px');
+            
+            // Handle delay if script is not found by adding retry with timeout
+            // This ensures the Promise resolves within 1 second, never hanging indefinitely
+            setTimeout(function() {
+                let scripts = document.getElementsByTagName('script'); 
+                for (var i = 0; i < scripts.length; ++i) {
+                    if(scripts[i].src && scripts[i].src.indexOf(scriptName) !== -1){
+                        myScript = scripts[i];
+                        break;
+                    }
+                }
+                
+                if (myScript) {
+                    console.log(`%cGot ${scriptName} from DOM after delay!`, 'color: green; background: yellow; font-size: 14px');
+                    resolve(myScript);
+                } else {
+                    console.log(`%c${scriptName} still not found after delay. Using fallback.`, 'color: orange; background: yellow; font-size: 14px');
+                    resolve(null); // Always resolves (never hangs), even when script not found
+                }
+            }, 1000);
+        } else {
+            resolve(myScript);
+        }
+    });
+}
+
+// Ensure local_app exists and extend it with all required methods
+window.local_app = window.local_app || {};
+
+// Add localsite methods to local_app (extending existing object if it already has web_root)
+(function(module) {
     let _args = {}; // private, also worked as []
     let localsite_repo;
-    return {
-        init : function(Args) {
-            _args = Args;
-            // some other initialising
-        },
-        helloWorld : function() {
-            //alert('Hello World! -' + _args[0]);
-            //alert('Hello World! -' + _args.test1);
-            alert(Object.keys(_args)[0]);
-        },
-        localsite_root : function() {
-            if (localsite_repo) { // Intensive, so allows to only run once
+    let modelearth_repo;
+    let local_app = window.local_app; // Reference to global local_app
+
+    // Extend local_app with localsite methods
+    local_app.init = local_app.init || function(Args) {
+        _args = Args;
+        // some other initialising
+    };
+    
+    local_app.helloWorld = local_app.helloWorld || function() {
+        //alert('Hello World! -' + _args[0]);
+        //alert('Hello World! -' + _args.test1);
+        alert(Object.keys(_args)[0]);
+    };
+    
+    local_app.localsite_root = local_app.localsite_root || function() {
+            if (localsite_repo) { // Use cached value if available
               return(localsite_repo);
             }
             //alert("get localsite_repo");
 
-            let scripts = document.getElementsByTagName('script'); 
-            let myScript; // = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
-            // Now try to find localsite.js
-            //alert(myScript.length)
-            for (var i = 0; i < scripts.length; ++i) {
-                if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
-                  myScript = scripts[i];
-                }
-            }
-            if (!myScript) { // Now try to find one containging map-embed.js
-              for (var i = 0; i < scripts.length; ++i) {
-                if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
-                  myScript = scripts[i];
-                }
-              }
-            }
-            if (!myScript) {
-              console.log('%cALERT: the current script localsite.js was not yet recognized in the DOM. Hit refresh.', 'color: red; background: yellow; font-size: 14px');
-              
-              // If this setTimeout works, we'll add it before extractHostnameAndPort is called.
-              setTimeout( function() {
-                for (var i = 0; i < scripts.length; ++i) {
-                    if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
-                      myScript = scripts[i];
-                    }
-                    console.log('%cGot script from DOM after delay! We need to modify code here to add additional attempts. ', 'color: green; background: yellow; font-size: 14px');
-              
-                }
-              }, 1000 );
-
-            }
-
-            let hostnameAndPort = extractHostnameAndPort(myScript.src);
-            console.log("location.host " + location.host);
-            let theroot = location.protocol + '//' + location.host + '/localsite/';
-
-            if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map, and ga-layers.json
-              // Might need (hopefully not) for https://www.georgia.org/center-of-innovation/energy/smart-mobility - needed occasionally for js/jquery.min.js below, not needed when hitting reload.
-              //theroot = "https://map.georgia.org/localsite/";
-              
-              // This could be breaking top links to Location and Good & Services.
-              // But reactivating after smart-mobility page tried to get js/jquery.min.js from geogia.org
-              // Re-omitting because js/jquery.min.js still used geogia.org on first load, once. (not 100% sure if old page was cached)
-              //theroot = hostnameAndPort + "/localsite/";
+            // Get web_root and append "/localsite/" - no DOM checking needed here
+            let web_root = this.web_root();
+            let theroot = web_root + "/localsite/";
+            
+            // Handle special case for Georgia domain
+            if (location.host.indexOf("georgia") >= 0) { 
+              // For feedback link within embedded map, and ga-layers.json
+              // Keep the theroot as determined by web_root + "/localsite/"
+              // This maintains compatibility with embedded maps
             }
             
-            if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-              console.log("hostnameAndPort " + hostnameAndPort);
-              theroot = hostnameAndPort + "/localsite/";
-              //consoleLog("myScript.src hostname and port: " + extractHostnameAndPort(myScript.src));
-              //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
-            }
-            if (location.host.indexOf('localhost') >= 0) {
-              // For testing embedding without locathost repo in site theroot. Rename your localsite folder.
-              // Why don't we reach ".showApps click" when activatied?:
-              //theroot = "https://model.earth/localsite/";
-            }
-            localsite_repo = theroot; // Save to reduce DOM hits
+            localsite_repo = theroot; // Cache to reduce repeated calls
             return (theroot);
-        },
-        community_data_root : function() { // General US states and eventually some international
+    };
+    
+    local_app.community_data_root = local_app.community_data_root || function() { // General US states and eventually some international
             let theroot = "https://model.earth/community-data/";
             if (location.host.indexOf('localhost') >= 0 && !onlineApp) {
               theroot = location.protocol + '//' + location.host + '/community-data/';
             }
             return (theroot);
-        },
-        modelearth_root : function() { // General US states and eventually some international
-            let theroot = "https://model.earth";
-            // TO DO: Check if localsite.js include div contains "https://model.earth" (non-relative)
+    };
+    
+    local_app.web_root = local_app.web_root || function() { // General US states and eventually some international
+            // Check if web_root was already populated by widget-embed.js or other scripts
+            // Avoid infinite recursion by checking if window.local_app is a different object
+            if (window.local_app && window.local_app !== local_app && 
+                typeof window.local_app.web_root === 'function') {
+                // Use the existing function from widget-embed.js or other source
+                let existingResult = window.local_app.web_root();
+                if (existingResult) {
+                    modelearth_repo = existingResult; // Cache the result
+                    return existingResult;
+                }
+            }
             
+            if (modelearth_repo) { // Use cached value if available
+                return modelearth_repo;
+            }
+            
+            let theroot = "https://model.earth";
+
+            // Try to find script synchronously first, prioritizing localsite.js
+            let scripts = document.getElementsByTagName('script'); 
+            let myScript;
+            
+            // Use path to localsite.js as location for supporting files - for embedding
+            for (var i = 0; i < scripts.length; ++i) {
+                if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
+                    myScript = scripts[i];
+                    break;
+                }
+            }
+            
+            // If localsite.js not found, try map-embed.js as fallback
+            /*
+            if (!myScript) {
+                for (var i = 0; i < scripts.length; ++i) {
+                    if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
+                        myScript = scripts[i];
+                        break;
+                    }
+                }
+            }
+            */
+
+            if (!myScript) {
+                // If not found, try async approach (for future calls)
+                findScript('localsite.js').then(script => {
+                    if (script) {
+                        let hostnameAndPort = extractHostnameAndPort(script.src);
+                        let result = theroot;
+                        if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+                            result = hostnameAndPort;
+                        } else if ((location.host.indexOf('localhost') >= 0 && location.port == "8887") || location.host.indexOf('127.0.0.1') >= 0) {
+                            result = location.protocol + '//' + location.host;
+                        }
+                        modelearth_repo = result; // Cache for future calls
+                    } else {
+                        /*
+                        // Try map-embed.js as fallback if localsite.js fails
+                        findScript('map-embed.js').then(fallbackScript => {
+                            if (fallbackScript) {
+                                let hostnameAndPort = extractHostnameAndPort(fallbackScript.src);
+                                let result = theroot;
+                                if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+                                    result = hostnameAndPort;
+                                } else if ((location.host.indexOf('localhost') >= 0 && location.port == "8887") || location.host.indexOf('127.0.0.1') >= 0) {
+                                    result = location.protocol + '//' + location.host;
+                                }
+                                modelearth_repo = result; // Cache for future calls
+                            }
+                        });
+                        */
+                    }
+                });
+                // Return default for immediate use
+                console.log("There was an alert here for months, but it wasn't reached (displayed) to my knowledge - LH. theroot: " + theroot)
+                return theroot;
+            }
+            
+            let hostnameAndPort = extractHostnameAndPort(myScript.src);
+            if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
+              // External webroot
+              modelearth_repo = hostnameAndPort; // Cache result
+              return (hostnameAndPort);
+            }
             // Currently assuming all other ports don't have localsite folder.
             if ((location.host.indexOf('localhost') >= 0 && location.port == "8887") || location.host.indexOf('127.0.0.1') >= 0) {
-              theroot = "";
+              theroot = location.protocol + '//' + location.host;
             }
+            modelearth_repo = theroot; // Cache result
             return (theroot);
-        },
-        topojson_root : function() { // General US states and eventually some international
+    };
+    
+    local_app.topojson_root = local_app.topojson_root || function() { // General US states and eventually some international
             // These repos will typically reside on github, so no localhost.
             let theroot = "https://model.earth";
+            //alert("hack")
+            //theroot = "http://localhost:8887";
             if (!onlineApp) {
               theroot = "";
             }
             return (theroot);
-        },
-        custom_data_root : function() { // Unique US states - will use javascript, domain, cookies and json.
+    };
+    
+    local_app.custom_data_root = local_app.custom_data_root || function() { // Unique US states - will use javascript, domain, cookies and json.
             let theroot = location.protocol + '//' + location.host + '/georgia-data/';
             if (location.host.indexOf('localhost') < 0) {
               theroot = "https://neighborhood.org/georgia-data/";
             }
             return (theroot);
-        }
     };
 
-    // EXPORTS
-    //module.init = init;
-    //module.setData = setData;
-}());
+})(local_app); // End of extending local_app
 
 //local_app.loctitle = "what"
 //alert(local_app.loctitle);
@@ -163,7 +263,7 @@ if(typeof hiddenhash == 'undefined') {
   var hiddenhash = {};
 }
 if (hiddenhash.geoview) {
-    alert("BUG L1 hiddenhash.geoview " + hiddenhash.geoview);
+    console.log("BUG L1 hiddenhash.geoview " + hiddenhash.geoview);
 }
 // param values from page are placed in hiddenhash. (UNLESS THEY ARE ALREADY IN THE HASH.)
 // hiddenhash is loaded into hash in gethash if hash does not have an existing value.
@@ -181,9 +281,17 @@ if(typeof param != 'undefined') { // From settings in HTML page
 
 } else { // No param object in page, but could be set in localsite.js include.
   hiddenhash = mix(hiddenhash,paramIncludeFile);
+  var param = {};
+
   // Now we add in the hash, after hiddenhash is set without hash
-  var param = structuredClone(extend(true, loadParams(location.search,location.hash), paramIncludeFile)); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
+  // TO DO - comment this line out since window.param seems to also sets param.  (Observed that in embed.js or map.js)
+  param = structuredClone(extend(true, loadParams(location.search,location.hash), paramIncludeFile)); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
   //param = loadParams(location.search,location.hash); // Includes localsite.js include.
+
+  // Allows embed.js to access. 
+  window.param = structuredClone(extend(true, loadParams(location.search,location.hash), paramIncludeFile)); // Subsequent overrides first giving priority to setting in page over URL. Clone/copy object without entanglement. 
+  
+  //alert("param set in localsite. param.map " + param.map);
 }
 
 if (param.state) {
@@ -354,16 +462,19 @@ function getHashOnly() {
   })(window.location.hash.substr(1).split('&'));
 }
 
-// Avoids triggering hash change event. 
+// updateHash avoids triggering hash change event.
 // Also called by goHash, which does trigger hash change event.
 
 function updateHash(addToHash, addToExisting, removeFromHash) {
     //alert("updateHash object: " + JSON.stringify(addToHash))
+    //let debugMsg = "updateHash called with: " + JSON.stringify(addToHash) + " addToExisting: " + addToExisting + " isPopstateNavigation: " + (typeof isPopstateNavigation !== 'undefined' ? isPopstateNavigation : "undefined");
+    //alert(debugMsg);
+    console.log("updateHash called with:", JSON.stringify(addToHash), "addToExisting:", addToExisting);
     let hash = {}; // Limited to this function
     if (addToExisting != false) {
       hash = getHashOnly(); // Include all existing. Excludes hiddenhash.
     }
-    console.log(addToHash)
+    console.log("updateHash addToHash:", addToHash)
     const newObj = {}; // For removal of blank keys in addToHash
     Object.entries(addToHash).forEach(([k, v]) => {
       if (v != null) {
@@ -388,10 +499,12 @@ function updateHash(addToHash, addToExisting, removeFromHash) {
         if (value && typeof value === 'object' && !Array.isArray(value)) {
             // Flatten nested object properties
             Object.entries(value).forEach(([subKey, subValue]) => {
-                flatHash[`${key}.${subKey}`] = subValue;
+                // Encode & characters in values to prevent hash parsing issues
+                flatHash[`${key}.${subKey}`] = String(subValue).replace(/&/g, '%26');
             });
         } else {
-            flatHash[key] = value;
+            // Encode & characters in values to prevent hash parsing issues
+            flatHash[key] = String(value).replace(/&/g, '%26');
         }
     });
     
@@ -401,14 +514,33 @@ function updateHash(addToHash, addToExisting, removeFromHash) {
     if (window.location.search) { // Existing, for parameters that are retained as hash changes.
       queryString += window.location.search; // Contains question mark (?)
     }
-    if (hashString) { // Remove the hash here if adding to other 
+    if (hashString) { // Remove the hash here if adding to other
       queryString += "#" + hashString;
     }
     let searchTitle = 'Page ' + hashString;
-    //alert(queryString)
-    window.history.pushState("", searchTitle, pathname + queryString);
+    let newURL = pathname + queryString;
+    let currentURL = window.location.pathname + window.location.search + window.location.hash;
+    console.log("pushState - Old URL:", currentURL, "New URL:", newURL);
+
+    // Only push to history if the URL is actually changing
+    if (currentURL !== newURL) {
+      // Use replaceState during back/forward navigation to avoid creating new history entries
+      if (typeof isPopstateNavigation !== 'undefined' && isPopstateNavigation) {
+        // alert("Using REPLACESTATE\nOld: " + currentURL + "\nNew: " + newURL); // Temp for testing
+        window.history.replaceState("", searchTitle, newURL);
+        console.log("replaceState executed - history entry updated (popstate navigation)");
+      } else {
+        //alert("Using PUSHSTATE\nOld: " + currentURL + "\nNew: " + newURL); // Temp for testing
+        window.history.pushState("", searchTitle, newURL);
+        console.log("pushState executed - new history entry created");
+      }
+    } else {
+      console.log("SKIPPING history update - URL unchanged\nURL: " + currentURL); // Temp for testing
+      console.log("pushState/replaceState skipped - URL unchanged");
+    }
 }
 function goHash(addToHash,removeFromHash) {
+  //alert("goHash called with: " + JSON.stringify(addToHash) + "\nremoveFromHash: " + removeFromHash);
   consoleLog("goHash\n" + JSON.stringify(addToHash, null, 2));
   // Get and normalize the current hash
   const currentHash = normalizeHash(window.location.hash);
@@ -417,7 +549,26 @@ function goHash(addToHash,removeFromHash) {
   const newHash = normalizeHash(window.location.hash);
   // Only trigger the event if the normalized hash actually changed
   if (currentHash !== newHash) {
+    //console.log("goHash triggering hashChangeEvent\nOld hash: " + currentHash + "\nNew hash: " + newHash);
     triggerHashChangeEvent();
+  } else {
+    consoleLog("goHash NOT triggering hashChangeEvent - hash unchanged");
+  }
+}
+// Like goHash but uses replaceState so the change does not create a browser history entry.
+// Use when toggling UI state (e.g. opening a settings panel) so the user can press Back
+// without the panel reopening.
+function goHashNoHistory(addToHash,removeFromHash) {
+  consoleLog("goHashNoHistory\n" + JSON.stringify(addToHash, null, 2));
+  const currentHash = normalizeHash(window.location.hash);
+  isPopstateNavigation = true; // Causes updateHash to use replaceState instead of pushState
+  updateHash(addToHash,true,removeFromHash);
+  isPopstateNavigation = false;
+  const newHash = normalizeHash(window.location.hash);
+  if (currentHash !== newHash) {
+    triggerHashChangeEvent();
+  } else {
+    consoleLog("goHashNoHistory NOT triggering hashChangeEvent - hash unchanged");
   }
 }
 function go(addToHash) {
@@ -458,6 +609,7 @@ if(typeof priorHash == 'undefined') {
 }
 //let nextPriorHash = {};
 let nextPriorHash = structuredClone(param); // Param values set in pages and the include URL are passed forward as a hiddenhash.
+var isPopstateNavigation = false; // Flag to track if we're in a back/forward navigation. Temp for testing
 // Triggers custom hashChangeEvent in multiple widgets.
 // Exception, React widgets use a different process.
 var triggerHashChangeEvent = function () {
@@ -477,7 +629,6 @@ var triggerHashChangeEvent = function () {
 function loadScript(url, callback)
 {
   //let urlID = url.replace(/^.*\/\/[^\/]+/, ''); // Allows id's to always omit the domain.
-
   let urlID = getUrlID3(url);
   var loadFile = true;
 
@@ -488,7 +639,7 @@ function loadScript(url, callback)
      loadFile = false;
   }
 
-  //alert(urlID)
+  // Nested calls are described here: https://books.google.com/books?id=ZOtVCgAAQBAJ&pg=PA6&lpg=PA6
   if (loadFile && !document.getElementById(urlID)) { // Prevents multiple loads.
       consoleLog("loadScript seeking " + url + " via urlID: " + urlID);
       var script = document.createElement('script');
@@ -496,41 +647,17 @@ function loadScript(url, callback)
       script.src = url;
       script.id = urlID; // Prevents multiple loads.
 
-      //$(document).ready(function () { // Only needed if appending to body
-       var head = document.getElementsByTagName('head')[0];
-       head.appendChild(script);
-      //});
+      var head = document.getElementsByTagName('head')[0];
+      head.appendChild(script);
 
-      // NOT NEEDED, this did not yet resolve function not being found in navigation.js
-      /*
-      let cleanUrlID = urlID.replace(/^\/+|\/+$/g, '').replace(/\//g, '-').replace(/\./g, '-'); // Remove / and . and beginning and ending slashes;
-      var script2 = document.createElement('script');
-      script2.type = 'text/javascript';
-      script2.src = ""; // Later we might try changing the id of existing scripts instead (to remove slashes).
-      script2.id = cleanUrlID + "-inserted";
-      head.appendChild(script2);
-      */
-
-      // Bind the event to the callback function. Two events for cross browser compatibility.
-      ////script.onreadystatechange = callback; // This apparently is never called by Brave, but needed for some of the other browsers.
-      //script.onreadystatechange = function() { // Cound eliminate these 3 lines and switch back to the line above.
-      //  consoleLog("loadScript ready: " + url); // This apparently is never called by Brave.
-      //  callback();
-      //}
-      //script.onload = callback;
       script.onload = function() {
-        //waitForElm(cleanUrlID).then((elm) => { // Since script.onload does not validate script is actually active in the DOM.
-          consoleLog("loadScript loaded: " + url); // Once the entire file is processed.
-          callback();
-        //});
+        consoleLog("loadScript loaded: " + url); // Once the entire file is processed.
+        if(callback) callback();
       }
-
-        
   } else {
     consoleLog("loadScript script already available: " + url + " via ID: " + urlID);
     if(callback) callback();
   }
-  // Nested calls are described here: https://books.google.com/books?id=ZOtVCgAAQBAJ&pg=PA6&lpg=PA6
 }
 
 var localsite_repo3; // TEMP HERE
@@ -629,7 +756,13 @@ function toggleFullScreen(alsoToggleHeader) {
   }
 }
 
+// Determined by where localsite.js if fetched from.
+
 var theroot = get_localsite_root(); // Try using let instead of var to find other declarations.
+
+// TO DO - eliminate theroot and use local_app.localsite_root instead.
+// TO DO - Then eliminate the following get_localsite_root
+
 function get_localsite_root() { // Also in two other places
   if (localsite_repo3) { // Intensive, so limit to running once.
     //alert(localsite_repo);
@@ -637,25 +770,28 @@ function get_localsite_root() { // Also in two other places
   }
 
   let scripts = document.getElementsByTagName('script'); 
-  let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js
-  //let myScript = null;
-  // Now try to find one containging map-embed.js
-  for (var i = 0; i < scripts.length; ++i) {
-      if(scripts[i].src && scripts[i].src.indexOf('map-embed.js') !== -1){
+
+  // let myScript = scripts[ scripts.length - 1 ]; // Last script on page, typically the current script localsite.js - Doesn't work for embedded widgets - returns cloudflare
+
+  let hostnameAndPort = window.location.protocol + '//' + window.location.host; // The base, which includes the port.
+  let myScript;
+  for (var i = 0; i < scripts.length; ++i) { // Using current script
+      if(scripts[i].src && scripts[i].src.indexOf('localsite.js') !== -1){
         myScript = scripts[i];
       }
   }
-  let hostnameAndPort = extractHostnameAndPort(myScript.src);
-  //consoleLog("hostnameAndPort: " + hostnameAndPort);
+  if (myScript) {
+      hostnameAndPort = extractHostnameAndPort(myScript.src);
+      consoleLog("hostnameAndPort from " + myScript.src + " is " + hostnameAndPort);
+  }
   let theroot = location.protocol + '//' + location.host + '/localsite/';
 
   if (location.host.indexOf("georgia") >= 0) { // For feedback link within embedded map
-    //theroot = "https://map.georgia.org/localsite/";
     theroot = hostnameAndPort + "/localsite/";
   }
   if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
     theroot = hostnameAndPort + "/localsite/";
-    //console.log("theroot: " + theroot);
+    console.log("theroot from remotely called localsite: " + theroot);
     //consoleLog("window.location hostname and port: " + window.location.hostname + ((window.location.port) ? ':'+window.location.port :''));
   }
   if (location.host.indexOf('localhost') >= 0) {
@@ -699,7 +835,7 @@ function consoleLog(text,value) {
   // Instead, hold in consoleLogHolder until #logText is available.
 
   let dsconsole = document.getElementById("logText");
-  if (dsconsole) { // Once in DOM
+  if (1==2 && dsconsole) { // Once in DOM
     //dsconsole.style.display = 'none'; // hidden
     if (consoleLogHolder.length > 0) { // Called only once to display pre-DOM values
       //dsconsole.innerHTML = consoleLogHolder;
@@ -739,7 +875,9 @@ function consoleLog(text,value) {
 function loadLocalTemplate() {
   consoleLog("loadLocalTemplate()");
   let datascapeFile = theroot + "info/template-main.html";
-  let datascapeFileDiv = "#datascape";
+  // Use body if #datascape doesn't exist
+  let datascapeFileDiv = $("#datascape").length ? "#datascape" : "body";
+
   waitForElm(datascapeFileDiv).then((elm) => {
 
     $.get(datascapeFile, function(theTemplate) { // Get and append template-main.html to #datascape
@@ -760,26 +898,40 @@ function loadLocalTemplate() {
       consoleLog("Template Loaded: " + datascapeFile);
       initSitelook();
       if (typeof relocatedStateMenu != "undefined") {
-        relocatedStateMenu.appendChild(state_select); // For apps hero
+        // DEACTIVATED, OCCURRED ON LOAD OF /localsite/info/
+        // Move elsewhere if still needed.
+        //relocatedStateMenu.appendChild(state_select); // For apps hero
         $(".stateFilters").hide();
       }
       if (typeof relocatedScopeMenu != "undefined") {
-        relocatedScopeMenu.appendChild(selectScope); // For apps hero
+        // DROPDOWN #selectScope was REMOVED  relocatedScopeMenu.appendChild(selectScope); // For apps hero
       }
       waitForElm('#filterClickLocation').then((elm) => {
         if (param.showstates != "false") {
-            $("#filterClickLocation").show();
+            $("#geoviewSelectHolder").show();
+            // Only show counties tab if sub-selections exist
+            let hash = getHash();
+            let hideCountiesTab = (hash.geoview == "country" && !hash.state) || (hash.geoview == "state" && !hash.geo);
+            if (!hideCountiesTab) {
+                $("#filterClickLocation").show(); // Show counties tab
+            }
         }
-        $("#mapFilters").prependTo("#fullcolumn");
+        $("#mapFilters").prependTo("#main-content");
         // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
-        $("#local-header").prependTo("#fullcolumn");
-        $("#headerbar").prependTo("#fullcolumn");
+        $("#main-header").insertBefore("#main-container");
+        //$("#headerbaroffset").prependTo("#main-container");
+        //$("#headerbar").prependTo("#main-container");
       });
       
-      waitForElm('#fullcolumn').then((elm) => {
-        $("#headerbar").prependTo("#fullcolumn"); // Move back up to top.
-        //$("#bodyMainHolder").prependTo("#fullcolumn"); // Move back up to top.
-        $("#sideTabs").prependTo("#fullcolumn"); // Move back up to top.
+      waitForElm('#main-container').then((elm) => {
+        $("#main-header").insertBefore("#main-container");
+
+        //$("#headerbaroffset").prependTo("#main-container");
+        //$("#headerbar").prependTo("#main-container"); // Move back up to top.
+
+
+        //$("#bodyMainHolder").prependTo("#main-container"); // Move back up to top.
+        $("#rightSideTabs").prependTo("#main-container"); // Move back up to top.
 
         // Replace paths in div
 
@@ -790,7 +942,7 @@ function loadLocalTemplate() {
             });
           });
         }
-        if(location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0) {
+        if(location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0 || location.host.indexOf("8888") >= 0) {
           $("#dreamstudio-nav a").each(function() {
             $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
           });
@@ -819,13 +971,13 @@ function hideHeaderBar() {
 function showHeaderBar() {
   waitForElm('#headerbar').then((elm) => {
     console.log("showHeaderBar")
-    //$('.headerOffset').show(); 
+    //$('.headerOffset').show();
     $('#headerbar').show();
     $('#headerbar').removeClass("headerbarhide");
     $('.bothSideIcons').addClass('sideIconsLower');
     $(".pagecolumn").addClass("pagecolumnLower"); // Didn't seem to be working
-    waitForElm('#navcolumn').then((elm) => {
-      $("#navcolumn").addClass("pagecolumnLower");
+    waitForElm('#main-nav').then((elm) => {
+      $("#main-nav").addClass("pagecolumnLower");
     });
     if (param.shortheader != "true") {
       $('#local-header').show();
@@ -856,10 +1008,10 @@ function loadLeafletAndMapFilters() {
       // But navigation.js won't be in the DOM if we don't waitForElm('#bodyloaded'). Used $(document).ready above instead.
       waitForElm('#bodyloaded').then((elm) => {
         console.log("body is now available"); // If missing header persists, remove waitForElm('#bodyloaded') here (line above annd closure)
-        // Puts space above flexmain for navcolumn to be visible after header
+        // Puts space above flexmain for main-nav to be visible after header
         $("body").prepend("<div id='local-header' class='flexheader noprint' style='display:none'></div>\r");
         waitForElm('#local-header').then((elm) => {
-          $("#local-header").prependTo("#fullcolumn"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
+          $("#local-header").prependTo("#main-container"); // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)
           if (param.shortheader != "true") {
             // Inital page load
             $('#local-header').show();
@@ -883,7 +1035,9 @@ function loadLeafletAndMapFilters() {
     });
   }
 }
-
+if (typeof Cookies != 'undefined') {
+  //alert('sitelook' + Cookies.get('sitelook'));
+};
 // WAIT FOR JQuery
 loadScript(theroot + 'js/jquery.min.js', function(results) {
   var waitForJQuery = setInterval(function () { // Waits for $ within jquery.min.js file to become available.
@@ -917,8 +1071,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           sitelook = param.sitelook;
         }
         if (sitelook == "light") {
-          removeElement('/localsite/css/bootstrap.darkly.min.css');
-          removeElement('/explore/css/site-dark.css');
+          ////removeElement(theroot + 'css/bootstrap.darkly.min.css');
+          removeElement(theroot + '../explore/css/site-dark.css');
           //includeCSS3(theroot + 'css/light.css',theroot);
           if (typeof Cookies != 'undefined') {
               waitForElm('#sitelook').then((elm) => {
@@ -963,29 +1117,77 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
           $(document).on('keypress', function(e) {
             if (e.which === 13 && $('#input123').is(':focus')) { // Return is key code 13.
-                //alert("return")
-                handleEmail(e);
+                const email = $('#input123').val().trim();
+                if (email.length == 0) {
+                  // TODO Clear email here
+                  delete localStorage.email;
+                  $(".uOut").hide();
+                } else { 
+                  handleEmail(e);
+                }
                 //console.log("Return key pressed in #input123");
             }
           });
 
+          // Handle gravatar checkbox and email field changes
+          $(document).on('change', '#getGravatar', function() {
+            updateGravatarDisplay();
+          });
+
+          $(document).on('input', '#input123', function() {
+            updateGravatarDisplay();
+          });
+
+          function updateGravatarDisplay() {
+            const email = $('#input123').val().trim();
+            const gravatarChecked = $("#getGravatar").is(":checked");
+            const gravatarLine = $("#getGravatar").parent();
+            $("#gravatarLine").show();
+            // Hide gravatar line when email is blank
+            if (!email) {
+              gravatarLine.hide();
+              $("#gravatarImg").empty();
+              delete localStorage.email;
+              $(".uOut").hide();
+              return;
+            } else {
+              gravatarLine.show();
+            }
+            
+            // Show/hide gravatar image based on checkbox and valid email
+            if (gravatarChecked && isValidEmail(email)) {
+                // https://pajhome.org.uk/crypt/md5/md5.js
+              loadScript('/localsite/js/md5.js', function(results) { // For gravatar image display
+                let userImg = $.gravatar(email);
+                if (userImg) {
+                  localStorage.userImg = userImg;
+                  $("#gravatarImg").html("<img src='" + localStorage.userImg + "' style='width:100%;max-width:100px;border-radius:50px;'><br><br>");
+                }
+              });
+            } else {
+              $("#gravatarImg").empty();
+            }
+          }
+
+          // Save clicked
           function handleEmail(e) {
               // For both keypress and click events
               let email = $('#input123').val();
               if (isValidEmail(email)) {
                 localStorage.email = email;
-
+                $(".uIn").hide();
                 if (isValid(email)) {
                   Cookies.set('golog', window.location.href);
-                  window.location = "/explore/menu/login/azure/";
+                  if (location.host.indexOf('localhost') >= 0) {
+                    alert("Redirect to explore - invalid email")
+                  }
+                  window.location = "/explore";
                   return;
-                } else {
-                  //window.location = "/";
                 }
 
                 if ($("#getGravatar").is(":checked")) {
                   // BUGBUG - Redirect above will bypass.
-                  loadScript('http://pajhome.org.uk/crypt/md5/md5.js', function(results) {
+                  loadScript('/localsite/js/md5.js', function(results) {
                     let userImg = $.gravatar(email);
                     if (userImg) {
                       localStorage.userImg = userImg;
@@ -994,12 +1196,27 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
                     }
                   });
                 }
-
               } else {
-                alert("email required"); // TO DO: Display in browser
+                //alert("email required"); // TO DO: Display in browser
                 $("#input123").focus();
               }
           }
+
+          // Initialize gravatar display when DOM is ready
+          $(document).ready(function() {
+            if (typeof waitForElm === 'function') {
+              waitForElm('#input123').then(() => {
+                updateGravatarDisplay();
+              });
+            } else {
+              // Fallback if waitForElm is not available
+              setTimeout(() => {
+                if ($("#input123").length) {
+                  updateGravatarDisplay();
+                }
+              }, 100);
+            }
+          });
       })();
 
       $.gravatar = function(emailAddress, overrides)
@@ -1049,76 +1266,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     }
 })();
 
-      // Load when body div becomes available, faster than waiting for all DOM .js files to load.
-      waitForElm('#bodyloaded').then((elm) => {
-      consoleLog("#bodyloaded becomes available");
-      waitForElm('#datascape').then((elm) => { // Wait for navigation.js to set
-        let modelsite = Cookies.get('modelsite');
-        if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
-          var div = $("<div />", {
-              html: '<style>.local{display:inline-block !important}.local-block{display:block !important}.localonly{display:block !important}.hidelocal{display:none}</style>'
-            }).appendTo("body");
-        } else {
-          // Inject style rule
-            var div = $("<div />", {
-              html: '<style>.local{display:none}.localonly{display:none}</style>'
-            }).appendTo("body");
-        }
-
-        // LOAD HTML TEMPLATE - Holds search filters and maps
-        // View html source: https://model.earth/localsite/map
-        // Consider pulling in HTML before DOM is loaded, then send to page once #datascape is available.
-
-       if (param.insertafter && $("#" + param.insertafter).length) {
-          $("#" + param.insertafter).append("<div id='datascape'></div>");
-        } else if(document.getElementById("datascape") == null) {
-          $('body').prepend("<div id='datascape'></div>");
-        }
-
-        if (param.showLeftIcon != false) { // && param.showheader == "true"
-          $('body').prepend("<div id='sideIcons' class='noprint bothSideIcons' style='position:fixed;left:0;width:32px'><div id='showNavColumn' class='showNavColumn' style='left:-28px;display:none'><i class='material-icons show-on-load' style='font-size:35px; opacity:1; background:#fcfcfc; color:#333; padding-left:2px; padding-right:2px; border: 1px solid #555; border-radius:8px; min-width: 38px;'>&#xE5D2;</i></div></div>");
-        }
-
-        if (param.showheader == "true" || param.showsearch == "true" || param.display == "everything" || param.display == "locfilters" || param.display == "map") {
-          //if (param.templatepage != "true") { // Prevents dup header on map/index.html - Correction, this is needed. param.templatepage can probably be removed.
-            //if (param.shownav != "true") { // Test for mentors page, will likely revise
-              loadLocalTemplate();
-            //}
-          //}
-        }
-      
-
-        // LOAD INFO TEMPLATE - Holds input-output widgets
-        // View html source: https://model.earth/localsite/info/template-charts.html
-        if (!$("#infoFile").length) {
-          $('body').append("<div id='infoFile'></div>");
-        }
-        if (param.display == "everything") {
-          let infoFile = theroot + "info/template-charts.html #template-charts"; // Including #template-charts limits to div within page, prevents other includes in page from being loaded.
-          //alert("Before template Loaded infoFile: " + infoFile);
-          $("#infoFile").load(infoFile, function( response, status, xhr ) {
-
-            /*
-            waitForElm('#industryFilters').then((elm) => {
-              alert("Info Template Loaded: " + infoFile);
-              $("#industryFilters").appendTo("#append_industryFilters");
-            });
-            */
-          });
-        }
-
-        // Move local-footer to the end of body
-        let foundTemplate = false;
-        // When the template (map/index.html) becomes available
-        waitForElm('#templateLoaded').then((elm) => {
-          foundTemplate = true;
-          $("#local-footer").appendTo("body");
-        });
-        if (foundTemplate == false) { // An initial move to the bottom - occurs when the template is not yet available.
-          $("#local-footer").appendTo("body");
-        }
-      });
-      }); // End body ready
 
       $(document).ready(function () {
         /*! jQuery & Zepto Lazy v1.7.10 - http://jquery.eisbehr.de/lazy - MIT&GPL-2.0 license - Copyright 2012-2018 Daniel 'Eisbehr' Kern */
@@ -1131,7 +1278,8 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         
       });
 
-      $(window).on('hashchange', function() { // Avoid window.onhashchange since overridden by map and widget embeds  
+      $(window).on('hashchange', function() { // Avoid window.onhashchange since overridden by map and widget embeds
+        //alert("HASHCHANGE event fired!\nNew URL: " + window.location.href);
         consoleLog("window hashchange");
         consoleLog("delete hiddenhash.name");
         delete hiddenhash.name; // Not sure where this is set.
@@ -1139,6 +1287,21 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         //delete hiddenhash.geo; // Not sure where this is set.
 
         triggerHashChangeEvent();
+      });
+
+      // Handle browser back/forward button navigation
+      window.addEventListener('popstate', function(event) {
+        console.log("popstate event, back/forward button navigation - URL:", window.location.href);
+        isPopstateNavigation = true;
+        // The hashchange event should handle the actual hash change,
+        // but we trigger it explicitly to ensure it fires
+        triggerHashChangeEvent();
+
+        // Reset flag after a short delay to allow hash change handlers to complete
+        setTimeout(function() {
+          isPopstateNavigation = false;
+        }, 100);
+
       });
       //MutationObserver.observe(hiddenhash, triggerHashChangeEvent);
 
@@ -1169,6 +1332,14 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       });
       $(document).on("click", ".showSearch", function(event) {
         showSearchFilter();
+        // Auto-close right navigation on narrow screens
+        if (window.innerWidth <= 1000) {
+            if (typeof goHash === 'function') {
+                goHash({'sidetab':''});
+            } else {
+                updateHash({"sidetab":""});
+            }
+        }
       });
       
       clearInterval(waitForJQuery); // Escape the loop
@@ -1251,6 +1422,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       fullsite = true;
       includeCSS3(theroot + 'css/map.css',theroot); // Before naics.js so #industries can be overwritten.
+      //includeCSS3(theroot + '../team/projects/map/location.css',theroot);
 
       // TODO - Try limiting to param.display == "everything"
       //includeCSS3(theroot + 'css/naics.css',theroot);
@@ -1293,6 +1465,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   }
 
   function loadMapAndMapFilters() {
+    return; //TEMP
     console.log("loadScript called from localsite.js");
     loadSearchFilterCss(); 
     loadScript(theroot + 'js/navigation.js', function(results) {
@@ -1309,6 +1482,13 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     !function() {
       // Setting up listener for font checking
       var font = "1rem 'Material Icons'";
+      var canTrackFontLoad = !!(document.fonts && document.fonts.load);
+      function markMaterialIconsLoaded() {
+        document.documentElement.classList.add('material-icons-loaded');
+        if (typeof document.dispatchEvent === 'function') {
+          document.dispatchEvent(new CustomEvent('materialIconsLoaded'));
+        }
+      }
 
       // Not sure why we had this. It renders on load, and then again each time browser is resized.
       //document.fonts.addEventListener('loadingdone', function(event) {
@@ -1320,6 +1500,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           head = document.getElementsByTagName('head')[0];
 
       link.addEventListener('load', function() {
+          if (!canTrackFontLoad) {
+            markMaterialIconsLoaded();
+          }
           //alert('Font loaded');
           $(document).ready(function () {
             //$(".show-on-load").show(); // This might only get applied to first instance of class.
@@ -1341,7 +1524,16 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
           //body.appendChild(link); // Doesn't get appended. Error: body is not defined
         });
       } else {
+        if (document.fonts && document.fonts.check && document.fonts.check(font)) {
+          markMaterialIconsLoaded();
+        }
         console.log("link.id " + link.id);
+      }
+
+      if (canTrackFontLoad) {
+        document.fonts.load(font).then(function() {
+          markMaterialIconsLoaded();
+        }).catch(function() {});
       }
     }();
   }
@@ -1362,6 +1554,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   $(document).on("click", "#earthClose", function(event) { // ZOOM IN
     $("#nullschoolHeader").hide();
     $("#hero_holder").show();
+    if (typeof goHash === "function") {
+      goHash({"geoview":""});
+    }
     event.stopPropagation();
   });
   $(document).on("click", "#earthZoom .leaflet-control-zoom-in", function(event) { // ZOOM IN
@@ -1862,19 +2057,58 @@ function extend () {
   return extended;
 };
 
+var _tabulatorReadyPromise = null;
 function loadTabulator() {
-  if (typeof Tabulator === 'undefined') {
-    includeCSS3(theroot + 'css/tabulator.min.css',theroot);
-    includeCSS3(theroot + 'css/base-tabulator.css',theroot);
-    
-    // BUGBUG - Tabulator v6.2.0 error at http://localhost:8887/localsite/info/#geoview=country
-    // Uncaught RangeError: Maximum call stack size exceeded
-    //loadScript(theroot + 'js/tabulator.min.js', function(results) {});
-
-    // HACK - using 5.5.2 until above resolved
-    //alert("tabulator552")
-    loadScript(theroot + 'js/tabulator552.min.js', function(results) {});
+  if (_tabulatorReadyPromise) {
+    return _tabulatorReadyPromise;
   }
+  if (typeof Tabulator !== 'undefined') {
+    _tabulatorReadyPromise = Promise.resolve();
+    return _tabulatorReadyPromise;
+  }
+  _tabulatorReadyPromise = new Promise(function(resolve) {
+    var cssLoaded = false;
+    var jsLoaded = false;
+    function checkReady() {
+      if (cssLoaded && jsLoaded) {
+        resolve();
+      }
+    }
+    // Load CSS with onload detection
+    var cssUrl = theroot + 'css/tabulator.min.css';
+    var cssUrlID = getUrlID3(cssUrl);
+    var existingLink = document.getElementById(cssUrlID);
+    if (existingLink) {
+      cssLoaded = true;
+    } else {
+      var link = document.createElement('link');
+      link.id = cssUrlID;
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = cssUrl;
+      link.media = 'all';
+      link.onload = function() {
+        cssLoaded = true;
+        checkReady();
+      };
+      link.onerror = function() {
+        cssLoaded = true;
+        checkReady();
+      };
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+    includeCSS3(theroot + 'css/base-tabulator.css',theroot);
+    // Be aware that including observablehq/runtime@4/dist/runtime.js in page breaks nav location filter's topojson and tabulator
+    loadScript(theroot + 'js/tabulator.min.js', function(results) {
+      jsLoaded = true;
+      checkReady();
+    });
+    // If CSS was already loaded, just wait for JS
+    if (cssLoaded) {
+      checkReady();
+    }
+  });
+  return _tabulatorReadyPromise;
 }
 
 // Serialize a key/value object.
@@ -1997,6 +2231,7 @@ function getState(stateCode) {
 function showSearchFilter() {
   if ($("#filterFieldsHolder").is(':visible') ) {
     $("#filterFieldsHolder").hide();
+    $("#showSideFromHeader").show();
     return;
   }
   let loadFilters = false;
@@ -2022,15 +2257,13 @@ function showSearchFilter() {
       consoleLog("Hide #filterFieldsHolder");
       $("#filterFieldsHolder").hide();
       $("#filterFieldsHolder").addClass("filterFieldsHidden");
-      //$("#filterbaroffset").hide();
-      ////$("#pageLinksHolder").hide();
     } else {
       // #datascape is needed for map/index.html to apply $("#filterFieldsHolder").show()
       // Also prevents search filter from flashing briefly in map/index.html before moving into #datascape
         
       if (document.getElementById("filterFieldContent") == null) { 
         //alert("load filter.html")
-        let filterFile = local_app.modelearth_root() + "/localsite/map/filter.html";
+        let filterFile = local_app.web_root() + "/localsite/map/filter.html";
         $("#filterFieldsHolder").load(filterFile, function( response, status, xhr ) {
 
         }); // End $("#filters").load
@@ -2042,32 +2275,29 @@ function showSearchFilter() {
     }
 
     let expandIcon = '<div class="hideNarrow" style="position:absolute;z-index:10000">' +
-            '<div class="closeSideTabs expandToFullscreen iconPadding" style="border:0px;"><i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D0;</i></div>' +
-            '<div class="closeSideTabs reduceFromFullscreen iconPadding" style="display:none; border:0px;"><i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D1;</i></div>' +
+            '<div class="closeSideTabs expandToFullscreen" style="border:0px;"><i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D0;</i></div>' +
+            '<div class="closeSideTabs reduceFromFullscreen" style="display:none; border:0px;"><i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D1;</i></div>' +
         '</div>';
     //$('#datascape').prepend(expandIcon);
 
     if (loadFilters) {
       waitForElm('#datascape #filterFieldContent').then((elm) => {
         revealFilters();
-        /*
-        console.log("show #filterFieldsHolder");
-        $("#filterFieldsHolder").show();
-        $("#filterFieldsHolder").removeClass("filterFieldsHidden");
-        //$("#filterbaroffset").show();
-        $(".hideWhenPop").show();
-        $('html,body').scrollTop(0);
-        */
       });
     }
-    //goHash({"sidetab":""}); // Hide sidetab when showSearchFilter
   }
 
 }
 function closeSideTabs() {
   console.log("closeSideTabs()");
-  updateHash({"sidetab":""});
-  $("#sideTabs").hide();
+  if (typeof goHashNoHistory === 'function') {
+    goHashNoHistory({'sidetab':''});
+  } else if (typeof goHash === 'function') {
+    goHash({'sidetab':''});
+  } else {
+    updateHash({"sidetab":""});
+  }
+  $("#rightSideTabs").hide();
   $("body").removeClass("bodyRightMargin");
   if (!$('body').hasClass('bodyLeftMargin')) {
     $('body').removeClass('mobileView');
@@ -2077,6 +2307,7 @@ function closeSideTabs() {
 }
 function revealFilters() {
   //console.log("show #filterFieldsHolder");
+  $("#showSideFromHeader").hide();
   $("#filterFieldsHolder").show();
   $("#filterFieldsHolder").removeClass("filterFieldsHidden");
   //$("#filterbaroffset").show();
@@ -2187,6 +2418,26 @@ function waitForElmKickoff(selector, resolve) {
   observer.observe(document.body, {
       childList: true, //This is a must have for the observer with subtree
       subtree: true //Set to true if changes must also be observed in descendants.
+  });
+}
+
+// Like waitForElm but waits for the element to have non-zero dimensions (layout complete).
+// Uses ResizeObserver to detect when the browser finishes layout for the element.
+function waitForLayout(elm) {
+  return new Promise(function(resolve) {
+    if (elm.offsetWidth > 0) {
+      consoleLog("waitForLayout: element already has width " + elm.offsetWidth);
+      return resolve(elm);
+    }
+    consoleLog("waitForLayout: waiting for element to get dimensions");
+    var observer = new ResizeObserver(function(entries) {
+      if (elm.offsetWidth > 0) {
+        observer.disconnect();
+        consoleLog("waitForLayout: element now has width " + elm.offsetWidth);
+        resolve(elm);
+      }
+    });
+    observer.observe(elm);
   });
 }
 
@@ -2417,6 +2668,35 @@ function formatBuckets(htmlText) {
   return tempDiv.innerHTML;
 }
 
+function addBrInSpans(html) {
+  // Remove <p> wrappers around standalone <span> elements at the top level.
+  // Because showdown wraps inline tags like <span> in <p>, unlike block tags like <div>.
+  html = html.replace(/<p>(\s*<span\b[^>]*>(?:(?!<\/span>)[\s\S])*<\/span>\s*)<\/p>/gi, '$1');
+
+  // simpleLineBreaks doesn't apply inside HTML elements, so add <br> for single newlines within <span> tags
+  return html.replace(/<span(\b[^>]*)>([\s\S]*?)<\/span>/gi, function(match, attrs, content) {
+    // Temporarily replace HTML comments to avoid affecting their contents
+    var comments = [];
+    content = content.replace(/<!--[\s\S]*?-->/g, function(comment) {
+      comments.push(comment);
+      return '\x00COMMENT' + (comments.length - 1) + '-->';
+    });
+    // Strip any <p> and </p> tags from span content.
+    // <span> is inline and cannot contain block-level <p> elements. When a multiline HTML
+    // comment interrupts a paragraph, showdown splits the span across paragraph boundaries,
+    // inserting stray </p> and <p> tags. The browser's innerHTML parser then auto-closes
+    // the span at the first block element, causing </span> to be lost.
+    content = content.replace(/<\/?p\b[^>]*>/gi, '');
+    // Add <br> for single newlines, but not after </div>, </span>, or --> (comment close)
+    content = content.replace(/(?<=[^\n])(?<!<\/div>|<\/span>|-->)\n(?=[^\n])/g, '<br>\n');
+    // Restore HTML comments
+    content = content.replace(/\x00COMMENT(\d+)-->/g, function(m, i) {
+      return comments[parseInt(i)];
+    });
+    return '<span' + attrs + '>' + content + '</span>';
+  });
+}
+
 function loadMarkdown(pagePath, divID, target, attempts, callback) {
   if (typeof attempts === 'undefined') {
     attempts = 1;
@@ -2427,11 +2707,13 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
   loadScript(theroot + 'js/showdown.min.js', function(results) {
 
   if (typeof customD3loaded !== 'undefined' && typeof showdownLoaded !== 'undefined') { // Ready
-  } else if (attempts < 300) { // Wait and try again
+  } else if (attempts < 100) { // Wait and try again
+    if (attempts % 20 === 0) { // Every 2 seconds (20 * 100ms)
+      console.warn("loadMarkdown waiting for scripts (" + (attempts / 10) + "s): customD3loaded=" + (typeof customD3loaded !== 'undefined') + ", showdownLoaded=" + (typeof showdownLoaded !== 'undefined'));
+    }
     setTimeout( function() {
-      //consoleLog("try loadMarkdown again")
       loadMarkdown(pagePath, divID, target, attempts+1, callback);
-    }, 30 );
+    }, 100 );
     return;
   } else {
     consoleLog("ERROR: loadMarkdown exceeded " + attempts + " attempts.");
@@ -2508,6 +2790,7 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
 
       var converter = new showdown.Converter({tables:true, metadata:true, simpleLineBreaks: true}),
       html = editReadme + converter.makeHtml(data);
+      html = addBrInSpans(html);
 
       var metadata = converter.getMetadata(true); // returns a string with the raw metadata
       var metadataFormat = converter.getMetadataFormat(); // returns the format of the metadata
@@ -2534,9 +2817,9 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
       }
 
       // Apply formatBuckets when on localhost
-      if (location.host.indexOf('localhost') >= 0) {
+      //if (location.host.indexOf('localhost') >= 0) { // Might limit to specific pages instead
         html = formatBuckets(html);
-      }
+      //}
 
       // Appends rather than overwrites
       loadIntoDiv(pageFolder,divID,html, function() {
@@ -2605,19 +2888,22 @@ function loadIntoDiv(pageFolder,divID,html,callback) {
     */
 
     links.forEach(function(currentElement) {
-      // Check if the link is a relative link
-      if (currentElement.getAttribute("href").toLowerCase().indexOf("http") < 0) {
-        // Update the href attribute with the pageFolder
-        currentElement.setAttribute("href", pageFolder + currentElement.getAttribute('href'));
-        //console.log("Showdown link update: " + pageFolder + " plus " + currentElement.getAttribute('href'));
+      var href = currentElement.getAttribute("href");
+      // Skip absolute URLs and root-relative paths (starting with /)
+      if (/^http/i.test(href) || href.startsWith('/')) {
+        return;
       }
-      // Check if the link is not a full URL
-      else if (!/^http/.test(currentElement.getAttribute("href"))) {
-        console.log("ALERT Adjust: " + currentElement.getAttribute('href'));
-        // Update the href attribute with the pageFolder
-        currentElement.setAttribute("href", pageFolder + currentElement.getAttribute('href'));
-        //console.log("Showdown link update2: " + pageFolder + " plus " + currentElement.getAttribute('href'));
+      currentElement.setAttribute("href", pageFolder + href);
+    });
+
+    // Update relative image src attributes to be relative to the markdown file's folder
+    let images = element.querySelectorAll('img[src]');
+    images.forEach(function(currentElement) {
+      var src = currentElement.getAttribute("src");
+      if (/^http/i.test(src) || src.startsWith('/') || src.startsWith('data:')) {
+        return;
       }
+      currentElement.setAttribute("src", pageFolder + src);
     });
 
 
@@ -2666,9 +2952,13 @@ function useSet() {
         if (uAcc < 5) {
           Cookies.set('golog', window.location.href);
           if (param.minred) {
-            window.location = param.minred;
+            //window.location = param.minred;
+            window.location.replace(param.minred); // So backing up skips the redirecting page.
           } else {
-            window.location = "/explore/menu/login/azure";
+            if (location.host.indexOf('localhost') >= 0) {
+                alert("Redirect to explore 4")
+            }
+            window.location = "/explore";
           }
           return;
         }
@@ -2849,24 +3139,192 @@ function loadUse(use) {
 
 // End: explore/js/embed.js
 
+function defaultModelsiteOptions() {
+    return [
+        { value: "tools", label: "PartnerTools" },
+        { value: "model.earth", label: "Model Earth", selected: true }
+    ];
+}
+
+function parseYamlScalar(value) {
+    if (value === undefined || value === null) {
+        return "";
+    }
+    let parsed = String(value).trim();
+    if (
+        (parsed.startsWith('"') && parsed.endsWith('"')) ||
+        (parsed.startsWith("'") && parsed.endsWith("'"))
+    ) {
+        parsed = parsed.slice(1, -1);
+    }
+    if (/^(true|false)$/i.test(parsed)) {
+        return parsed.toLowerCase() === "true";
+    }
+    return parsed;
+}
+
+function parseModelsiteYaml(yamlText) {
+    const options = [];
+    const lines = yamlText.split(/\r?\n/);
+    let current = null;
+
+    function pushCurrent() {
+        if (!current) {
+            return;
+        }
+        if (!current.value || !current.label) {
+            current = null;
+            return;
+        }
+        options.push(current);
+        current = null;
+    }
+
+    for (let i = 0; i < lines.length; i += 1) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        if (!trimmed || trimmed.startsWith("#")) {
+            continue;
+        }
+        if (trimmed === "modelsites:" || trimmed === "sites:") {
+            continue;
+        }
+
+        const listStart = line.match(/^\s*-\s*(.*)$/);
+        if (listStart) {
+            pushCurrent();
+            current = {};
+            const inline = listStart[1].trim();
+            if (inline) {
+                const inlinePair = inline.match(/^([A-Za-z0-9_-]+)\s*:\s*(.+)$/);
+                if (inlinePair) {
+                    current[inlinePair[1]] = parseYamlScalar(inlinePair[2]);
+                }
+            }
+            continue;
+        }
+
+        const pair = line.match(/^\s*([A-Za-z0-9_-]+)\s*:\s*(.+)\s*$/);
+        if (pair && current) {
+            current[pair[1]] = parseYamlScalar(pair[2]);
+        }
+    }
+    pushCurrent();
+    return options;
+}
+
+function renderModelsiteOptions(selectElm, options) {
+    if (!selectElm) {
+        return;
+    }
+    selectElm.innerHTML = "";
+    for (let i = 0; i < options.length; i += 1) {
+        const config = options[i];
+        if (!config || !config.value || !config.label) {
+            continue;
+        }
+        const optionElm = document.createElement("option");
+        optionElm.value = String(config.value);
+        optionElm.textContent = String(config.label);
+        if (config.class) {
+            optionElm.className = String(config.class);
+        }
+        if (config.style) {
+            optionElm.style.cssText = String(config.style);
+        }
+        if (config.selected === true || String(config.selected).toLowerCase() === "true") {
+            optionElm.selected = true;
+        }
+        selectElm.appendChild(optionElm);
+    }
+}
+
+async function loadModelsiteOptions() {
+    const fallbackOptions = defaultModelsiteOptions();
+    const webRoot = (window.local_app && typeof window.local_app.web_root === "function")
+        ? String(window.local_app.web_root()).replace(/\/+$/, "")
+        : (location.protocol + "//" + location.host);
+    const currentOriginRoot = location.protocol + "//" + location.host;
+    const candidatePaths = Array.from(new Set([
+        webRoot + "/modelsite.yaml",
+        currentOriginRoot + "/modelsite.yaml",
+        "https://raw.githubusercontent.com/ModelEarth/webroot/main/modelsite.yaml"
+    ]));
+
+    for (let i = 0; i < candidatePaths.length; i += 1) {
+        const modelsiteYamlPath = candidatePaths[i];
+        try {
+            const response = await fetch(modelsiteYamlPath, { cache: "no-store" });
+            if (!response.ok) {
+                continue;
+            }
+            const yamlText = await response.text();
+            const parsedOptions = parseModelsiteYaml(yamlText);
+            if (parsedOptions.length) {
+                return parsedOptions;
+            }
+            consoleLog("No valid entries in " + modelsiteYamlPath + ". Using fallback modelsite options.");
+        } catch (error) {}
+    }
+    consoleLog("modelsite.yaml not found. Using fallback modelsite options.");
+    return fallbackOptions;
+}
+
+function setupModelsiteSelect() {
+    waitForElm("#modelsite").then(async function(selectElm) {
+        const options = await loadModelsiteOptions();
+        renderModelsiteOptions(selectElm, options);
+
+        let selectedValue = "";
+        if (typeof Cookies !== "undefined" && Cookies.get("modelsite")) {
+            selectedValue = Cookies.get("modelsite");
+        }
+        if (!selectedValue) {
+            const selectedOption = options.find(function(option) {
+                return option && (option.selected === true || String(option.selected).toLowerCase() === "true");
+            });
+            if (selectedOption && selectedOption.value) {
+                selectedValue = String(selectedOption.value);
+            }
+        }
+        if (!selectedValue && options.length) {
+            selectedValue = String(options[0].value);
+        }
+        if (selectedValue) {
+            const hasMatch = Array.from(selectElm.options).some(function(optionElm) {
+                return optionElm.value === selectedValue;
+            });
+            if (hasMatch) {
+                selectElm.value = selectedValue;
+            }
+        }
+    });
+}
+
 // Copied from setting.js initElements()
 function initSitelook() {
-    let sitemode;
     let sitesource;
     let sitelook;
+    let stylelook;
     let devmode;
     let onlinemode;
     let globecenter;
     let modelsite;
     let gitrepo;
 
+    if (typeof populateStylelookSelect === 'function') {
+        populateStylelookSelect(document.getElementById("stylelook"), 'settings');
+    }
+
     if(typeof Cookies != 'undefined') {
         if (Cookies.get('sitelook')) {
           $("#sitelook").val(Cookies.get('sitelook'));
           sitelook = Cookies.get('sitelook');
         }
-        if (Cookies.get('sitemode')) {
-            $(".sitemode").val(Cookies.get('sitemode'));
+        if (Cookies.get('stylelook')) {
+            $("#stylelook").val(Cookies.get('stylelook'));
+            stylelook = Cookies.get('stylelook');
         }
         if (Cookies.get('sitesource')) {
             $("#sitesource").val(Cookies.get('sitesource'));
@@ -2897,14 +3355,30 @@ function initSitelook() {
         }
     }
     if (param["sitelook"]) { // From URL
-        sitelook = param["sitelook"]; 
+        sitelook = param["sitelook"];
+    }
+    if (param["style"] !== undefined) { // From URL
+        stylelook = param["style"];
+        $("#stylelook").val(stylelook || "base");
+        if (typeof Cookies != 'undefined') {
+            Cookies.set('stylelook', stylelook || "base");
+        }
+    }
+    if (param["modelsite"]) { // From page param - set cookie so navigation to other pages uses same modelsite
+        modelsite = param["modelsite"];
+        $("#modelsite").val(modelsite);
+        if (typeof Cookies != 'undefined') {
+            Cookies.set('modelsite', modelsite);
+        }
     }
     setSitelook(sitelook);
+    setStylelook(stylelook);
     setDevmode(devmode);
     setModelsite(modelsite);
     setGitrepo(modelsite);
     setOnlinemode(onlinemode);
     setGlobecenter(globecenter);
+    setupModelsiteSelect();
     if (localStorage.email) {
       $("#input123").val(localStorage.email);
       $(".uIn").hide();$(".uOut").show();
@@ -2913,8 +3387,131 @@ function initSitelook() {
     }
 }
 
+// Update automatically whenever mode change occurs on user computer
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyColorSchemeClass);
+function applyColorSchemeClass() {
+    let siteLook = Cookies.get('sitelook');
+    if (!siteLook) {
+        siteLook = "default";
+    }
+    setSitelook(siteLook);
+}
+
+// Run when body tag is available, but don't wait for entire DOM
+function waitForBody(callback) {
+    if (document.body) {
+        callback();
+    } else {
+        setTimeout(() => waitForBody(callback), 10);
+    }
+}
+waitForBody(applyColorSchemeClass);
+
+
 function setSitemode(sitemode) {
   // Not copied over from settings.js
+}
+const localStylelookThemes = ['notion', 'claude', 'openai', 'codex', 'grok', 'xai', 'georgia'];
+const cvStylelookThemes = [
+  'creative-studio',
+  'data-driven',
+  'elegant',
+  'executive-slate',
+  'kendall',
+  'macchiato',
+  'minimalist',
+  'modern-classic',
+  'onepage',
+  'professional',
+  'pumpkin',
+  'striking'
+];
+function normalizeStylelookValue(styleLook) {
+    return styleLook;
+}
+function getStylelookThemeUrl(styleLook) {
+    styleLook = normalizeStylelookValue(styleLook);
+    if (!styleLook || styleLook == "base") {
+      return "";
+    }
+    if (localStylelookThemes.includes(styleLook)) {
+      return local_app.localsite_root() + 'css/styles/' + encodeURIComponent(styleLook) + '.css';
+    }
+    if (cvStylelookThemes.includes(styleLook)) {
+      const cvThemeRoot = (location.host.indexOf('localhost') >= 0 || location.host.indexOf('127.0.0.1') >= 0)
+        ? local_app.web_root()
+        : 'https://model.earth';
+      return cvThemeRoot + '/cv/common/themes/' + encodeURIComponent(styleLook) + '/style.css';
+    }
+    return "";
+}
+function pageHasStylesheet(url) {
+    if (!url) {
+      return false;
+    }
+    let targetUrl;
+    try {
+      targetUrl = new URL(url, window.location.href).href;
+    } catch (err) {
+      return false;
+    }
+    return Array.from(document.querySelectorAll('link[rel="stylesheet"]')).some(function(link) {
+      if (link.id == "stylelookThemeStylesheet") {
+        return false;
+      }
+      try {
+        return link.href && new URL(link.href, window.location.href).href == targetUrl;
+      } catch (err) {
+        return false;
+      }
+    });
+}
+function setStylelook(styleLook) {
+    if (!document.body) {
+      return;
+    }
+    styleLook = normalizeStylelookValue(styleLook);
+    if (styleLook == "base") {
+      styleLook = "";
+    }
+    if (!styleLook) {
+      styleLook = "";
+    }
+
+    const stylelookElement = document.getElementById("stylelook");
+    if (stylelookElement) {
+        stylelookElement.value = styleLook || "base";
+        if (stylelookElement.value !== (styleLook || "base")) {
+            stylelookElement.value = "base";
+        }
+    }
+
+    document.body.classList.remove(...localStylelookThemes, 'cv-theme');
+
+    let themeUrl = getStylelookThemeUrl(styleLook);
+    if (localStylelookThemes.includes(styleLook)) {
+      document.body.classList.add(styleLook);
+    } else if (cvStylelookThemes.includes(styleLook)) {
+      document.body.classList.add('cv-theme');
+    }
+
+    let themeLink = document.getElementById("stylelookThemeStylesheet");
+    if (!themeUrl || pageHasStylesheet(themeUrl)) {
+      if (themeLink) {
+        themeLink.parentNode.removeChild(themeLink);
+      }
+      return;
+    }
+
+    if (!themeLink) {
+      themeLink = document.createElement('link');
+      themeLink.id = "stylelookThemeStylesheet";
+      themeLink.rel = 'stylesheet';
+      themeLink.type = 'text/css';
+      themeLink.media = 'all';
+      document.getElementsByTagName('head')[0].appendChild(themeLink);
+    }
+    themeLink.href = themeUrl;
 }
 function setSitelook(siteLook) {
     //let root = "/explore/"; // TEMP
@@ -2922,64 +3519,70 @@ function setSitelook(siteLook) {
     if (!siteLook) {
       siteLook = "default"
     }
-    if (siteLook == "default" && (Cookies.get('modelsite') == "dreamstudio" || location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0)) {
-      siteLook = "dark"
-    }
     consoleLog("setSiteLook: " + siteLook);
-    $("#sitelook").val(siteLook);
+    
+    // Set sitelook select value
+    const sitelookElement = document.getElementById("sitelook");
+    if (sitelookElement) {
+        sitelookElement.value = siteLook;
+    }
 
     // Force the brower to reload by changing version number. Avoid on localhost for in-browser editing. If else.
-    var forceReload = (location.host.indexOf('localhost') >= 0 ? "" : "?v=3");
-    $("body").removeClass("dark");
-    if (siteLook == "dark") {
-        $('.sitebasemap').val("dark").change();
-        //toggleVideo("show","nochange");
-        $("body").addClass("dark");
-        //removeElement('/localsite/css/light.css');
-        includeCSS3('/localsite/css/bootstrap.darkly.min.css');
-        $("#css-site-dark-css").removeAttr('disabled');
-        $("#css-site-green-css").attr("disabled", "disabled");
-        $("#css-site-plain-css").attr("disabled", "disabled");
-        $('.searchTextHolder').append($('.searchTextMove'));
-    } else if (siteLook == "gc") {
-        $('.sitebasemap').val("osm").change();
-        //toggleVideo("hide","pauseVideo");
-        //includeCSS3(root + 'css/site-green.css' + forceReload);
-        $("#css-site-green-css").removeAttr('disabled');
-        $("#css-site-dark-css").attr("disabled", "disabled");
-        $("#css-site-plain-css").attr("disabled", "disabled");
-        $('.searchTextHolder').append($('.searchTextMove'));
-    } else if (siteLook == "default") {
-        //removeElement('/localsite/css/light.css');
-        removeElement('/localsite/css/bootstrap.darkly.min.css');
-        $("#css-site-green-css").removeAttr('disabled');
-        $("#css-site-dark-css").attr("disabled", "disabled");
-        $("#css-site-plain-css").attr("disabled", "disabled");
-        //$('.searchTextHolder').append($('.searchTextMove'));
-    } else { // Light
-        //includeCSS3(root + 'css/light.css'); // + forceReload
-        removeElement('/localsite/css/bootstrap.darkly.min.css');
-        //removeElement(root + 'css/site-dark.css');
-
-        $('.sitebasemap').val("positron_light_nolabels").change();
-        //includeCSS3(root + 'css/site-plain.css' + forceReload);
-
-        /*
-        $("#css-site-plain-css").removeAttr('disabled');
-        $("#css-site-dark-css").attr("disabled", "disabled");
-        $("#css-site-green-css").attr("disabled", "disabled");
-        */
-
-        //$(".layoutTabHolder").show();
+    //var forceReload = (location.host.indexOf('localhost') >= 0 ? "" : "?v=3");
+    
+    if (siteLook == "computer") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        siteLook = "dark"
+      }
+    } else if (siteLook == "default" && (Cookies.get('modelsite') == "dreamstudio" || location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0)) {
+      siteLook = "dark"
     }
-    //setTimeout(function(){ updateOffsets(); }, 200); // Allows time for css file to load.
-    //setTimeout(function(){ updateOffsets(); }, 4000);
+    if (siteLook == "dark") {
+        // Set sitebasemap value and trigger change event
+        const sitebasemapElements = document.querySelectorAll('.sitebasemap');
+        sitebasemapElements.forEach(element => {
+            element.value = "dark";
+            element.dispatchEvent(new Event('change'));
+        });
+        
+        //toggleVideo("show","nochange");
+        document.body.classList.add("dark");
+        //removeElement('/localsite/css/light.css');
+        ////includeCSS3(theroot + 'css/bootstrap.darkly.min.css');
+  
+        // Move search text elements
+        const searchTextHolder = document.querySelector('.searchTextHolder');
+        const searchTextMove = document.querySelector('.searchTextMove');
+        if (searchTextHolder && searchTextMove) {
+            searchTextHolder.appendChild(searchTextMove);
+        }
+    } else if (siteLook == "default") {
+        document.body.classList.remove("dark");
+        ////removeElement(theroot + 'css/bootstrap.darkly.min.css');
+    } else { // Light
+        document.body.classList.remove("dark");
+        ////removeElement(theroot + 'css/bootstrap.darkly.min.css');
+        //const sitebasemapElements = document.querySelectorAll('.sitebasemap');
+        //sitebasemapElements.forEach(element => {
+        //    element.value = "positron_light_nolabels";
+        //    element.dispatchEvent(new Event('change'));
+        //});
+    }
 }
 function setDevmode(devmode) {
+  const devCssUrl = theroot + 'css/dev.css';
   if (devmode == "dev") {
-    includeCSS3(local_app.localsite_root() + 'css/dev.css');
+    //includeCSS3(local_app.localsite_root() + 'css/dev.css');
+    includeCSS3(devCssUrl);
   } else {
-    removeElement('/localsite/css/dev.css');
+    //removeElement('/localsite/css/dev.css');
+    removeElement(getUrlID3(devCssUrl, theroot));
+    // Fallback for legacy/alternate link IDs that may already exist in the DOM.
+    //document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+    //  if (link.href && link.href.indexOf('/localsite/css/dev.css') >= 0) {
+    //    link.remove();
+    //  }
+    //});
   }
 }
 function setOnlinemode(onlinemode) {
@@ -3045,10 +3648,23 @@ function geoSuccess(pos) {
 }
 
 function setModelsite(modelsite) {
-  if (modelsite != "") {
-    console.log("setModelsite() is not currently used.");
-    // Avoid calling refresh here since runs when page loads.
+  const nextModelsite = (typeof modelsite === 'string' && modelsite) ? modelsite : "";
+  const priorModelsite = (typeof window !== 'undefined' && typeof window.modelsiteUniversal === 'string')
+    ? window.modelsiteUniversal
+    : modelsiteUniversal;
+
+  modelsiteUniversal = nextModelsite;
+  if (typeof window !== 'undefined') {
+    window.modelsiteUniversal = nextModelsite;
   }
+
+  if (typeof document !== 'undefined' && priorModelsite !== nextModelsite) {
+    document.dispatchEvent(new CustomEvent('modelsiteChanged', {
+      detail: { modelsite: nextModelsite }
+    }));
+  }
+
+  return nextModelsite;
 }
 function setGitrepo(gitrepo) {
   if (gitrepo != "") {
@@ -3110,7 +3726,7 @@ function formatRow(key,value,level,item) {
       //if(value && value.length > 0) { // Hides blank for nutrition
       if(value) { // Hides blank for nutrition
         // level" + level + " 
-        addHtml += "<div class='keyonly titlecell celltop'><b>" + key + "</b></div>";
+        addHtml += "<div class='keyonly barTitle titlecell celltop'><b>" + key + "</b></div>";
       }
     }
   } else {
@@ -3158,7 +3774,7 @@ function formatRow(key,value,level,item) {
       }
       if (barTitle) {
         addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell objectcell-lines' style='" + insertStyle + "'>"; // Around rows
-        addHtml += "<div keyname='" + keyName + "' class='barTitle child-count-" + Object.keys(value).length + "'>" + barTitle + "</div>\n";
+        addHtml += "<div keyname='" + keyName + "' class='child-count-" + Object.keys(value).length + "'>" + barTitle + "</div>\n";
       } else {
         addHtml += "<!--Child count " + Object.keys(value).length + "-->";
         addHtml += "<div class='floating-object celltop rowlevel" + level + " objectcell' style='" + insertStyle + "'>"; // Around rows
@@ -3364,6 +3980,251 @@ function isValidJSON(str) {
     }
 }
 
+function formatCell(input, format) {
+    // If format is none or blank, return input as it is.
+    if (format === 'none' || format === '' || input === '') {
+        return input;
+    }
+    
+    // Store original input for fallback
+    const originalInput = input;
+    
+    // Convert input to a number to prevent toFixed errors
+    input = parseFloat(input);
+    
+    // If input is not a valid number, return original input
+    if (isNaN(input)) {
+        return originalInput;
+    }
+    
+    if (Math.abs(input) < 1e-10 && input !== 0) {
+        //console.log('formatCell received very small value:', input, 'type:', typeof input);
+    }
+
+    // Format as scientific notation
+    if (format === 'scientific') {
+        let scientificValue = input.toExponential(1);
+        let parts = scientificValue.split('e');
+        let base = parts[0];
+        let exponent = parseInt(parts[1]);
+        
+        // Don't show power notation for exponent of 0
+        if (exponent === 0) {
+            return base;
+        }
+        
+        // Format with HTML superscript
+        return `${base}&times;10<sup>${exponent}</sup>`;
+    }
+
+    // Format as full number with all decimal places
+    if (format === 'full') {
+        if (Math.abs(input) < 1e-6) {
+            return input.toFixed(20).replace(/0+$/, '').replace(/\.$/, '');
+        } else {
+            return input.toString();
+        }
+    }
+
+    // Format as easy - explicit check to ensure this path is taken
+    if (format === 'easy') {
+        // Use the same logic as the default format but ensure it's explicitly called
+        // (This will fall through to the default format logic below)
+    }
+
+    // Handle positive values
+    if (input >= 1e12) {
+        return (input / 1e12).toFixed(3) + ' Trillion';
+    } else if (input >= 1e9) {
+        return (input / 1e9).toFixed(1) + ' Billion';
+    } else if (input >= 1e6) {
+        return (input / 1e6).toFixed(1) + ' Million';
+    } else if (input >= 1000) {
+        return (input / 1000).toFixed(1) + ' K';
+    } else if (input >= 1) {
+        // Round to one decimal. Remove .0
+        return input.toFixed(1).replace(/\.0$/, '');
+    } else if (input > 0) {
+        // Small positive values - for very small numbers, use named suffixes
+        if (input <= 1e-33) { // decillionth or less
+            return (input / 1e-33).toFixed(3) + ' Decillionth';
+        } else if (input <= 1e-30) { // nonillionth or less
+            return (input / 1e-30).toFixed(3) + ' Nonillionth';
+        } else if (input <= 1e-27) { // octillionth or less
+            return (input / 1e-27).toFixed(3) + ' Octillionth';
+        } else if (input <= 1e-24) { // septillionth or less
+            return (input / 1e-24).toFixed(3) + ' Septillionth';
+        } else if (input <= 1e-21) { // sextillionth or less
+            return (input / 1e-21).toFixed(3) + ' Sextillionth';
+        } else if (input <= 1e-18) { // quintillionth or less
+            return (input / 1e-18).toFixed(3) + ' Quintillionth';
+        } else if (input <= 1e-15) { // quadrillionth or less
+            return (input / 1e-15).toFixed(3) + ' Quadrillionth';
+        } else if (input <= 1e-12) { // trillionth or less
+            return (input / 1e-12).toFixed(3) + ' Trillionth';
+        } else if (input <= 1e-9) { // billionth or less
+            return (input / 1e-9).toFixed(3) + ' Billionth';
+        } else if (input <= 1e-6) { // millionth or less
+            return (input / 1e-6).toFixed(3) + ' Millionth';
+        }
+        // Show up to 15 decimal places, removing trailing zeros
+        let formatted = input.toFixed(15).replace(/0+$/, '').replace(/\.$/, '');
+        console.log('Small positive formatting:', input, '->', formatted);
+        return formatted === '' ? '0' : formatted;
+    } else if (input === 0) {
+        return '0';
+    }
+    // Handle negative values
+    else if (input <= -1e12) {
+        return (input / 1e12).toFixed(3) + ' Trillion';
+    } else if (input <= -1e9) {
+        return (input / 1e9).toFixed(1) + ' Billion';
+    } else if (input <= -1e6) {
+        return (input / 1e6).toFixed(1) + ' Million';
+    } else if (input <= -1000) {
+        return (input / 1e3).toFixed(1) + ' K';
+    } else if (input <= -1) {
+        // Round to one decimal. Remove .0
+        return input.toFixed(1).replace(/\.0$/, '');
+    } else if (input < 0) {
+        // Small negative values - for very small numbers, use named suffixes
+        if (input <= -1e-33) { // decillionth or less
+            return (input / 1e-33).toFixed(3) + ' Decillionth';
+        } else if (input <= -1e-30) { // nonillionth or less
+            return (input / 1e-30).toFixed(3) + ' Nonillionth';
+        } else if (input <= -1e-27) { // octillionth or less
+            return (input / 1e-27).toFixed(3) + ' Octillionth';
+        } else if (input <= -1e-24) { // septillionth or less
+            return (input / 1e-24).toFixed(3) + ' Septillionth';
+        } else if (input <= -1e-21) { // sextillionth or less
+            return (input / 1e-21).toFixed(3) + ' Sextillionth';
+        } else if (input <= -1e-18) { // quintillionth or less
+            return (input / 1e-18).toFixed(3) + ' Quintillionth';
+        } else if (input <= -1e-15) { // quadrillionth or less
+            return (input / 1e-15).toFixed(3) + ' Quadrillionth';
+        } else if (input <= -1e-12) { // trillionth or less
+            return (input / 1e-12).toFixed(3) + ' Trillionth';
+        } else if (input <= -1e-9) { // billionth or less
+            return (input / 1e-9).toFixed(3) + ' Billionth';
+        } else if (input <= -1e-6) { // millionth or less
+            return (input / 1e-6).toFixed(3) + ' Millionth';
+        }
+        // Show up to 15 decimal places, removing trailing zeros
+        let formatted = input.toFixed(15).replace(/0+$/, '').replace(/\.$/, '');
+        console.log('Small negative formatting:', input, '->', formatted);
+        return formatted === '' || formatted === '-' ? '0' : formatted;
+    } else {
+        // Fallback for any edge cases
+        return input.toExponential(1);
+    }
+}
+
+// Test cases
+//console.log(formatCell(42262000000, 'easy')); // Output: "42.3 Billion"
+//console.log(formatCell(9500000, 'easy'));     // Output: "9.5 Million"
+//console.log(formatCell(50000, 'easy'));       // Output: "50.0 K"
+//console.log(formatCell(99.99, 'easy') + " - BUG, let's avoid adding .0 when rounding");        // Output: "100.0" - 
+//console.log(formatCell(0.0005, 'easy'));      // Output: "5.0e-4"
+// console.log(formatCell(45000000, 'scientific')); // Output: "4.5e+7"
+
+function formatCellX(input, format) {
+    // If format is none or blank, return input as it is.
+    if (format === 'none' || format === '' || input === '') {
+        return ''
+    }
+    input = parseFloat(input); // Convert input to a number
+    // Format as scientific notation
+    if (format === 'scientific') {
+        return input.toExponential(1);
+    }
+
+    // Format as easy
+    if (input >= 1e12) {
+        // Round to billions
+        return (input / 1e12).toFixed(3) + ' Trillion';
+    } else if (input >= 1e9) {
+        // Round to billions
+        return (input / 1e9).toFixed(1) + ' Billion';
+    } else if (input >= 1e6) {
+        // Round to millions
+        return (input / 1e6).toFixed(1) + ' Million';
+    } else if (input >= 1000) {
+        // Round to thousands
+        return (input / 1000).toFixed(1) + ' K';
+    } else if (input >= 1) {
+        // Round to one decimal. Remove .0
+        //console.log("input:" + input + "-")
+        return input.toFixed(1).replace(/\.0$/, '');
+    } else if (input > 0) {
+        // Small positive values - for very small numbers, use named suffixes
+        if (input <= 1e-33) { // decillionth or less
+            return (input / 1e-33).toFixed(3) + ' Decillionth';
+        } else if (input <= 1e-30) { // nonillionth or less
+            return (input / 1e-30).toFixed(3) + ' Nonillionth';
+        } else if (input <= 1e-27) { // octillionth or less
+            return (input / 1e-27).toFixed(3) + ' Octillionth';
+        } else if (input <= 1e-24) { // septillionth or less
+            return (input / 1e-24).toFixed(3) + ' Septillionth';
+        } else if (input <= 1e-21) { // sextillionth or less
+            return (input / 1e-21).toFixed(3) + ' Sextillionth';
+        } else if (input <= 1e-18) { // quintillionth or less
+            return (input / 1e-18).toFixed(3) + ' Quintillionth';
+        } else if (input <= 1e-15) { // quadrillionth or less
+            return (input / 1e-15).toFixed(3) + ' Quadrillionth';
+        } else if (input <= 1e-12) { // trillionth or less
+            return (input / 1e-12).toFixed(3) + ' Trillionth';
+        } else if (input <= 1e-9) { // billionth or less
+            return (input / 1e-9).toFixed(3) + ' Billionth';
+        } else if (input <= 1e-6) { // millionth or less
+            return (input / 1e-6).toFixed(3) + ' Millionth';
+        }
+        // Show up to 15 decimal places, removing trailing zeros
+        let formatted = input.toFixed(15).replace(/0+$/, '').replace(/\.$/, '');
+        return formatted === '' ? '0' : formatted;
+    } else if (input === 0) {
+        return '0';
+    } else if (input <= -1e12) {
+        return (input / 1e12).toFixed(3) + ' Trillion';
+    } else if (input <= -1e9) {
+        return (input / 1e9).toFixed(1) + ' Billion';
+    } else if (input <= -1e6) {
+        return (input / 1e6).toFixed(1) + ' Million';
+    } else if (input <= -1000) {
+        return (input / 1e3).toFixed(1) + ' K';
+    } else if (input <= -1) {
+        // Round to one decimal. Remove .0
+        return input.toFixed(1).replace(/\.0$/, '');
+    } else if (input < 0) {
+        // Small negative values - for very small numbers, use named suffixes
+        if (input <= -1e-33) { // decillionth or less
+            return (input / 1e-33).toFixed(3) + ' Decillionth';
+        } else if (input <= -1e-30) { // nonillionth or less
+            return (input / 1e-30).toFixed(3) + ' Nonillionth';
+        } else if (input <= -1e-27) { // octillionth or less
+            return (input / 1e-27).toFixed(3) + ' Octillionth';
+        } else if (input <= -1e-24) { // septillionth or less
+            return (input / 1e-24).toFixed(3) + ' Septillionth';
+        } else if (input <= -1e-21) { // sextillionth or less
+            return (input / 1e-21).toFixed(3) + ' Sextillionth';
+        } else if (input <= -1e-18) { // quintillionth or less
+            return (input / 1e-18).toFixed(3) + ' Quintillionth';
+        } else if (input <= -1e-15) { // quadrillionth or less
+            return (input / 1e-15).toFixed(3) + ' Quadrillionth';
+        } else if (input <= -1e-12) { // trillionth or less
+            return (input / 1e-12).toFixed(3) + ' Trillionth';
+        } else if (input <= -1e-9) { // billionth or less
+            return (input / 1e-9).toFixed(3) + ' Billionth';
+        } else if (input <= -1e-6) { // millionth or less
+            return (input / 1e-6).toFixed(3) + ' Millionth';
+        }
+        // Show up to 15 decimal places, removing trailing zeros
+        let formatted = input.toFixed(15).replace(/0+$/, '').replace(/\.$/, '');
+        return formatted === '' || formatted === '-' ? '0' : formatted;
+    } else {
+        // Fallback for any edge cases
+        return input.toExponential(1);
+    }
+}
 
 // AnythingLLM left side navigation header adjustment
 // Monitors header visibility and adjusts top positioning while keeping content within flexMain
@@ -3432,6 +4293,983 @@ function adjustAnythingLLMNavigation() {
 }
 
 // Initialize AnythingLLM navigation adjustments when DOM is ready
-document.addEventListener('DOMContentLoaded', adjustAnythingLLMNavigation);
+// Saving incase anyone wants to include AnythingLLM in webroot
+//document.addEventListener('DOMContentLoaded', adjustAnythingLLMNavigation);
+
+// Auth Modal Integration - lazy load and show modal
+function showAuthModal() {
+  if (typeof window.authModal !== 'undefined' && window.authModal) {
+    window.authModal.show();
+  } else {
+    // Lazy load the auth modal script
+    const authModalPath = local_app.localsite_root() + '../team/js/auth-modal.js';
+    loadScript(authModalPath, function() {
+      // Modal initializes immediately when script loads, so show it
+      if (window.authModal) {
+        window.authModal.show();
+      }
+    });
+  }
+}
+
+// ========================================
+// Panel Menu Toggle System
+// ========================================
+
+/**
+ * Builds menu configuration based on panel type
+ * @param {string} panelType - Type of panel (Content, List, Map)
+ * @param {string} panelId - ID of the panel element
+ * @param {string} datasourcePath - Path for datasource insights link (optional)
+ * @returns {Array} Array of menu item objects
+ */
+function buildMenuConfig(panelType, panelId, datasourcePath = '', panelLabel = '') {
+  const menuItems = [];
+  const effectivePanelLabel = panelLabel || panelType;
+
+  // Expand/Collapse item (label updated dynamically)
+  menuItems.push({
+    label: `Expand ${effectivePanelLabel}`,
+    action: 'expand',
+    icon: 'open_in_full'
+  });
+
+  // Hide item
+  menuItems.push({
+    label: `Hide ${effectivePanelLabel}`,
+    action: 'hide',
+    icon: 'visibility_off'
+  });
+
+  // Panel-specific items
+  if (panelType === 'Content') {
+    // Put close action at top, followed by a separator
+    menuItems.push({ label: 'Close Map View', action: 'closemapview', icon: '', display: 'none', class: 'filterFieldMenuClose' });
+    menuItems.push({ divider: true });
+    // Then all existing filter menu items
+    menuItems.push({ label: 'Earth', action: 'earth', icon: '', hasCheck: true });
+    menuItems.push({ label: 'Countries', action: 'countries', icon: '', hasCheck: true });
+    menuItems.push({ label: 'States', action: 'state', icon: '', hasCheck: true });
+    menuItems.push({ label: 'Counties', action: 'county', icon: '', hasCheck: true });
+    menuItems.push({ label: 'Topics', action: 'topics', icon: '', hasCheck: true });
+    menuItems.push({ divider: true });
+    menuItems.push({ label: 'About Filters', action: 'aboutfilters', icon: '', isLink: true });
+    menuItems.push({ label: 'Hide Filter Bar', action: 'hidefilters', icon: '' });
+    menuItems.push({ label: 'Close App View', action: 'closeappview', icon: '', display: 'none', class: 'filterFieldMenuClose' });
+  } else if (panelType === 'List') {
+    // Add separator then Inspect and List Insights
+    menuItems.push({ divider: true });
+    menuItems.push({
+      label: 'Inspect',
+      action: 'inspect',
+      icon: 'bug_report',
+      hasCheck: true
+    });
+    menuItems.push({
+      label: `${panelType} Insights`,
+      action: 'link',
+      icon: 'insights',
+      href: `/team/projects/#path=${datasourcePath}`,
+      display: 'none',
+      class: 'local'
+    });
+  } else if (panelType === 'View' || panelType === 'Details') {
+    // Add Start Tour first
+    menuItems.unshift({
+      label: 'Start Tour',
+      action: 'starttour',
+      icon: 'play_circle'
+    });
+
+    // Add separator then View Insights link (local only)
+    menuItems.push({ divider: true });
+    menuItems.push({
+      label: 'View Insights',
+      action: 'link',
+      icon: 'insights',
+      href: `/team/projects/#path=${datasourcePath}`,
+      display: 'none',
+      class: 'local'
+    });
+  }
+  // Map type has no additional items
+
+  return menuItems;
+}
+
+/**
+ * Sets the panel toggle icon
+ * @param {string} holderId - ID of the toggle holder element
+ * @param {string} iconName - Name of the icon (arrow_right or arrow_drop_down_circle)
+ */
+function setPanelToggleIcon(holderId, iconName) {
+  const holder = document.getElementById(holderId);
+  if (!holder) return;
+
+  const iconElement = holder.querySelector('[id$="MenuToggleIcon"]');
+  const circleElement = holder.querySelector('.material-icons:not([id])');
+
+  if (!iconElement) return;
+
+  iconElement.textContent = iconName;
+
+  if (iconName === 'arrow_right') {
+    iconElement.style.fontSize = '18px';
+    iconElement.style.transform = 'translate(-50%, -50%)';
+    if (circleElement) {
+      circleElement.style.display = '';
+      circleElement.style.fontSize = '24px';
+      circleElement.style.transform = 'translate(-50%, -50%)';
+    }
+  } else if (iconName === 'arrow_drop_down_circle') {
+    iconElement.style.fontSize = '24px';
+    iconElement.style.transform = 'translate(-50%, -50%)';
+    if (circleElement) {
+      circleElement.style.display = 'none';
+    }
+  }
+}
+
+/**
+ * Refreshes the panel toggle icon based on menu visibility
+ * @param {string} holderId - ID of the toggle holder element
+ * @param {string} panelId - ID of the panel element
+ */
+function refreshPanelToggleIcon(holderId, panelId) {
+  const menu = document.getElementById(panelId + 'Menu');
+  if (!menu) return;
+
+  const isMenuVisible = menu.style.display !== 'none';
+  setPanelToggleIcon(holderId, isMenuVisible ? 'arrow_drop_down_circle' : 'arrow_right');
+}
+
+/**
+ * Gets panel menu options for a panel ID
+ * @param {string} panelId - ID of the panel element
+ * @returns {Object} Panel menu options
+ */
+function getPanelMenuOptions(panelId) {
+  if (!window.panelMenuOptions) return {};
+  return window.panelMenuOptions[panelId] || {};
+}
+
+/**
+ * Gets panel label for menu text
+ * @param {string} panelId - ID of the panel element
+ * @param {string} panelType - Type of panel (Content, List, Map)
+ * @returns {string} Panel label for text
+ */
+function getPanelLabel(panelId, panelType) {
+  const options = getPanelMenuOptions(panelId);
+  return options.panelLabel || panelType;
+}
+
+/**
+ * Finds and expands/collapses sibling panels
+ * @param {string} panelId - ID of the panel that was toggled
+ * @param {boolean} isExpanding - True if expanding, false if collapsing
+ */
+function toggleSiblingPanels(panelId, isExpanding) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+
+  const myparent = panel.getAttribute('myparent');
+  if (!myparent) return;
+
+  const parentContainer = document.getElementById(myparent);
+  if (!parentContainer) return;
+
+  // Find all sibling panels with myparent attribute in the same parent
+  const allPanelsWithParent = document.querySelectorAll(`[myparent="${myparent}"]`);
+  const siblingPanels = Array.from(allPanelsWithParent).filter(sibling => sibling.id !== panelId);
+
+  siblingPanels.forEach(sibling => {
+    const siblingId = sibling.id;
+
+    // Check if sibling is already in the correct state
+    const siblingMyparent = sibling.getAttribute('myparent');
+    const siblingOriginalParent = siblingMyparent ? document.getElementById(siblingMyparent) : null;
+    const siblingIsExpanded = siblingOriginalParent && !siblingOriginalParent.contains(sibling);
+
+    // Only toggle if sibling is in opposite state
+    if (isExpanding && !siblingIsExpanded) {
+      // Expand sibling
+      if (window.listingsApp && typeof window.listingsApp.myHero === 'function') {
+        const mockButton = document.createElement('button');
+        mockButton.setAttribute('mywidgetpanel', siblingId);
+        mockButton.className = 'fullscreen-toggle-btn';
+
+        const syntheticEvent = new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        });
+
+        Object.defineProperty(syntheticEvent, 'target', {
+          value: mockButton,
+          enumerable: true
+        });
+
+        const originalEvent = window.event;
+        window.event = syntheticEvent;
+
+        window.listingsApp.myHero();
+
+        window.event = originalEvent;
+      }
+    } else if (!isExpanding && siblingIsExpanded) {
+      // Collapse sibling
+      if (window.listingsApp && typeof window.listingsApp.myHero === 'function') {
+        const mockButton = document.createElement('button');
+        mockButton.setAttribute('mywidgetpanel', siblingId);
+        mockButton.className = 'fullscreen-toggle-btn';
+
+        const syntheticEvent = new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        });
+
+        Object.defineProperty(syntheticEvent, 'target', {
+          value: mockButton,
+          enumerable: true
+        });
+
+        const originalEvent = window.event;
+        window.event = syntheticEvent;
+
+        window.listingsApp.myHero();
+
+        window.event = originalEvent;
+      }
+    }
+
+    // Update sibling menu labels
+    setTimeout(() => {
+      const siblingMenu = document.getElementById(siblingId + 'Menu');
+      if (siblingMenu) {
+        // Determine panel type from menu or default to generic
+        let siblingType = 'Panel';
+        if (siblingId.includes('map')) siblingType = 'Map';
+        else if (siblingId.includes('Details')) siblingType = 'List';
+        else if (siblingId.includes('Gallery')) siblingType = 'Content';
+
+        updateMenuLabels(siblingId + 'Menu', siblingId, siblingType);
+        refreshPanelToggleIcon(siblingId + 'MenuControl', siblingId);
+      }
+    }, 100);
+  });
+}
+
+/**
+ * Updates menu labels based on panel state
+ * @param {string} menuId - ID of the menu element
+ * @param {string} panelId - ID of the panel element
+ * @param {string} panelType - Type of panel (Content, List, Map)
+ */
+function updateMenuLabels(menuId, panelId, panelType) {
+  const menu = document.getElementById(menuId);
+  const panel = document.getElementById(panelId);
+  if (!menu || !panel) return;
+  const panelLabel = getPanelLabel(panelId, panelType);
+  const menuOptions = getPanelMenuOptions(panelId);
+  const expandBehavior = menuOptions.expandBehavior || (panelType === 'View' ? 'fullscreen' : 'hero');
+
+  // Check if panel is in hero container (expanded) or fullscreen mode
+  let isExpanded = panel.dataset && panel.dataset.menuExpanded === 'true' ? true : false;
+
+  if (typeof menuOptions.isExpanded === 'function') {
+    isExpanded = !!menuOptions.isExpanded(panel, panelId, panelType);
+  } else if (expandBehavior === 'fullscreen') {
+    // For fullscreen-style panels, use fullscreen state and fullscreen button visibility.
+    const reduceBtn = document.querySelector('.reduceFromFullscreen');
+    const reduceBtnVisible = !!(reduceBtn && getComputedStyle(reduceBtn).display !== 'none');
+    isExpanded = !!document.fullscreenElement ||
+                 document.body.classList.contains('fullscreenMode') ||
+                 document.documentElement.classList.contains('fullscreenMode') ||
+                 reduceBtnVisible;
+  } else {
+    // Generic approach: check if panel has been moved from its original parent
+    const myparent = panel.getAttribute('myparent');
+    if (myparent) {
+      const originalParent = document.getElementById(myparent);
+      // Panel is expanded if it's NOT in its original parent
+      if (!panel.dataset || panel.dataset.menuExpanded === undefined) {
+        isExpanded = originalParent && !originalParent.contains(panel);
+      }
+    } else {
+      // Fallback: check if in any hero container (for panels without myparent attribute)
+      const heroContainers = ['widgetHero', 'detailHero'].map(id => document.getElementById(id)).filter(Boolean);
+      if (!panel.dataset || panel.dataset.menuExpanded === undefined) {
+        isExpanded = heroContainers.some(hero => hero.contains(panel) && hero.style.display !== 'none');
+      }
+    }
+  }
+
+  // Find expand/collapse menu item
+  const expandItem = menu.querySelector('[data-action="expand"], [data-action="collapse"]');
+  if (expandItem) {
+    const iconElement = expandItem.querySelector('.material-icons');
+    if (isExpanded) {
+      expandItem.childNodes.forEach(node => {
+        if (node.nodeType === 3) { // Text node
+          node.textContent = `Collapse ${panelLabel}`;
+        }
+      });
+      if (iconElement) iconElement.textContent = 'close_fullscreen';
+      expandItem.setAttribute('data-action', 'collapse');
+    } else {
+      expandItem.childNodes.forEach(node => {
+        if (node.nodeType === 3) { // Text node
+          node.textContent = `Expand ${panelLabel}`;
+        }
+      });
+      if (iconElement) iconElement.textContent = 'open_in_full';
+      expandItem.setAttribute('data-action', 'expand');
+    }
+  }
+}
+
+// Tour state management
+window.tourState = {
+  isPlaying: false,
+  currentIndex: -1,
+  listingIds: [],
+  timeoutId: null,
+  panelId: null
+};
+const tourState = window.tourState;
+
+/**
+ * Toggles tour play/pause
+ * @param {string} panelId - ID of the panel
+ */
+function toggleTour(panelId) {
+  if (tourState.isPlaying) {
+    stopTour(panelId);
+  } else {
+    startTour(panelId);
+  }
+}
+
+/**
+ * Starts the tour
+ * @param {string} panelId - ID of the panel
+ * @param {boolean} isReload - Whether this is a reload/resume from hash
+ */
+function startTour(panelId, isReload = false) {
+  // Get listing IDs from DOM elements
+  const listingCards = document.querySelectorAll('.listing-card[data-listing-id]');
+  tourState.listingIds = Array.from(listingCards)
+    .map(card => card.getAttribute('data-listing-id'))
+    .filter(id => id); // Filter out undefined/null/empty
+
+  if (tourState.listingIds.length === 0) {
+    console.warn('No listings available for tour');
+    return;
+  }
+
+  // Clear any existing timeout first to prevent multiple timers
+  if (tourState.timeoutId) {
+    clearTimeout(tourState.timeoutId);
+    tourState.timeoutId = null;
+  }
+
+  tourState.isPlaying = true;
+  tourState.panelId = panelId;
+
+  // Update icon to pause - with retry to ensure element exists
+  const setIconWithRetry = (retries = 5) => {
+    const iconElement = document.getElementById(panelId + 'MenuToggleIcon');
+    if (iconElement) {
+      updateTourIcon(panelId, 'pause');
+    } else if (retries > 0) {
+      setTimeout(() => setIconWithRetry(retries - 1), 100);
+    }
+  };
+  setIconWithRetry();
+
+  if (isReload) {
+    // Reloading from hash - find current id and resume from there
+    const hash = (typeof getHash === 'function') ? getHash() : {};
+    const currentId = hash.id;
+
+    if (currentId) {
+      // Find the index of the current id
+      const currentIdx = tourState.listingIds.indexOf(currentId);
+      tourState.currentIndex = currentIdx >= 0 ? currentIdx : 0;
+    } else {
+      tourState.currentIndex = 0;
+    }
+
+    // Don't navigate - already on the correct id
+    // Set timeout for 8 seconds to advance to next slide
+    // Each slide sets its own timeout when it loads
+    tourState.timeoutId = setTimeout(() => {
+      // Check if detailplay is still in hash (user might have removed it)
+      const currentHash = (typeof getHash === 'function') ? getHash() : {};
+      if (!currentHash.detailplay || currentHash.detailplay !== 'true') {
+        // User removed detailplay, stop the tour
+        stopTour(panelId);
+        return;
+      }
+
+      tourState.currentIndex++;
+
+      if (tourState.currentIndex >= tourState.listingIds.length) {
+        // Tour completed, loop back to start
+        tourState.currentIndex = 0;
+      }
+
+      if (typeof goHash === 'function') {
+        const currentHash = getHash();
+        goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true', view: currentHash.view || '' });
+      }
+    }, 8000);
+  } else {
+    // Fresh start from clicking "Start Tour" - continue from current position
+    const hash = (typeof getHash === 'function') ? getHash() : {};
+    const currentId = hash.id;
+
+    if (currentId) {
+      // Find the index of the current id
+      const currentIdx = tourState.listingIds.indexOf(currentId);
+      tourState.currentIndex = currentIdx >= 0 ? currentIdx : -1;
+    } else {
+      // No current id, start from beginning
+      tourState.currentIndex = -1;
+    }
+
+    // Immediately advance to next item
+    tourState.currentIndex++;
+    if (tourState.currentIndex >= tourState.listingIds.length) {
+      tourState.currentIndex = 0;
+    }
+
+    if (typeof goHash === 'function') {
+      const currentHash = getHash();
+      goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true', view: currentHash.view || '' });
+    }
+
+    // Note: The page reload will trigger startTour(panelId, true) which will set the timeout
+    // No need to set timeout here as the reload case handles it
+  }
+}
+
+// Make startTour globally accessible
+window.startTour = startTour;
+
+/**
+ * Stops the tour
+ * @param {string} panelId - ID of the panel
+ */
+function stopTour(panelId) {
+  tourState.isPlaying = false;
+
+  if (tourState.timeoutId) {
+    clearTimeout(tourState.timeoutId);
+    tourState.timeoutId = null;
+  }
+
+  // Update icon back to arrow
+  updateTourIcon(panelId, 'arrow');
+
+  // Remove detailplay from hash
+  if (typeof goHash === 'function') {
+    goHash({ detailplay: '' });
+  }
+}
+
+// Make stopTour globally accessible
+window.stopTour = stopTour;
+
+/**
+ * Updates the tour icon
+ * @param {string} panelId - ID of the panel
+ * @param {string} iconType - 'pause' or 'arrow'
+ */
+function updateTourIcon(panelId, iconType) {
+  const iconElement = document.getElementById(panelId + 'MenuToggleIcon');
+  const circleElement = document.querySelector(`#${panelId}MenuControl .material-icons:not([id])`);
+
+  if (!iconElement) return;
+
+  if (iconType === 'pause') {
+    iconElement.textContent = 'pause';
+    iconElement.style.fontSize = '24px';
+    iconElement.style.transform = 'translate(-50%, -50%)';
+    iconElement.classList.add('pause-icon');
+    if (circleElement) circleElement.style.display = 'none';
+  } else {
+    iconElement.textContent = 'arrow_right';
+    iconElement.style.fontSize = '18px';
+    iconElement.style.transform = 'translate(-50%, -50%)';
+    iconElement.classList.remove('pause-icon');
+    if (circleElement) {
+      circleElement.style.display = '';
+      circleElement.style.transform = 'translate(-50%, -50%)';
+    }
+  }
+
+  // Update menu label
+  const menu = document.getElementById(panelId + 'Menu');
+  if (menu) {
+    const startTourItem = menu.querySelector('[data-action="starttour"]');
+    if (startTourItem) {
+      const iconEl = startTourItem.querySelector('.material-icons');
+      const labelNode = Array.from(startTourItem.childNodes).find(node => node.nodeType === 3);
+
+      if (iconType === 'pause') {
+        if (iconEl) iconEl.textContent = 'pause_circle';
+        if (labelNode) labelNode.textContent = 'Pause Tour';
+      } else {
+        if (iconEl) iconEl.textContent = 'play_circle';
+        if (labelNode) labelNode.textContent = 'Start Tour';
+      }
+    }
+  }
+}
+
+/**
+ * Handles panel menu actions
+ * @param {string} action - Action to perform
+ * @param {string} panelId - ID of the panel element
+ * @param {string} panelType - Type of panel (Content, List, Map)
+ */
+function handlePanelAction(action, panelId, panelType) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  const menuOptions = getPanelMenuOptions(panelId);
+  const expandBehavior = menuOptions.expandBehavior || (panelType === 'View' ? 'fullscreen' : 'hero');
+
+  if (action === 'starttour') {
+    toggleTour(panelId);
+  } else if (action === 'expand' || action === 'collapse') {
+    // Per-panel custom toggle behavior via passed options
+    if (typeof menuOptions.toggleExpand === 'function') {
+      menuOptions.toggleExpand(action, panelId, panelType);
+
+      const siblingPanelId = menuOptions.siblingPanelId || panelId;
+      const siblingPanel = document.getElementById(siblingPanelId);
+      const siblingParentId = siblingPanel ? siblingPanel.getAttribute('myparent') : null;
+      const siblingOriginalParent = siblingParentId ? document.getElementById(siblingParentId) : null;
+      let isExpanding = false;
+      if (typeof menuOptions.isExpanded === 'function') {
+        isExpanding = !!menuOptions.isExpanded(panel, panelId, panelType);
+      } else if (siblingOriginalParent && siblingPanel) {
+        isExpanding = !siblingOriginalParent.contains(siblingPanel);
+      }
+      if (menuOptions.toggleSiblings !== false) {
+        toggleSiblingPanels(siblingPanelId, isExpanding);
+      }
+
+      setTimeout(() => {
+        updateMenuLabels(panelId + 'Menu', panelId, panelType);
+        refreshPanelToggleIcon(panelId + 'MenuControl', panelId);
+      }, 50);
+    }
+    // Fullscreen behavior for panels configured as fullscreen mode
+    else if (expandBehavior === 'fullscreen') {
+      const expandBtn = document.querySelector('.expandToFullscreen');
+      const reduceBtn = document.querySelector('.reduceFromFullscreen');
+      const expandVisible = !!(expandBtn && getComputedStyle(expandBtn).display !== 'none');
+      const reduceVisible = !!(reduceBtn && getComputedStyle(reduceBtn).display !== 'none');
+
+      if (action === 'expand') {
+        if (expandBtn && expandVisible) {
+          expandBtn.click();
+        }
+      } else if (action === 'collapse') {
+        if (reduceBtn && reduceVisible) {
+          reduceBtn.click();
+        }
+      }
+
+      // Update menu labels after state change
+      setTimeout(() => {
+        updateMenuLabels(panelId + 'Menu', panelId, panelType);
+        refreshPanelToggleIcon(panelId + 'MenuControl', panelId);
+      }, 50);
+    } else {
+      // Original behavior for other panel types
+      // Create a mock button element with mywidgetpanel attribute
+      const mockButton = document.createElement('button');
+      mockButton.setAttribute('mywidgetpanel', panelId);
+      mockButton.className = 'fullscreen-toggle-btn';
+
+      // Create a synthetic event with the mock button as target
+      const syntheticEvent = new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        view: window
+      });
+
+      // Temporarily set window.event to our synthetic event with the button target
+      Object.defineProperty(syntheticEvent, 'target', {
+        value: mockButton,
+        enumerable: true
+      });
+
+      // Store original event
+      const originalEvent = window.event;
+      window.event = syntheticEvent;
+
+      // Call myHero to toggle expansion
+      if (window.listingsApp && typeof window.listingsApp.myHero === 'function') {
+        window.listingsApp.myHero();
+
+        // Restore original event
+        window.event = originalEvent;
+
+        // Determine if we're expanding or collapsing
+        const panel = document.getElementById(panelId);
+        const myparent = panel ? panel.getAttribute('myparent') : null;
+        const originalParent = myparent ? document.getElementById(myparent) : null;
+        const isExpanding = originalParent && !originalParent.contains(panel);
+
+        // Toggle sibling panels
+        toggleSiblingPanels(panelId, isExpanding);
+
+        // Update menu labels after state change
+        setTimeout(() => {
+          updateMenuLabels(panelId + 'Menu', panelId, panelType);
+          refreshPanelToggleIcon(panelId + 'MenuControl', panelId);
+        }, 50);
+      }
+    }
+  } else if (action === 'hide') {
+    // Hide panel and parent
+    const myparent = panel.getAttribute('myparent');
+    if (myparent) {
+      const parentDiv = document.getElementById(myparent);
+      if (parentDiv) {
+        parentDiv.style.display = 'none';
+      }
+    }
+    panel.style.display = 'none';
+
+    // Close menu
+    const menu = document.getElementById(panelId + 'Menu');
+    if (menu) menu.style.display = 'none';
+    refreshPanelToggleIcon(panelId + 'MenuControl', panelId);
+  } else if (action === 'inspect') {
+    // Toggle inspect mode
+    if (!window.listingsApp) return;
+
+    const isInspectMode = window.listingsApp.inspectMode || false;
+    window.listingsApp.inspectMode = !isInspectMode;
+
+    // Show placeholder immediately BEFORE any other processing
+    if (window.listingsApp.inspectMode) {
+      const listingsGrid = document.querySelector('.listings-grid');
+      if (listingsGrid && !document.getElementById('inspect-debug-card')) {
+        // Insert empty placeholder immediately
+        const placeholderHtml = `
+          <div class="listing-card" id="inspect-debug-card" style="background: #1a1a1a; color: #00ff00; border: 2px solid #00ff00; position: relative;">
+            <div class="listing-content">
+              <h3 class="listing-title" style="color: #00ff00; display: flex; justify-content: space-between; align-items: center;">
+                <span>Debug Messages</span>
+                <button id="close-inspect-debug" style="background: none; border: none; color: #00ff00; font-size: 24px; cursor: pointer; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;" title="Close debug messages">&times;</button>
+              </h3>
+              <div id="inspect-debug-messages" style="font-family: 'Courier New', monospace; font-size: 12px; max-height: 400px; overflow-y: auto;">
+                <div style="color: #00ff00; padding: 8px;">Loading messages...</div>
+              </div>
+            </div>
+          </div>
+        `;
+        listingsGrid.insertAdjacentHTML('afterbegin', placeholderHtml);
+      }
+    }
+
+    // Update menu item check state
+    const menu = document.getElementById(panelId + 'Menu');
+    if (menu) {
+      const inspectItem = menu.querySelector('[data-action="inspect"]');
+      const checkMark = inspectItem?.querySelector('.menuToggleCheck');
+      if (checkMark) {
+        checkMark.style.display = window.listingsApp.inspectMode ? 'inline' : 'none';
+      }
+    }
+
+    // Populate with actual messages after showing placeholder
+    if (window.listingsApp.inspectMode) {
+      setTimeout(() => {
+        if (window.listingsApp.populateDebugCard) {
+          window.listingsApp.populateDebugCard();
+        }
+      }, 0);
+    } else {
+      // Hide debug card immediately
+      const debugCard = document.getElementById('inspect-debug-card');
+      if (debugCard) {
+        debugCard.remove();
+      }
+    }
+  }
+}
+
+/**
+ * Creates and adds a panel menu toggle to a panel
+ * @param {Object} options - Configuration options
+ * @param {string} options.panelType - Type of panel (Content, List, Map)
+ * @param {string} options.targetPanelId - ID of the target panel element
+ * @param {string} options.containerSelector - CSS selector for where to insert the toggle
+ * @param {Array} options.menuItems - Optional custom menu items (uses buildMenuConfig if not provided)
+ * @param {string} options.datasourcePath - Path for datasource insights link (optional)
+ * @param {string} options.menuPopupHolder - Optional CSS selector for where to render the menu popup (if not provided, menu is rendered next to toggle)
+ * @returns {Object} Object with render(), destroy(), updateState() methods
+ */
+function addPanelMenu(options) {
+  const {
+    panelType,
+    targetPanelId,
+    containerSelector,
+    menuItems,
+    datasourcePath = '',
+    inline = false,
+    menuPopupHolder = '',
+    onAction = null,
+    panelLabel = '',
+    expandBehavior = '',
+    isExpanded = null,
+    toggleExpand = null,
+    siblingPanelId = '',
+    toggleSiblings = true
+  } = options;
+
+  const resolvedExpandBehavior = expandBehavior || (panelType === 'View' ? 'fullscreen' : 'hero');
+  const resolvedPanelLabel = panelLabel || panelType;
+  const items = menuItems || buildMenuConfig(panelType, targetPanelId, datasourcePath, resolvedPanelLabel);
+
+  const render = () => {
+    const container = document.querySelector(containerSelector);
+    if (!container) {
+      console.warn(`Container not found: ${containerSelector}`);
+      return;
+    }
+
+    // Generate toggle holder HTML
+    let toggleHtml;
+    if (inline) {
+      // For inline containers (like search-fields-control), don't add positioning wrapper
+      toggleHtml = `
+        <div id="${targetPanelId}MenuControl" class="menuIconHolder menuToggleHolderInline"
+             title="Panel menu">
+          <i class="material-icons" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:24px;">circle</i>
+          <i id="${targetPanelId}MenuToggleIcon" class="material-icons"
+             style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:18px;">arrow_right</i>
+        </div>
+      `;
+    } else {
+      // For absolute positioned containers
+      const holderClass = panelType === 'Map' ? 'menuIconHolder menuToggleHolderMap' : 'menuIconHolder';
+      toggleHtml = `
+        <div style="position:absolute; right:8px; top:8px; z-index:1000;">
+          <div id="${targetPanelId}MenuControl" class="${holderClass}"
+               style="position:relative; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;"
+               title="Panel menu">
+            <i class="material-icons circle-bg" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);">circle</i>
+            <i id="${targetPanelId}MenuToggleIcon" class="material-icons menu-toggle-arrow"
+               style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);">arrow_right</i>
+          </div>
+        </div>
+      `;
+    }
+
+    // Generate menu HTML
+    const menuClass = inline ? 'menuToggleMenuInline' : 'menuToggleMenu';
+    let menuHtml = `<div id="${targetPanelId}Menu" class="${menuClass}" style="display:none;">`;
+    items.forEach(item => {
+      if (item.divider) {
+        menuHtml += '<div class="menuToggleDivider"></div>';
+      } else {
+        const displayStyle = item.display ? `display:${item.display};` : '';
+        const className = item.class ? ` ${item.class}` : '';
+        const dataAction = item.action ? ` data-action="${item.action}"` : '';
+
+        if (item.href) {
+          menuHtml += `<a href="${item.href}" class="menuToggleItem${className}"${dataAction} style="${displayStyle}">`;
+        } else {
+          menuHtml += `<div class="menuToggleItem${className}"${dataAction} style="${displayStyle}">`;
+        }
+
+        if (item.icon) {
+          menuHtml += `<i class="material-icons">${item.icon}</i>`;
+        }
+        menuHtml += item.label;
+
+        if (item.hasCheck) {
+          menuHtml += '<span class="material-icons menuToggleCheck">check</span>';
+        }
+
+        if (item.href) {
+          menuHtml += '</a>';
+        } else {
+          menuHtml += '</div>';
+        }
+      }
+    });
+    menuHtml += '</div>';
+
+    // Insert into DOM
+    if (menuPopupHolder) {
+      // Insert toggle into the specified container
+      container.insertAdjacentHTML('afterbegin', toggleHtml);
+
+      // Insert menu into the popup holder container
+      const popupContainer = document.querySelector(menuPopupHolder);
+      if (popupContainer) {
+        popupContainer.insertAdjacentHTML('afterbegin', menuHtml);
+      } else {
+        console.warn(`Menu popup holder not found: ${menuPopupHolder}`);
+      }
+    } else {
+      // Insert both toggle and menu together (original behavior)
+      container.insertAdjacentHTML('afterbegin', toggleHtml + menuHtml);
+    }
+
+    // Setup event listeners
+    setupPanelMenuEvents(targetPanelId, panelType);
+  };
+
+  const destroy = () => {
+    const holder = document.getElementById(targetPanelId + 'MenuControl');
+    const menu = document.getElementById(targetPanelId + 'Menu');
+
+    // Remove holder
+    if (menuPopupHolder) {
+      // When using popup holder, holder is always inserted directly
+      if (holder) holder.remove();
+    } else if (inline) {
+      // For inline, only remove the holder itself
+      if (holder) holder.remove();
+    } else {
+      // For absolute positioned, remove the wrapper div
+      if (holder) holder.parentElement?.remove();
+    }
+
+    // Remove menu (always independent of holder when using menuPopupHolder)
+    if (menu) menu.remove();
+  };
+
+  const updateState = () => {
+    updateMenuLabels(targetPanelId + 'Menu', targetPanelId, panelType);
+    refreshPanelToggleIcon(targetPanelId + 'MenuControl', targetPanelId);
+  };
+
+  if (typeof onAction === 'function') {
+    if (!window.panelMenuCallbacks) window.panelMenuCallbacks = {};
+    window.panelMenuCallbacks[targetPanelId] = onAction;
+  }
+  if (!window.panelMenuOptions) window.panelMenuOptions = {};
+  window.panelMenuOptions[targetPanelId] = {
+    panelType,
+    panelLabel: resolvedPanelLabel,
+    expandBehavior: resolvedExpandBehavior,
+    isExpanded,
+    toggleExpand,
+    siblingPanelId,
+    toggleSiblings
+  };
+
+  return { render, destroy, updateState };
+}
+
+/**
+ * Sets up event listeners for a panel menu
+ * @param {string} panelId - ID of the panel element
+ * @param {string} panelType - Type of panel (Content, List, Map)
+ */
+function setupPanelMenuEvents(panelId, panelType) {
+  const holderId = panelId + 'MenuControl';
+  const menuId = panelId + 'Menu';
+
+  // Toggle menu on holder click
+  document.addEventListener('click', function(e) {
+    const holder = e.target.closest(`#${holderId}`);
+    if (!holder) return;
+    e.stopPropagation();
+
+    // Close any open search popup
+    if (window.listingsApp && typeof window.listingsApp.closeSearchPopup === 'function') {
+      window.listingsApp.closeSearchPopup();
+    }
+
+    // If tour is playing, clicking the holder toggles pause
+    if (tourState.isPlaying && tourState.panelId === panelId) {
+      toggleTour(panelId);
+      return;
+    }
+
+    const menu = document.getElementById(menuId);
+    if (!menu) return;
+
+    const isVisible = menu.style.display !== 'none';
+
+    // Close all other panel menus
+    document.querySelectorAll('.menuToggleMenu, .menuToggleMenuInline').forEach(m => {
+      if (m.id !== menuId) m.style.display = 'none';
+    });
+
+    // Toggle this menu
+    menu.style.display = isVisible ? 'none' : 'block';
+
+    // Update icon
+    refreshPanelToggleIcon(holderId, panelId);
+
+    // Update menu labels
+    updateMenuLabels(menuId, panelId, panelType);
+  });
+
+  // Handle menu item clicks
+  const menuClickHandler = function(e) {
+    const target = e.target.closest(`#${menuId} .menuToggleItem[data-action]`);
+    if (!target) return;
+    const action = target.getAttribute('data-action');
+    const href = target.getAttribute('href');
+
+    if (action && !href) {
+      e.preventDefault();
+      let handled = false;
+      if (window.panelMenuCallbacks && typeof window.panelMenuCallbacks[panelId] === 'function') {
+        handled = window.panelMenuCallbacks[panelId](action, panelId, panelType) === true;
+      }
+      if (!handled) {
+        handlePanelAction(action, panelId, panelType);
+      }
+
+      if (action === 'expand') {
+        const panel = document.getElementById(panelId);
+        if (panel) panel.dataset.menuExpanded = 'true';
+      }
+      if (action === 'collapse') {
+        const panel = document.getElementById(panelId);
+        if (panel) panel.dataset.menuExpanded = 'false';
+      }
+
+      // Close menu after action
+      const menu = document.getElementById(menuId);
+      if (menu) menu.style.display = 'none';
+      // Refresh icon after action (expand/collapse may update layout)
+      setTimeout(() => {
+        refreshPanelToggleIcon(holderId, panelId);
+        updateMenuLabels(menuId, panelId, panelType);
+      }, 50);
+    }
+    // If href exists, let the link navigate normally
+  };
+  document.addEventListener('click', menuClickHandler);
+
+  // Close menu when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest(`#${holderId}, #${menuId}`)) {
+      const menu = document.getElementById(menuId);
+      if (menu && menu.style.display !== 'none') {
+        menu.style.display = 'none';
+        refreshPanelToggleIcon(holderId, panelId);
+      }
+    }
+  });
+}
 
 consoleLog("end localsite");

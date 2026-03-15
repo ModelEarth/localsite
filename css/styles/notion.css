@@ -1,0 +1,186 @@
+/* Notion style overrides for the shared theme layer in base.css */
+.notion {
+  --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-secondary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-headline: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-subheadline: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --bg-page: #ffffff;
+  --bg-card: #ffffff;
+  --accent: #548164;
+  --accent-hover: #40644d;
+  --accent-soft: #eef3ed;
+  --text-main: #373530;
+  --text-muted: #787774;
+  --border-subtle: rgba(55, 53, 47, 0.09);
+  --chip-bg: #f1f1ef;
+  --chip-text: #787774;
+  --link-color: #0969da;
+  --link-hover: #0550ae;
+  --panel-radius: 3px;
+  --button-radius: 6px;
+  --chip-radius: 3px;
+  --alert-radius: 3px;
+  --notion-fg-default: var(--text-main);
+  --notion-bg: var(--bg-page);
+  --notion-default: var(--bg-card);
+  --soft-bg-green: #f8fbf8;
+  --soft-bg-blue: #f6fafc;
+  --soft-bg-yellow: #fefcf5;
+  --soft-bg-red: #fdf9f9;
+  --soft-bg-purple: #fafafc;
+  --notion-gray: #f1f1ef;
+  --notion-brown: #f3eeee;
+  --notion-orange: #f8ecdf;
+  --notion-yellow: #faf3dd;
+  --notion-green: #eef3ed;
+  --notion-blue: #e9f3f7;
+  --notion-purple: #f6f3f8;
+  --notion-pink: #f9f2f5;
+  --notion-red: #faecec;
+  --notion-gray-text: #787774;
+  --notion-brown-text: #976d57;
+  --notion-orange-text: #cc782f;
+  --notion-yellow-text: #c29343;
+  --notion-green-text: #548164;
+  --notion-blue-text: #487ca5;
+  --notion-purple-text: #8a67ab;
+  --notion-pink-text: #b35488;
+  --notion-red-text: #c4554d;
+  --color-primary: var(--accent);
+  --color-primary-hover: #40644d;
+  --color-secondary: var(--notion-pink-text);
+  --color-secondary-hover: #9b427d;
+  --color-success: var(--notion-green-text);
+  --color-success-hover: #35624a;
+  --color-danger: var(--notion-red-text);
+  --color-danger-hover: #97342c;
+  --color-warning: var(--notion-yellow-text);
+  --color-warning-hover: #997232;
+  --color-info: var(--notion-blue-text);
+  --color-info-hover: #3d5770;
+  --color-info-text: #ffffff;
+  --color-light: var(--notion-gray);
+  --color-light-hover: #eaeae9;
+  --color-light-text: var(--text-main);
+  --color-dark: #191919;
+  --color-dark-hover: #121212;
+  --alert-primary-bg: rgba(59, 130, 246, 0.12);
+  --alert-success-bg: var(--notion-green);
+  --alert-danger-bg: var(--notion-red);
+  --alert-warning-bg: var(--notion-yellow);
+  --alert-info-bg: var(--notion-blue);
+  --badge-primary-bg: var(--notion-green);
+  --badge-primary-text: var(--color-primary);
+  --badge-secondary-bg: var(--notion-pink);
+  --badge-success-bg: var(--notion-green);
+  --badge-danger-bg: var(--notion-red);
+  --badge-warning-bg: var(--notion-yellow);
+  --badge-info-bg: var(--notion-blue);
+  --heatmap-0: #e7f3ea;
+  --heatmap-1: #d6edd9;
+  --heatmap-2: #a8d8af;
+  --heatmap-3: #7ac385;
+  --heatmap-4: #4cae5c;
+  --heatmap-5: #235d39;
+  --heatmap-hot-0: #ece6ee;
+  --heatmap-hot-1: #e8dfe9;
+  --heatmap-hot-2: #d4bfd8;
+  --heatmap-hot-3: #c09fc7;
+  --heatmap-hot-4: #a67fb6;
+  --heatmap-hot-5: #7b5e85;
+  --heatmap-cool-0: #f2e8dc;
+  --heatmap-cool-1: #f4e4d6;
+  --heatmap-cool-2: #edcfb3;
+  --heatmap-cool-3: #e6ba90;
+  --heatmap-cool-4: #dfa56d;
+  --heatmap-cool-5: #cc782f;
+  --heatmap-warm-0: #e4edf5;
+  --heatmap-warm-1: #d9e8f4;
+  --heatmap-warm-2: #b3d1e9;
+  --heatmap-warm-3: #8dbadd;
+  --heatmap-warm-4: #67a3d2;
+  --heatmap-warm-5: #487ca5;
+  --bg-footer: #e8e7e3;
+  --bg-footer-swatch: #e8e7e3;
+}
+
+.notion .palette-title,
+.notion .samples-title,
+.notion .component-label,
+.notion .card-title {
+  font-weight: 600;
+}
+
+.notion .btn {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.notion .color-name {
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.dark.notion,
+.dark .notion {
+  --bg-footer: #1c1b19;
+  --bg-card: #2b2926;
+  --color-light: #375a7f;
+  --color-light-hover: #304454;
+  --color-light-text: #d1d5db;
+  --color-success: #84a98c;
+  --color-info: #375a7f;
+  --color-info-hover: #304454;
+  --color-info-text: #ffffff;
+  --soft-bg-green: rgba(84, 129, 100, 0.18);
+  --soft-bg-blue: rgba(72, 124, 165, 0.18);
+  --soft-bg-yellow: rgba(194, 147, 67, 0.18);
+  --soft-bg-red: rgba(196, 85, 77, 0.18);
+  --soft-bg-purple: rgba(138, 103, 171, 0.18);
+  --notion-gray: rgba(120, 119, 116, 0.22);
+  --notion-brown: rgba(151, 109, 87, 0.22);
+  --notion-orange: rgba(204, 120, 47, 0.22);
+  --notion-yellow: rgba(194, 147, 67, 0.22);
+  --notion-green: rgba(84, 129, 100, 0.22);
+  --notion-blue: rgba(72, 124, 165, 0.22);
+  --notion-purple: rgba(138, 103, 171, 0.22);
+  --notion-pink: rgba(179, 84, 136, 0.22);
+  --notion-red: rgba(196, 85, 77, 0.22);
+  --notion-green-text: #a6c6ae;
+  --notion-blue-text: #aac8df;
+  --alert-primary-bg: rgba(59, 130, 246, 0.24);
+  --alert-primary-text: #93c5fd;
+  --alert-primary-accent: #60a5fa;
+  --alert-success-bg: rgba(84, 129, 100, 0.24);
+  --alert-success-text: #a6c6ae;
+  --alert-danger-bg: rgba(196, 85, 77, 0.24);
+  --alert-danger-text: #e8b4ae;
+  --alert-warning-bg: rgba(194, 147, 67, 0.24);
+  --alert-warning-text: #ead198;
+  --alert-info-bg: rgba(72, 124, 165, 0.24);
+  --alert-info-text: #aac8df;
+  --badge-primary-bg: rgba(84, 129, 100, 0.24);
+  --badge-primary-text: var(--alert-primary-text);
+  --badge-secondary-bg: rgba(179, 84, 136, 0.24);
+  --badge-secondary-text: #e5b7cf;
+  --badge-success-bg: rgba(84, 129, 100, 0.24);
+  --badge-success-text: #a6c6ae;
+  --badge-danger-bg: rgba(196, 85, 77, 0.24);
+  --badge-danger-text: #e8b4ae;
+  --badge-warning-bg: rgba(194, 147, 67, 0.24);
+  --badge-warning-text: #ead198;
+  --badge-info-bg: rgba(72, 124, 165, 0.24);
+  --badge-info-text: #aac8df;
+}
+
+.dark.notion .color-name,
+.dark .notion .color-name {
+  color: #d1d5db;
+}
+
+.dark.notion .samples-title,
+.dark .notion .samples-title {
+  color: #d1d5db;
+}

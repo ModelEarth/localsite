@@ -464,37 +464,52 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     display: block;
 }
 
-/* For navcolumn from header.html */
-.navcolumn-inpage .sidecolumnLeft {
+/* For main-nav from header.html */
+.main-nav-inpage .sidecolumnLeft {
     position: static !important;
     float:left;
     padding: 0px;
 }
-.navcolumn-inpage .sidecolumnLeftScroll {
+.main-nav-inpage .main-nav-scroll {
     position: relative;
     bottom:auto !important;
     right:0 !important;
 }
 
-.navcolumn {
-    position: fixed;
-    width: 220px;
+.main-nav {
+    width: 190px;
+    min-width: 190px;
     padding-right: 0px;
-	top:0;
-	left:0;
-	bottom:0;
+	border-right: 1px solid #ddd;
+	heightX: 100%;
+	top: var(--header-height);
 }
 @media (max-width: 600px) {
-	.navcolumn {
-		width: 100%;
+	.main-nav {
+    	width: 100% !important;
+	}
+	#showSideFromHeader i {
+		margin-top: 4px;
+	}
+	#showSideFromHeader i {
+	    font-size: 40px;
+	    min-width: 48px;
+	}
+	.headerbarheight {
+		height: 60px;
+		min-height: 60px;
+	}
+	.close-X-sm { /* .hideSide */
+		padding: 15px;
+		font-size: 24px;
 	}
 }
 .listcolumn {
     position: fixed;
     width:380px;
     padding-right:0px;
-	top:0;
-	left:220px;
+	top: 80px;
+    left: 257px;
 	bottom:0;
 	background-color: #ddd;
 }
@@ -525,43 +540,33 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 #insertedText {
 	flex: 1;
 }
-.pagecolumn {
-	/* top:54px; */
-}
 .pagecolumnToTop {
-	top:0px;
+	top: 0px;
 }
 .rightIcons {
+	/*
 	position: absolute;
 	right: 0px;
+	top: 0px;
+	bottom: 0px;
 	z-index: 999;
-	font-size: 44px;
-	text-shadow: 1px 1px 4px #fff;
-	padding-right: 16px;
-}
-.dark .rightIcons {
-	text-shadow: none;
+	*/
+	float: right;
+	displayX: flex;
+	align-itemsX: center;
 }
 .bothSideIcons {
   top:0px;
-  z-index:10000;
+  z-index:100;
 }
-.pagecolumnLow {
+.pagecolumnLowX {
 	top: 58px;
 }
-.pagecolumnLower { /* same as #local-header */
+.pagecolumnLowerX { /* same as #local-header */
 	top:79px;
 }
-.sideIconsLower {
+.sideIconsLowerX {
   top:79px;
-}
-@media (max-width: 600px) {
-	.pagecolumnLower {
-		top:64px;
-	}
-	.sideIconsLower {
-	 	top:4px;
-	}
 }
 #showNavColumn {
 	pointer-events: auto;
@@ -569,6 +574,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	height: 37px;
  	opacity: .3;
  	cursor: pointer;
+ 	position: relative;
  	z-index: 1001;
 }
 .showList {
@@ -595,16 +601,22 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 .sidecolumnLeft {
     line-height: 28px;
-    font-size: 16px;
+    font-size: 15px;
     bottom:0;
     z-index:200; /* 1 allows border highlight to overlap adjacent content area. At least 101 is needed for OpenWebUI */
+}
+@media (max-width: 600px) {
+	.sidecolumnLeft {
+	    font-size: 18px;
+	    line-height: 35px;
+	}
 }
 #cloneRight {
 	position:inherit;
     line-height: 34px;
     font-size: 18px;
 }
-#navcolumn .navcolumnIndent {
+#main-nav .navcolumnIndent {
 	margin-left: 25px;
 }
 #navcolumnTitle {
@@ -619,6 +631,8 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 #listLeft b, .sidecolumnLeft b, #cloneRight b {
     color:#333;
     font-weight:800;
+    display:block;
+    min-height: 26.5px;
 }
 #listLeft .legendDot {
 	padding:0px;
@@ -630,12 +644,10 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	margin-right:7px;
 	float:left;
 }
-.sidecolumnLeftScroll {
-    position:absolute;
+.main-nav-scroll {
+    position:sticky;
     top:0px; /* was 30px */
-    bottom:0px;
-    right:0px;
-    left:0px;
+    height: calc(100vh - var(--header-offset-height, 79px)); /* Dynamically subtract header offset height */
     overflow-y:scroll;
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none;  /* IE and Edge */
@@ -643,10 +655,10 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     padding-bottom: 500px; /* Allows for footer */
     padding-top: 38px;
 }
-.sidecolumnLeftScroll::-webkit-scrollbar {
+.main-nav-scroll::-webkit-scrollbar {
   display: none;
 }
-.sidecolumnLeftScrollLower {
+.main-nav-scrollLower {
 	padding-top: 70px;
 }
 
@@ -658,7 +670,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .catList>div {
 	cursor: pointer;
 	padding-left: 3px;
-	font-size: 15px;
+	font-size: 13px;
 	line-height: 1.1em;
 	padding-top: 8px;
 	padding-bottom: 8px;
@@ -675,7 +687,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 .sidecolumnLeft b a {
 	color: #333;
-	font-size: 16px;
+	font-size: 14.5px;
 	line-height: 1.8em;
 	padding-left: 20px;
 }
@@ -690,7 +702,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	border: 0px;
 	font-size: 18px;
 	width: 100%;
-	max-width: 300px;
+	/* max-width: 300px; */
 }
 @media (max-width: 800px) {
 	.navcolumnClear {
@@ -700,21 +712,31 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 .navcolumnClear b a, .navcolumnClear b a:visited {
 	color: #fff !important; /* important to override base.css. Not sure why this later css not given priority. */
 }
-#fullcolumn {
-    /* overflow: auto; */ /* Caused address auto-complet to be covered by footer. */
-    scrollbar-width: none;
-    position: relative;
-    min-height: 100%; /* For short samples page */
-    margin-bottomX: 80px;
-    heightX:100%; /* For counties map, but breaks fixed position map on tools page. */
+#main-layout {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	overflow-y: auto; /* Allows #side-nav to avoid scrolling up, resulting in a space below #side-nav-footer */
 }
-.dark #fullcolumn  a:link, .dark #fullcolumn  a:visited {
+#main-container {
+	display: flex;
+    flex: 1;
+    flex-direction: row;
+    margin: 0 auto;
+    width: 100%;
+}
+#main-content {
+	flex: 1 1 auto;
+	min-width: 0; /* Allow map/filter bar to shrink when sidebar opens */
+}
+.dark #main-container  a:link, .dark #main-container  a:visited {
   color: #acb;
 }
-.dark #fullcolumn  b a:link, .dark #fullcolumn  b a:visited {
+.dark #main-container  b a:link, .dark #main-container  b a:visited {
   color: #ccc;
 }
-.dark #fullcolumn h1, .dark #fullcolumn h2, .dark #fullcolumn h3, .dark #fullcolumn h4, .dark #fullcolumn h5, .dark #fullcolumn h6 {
+.dark #main-container h1, .dark #main-container h2, .dark #main-container h3, .dark #main-container h4, .dark #main-container h5, .dark #main-container h6 {
   color: #ccc;
 }
 .navLinks a {
@@ -731,7 +753,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
   font: 400 16px/1.8 "Lato", sans-serif;
   -webkit-font-smoothing: inherit !important;
 }
-.dark #fullcolumn .navLinks a:link, .dark #fullcolumn .navLinks a:visited {
+.dark #main-container .navLinks a:link, .dark #main-container .navLinks a:visited {
   color: #fff;
 }
 .navLinks a:hover {
@@ -748,16 +770,16 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 }
 
 @media (max-width: 800px) {
-    #navcolumn {
-      display: none;
+    #main-nav {
+      displayX: none;
       z-index: 1000;
     }
 }
-.navcolumn-inpage {
+.main-nav-inpage {
     position: static !important;
     position: relative;
 }
-.navcolumn-inpage > .sidecolumnLeft {
+.main-nav-inpage > .sidecolumnLeft {
     position: static;
 }
 .navcolumnBar {
@@ -768,7 +790,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	top: 0;
 	display: none;
 }
-/* End For navcolumn from header.html */
+/* End For main-nav from header.html */
 
 #rightTopMenu select {
     width: 280px;
@@ -782,6 +804,13 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     margin-right: 30px;
     padding-right: 30px;
     border: 0px !important;
+}
+#rightTopMenu select:focus,
+#rightTopMenu select:active,
+#rightTopMenu select:focus-visible {
+    border: 0px !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 .dark #rightTopMenu select {
 	color: #eee !important;
@@ -812,7 +841,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
-    padding: 12px 24px 34px 16px;
+    padding: 12px 24px 34px 20px;
 }
 .menuTitle {
   font-size:18pt;
@@ -849,11 +878,11 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     float: left;
     min-width: 120px;
 }
-#sideTabs {
+#rightSideTabs {
 	width:500px;
 }
 @media (max-width: 1000px) {
-	#sideTabs {
+	#rightSideTabs {
 		width:100%;
 	}
 }
@@ -979,3 +1008,59 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     }
 }
 /* End Settings Menu */
+
+/* Locations Section in Sidebar */
+#locations-header {
+    padding: 0;
+    margin-bottom: 0;
+}
+#locations-header > b {
+    display: block;
+    margin-bottom: 0;
+}
+#locations-header > b a {
+    display: block;
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    line-height: 1.8em;
+    padding-left: 20px;
+    cursor: pointer;
+}
+#locations-header > b a:hover {
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+}
+#locations-content {
+    padding: 0 10px 10px 20px;
+}
+/* Locations/Continents Toggle */
+.legend-view-toggle {
+    display: flex;
+    background: rgba(0,0,0,0.06);
+    border-radius: 6px;
+    padding: 2px;
+    gap: 2px;
+    margin-bottom: 8px;
+}
+.view-toggle-btn {
+    padding: 4px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.view-toggle-btn:hover {
+    color: #333;
+    background: rgba(255,255,255,0.5);
+}
+.view-toggle-btn.active {
+    background: #fff;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
