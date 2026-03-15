@@ -1647,7 +1647,7 @@ a:hover {
 .btn-secondary {
   background: var(--color-secondary);
   border-color: var(--color-secondary);
-  color: #fff;
+  color: #fff !important;
 }
 .btn-secondary:hover {
   background: var(--color-secondary-hover);
@@ -2642,9 +2642,7 @@ body.dark .config-field select {
   margin-top:5px;
   margin-bottom:5px;
 }
-.hidden {
-  displayX:none;
-}
+
 .bucketDesc {
   white-space: nowrap;
 }

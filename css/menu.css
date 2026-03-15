@@ -367,7 +367,12 @@
     border-bottom: 1px solid #e5e5e5;
 }
 
-
+.bucketcontent h2 {
+  margin-bottom: 16px;
+}
+.bucketcontent h3 {
+  margin-top: 0px;
+}
 
 /* Open nav icons when rolling over. Originally Bootstrap. */
 ul.nav li.dropdown:hover ul.dropdown-menu {
