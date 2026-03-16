@@ -13,7 +13,6 @@
 // We disable the rowSelected event handler during the updateSelectedTableRows function so it doesn't re-fire the goHash().
 
 
-
 // TO DO: Unselecting county on map is not unchecking tabulator checkbox
 
 if(typeof window.local_app == 'undefined') { window.local_app = {}; console.log("BUG: Move navigation.js after localsite.js"); } // In case navigation.js included before localsite.js
@@ -7622,7 +7621,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             param.titleArray = ["planet","live"]
             param.headerLogoSmall = "<img src='/localsite/img/logo/planetlive/faveye.png' style='width:40px;opacity:0.85'>"
             param.headerLogoNoText = "<img src='/localsite/img/logo/planetlive/faveye.png' style='float:left;width:38px;margin-right:7px'>";
-            param.headerLogo = "<a href='" + siteRoot + "/'><img src='/localsite/img/logo/planetlive/faveye.png' style='float:left;width:38px;margin-right:10px'><img src='/localsite/img/logo/planetlive/planet.live.png' alt='planet.live' style='height:24px; margin-top:8px' class='headerLogoDesktop'></a>";
+            param.headerLogo = "<a href='" + siteRoot + "/'><img src='/localsite/img/logo/planetlive/faveye.png' style='float:left;width:38px;margin-right:10px;margin-top:-0.5px'><img src='/localsite/img/logo/planetlive/planet.live.png' alt='planet.live' style='height:24px; margin-top:8px' class='headerLogoDesktop'></a>";
             
             // Quick fix, need to adjust for period in class name on datah page.
             showClassInline(".planetlive");
@@ -7955,8 +7954,8 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                                         waitForElm('#resourcesPanel').then((elm) => {
                                             // TO DO - Lazy load elsewhere, and avoid if already loaded
                                             loadMarkdown(storiesFile, "storiesDiv", "_parent");
-                                            //alert("after storiesFile")
-                                            let resourcesFile = prependFolder + "/resources.md";
+                                            //let resourcesFile = prependFolder + "/resources.md";
+                                            let resourcesFile = "/requests/resources/resources.md";
                                             loadMarkdown(resourcesFile, "resourcesMenu", "_parent");
                                         });
                                     }

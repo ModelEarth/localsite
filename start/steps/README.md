@@ -4,9 +4,9 @@
 Our helpful tips for [Yarn, Node, Python, Docker and Conda](../cmds/).  
 
 
-## ModelEarth webroot with Claude Code CLI
+## ModelEarth webroot with Agent Code CLI
 
-**Getting Started** [Activate your webroot](https://model.earth/webroot) using Claude Code CLI or your favorite AI CLI
+**Getting Started** [Activate your webroot](https://model.earth/webroot) using your favorite Coding CLI
 
 **CodeChat:** [Overview of our webroot and RAG process](../../../codechat/) 
 
@@ -46,7 +46,7 @@ On Windows:
 The localsite repo should now be visible at [http://localhost:8887/localsite](http://localhost:8887/localsite)  
 ([Other http server options](../http-server) and [VS Code issue to resolve](../http-server).)  
 
-You can add an index.html file with the following redirect in your [webroot](http://localhost:8887/). Point at the repo you're working in the most.
+IN a custom webroot you can add an index.html redirect to point at the repo you're working in the most.
 
 	<script language="JavaScript">window.location="localsite/"</script>
 
