@@ -7924,7 +7924,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
 
                             waitForElm('#main-nav').then((elm) => { // #main-nav is appended by this navigation.js script, so typically not needed.
                                 $("#showNavColumn").show();
-                                if(location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0) {
+                                if(location.host.indexOf("localsite/seasons/") >= 0 || location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0) {
                                     $("#sidecolumnContent a").each(function() {
                                       $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
                                     });
