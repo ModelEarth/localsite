@@ -6,6 +6,10 @@
     background-color: #fff;
     border-right: 1px solid #fff;
 }
+.dark .tabulator button {
+    background-color: #333;
+    color: #ddd;
+}
 .dark .tabulator .tabulator-header .tabulator-col {
    
 }
@@ -23,7 +27,8 @@
 }
 .tabulator .tabulator-footer {
     background-color: transparent;
-    border-right: 1px solid #fff;
+    color: inherit;
+    font-weight: inherit;
 }
 .tabulator .tabulator-footer .tabulator-footer-contents {
     padding-left: 0;
@@ -58,7 +63,9 @@
 #tabulator-sample .tabulatorBar div:nth-child(3) {
     height: 6px !important; /* narrower bars */
 }
-
+.tabulator-paginator input {
+    margin-right: 12px;
+}
 
 
 

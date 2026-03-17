@@ -905,6 +905,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     box-shadow: -8px -2px 8px 1px rgba(0, 0, 0, 0.4);
 }
 #rightTopMenu p {
+	margin: 0px;
 	margin-bottom: 6px;
 }
 #rightTopMenu h2 {
