@@ -27,6 +27,8 @@ Used in localsite, modelearth, io, neighborhood, trees
     --sidebar-width-expanded: 67px;
     --sidebar-collapsed: 64px;
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --bg-header: #084975;
+    --bg-header-text: #ddd;
     --bg-footer: #dae8eb;
     --bg-footer-swatch: #dae8eb;
 }
