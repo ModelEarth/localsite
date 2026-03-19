@@ -3682,7 +3682,11 @@ body.sidebar-hovered {
         display: inline-block;
     }
 }
-
+@media (min-width: 601px) {
+  #showSideFromHeader {
+    padding-top: 20px;
+  }
+}
 .basePanel {
     background: white;
     border-radius: var(--border-radius);
