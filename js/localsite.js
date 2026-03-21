@@ -1481,7 +1481,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     // This was inside FULL SITE above, but it is needed for menus embedded in external sites.
     !function() {
       // Setting up listener for font checking
-      var font = "1rem 'Material Icons'";
+      var font = "1rem 'Material Symbols Outlined'";
       var canTrackFontLoad = !!(document.fonts && document.fonts.load);
       function markMaterialIconsLoaded() {
         document.documentElement.classList.add('material-icons-loaded');
