@@ -47,6 +47,7 @@
   --color-primary-hover: #1b4a2d;
   --color-secondary: #aa483e;
   --color-secondary-hover: #8b3a31;
+  --color-tertiary: #666666;
   --color-success: #6aa442;
   --color-success-hover: #5b8c38;
   --color-danger: #aa483e;
@@ -126,6 +127,7 @@
   --bg-card: #1d2832;
   --color-primary: #084975;
   --color-primary-hover: #063a5d;
+  --color-tertiary: #666666;
   --color-light: #375a7f;
   --color-light-hover: #304454;
   --color-light-text: #d1d5db;

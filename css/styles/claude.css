@@ -48,6 +48,7 @@
   --color-primary-hover: #a8502a;
   --color-secondary: var(--notion-pink-text);
   --color-secondary-hover: #923358;
+  --color-tertiary: #B8860B;
   --color-success: var(--notion-green-text);
   --color-success-hover: #236040;
   --color-danger: var(--notion-red-text);
@@ -159,6 +160,7 @@
   --notion-red: rgba(192, 57, 43, 0.22);
   --notion-green-text: #7ec89a;
   --notion-blue-text: #7ab5e0;
+  --color-tertiary: #B8860B;
   --alert-primary-bg: rgba(232, 120, 74, 0.2);
   --alert-primary-text: #f4b48e;
   --alert-primary-accent: #e8784a;

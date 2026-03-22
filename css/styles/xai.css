@@ -48,6 +48,7 @@
   --color-primary-hover: var(--accent-hover);
   --color-secondary: #5b6475;
   --color-secondary-hover: #424a58;
+  --color-tertiary: #5B6475;
   --color-success: #19a2ff;
   --color-success-hover: #1182d0;
   --color-danger: #6b7280;
@@ -164,6 +165,7 @@
   --link-hover: #d7e3ff;
   --color-secondary: #6b7792;
   --color-secondary-hover: #7b88a5;
+  --color-tertiary: #5B6475;
   --color-success: #4cc9f0;
   --color-success-hover: #2db4de;
   --color-danger: #9aa3b5;

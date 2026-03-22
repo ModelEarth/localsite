@@ -51,6 +51,7 @@
   --color-primary-hover: #40644d;
   --color-secondary: var(--notion-pink-text);
   --color-secondary-hover: #9b427d;
+  --color-tertiary: #C9B8D4;
   --color-success: var(--notion-green-text);
   --color-success-hover: #35624a;
   --color-danger: var(--notion-red-text);

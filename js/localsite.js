@@ -386,8 +386,10 @@ function loadParams(paramStr,hashStr) {
   for (let i = 0; i < hashPairs.length; i++) {
       if(!hashPairs[i])
           continue;
-      if (i==0 && hashPairs[i].indexOf("=") == -1) {
-        params[""] = hashPairs[i];  // Allows for initial # params without =.
+      if (hashPairs[i].indexOf("=") == -1) {
+        if (!params[""]) {
+          params[""] = decodeURIComponent(hashPairs[i]);  // Allows a standalone hash token in any position.
+        }
         continue;
       }
       let hashPair = hashPairs[i].split('=');
@@ -432,6 +434,15 @@ function getHashOnly() {
     if (pairs == "") return {};
     var result = {};
     pairs.forEach(function (pair) {
+      if (!pair) {
+        return;
+      }
+      if (pair.indexOf('=') === -1) {
+        if (!result[""]) {
+          result[""] = decodeURIComponent(pair);
+        }
+        return;
+      }
       // Split the pair on "=" to get key and value
       let keyValue = pair.split('=');
       let key = keyValue[0];
@@ -508,7 +519,15 @@ function updateHash(addToHash, addToExisting, removeFromHash) {
         }
     });
     
-    const hashString = decodeURIComponent(new URLSearchParams(flatHash).toString()); // decode to display commas and slashes in URL hash values
+    let standaloneHashKey = "";
+    if (typeof flatHash[""] !== "undefined" && flatHash[""] !== "") {
+      standaloneHashKey = decodeURIComponent(encodeURIComponent(String(flatHash[""])));
+      delete flatHash[""];
+    }
+    const hashParamString = decodeURIComponent(new URLSearchParams(flatHash).toString()); // decode to display commas and slashes in URL hash values
+    const hashString = standaloneHashKey
+      ? (hashParamString ? standaloneHashKey + "&" + hashParamString : standaloneHashKey)
+      : hashParamString;
     var pathname = window.location.pathname.replace(/\/\/+/g, '\/')
     var queryString = "";
     if (window.location.search) { // Existing, for parameters that are retained as hash changes.
@@ -614,7 +633,7 @@ var isPopstateNavigation = false; // Flag to track if we're in a back/forward na
 // Exception, React widgets use a different process.
 var triggerHashChangeEvent = function () {
     // priorHash includes remaining values in hiddenhash (which originate from param values in page)
-    priorHash = structuredClone($.extend(true, {}, nextPriorHash));
+    priorHash = structuredClone(nextPriorHash || {});
     //alert("hiddenhash.geoview " + hiddenhash.geoview);
     //nextPriorHash = getHashOnly();
     nextPriorHash = getHash(); // Includes hiddenhash
@@ -4658,11 +4677,24 @@ function toggleTour(panelId) {
  * @param {boolean} isReload - Whether this is a reload/resume from hash
  */
 function startTour(panelId, isReload = false) {
-  // Get listing IDs from DOM elements
-  const listingCards = document.querySelectorAll('.listing-card[data-listing-id]');
-  tourState.listingIds = Array.from(listingCards)
-    .map(card => card.getAttribute('data-listing-id'))
-    .filter(id => id); // Filter out undefined/null/empty
+  const menuOptions = (typeof getPanelMenuOptions === 'function') ? getPanelMenuOptions(panelId) : {};
+  let listingIds = [];
+
+  if (menuOptions && typeof menuOptions.getTourListingIds === 'function') {
+    const customIds = menuOptions.getTourListingIds({ panelId, isReload });
+    if (Array.isArray(customIds)) {
+      listingIds = customIds.filter(id => id);
+    }
+  }
+
+  if (!listingIds.length) {
+    const listingCards = document.querySelectorAll('.listing-card[data-listing-id]');
+    listingIds = Array.from(listingCards)
+      .map(card => card.getAttribute('data-listing-id'))
+      .filter(id => id);
+  }
+
+  tourState.listingIds = listingIds;
 
   if (tourState.listingIds.length === 0) {
     console.warn('No listings available for tour');
@@ -4730,8 +4762,11 @@ function startTour(panelId, isReload = false) {
     // Fresh start from clicking "Start Tour" - continue from current position
     const hash = (typeof getHash === 'function') ? getHash() : {};
     const currentId = hash.id;
+    const startTourAtFirstListing = !!(menuOptions && menuOptions.startTourAtFirstListing);
 
-    if (currentId) {
+    if (startTourAtFirstListing) {
+      tourState.currentIndex = -1;
+    } else if (currentId) {
       // Find the index of the current id
       const currentIdx = tourState.listingIds.indexOf(currentId);
       tourState.currentIndex = currentIdx >= 0 ? currentIdx : -1;

@@ -46,9 +46,10 @@
   --notion-red-text: #c45a5f;
   --color-primary: var(--accent);
   --color-primary-hover: var(--accent-hover);
-  --color-secondary: #565869;
+  --color-secondary: #7A7F87;
   --color-secondary-hover: #3d3f48;
-  --color-success: #10a37f;
+  --color-tertiary: #565869;
+  --color-success: #0D8A6B;
   --color-success-hover: #0d8a6b;
   --color-danger: #c45a5f;
   --color-danger-hover: #a9474d;
@@ -158,6 +159,7 @@
   --link-hover: #a8f0dc;
   --color-secondary: #6f7480;
   --color-secondary-hover: #858b98;
+  --color-tertiary: #7A7F87;
   --color-light: #2b2b2b;
   --color-light-hover: #363636;
   --color-light-text: #ececec;
