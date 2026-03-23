@@ -356,9 +356,11 @@ body {
 #datascape {
   font-size: 0; /* prevents 19px tall blank space */
 }
+body.dark {
+  background-color: #333;
+}
 .dark {
   color: #eee;
-  background-colorX: #333;
 }
 .bodyIconMargin {
   margin-left: 64px;
@@ -1305,19 +1307,29 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   width: auto;
   border: 1px solid var(--border-light);
 }
+/*
 .btn:link, .btn:visited, .contentpadding .btn:link, .contentpadding .btn:visited {
   color: #343434;;
   text-decoration: none;
 }
-#hero-rect .btn:link, #hero-rect .btn:visited {
-  color: #fff;
-}
-.btn:hover, .btn-med:hover, .btn-lg:hover {
-    background-color: #555; /* #b9da79 */
+.btn:hover, .btn:visited:link, .btn:visited:hover, .btn-med:hover, .btn-lg:hover {
+    background-color: #555;
     border-color: #555;
     color: #fff;
     text-decoration: none;
 }
+*/
+.btn {
+  color: #343434;
+  text-decoration: none;
+}
+.btn:hover {
+  color: #fff;
+}
+#hero-rect .btn:link, #hero-rect .btn:visited {
+  color: #fff;
+}
+
 .dark .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white) {
   color: #fff;
   background-color: #375a7f;
