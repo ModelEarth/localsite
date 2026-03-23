@@ -2908,8 +2908,8 @@ function loadIntoDiv(pageFolder,divID,html,callback) {
 
     links.forEach(function(currentElement) {
       var href = currentElement.getAttribute("href");
-      // Skip absolute URLs and root-relative paths (starting with /)
-      if (/^http/i.test(href) || href.startsWith('/')) {
+      // Skip absolute URLs, root-relative paths, and in-page hash links
+      if (/^http/i.test(href) || href.startsWith('/') || href.startsWith('#')) {
         return;
       }
       currentElement.setAttribute("href", pageFolder + href);
