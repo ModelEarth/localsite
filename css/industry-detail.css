@@ -327,3 +327,45 @@
   color: #eee !important;
 }
 
+/* Dark mode for Environmental Impact section */
+.dark #industryImpactCharts {
+  color: #ddd !important;
+}
+
+.dark #industryImpactCharts div[style*="background:#f0f0f0"] {
+  background: #3d3d3d !important;
+}
+
+/* Dark mode for Supply Chain section */
+.dark #industrySupplyChain div[style*="background:#f8f9fa"] {
+  background: #3d3d3d !important;
+}
+
+.dark #industrySupplyChain p {
+  color: #bbb !important;
+}
+
+/* Dark mode for no products message */
+.dark #noProductsMessage {
+  background: #3d3d3d !important;
+}
+
+.dark #noProductsMessage p {
+  color: #ddd !important;
+}
+
+/* Prefers-color-scheme dark mode for impact sections */
+@media (prefers-color-scheme: dark) {
+  #industryImpactCharts {
+    color: #ddd !important;
+  }
+
+  #industrySupplyChain div[style*="background:#f8f9fa"] {
+    background: #3d3d3d !important;
+  }
+
+  #noProductsMessage {
+    background: #3d3d3d !important;
+  }
+}
+

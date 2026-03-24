@@ -76,9 +76,15 @@ async function showIndustryDetail(naicsCode, sectorData) {
     document.getElementById('industryEmployment').textContent = '--';
     document.getElementById('industryEstablishments').textContent = '--';
     document.getElementById('industryPayroll').textContent = '--';
-    
+
     // Load products
     await loadProductsForNaics(naicsCode);
+
+    // Load environmental impact data
+    loadImpactData(naicsCode);
+
+    // Load supply chain links
+    loadSupplyChain(naicsCode);
 }
 
 /**
@@ -264,41 +270,50 @@ function getKnownProductsForCategory(category) {
     // In production, this should use an index file or API
     const knownProducts = {
         'Ready_Mix': [
-            '000732f4bc634964bac4968d4510ed0e',
-            '000c1c639b18479cb2c55ea08693949d',
-            '000cee52ac524c0193af8f93e8c825bc',
-            '000e22ce2e134d4a95f6f83b245f1c79',
-            '000e693366964320940c92b79ef0c973',
-            '000f7fca7f4e42c7bd4da4991d7c2187',
-            '0010b05572a54c52b0bedd1074a95daf',
-            '0011aa2f95af4c76b85af7fff050bbc8'
+            'ec3000d4', 'ec3001ax', 'ec30032d', 'ec3005gp',
+            'ec300bpy', 'ec300c9d', 'ec300d8p', 'ec300db5'
         ],
         'Shotcrete': [
-            // Add from Shotcrete folder when available
+            'ec3003uy', 'ec3009ud', 'ec301qpu', 'ec302b3h',
+            'ec303zpq', 'ec30708m', 'ec307pap', 'ec308nmc'
         ],
-        'Flowable_Concrete_Fill': [
-            // Add from Flowable_Concrete_Fill folder when available
-        ],
-        'High_Strength_Cement-Based_Grout': [
-            // Add from grout folder when available
-        ],
+        'Flowable_Concrete_Fill': [],
+        'High_Strength_Cement-Based_Grout': [],
         'Acoustical_Ceilings': [
-            '61a3d3f6469b4e9baa9da7605650a63d'
+            'ec34dgk1', 'ec3k6c1d'
         ],
         'Cement': [
-            // Add from Cement folder when available
+            'ec33m9e1', 'ec34txjt', 'ec34zxa1', 'ec37nq12',
+            'ec37y2bk', 'ec38s207', 'ec3gbqug', 'ec3htr2a'
         ],
         'Steel': [
-            // Add from Steel folder when available
+            'ec3src6x'
+        ],
+        'Coil_Steel': [
+            'ec30d2qj', 'ec3a646t', 'ec3a6ngm', 'ec3ahpea',
+            'ec3fwne8', 'ec3hsdfw', 'ec3s17t8', 'ec3xar3h'
+        ],
+        'Structural_Steel': [
+            'ec31zw5h', 'ec3mtme4', 'ec3sxgng', 'ec3ue4ae'
         ],
         'Gypsum_Board': [
-            // Add from Gypsum_Board folder when available
+            'ec32ayws', 'ec32p7es', 'ec32pye8', 'ec33a3y1',
+            'ec33fp7p', 'ec35n87r', 'ec35x08r', 'ec35z4af'
         ],
         'Carpet': [
-            // Add from Carpet folder when available
+            'ec357t8x', 'ec375pgp', 'ec3954f2', 'ec3bayh4',
+            'ec3bb7fn', 'ec3caufd', 'ec3epmm0', 'ec3ghy2j'
         ],
         'Asphalt': [
-            // Add from Asphalt folder when available
+            'ec300sgk', 'ec3010gy', 'ec30d8db', 'ec30dd18',
+            'ec30efeq', 'ec30nqkj', 'ec30ny02', 'ec30rtpm'
+        ],
+        'Brick': [
+            'ec3dnrg4', 'ec3h3e48'
+        ],
+        'Concrete': [
+            'ec376z7h', 'ec37pwz4', 'ec387kjm', 'ec3kzesx',
+            'ec3rdre8', 'ec3t2tcs', 'ec3tmth5'
         ]
     };
     
@@ -563,6 +578,219 @@ function updateIndustryStats(stats) {
     }
 }
 
+/**
+ * Load USEEIO environmental impact data for a NAICS sector
+ * Fetches indicators and D matrix to show impact profile
+ * @param {string} naicsCode - The NAICS code
+ */
+async function loadImpactData(naicsCode) {
+    const container = document.getElementById('industryImpactCharts');
+    if (!container) return;
+
+    container.innerHTML = '<div style="text-align:center; padding:20px; color:#666;">Loading environmental impact data...</div>';
+
+    try {
+        // Determine model and endpoint based on current state
+        let hash = {};
+        if (typeof getHash === 'function') {
+            hash = getHash();
+        } else {
+            // Parse hash manually
+            const hashStr = window.location.hash.substring(1);
+            hashStr.split('&').forEach(pair => {
+                const [k, v] = pair.split('=');
+                if (k && v) hash[k] = v;
+            });
+        }
+
+        // Always use the national model (411 sectors) for detailed impact data.
+        // State models only have ~146 aggregated sectors (e.g., "327" not "327320"),
+        // so they won't match specific NAICS codes.
+        let endpoint = '/io/build/api';
+        let modelName = 'USEEIOv2.0.1-411';
+
+        const baseUrl = endpoint + '/' + modelName;
+
+        // Fetch sectors, indicators, D matrix, and q vector in parallel
+        const [sectors, indicators, matrixD, vectorQ] = await Promise.all([
+            fetch(baseUrl + '/sectors.json').then(r => r.ok ? r.json() : []),
+            fetch(baseUrl + '/indicators.json').then(r => r.ok ? r.json() : []),
+            fetch(baseUrl + '/matrix/D.json').then(r => r.ok ? r.json() : []),
+            fetch(baseUrl + '/matrix/q.json').then(r => r.ok ? r.json() : [])
+        ]);
+
+        if (!sectors.length || !indicators.length || !matrixD.length) {
+            container.innerHTML = '<p style="color:#666;">Environmental impact data not available for this model.</p>';
+            return;
+        }
+
+        // Find the sector matching this NAICS code
+        const sector = sectors.find(s => s.code === naicsCode || s.code.startsWith(naicsCode) || naicsCode.startsWith(s.code));
+
+        if (!sector) {
+            container.innerHTML = '<p style="color:#666;">No USEEIO sector found matching NAICS ' + naicsCode + '.</p>';
+            return;
+        }
+
+        // Update title/description if we found a better name from USEEIO
+        const titleEl = document.getElementById('industryDetailTitle');
+        if (titleEl && (titleEl.textContent === 'Industry ' + naicsCode || titleEl.textContent === '')) {
+            titleEl.textContent = sector.name;
+        }
+        const descEl = document.getElementById('industryDetailDescription');
+        if (descEl && sector.description) {
+            descEl.textContent = sector.description;
+        }
+
+        // Key environmental indicators to display
+        const keyIndicators = ['GHG', 'WATR', 'ENRG', 'JOBS', 'VADD', 'ACID', 'SMOG', 'LAND'];
+
+        // Build impact data
+        const impacts = [];
+        indicators.forEach(ind => {
+            if (!keyIndicators.includes(ind.code)) return;
+
+            const dValue = matrixD[ind.index] ? matrixD[ind.index][sector.index] : 0;
+            const qValue = vectorQ[sector.index] ? vectorQ[sector.index][0] : 0;
+            const actualValue = dValue * qValue;
+
+            impacts.push({
+                code: ind.code,
+                name: ind.simplename || ind.name,
+                unit: ind.simpleunit || ind.unit,
+                coefficient: dValue,
+                actualValue: actualValue,
+                index: ind.index
+            });
+        });
+
+        // Sort: JOBS and VADD first, then by actual value descending
+        impacts.sort((a, b) => {
+            const priority = { 'JOBS': 0, 'VADD': 1, 'GHG': 2 };
+            const pa = priority[a.code] !== undefined ? priority[a.code] : 10;
+            const pb = priority[b.code] !== undefined ? priority[b.code] : 10;
+            if (pa !== pb) return pa - pb;
+            return Math.abs(b.actualValue) - Math.abs(a.actualValue);
+        });
+
+        // Find max for bar scaling
+        const maxVal = Math.max(...impacts.map(i => Math.abs(i.coefficient)));
+
+        // Render impact bars
+        let html = '<div style="margin-bottom:10px; font-size:13px; color:#666;">Sector: <strong>' + escapeHtml(sector.name) + '</strong> (' + escapeHtml(sector.code) + ')</div>';
+        html += '<div style="display:grid; gap:12px;">';
+
+        impacts.forEach(impact => {
+            const barWidth = maxVal > 0 ? Math.max(2, (Math.abs(impact.coefficient) / maxVal) * 100) : 0;
+            const color = getIndicatorColor(impact.code);
+            const formattedValue = formatImpactValue(impact.actualValue, impact.code);
+            const coeffFormatted = impact.coefficient.toExponential(2);
+
+            html += '<div style="display:grid; grid-template-columns:140px 1fr auto; align-items:center; gap:10px;">';
+            html += '  <div style="font-size:13px; font-weight:500; color:#555;">' + escapeHtml(impact.name) + '</div>';
+            html += '  <div style="background:#f0f0f0; border-radius:4px; overflow:hidden; height:24px;">';
+            html += '    <div style="width:' + barWidth + '%; height:100%; background:' + color + '; border-radius:4px; transition:width 0.5s ease;"></div>';
+            html += '  </div>';
+            html += '  <div style="font-size:13px; font-weight:600; color:#333; min-width:100px; text-align:right;" title="Coefficient: ' + coeffFormatted + ' per $">' + formattedValue + '</div>';
+            html += '</div>';
+        });
+
+        html += '</div>';
+        html += '<p style="font-size:12px; color:#999; margin-top:15px;">Impact values from USEEIO v2 model. Hover values for per-dollar coefficients. Data: U.S. EPA</p>';
+
+        container.innerHTML = html;
+
+    } catch (error) {
+        console.error('[IndustryDetail] Error loading impact data:', error);
+        container.innerHTML = '<p style="color:#666;">Could not load environmental impact data. <a href="/io/charts/inflow-outflow/#naics=' + naicsCode + '" style="color:#007bff;">View in Inflow-Outflow Chart</a></p>';
+    }
+}
+
+/**
+ * Load supply chain information for a NAICS sector
+ * @param {string} naicsCode - The NAICS code
+ */
+function loadSupplyChain(naicsCode) {
+    const container = document.getElementById('industrySupplyChain');
+    if (!container) return;
+
+    // Parse current hash for state
+    let hash = {};
+    if (typeof getHash === 'function') {
+        hash = getHash();
+    } else {
+        const hashStr = window.location.hash.substring(1);
+        hashStr.split('&').forEach(pair => {
+            const [k, v] = pair.split('=');
+            if (k && v) hash[k] = v;
+        });
+    }
+
+    const stateParam = hash.state ? '&state=' + hash.state : '';
+    const inflowOutflowUrl = '/io/charts/inflow-outflow/#naics=' + naicsCode + stateParam;
+
+    let html = '<div style="padding:20px; background:#f8f9fa; border-radius:8px;">';
+    html += '  <p style="margin-bottom:15px; color:#555;">Explore which industries supply inputs to and receive outputs from this sector using the interactive Inflow-Outflow chart.</p>';
+    html += '  <a href="' + inflowOutflowUrl + '" target="_blank" style="display:inline-flex; align-items:center; gap:8px; padding:10px 20px; background:#007bff; color:white; border-radius:6px; text-decoration:none; font-weight:500; transition:background 0.2s;">';
+    html += '    View Supply Chain Analysis';
+    html += '    <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M10.5 1.5H7.5M10.5 1.5V4.5M10.5 1.5L6 6M5 1.5H3.5C2.67157 1.5 2 2.17157 2 3V8.5C2 9.32843 2.67157 10 3.5 10H9C9.82843 10 10.5 9.32843 10.5 9V7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    html += '  </a>';
+    html += '</div>';
+
+    container.innerHTML = html;
+}
+
+/**
+ * Get color for an environmental indicator
+ * @param {string} code - Indicator code
+ * @returns {string} CSS color
+ */
+function getIndicatorColor(code) {
+    const colors = {
+        'GHG': '#e74c3c',
+        'WATR': '#3498db',
+        'ENRG': '#f39c12',
+        'JOBS': '#27ae60',
+        'VADD': '#2ecc71',
+        'ACID': '#e67e22',
+        'SMOG': '#9b59b6',
+        'LAND': '#1abc9c'
+    };
+    return colors[code] || '#95a5a6';
+}
+
+/**
+ * Format impact value for display
+ * @param {number} value - Raw impact value
+ * @param {string} code - Indicator code
+ * @returns {string} Formatted string
+ */
+function formatImpactValue(value, code) {
+    if (!value || value === 0) return '--';
+
+    if (code === 'JOBS') {
+        return Math.round(value).toLocaleString() + ' jobs';
+    }
+    if (code === 'VADD') {
+        if (value >= 1e9) return '$' + (value / 1e9).toFixed(1) + 'B';
+        if (value >= 1e6) return '$' + (value / 1e6).toFixed(1) + 'M';
+        if (value >= 1e3) return '$' + (value / 1e3).toFixed(1) + 'K';
+        return '$' + Math.round(value).toLocaleString();
+    }
+    if (code === 'GHG') {
+        if (value >= 1e9) return (value / 1e9).toFixed(1) + 'B kg CO₂e';
+        if (value >= 1e6) return (value / 1e6).toFixed(1) + 'M kg CO₂e';
+        if (value >= 1e3) return (value / 1e3).toFixed(1) + 'K kg CO₂e';
+        return Math.round(value).toLocaleString() + ' kg CO₂e';
+    }
+    // Generic formatting
+    if (Math.abs(value) >= 1e9) return (value / 1e9).toFixed(1) + 'B';
+    if (Math.abs(value) >= 1e6) return (value / 1e6).toFixed(1) + 'M';
+    if (Math.abs(value) >= 1e3) return (value / 1e3).toFixed(1) + 'K';
+    if (Math.abs(value) >= 1) return value.toFixed(1);
+    return value.toExponential(2);
+}
+
 // Helper Functions
 
 /**
@@ -622,6 +850,8 @@ window.initIndustryDetail = initIndustryDetail;
 window.showIndustryDetail = showIndustryDetail;
 window.updateIndustryStats = updateIndustryStats;
 window.loadMoreProducts = loadMoreProducts;
+window.loadImpactData = loadImpactData;
+window.loadSupplyChain = loadSupplyChain;
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
@@ -629,4 +859,26 @@ if (document.readyState === 'loading') {
 } else {
     initIndustryDetail();
 }
+
+// Listen for hash changes to refresh industry detail when NAICS changes
+window.addEventListener('hashchange', function() {
+    const hashStr = window.location.hash.substring(1);
+    const params = {};
+    hashStr.split('&').forEach(pair => {
+        const [k, v] = pair.split('=');
+        if (k && v) params[k] = decodeURIComponent(v);
+    });
+
+    // Only act if we have a single NAICS code and a state
+    if (params.state && params.naics && params.naics.indexOf(',') < 0) {
+        const detailDiv = document.getElementById('industryDetail');
+        if (detailDiv && detailDiv.style.display !== 'none') {
+            // NAICS changed while detail view is visible - refresh
+            if (params.naics !== currentNaicsCode) {
+                console.log('[IndustryDetail] Hash changed, refreshing for NAICS:', params.naics);
+                showIndustryDetail(params.naics);
+            }
+        }
+    }
+});
 
