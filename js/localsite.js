@@ -1578,11 +1578,11 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
     }
     event.stopPropagation();
   });
-  $(document).on("click", "#earthZoom .leaflet-control-zoom-in", function(event) { // ZOOM IN
+  $(document).on("click", "#earthZoom .earth-control-zoom-in", function(event) { // ZOOM IN
     zoomEarth(200);
     event.stopPropagation();
   });
-  $(document).on("click", "#earthZoom .leaflet-control-zoom-out", function(event) { // ZOOM IN
+  $(document).on("click", "#earthZoom .earth-control-zoom-out", function(event) { // ZOOM IN
     zoomEarth(-200);
     event.stopPropagation();
   });
@@ -3182,6 +3182,38 @@ function parseYamlScalar(value) {
     return parsed;
 }
 
+function parseModelsitesFile(text) {
+    const options = [];
+    const lines = text.split(/\r?\n/);
+    let current = null;
+
+    for (let i = 0; i < lines.length; i += 1) {
+        const line = lines[i];
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith("#")) {
+            continue;
+        }
+        const header = trimmed.match(/^\[modelsite\s+"([^"]+)"\]$/);
+        if (header) {
+            if (current && current.value && current.label) {
+                options.push(current);
+            }
+            current = { value: header[1] };
+            continue;
+        }
+        const pair = trimmed.match(/^([A-Za-z0-9_-]+)\s*=\s*(.+)$/);
+        if (pair && current) {
+            const key = pair[1];
+            const val = pair[2].trim();
+            current[key] = /^(true|false)$/i.test(val) ? val.toLowerCase() === "true" : val;
+        }
+    }
+    if (current && current.value && current.label) {
+        options.push(current);
+    }
+    return options;
+}
+
 function parseModelsiteYaml(yamlText) {
     const options = [];
     const lines = yamlText.split(/\r?\n/);
@@ -3252,6 +3284,9 @@ function renderModelsiteOptions(selectElm, options) {
         if (config.style) {
             optionElm.style.cssText = String(config.style);
         }
+        if (config.class && String(config.class).split(/\s+/).includes("local")) {
+            optionElm.style.display = "none";
+        }
         if (config.selected === true || String(config.selected).toLowerCase() === "true") {
             optionElm.selected = true;
         }
@@ -3266,27 +3301,30 @@ async function loadModelsiteOptions() {
         : (location.protocol + "//" + location.host);
     const currentOriginRoot = location.protocol + "//" + location.host;
     const candidatePaths = Array.from(new Set([
-        webRoot + "/modelsite.yaml",
-        currentOriginRoot + "/modelsite.yaml",
-        "https://raw.githubusercontent.com/ModelEarth/webroot/main/modelsite.yaml"
+        webRoot + "/.modelsites",
+        currentOriginRoot + "/.modelsites",
+        webRoot + "/team/.modelsites",
+        "https://raw.githubusercontent.com/ModelEarth/team/main/.modelsites"
     ]));
 
     for (let i = 0; i < candidatePaths.length; i += 1) {
-        const modelsiteYamlPath = candidatePaths[i];
+        const modelsitePath = candidatePaths[i];
         try {
-            const response = await fetch(modelsiteYamlPath, { cache: "no-store" });
+            const response = await fetch(modelsitePath, { cache: "no-store" });
             if (!response.ok) {
                 continue;
             }
-            const yamlText = await response.text();
-            const parsedOptions = parseModelsiteYaml(yamlText);
+            const text = await response.text();
+            const parsedOptions = modelsitePath.endsWith(".modelsites")
+                ? parseModelsitesFile(text)
+                : parseModelsiteYaml(text);
             if (parsedOptions.length) {
                 return parsedOptions;
             }
-            consoleLog("No valid entries in " + modelsiteYamlPath + ". Using fallback modelsite options.");
+            consoleLog("No valid entries in " + modelsitePath + ". Using fallback modelsite options.");
         } catch (error) {}
     }
-    consoleLog("modelsite.yaml not found. Using fallback modelsite options.");
+    consoleLog(".modelsites not found. Using fallback modelsite options.");
     return fallbackOptions;
 }
 

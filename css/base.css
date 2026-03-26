@@ -4246,3 +4246,34 @@ body.sidebar-hidden #openNav {
     margin-right: 0;
   }
 }
+
+.earth-control {
+    cursor: auto;
+    clear: both;
+    position: relative;
+    z-index: 400;
+    pointer-events: visiblePainted;
+    pointer-events: auto;
+}
+.earth-bar a {
+    display: block;
+    width: 36px;
+    height: 36px;
+    font-size: 30px;
+    font-weight: bolder;
+    color: #fff;
+    background-color: #555;
+    border: 0px;
+    border-radius: 6px;
+    margin-left: 4px;
+    text-decoration: none;
+    text-align: center;
+    line-height: 32px;
+    vertical-align: center;
+}
+.earth-bar a:hover {
+  background-color: #333;
+}
+.earth-control-zoom-in {
+  margin-bottom: 6px;
+}
