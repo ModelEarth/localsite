@@ -19,6 +19,7 @@
   height: 12px;
   background-color: rgba(0,0,0,.5);
   pointer-events: auto;
+  z-index: 3;
 }
 #slider-pips-gap-hit-area {
   position: absolute;
@@ -64,6 +65,7 @@
   padding-top: 5px;
   height: 75px;
 }
+#slider-pips .noUi-base { cursor: pointer; }
 #slider-pips .noUi-handle {
   height: 17px;
   top: -3px;
