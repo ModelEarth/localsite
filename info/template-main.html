@@ -1205,8 +1205,8 @@ Displayed by hashChanged() in navigation.js
   }
   #mainbucket {
     position: absolute;
-    right: 80px;
-    bottom: 20px;
+    right: 100px;
+    bottom: 90px;
     padding: 20px;
     font-size: 18px;
     line-height: 28px;
@@ -1221,14 +1221,9 @@ Displayed by hashChanged() in navigation.js
   }
 </style>
 
-<div id="nullschoolHeader" style="position:relative; display:none">
+<div id="mainEarthDisplay" style="position:relative; display:none">
 
-  <div id="earthClose" style="position:absolute;top:13px;right:15px;color:#ccc;cursor:pointer"><i class="material-icons show-on-load" style="font-size:20px;">&#10005;</i></div>
-
-  <div id="earthZoom" class="earthZoom" style="display:none; position:absolute; z-index:100; right:20px; bottom:20px">
-    
-      <div class="earth-control-zoom earth-bar earth-control"><a class="earth-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in">+</a><a class="earth-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out">−</a></div>
-  </div>
+  <!-- #earthClose and .earth-zoom-controls created by createEarthZoomControls('mainEarthDisplay') in nouislider.min.js -->
   
 
   <div class="hideMobile">

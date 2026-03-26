@@ -1567,112 +1567,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       console.log('%cALERT: JQUERY NOT YET AVAILABLE! JQuery probably needs to be added to calling page.', 'color: red; background: yellow; font-size: 14px');    
     }
   }
-  
-
-  // NULLSCHOOL
-  $(document).on("click", "#earthClose", function(event) { // ZOOM IN
-    $("#nullschoolHeader").hide();
-    $("#hero_holder").show();
-    if (typeof goHash === "function") {
-      goHash({"geoview":""});
-    }
-    event.stopPropagation();
-  });
-  $(document).on("click", "#earthZoom .earth-control-zoom-in", function(event) { // ZOOM IN
-    zoomEarth(200);
-    event.stopPropagation();
-  });
-  $(document).on("click", "#earthZoom .earth-control-zoom-out", function(event) { // ZOOM IN
-    zoomEarth(-200);
-    event.stopPropagation();
-  });
-  function zoomEarth(zoomAmount) {
-    if (!localObject.earth) {
-      let earthSrc = document.getElementById("mainframe").src; // Only returns the initial cross-domain uri.
-      localObject.earth = getEarthObject(earthSrc.split('#')[1]);
-    }
-    // Add 100 to orthographic map zoom
-    let orthographic = localObject.earth.orthographic.split(",");
-    localObject.earth.orthographic = orthographic[0] + "," + orthographic[1] + "," + (+orthographic[2] + zoomAmount);
-    
-    /*
-    let theMonth = 6;
-    let theDay = 1;
-    let theHour = 0;
-
-    let monthStr = String(theMonth).padStart(2, '0');
-    let dayStr = String(theDay).padStart(2, '0');
-    let hourStr = String(theHour).padStart(2, '0');
-    $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " " + theHour + ":00 GMT (7 PM EST)");
-    */
-
-    let earthUrl = "https://earth.nullschool.net/#";
-    if (localObject.earth.date) {
-      earthUrl += localObject.earth.date + "/" + localObject.earth.time + "/";
-    } else {
-      earthUrl += "current/";
-    }
-    earthUrl += localObject.earth.mode + "/overlay=" + localObject.earth.overlay + "/orthographic=" + localObject.earth.orthographic;
-    loadIframe("mainframe", earthUrl);
-    //loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/" + hourStr + "00Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
-  }
-  function getEarthObject(url) {
-    console.log("map.js getEarthObject " + url);
-    if (url == undefined) {
-      console.log("BUG - getEarthObject url undefined");
-      return;
-    }
-    let urlPart = url.split('/');
-    let params = {};
-    if (urlPart.length > 6) { // URL contains date and time
-      params.date = urlPart[0] + "/" + urlPart[1] + "/" + urlPart[2];
-      params.time = urlPart[3];
-      params.mode = urlPart[4] + "/" + urlPart[5] + "/" + urlPart[6];
-    } else {
-      params.mode = urlPart[1] + "/" + urlPart[2] + "/" + urlPart[3];
-    }
-    for (let i = 4; i < urlPart.length; i++) {
-        if(!urlPart[i])
-            continue;
-        if (i==0 && urlPart[i].indexOf("=") == -1) {
-          params[""] = urlPart[i];  // Allows for initial # params without =.
-          continue;
-        }
-        let hashPair = urlPart[i].split('=');
-        params[decodeURIComponent(hashPair[0]).toLowerCase()] = decodeURIComponent(hashPair[1]);
-     }
-     return params;
-  }
-  function delay(time) {
-    return new Promise(resolve => setTimeout(resolve, time));
-  }
-  async function loopMap() {
-    await delay(200);
-    let theMonth = 6;
-    let theDay = 1;
-    let theHour = 0;
-    while (theDay <= 20) {
-      let monthStr = String(theMonth).padStart(2, '0');
-      let dayStr = String(theDay).padStart(2, '0');
-      let hourStr = String(theHour).padStart(2, '0');
-      $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " " + theHour + ":00 GMT (7 PM EST)");
-
-      loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/" + hourStr + "00Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
-      await delay(1000);
-
-      $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " 12:00 GMT (7 AM EST)");
-      loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/1200Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
-      await delay(1000);
-
-      theDay += 1;
-      //theHour += 2;   
-    }
-  }
-  $(document).ready(function () {
-    // Run animation - add a button for this
-    //loopMap();
-  });
-  // END NULLSCHOOL
 
 }, 10); // End block, could move to end of jQuery loadScript.
 
@@ -2334,28 +2228,39 @@ function revealFilters() {
   $('html,body').scrollTop(0);
 }
 function showGlobalMap(globalMap) { // Used by community/index.html, green-sah
-  $("#nullschoolHeader").show();
+  // If a page manages its own #mainframe outside #mainEarthDisplay, don't create a duplicate.
+  var existingFrame = document.getElementById('mainframe');
+  if (existingFrame && !$('#mainEarthDisplay').find('#mainframe').length) {
+    return;
+  }
 
-  if($("#globalMapHolder").length <= 1) {
-    //$("#globalMapHolder").html('<iframe src="https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
-    
+  $("#mainEarthDisplay").show();
+
+  if (!existingFrame) {
     // Two steps prevent loading error
     $("#globalMapHolder").html('<iframe src="" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
-    
-    loadIframe("mainframe",globalMap);
-
-    // Chem Currents NO2 - Since Wind makes NO2 clouds hard to see
-    //loadIframe("mainframe","https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
-
   }
+
+  loadIframe("mainframe",globalMap);
+
+  includeCSS3(theroot + 'css/nouislider.min.css', '');
+  if (typeof setupGlobalMapSlider === 'function') {
+    setupGlobalMapSlider(globalMap);
+  } else {
+    loadScript(theroot + 'js/nouislider.min.js', function() {
+      setupGlobalMapSlider(globalMap);
+    });
+  }
+  // Chem Currents NO2 - Since Wind makes NO2 clouds hard to see
+  //loadIframe("mainframe","https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
 }
 function loadIframe(iframeName, url) {  
   var $iframe = $('#' + iframeName);
   if ($iframe.length) {
       //alert("loadIframe" + url)
       $iframe.attr('src',url);
-      $("#nullschoolHeader #mainbucket").show();
-      $("#nullschoolHeader #earthZoom").show();
+      $("#mainEarthDisplay #mainbucket").show();
+      $(".earth-zoom-controls").show();
       return false;
   }
   return true;
@@ -3669,7 +3574,7 @@ function setGlobecenter(globecenter, promptForCurrentPosition) {
   //alert("Lat: " + $("#globeLongitude").val());
 
   // Limit to when nullschool already visible.
-  if ($('#nullschoolHeader').is(':visible')) {
+  if ($('#mainEarthDisplay').is(':visible')) {
     if ($("#globeLatitude").val() && $("#globeLongitude").val()) {
         // Add latlon validation
         let globeZoom = "800"; // "1037";

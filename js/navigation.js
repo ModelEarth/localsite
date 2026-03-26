@@ -1101,14 +1101,14 @@ function hashChanged() {
         //$("#filterLocations").show();$("#locationFilterHolder").show();$("#imagineBar").show();
         //$("#geomap").show(); // To trigger map filter display below.
         if (hash.geoview == "earth") {
-            $("#nullschoolHeader").show();
+            $("#mainEarthDisplay").show();
         } else if (!hash.geoview && priorHash.geoview == "earth") {
-            $("#nullschoolHeader").hide();
+            $("#mainEarthDisplay").hide();
         } else if (hash.geoview && hash.geoview != "earth") {
-            $("#nullschoolHeader").hide();
+            $("#mainEarthDisplay").hide();
         } else if (!hash.geoview && priorHash.geoview) {
             if ($('#globalMapHolder #mainframe').attr('src')) { // Checking so we don't show a close-X when there is no content in the iframe.
-                $("#nullschoolHeader").show();
+                $("#mainEarthDisplay").show();
             }
         }
         waitForElm('#state_select').then((elm) => {
@@ -3452,7 +3452,7 @@ catArray = [];
         });
     }
     function applyGeoviewSelection(value) {
-        if (value == "earth" && $("#nullschoolHeader").is(":visible")) {
+        if (value == "earth" && $("#mainEarthDisplay").is(":visible")) {
             goHash({"geoview":""});
             return;
         }
@@ -8636,8 +8636,8 @@ $(document).on("change", ".settingsPanel input", function(event) {
     autoCloseRightNavOnNarrow();
 });
 function showEarth(show) {
-    if ($("#nullschoolHeader").is(':visible') && show != "show") {
-        $("#nullschoolHeader").hide();
+    if ($("#mainEarthDisplay").is(':visible') && show != "show") {
+        $("#mainEarthDisplay").hide();
         //$("#globalMapHolder").show();
         $("#hero_holder").show();
         closeSideTabs();
