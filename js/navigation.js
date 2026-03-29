@@ -9830,7 +9830,7 @@ function getCurrentEarthWhenUtc() {
 
 function buildEarthLocationHash(lat, lon) {
   var latLon = lon + ',' + lat;
-  return getCurrentEarthWhenUtc() + '/wind/surface/level/grid=on/orthographic=' + latLon + ',3000/loc=' + latLon;
+  return getCurrentEarthWhenUtc() + '/wind/surface/level/orthographic=' + latLon + ',3000/loc=' + latLon;
 }
 
 function buildCurrentEarthHash(defaultOrthographic) {
