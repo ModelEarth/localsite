@@ -21,6 +21,53 @@
   pointer-events: auto;
   z-index: 3;
 }
+#slider-date-label {
+  position: absolute;
+  left: 10px;
+  bottom: 14px;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+  pointer-events: auto;
+  cursor: pointer;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0,0,0,.7);
+  z-index: 4;
+}
+#slider-date-label:hover { text-decoration: underline; }
+#earth-date-picker {
+  position: absolute;
+  left: 10px;
+  bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10,16,22,.88);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 6px;
+  padding: 6px 10px;
+  z-index: 10;
+  pointer-events: auto;
+  white-space: nowrap;
+}
+#earth-date-picker input[type="date"],
+#earth-date-picker select {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  height: 28px;
+  box-sizing: border-box;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0 6px;
+}
+#earth-date-picker input[type="date"] { height: 32px; }
+#earth-date-picker input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+#earth-date-picker select option { background: #1a2530; color: #fff; }
 #slider-pips-gap-hit-area {
   position: absolute;
   right: 10px;
@@ -113,13 +160,13 @@ body.dark:has(#slider-pips-wrap) #upIconTray #headerIcons .playPauseButton:focus
 /* Earth close button */
 a.earth-close-btn {
   display: block;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background-color: rgba(80, 80, 80, 0.7);
   color: #888;
   text-align: center;
-  line-height: 28px;
+  line-height: 32px;
   font-size: 16px;
   text-decoration: none;
   margin-bottom: 8px;

@@ -429,6 +429,38 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
 function getHash() {
   return (mix(getHashOnly(),hiddenhash)); // Includes hiddenhash
 }
+function ensureHideWhenGeoviewStyle() {
+  if (document.getElementById('hide-when-geoview-style')) return;
+  var style = document.createElement('style');
+  style.id = 'hide-when-geoview-style';
+  style.textContent = '.hash-has-geoview .hideWhenGeoview{display:none !important;}';
+  document.head.appendChild(style);
+}
+function isEarthHashValue(token) {
+  return typeof token === 'string' && token.indexOf('/wind/surface/') >= 0 && token.indexOf('orthographic=') >= 0;
+}
+function syncDerivedHiddenhashFromHashOnly() {
+  let hashOnly = getHashOnly();
+  if (!hashOnly.geoview) {
+    if (isEarthHashValue(hashOnly.earth) || isEarthHashValue(hashOnly[""])) {
+      hiddenhash.geoview = 'earth';
+    } else if (hiddenhash.geoview == 'earth') {
+      delete hiddenhash.geoview;
+    }
+  }
+}
+function syncHideWhenGeoviewFromHash() {
+  let hash = getHash();
+  let hasGeoview = !!hash.geoview;
+  ensureHideWhenGeoviewStyle();
+  document.documentElement.classList.toggle('hash-has-geoview', hasGeoview);
+  if (document.body) {
+    document.body.classList.toggle('hash-has-geoview', hasGeoview);
+  }
+  document.querySelectorAll('.hideWhenGeoview').forEach(function(el) {
+    el.style.display = hasGeoview ? 'none' : '';
+  });
+}
 function getHashOnly() {
   return (function (pairs) {
     if (pairs == "") return {};
@@ -632,6 +664,7 @@ var isPopstateNavigation = false; // Flag to track if we're in a back/forward na
 // Triggers custom hashChangeEvent in multiple widgets.
 // Exception, React widgets use a different process.
 var triggerHashChangeEvent = function () {
+    syncDerivedHiddenhashFromHashOnly();
     // priorHash includes remaining values in hiddenhash (which originate from param values in page)
     priorHash = structuredClone(nextPriorHash || {});
     //alert("hiddenhash.geoview " + hiddenhash.geoview);
@@ -643,6 +676,16 @@ var triggerHashChangeEvent = function () {
     // Dispatch the event
     document.dispatchEvent(event);
 };
+document.addEventListener('hashChangeEvent', syncHideWhenGeoviewFromHash, false);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    syncDerivedHiddenhashFromHashOnly();
+    syncHideWhenGeoviewFromHash();
+  });
+} else {
+  syncDerivedHiddenhashFromHashOnly();
+  syncHideWhenGeoviewFromHash();
+}
 
 // COMMON
 function loadScript(url, callback)
@@ -1351,13 +1394,10 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       });
       $(document).on("click", ".showSearch", function(event) {
         showSearchFilter();
-        // Auto-close right navigation on narrow screens
-        if (window.innerWidth <= 1000) {
-            if (typeof goHash === 'function') {
-                goHash({'sidetab':''});
-            } else {
-                updateHash({"sidetab":""});
-            }
+        if (typeof goHash === 'function') {
+            goHash({'sidetab':''});
+        } else {
+            updateHash({"sidetab":""});
         }
       });
       
@@ -2162,6 +2202,12 @@ function showSearchFilter() {
     });
     $('html,body').scrollTop(0);
     loadFilters = true;
+    // template-main.html may still be loading; once its container arrives, load filter.html into it
+    waitForElm('#filterFieldsHolder').then(function() {
+      if (!document.getElementById('filterFieldContent')) {
+        $("#filterFieldsHolder").load(local_app.web_root() + "/localsite/map/filter.html");
+      }
+    });
   } else {
     let filterTop = $("#filterFieldsHolder").offset().top - window.pageYOffset;
     consoleLog("showSearchFilter #filterFieldsHolder offset top: " + filterTop);
@@ -2194,7 +2240,7 @@ function showSearchFilter() {
     //$('#datascape').prepend(expandIcon);
 
     if (loadFilters) {
-      waitForElm('#datascape #filterFieldContent').then((elm) => {
+      waitForElm('#filterFieldContent').then((elm) => {
         revealFilters();
       });
     }
@@ -2244,11 +2290,13 @@ function showGlobalMap(globalMap) { // Used by community/index.html, green-sah
   loadIframe("mainframe",globalMap);
 
   includeCSS3(theroot + 'css/nouislider.min.css', '');
-  if (typeof setupGlobalMapSlider === 'function') {
-    setupGlobalMapSlider(globalMap);
+  if (typeof window.setupGlobalMapSlider === 'function') {
+    window.setupGlobalMapSlider(globalMap);
   } else {
     loadScript(theroot + 'js/nouislider.min.js', function() {
-      setupGlobalMapSlider(globalMap);
+      waitForVariable('setupGlobalMapSlider', function() {
+        window.setupGlobalMapSlider(globalMap);
+      });
     });
   }
   // Chem Currents NO2 - Since Wind makes NO2 clouds hard to see

@@ -7,6 +7,7 @@ Used in localsite, modelearth, io, neighborhood, trees
     --side-nav-width: 67px;
     --bg-primary: #F9FAFB;
     --bg-secondary: #FFFFFF;
+    --bg-tertiary: rgba(0, 0, 0, 0.07);
     --text-primary: #1A1A1A;
     --text-secondary: #6B7280;
     --text-tertiary: #1A1A1A;
@@ -33,6 +34,7 @@ Used in localsite, modelearth, io, neighborhood, trees
     --bg-footer-swatch: #dae8eb;
 }
 .dark {
+    --bg-tertiary: rgba(255, 255, 255, 0.1);
     --bg-secondary: #555;
     --color-tertiaryX: #555;
     --text-secondary: #6B7280; /* too light for icons on team/projects */
@@ -3230,7 +3232,7 @@ body.sidebar-hovered {
 }
 
 .nav-link:hover {
-    background: var(--bg-tertiary/80);
+    background: var(--bg-tertiary);
     border-color: var(--border-medium);
     color: var(--text-primary);
     box-shadow: var(--shadow-sm);

@@ -200,7 +200,7 @@ function hashChanged() {
         testAlert("hashChanged earth: waiting for #globalMapHolder");
         waitForElm('#globalMapHolder').then((elm) => {
             testAlert("hashChanged earth: showGlobalMap");
-            showGlobalMap(`https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=${latLonZoom}`);
+            showGlobalMap(getEarthMapUrlFromHash(latLonZoom));
         });
         $("#geoPicker").hide();
         $(".stateFilters").hide();
@@ -1131,7 +1131,7 @@ function hashChanged() {
             if (localStorage.latitude && localStorage.longitude) {
                 latLonZoom = localStorage.longitude + "," + localStorage.latitude + ",1037";
             }
-            showGlobalMap(`https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=${latLonZoom}`);
+            showGlobalMap(getEarthMapUrlFromHash(latLonZoom));
         } else if (hash.geoview && isValidGeoview) {
             loadGeomap = true;
             // if ((priorHash.sidetab == "locale" && hash.sidetab != "locale") || (priorHash.locpop  && !hash.locpop)) {
@@ -8508,9 +8508,8 @@ $(document).on("change", ".sitebasemap", function(event) {
 
 waitForElm('#mainHero').then((elm) => {
     waitForElm('#mapFilters').then((elm) => {
-        $("#datascape").prependTo($("#mainHero"));
-        $("#filterFieldsHolder").show();
-        $("#filterFieldsHolder").addClass("dark");
+        //$("#datascape").prependTo($("#mainHero"));
+        //$("#filterFieldsHolder").show();
     });
 });
 $(document).on("change", "#mainhero", function(event) { // Public or Dev
@@ -8621,8 +8620,13 @@ function autoCloseRightNavOnNarrow() {
 }
 
 $(document).on("click", ".showEarth", function(event) {
+    let latLonZoom = "-72.24,46.06,511";
+    if (localStorage.latitude && localStorage.longitude) {
+        latLonZoom = localStorage.longitude + "," + localStorage.latitude + ",511";
+    }
     showEarth("show");
     autoCloseRightNavOnNarrow();
+    updateHash({"sidetab":"","geoview":"earth","earth":getEarthHashValue((typeof getHash === 'function') ? getHash() : {}, latLonZoom)});
     event.stopPropagation();
 });
 
@@ -8656,7 +8660,7 @@ function showEarth(show) {
         if (localStorage.latitude && localStorage.longitude) {
             latLonZoom = localStorage.longitude + "," + localStorage.latitude + ",511";
         }
-        showGlobalMap(`https://earth.nullschool.net/#current/wind/surface/level/overlay=temp/orthographic=${latLonZoom}`);
+        showGlobalMap(getEarthMapUrlFromHash(latLonZoom));
     }
 }
 $(document).click(function(event) { // Hide open menus
@@ -9807,6 +9811,242 @@ function hideScopeOptions(hideScopes) {
 if (!onlineApp) {
     console.log("You are currently in offline mode.")
 }
+
+// ---- Shared Autocomplete (location search + #keywordsTB) ----
+var globalAddress = "";
+
+function isValidLatLon(lat, lon) {
+  return Number.isFinite(lat) && Number.isFinite(lon);
+}
+
+function getCurrentEarthWhenUtc() {
+  var now = new Date();
+  var year = now.getUTCFullYear();
+  var month = String(now.getUTCMonth() + 1).padStart(2, '0');
+  var day = String(now.getUTCDate()).padStart(2, '0');
+  var hour = String(now.getUTCHours()).padStart(2, '0');
+  return year + '/' + month + '/' + day + '/' + hour + '00Z';
+}
+
+function buildEarthLocationHash(lat, lon) {
+  var latLon = lon + ',' + lat;
+  return getCurrentEarthWhenUtc() + '/wind/surface/level/grid=on/orthographic=' + latLon + ',3000/loc=' + latLon;
+}
+
+function buildCurrentEarthHash(defaultOrthographic) {
+  return 'current/wind/surface/level/overlay=temp/orthographic=' + defaultOrthographic;
+}
+
+function getEarthHashValue(hash, defaultOrthographic) {
+  if (hash && hash.earth) {
+    return hash.earth;
+  }
+  if (hash && hash[""]) {
+    return hash[""];
+  }
+  return buildCurrentEarthHash(defaultOrthographic);
+}
+
+function updateEarthHashForLocation(lat, lon) {
+  if (!isValidLatLon(lat, lon)) return;
+  if (typeof goHash !== 'function') {
+    alert('goHash() is not available from localsite/js/localsite.js');
+    return;
+  }
+  goHash({ 'earth': buildEarthLocationHash(lat, lon), 'geoview': 'earth' });
+}
+
+function getEarthMapUrlFromHash(defaultOrthographic) {
+  var hash = (typeof getHash === 'function') ? getHash() : {};
+  return 'https://earth.nullschool.net/#' + getEarthHashValue(hash, defaultOrthographic);
+}
+
+function lookupSelectedLocationLatLon(item) {
+  var searchQuery = [item.address.city, item.address.state, item.address.postalCode].filter(Boolean).join(', ');
+  if (!searchQuery) return Promise.resolve(null);
+  return fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(searchQuery) + '&format=json&limit=1')
+    .then(function(r) { return r.json(); })
+    .then(function(geo) {
+      if (!geo.length) return null;
+      var lat = parseFloat(geo[0].lat);
+      var lon = parseFloat(geo[0].lon);
+      if (!isValidLatLon(lat, lon)) return null;
+      return { lat: lat, lon: lon };
+    });
+}
+
+function updateGlobalAddress() {
+  var inputField = document.getElementById("autocomplete-input");
+  if (inputField) globalAddress = inputField.value;
+  console.log("Global Address Updated: " + globalAddress);
+}
+
+function copyMcpToClipboard() {
+  var button = document.getElementById('copyMcpButton');
+  if (!button) return;
+  var mcpData = button.getAttribute('data-mcp');
+  navigator.clipboard.writeText(mcpData).then(function() {
+    var orig = button.textContent;
+    button.textContent = 'Copied!';
+    setTimeout(function() { button.textContent = orig; }, 2000);
+  }).catch(function(err) { console.error('Failed to copy:', err); });
+}
+
+// Generic autocomplete UI — fetchFn(value, resultsEl, inputEl) populates resultsEl
+function initAutocomplete(inputEl, fetchFn) {
+  if (!inputEl) return null;
+  var container = (typeof inputEl.closest === 'function') ? inputEl.closest('.autocomplete-container') : null;
+  var keywordField = (!container && typeof inputEl.closest === 'function') ? inputEl.closest('.keywordField') : null;
+  var ownerId = inputEl.id || inputEl.name || 'autocomplete';
+  var resultsHost = null;
+  if (keywordField) {
+    resultsHost = keywordField.querySelector('.autocomplete-results-overlay-host[data-autocomplete-owner="' + ownerId + '"]');
+    if (!resultsHost) {
+      resultsHost = document.createElement('div');
+      resultsHost.className = 'autocomplete-results-overlay-host';
+      resultsHost.setAttribute('data-autocomplete-owner', ownerId);
+      var searchField = keywordField.querySelector('.searchField');
+      if (searchField && searchField.parentNode === keywordField) {
+        keywordField.insertBefore(resultsHost, searchField.nextSibling);
+      } else {
+        keywordField.appendChild(resultsHost);
+      }
+    }
+  } else {
+    resultsHost = container || inputEl.parentNode;
+  }
+  var resultsEl = resultsHost ? resultsHost.querySelector('.autocomplete-results[data-autocomplete-owner="' + ownerId + '"]') : null;
+  if (!resultsEl) {
+    resultsEl = document.createElement('ul');
+    resultsEl.className = 'autocomplete-results';
+    resultsEl.setAttribute('data-autocomplete-owner', ownerId);
+    if (!container && !keywordField && resultsHost && resultsHost.classList) {
+      resultsHost.classList.add('autocomplete-results-host');
+    }
+    resultsHost.appendChild(resultsEl);
+  }
+  if (!container && !keywordField && resultsHost && resultsHost.classList) {
+    resultsHost.classList.add('autocomplete-results-host');
+  }
+  if (container) {
+    container.addEventListener('click', function() { inputEl.setAttribute('placeholder', ''); });
+  }
+  inputEl.addEventListener('input', function() {
+    fetchFn(inputEl.value, resultsEl, inputEl);
+  });
+  document.addEventListener('click', function(e) {
+    if (!inputEl.contains(e.target) && !resultsEl.contains(e.target)) {
+      resultsEl.innerHTML = '';
+    }
+  });
+  return resultsEl;
+}
+
+// Location autocomplete for #autocomplete-input
+// Shared location fetch — populates resultsEl; calls onSelect(item) when a result is clicked
+function fetchLocationItems(value, resultsEl, inputEl, onSelect) {
+  if (!value) { resultsEl.innerHTML = ''; return; }
+  fetch('https://autocomplete.search.hereapi.com/v1/autocomplete?apiKey=fqe1Boy0RrwDPIXwzutkFL5Ljo0QJJT6Xb-KoehiUe0&q=' + encodeURIComponent(value) + '&maxresults=8')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      resultsEl.innerHTML = '';
+      (data.items || []).forEach(function(raw) {
+        var item = { id: raw.id, title: raw.title, address: {
+          label: raw.address.label, city: raw.address.city,
+          countryName: raw.address.countryName, postalCode: raw.address.postalCode,
+          state: raw.address.state, stateCode: raw.address.stateCode
+        }};
+        var li = document.createElement('li');
+        li.textContent = item.title;
+        li.className = 'autocomplete-item';
+        li.addEventListener('click', function() {
+          inputEl.value = item.title;
+          resultsEl.innerHTML = '';
+          onSelect(item);
+        });
+        resultsEl.appendChild(li);
+      });
+    })
+    .catch(function(err) { console.error('Location fetch error:', err); });
+}
+
+// Location autocomplete with MCP output for #autocomplete-input
+waitForElm('#autocomplete-input').then(function() {
+  var input = document.getElementById('autocomplete-input');
+  var requestsDiv = document.getElementById('requests');
+  var loading = document.getElementById('loading');
+  var addressLabel = '', country = '';
+
+  initAutocomplete(input, function(value, resultsEl, inputEl) {
+    if (requestsDiv) requestsDiv.innerHTML = '';
+    if (loading) loading.style.display = value ? 'block' : 'none';
+    fetchLocationItems(value, resultsEl, inputEl, function(item) {
+      if (loading) loading.style.display = 'none';
+      country = item.address.countryName || '';
+      addressLabel = '';
+      lookupSelectedLocationLatLon(item)
+        .then(function(coords) {
+          var details = '';
+          if (item.address.city)        details += '<b>City:</b> '        + item.address.city        + '<br>';
+          if (item.address.countryName) details += '<b>Country:</b> '     + item.address.countryName + '<br>';
+          if (item.address.postalCode)  details += '<b>Postal Code:</b> ' + item.address.postalCode  + '<br>';
+          if (item.address.state)       details += '<b>State:</b> '       + item.address.state       + '<br>';
+          if (item.address.label && item.address.label !== item.address.countryName) {
+            details += '<b>Formatted Address:</b> ' + item.address.label + '<br>';
+            addressLabel = item.address.label;
+          }
+          var lat = null, lon = null;
+          if (coords) {
+            lat = coords.lat;
+            lon = coords.lon;
+            details += '<b>Latitude:</b> ' + lat + '<br><b>Longitude:</b> ' + lon + '<br>';
+            updateEarthHashForLocation(lat, lon);
+          }
+          var mcpData = { context_type: 'location', location: {
+            name: item.title, formatted_address: addressLabel || item.address.label,
+            components: { city: item.address.city || null, state: item.address.state || null,
+              state_code: item.address.stateCode || null, postal_code: item.address.postalCode || null,
+              country: item.address.countryName || null },
+            coordinates: { latitude: lat, longitude: lon }
+          }, timestamp: new Date().toISOString(), source: 'hereapi.com + openstreetmap.org' };
+          var mcpJson = JSON.stringify(mcpData, null, 2);
+          details += '<br><b>Model Context Protocol (MCP):</b><br>';
+          details += '<pre style="background-color:#f5f5f5;padding:10px;border-radius:4px;overflow-x:auto;font-size:12px;">' + mcpJson + '</pre>';
+          var parts = [item.address.countryName, item.address.postalCode, item.address.city || item.address.state].filter(Boolean);
+          var aiPrompt = encodeURIComponent(parts.join(', ') || item.title);
+          details += '<br><b>Send to AI:</b><br><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">';
+          details += '<a href="https://claude.ai/new?q=' + aiPrompt + '" target="_blank" style="padding:6px 12px;background-color:#6366f1;color:white;text-decoration:none;border-radius:4px;font-size:14px;">Claude</a>';
+          details += '<a href="https://chatgpt.com/?q=' + aiPrompt + '" target="_blank" style="padding:6px 12px;background-color:#10a37f;color:white;text-decoration:none;border-radius:4px;font-size:14px;">ChatGPT</a>';
+          details += '<button onclick="copyMcpToClipboard()" data-mcp=\'' + mcpJson.replace(/'/g, '&apos;') + '\' id="copyMcpButton" style="padding:6px 12px;background-color:#64748b;color:white;border:none;border-radius:4px;font-size:14px;cursor:pointer;">Copy MCP</button>';
+          details += '</div>';
+          if (requestsDiv) requestsDiv.innerHTML = details;
+        });
+    });
+  });
+
+  var button = document.getElementById('autocomplete-button');
+  if (button) {
+    button.addEventListener('click', function() {
+      window.location.href = 'https://chatgpt.com/?prompt=' + encodeURIComponent(addressLabel || country);
+    });
+  }
+});
+
+// Keyword autocomplete for #keywordsTB — shares fetchLocationItems
+waitForElm('#keywordsTB').then(function() {
+  var input = document.getElementById('keywordsTB');
+  initAutocomplete(input, function(value, resultsEl, inputEl) {
+    fetchLocationItems(value, resultsEl, inputEl, function(item) {
+      inputEl.value = item.title;
+      lookupSelectedLocationLatLon(item)
+        .then(function(coords) {
+          if (!coords) return;
+          updateEarthHashForLocation(coords.lat, coords.lon);
+        })
+        .catch(function(err) { console.error('Location coordinate fetch error:', err); });
+    });
+  });
+});
 
 // Navigation toggle handler for both openNav and showSideFromHeader
 function handleNavigationToggle() {
