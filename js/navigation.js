@@ -3408,46 +3408,34 @@ catArray = [];
             if (!$toggleIcon.length) {
                 return;
             }
-            $toggleIcon.text(iconName);
-            if (iconName === "arrow_drop_down_circle") {
-                // arrow_drop_down_circle has its own circle, hide the background circle
-                $holder.find(".material-icons:first").hide();
-                $holder.removeClass("filter-toggle-forward");
-            } else {
-                // arrow_right needs the background circle
-                $holder.find(".material-icons:first").show();
-                $holder.addClass("filter-toggle-forward");
-            }
+            $toggleIcon.attr("data-icon", iconName || "custom-dots");
         });
     }
     function refreshFilterToggleIcon() {
         if (!$("#filterFieldToggleHolder, #filterFieldToggleInHeader").length) {
             return;
         }
-        if ($("#filterFieldMenu").is(":visible")) {
-            setFilterToggleIcon("arrow_drop_down_circle");
-            return;
-        }
-        const activeSection = getActiveFilterSection();
-        if (activeSection) {
-            setFilterToggleIcon("arrow_drop_down_circle");
-        } else {
-            setFilterToggleIcon("arrow_right");
-        }
+        setFilterToggleIcon("more_horiz");
     }
     function updateFilterMenuState() {
         const hash = getHash();
         const activeSection = getActiveFilterSection();
         const hasGeoview = !!activeSection;
+        const hasEarthView = hash.geoview === "earth";
+        const hasVisibleEarthDisplay = $(".earthDisplay").filter(":visible").length > 0;
+        const hasEarthDisplay = $(".earthDisplay").length > 0;
         const hasAppview = !!hash.appview;
-        $("#filterFieldMenuClose").toggle(hasGeoview);
+        $("#filterFieldMenuCloseEarth")
+            .toggle(hasEarthView || hasEarthDisplay)
+            .text(hasVisibleEarthDisplay ? "Close Earth View" : "Open Earth View");
+        $("#filterFieldMenuClose").toggle(hasGeoview && !hasEarthView);
         $("#filterFieldMenuCloseApps").toggle(hasAppview);
         // The first divider sits below "Close Map View" and should only show when a close action is visible.
-        $("#filterFieldMenu .menuToggleDivider").first().toggle(hasGeoview || hasAppview);
+        $("#filterFieldMenu .menuToggleDivider").first().toggle(hasGeoview || hasAppview || hasEarthDisplay);
         $("#filterFieldMenu .menuToggleItem[data-action='county']").toggle(!!hash.state);
         $("#filterFieldMenu .menuToggleItem[data-action]").each(function() {
             const action = $(this).data("action");
-            const isActive = (action === activeSection) || (action === "topics" && hasAppview);
+            const isActive = (action === "earth" && hasVisibleEarthDisplay) || (action === activeSection) || (action === "topics" && hasAppview);
             $(this).toggleClass("is-active", isActive);
         });
     }
@@ -3652,6 +3640,34 @@ catArray = [];
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
         $("#filterFieldMenu").hide();
         goHash({"geoview":""});
+        refreshFilterToggleIcon();
+        requestAnimationFrame(() => {
+            window.scrollTo(0, scrollTop);
+        });
+        event.stopPropagation();
+    });
+    $(document).on("click", "#filterFieldMenuCloseEarth", function(event) {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        const hasVisibleEarthDisplay = $(".earthDisplay").filter(":visible").length > 0;
+        $("#filterFieldMenu").hide();
+        $("#filterFieldMenu .menuToggleItem[data-action='earth']").removeClass("is-active");
+        if (hasVisibleEarthDisplay) {
+            if (typeof window.closeEarthMapView === "function") {
+                window.closeEarthMapView();
+            } else {
+                if (typeof window.stopEarthSliderPlayback === "function") {
+                    window.stopEarthSliderPlayback();
+                }
+                goHash({"geoview":""});
+            }
+        } else {
+            if (typeof window.openEarthMapView === "function") {
+                window.openEarthMapView();
+            } else if (typeof showEarth === "function") {
+                showEarth("show");
+            }
+        }
+        updateFilterMenuState();
         refreshFilterToggleIcon();
         requestAnimationFrame(() => {
             window.scrollTo(0, scrollTop);
@@ -9830,7 +9846,7 @@ function getCurrentEarthWhenUtc() {
 
 function buildEarthLocationHash(lat, lon) {
   var latLon = lon + ',' + lat;
-  return getCurrentEarthWhenUtc() + '/wind/surface/level/orthographic=' + latLon + ',3000/loc=' + latLon;
+  return getCurrentEarthWhenUtc() + '/wind/surface/level/orthographic=' + latLon + ',1000/loc=' + latLon;
 }
 
 function buildCurrentEarthHash(defaultOrthographic) {
@@ -9853,7 +9869,23 @@ function updateEarthHashForLocation(lat, lon) {
     alert('goHash() is not available from localsite/js/localsite.js');
     return;
   }
-  goHash({ 'earth': buildEarthLocationHash(lat, lon), 'geoview': 'earth' });
+  var latLon = lon + ',' + lat;
+  var newHash;
+  if (typeof getCurrentEarthHashValue === 'function' &&
+      typeof buildEarthHashFromWhen === 'function' &&
+      typeof updateEarthHashOrthographic === 'function' &&
+      typeof getCurrentEarthWhenUtc === 'function') {
+    var currentHash = getCurrentEarthHashValue('');
+    newHash = buildEarthHashFromWhen(getCurrentEarthWhenUtc(), currentHash, '');
+    newHash = updateEarthHashOrthographic(newHash, latLon + ',1000', '');
+    newHash = newHash.replace(/loc=[^\/\s&#]+/, 'loc=' + latLon);
+    if (newHash.indexOf('loc=') < 0) newHash += '/loc=' + latLon;
+  } else {
+    newHash = buildEarthLocationHash(lat, lon);
+  }
+  if (typeof loadEarthHashIntoIframe === 'function') loadEarthHashIntoIframe(newHash);
+  if (typeof updateHash === 'function') updateHash({ 'earth': newHash, 'geoview': 'earth' });
+  return newHash;
 }
 
 function getEarthMapUrlFromHash(defaultOrthographic) {
@@ -9862,17 +9894,36 @@ function getEarthMapUrlFromHash(defaultOrthographic) {
 }
 
 function lookupSelectedLocationLatLon(item) {
+  if (item.position) return Promise.resolve(item.position);
+  var isCountry = item.resultType === 'administrativeArea' && !item.address.city && !item.address.state;
+  if (!isCountry) isCountry = !item.address.city && !item.address.state && !!item.address.countryName;
+
+  function parseLatLon(geo) {
+    if (!geo.length) return null;
+    var lat = parseFloat(geo[0].lat);
+    var lon = parseFloat(geo[0].lon);
+    return isValidLatLon(lat, lon) ? { lat: lat, lon: lon } : null;
+  }
+
+  if (isCountry) {
+    var countryName = item.address.countryName || item.title;
+    return fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(countryName) + '&featuretype=country&format=json&limit=1')
+      .then(function(r) { return r.json(); })
+      .then(function(geo) {
+        var result = parseLatLon(geo);
+        if (result) return result;
+        // fallback without featuretype
+        return fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(countryName) + '&format=json&limit=1')
+          .then(function(r) { return r.json(); })
+          .then(parseLatLon);
+      });
+  }
+
   var searchQuery = [item.address.city, item.address.state, item.address.postalCode].filter(Boolean).join(', ');
   if (!searchQuery) return Promise.resolve(null);
   return fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(searchQuery) + '&format=json&limit=1')
     .then(function(r) { return r.json(); })
-    .then(function(geo) {
-      if (!geo.length) return null;
-      var lat = parseFloat(geo[0].lat);
-      var lon = parseFloat(geo[0].lon);
-      if (!isValidLatLon(lat, lon)) return null;
-      return { lat: lat, lon: lon };
-    });
+    .then(parseLatLon);
 }
 
 function updateGlobalAddress() {
@@ -9944,20 +9995,38 @@ function initAutocomplete(inputEl, fetchFn) {
 
 // Location autocomplete for #autocomplete-input
 // Shared location fetch — populates resultsEl; calls onSelect(item) when a result is clicked
-function fetchLocationItems(value, resultsEl, inputEl, onSelect) {
+function fetchLocationItems(value, resultsEl, inputEl, onSelect, maxResults) {
   if (!value) { resultsEl.innerHTML = ''; return; }
-  fetch('https://autocomplete.search.hereapi.com/v1/autocomplete?apiKey=fqe1Boy0RrwDPIXwzutkFL5Ljo0QJJT6Xb-KoehiUe0&q=' + encodeURIComponent(value) + '&maxresults=8')
+  fetch('https://autocomplete.search.hereapi.com/v1/autocomplete?apiKey=fqe1Boy0RrwDPIXwzutkFL5Ljo0QJJT6Xb-KoehiUe0&q=' + encodeURIComponent(value) + '&maxresults=' + (maxResults || 8))
     .then(function(r) { return r.json(); })
     .then(function(data) {
       resultsEl.innerHTML = '';
       (data.items || []).forEach(function(raw) {
-        var item = { id: raw.id, title: raw.title, address: {
-          label: raw.address.label, city: raw.address.city,
-          countryName: raw.address.countryName, postalCode: raw.address.postalCode,
-          state: raw.address.state, stateCode: raw.address.stateCode
-        }};
+        var hasPosition = raw.position && isValidLatLon(parseFloat(raw.position.lat), parseFloat(raw.position.lng));
+        var isCountryLevel = !raw.address.city && !raw.address.state && !!raw.address.countryName;
+        var expectsLatLon = hasPosition || isCountryLevel;
+        var isCanadaFSA = raw.address.countryName === 'Canada' && raw.address.postalCode && raw.address.postalCode.length === 3;
+        var isKnownInvalid = isCanadaFSA;
+        var item = { id: raw.id, title: raw.title, resultType: raw.resultType,
+          position: hasPosition ? { lat: parseFloat(raw.position.lat), lon: parseFloat(raw.position.lng) } : null,
+          address: {
+            label: raw.address.label, city: raw.address.city,
+            countryName: raw.address.countryName, postalCode: raw.address.postalCode,
+            state: raw.address.state, stateCode: raw.address.stateCode,
+            street: raw.address.street
+          }};
         var li = document.createElement('li');
-        li.textContent = item.title;
+        li.style.cssText = 'display:flex;justify-content:space-between;align-items:center;';
+        var titleSpan = document.createElement('span');
+        titleSpan.textContent = item.title;
+        li.appendChild(titleSpan);
+        if (expectsLatLon || isKnownInvalid) {
+          var icon = document.createElement('span');
+          icon.className = 'material-icons';
+          icon.textContent = isKnownInvalid ? 'location_off' : 'location_on';
+          icon.style.cssText = 'font-size:16px;opacity:0.6;flex-shrink:0;margin-left:6px;margin-right:-8px;';
+          li.appendChild(icon);
+        }
         li.className = 'autocomplete-item';
         li.addEventListener('click', function() {
           inputEl.value = item.title;
@@ -9996,11 +10065,17 @@ waitForElm('#autocomplete-input').then(function() {
             addressLabel = item.address.label;
           }
           var lat = null, lon = null;
+          var earthHashValue = '';
           if (coords) {
             lat = coords.lat;
             lon = coords.lon;
             details += '<b>Latitude:</b> ' + lat + '<br><b>Longitude:</b> ' + lon + '<br>';
-            updateEarthHashForLocation(lat, lon);
+            earthHashValue = updateEarthHashForLocation(lat, lon) || '';
+            if (earthHashValue) {
+              details += '<div style="margin-top:10px;margin-bottom:4px;">';
+              details += '<a href="#earth=' + encodeURIComponent(earthHashValue) + '&geoview=earth" onclick="window.scrollTo({ top: 0, behavior: \'auto\' });" style="display:inline-block;padding:6px 12px;background-color:#2563eb;color:white;text-decoration:none;border-radius:4px;font-size:14px;">Earth View</a>';
+              details += '</div>';
+            }
           }
           var mcpData = { context_type: 'location', location: {
             name: item.title, formatted_address: addressLabel || item.address.label,
@@ -10035,7 +10110,7 @@ waitForElm('#autocomplete-input').then(function() {
 // Keyword autocomplete for #keywordsTB — shares fetchLocationItems
 waitForElm('#keywordsTB').then(function() {
   var input = document.getElementById('keywordsTB');
-  initAutocomplete(input, function(value, resultsEl, inputEl) {
+  var navResultsEl = initAutocomplete(input, function(value, resultsEl, inputEl) {
     fetchLocationItems(value, resultsEl, inputEl, function(item) {
       inputEl.value = item.title;
       lookupSelectedLocationLatLon(item)
@@ -10044,8 +10119,9 @@ waitForElm('#keywordsTB').then(function() {
           updateEarthHashForLocation(coords.lat, coords.lon);
         })
         .catch(function(err) { console.error('Location coordinate fetch error:', err); });
-    });
+    }, 10);
   });
+  if (navResultsEl) navResultsEl.style.maxHeight = '400px';
 });
 
 // Navigation toggle handler for both openNav and showSideFromHeader

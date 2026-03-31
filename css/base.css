@@ -4164,8 +4164,8 @@ body.sidebar-hidden #openNav {
   transform: translate(-50%, -50%);
 }
 #filterFieldToggleHolder {
-  width: 93px;
-  min-width: 93px;
+  width: 54px;
+  min-width: 54px;
   cursor: pointer;
 }
 #filterFieldToggleInHeader {
@@ -4183,38 +4183,55 @@ body.sidebar-hidden #openNav {
   color: #888;
   cursor: pointer;
 }
+#filterFieldToggleHolder .filter-toggle-circle,
+#filterFieldToggleInHeader .filter-toggle-circle {
+  font-size: 32px;
+}
 #filterFieldToggleIcon,
 #filterFieldToggleIconInHeader,
 .filter-field-toggle-icon {
   position: absolute !important;
-  font-size: 28px;
+  display: block;
+  width: 13px;
+  height: 3px;
+  transform: translate(-50%, -50%);
 }
-/*
-#filterFieldToggleHolder:not(.filter-toggle-forward) #filterFieldToggleIcon {
-  font-size: 28px;
+.filter-field-toggle-icon .filter-toggle-dot {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #666;
 }
-*/
-#filterFieldToggleHolder.filter-toggle-forward .filter-field-toggle-icon,
-#filterFieldToggleInHeader.filter-toggle-forward .filter-field-toggle-icon {
-  font-size: 28px;
+.filter-field-toggle-icon .filter-toggle-dot:nth-child(1) {
+  left: 0;
+}
+.filter-field-toggle-icon .filter-toggle-dot:nth-child(2) {
+  left: 5px;
+}
+.filter-field-toggle-icon .filter-toggle-dot:nth-child(3) {
+  left: 10px;
 }
 @media (max-width: 400px) {
   #filterFieldToggleHolder i,
   #filterFieldToggleInHeader i {
     font-size: 36px;
   }
+  #filterFieldToggleHolder .filter-toggle-circle,
+  #filterFieldToggleInHeader .filter-toggle-circle {
+    font-size: 36px;
+  }
   #filterFieldToggleIcon,
   #filterFieldToggleIconInHeader,
   .filter-field-toggle-icon {
-    font-size: 32px;
+    width: 13px;
+    height: 3px;
+    transform: translate(-50%, -50%);
   }
-  #filterFieldToggleHolder:not(.filter-toggle-forward) .filter-field-toggle-icon,
-  #filterFieldToggleInHeader:not(.filter-toggle-forward) .filter-field-toggle-icon {
-    font-size: 32px;
-  }
-  #filterFieldToggleHolder.filter-toggle-forward .filter-field-toggle-icon,
-  #filterFieldToggleInHeader.filter-toggle-forward .filter-field-toggle-icon {
-    font-size: 32px;
+  .filter-field-toggle-icon .filter-toggle-dot {
+    width: 4px;
+    height: 4px;
   }
 }
 @media (max-width: 600px) {
@@ -4259,8 +4276,8 @@ body.sidebar-hidden #openNav {
 }
 .earth-bar a {
     display: block;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     font-size: 30px;
     font-weight: bolder;
     color: #fff;
@@ -4270,12 +4287,38 @@ body.sidebar-hidden #openNav {
     margin-left: 4px;
     text-decoration: none;
     text-align: center;
-    line-height: 32px;
+    line-height: 26px;
     vertical-align: center;
 }
 .earth-bar a:hover {
-  background-color: #333;
+  background-color: #666;
 }
 .earth-control-zoom-in {
   margin-bottom: 6px;
+}
+#earthPlayInFilters {
+  display: none;
+  min-width: 42px;
+  padding: 0 2px 0 0;
+  color: #888;
+  cursor: pointer;
+}
+#earthPlayInFilters .play-pause-icon {
+  font-size: 35px;
+}
+#earthPlayInFilters:hover,
+#earthPlayInFilters:focus {
+  color: #333;
+}
+#earthPlayInFilters .material-icons {
+  position: static;
+  transform: none;
+  line-height: 1;
+}
+body.dark #earthPlayInFilters {
+  color: #bbb;
+}
+body.dark #earthPlayInFilters:hover,
+body.dark #earthPlayInFilters:focus {
+  color: #fff;
 }

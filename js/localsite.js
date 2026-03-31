@@ -2287,7 +2287,14 @@ function showGlobalMap(globalMap) { // Used by community/index.html, green-sah
     $("#globalMapHolder").html('<iframe src="" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
   }
 
-  loadIframe("mainframe",globalMap);
+  var _hashForMap = (typeof getHash === 'function') ? getHash() : {};
+  if (_hashForMap.earth) {
+    loadIframe("mainframe", 'https://earth.nullschool.net/#' + _hashForMap.earth);
+  } else if (_hashForMap['']) {
+    loadIframe("mainframe", 'https://earth.nullschool.net/#' + _hashForMap['']);
+  } else {
+    loadIframe("mainframe", globalMap);
+  }
 
   includeCSS3(theroot + 'css/nouislider.min.css', '');
   if (typeof window.setupGlobalMapSlider === 'function') {
@@ -3621,21 +3628,24 @@ function setGlobecenter(globecenter, promptForCurrentPosition) {
   }
   //alert("Lat: " + $("#globeLongitude").val());
 
-  // Limit to when nullschool already visible.
+  // Limit to when nullschool already visible and no incoming hash earth value.
   if ($('#mainEarthDisplay').is(':visible')) {
     if ($("#globeLatitude").val() && $("#globeLongitude").val()) {
-        // Add latlon validation
-        let globeZoom = "800"; // "1037";
+        var _hashCheck = (typeof getHash === 'function') ? getHash() : {};
+        if (!_hashCheck.earth && !_hashCheck['']) {
+          // Add latlon validation
+          let globeZoom = "800"; // "1037";
 
-        // Move these into dropdown attributes
-        if ($("#globeLongitude").val() == "-160") {
-          globeZoom = "300"; // For Pacific
-        } else if ($("#globeLongitude").val() == "80") {
-          globeZoom = "600"; // For India
+          // Move these into dropdown attributes
+          if ($("#globeLongitude").val() == "-160") {
+            globeZoom = "300"; // For Pacific
+          } else if ($("#globeLongitude").val() == "80") {
+            globeZoom = "600"; // For India
+          }
+
+          let latLonZoom = $("#globeLongitude").val() + "," + $("#globeLatitude").val() + "," + globeZoom;
+          showGlobalMap(`https://earth.nullschool.net/#current/wind/surface/level/orthographic=${latLonZoom}`);
         }
-
-        let latLonZoom = $("#globeLongitude").val() + "," + $("#globeLatitude").val() + "," + globeZoom;
-        showGlobalMap(`https://earth.nullschool.net/#current/wind/surface/level/orthographic=${latLonZoom}`);
     }
   }
 }
