@@ -909,7 +909,7 @@ hr {
   text-decoration: none;
 }
 .content a:link, .content a:visited, .contentfull a:link, .contentfull a:visited, .content-color a:link, .content-color a:visited {
-  color: #0366d6;
+  /* color: #0366d6; */
 }
 .dark .content a:link, .dark .content a:visited, .dark .content-color a:link, .dark .content-color a:visited  {
   color: #acb;

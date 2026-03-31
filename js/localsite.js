@@ -3924,7 +3924,9 @@ addEventListener("load", function(){
     return null;
   };
   document.querySelector("body").addEventListener('click', function(e) {
-    $(".hideOnBodyClick").hide();
+    document.querySelectorAll(".hideOnBodyClick").forEach(function(el) {
+      el.style.display = "none";
+    });
     var anchor = getParentAnchor(e.target);
     if(anchor !== null) {
       //$('#log_display').hide();
