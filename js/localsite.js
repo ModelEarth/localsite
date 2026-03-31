@@ -2666,8 +2666,14 @@ function addBrInSpans(html) {
     // inserting stray </p> and <p> tags. The browser's innerHTML parser then auto-closes
     // the span at the first block element, causing </span> to be lost.
     content = content.replace(/<\/?p\b[^>]*>/gi, '');
-    // Add <br> for single newlines, but not after </div>, </span>, or --> (comment close)
-    content = content.replace(/(?<=[^\n])(?<!<\/div>|<\/span>|-->)\n(?=[^\n])/g, '<br>\n');
+    // Add <br> for single newlines, but not after block/void elements or comment close.
+    // Temporarily normalize all <br> variants to a placeholder so the lookbehind catches
+    // them reliably regardless of form (<br>, <br/>, <br />), then restore afterward.
+    // This also preserves intentional <br><br> pairs — the placeholder-to-placeholder
+    // boundary still satisfies the lookbehind, so no extra <br> is inserted between them.
+    content = content.replace(/<br\s*\/?>/gi, '\x00BR\x00');
+    content = content.replace(/(?<=[^\n])(?<!<\/div>|<\/span>|<\/h1>|<\/h2>|<\/h3>|<\/h4>|<\/h5>|<\/h6>|\x00BR\x00|-->)\n(?=[^\n])/g, '<br>\n');
+    content = content.replace(/\x00BR\x00/g, '<br>');
     // Restore HTML comments
     content = content.replace(/\x00COMMENT(\d+)-->/g, function(m, i) {
       return comments[parseInt(i)];
@@ -2677,6 +2683,7 @@ function addBrInSpans(html) {
 }
 
 function loadMarkdown(pagePath, divID, target, attempts, callback) {
+  // Include markdown="1" on div tags to process <div> content as markdown.
   if (typeof attempts === 'undefined') {
     attempts = 1;
   }
