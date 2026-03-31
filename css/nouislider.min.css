@@ -83,9 +83,12 @@
   width: 10px;
   z-index: 2;
   pointer-events: auto;
+  background-color: rgba(0,0,0,.5);
 }
-#slider-pips-hit-left { left: 0; }
-#slider-pips-hit-right { right: 0; }
+#slider-pips-hit-left { left: 0; border-radius: 4px 0 0 4px; }
+#slider-pips-hit-right { right: -10px; width: 20px; border-radius: 0 4px 4px 0; }
+#slider-on-map #slider-pips { border-radius: 0; border: none; box-shadow: none; }
+#slider-on-map #slider-pips .noUi-value.impact-first-pip { transform: translateX(-8px); }
 #slider-pips .noUi-value {
   color: #fff;
   font-size: 12px;
