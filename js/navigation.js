@@ -9167,6 +9167,8 @@ function activateSideColumn() {
     */
 
     // Initial page load
+    // Commented out Mar 2026
+    /*
     var currentSection = currentSideID();
     if (currentSection && currentSection.length) {
         if (currentSection == "intro") {
@@ -9180,6 +9182,7 @@ function activateSideColumn() {
             //menuItems.filter("[href*='interns/']").addClass("active");
         }
     }
+    */
 }
 
 // INIT

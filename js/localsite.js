@@ -2372,7 +2372,7 @@ function waitForVariable(variable, callback) { // Declare variable using var sin
 function waitForElm(selector) {
     return new Promise(resolve => {
         if (document.querySelector(selector)) {
-            consoleLog("waitForElm found " + selector);
+            //consoleLog("waitForElm found " + selector);
             return resolve(document.querySelector(selector));
         }
         if (document.body) {
@@ -2386,7 +2386,7 @@ function waitForElm(selector) {
     });
 }
 function waitForElmKickoff(selector, resolve) {
-  consoleLog("waitForElm waiting for " + selector);
+  //consoleLog("waitForElm waiting for " + selector);
   const observer = new MutationObserver(mutations => {
       if (document.querySelector(selector)) {
           resolve(document.querySelector(selector));
@@ -3599,14 +3599,7 @@ function setDevmode(devmode) {
     //includeCSS3(local_app.localsite_root() + 'css/dev.css');
     includeCSS3(devCssUrl);
   } else {
-    //removeElement('/localsite/css/dev.css');
     removeElement(getUrlID3(devCssUrl, theroot));
-    // Fallback for legacy/alternate link IDs that may already exist in the DOM.
-    //document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
-    //  if (link.href && link.href.indexOf('/localsite/css/dev.css') >= 0) {
-    //    link.remove();
-    //  }
-    //});
   }
 }
 function setOnlinemode(onlinemode) {
@@ -4096,7 +4089,7 @@ function formatCell(input, format) {
         }
         // Show up to 15 decimal places, removing trailing zeros
         let formatted = input.toFixed(15).replace(/0+$/, '').replace(/\.$/, '');
-        console.log('Small positive formatting:', input, '->', formatted);
+        //console.log('Small positive formatting:', input, '->', formatted);
         return formatted === '' ? '0' : formatted;
     } else if (input === 0) {
         return '0';
@@ -4153,105 +4146,6 @@ function formatCell(input, format) {
 //console.log(formatCell(99.99, 'easy') + " - BUG, let's avoid adding .0 when rounding");        // Output: "100.0" - 
 //console.log(formatCell(0.0005, 'easy'));      // Output: "5.0e-4"
 // console.log(formatCell(45000000, 'scientific')); // Output: "4.5e+7"
-
-function formatCellX(input, format) {
-    // If format is none or blank, return input as it is.
-    if (format === 'none' || format === '' || input === '') {
-        return ''
-    }
-    input = parseFloat(input); // Convert input to a number
-    // Format as scientific notation
-    if (format === 'scientific') {
-        return input.toExponential(1);
-    }
-
-    // Format as easy
-    if (input >= 1e12) {
-        // Round to billions
-        return (input / 1e12).toFixed(3) + ' Trillion';
-    } else if (input >= 1e9) {
-        // Round to billions
-        return (input / 1e9).toFixed(1) + ' Billion';
-    } else if (input >= 1e6) {
-        // Round to millions
-        return (input / 1e6).toFixed(1) + ' Million';
-    } else if (input >= 1000) {
-        // Round to thousands
-        return (input / 1000).toFixed(1) + ' K';
-    } else if (input >= 1) {
-        // Round to one decimal. Remove .0
-        //console.log("input:" + input + "-")
-        return input.toFixed(1).replace(/\.0$/, '');
-    } else if (input > 0) {
-        // Small positive values - for very small numbers, use named suffixes
-        if (input <= 1e-33) { // decillionth or less
-            return (input / 1e-33).toFixed(3) + ' Decillionth';
-        } else if (input <= 1e-30) { // nonillionth or less
-            return (input / 1e-30).toFixed(3) + ' Nonillionth';
-        } else if (input <= 1e-27) { // octillionth or less
-            return (input / 1e-27).toFixed(3) + ' Octillionth';
-        } else if (input <= 1e-24) { // septillionth or less
-            return (input / 1e-24).toFixed(3) + ' Septillionth';
-        } else if (input <= 1e-21) { // sextillionth or less
-            return (input / 1e-21).toFixed(3) + ' Sextillionth';
-        } else if (input <= 1e-18) { // quintillionth or less
-            return (input / 1e-18).toFixed(3) + ' Quintillionth';
-        } else if (input <= 1e-15) { // quadrillionth or less
-            return (input / 1e-15).toFixed(3) + ' Quadrillionth';
-        } else if (input <= 1e-12) { // trillionth or less
-            return (input / 1e-12).toFixed(3) + ' Trillionth';
-        } else if (input <= 1e-9) { // billionth or less
-            return (input / 1e-9).toFixed(3) + ' Billionth';
-        } else if (input <= 1e-6) { // millionth or less
-            return (input / 1e-6).toFixed(3) + ' Millionth';
-        }
-        // Show up to 15 decimal places, removing trailing zeros
-        let formatted = input.toFixed(15).replace(/0+$/, '').replace(/\.$/, '');
-        return formatted === '' ? '0' : formatted;
-    } else if (input === 0) {
-        return '0';
-    } else if (input <= -1e12) {
-        return (input / 1e12).toFixed(3) + ' Trillion';
-    } else if (input <= -1e9) {
-        return (input / 1e9).toFixed(1) + ' Billion';
-    } else if (input <= -1e6) {
-        return (input / 1e6).toFixed(1) + ' Million';
-    } else if (input <= -1000) {
-        return (input / 1e3).toFixed(1) + ' K';
-    } else if (input <= -1) {
-        // Round to one decimal. Remove .0
-        return input.toFixed(1).replace(/\.0$/, '');
-    } else if (input < 0) {
-        // Small negative values - for very small numbers, use named suffixes
-        if (input <= -1e-33) { // decillionth or less
-            return (input / 1e-33).toFixed(3) + ' Decillionth';
-        } else if (input <= -1e-30) { // nonillionth or less
-            return (input / 1e-30).toFixed(3) + ' Nonillionth';
-        } else if (input <= -1e-27) { // octillionth or less
-            return (input / 1e-27).toFixed(3) + ' Octillionth';
-        } else if (input <= -1e-24) { // septillionth or less
-            return (input / 1e-24).toFixed(3) + ' Septillionth';
-        } else if (input <= -1e-21) { // sextillionth or less
-            return (input / 1e-21).toFixed(3) + ' Sextillionth';
-        } else if (input <= -1e-18) { // quintillionth or less
-            return (input / 1e-18).toFixed(3) + ' Quintillionth';
-        } else if (input <= -1e-15) { // quadrillionth or less
-            return (input / 1e-15).toFixed(3) + ' Quadrillionth';
-        } else if (input <= -1e-12) { // trillionth or less
-            return (input / 1e-12).toFixed(3) + ' Trillionth';
-        } else if (input <= -1e-9) { // billionth or less
-            return (input / 1e-9).toFixed(3) + ' Billionth';
-        } else if (input <= -1e-6) { // millionth or less
-            return (input / 1e-6).toFixed(3) + ' Millionth';
-        }
-        // Show up to 15 decimal places, removing trailing zeros
-        let formatted = input.toFixed(15).replace(/0+$/, '').replace(/\.$/, '');
-        return formatted === '' || formatted === '-' ? '0' : formatted;
-    } else {
-        // Fallback for any edge cases
-        return input.toExponential(1);
-    }
-}
 
 // AnythingLLM left side navigation header adjustment
 // Monitors header visibility and adjusts top positioning while keeping content within flexMain
