@@ -1,425 +1,418 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Trade Impact Sankey</title>
-<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
-<link type="text/css" rel="stylesheet" href="../../../css/base.css" id="../../../css/base.css" />
-<script type="text/javascript" src="../../../js/localsite.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Worldwide Trade Impact And Resource Dashboard</title>
+<link type="text/css" rel="stylesheet" href="../../../css/base.css" id="/localsite/css/base.css" />
+<script type="text/javascript" src="../../../js/localsite.js?showheader=true&showsearch=true&showfilters=true"></script>
 <style>
-  :root {
-    color-scheme: light;
-    --trade-bg: #f5f1e8;
-    --trade-bg-2: #ebe4d7;
-    --trade-surface: rgba(255, 252, 247, 0.84);
-    --trade-surface-strong: rgba(255, 251, 246, 0.94);
-    --trade-panel-glow: rgba(255, 255, 255, 0.58);
-    --trade-ink: #1f2530;
-    --trade-muted: #66707c;
-    --trade-accent: #cf6736;
-    --trade-accent-deep: #a5512c;
-    --trade-accent-soft: rgba(207, 103, 54, 0.12);
-    --trade-good: #2f6f51;
-    --trade-bad: #a33f2b;
-    --trade-shadow: 0 24px 70px rgba(28, 36, 48, 0.12);
-    --trade-shadow-soft: 0 12px 34px rgba(28, 36, 48, 0.08);
-  }
-
-  * { box-sizing: border-box; }
-
   body {
+    background: #fafbfc;
+  }
+  .content.contentpadding {
+    max-width: 1480px;
+  }
+  .sankey-page-header {
+    margin: 1em 0 0.4em;
+  }
+  .sankey-page-header h2 {
+    margin: 0 0 0.2em;
+    font-size: 1.7em;
+  }
+  .sankey-page-header p {
     margin: 0;
-    min-height: 100vh;
-    font-family: "Aptos", "Segoe UI Variable", "Segoe UI", sans-serif;
-    color: var(--trade-ink);
-    background:
-      radial-gradient(circle at 8% 12%, rgba(207, 103, 54, 0.18), transparent 26%),
-      radial-gradient(circle at 88% 16%, rgba(58, 121, 138, 0.14), transparent 24%),
-      linear-gradient(180deg, var(--trade-bg) 0%, var(--trade-bg-2) 100%);
-    overflow-x: hidden;
+    color: #555;
+    font-size: 0.96em;
+    line-height: 1.6;
+    max-width: 980px;
   }
-
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background:
-      linear-gradient(115deg, rgba(255, 255, 255, 0.24), transparent 30%),
-      radial-gradient(circle at top, rgba(255, 255, 255, 0.28), transparent 46%);
-    opacity: 0.9;
-  }
-
-  .trade-shell {
-    width: min(1560px, calc(100% - 36px));
-    margin: 0 auto;
-    padding: 28px 0 42px;
-    position: relative;
-    z-index: 1;
-    container-type: inline-size;
-  }
-
-  .hero-card, .toolbar-card, .trade-panel {
-    position: relative;
-    background: var(--trade-surface);
-    border-radius: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.36);
-    box-shadow: var(--trade-shadow);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    overflow: hidden;
-  }
-
-  .hero-card::before, .toolbar-card::before, .trade-panel::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(145deg, var(--trade-panel-glow), transparent 42%);
-    pointer-events: none;
-  }
-
-  .hero-card, .toolbar-card { container-type: inline-size; }
-  .hero-card { padding: 24px; margin-bottom: 18px; }
-  .hero-top, .panel-head, .toolbar-head {
+  .hero-meta {
     display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.75em;
+    margin: 0.9em 0 1.1em;
   }
-
-  .hero-top { margin-bottom: 18px; }
-
-  .eyebrow, .pill, .panel-note {
+  .pill {
     display: inline-flex;
     align-items: center;
+    min-height: 2.2em;
+    padding: 0.35em 0.9em;
+    border: 1px solid #d7dee8;
     border-radius: 999px;
-    font-weight: 800;
+    background: #f4f7fb;
+    color: #36506c;
+    font-size: 0.92em;
+    font-weight: 600;
   }
-
-  .eyebrow {
-    gap: 8px;
-    padding: 8px 12px;
-    background: rgba(31, 37, 48, 0.06);
-    color: var(--trade-muted);
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+  #sankey-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2em;
+    align-items: end;
+    padding: 0.9em 1em;
+    background: #f4f6f8;
+    border: 1px solid #dde1e7;
+    border-radius: 6px;
+    margin-bottom: 0.75em;
   }
-
-  .hero-meta { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
-  .pill {
-    padding: 9px 13px;
-    background: var(--trade-accent-soft);
-    color: var(--trade-accent-deep);
-    font-size: 0.92rem;
-  }
-
-  .hero-main {
-    display: grid;
-    grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.92fr);
-    gap: 18px;
-    align-items: stretch;
-  }
-
-  .hero-copy { padding: 8px 4px 4px; }
-  .hero-copy h1 {
-    margin: 0;
-    font-family: "Aptos Display", "Aptos", "Trebuchet MS", sans-serif;
-    font-size: clamp(2.3rem, 5vw, 4.5rem);
-    line-height: 0.96;
-    letter-spacing: -0.05em;
-    max-width: 12ch;
-  }
-
-  .hero-copy p, .toolbar-copy p, .panel-copy p {
-    color: var(--trade-muted);
-    line-height: 1.6;
-  }
-
-  .hero-copy p { margin: 16px 0 0; max-width: 64ch; font-size: 1.02rem; }
-  .hero-aside { display: grid; gap: 12px; }
-  .summary-card {
-    padding: 16px 18px;
-    border-radius: 22px;
-    background: var(--trade-surface-strong);
-    box-shadow: var(--trade-shadow-soft);
-  }
-
-  .summary-label {
-    display: block;
-    margin-bottom: 7px;
-    color: var(--trade-muted);
-    font-size: 0.76rem;
-    font-weight: 800;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-  }
-
-  .summary-value { display: block; font-size: 1.05rem; font-weight: 700; line-height: 1.35; }
-  .toolbar-card { padding: 20px; margin-bottom: 22px; }
-  .toolbar-head { margin-bottom: 16px; }
-  .toolbar-copy h2, .panel-copy h2 { margin: 0 0 6px; letter-spacing: -0.02em; }
-  .toolbar-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: end; }
-
-  .control {
+  #sankey-controls .control {
     display: flex;
     flex-direction: column;
-    gap: 7px;
-    min-width: 180px;
+    gap: 0.35em;
+    min-width: 170px;
   }
-
-  .control.grow { flex: 1; min-width: 260px; }
-  .control label {
-    color: var(--trade-muted);
-    font-size: 0.77rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
+  #sankey-controls label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
+    color: #556070;
   }
-
-  .control input, .control select, .control button {
-    appearance: none;
-    border: none;
-    border-radius: 18px;
-    padding: 13px 15px;
-    font-size: 0.96rem;
-    color: var(--trade-ink);
-    background: rgba(255, 255, 255, 0.86);
-    box-shadow:
-      inset 0 0 0 1px rgba(31, 37, 48, 0.06),
-      0 10px 24px rgba(28, 36, 48, 0.08);
+  #sankey-controls select {
+    padding: 0.45em 0.65em;
+    font-size: 0.94em;
+    border: 1px solid #cfd6df;
+    border-radius: 4px;
+    background: #fff;
+    color: #223242;
   }
-
-  .control button {
-    min-width: 140px;
+  #sankey-controls input[type=range] {
+    width: 140px;
     cursor: pointer;
-    font-weight: 800;
-    color: #fff8f4;
-    background: linear-gradient(180deg, #e07a49 0%, #cb6035 100%);
   }
-
-  .status { margin-top: 14px; color: var(--trade-good); font-weight: 700; }
-  .status[data-state="error"] { color: var(--trade-bad); }
-
-  .trade-grid {
+  #topn-label {
+    min-width: 2.2em;
+    color: #223242;
+    font-size: 0.94em;
+    font-weight: 700;
+    text-align: right;
+  }
+  #status-text {
+    font-size: 0.9em;
+    color: #5c6775;
+    font-style: italic;
+    margin: 0 0 0.85em;
+    min-height: 1.4em;
+  }
+  #chart-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px;
-    align-items: stretch;
+    gap: 1em;
   }
-
-  .trade-panel {
-    min-height: 590px;
+  .panel {
     display: flex;
     flex-direction: column;
-    padding: 20px;
-    container-type: inline-size;
+    min-height: 570px;
+    padding: 1em;
+    background: #fff;
+    border: 1px solid #e3e8ee;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
   }
-
-  .trade-panel.panel-expanded { grid-column: 1 / -1; min-height: 760px; }
-  .trade-panel.panel-hidden { display: none; }
-  .panel-head { margin-bottom: 14px; position: relative; min-height: 54px; padding-right: 52px; }
-  .panel-copy p { margin: 0; font-size: 0.95rem; line-height: 1.45; max-width: 54ch; }
-
-  .panel-note {
-    padding: 10px 12px;
-    background: rgba(31, 37, 48, 0.05);
-    color: var(--trade-muted);
-    font-size: 0.8rem;
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    align-items: flex-start;
+    margin-bottom: 0.9em;
   }
-
+  .panel-copy h2 {
+    margin: 0 0 0.3em;
+    font-size: 1.08em;
+    color: #243447;
+  }
+  .panel-copy p {
+    margin: 0;
+    color: #677382;
+    font-size: 0.9em;
+    line-height: 1.5;
+  }
+  .panel-head .control {
+    min-width: 180px;
+  }
+  .panel-head .control label {
+    display: block;
+    margin-bottom: 0.35em;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #5a6676;
+  }
+  .panel-head .control select {
+    width: 100%;
+    padding: 0.42em 0.6em;
+    font-size: 0.92em;
+    border: 1px solid #cfd6df;
+    border-radius: 4px;
+    background: #fff;
+  }
   .stats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 0.75em;
+    margin-bottom: 0.85em;
   }
-
   .stat {
-    padding: 13px 14px;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.62);
-    box-shadow: inset 0 0 0 1px rgba(31, 37, 48, 0.05);
+    min-height: 4.6em;
+    padding: 0.75em 0.85em;
+    border: 1px solid #e4e8ee;
+    border-radius: 6px;
+    background: #f8fafc;
   }
-
   .stat .label {
     display: block;
-    color: var(--trade-muted);
-    font-size: 0.74rem;
+    margin-bottom: 0.35em;
+    color: #6b7786;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 7px;
-    font-weight: 800;
   }
-
-  .stat .value { display: block; font-size: 1rem; font-weight: 700; line-height: 1.3; }
+  .stat .value {
+    display: block;
+    color: #223242;
+    font-size: 0.97rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
   .chart-wrap {
+    position: relative;
     flex: 1;
     min-height: 430px;
-    position: relative;
-    border-radius: 24px;
     overflow: hidden;
+    border: 1px solid #e5e9ef;
+    border-radius: 6px;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(248, 244, 238, 0.94)),
-      linear-gradient(90deg, rgba(207, 103, 54, 0.04), rgba(58, 121, 138, 0.05));
-    box-shadow:
-      inset 0 0 0 1px rgba(31, 37, 48, 0.06),
-      0 12px 28px rgba(28, 36, 48, 0.08);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 252, 0.98)),
+      repeating-linear-gradient(
+        0deg,
+        rgba(35, 52, 71, 0.03),
+        rgba(35, 52, 71, 0.03) 1px,
+        transparent 1px,
+        transparent 28px
+      );
   }
-
-  .chart-wrap::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(rgba(31, 37, 48, 0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(31, 37, 48, 0.03) 1px, transparent 1px);
-    background-size: 100% 30px, 30px 100%;
-    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 92%);
-    pointer-events: none;
+  .chart-wrap svg {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
-
-  .chart-wrap svg { width: 100%; height: 100%; display: block; position: relative; z-index: 1; }
   .tooltip {
     position: fixed;
     z-index: 1000;
-    width: min(330px, calc(100vw - 24px));
-    padding: 13px 15px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    background: rgba(255, 252, 247, 0.96);
-    box-shadow: 0 22px 42px rgba(28, 36, 48, 0.18);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    width: min(320px, calc(100vw - 24px));
+    padding: 0.85em 0.95em;
+    border: 1px solid rgba(35, 52, 71, 0.16);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+    backdrop-filter: blur(6px);
     pointer-events: none;
     opacity: 0;
     transform: translateY(4px);
     transition: opacity 0.14s ease, transform 0.14s ease;
   }
-
-  .tooltip.is-visible { opacity: 1; transform: translateY(0); }
-  .tooltip.is-click { background: rgba(255, 247, 239, 0.98); }
-  .tooltip-title { margin: 0 0 8px; font-size: 0.98rem; font-weight: 800; letter-spacing: -0.02em; }
-  .tooltip-body { display: grid; gap: 8px; }
-  .tooltip-row { display: grid; grid-template-columns: 96px 1fr; gap: 10px; align-items: start; }
-  .tooltip-key { color: var(--trade-muted); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
-  .tooltip-value { font-size: 0.9rem; font-weight: 700; line-height: 1.35; word-break: break-word; }
-  .interactive-mark, .sankey-link { cursor: pointer; transition: opacity 0.18s ease, stroke-opacity 0.18s ease, fill-opacity 0.18s ease; }
-  .sankey-link:hover, .interactive-mark:hover { opacity: 1; stroke-opacity: 0.8; }
-  .sankey-link.is-selected, .bar-mark.is-selected { filter: drop-shadow(0 0 9px rgba(207, 103, 54, 0.33)); }
-  .node-label, .bar-label { fill: #273140; font-size: 12px; font-weight: 700; dominant-baseline: middle; }
-  .node-value, .bar-value, .bar-grid-text, .bar-hint { fill: #6a7380; dominant-baseline: middle; }
-  .node-value, .bar-value { font-size: 11px; font-weight: 700; }
-  .bar-grid-line { stroke: rgba(31, 37, 48, 0.1); stroke-dasharray: 4 6; }
-  .bar-grid-text { font-size: 11px; }
-  .bar-hint { font-size: 10px; }
-
-  @container (max-width: 1180px) {
-    .hero-main, .trade-grid { grid-template-columns: 1fr; }
+  .tooltip.is-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
-
-  @container (max-width: 760px) {
-    .trade-shell { width: min(100% - 18px, 100%); }
-    .hero-card, .toolbar-card, .trade-panel { border-radius: 24px; }
-    .hero-top, .panel-head, .toolbar-head, .toolbar-row { flex-direction: column; align-items: stretch; }
-    .hero-meta { justify-content: flex-start; }
-    .stats { grid-template-columns: 1fr; }
+  .tooltip.is-click {
+    border-color: rgba(37, 99, 235, 0.2);
+    background: rgba(248, 251, 255, 0.99);
   }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      color-scheme: dark;
-      --trade-bg: #14181f;
-      --trade-bg-2: #10141b;
-      --trade-surface: rgba(23, 28, 36, 0.82);
-      --trade-surface-strong: rgba(28, 34, 43, 0.92);
-      --trade-panel-glow: rgba(255, 255, 255, 0.03);
-      --trade-ink: #edf2f8;
-      --trade-muted: #9ca8b8;
-      --trade-good: #8ad0a9;
-      --trade-bad: #ff8c73;
+  .tooltip-title {
+    margin: 0 0 0.65em;
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #223242;
+  }
+  .tooltip-body {
+    display: grid;
+    gap: 0.5em;
+  }
+  .tooltip-row {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 0.7em;
+    align-items: start;
+  }
+  .tooltip-key {
+    color: #677382;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .tooltip-value {
+    color: #223242;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.35;
+    word-break: break-word;
+  }
+  .sankey-link {
+    cursor: pointer;
+    transition: filter 0.18s ease, stroke-width 0.18s ease;
+  }
+  .interactive-mark {
+    cursor: pointer;
+    transition: opacity 0.18s ease, stroke-opacity 0.18s ease, fill-opacity 0.18s ease;
+  }
+  .sankey-link:hover {
+    stroke-width: 4px;
+    filter: drop-shadow(0 0 4px rgba(37, 99, 235, 0.28));
+  }
+  .sankey-link.is-selected,
+  .bar-mark.is-selected {
+    filter: drop-shadow(0 0 7px rgba(37, 99, 235, 0.2));
+  }
+  .sankey-node {
+    transition: opacity 0.18s ease;
+  }
+  .sankey-node:hover {
+    opacity: 0.96;
+  }
+  .node-label {
+    font-size: 12px;
+    fill: #243040;
+    font-weight: 700;
+    dominant-baseline: middle;
+  }
+  .node-value {
+    font-size: 11px;
+    fill: #5f6977;
+    dominant-baseline: middle;
+  }
+  .bar-grid-line {
+    stroke: rgba(35, 52, 71, 0.08);
+    stroke-dasharray: 4 6;
+  }
+  .bar-grid-text {
+    fill: #7a8390;
+    font-size: 11px;
+  }
+  .bar-label {
+    fill: #243040;
+    font-size: 12px;
+    font-weight: 700;
+    dominant-baseline: middle;
+  }
+  .bar-value {
+    fill: #5f6977;
+    font-size: 11px;
+    font-weight: 700;
+    dominant-baseline: middle;
+  }
+  .bar-hint {
+    fill: #7a8390;
+    font-size: 10px;
+    dominant-baseline: middle;
+  }
+  #sankey-attribution {
+    margin-top: 1em;
+    padding-top: 0.75em;
+    border-top: 1px solid #dde1e7;
+    font-size: 0.85em;
+    color: #666;
+    line-height: 1.8;
+  }
+  #sankey-attribution a {
+    color: #2563eb;
+    text-decoration: none;
+  }
+  #sankey-attribution a:hover {
+    text-decoration: underline;
+  }
+  @media (max-width: 1180px) {
+    #chart-grid {
+      grid-template-columns: 1fr;
     }
-
-    body {
-      background:
-        radial-gradient(circle at 10% 10%, rgba(207, 103, 54, 0.18), transparent 22%),
-        radial-gradient(circle at 86% 14%, rgba(81, 148, 159, 0.12), transparent 24%),
-        linear-gradient(180deg, var(--trade-bg) 0%, var(--trade-bg-2) 100%);
+  }
+  @media (max-width: 760px) {
+    #sankey-controls,
+    .panel-head {
+      flex-direction: column;
+      align-items: stretch;
     }
-
-    .control input, .control select { background: rgba(20, 24, 31, 0.9); }
-    .tooltip { background: rgba(22, 27, 35, 0.96); border-color: rgba(255, 255, 255, 0.08); }
-    .tooltip.is-click { background: rgba(28, 21, 18, 0.96); }
-    .node-label, .bar-label { fill: #edf2f8; }
-    .node-value, .bar-value, .bar-grid-text, .bar-hint { fill: #9ca8b8; }
+    #sankey-controls .control,
+    .panel-head .control {
+      min-width: 100%;
+    }
+    .stats {
+      grid-template-columns: 1fr;
+    }
+    .panel {
+      min-height: 520px;
+    }
   }
 </style>
 </head>
 <body>
-<main class="trade-shell">
-  <section class="hero-card">
-    <div class="hero-top">
-      <span class="eyebrow">Trade Atlas</span>
-      <div class="hero-meta">
-        <span id="selection-pill" class="pill">Selection: --</span>
-        <span id="rule-pill" class="pill">Visible flows filter out WHOLE and CONST sectors</span>
-        <span class="pill">localsite + CSV fetch</span>
-      </div>
-    </div>
-    <div class="hero-main">
-      <div class="hero-copy">
-        <h1 id="page-title">Trade Impact And Resource Dashboard</h1>
-        <p>Compare impact flows and resource pressure in one shared view, then pivot across countries and years without leaving the page. This localsite version keeps the same core Sankey workflow while styling it around the local panel system.</p>
-      </div>
-      <div class="hero-aside">
-        <div class="summary-card">
-          <span class="summary-label">Views</span>
-          <span class="summary-value">Impact Sankeys, resource flow, and resource mix</span>
-        </div>
-        <div class="summary-card">
-          <span class="summary-label">Data Source</span>
-          <span class="summary-value">Annual trade-data CSV files loaded directly per country and year</span>
-        </div>
-        <div class="summary-card">
-          <span class="summary-label">Interaction</span>
-          <span class="summary-value">Hover for a quick read, click to pin details, use panel menus to expand or close cards</span>
-        </div>
-      </div>
-    </div>
-  </section>
+<div class="content contentpadding">
 
-  <section class="toolbar-card" aria-label="Dataset controls">
-    <div class="toolbar-head">
-      <div class="toolbar-copy">
-        <h2>Explore Trade Flow</h2>
-        <p>Enter single or comma-separated countries and years, or use hash values like <code>#country=US,WM&amp;year=2019,2022</code>. The page updates the hash with <code>updateHash()</code> and refreshes the display when fields change.</p>
-      </div>
-      <div class="control">
-        <label for="restore-panels">Panel Layout</label>
-        <button id="restore-panels" type="button">Restore Hidden Panels</button>
-      </div>
-    </div>
-    <div class="toolbar-row">
-      <div class="control grow">
-        <label for="country-input">Country Or Countries</label>
-        <input id="country-input" list="country-options" type="text" autocomplete="off" spellcheck="false">
-        <datalist id="country-options"></datalist>
-      </div>
-      <div class="control grow">
-        <label for="year-input">Year Or Years</label>
-        <input id="year-input" list="year-options" type="text" autocomplete="off" spellcheck="false">
-        <datalist id="year-options"></datalist>
-      </div>
-    </div>
-    <div id="status-text" class="status">Preparing dashboard...</div>
-  </section>
+  <div class="sankey-page-header">
+    <h2>Worldwide Trade Impact And Resource Dashboard</h2>
+    <p>
+      Compare trade impact pathways and resource profiles using the same country, year, and flow controls across all four panels.
+      Data is loaded from repository-hosted trade-data assets and aligned with the Sankey page layout.
+    </p>
+  </div>
 
-  <section id="chart-grid" class="trade-grid" aria-label="Trade dashboard chart grid"></section>
-</main>
+  <div class="hero-meta">
+    <span id="selection-pill" class="pill">Selection: --</span>
+  </div>
+
+  <div id="sankey-controls" aria-label="Dataset controls">
+    <div class="control">
+      <label for="country-select">Country</label>
+      <select id="country-select"></select>
+    </div>
+    <div class="control">
+      <label for="year-select">Year</label>
+      <select id="year-select"></select>
+    </div>
+    <div class="control">
+      <label for="flow-select">Flow</label>
+      <select id="flow-select">
+        <option value="domestic">Domestic</option>
+        <option value="imports">Imports</option>
+        <option value="exports">Exports</option>
+      </select>
+    </div>
+    <div class="control">
+      <label for="topn-slider">Top flows</label>
+      <div>
+        <input type="range" id="topn-slider" min="5" max="50" step="1" value="5">
+        <span id="topn-label">5</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="status-text">Preparing dashboard...</div>
+  <div id="chart-grid" aria-label="Trade dashboard panels"></div>
+
+  <div id="sankey-attribution">
+    <strong>Data source:</strong>
+    <a href="https://github.com/savar25/trade-data" target="_blank" rel="noopener">savar25/trade-data</a>
+    &middot; repository paths under <code>year/</code> and <code>sankey-datasets/</code>
+  </div>
+
+</div>
 
 <div id="hover-tooltip" class="tooltip" aria-hidden="true"></div>
 <div id="click-tooltip" class="tooltip is-click" aria-hidden="true"></div>
-<script src="./sankey.js"></script>
+
+<script>
+window.TRADE_DASHBOARD_CONFIG = {
+  datasetBasePath: "https://cdn.jsdelivr.net/gh/savar25/trade-data@main/sankey-datasets",
+  yearBasePath: "https://cdn.jsdelivr.net/gh/savar25/trade-data@main/year",
+  rawYearBasePath: "https://raw.githubusercontent.com/savar25/trade-data/main/year"
+};
+</script>
+<script src="https://cdn.jsdelivr.net/gh/savar25/trade-data@main/sankey-data.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/savar25/trade-data@main/trade-resource-data.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/savar25/trade-data@main/chart.js"></script>
 </body>
 </html>
