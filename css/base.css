@@ -4077,7 +4077,7 @@ body.sidebar-hidden #openNav {
 }
 /* Common circle background styling for menu toggle icons */
 .menuToggleHolderMap .material-icons.circle-bg {
-  color: rgba(255, 255, 255, 0.6);
+  /* color: rgba(255, 255, 255, 0.6); */
   font-size: 34px;
 }
 .dark .menuToggleHolderMap .material-icons.circle-bg {
@@ -4095,7 +4095,7 @@ body.sidebar-hidden #openNav {
 .menu-toggle-arrow {
   font-size: 28px;
   font-weight: 500;
-  color: #aaa;
+  /* color: #aaa; */
 }
 /* Ensure icon positioning is stable */
 #widgetDetailsMenuControl .material-icons,
