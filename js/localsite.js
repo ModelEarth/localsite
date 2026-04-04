@@ -5211,4 +5211,81 @@ function setupPanelMenuEvents(panelId, panelType) {
   });
 }
 
+// Universal top navigation offset.
+// Tracks the combined height of fixed/sticky elements occupying the top of the viewport:
+//   1. #main-header (sticky, gains height when #headerbar is visible)
+//   2. #filterFieldsHolder when .filterFieldsHolderFixed is present
+//   3. #local-header (non-sticky initial header) when it is still in the viewport
+// Exposes window.topNavOffset (number, pixels) and the --top-nav-offset CSS custom property
+// so any fixed element can use var(--top-nav-offset) without hardcoding header heights.
+// Event sources: MutationObserver (attribute/class changes) + IntersectionObserver on
+// #local-header (fires when it scrolls in/out of view). No scroll polling.
+function initTopNavOffset() {
+  // These may be null at call time if elements are injected dynamically; waitForElm
+  // below will populate them once available and re-run computeTopNavOffset.
+  var mainHeader = null;
+  var filterHolder = null;
+
+  function computeTopNavOffset() {
+    var offset = 0;
+    if (mainHeader) {
+      offset += mainHeader.getBoundingClientRect().height;
+    }
+    if (filterHolder && filterHolder.classList.contains('filterFieldsHolderFixed')) {
+      offset += filterHolder.offsetHeight;
+    }
+    // When no sticky/fixed element contributes, check whether #local-header (the
+    // non-sticky page-load header) is still at the top of the viewport.
+    if (offset === 0) {
+      var lh = document.getElementById('local-header');
+      if (lh) {
+        var lhBottom = lh.getBoundingClientRect().bottom;
+        if (lhBottom > 0) { offset = Math.round(lhBottom); }
+      }
+    }
+    window.topNavOffset = offset;
+    document.documentElement.style.setProperty('--top-nav-offset', offset + 'px');
+  }
+
+  if (typeof waitForElm === 'function') {
+    // #main-header may be injected dynamically; capture it and recompute once available.
+    waitForElm('#main-header').then(function(mh) {
+      mainHeader = mh;
+      computeTopNavOffset();
+    });
+
+    // Watch #headerbar for class changes (headerbarhide added/removed) and inline style
+    // changes (jQuery .hide()/.show()), both of which affect #main-header's rendered height.
+    waitForElm('#headerbar').then(function(hb) {
+      new MutationObserver(computeTopNavOffset).observe(hb, {
+        attributes: true,
+        attributeFilter: ['class', 'style']
+      });
+      computeTopNavOffset();
+    });
+
+    // Watch filterFieldsHolder for the filterFieldsHolderFixed class being added/removed.
+    waitForElm('#filterFieldsHolder').then(function(fh) {
+      filterHolder = fh;
+      new MutationObserver(computeTopNavOffset).observe(fh, {
+        attributes: true,
+        attributeFilter: ['class']
+      });
+      computeTopNavOffset();
+    });
+
+    // #local-header is non-sticky; use IntersectionObserver to fire when it scrolls
+    // in/out of the viewport — the scroll-away case not captured by MutationObservers.
+    waitForElm('#local-header').then(function(lh) {
+      new IntersectionObserver(computeTopNavOffset, { threshold: 0 }).observe(lh);
+    });
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initTopNavOffset);
+} else {
+  initTopNavOffset();
+}
+
 consoleLog("end localsite");

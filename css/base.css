@@ -4,6 +4,7 @@ Used in localsite, modelearth, io, neighborhood, trees
 */
 :root {
     --header-height: 80px;  /* Define header height as CSS variable */
+    --top-nav-offset: var(--header-height);  /* Combined height of fixed top elements; updated by initTopNavOffset() in localsite.js */
     --side-nav-width: 67px;
     --bg-primary: #F9FAFB;
     --bg-secondary: #FFFFFF;
@@ -1320,7 +1321,6 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     color: #fff;
     text-decoration: none;
 }
-*/
 .btn {
   color: #343434;
   text-decoration: none;
@@ -1328,6 +1328,8 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .btn:hover {
   color: #fff;
 }
+*/
+
 #hero-rect .btn:link, #hero-rect .btn:visited {
   color: #fff;
 }
@@ -3166,10 +3168,9 @@ body.sidebar-hovered {
 
 /* Navigation Menu */
 #side-nav-absolute {
-    position: absolute;
-    top: var(--header-height);
-    bottom: 0px;
-    height: calc(100vh - var(--header-height));
+    position: fixed;
+    top: var(--top-nav-offset, var(--header-height));
+    height: calc(100vh - var(--top-nav-offset, var(--header-height)));
     display: flex;
     flex-direction: row;
     overflow-y: auto;
@@ -3450,7 +3451,7 @@ body.sidebar-hovered {
     padding-right: 20px;
   }
   #side-nav {
-    top: var(--header-height, 60px);
+    top: var(--top-nav-offset, var(--header-height, 60px));
   }
   
   /* Expanded nav arrows on mobile - larger with circle background */

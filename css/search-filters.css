@@ -563,6 +563,10 @@ input.filterClick[type="text"] {
 @media (max-width: 800px) {
     #keywordsTB {
         min-width: 100px;
+        max-width: 100px;
+    }
+    #geoview_select {
+      displayX: none;
     }
 }
 @container (max-width: 400px) {
@@ -1059,4 +1063,46 @@ input.filterClick[type="text"] {
 #mainHero #filterFieldsHolder > #showNavColumn {
   color: #fff;
   background-color: rgba(33,33,33,0.3);
+}
+
+#filterFieldToggleInHeader {
+    display: none !important;
+}
+
+#filterFieldToggleInBar {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    min-width: 44px;
+    cursor: pointer;
+    position: relative;
+    margin-top:18px;
+}
+
+#filterFieldToggleInBar i {
+    font-size: 32px;
+    color: #888;
+    cursor: pointer;
+}
+
+#filterFieldToggleInBar .filter-toggle-circle {
+    font-size: 32px;
+}
+
+#geoviewSelectHolder {
+    align-items: center;
+    gap: 8px;
+}
+
+@media (min-width: 601px) {
+    #filterFieldToggleInBar {
+        display: none !important;
+    }
+}
+
+@media (max-width: 600px) {
+    #geoview_select {
+        display: none !important;
+    }
 }
