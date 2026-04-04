@@ -1,13 +1,21 @@
+<div markdown="1" class="local" style="display:none;">
+## Div Content as Markdown
+Include markdown="1" on div tags to process as markdown.
+
+<!-- TEST -->
+</div>
+
+
 ## Localsite Nav
 
 The&nbsp;[localsite&nbsp;repo](https://github.com/modelearth/localsite/) provides a static framework for displaying navigation and maps from json&nbsp;APIs, Google Sheets, and&nbsp;.CSV&nbsp;files.
 
 ## Get Involved
 
-[DreamStudio](https://dreamstudio.com) - Collaborative Data Science, ML Forecasts and AI Insights  
+[DreamStudio](https://dreamstudio.com) - Collaborative Data Science, ML and AI Insights  
 [Webroot Setup](https://model.earth/webroot/) - Localsite Starter Steps, simple push/pull cmds
-[PartnerTools](https://github.com/PartnerTools/webroot) - Base webroot with Rust Team and Vercel Chat
-[Model.Earth](https://model.earth) - Environmental Impacts, International Tradeflow data
+[PartnerTools](https://github.com/PartnerTools/webroot) - Base webroot with Rust endpoints and Vercel chat
+[Model.Earth](https://model.earth) - Environmental Impacts, International Trade Flow
 
 
 ## Embed Datascapes

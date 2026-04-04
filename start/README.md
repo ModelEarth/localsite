@@ -2,7 +2,7 @@
 <a href="https://model.earth/community/start/">View current GitHub page as a web page</a>
 </div>
 
-<h1 style="font-size:32px">Starter Samples</h1>
+<h1>Starter Samples</h1>
 
 ### Localsite Setup and Development
 

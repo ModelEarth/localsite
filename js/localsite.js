@@ -429,6 +429,38 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
 function getHash() {
   return (mix(getHashOnly(),hiddenhash)); // Includes hiddenhash
 }
+function ensureHideWhenGeoviewStyle() {
+  if (document.getElementById('hide-when-geoview-style')) return;
+  var style = document.createElement('style');
+  style.id = 'hide-when-geoview-style';
+  style.textContent = '.hash-has-geoview .hideWhenGeoview{display:none !important;}';
+  document.head.appendChild(style);
+}
+function isEarthHashValue(token) {
+  return typeof token === 'string' && token.indexOf('/wind/surface/') >= 0 && token.indexOf('orthographic=') >= 0;
+}
+function syncDerivedHiddenhashFromHashOnly() {
+  let hashOnly = getHashOnly();
+  if (!hashOnly.geoview) {
+    if (isEarthHashValue(hashOnly.earth) || isEarthHashValue(hashOnly[""])) {
+      hiddenhash.geoview = 'earth';
+    } else if (hiddenhash.geoview == 'earth') {
+      delete hiddenhash.geoview;
+    }
+  }
+}
+function syncHideWhenGeoviewFromHash() {
+  let hash = getHash();
+  let hasGeoview = !!hash.geoview;
+  ensureHideWhenGeoviewStyle();
+  document.documentElement.classList.toggle('hash-has-geoview', hasGeoview);
+  if (document.body) {
+    document.body.classList.toggle('hash-has-geoview', hasGeoview);
+  }
+  document.querySelectorAll('.hideWhenGeoview').forEach(function(el) {
+    el.style.display = hasGeoview ? 'none' : '';
+  });
+}
 function getHashOnly() {
   return (function (pairs) {
     if (pairs == "") return {};
@@ -632,6 +664,7 @@ var isPopstateNavigation = false; // Flag to track if we're in a back/forward na
 // Triggers custom hashChangeEvent in multiple widgets.
 // Exception, React widgets use a different process.
 var triggerHashChangeEvent = function () {
+    syncDerivedHiddenhashFromHashOnly();
     // priorHash includes remaining values in hiddenhash (which originate from param values in page)
     priorHash = structuredClone(nextPriorHash || {});
     //alert("hiddenhash.geoview " + hiddenhash.geoview);
@@ -643,6 +676,16 @@ var triggerHashChangeEvent = function () {
     // Dispatch the event
     document.dispatchEvent(event);
 };
+document.addEventListener('hashChangeEvent', syncHideWhenGeoviewFromHash, false);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    syncDerivedHiddenhashFromHashOnly();
+    syncHideWhenGeoviewFromHash();
+  });
+} else {
+  syncDerivedHiddenhashFromHashOnly();
+  syncHideWhenGeoviewFromHash();
+}
 
 // COMMON
 function loadScript(url, callback)
@@ -1351,13 +1394,10 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       });
       $(document).on("click", ".showSearch", function(event) {
         showSearchFilter();
-        // Auto-close right navigation on narrow screens
-        if (window.innerWidth <= 1000) {
-            if (typeof goHash === 'function') {
-                goHash({'sidetab':''});
-            } else {
-                updateHash({"sidetab":""});
-            }
+        if (typeof goHash === 'function') {
+            goHash({'sidetab':''});
+        } else {
+            updateHash({"sidetab":""});
         }
       });
       
@@ -1567,112 +1607,6 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       console.log('%cALERT: JQUERY NOT YET AVAILABLE! JQuery probably needs to be added to calling page.', 'color: red; background: yellow; font-size: 14px');    
     }
   }
-  
-
-  // NULLSCHOOL
-  $(document).on("click", "#earthClose", function(event) { // ZOOM IN
-    $("#nullschoolHeader").hide();
-    $("#hero_holder").show();
-    if (typeof goHash === "function") {
-      goHash({"geoview":""});
-    }
-    event.stopPropagation();
-  });
-  $(document).on("click", "#earthZoom .leaflet-control-zoom-in", function(event) { // ZOOM IN
-    zoomEarth(200);
-    event.stopPropagation();
-  });
-  $(document).on("click", "#earthZoom .leaflet-control-zoom-out", function(event) { // ZOOM IN
-    zoomEarth(-200);
-    event.stopPropagation();
-  });
-  function zoomEarth(zoomAmount) {
-    if (!localObject.earth) {
-      let earthSrc = document.getElementById("mainframe").src; // Only returns the initial cross-domain uri.
-      localObject.earth = getEarthObject(earthSrc.split('#')[1]);
-    }
-    // Add 100 to orthographic map zoom
-    let orthographic = localObject.earth.orthographic.split(",");
-    localObject.earth.orthographic = orthographic[0] + "," + orthographic[1] + "," + (+orthographic[2] + zoomAmount);
-    
-    /*
-    let theMonth = 6;
-    let theDay = 1;
-    let theHour = 0;
-
-    let monthStr = String(theMonth).padStart(2, '0');
-    let dayStr = String(theDay).padStart(2, '0');
-    let hourStr = String(theHour).padStart(2, '0');
-    $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " " + theHour + ":00 GMT (7 PM EST)");
-    */
-
-    let earthUrl = "https://earth.nullschool.net/#";
-    if (localObject.earth.date) {
-      earthUrl += localObject.earth.date + "/" + localObject.earth.time + "/";
-    } else {
-      earthUrl += "current/";
-    }
-    earthUrl += localObject.earth.mode + "/overlay=" + localObject.earth.overlay + "/orthographic=" + localObject.earth.orthographic;
-    loadIframe("mainframe", earthUrl);
-    //loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/" + hourStr + "00Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
-  }
-  function getEarthObject(url) {
-    console.log("map.js getEarthObject " + url);
-    if (url == undefined) {
-      console.log("BUG - getEarthObject url undefined");
-      return;
-    }
-    let urlPart = url.split('/');
-    let params = {};
-    if (urlPart.length > 6) { // URL contains date and time
-      params.date = urlPart[0] + "/" + urlPart[1] + "/" + urlPart[2];
-      params.time = urlPart[3];
-      params.mode = urlPart[4] + "/" + urlPart[5] + "/" + urlPart[6];
-    } else {
-      params.mode = urlPart[1] + "/" + urlPart[2] + "/" + urlPart[3];
-    }
-    for (let i = 4; i < urlPart.length; i++) {
-        if(!urlPart[i])
-            continue;
-        if (i==0 && urlPart[i].indexOf("=") == -1) {
-          params[""] = urlPart[i];  // Allows for initial # params without =.
-          continue;
-        }
-        let hashPair = urlPart[i].split('=');
-        params[decodeURIComponent(hashPair[0]).toLowerCase()] = decodeURIComponent(hashPair[1]);
-     }
-     return params;
-  }
-  function delay(time) {
-    return new Promise(resolve => setTimeout(resolve, time));
-  }
-  async function loopMap() {
-    await delay(200);
-    let theMonth = 6;
-    let theDay = 1;
-    let theHour = 0;
-    while (theDay <= 20) {
-      let monthStr = String(theMonth).padStart(2, '0');
-      let dayStr = String(theDay).padStart(2, '0');
-      let hourStr = String(theHour).padStart(2, '0');
-      $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " " + theHour + ":00 GMT (7 PM EST)");
-
-      loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/" + hourStr + "00Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
-      await delay(1000);
-
-      $("#mapText").html("NO<sub>2</sub> - " + monthStr  + "/" + dayStr + "/2022 " + " 12:00 GMT (7 AM EST)");
-      loadIframe("mainframe","https://earth.nullschool.net/#2022/" + monthStr + "/" + dayStr + "/1200Z/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");  
-      await delay(1000);
-
-      theDay += 1;
-      //theHour += 2;   
-    }
-  }
-  $(document).ready(function () {
-    // Run animation - add a button for this
-    //loopMap();
-  });
-  // END NULLSCHOOL
 
 }, 10); // End block, could move to end of jQuery loadScript.
 
@@ -2268,6 +2202,12 @@ function showSearchFilter() {
     });
     $('html,body').scrollTop(0);
     loadFilters = true;
+    // template-main.html may still be loading; once its container arrives, load filter.html into it
+    waitForElm('#filterFieldsHolder').then(function() {
+      if (!document.getElementById('filterFieldContent')) {
+        $("#filterFieldsHolder").load(local_app.web_root() + "/localsite/map/filter.html");
+      }
+    });
   } else {
     let filterTop = $("#filterFieldsHolder").offset().top - window.pageYOffset;
     consoleLog("showSearchFilter #filterFieldsHolder offset top: " + filterTop);
@@ -2300,7 +2240,7 @@ function showSearchFilter() {
     //$('#datascape').prepend(expandIcon);
 
     if (loadFilters) {
-      waitForElm('#datascape #filterFieldContent').then((elm) => {
+      waitForElm('#filterFieldContent').then((elm) => {
         revealFilters();
       });
     }
@@ -2334,28 +2274,48 @@ function revealFilters() {
   $('html,body').scrollTop(0);
 }
 function showGlobalMap(globalMap) { // Used by community/index.html, green-sah
-  $("#nullschoolHeader").show();
+  // If a page manages its own #mainframe outside #mainEarthDisplay, don't create a duplicate.
+  var existingFrame = document.getElementById('mainframe');
+  if (existingFrame && !$('#mainEarthDisplay').find('#mainframe').length) {
+    return;
+  }
 
-  if($("#globalMapHolder").length <= 1) {
-    //$("#globalMapHolder").html('<iframe src="https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
-    
+  $("#mainEarthDisplay").show();
+
+  if (!existingFrame) {
     // Two steps prevent loading error
     $("#globalMapHolder").html('<iframe src="" class="iframe" name="mainframe" id="mainframe"></iframe><div id="mapText" style="padding-left:20px"></div>');
-    
-    loadIframe("mainframe",globalMap);
-
-    // Chem Currents NO2 - Since Wind makes NO2 clouds hard to see
-    //loadIframe("mainframe","https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
-
   }
+
+  var _hashForMap = (typeof getHash === 'function') ? getHash() : {};
+  if (_hashForMap.earth) {
+    loadIframe("mainframe", 'https://earth.nullschool.net/#' + _hashForMap.earth);
+  } else if (_hashForMap['']) {
+    loadIframe("mainframe", 'https://earth.nullschool.net/#' + _hashForMap['']);
+  } else {
+    loadIframe("mainframe", globalMap);
+  }
+
+  includeCSS3(theroot + 'css/nouislider.min.css', '');
+  if (typeof window.setupGlobalMapSlider === 'function') {
+    window.setupGlobalMapSlider(globalMap);
+  } else {
+    loadScript(theroot + 'js/nouislider.min.js', function() {
+      waitForVariable('setupGlobalMapSlider', function() {
+        window.setupGlobalMapSlider(globalMap);
+      });
+    });
+  }
+  // Chem Currents NO2 - Since Wind makes NO2 clouds hard to see
+  //loadIframe("mainframe","https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
 }
 function loadIframe(iframeName, url) {  
   var $iframe = $('#' + iframeName);
   if ($iframe.length) {
       //alert("loadIframe" + url)
       $iframe.attr('src',url);
-      $("#nullschoolHeader #mainbucket").show();
-      $("#nullschoolHeader #earthZoom").show();
+      $("#mainEarthDisplay #mainbucket").show();
+      $(".earth-zoom-controls").show();
       return false;
   }
   return true;
@@ -2412,7 +2372,7 @@ function waitForVariable(variable, callback) { // Declare variable using var sin
 function waitForElm(selector) {
     return new Promise(resolve => {
         if (document.querySelector(selector)) {
-            consoleLog("waitForElm found " + selector);
+            //consoleLog("waitForElm found " + selector);
             return resolve(document.querySelector(selector));
         }
         if (document.body) {
@@ -2426,7 +2386,7 @@ function waitForElm(selector) {
     });
 }
 function waitForElmKickoff(selector, resolve) {
-  consoleLog("waitForElm waiting for " + selector);
+  //consoleLog("waitForElm waiting for " + selector);
   const observer = new MutationObserver(mutations => {
       if (document.querySelector(selector)) {
           resolve(document.querySelector(selector));
@@ -2706,8 +2666,14 @@ function addBrInSpans(html) {
     // inserting stray </p> and <p> tags. The browser's innerHTML parser then auto-closes
     // the span at the first block element, causing </span> to be lost.
     content = content.replace(/<\/?p\b[^>]*>/gi, '');
-    // Add <br> for single newlines, but not after </div>, </span>, or --> (comment close)
-    content = content.replace(/(?<=[^\n])(?<!<\/div>|<\/span>|-->)\n(?=[^\n])/g, '<br>\n');
+    // Add <br> for single newlines, but not after block/void elements or comment close.
+    // Temporarily normalize all <br> variants to a placeholder so the lookbehind catches
+    // them reliably regardless of form (<br>, <br/>, <br />), then restore afterward.
+    // This also preserves intentional <br><br> pairs — the placeholder-to-placeholder
+    // boundary still satisfies the lookbehind, so no extra <br> is inserted between them.
+    content = content.replace(/<br\s*\/?>/gi, '\x00BR\x00');
+    content = content.replace(/(?<=[^\n])(?<!<\/div>|<\/span>|<\/h1>|<\/h2>|<\/h3>|<\/h4>|<\/h5>|<\/h6>|\x00BR\x00|-->)\n(?=[^\n])/g, '<br>\n');
+    content = content.replace(/\x00BR\x00/g, '<br>');
     // Restore HTML comments
     content = content.replace(/\x00COMMENT(\d+)-->/g, function(m, i) {
       return comments[parseInt(i)];
@@ -2717,6 +2683,7 @@ function addBrInSpans(html) {
 }
 
 function loadMarkdown(pagePath, divID, target, attempts, callback) {
+  // Include markdown="1" on div tags to process <div> content as markdown.
   if (typeof attempts === 'undefined') {
     attempts = 1;
   }
@@ -3182,6 +3149,38 @@ function parseYamlScalar(value) {
     return parsed;
 }
 
+function parseModelsitesFile(text) {
+    const options = [];
+    const lines = text.split(/\r?\n/);
+    let current = null;
+
+    for (let i = 0; i < lines.length; i += 1) {
+        const line = lines[i];
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith("#")) {
+            continue;
+        }
+        const header = trimmed.match(/^\[modelsite\s+"([^"]+)"\]$/);
+        if (header) {
+            if (current && current.value && current.label) {
+                options.push(current);
+            }
+            current = { value: header[1] };
+            continue;
+        }
+        const pair = trimmed.match(/^([A-Za-z0-9_-]+)\s*=\s*(.+)$/);
+        if (pair && current) {
+            const key = pair[1];
+            const val = pair[2].trim();
+            current[key] = /^(true|false)$/i.test(val) ? val.toLowerCase() === "true" : val;
+        }
+    }
+    if (current && current.value && current.label) {
+        options.push(current);
+    }
+    return options;
+}
+
 function parseModelsiteYaml(yamlText) {
     const options = [];
     const lines = yamlText.split(/\r?\n/);
@@ -3252,6 +3251,9 @@ function renderModelsiteOptions(selectElm, options) {
         if (config.style) {
             optionElm.style.cssText = String(config.style);
         }
+        if (config.class && String(config.class).split(/\s+/).includes("local")) {
+            optionElm.style.display = "none";
+        }
         if (config.selected === true || String(config.selected).toLowerCase() === "true") {
             optionElm.selected = true;
         }
@@ -3266,27 +3268,30 @@ async function loadModelsiteOptions() {
         : (location.protocol + "//" + location.host);
     const currentOriginRoot = location.protocol + "//" + location.host;
     const candidatePaths = Array.from(new Set([
-        webRoot + "/modelsite.yaml",
-        currentOriginRoot + "/modelsite.yaml",
-        "https://raw.githubusercontent.com/ModelEarth/webroot/main/modelsite.yaml"
+        webRoot + "/modelsites.ini",
+        currentOriginRoot + "/modelsites.ini",
+        webRoot + "/team/modelsites.ini",
+        "https://raw.githubusercontent.com/ModelEarth/team/main/modelsites.ini"
     ]));
 
     for (let i = 0; i < candidatePaths.length; i += 1) {
-        const modelsiteYamlPath = candidatePaths[i];
+        const modelsitePath = candidatePaths[i];
         try {
-            const response = await fetch(modelsiteYamlPath, { cache: "no-store" });
+            const response = await fetch(modelsitePath, { cache: "no-store" });
             if (!response.ok) {
                 continue;
             }
-            const yamlText = await response.text();
-            const parsedOptions = parseModelsiteYaml(yamlText);
+            const text = await response.text();
+            const parsedOptions = modelsitePath.endsWith(".ini")
+                ? parseModelsitesFile(text)
+                : parseModelsiteYaml(text);
             if (parsedOptions.length) {
                 return parsedOptions;
             }
-            consoleLog("No valid entries in " + modelsiteYamlPath + ". Using fallback modelsite options.");
+            consoleLog("No valid entries in " + modelsitePath + ". Using fallback modelsite options.");
         } catch (error) {}
     }
-    consoleLog("modelsite.yaml not found. Using fallback modelsite options.");
+    consoleLog("modelsites.ini not found. Using fallback modelsite options.");
     return fallbackOptions;
 }
 
@@ -3594,14 +3599,7 @@ function setDevmode(devmode) {
     //includeCSS3(local_app.localsite_root() + 'css/dev.css');
     includeCSS3(devCssUrl);
   } else {
-    //removeElement('/localsite/css/dev.css');
     removeElement(getUrlID3(devCssUrl, theroot));
-    // Fallback for legacy/alternate link IDs that may already exist in the DOM.
-    //document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
-    //  if (link.href && link.href.indexOf('/localsite/css/dev.css') >= 0) {
-    //    link.remove();
-    //  }
-    //});
   }
 }
 function setOnlinemode(onlinemode) {
@@ -3630,21 +3628,24 @@ function setGlobecenter(globecenter, promptForCurrentPosition) {
   }
   //alert("Lat: " + $("#globeLongitude").val());
 
-  // Limit to when nullschool already visible.
-  if ($('#nullschoolHeader').is(':visible')) {
+  // Limit to when nullschool already visible and no incoming hash earth value.
+  if ($('#mainEarthDisplay').is(':visible')) {
     if ($("#globeLatitude").val() && $("#globeLongitude").val()) {
-        // Add latlon validation
-        let globeZoom = "800"; // "1037";
+        var _hashCheck = (typeof getHash === 'function') ? getHash() : {};
+        if (!_hashCheck.earth && !_hashCheck['']) {
+          // Add latlon validation
+          let globeZoom = "800"; // "1037";
 
-        // Move these into dropdown attributes
-        if ($("#globeLongitude").val() == "-160") {
-          globeZoom = "300"; // For Pacific
-        } else if ($("#globeLongitude").val() == "80") {
-          globeZoom = "600"; // For India
+          // Move these into dropdown attributes
+          if ($("#globeLongitude").val() == "-160") {
+            globeZoom = "300"; // For Pacific
+          } else if ($("#globeLongitude").val() == "80") {
+            globeZoom = "600"; // For India
+          }
+
+          let latLonZoom = $("#globeLongitude").val() + "," + $("#globeLatitude").val() + "," + globeZoom;
+          showGlobalMap(`https://earth.nullschool.net/#current/wind/surface/level/orthographic=${latLonZoom}`);
         }
-
-        let latLonZoom = $("#globeLongitude").val() + "," + $("#globeLatitude").val() + "," + globeZoom;
-        showGlobalMap(`https://earth.nullschool.net/#current/wind/surface/level/orthographic=${latLonZoom}`);
     }
   }
 }
@@ -3923,7 +3924,9 @@ addEventListener("load", function(){
     return null;
   };
   document.querySelector("body").addEventListener('click', function(e) {
-    $(".hideOnBodyClick").hide();
+    document.querySelectorAll(".hideOnBodyClick").forEach(function(el) {
+      el.style.display = "none";
+    });
     var anchor = getParentAnchor(e.target);
     if(anchor !== null) {
       //$('#log_display').hide();
@@ -4088,7 +4091,7 @@ function formatCell(input, format) {
         }
         // Show up to 15 decimal places, removing trailing zeros
         let formatted = input.toFixed(15).replace(/0+$/, '').replace(/\.$/, '');
-        console.log('Small positive formatting:', input, '->', formatted);
+        //console.log('Small positive formatting:', input, '->', formatted);
         return formatted === '' ? '0' : formatted;
     } else if (input === 0) {
         return '0';
@@ -4145,105 +4148,6 @@ function formatCell(input, format) {
 //console.log(formatCell(99.99, 'easy') + " - BUG, let's avoid adding .0 when rounding");        // Output: "100.0" - 
 //console.log(formatCell(0.0005, 'easy'));      // Output: "5.0e-4"
 // console.log(formatCell(45000000, 'scientific')); // Output: "4.5e+7"
-
-function formatCellX(input, format) {
-    // If format is none or blank, return input as it is.
-    if (format === 'none' || format === '' || input === '') {
-        return ''
-    }
-    input = parseFloat(input); // Convert input to a number
-    // Format as scientific notation
-    if (format === 'scientific') {
-        return input.toExponential(1);
-    }
-
-    // Format as easy
-    if (input >= 1e12) {
-        // Round to billions
-        return (input / 1e12).toFixed(3) + ' Trillion';
-    } else if (input >= 1e9) {
-        // Round to billions
-        return (input / 1e9).toFixed(1) + ' Billion';
-    } else if (input >= 1e6) {
-        // Round to millions
-        return (input / 1e6).toFixed(1) + ' Million';
-    } else if (input >= 1000) {
-        // Round to thousands
-        return (input / 1000).toFixed(1) + ' K';
-    } else if (input >= 1) {
-        // Round to one decimal. Remove .0
-        //console.log("input:" + input + "-")
-        return input.toFixed(1).replace(/\.0$/, '');
-    } else if (input > 0) {
-        // Small positive values - for very small numbers, use named suffixes
-        if (input <= 1e-33) { // decillionth or less
-            return (input / 1e-33).toFixed(3) + ' Decillionth';
-        } else if (input <= 1e-30) { // nonillionth or less
-            return (input / 1e-30).toFixed(3) + ' Nonillionth';
-        } else if (input <= 1e-27) { // octillionth or less
-            return (input / 1e-27).toFixed(3) + ' Octillionth';
-        } else if (input <= 1e-24) { // septillionth or less
-            return (input / 1e-24).toFixed(3) + ' Septillionth';
-        } else if (input <= 1e-21) { // sextillionth or less
-            return (input / 1e-21).toFixed(3) + ' Sextillionth';
-        } else if (input <= 1e-18) { // quintillionth or less
-            return (input / 1e-18).toFixed(3) + ' Quintillionth';
-        } else if (input <= 1e-15) { // quadrillionth or less
-            return (input / 1e-15).toFixed(3) + ' Quadrillionth';
-        } else if (input <= 1e-12) { // trillionth or less
-            return (input / 1e-12).toFixed(3) + ' Trillionth';
-        } else if (input <= 1e-9) { // billionth or less
-            return (input / 1e-9).toFixed(3) + ' Billionth';
-        } else if (input <= 1e-6) { // millionth or less
-            return (input / 1e-6).toFixed(3) + ' Millionth';
-        }
-        // Show up to 15 decimal places, removing trailing zeros
-        let formatted = input.toFixed(15).replace(/0+$/, '').replace(/\.$/, '');
-        return formatted === '' ? '0' : formatted;
-    } else if (input === 0) {
-        return '0';
-    } else if (input <= -1e12) {
-        return (input / 1e12).toFixed(3) + ' Trillion';
-    } else if (input <= -1e9) {
-        return (input / 1e9).toFixed(1) + ' Billion';
-    } else if (input <= -1e6) {
-        return (input / 1e6).toFixed(1) + ' Million';
-    } else if (input <= -1000) {
-        return (input / 1e3).toFixed(1) + ' K';
-    } else if (input <= -1) {
-        // Round to one decimal. Remove .0
-        return input.toFixed(1).replace(/\.0$/, '');
-    } else if (input < 0) {
-        // Small negative values - for very small numbers, use named suffixes
-        if (input <= -1e-33) { // decillionth or less
-            return (input / 1e-33).toFixed(3) + ' Decillionth';
-        } else if (input <= -1e-30) { // nonillionth or less
-            return (input / 1e-30).toFixed(3) + ' Nonillionth';
-        } else if (input <= -1e-27) { // octillionth or less
-            return (input / 1e-27).toFixed(3) + ' Octillionth';
-        } else if (input <= -1e-24) { // septillionth or less
-            return (input / 1e-24).toFixed(3) + ' Septillionth';
-        } else if (input <= -1e-21) { // sextillionth or less
-            return (input / 1e-21).toFixed(3) + ' Sextillionth';
-        } else if (input <= -1e-18) { // quintillionth or less
-            return (input / 1e-18).toFixed(3) + ' Quintillionth';
-        } else if (input <= -1e-15) { // quadrillionth or less
-            return (input / 1e-15).toFixed(3) + ' Quadrillionth';
-        } else if (input <= -1e-12) { // trillionth or less
-            return (input / 1e-12).toFixed(3) + ' Trillionth';
-        } else if (input <= -1e-9) { // billionth or less
-            return (input / 1e-9).toFixed(3) + ' Billionth';
-        } else if (input <= -1e-6) { // millionth or less
-            return (input / 1e-6).toFixed(3) + ' Millionth';
-        }
-        // Show up to 15 decimal places, removing trailing zeros
-        let formatted = input.toFixed(15).replace(/0+$/, '').replace(/\.$/, '');
-        return formatted === '' || formatted === '-' ? '0' : formatted;
-    } else {
-        // Fallback for any edge cases
-        return input.toExponential(1);
-    }
-}
 
 // AnythingLLM left side navigation header adjustment
 // Monitors header visibility and adjusts top positioning while keeping content within flexMain
@@ -5305,6 +5209,83 @@ function setupPanelMenuEvents(panelId, panelType) {
       }
     }
   });
+}
+
+// Universal top navigation offset.
+// Tracks the combined height of fixed/sticky elements occupying the top of the viewport:
+//   1. #main-header (sticky, gains height when #headerbar is visible)
+//   2. #filterFieldsHolder when .filterFieldsHolderFixed is present
+//   3. #local-header (non-sticky initial header) when it is still in the viewport
+// Exposes window.topNavOffset (number, pixels) and the --top-nav-offset CSS custom property
+// so any fixed element can use var(--top-nav-offset) without hardcoding header heights.
+// Event sources: MutationObserver (attribute/class changes) + IntersectionObserver on
+// #local-header (fires when it scrolls in/out of view). No scroll polling.
+function initTopNavOffset() {
+  // These may be null at call time if elements are injected dynamically; waitForElm
+  // below will populate them once available and re-run computeTopNavOffset.
+  var mainHeader = null;
+  var filterHolder = null;
+
+  function computeTopNavOffset() {
+    var offset = 0;
+    if (mainHeader) {
+      offset += mainHeader.getBoundingClientRect().height;
+    }
+    if (filterHolder && filterHolder.classList.contains('filterFieldsHolderFixed')) {
+      offset += filterHolder.offsetHeight;
+    }
+    // When no sticky/fixed element contributes, check whether #local-header (the
+    // non-sticky page-load header) is still at the top of the viewport.
+    if (offset === 0) {
+      var lh = document.getElementById('local-header');
+      if (lh) {
+        var lhBottom = lh.getBoundingClientRect().bottom;
+        if (lhBottom > 0) { offset = Math.round(lhBottom); }
+      }
+    }
+    window.topNavOffset = offset;
+    document.documentElement.style.setProperty('--top-nav-offset', offset + 'px');
+  }
+
+  if (typeof waitForElm === 'function') {
+    // #main-header may be injected dynamically; capture it and recompute once available.
+    waitForElm('#main-header').then(function(mh) {
+      mainHeader = mh;
+      computeTopNavOffset();
+    });
+
+    // Watch #headerbar for class changes (headerbarhide added/removed) and inline style
+    // changes (jQuery .hide()/.show()), both of which affect #main-header's rendered height.
+    waitForElm('#headerbar').then(function(hb) {
+      new MutationObserver(computeTopNavOffset).observe(hb, {
+        attributes: true,
+        attributeFilter: ['class', 'style']
+      });
+      computeTopNavOffset();
+    });
+
+    // Watch filterFieldsHolder for the filterFieldsHolderFixed class being added/removed.
+    waitForElm('#filterFieldsHolder').then(function(fh) {
+      filterHolder = fh;
+      new MutationObserver(computeTopNavOffset).observe(fh, {
+        attributes: true,
+        attributeFilter: ['class']
+      });
+      computeTopNavOffset();
+    });
+
+    // #local-header is non-sticky; use IntersectionObserver to fire when it scrolls
+    // in/out of the viewport — the scroll-away case not captured by MutationObservers.
+    waitForElm('#local-header').then(function(lh) {
+      new IntersectionObserver(computeTopNavOffset, { threshold: 0 }).observe(lh);
+    });
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initTopNavOffset);
+} else {
+  initTopNavOffset();
 }
 
 consoleLog("end localsite");

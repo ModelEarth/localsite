@@ -224,9 +224,10 @@
 	float: left;
 }
 .keywordField {
-	overflow: auto;
+	overflow: visible;
 	clear: none;
 	max-width: 100%;
+	position: relative;
 }
 .keywordField .searchField {
 	display: flex;
@@ -434,6 +435,126 @@ input.filterClick[type="text"] {
     background-color: #22aa22;
 }
 
+.autocomplete-container {
+    align-items: center;
+    position: relative;
+    background-color: #fff;
+    border-radius: 28px;
+    border: 1px solid #444;
+    display: flex;
+    flex-shrink: 0;
+    gap: 4px;
+    height: fit-content;
+    margin: 1px;
+    padding: 0px;
+    width: 100%;
+}
+.autocomplete-container .autocomplete-input {
+    align-items: center;
+    align-self: stretch;
+    background: transparent;
+    border: none;
+    color: var(--gm-3-ref-neutral-neutral-40);
+    display: flex;
+    flex: 1 0 0;
+    font-family: var(--font-family-sans-serif);
+    font-size: 18px;
+    font-weight: 400;
+    height: 48px;
+    line-height: 24px;
+    padding: 0px 8px 0px 24px;
+    box-sizing: border-box;
+}
+.autocomplete-container #loading {
+    margin-left: 24px;
+    font-size: 14px;
+    color: #0f5b9e;
+}
+.autocomplete-results-host {
+    position: relative;
+    overflow: visible !important;
+}
+.autocomplete-results-overlay-host {
+    position: relative;
+    width: min(100%, 400px);
+    height: 0;
+    overflow: visible;
+    z-index: 1002;
+}
+.autocomplete-results {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    background-color: white;
+    border-radius: 0 0 4px 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.autocomplete-results-host > .autocomplete-results {
+    margin-top: 4px;
+    width: 100%;
+}
+.autocomplete-results-overlay-host > .autocomplete-results {
+    margin-top: 4px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+.autocomplete-results li {
+    line-height: 1.4em;
+    padding: 8px 16px;
+    cursor: pointer;
+    background-color: white;
+    border-bottom: 1px solid #eee;
+}
+.autocomplete-results li:hover {
+    background-color: #f0f0f0;
+}
+.autocomplete-container #autocomplete-button {
+    cursor: pointer;
+    flex-shrink: 0;
+    height: 42px;
+    width: 42px;
+}
+.dark .autocomplete-container {
+    background-color: #2a2a2a;
+    border-color: #666;
+}
+.dark .autocomplete-container .autocomplete-input {
+    color: #e0e0e0;
+}
+.dark .autocomplete-container .autocomplete-input::placeholder {
+    color: #888;
+}
+.dark .autocomplete-results {
+    background-color: #2a2a2a;
+    border-color: #666;
+}
+.dark .autocomplete-results li {
+    background-color: #2a2a2a;
+    border-bottom-color: #444;
+}
+.dark .autocomplete-results li:hover {
+    background-color: #3a3a3a;
+}
+.dark #requests pre {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0;
+    border: 1px solid #444;
+}
+.dark #requests a,
+.dark #requests button { opacity: 0.9; }
+.dark #requests a:hover,
+.dark #requests button:hover { opacity: 1; filter: brightness(1.1); }
+
 #keywordsTB {
     width:100%;
     min-width: 100px;
@@ -442,6 +563,10 @@ input.filterClick[type="text"] {
 @media (max-width: 800px) {
     #keywordsTB {
         min-width: 100px;
+        max-width: 100px;
+    }
+    #geoview_select {
+      displayX: none;
     }
 }
 @container (max-width: 400px) {
@@ -938,4 +1063,46 @@ input.filterClick[type="text"] {
 #mainHero #filterFieldsHolder > #showNavColumn {
   color: #fff;
   background-color: rgba(33,33,33,0.3);
+}
+
+#filterFieldToggleInHeader {
+    display: none !important;
+}
+
+#filterFieldToggleInBar {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    min-width: 44px;
+    cursor: pointer;
+    position: relative;
+    margin-top:18px;
+}
+
+#filterFieldToggleInBar i {
+    font-size: 32px;
+    color: #888;
+    cursor: pointer;
+}
+
+#filterFieldToggleInBar .filter-toggle-circle {
+    font-size: 32px;
+}
+
+#geoviewSelectHolder {
+    align-items: center;
+    gap: 8px;
+}
+
+@media (min-width: 601px) {
+    #filterFieldToggleInBar {
+        display: none !important;
+    }
+}
+
+@media (max-width: 600px) {
+    #geoview_select {
+        display: none !important;
+    }
 }

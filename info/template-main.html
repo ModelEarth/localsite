@@ -27,7 +27,7 @@
   <!-- event.stopPropagation() here breaks top icon clicks -->
   <div id="rightTopMenu" onclickX="event.stopPropagation()" class="hideOnBodyClickXX">
     
-    <div id="goatIcons" class="darkDivText" style="background-color:#111; color:#ccc; width:100%; height:55px; padding-right:6px; overflow:hidden">
+    <div id="goatIcons" class="darkDivText" style="background-color:#111; color:#ccc; width:100%; height:55px; padding-right:6px; overflow:hidden; cursor:pointer">
 
       <div style="float:left">
         <div class="closeSideTabs" style="cursor:pointer;">
@@ -1205,8 +1205,8 @@ Displayed by hashChanged() in navigation.js
   }
   #mainbucket {
     position: absolute;
-    right: 80px;
-    bottom: 20px;
+    right: 100px;
+    bottom: 90px;
     padding: 20px;
     font-size: 18px;
     line-height: 28px;
@@ -1221,14 +1221,9 @@ Displayed by hashChanged() in navigation.js
   }
 </style>
 
-<div id="nullschoolHeader" style="position:relative; display:none">
+<div id="mainEarthDisplay" class="earthDisplay" style="position:relative; display:none">
 
-  <div id="earthClose" style="position:absolute;top:13px;right:15px;color:#ccc;cursor:pointer"><i class="material-icons show-on-load" style="font-size:20px;">&#10005;</i></div>
-
-  <div id="earthZoom" class="earthZoom" style="display:none; position:absolute; z-index:100; right:20px; bottom:20px">
-    
-    <div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in">+</a><a class="leaflet-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out">−</a></div>
-  </div>
+  <!-- #earthClose and .earth-zoom-controls created by createEarthZoomControls('mainEarthDisplay') in nouislider.min.js -->
   
 
   <div class="hideMobile">
@@ -1249,7 +1244,7 @@ Displayed by hashChanged() in navigation.js
     <div class="earth georgia" style="display:none">
       <div style="padding-top:5px;overflow:auto" class="hideOnProjectsPage">
         Exploring Earth's systems<br>through collaborative modeling.<br>
-        <a href="projects/" class="btn btn-primary" style="margin-top:10px;">Coding Moonshots</a>
+        <a href="/community/projects/" class="btn btn-primary" style="margin-top:10px;">Coding Moonshots</a>
       </div>
       <div style="display:none" class="projectsPage">
         Build your school projects and dissertations<br>

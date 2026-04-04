@@ -4,9 +4,11 @@ Used in localsite, modelearth, io, neighborhood, trees
 */
 :root {
     --header-height: 80px;  /* Define header height as CSS variable */
+    --top-nav-offset: var(--header-height);  /* Combined height of fixed top elements; updated by initTopNavOffset() in localsite.js */
     --side-nav-width: 67px;
     --bg-primary: #F9FAFB;
     --bg-secondary: #FFFFFF;
+    --bg-tertiary: rgba(0, 0, 0, 0.07);
     --text-primary: #1A1A1A;
     --text-secondary: #6B7280;
     --text-tertiary: #1A1A1A;
@@ -33,6 +35,7 @@ Used in localsite, modelearth, io, neighborhood, trees
     --bg-footer-swatch: #dae8eb;
 }
 .dark {
+    --bg-tertiary: rgba(255, 255, 255, 0.1);
     --bg-secondary: #555;
     --color-tertiaryX: #555;
     --text-secondary: #6B7280; /* too light for icons on team/projects */
@@ -58,8 +61,8 @@ Used in localsite, modelearth, io, neighborhood, trees
   --border-subtle: rgba(55, 53, 47, 0.09);
   --chip-bg: #f3f4f6;
   --chip-text: #343434;
-  --link-color: var(--accent);
-  --link-hover: var(--accent-hover);
+  --link-color: #c96432;
+  --link-hover: #a8502a;
   --font-primaryX: 'Nunito Sans', Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-primary: apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --font-secondary: Georgia, serif;
@@ -907,7 +910,7 @@ hr {
   text-decoration: none;
 }
 .content a:link, .content a:visited, .contentfull a:link, .contentfull a:visited, .content-color a:link, .content-color a:visited {
-  color: #0366d6;
+  /* color: #0366d6; */
 }
 .dark .content a:link, .dark .content a:visited, .dark .content-color a:link, .dark .content-color a:visited  {
   color: #acb;
@@ -1318,7 +1321,6 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     color: #fff;
     text-decoration: none;
 }
-*/
 .btn {
   color: #343434;
   text-decoration: none;
@@ -1326,6 +1328,8 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .btn:hover {
   color: #fff;
 }
+*/
+
 #hero-rect .btn:link, #hero-rect .btn:visited {
   color: #fff;
 }
@@ -3164,10 +3168,9 @@ body.sidebar-hovered {
 
 /* Navigation Menu */
 #side-nav-absolute {
-    position: absolute;
-    top: var(--header-height);
-    bottom: 0px;
-    height: calc(100vh - var(--header-height));
+    position: fixed;
+    top: var(--top-nav-offset, var(--header-height));
+    height: calc(100vh - var(--top-nav-offset, var(--header-height)));
     display: flex;
     flex-direction: row;
     overflow-y: auto;
@@ -3230,7 +3233,7 @@ body.sidebar-hovered {
 }
 
 .nav-link:hover {
-    background: var(--bg-tertiary/80);
+    background: var(--bg-tertiary);
     border-color: var(--border-medium);
     color: var(--text-primary);
     box-shadow: var(--shadow-sm);
@@ -3448,7 +3451,7 @@ body.sidebar-hovered {
     padding-right: 20px;
   }
   #side-nav {
-    top: var(--header-height, 60px);
+    top: var(--top-nav-offset, var(--header-height, 60px));
   }
   
   /* Expanded nav arrows on mobile - larger with circle background */
@@ -4075,7 +4078,7 @@ body.sidebar-hidden #openNav {
 }
 /* Common circle background styling for menu toggle icons */
 .menuToggleHolderMap .material-icons.circle-bg {
-  color: rgba(255, 255, 255, 0.6);
+  /* color: rgba(255, 255, 255, 0.6); */
   font-size: 34px;
 }
 .dark .menuToggleHolderMap .material-icons.circle-bg {
@@ -4093,7 +4096,7 @@ body.sidebar-hidden #openNav {
 .menu-toggle-arrow {
   font-size: 28px;
   font-weight: 500;
-  color: #aaa;
+  /* color: #aaa; */
 }
 /* Ensure icon positioning is stable */
 #widgetDetailsMenuControl .material-icons,
@@ -4162,8 +4165,8 @@ body.sidebar-hidden #openNav {
   transform: translate(-50%, -50%);
 }
 #filterFieldToggleHolder {
-  width: 93px;
-  min-width: 93px;
+  width: 54px;
+  min-width: 54px;
   cursor: pointer;
 }
 #filterFieldToggleInHeader {
@@ -4181,38 +4184,55 @@ body.sidebar-hidden #openNav {
   color: #888;
   cursor: pointer;
 }
+#filterFieldToggleHolder .filter-toggle-circle,
+#filterFieldToggleInHeader .filter-toggle-circle {
+  font-size: 32px;
+}
 #filterFieldToggleIcon,
 #filterFieldToggleIconInHeader,
 .filter-field-toggle-icon {
   position: absolute !important;
-  font-size: 28px;
+  display: block;
+  width: 13px;
+  height: 3px;
+  transform: translate(-50%, -50%);
 }
-/*
-#filterFieldToggleHolder:not(.filter-toggle-forward) #filterFieldToggleIcon {
-  font-size: 28px;
+.filter-field-toggle-icon .filter-toggle-dot {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #666;
 }
-*/
-#filterFieldToggleHolder.filter-toggle-forward .filter-field-toggle-icon,
-#filterFieldToggleInHeader.filter-toggle-forward .filter-field-toggle-icon {
-  font-size: 28px;
+.filter-field-toggle-icon .filter-toggle-dot:nth-child(1) {
+  left: 0;
+}
+.filter-field-toggle-icon .filter-toggle-dot:nth-child(2) {
+  left: 5px;
+}
+.filter-field-toggle-icon .filter-toggle-dot:nth-child(3) {
+  left: 10px;
 }
 @media (max-width: 400px) {
   #filterFieldToggleHolder i,
   #filterFieldToggleInHeader i {
     font-size: 36px;
   }
+  #filterFieldToggleHolder .filter-toggle-circle,
+  #filterFieldToggleInHeader .filter-toggle-circle {
+    font-size: 36px;
+  }
   #filterFieldToggleIcon,
   #filterFieldToggleIconInHeader,
   .filter-field-toggle-icon {
-    font-size: 32px;
+    width: 13px;
+    height: 3px;
+    transform: translate(-50%, -50%);
   }
-  #filterFieldToggleHolder:not(.filter-toggle-forward) .filter-field-toggle-icon,
-  #filterFieldToggleInHeader:not(.filter-toggle-forward) .filter-field-toggle-icon {
-    font-size: 32px;
-  }
-  #filterFieldToggleHolder.filter-toggle-forward .filter-field-toggle-icon,
-  #filterFieldToggleInHeader.filter-toggle-forward .filter-field-toggle-icon {
-    font-size: 32px;
+  .filter-field-toggle-icon .filter-toggle-dot {
+    width: 4px;
+    height: 4px;
   }
 }
 @media (max-width: 600px) {
@@ -4245,4 +4265,61 @@ body.sidebar-hidden #openNav {
     margin-left: 0;
     margin-right: 0;
   }
+}
+
+.earth-control {
+    cursor: auto;
+    clear: both;
+    position: relative;
+    z-index: 400;
+    pointer-events: visiblePainted;
+    pointer-events: auto;
+}
+.earth-bar a {
+    display: block;
+    width: 32px;
+    height: 32px;
+    font-size: 30px;
+    font-weight: bolder;
+    color: #fff;
+    background-color: #555;
+    border: 0px;
+    border-radius: 6px;
+    margin-left: 4px;
+    text-decoration: none;
+    text-align: center;
+    line-height: 26px;
+    vertical-align: center;
+}
+.earth-bar a:hover {
+  background-color: #666;
+}
+.earth-control-zoom-in {
+  margin-bottom: 6px;
+}
+#earthPlayInFilters {
+  display: none;
+  min-width: 42px;
+  padding: 0 2px 0 0;
+  color: #888;
+  cursor: pointer;
+}
+#earthPlayInFilters .play-pause-icon {
+  font-size: 35px;
+}
+#earthPlayInFilters:hover,
+#earthPlayInFilters:focus {
+  color: #333;
+}
+#earthPlayInFilters .material-icons {
+  position: static;
+  transform: none;
+  line-height: 1;
+}
+body.dark #earthPlayInFilters {
+  color: #bbb;
+}
+body.dark #earthPlayInFilters:hover,
+body.dark #earthPlayInFilters:focus {
+  color: #fff;
 }
