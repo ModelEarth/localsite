@@ -5234,14 +5234,15 @@ function initTopNavOffset() {
     if (filterHolder && filterHolder.classList.contains('filterFieldsHolderFixed')) {
       offset += filterHolder.offsetHeight;
     }
-    // When no sticky/fixed element contributes, check whether #local-header (the
-    // non-sticky page-load header) is still at the top of the viewport.
-    if (offset === 0) {
-      var lh = document.getElementById('local-header');
-      if (lh) {
-        var lhBottom = lh.getBoundingClientRect().bottom;
-        if (lhBottom > 0) { offset = Math.round(lhBottom); }
-      }
+    // Always include the visible portion of #local-header (non-sticky page-load header).
+    // Math.max ensures the offset never drops below local-header's bottom edge while it is
+    // still in the viewport — prevents fixed navs from overlapping local-header content
+    // when the filter bar first becomes sticky. When local-header is not visible,
+    // lhBottom <= 0 and this has no effect.
+    var lh = document.getElementById('local-header');
+    if (lh) {
+      var lhBottom = lh.getBoundingClientRect().bottom;
+      if (lhBottom > offset) { offset = Math.round(lhBottom); }
     }
     window.topNavOffset = offset;
     document.documentElement.style.setProperty('--top-nav-offset', offset + 'px');

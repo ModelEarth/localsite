@@ -1559,7 +1559,7 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
         const navHTML = `
             <div id="side-nav" class="sidebar ${initialClasses}${!this.isCollapsed && !this.isMobile && !this.isHidden ? ' expanded' : ' collapsed'}" style="${initialStyle}">
                       
-                <div id="side-nav-absolute">
+                <div id="side-nav-fixed">
 
                     <div id="side-nav-content">
                         <div id="side-nav-header"><button id="nav-close-btn" class="nav-x" title="Close navigation">✕</button></div>
@@ -7838,12 +7838,12 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         }
         */
 
-        waitForElm('#side-nav-absolute').then((elm) => {
+        waitForElm('#side-nav-fixed').then((elm) => {
             // For map list
             let listColumnElement = "<div id='listcolumn' class='listcolumn pagecolumn sidelist pagecolumnLow pagecolumnLower' style='display:none'><div class='listHeader'><div class='hideSideList nav-x' style='position:absolute;right:0;top:0;z-index:1;margin-top:0px'>✕</div><h1 class='listTitle'></h1><div class='listSubtitle'></div><div class='sideListSpecs'></div></div><div id='listmain'><div id='listcolumnList'></div></div><div id='listInfo' class='listInfo content'></div></div>\r";
         
             if(document.getElementById("main-nav") == null) {
-                let prependTo = "#side-nav-absolute";
+                let prependTo = "#side-nav-fixed";
                 // Includes listColumnElement with #listcolumn
                 $(prependTo).append("<div id='main-nav' class='main-nav pagecolumn noprint sidecolumnLeft pagecolumnLow liteDiv' style='display:none; min-height:300px'><div class='hideSide main-nav-close-btn nav-x' style='position:absolute;right:8px;top:8px;z-index:1;margin-top:0px'>✕</div><div class='navcolumnBar'></div><div class='main-nav-scroll'><div id='navcolumnTitle' class='maincat' style='display:none'></div><div id='listLeft'></div><div id='cloneLeftTarget'></div></div></div>" + listColumnElement); //  listColumnElement will be blank if already applied above.
                 $("#mapFilters").prependTo($("#main-layout"));
@@ -8157,7 +8157,6 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         if(document.getElementById("footer") == null) {
             $("#main-content").append( "<div id='main-footer' class='flexfooter noprint'></div>\r" );
         } else {
-            //$("#footer").addClass("flexfooter");
             $("#footer").prepend( "<div id='main-footer' class='flexfooter noprint'></div>\r" );
         }
         if (location.host.indexOf('localhost') >= 0 && param.showfooter != false && !param.footer) {
@@ -8286,12 +8285,16 @@ waitForElm('#bodyloaded').then((elm) => {
 
     // Move main-footer to the end of main-layout
     
-    let foundTemplate = false;
-    // When the template (map/index.html) becomes available
-    waitForElm('#templateLoaded').then((elm) => {
-      foundTemplate = true;
-      $("#main-footer").appendTo("#main-content");
-    });
+	    let foundTemplate = false;
+	    // When the template (map/index.html) becomes available
+	    waitForElm('#templateLoaded').then((elm) => {
+	      foundTemplate = true;
+	      if (document.getElementById("footer") == null) {
+	        $("#main-footer").appendTo("#main-content");
+	      } else {
+	        $("#main-footer").prependTo("#footer");
+	      }
+	    });
     if (foundTemplate == false) { // An initial move to the bottom - occurs when the template is not yet available.
       // Might reactivate
       //$("#main-footer").appendTo("#main-layout");

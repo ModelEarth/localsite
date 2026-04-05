@@ -31,7 +31,7 @@ body {
 #side-nav.expanded {
     width: 250px;
 }
-#side-nav-absolute {
+#side-nav-fixed {
     position: absolute;
     top: var(--header-height);
     bottom: 0px;
