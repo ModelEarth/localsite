@@ -5246,6 +5246,11 @@ function initTopNavOffset() {
     }
     window.topNavOffset = offset;
     document.documentElement.style.setProperty('--top-nav-offset', offset + 'px');
+    var headerbarOffset = mainHeader ? Math.round(mainHeader.getBoundingClientRect().height) : 0;
+    if (headerbarOffset === 0 && filterHolder && filterHolder.classList.contains('filterFieldsHolderFixed')) {
+      headerbarOffset = filterHolder.offsetHeight;
+    }
+    document.documentElement.style.setProperty('--headerbar-offset', headerbarOffset + 'px');
   }
 
   if (typeof waitForElm === 'function') {
