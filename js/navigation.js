@@ -3440,6 +3440,10 @@ catArray = [];
         });
     }
     function applyGeoviewSelection(value) {
+        if (value == "space") {
+            window.location.href = "/space/";
+            return;
+        }
         if (value == "earth" && $("#mainEarthDisplay").is(":visible")) {
             goHash({"geoview":""});
             return;

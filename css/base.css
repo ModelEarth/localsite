@@ -227,9 +227,9 @@ body {
   font-family: var(--font-body);
   line-height: 1.5;
 }
-a,
-a:link,
-a:visited {
+a:not(.btn),
+a:not(.btn):link,
+a:not(.btn):visited {
   color: var(--link-color);
   text-decoration: none;
 }
@@ -909,10 +909,10 @@ hr {
 .content a, .contentfull a, .content-color a {
   text-decoration: none;
 }
-.content a:link, .content a:visited, .contentfull a:link, .contentfull a:visited, .content-color a:link, .content-color a:visited {
+.content a:not(.btn):link, .content a:not(.btn):visited, .contentfull a:not(.btn):link, .contentfull a:not(.btn):visited, .content-color a:not(.btn):link, .content-color a:not(.btn):visited {
   /* color: #0366d6; */
 }
-.dark .content a:link, .dark .content a:visited, .dark .content-color a:link, .dark .content-color a:visited  {
+.dark .content a:not(.btn):link, .dark .content a:not(.btn):visited, .dark .content-color a:not(.btn):link, .dark .content-color a:not(.btn):visited {
   color: #acb;
 }
 .lite { /* Also in DS */
@@ -1273,7 +1273,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 }
 .btn:link,
 .btn:visited {
-  color: var(--chip-text);
+  /* color: var(--chip-text); */
 }
 .btn:hover {
   background: var(--accent-soft);
