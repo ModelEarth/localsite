@@ -13,6 +13,8 @@ Used in localsite, modelearth, io, neighborhood, trees
     --text-secondary: #6B7280;
     --text-tertiary: #1A1A1A;
     --text-muted: #9CA3AF;
+    --text-header: #777;
+    --text-header-hover: #444;
     --accent-green: #10B981;
     --accent-blue: #3B82F6;
     --accent-orange: #F59E0B;
@@ -41,6 +43,8 @@ Used in localsite, modelearth, io, neighborhood, trees
     --text-secondary: #6B7280; /* too light for icons on team/projects */
     --text-secondary: #bbb;
     --text-primary: #eee;
+    --text-header: #aaa;
+    --text-header-hover: #fff;
     --border-light: #aaa;
     --border-medium: #666;
     --bg-footer: #222;

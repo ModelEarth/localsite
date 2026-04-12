@@ -166,6 +166,16 @@ window.TradeShared = (function () {
     if (container) {
       _injectStyles();
       _buildControls(container, options.years || [], options.currencies || ["EUR"]);
+      var attr = document.getElementById("sankey-attribution");
+      if (attr) {
+        var yearEl     = document.getElementById("trade-year-select");
+        var currencyEl = document.getElementById("trade-currency-select");
+        var msg = document.createElement("div");
+        msg.id = "trade-debug";
+        msg.textContent = "trade.js init: year=" + (yearEl ? yearEl.value : "?") + " (" + (yearEl ? yearEl.options.length : 0) + " options)" +
+          " currency=" + (currencyEl ? currencyEl.value : "?") + " (" + (currencyEl ? currencyEl.options.length : 0) + " options)";
+        attr.appendChild(msg);
+      }
     }
   }
 

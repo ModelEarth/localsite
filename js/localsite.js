@@ -2369,11 +2369,22 @@ function waitForVariable(variable, callback) { // Declare variable using var sin
 
 // TO DO: Optimize by checking just the nodes in the mutations
 // https://stackoverflow.com/questions/5525071/how-to-wait-until-an-element-exists
+function waitForElmLookup(selector) {
+    const rawSelector = `${selector || ''}`.trim();
+    if (!rawSelector) return null;
+    if (rawSelector.startsWith('.')) {
+        return document.querySelector(rawSelector);
+    }
+    const id = rawSelector.startsWith('#') ? rawSelector.slice(1) : rawSelector;
+    return document.getElementById(id);
+}
+
 function waitForElm(selector) {
     return new Promise(resolve => {
-        if (document.querySelector(selector)) {
+        const existingElement = waitForElmLookup(selector);
+        if (existingElement) {
             //consoleLog("waitForElm found " + selector);
-            return resolve(document.querySelector(selector));
+            return resolve(existingElement);
         }
         if (document.body) {
           waitForElmKickoff(selector,resolve);
@@ -2388,8 +2399,9 @@ function waitForElm(selector) {
 function waitForElmKickoff(selector, resolve) {
   //consoleLog("waitForElm waiting for " + selector);
   const observer = new MutationObserver(mutations => {
-      if (document.querySelector(selector)) {
-          resolve(document.querySelector(selector));
+      const foundElement = waitForElmLookup(selector);
+      if (foundElement) {
+          resolve(foundElement);
           observer.disconnect();
       }
   });

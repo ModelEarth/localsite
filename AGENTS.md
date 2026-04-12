@@ -25,6 +25,46 @@ Include .dark mode css. Set responsive layouts based on parent div widths rather
 
 material-icons are available to pages that include localsite/js/localsite.js
 
+### Loading JavaScript and CSS Files Dynamically
+
+Use these functions from localsite/js/localsite.js to load external files at runtime:
+
+#### loadScript(url, callback)
+Loads a JavaScript file once; prevents double-loading by keying on the URL. Fires `callback` when the script is ready.
+
+```javascript
+loadScript('/cv/common/index.js', function () {
+  // index.js is loaded; safe to call its exported APIs
+  window.CVRenderer.render('detailed.json', onDone);
+});
+```
+
+#### includeCSS3(url)
+Appends a `<link rel="stylesheet">` to `<head>` once. Prevents double-loading by keying on the URL. No callback — stylesheets apply immediately after insertion.
+
+```javascript
+includeCSS3('/cv/common/cv.css');
+```
+
+#### Swappable stylesheets (e.g. theme switching)
+When you need to swap CSS at runtime rather than load it once, manage the `<link>` element directly by updating its `href`:
+
+```javascript
+let themeLink = document.getElementById('myThemeStylesheet');
+if (!themeLink) {
+  themeLink = document.createElement('link');
+  themeLink.id = 'myThemeStylesheet';
+  themeLink.rel = 'stylesheet';
+  themeLink.type = 'text/css';
+  document.head.appendChild(themeLink);
+}
+themeLink.href = `/themes/${encodeURIComponent(theme)}/style.css`;
+```
+
+Do **not** use `includeCSS3` for swappable stylesheets — it is intended for stylesheets that are loaded once and never changed.
+
+---
+
 ### Alert Messages
 
 Avoid including \n line breaks in alerts since they prevent text from being copied.
