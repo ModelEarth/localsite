@@ -10,6 +10,7 @@ New index.html pages can use a copy of the template:
 /localsite/start/template/index.html
 
 The template .html includes localsite.js and base.css
+Use css in localsite/css/base.css for -- :root, .dark, .btn, card, panel and radius styles rather than creating page-specific css styles.
 
 **UTF-8 Character Encoding**: Always include `<meta charset="UTF-8">` in the `<head>` section of new HTML pages to ensure proper character rendering and prevent display issues with special characters.
 
@@ -41,10 +42,6 @@ loadScript('/cv/common/index.js', function () {
 
 #### includeCSS3(url)
 Appends a `<link rel="stylesheet">` to `<head>` once. Prevents double-loading by keying on the URL. No callback — stylesheets apply immediately after insertion.
-
-```javascript
-includeCSS3('/cv/common/cv.css');
-```
 
 #### Swappable stylesheets (e.g. theme switching)
 When you need to swap CSS at runtime rather than load it once, manage the `<link>` element directly by updating its `href`:

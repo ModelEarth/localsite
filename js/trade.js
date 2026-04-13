@@ -39,16 +39,15 @@ window.TradeShared = (function () {
     style.textContent =
       "#trade-shared-controls {" +
       "  display:flex; flex-wrap:wrap; gap:1.5em; align-items:center;" +
-      "  padding:0.75em 1em; background:#f4f6f8;" +
-      "  border:1px solid #dde1e7; border-radius:6px; margin-bottom:0.75em;" +
+      "  padding:0.5em 0 0.5em;" +
       "}" +
       "#trade-shared-controls label {" +
       "  display:flex; align-items:center; gap:0.5em;" +
-      "  font-size:0.93em; color:#333;" +
+      "  font-size:0.93em; color:var(--text-primary);" +
       "}" +
       "#trade-shared-controls select {" +
       "  padding:0.25em 0.5em; font-size:0.93em;" +
-      "  border:1px solid #ccc; border-radius:4px; background:#fff;" +
+      "  border:1px solid #ccc; border-radius:4px; background:var(--bg-tertiary);" +
       "}" +
       "#trade-shared-controls input[type=range] { width:120px; cursor:pointer; }" +
       "#trade-topn-label { font-weight:600; min-width:2em; text-align:right; }";
@@ -77,11 +76,11 @@ window.TradeShared = (function () {
     yearLabel.appendChild(yearSelect);
     container.appendChild(yearLabel);
 
-    // Indicator
+    // Factors
     var metricLabel = document.createElement("label");
-    metricLabel.appendChild(document.createTextNode("Indicator: "));
+    metricLabel.appendChild(document.createTextNode("Factors: "));
     var metricSelect = document.createElement("select");
-    metricSelect.id = "trade-metric-select";
+    metricSelect.id = "factor";
     Object.keys(METRICS).forEach(function (key) {
       var opt = document.createElement("option");
       opt.value = key; opt.textContent = METRICS[key].label;
@@ -108,9 +107,9 @@ window.TradeShared = (function () {
     currencyLabel.appendChild(currencySelect);
     container.appendChild(currencyLabel);
 
-    // Top flows
+    // Inflows
     var topnLabel = document.createElement("label");
-    topnLabel.appendChild(document.createTextNode("Top flows: "));
+    topnLabel.appendChild(document.createTextNode("Inflows: "));
     var topnSlider = document.createElement("input");
     topnSlider.type = "range"; topnSlider.id = "trade-topn-slider";
     topnSlider.min = "5"; topnSlider.max = "50"; topnSlider.step = "1";
@@ -193,7 +192,7 @@ window.TradeShared = (function () {
     }
     if (partial.metric !== undefined && partial.metric !== _state.metric) {
       _state.metric = partial.metric;
-      var ms = document.getElementById("trade-metric-select");
+      var ms = document.getElementById("factor");
       if (ms) { ms.value = partial.metric; }
       changed = true;
     }
