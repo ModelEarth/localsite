@@ -35,6 +35,10 @@ Used in localsite, modelearth, io, neighborhood, trees
     --bg-header-text: #333;
     --bg-footer: #dae8eb;
     --bg-footer-swatch: #dae8eb;
+    --btn-radius: 999px;
+    --panel-radius: 16px;
+    --card-radius: 12px;
+    --control-radius: 8px;
 }
 .dark {
     --bg-primary: #222;
@@ -1338,17 +1342,25 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   color: #fff;
 }
 
-.dark .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white) {
+/*
+.dark .btn {
+  background-color: #375a7f;
+}
+*/
+
+.dark .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):not(.btn-clear) {
   color: #fff;
   background-color: #375a7f;
   border: 1px solid #375a7f;
 }
+
 .dark .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):hover,
-.dark .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):focus {
+.dark .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):not(.btn-clear):focus {
   background-color: #304454;
   border-color: #304454;
   color: #fff;
 }
+
 
 /* color is !important so surrounding a href color from menu.css does not override */
 .btn-primary {
@@ -1370,12 +1382,16 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     border-color: #6fa1d8;
 }
 .btn-clear {
-    background-color: var(--color-whitetextborder);
-    border-color: #222;
+    background-color: none;
+    background: none;
+    border-color: #aaa;
     color: #222 !important;
 }
 .dark .btn-clear {
     background-color: var(--color-whitetextborder);
+    background-color: none;
+    background: none;
+    border: 1px solid #375a7f !important;
     border-color: #fff;
     color: #fff !important;
 }

@@ -69,8 +69,18 @@ function updateStyleAbout(typographyValue) {
 </div>
 
 <div class="content contentpadding">
-<div class="samples-section">
-  <div class="samples-title" id="samplesTitle">Georgia Elements</div>
+<div class="samples-section" data-corner-radius="rounded">
+  <div class="samples-header">
+    <div class="samples-title" id="samplesTitle">Georgia Elements</div>
+    <div class="samples-header-controls">
+      <label class="samples-control-label" for="cornerRadius">Corner Radius</label>
+      <select id="cornerRadius">
+        <option value="rounded">Rounded</option>
+        <option value="less-rounded">Less Rounded</option>
+        <option value="rectangle">Rectangle</option>
+      </select>
+    </div>
+  </div>
   
   <div class="component-group">
     <div class="component-label">Buttons</div>
@@ -453,6 +463,8 @@ const pushHash = typeof goHash === 'function' ? goHash : writeHash;
 
 // Typography toggle functionality
 const typographySelect = document.getElementById('typographySelect');
+const cornerRadiusSelect = document.getElementById('cornerRadius');
+const samplesSection = document.querySelector('.samples-section');
 const localThemeClasses = ['georgia', 'notion', 'claude', 'openai', 'codex', 'grok', 'xai'];
 const localTypographyThemes = localThemeClasses.concat(['base']);
 const cvTypographyThemes = [
@@ -682,6 +694,29 @@ function updateSamplesTitle(typographyValue) {
   }
 }
 
+function normalizeCornerRadiusValue(value) {
+  if (value === 'less-rounded' || value === 'rectangle') {
+    return value;
+  }
+  return 'rounded';
+}
+
+function applyCornerRadiusSelection(cornerRadiusValue, persistValue) {
+  const normalizedValue = normalizeCornerRadiusValue(cornerRadiusValue);
+  if (!samplesSection || !cornerRadiusSelect) {
+    return;
+  }
+
+  samplesSection.dataset.cornerRadius = normalizedValue;
+  if (cornerRadiusSelect.value !== normalizedValue) {
+    cornerRadiusSelect.value = normalizedValue;
+  }
+
+  if (persistValue) {
+    localStorage.setItem('cornerRadiusSelection', normalizedValue);
+  }
+}
+
 function syncSharedStylelook(typographyValue, persistCookie) {
   const normalizedValue = normalizeTypographyStyleValue(typographyValue);
   if (persistCookie && typeof Cookies !== 'undefined') {
@@ -727,6 +762,14 @@ function applyTypographySelection(typographyValue, persistCookie) {
 }
 
 function initializeTypographyDemo() {
+  applyCornerRadiusSelection(localStorage.getItem('cornerRadiusSelection') || 'rounded', false);
+
+  if (cornerRadiusSelect) {
+    cornerRadiusSelect.addEventListener('change', function() {
+      applyCornerRadiusSelection(this.value, true);
+    });
+  }
+
   if (!initializeTypographySelect()) {
     return;
   }
