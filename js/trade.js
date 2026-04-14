@@ -5,10 +5,10 @@
 window.TradeShared = (function () {
 
   var METRICS = {
-    CO2_total:        { label: "CO\u2082 Emissions",  unit: "Gt CO\u2082", scale: 1e12, sourceKeys: ["CO2_total"],                                 scoreDirection: "lower"  },
-    Water_total:      { label: "Water Use",           unit: "Gm\u00B3",    scale: 1e9,  sourceKeys: ["Water_total"],                                scoreDirection: "lower"  },
+    amount:           { label: "Amount Spent",        unit: "M EUR",       scale: 1,    sourceKeys: ["amount"],                                     scoreDirection: "higher" },
     Employment_total: { label: "Employment",          unit: "M jobs",      scale: 1e6,  sourceKeys: ["Employment_total", "Employment_people_total"], scoreDirection: "higher" },
-    amount:           { label: "Amount Spent",        unit: "M EUR",       scale: 1,    sourceKeys: ["amount"],                                     scoreDirection: "higher" }
+    Water_total:      { label: "Water Use",           unit: "Gm\u00B3",    scale: 1e9,  sourceKeys: ["Water_total"],                                scoreDirection: "lower"  },
+    CO2_total:        { label: "CO\u2082 Emissions",  unit: "Gt CO\u2082", scale: 1e12, sourceKeys: ["CO2_total"],                                 scoreDirection: "lower"  }
   };
 
   var CURRENCY_NAMES = {
