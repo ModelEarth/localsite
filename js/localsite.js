@@ -3280,10 +3280,10 @@ async function loadModelsiteOptions() {
         : (location.protocol + "//" + location.host);
     const currentOriginRoot = location.protocol + "//" + location.host;
     const candidatePaths = Array.from(new Set([
-        webRoot + "/modelsites.ini",
-        currentOriginRoot + "/modelsites.ini",
-        webRoot + "/team/modelsites.ini",
-        "https://raw.githubusercontent.com/ModelEarth/team/main/modelsites.ini"
+        webRoot + "/sites.yaml",
+        currentOriginRoot + "/sites.yaml",
+        webRoot + "/team/sites.yaml",
+        "https://raw.githubusercontent.com/ModelEarth/team/main/sites.yaml"
     ]));
 
     for (let i = 0; i < candidatePaths.length; i += 1) {
@@ -3303,7 +3303,7 @@ async function loadModelsiteOptions() {
             consoleLog("No valid entries in " + modelsitePath + ". Using fallback modelsite options.");
         } catch (error) {}
     }
-    consoleLog("modelsites.ini not found. Using fallback modelsite options.");
+    consoleLog("sites.yaml not found. Using fallback modelsite options.");
     return fallbackOptions;
 }
 
