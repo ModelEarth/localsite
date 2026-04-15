@@ -254,7 +254,7 @@ function loadMap1(calledBy, show, dp_incoming) {
       //  = $("#state_select").find(":selected").val()
       let kilometers_wide = $("#state_select").find(":selected").attr("km");
       //zoom = 1/kilometers_wide * 1800000;
-      zoom = zoomFromKm2(kilometers_wide,theState);
+      dp.zoom = zoomFromKm2(kilometers_wide,theState);
       dp.latitude = $("#state_select").find(":selected").attr("lat");
       dp.longitude = $("#state_select").find(":selected").attr("lon");
       //alert("dp.longitude " + dp.longitude)
@@ -3198,13 +3198,10 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
 
       // Originally only map1 was getting updated.
 
-      console.log("Removing prior layer:", priorLayer, "from both maps");
-      // Remove prior layer from both maps when switching topics
-      if (overlays1[priorLayer]) {
-        map1.removeLayer(overlays1[priorLayer]);
-      }
-      if (overlays2[priorLayer]) {
-        map2.removeLayer(overlays2[priorLayer]);
+      console.log("Removing prior layer:", priorLayer, "from", whichmap);
+      // Each map removes only its own prior layer to avoid removing newly added layers from the other map
+      if (overlays[priorLayer]) {
+        map.removeLayer(overlays[priorLayer]);
       }
     }
     //alert("addOverlay - typeof overlays[dataTitle] " + typeof overlays[dataTitle])
@@ -3851,13 +3848,16 @@ function hashChangedMap() {
               let kilometers_wide = $("#state_select").find(":selected").attr("km");
               //zoom = 1/kilometers_wide * 1800000;
       
-              if (theState == "HI") { // Hawaii
-                  zoom = 6
-              } else if (kilometers_wide > 1000000) { // Alaska
+              if (kilometers_wide > 1000000) { // Alaska
                   zoom = 4
+              } else if (kilometers_wide > 600000) { // Texas-scale
+                  zoom = 6
+              } else if (kilometers_wide > 105000) { // CA and similar medium-large states
+                  zoom = 7
               } else {
-                  zoom = 7; // For Georgia map
+                  zoom = 8; // Default for most states
               }
+              if (["CA","KY"].includes(theState)) { zoom = zoom - 1; }
               dp.latitude = $("#state_select").find(":selected").attr("lat");
               dp.longitude = $("#state_select").find(":selected").attr("lon");
               //alert("dp.longitude  " + dp.longitude)
@@ -3918,23 +3918,17 @@ $(document).ready(function () {
 
 function zoomFromKm2(kilometers_wide, theState) {
   //alert(kilometers_wide) // undefined for the 1st of 3.
-  let zoom = 5;
+  let zoom = 8; // Default for most states
   if (!kilometers_wide) return zoom;
   if (kilometers_wide > 1000000) { // Alaska
     zoom = 4
-  } else if (kilometers_wide > 600000) { // Texas
-    zoom = 5
-  } else if (kilometers_wide > 105000) { // Hawaii and Idaho
+  } else if (kilometers_wide > 600000) { // Texas-scale
     zoom = 6
+  } else if (kilometers_wide > 105000) { // CA, ID and similar medium-large states
+    zoom = 7
   }
-  if (theState == "AL" || theState == "AR" || theState == "GA" || theState == "CO" || theState == "IA") { // Zoom closer for some states
-    zoom = zoom + 1;
-  }
-  if (theState == "HI" || theState == "IN") {
-    zoom = zoom + 2;
-  }
-  if (theState == "DE") {
-    zoom = zoom + 3;
+  if (["CA","KY"].includes(theState)) { // States needing one step more zoomed out
+    zoom = zoom - 1;
   }
   return zoom;
 }
