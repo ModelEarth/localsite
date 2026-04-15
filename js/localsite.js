@@ -3161,38 +3161,6 @@ function parseYamlScalar(value) {
     return parsed;
 }
 
-function parseModelsitesFile(text) {
-    const options = [];
-    const lines = text.split(/\r?\n/);
-    let current = null;
-
-    for (let i = 0; i < lines.length; i += 1) {
-        const line = lines[i];
-        const trimmed = line.trim();
-        if (!trimmed || trimmed.startsWith("#")) {
-            continue;
-        }
-        const header = trimmed.match(/^\[modelsite\s+"([^"]+)"\]$/);
-        if (header) {
-            if (current && current.value && current.label) {
-                options.push(current);
-            }
-            current = { value: header[1] };
-            continue;
-        }
-        const pair = trimmed.match(/^([A-Za-z0-9_-]+)\s*=\s*(.+)$/);
-        if (pair && current) {
-            const key = pair[1];
-            const val = pair[2].trim();
-            current[key] = /^(true|false)$/i.test(val) ? val.toLowerCase() === "true" : val;
-        }
-    }
-    if (current && current.value && current.label) {
-        options.push(current);
-    }
-    return options;
-}
-
 function parseModelsiteYaml(yamlText) {
     const options = [];
     const lines = yamlText.split(/\r?\n/);
@@ -3294,9 +3262,7 @@ async function loadModelsiteOptions() {
                 continue;
             }
             const text = await response.text();
-            const parsedOptions = modelsitePath.endsWith(".ini")
-                ? parseModelsitesFile(text)
-                : parseModelsiteYaml(text);
+            const parsedOptions = parseModelsiteYaml(text);
             if (parsedOptions.length) {
                 return parsedOptions;
             }
