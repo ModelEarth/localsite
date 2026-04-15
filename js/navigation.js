@@ -210,7 +210,7 @@ function hashChanged() {
     if (hash.statename) { // From Tabulator state list, convert to 2-char abbrviation
         //alert("hash.statename1 " + hash.statename);
         //alert("hiddenhash.statename1 " + hiddenhash.statename);
-        waitForElm('#state_select').then((elm) => {
+        onElmReady('#state_select', function() {
             //theState = $("#state_select").find(":selected").val();
             //stateAbbrev = $("#state_select[name=\"" + hash.statename + "\"]").val();
             stateAbbrev = $('#state_select option:contains(' + hash.statename + ')').val();
@@ -224,9 +224,9 @@ function hashChanged() {
 
     if (hash.state) {
         stateAbbrev = hash.state.split(",")[0].toUpperCase();
-        waitForElm('#state_select').then((elm) => {
+        onElmReady('#state_select', function() {
             $("#state_select").val(stateAbbrev);
-        });      
+        });
         // Apply early since may be used by changes to geo
         $("#state_select").val(stateAbbrev);
         if (priorHash.state && hash.state != priorHash.state) {
@@ -237,7 +237,7 @@ function hashChanged() {
         $(".locationTabText").text("United States");
     }
     if (hash.state != priorHash.state) {
-        waitForElm('#state_select').then((elm) => {
+        onElmReady('#state_select', function() {
             //alert("hash.state " + hash.state + " stateAbbrev: " + stateAbbrev);
             if (stateAbbrev) {
                 $("#state_select").val(stateAbbrev);
@@ -699,7 +699,7 @@ function hashChanged() {
         }
     }
     if (hash.geoview == "earth" || hash.geoview == "countries") {
-        waitForElm('#state_select').then((elm) => {
+        onElmReady('#state_select', function() {
             $("#state_select").hide();
         });
     } else if (hash.geoview == "country") {
@@ -789,10 +789,10 @@ function hashChanged() {
 
             } else if (hash.state) {
 
-                waitForElm('.region_service').then((elm) => {
+                onElmReady('.region_service', function() {
                     $(".region_service").text(hash.state); // While waiting for full state name
                 });
-                waitForElm('#state_select').then((elm) => {
+                onElmReady('#state_select', function() {
                     //$("#state_select").val(stateAbbrev);
                     console.log("fetch theStateName from #state_select");
                     //$("#state_select").val(hash.state.split(",")[0].toUpperCase());
@@ -800,7 +800,7 @@ function hashChanged() {
                     if ($("#state_select").find(":selected").val()) { // Omits top which has no text
                         theStateName = $("#state_select").find(":selected").text();
                         console.log("fetched " + theStateName);
-                        waitForElm('.region_service').then((elm) => {
+                        onElmReady('.region_service', function() {
                             $(".region_service").text(theStateName + " Industries");
                             if (showTitle) {
                                 $(".region_service").text(theStateName + " - " + hash.show.toTitleCaseFormat());
@@ -1011,7 +1011,7 @@ function hashChanged() {
         let imageUrl;
         if (hash.state) {
             let stateAbbrev = hash.state.split(",")[0].toUpperCase();
-            waitForElm('#state_select').then((elm) => {
+            onElmReady('#state_select', function() {
                 $("#state_select").val(stateAbbrev);
                 if ($("#state_select").find(":selected").val()) { // Omits top which has no text
                     theStateName = $("#state_select").find(":selected").text();
@@ -8264,7 +8264,7 @@ waitForElm('#bodyloaded').then((elm) => {
     
     // #infoFile - Holds input-output widgets
     // View html source: https://model.earth/localsite/info/template-charts.html
-    waitForElm("#main-content").then((elm) => {
+    onElmReady("#main-content", function() {
       $("#main-content").append("<div id='infoFile'></div>");
 
       // Move to bottom of main-content
@@ -8291,7 +8291,7 @@ waitForElm('#bodyloaded').then((elm) => {
     
 	    let foundTemplate = false;
 	    // When the template (map/index.html) becomes available
-	    waitForElm('#templateLoaded').then((elm) => {
+	    onElmReady('#templateLoaded', function() {
 	      foundTemplate = true;
 	      if (document.getElementById("footer") == null) {
 	        $("#main-footer").appendTo("#main-content");

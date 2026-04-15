@@ -130,7 +130,7 @@ function loadMap1(calledBy, show, dp_incoming) {
   if (hash.state) {
     theState = hash.state.split(",")[0].toUpperCase()
   }
-  waitForElm('#state_select').then((elm) => {
+  onElmReady('#state_select', function() {
 
     if (theState != "") {
       //  = $("#state_select").find(":selected").val()
@@ -3709,7 +3709,7 @@ function hashChangedMap() {
     // Why are new map points not appearing
 
     loadScript(theroot + 'js/map-filters.js', function(results) { // map.js depends on map-filters.js
-      waitForElm('#state_select').then((elm) => {
+      onElmReady('#state_select', function() {
         // Async, so this occurs while the rest proceeds.
         let dp = {};
         // Copied from map-filters.js

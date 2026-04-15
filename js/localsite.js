@@ -968,7 +968,7 @@ function loadLocalTemplate() {
       if (typeof relocatedScopeMenu != "undefined") {
         // DROPDOWN #selectScope was REMOVED  relocatedScopeMenu.appendChild(selectScope); // For apps hero
       }
-      waitForElm('#filterClickLocation').then((elm) => {
+      onElmReady('#filterClickLocation', function() {
         if (param.showstates != "false") {
             $("#geoviewSelectHolder").show();
             // Only show counties tab if sub-selections exist
@@ -985,7 +985,7 @@ function loadLocalTemplate() {
         //$("#headerbar").prependTo("#main-container");
       });
       
-      waitForElm('#main-container').then((elm) => {
+      onElmReady('#main-container', function() {
         $("#main-header").insertBefore("#main-container");
 
         //$("#headerbaroffset").prependTo("#main-container");
@@ -1031,14 +1031,14 @@ function hideHeaderBar() {
   $('.bothSideIcons').removeClass('sideIconsLower');
 }
 function showHeaderBar() {
-  waitForElm('#headerbar').then((elm) => {
+  onElmReady('#headerbar', function() {
     console.log("showHeaderBar")
     //$('.headerOffset').show();
     $('#headerbar').show();
     $('#headerbar').removeClass("headerbarhide");
     $('.bothSideIcons').addClass('sideIconsLower');
     $(".pagecolumn").addClass("pagecolumnLower"); // Didn't seem to be working
-    waitForElm('#main-nav').then((elm) => {
+    onElmReady('#main-nav', function() {
       $("#main-nav").addClass("pagecolumnLower");
     });
     if (param.shortheader != "true") {
@@ -2369,14 +2369,21 @@ function waitForVariable(variable, callback) { // Declare variable using var sin
 
 // TO DO: Optimize by checking just the nodes in the mutations
 // https://stackoverflow.com/questions/5525071/how-to-wait-until-an-element-exists
+function isSimpleClassSelector(selector) {
+  return (selector || "").match(/^\.[^\s>+~#.:[\],]+$/) !== null;
+}
+
+function isSimpleIdSelector(selector) {
+  return (selector || "").startsWith('#') && (selector || "").match(/^[#][^\s>+~.:[\],]+$/) !== null;
+}
+
 function waitForElmLookup(selector) {
     const rawSelector = `${selector || ''}`.trim();
     if (!rawSelector) return null;
-    if (rawSelector.startsWith('.')) {
-        return document.querySelector(rawSelector);
+    if (isSimpleClassSelector(rawSelector)) {
+        return document.getElementsByClassName(rawSelector.slice(1))[0] || null;
     }
-    const isSimpleIdSelector = rawSelector.startsWith('#') && /^[#][^\s>+~.:[\],]+$/.test(rawSelector);
-    if (isSimpleIdSelector) {
+    if (isSimpleIdSelector(rawSelector)) {
         return document.getElementById(rawSelector.slice(1));
     }
     try {
@@ -2388,12 +2395,11 @@ function waitForElmLookup(selector) {
 }
 
 function waitForElm(selector) {
+    const existingElement = waitForElmLookup(selector);
+    if (existingElement) {
+        return Promise.resolve(existingElement);
+    }
     return new Promise(resolve => {
-        const existingElement = waitForElmLookup(selector);
-        if (existingElement) {
-            //consoleLog("waitForElm found " + selector);
-            return resolve(existingElement);
-        }
         if (document.body) {
           waitForElmKickoff(selector,resolve);
         } else {
@@ -2403,6 +2409,15 @@ function waitForElm(selector) {
           });
         }
     });
+}
+
+function onElmReady(selector, callback) {
+  const existingElement = waitForElmLookup(selector);
+  if (existingElement) {
+    callback(existingElement);
+    return;
+  }
+  waitForElm(selector).then(callback);
 }
 function waitForElmKickoff(selector, resolve) {
   //consoleLog("waitForElm waiting for " + selector);
