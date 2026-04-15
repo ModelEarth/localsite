@@ -3232,7 +3232,7 @@ body.sidebar-hovered {
     display: flex;
     align-items: center;
     padding: 12px 12px 12px 12px;
-    background: none;
+    background: var(--bg-secondary);
     border: 0px solid transparent;
     border-radius: 50px;
     color: var(--text-secondary);

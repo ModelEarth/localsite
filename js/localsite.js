@@ -2375,8 +2375,16 @@ function waitForElmLookup(selector) {
     if (rawSelector.startsWith('.')) {
         return document.querySelector(rawSelector);
     }
-    const id = rawSelector.startsWith('#') ? rawSelector.slice(1) : rawSelector;
-    return document.getElementById(id);
+    const isSimpleIdSelector = rawSelector.startsWith('#') && /^[#][^\s>+~.:[\],]+$/.test(rawSelector);
+    if (isSimpleIdSelector) {
+        return document.getElementById(rawSelector.slice(1));
+    }
+    try {
+        return document.querySelector(rawSelector);
+    } catch (error) {
+        const id = rawSelector.startsWith('#') ? rawSelector.slice(1) : rawSelector;
+        return document.getElementById(id);
+    }
 }
 
 function waitForElm(selector) {
