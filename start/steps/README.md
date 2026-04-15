@@ -46,7 +46,7 @@ On Windows:
 The localsite repo should now be visible at [http://localhost:8887/localsite](http://localhost:8887/localsite)  
 ([Other http server options](../http-server) and [VS Code issue to resolve](../http-server).)  
 
-IN a custom webroot you can add an index.html redirect to point at the repo you're working in the most.
+In a custom webroot you can add an index.html redirect to point at the repo you're working in the most.
 
 	<script language="JavaScript">window.location="localsite/"</script>
 
@@ -55,11 +55,10 @@ IN a custom webroot you can add an index.html redirect to point at the repo you'
 You'll typicaly only need a couple of the repos locally when making edits.  
 All the repos below are viewable at [model.earth](https://model.earth). Each repo is a subfolder. Example: [model.earth/projects](https://model.earth/projects)
 
-We generally avoid creating branches. Make your edits in a fork, then send a Pull Request (PR). We love when you edit README.md files to help keep our TO DOs current. Add your first name where you're working and send a PR. Also send Loren an email whenever you submit a Pull Request.
+We generally avoid creating branches in parent repos. Make your edits in a fork (in your main branch), then send a Pull Request (PR). Until we pull your fork, any further change you make in your fork's main branch will automatically be added to your pending PR. If you're not ready to push something, that's the one great time to work in a branch other than main, in your fork.
 
+We love when you edit README.md files to help keep our TO DOs and documentation current. Add your first name (and optionally last initial) where you're working on a TO DO, and send a PR so others see you have work in progress. Also send Loren an email whenever you submit a Pull Request, and consider sharing in our Discord.
 
-
- 
 Turn on GitHub Pages for any repo you fork by clicking the Settings icon, then Pages.
 
 ### Fork one or two repos you plan to edit
@@ -457,7 +456,7 @@ You can point a domain at all the repos in your Github account with the steps be
 - Avoid putting referenced files in your [github username].github.io root repo because it won't be the root of your site when you view on localhost.  
 - Fork the "[localsite](https://github.com/modelearth/localsite/)" repo into your GitHub account if you'd like to include it's functionality in any of your sites. Turn on GitHub pages to display at YourDomain.com/localsite/  
 
-We sometimes [use Github .submodules](../submodules/) to deploy multiple repos into a single [Cloudflare site](../cloudflare/). A super high traffic site can use Cloudflare's free CDN to avoid exceeding limits in Github.
+We[use Github .submodules](../submodules/) to deploy multiple repos into a single [Cloudflare site](../cloudflare/). A high traffic site can use Cloudflare's free CDN to avoid exceeding limits in Github.
 
 ## Ignore a newly added blank .env file
 

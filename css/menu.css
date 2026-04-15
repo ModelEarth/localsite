@@ -737,7 +737,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 	flex: 1 1 auto;
 	min-width: 0; /* Allow map/filter bar to shrink when sidebar opens */
 }
-.dark #main-container  a:link, .dark #main-container  a:visited {
+.dark #main-container a:not(.btn):link, .dark #main-container a:not(.btn):visited {
   color: #acb;
 }
 .dark #main-container  b a:link, .dark #main-container  b a:visited {

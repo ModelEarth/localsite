@@ -13,6 +13,8 @@ Used in localsite, modelearth, io, neighborhood, trees
     --text-secondary: #6B7280;
     --text-tertiary: #1A1A1A;
     --text-muted: #9CA3AF;
+    --text-header: #777;
+    --text-header-hover: #444;
     --accent-green: #10B981;
     --accent-blue: #3B82F6;
     --accent-orange: #F59E0B;
@@ -33,14 +35,20 @@ Used in localsite, modelearth, io, neighborhood, trees
     --bg-header-text: #333;
     --bg-footer: #dae8eb;
     --bg-footer-swatch: #dae8eb;
+    --btn-radius: 999px;
+    --panel-radius: 16px;
+    --card-radius: 12px;
+    --control-radius: 8px;
 }
 .dark {
-    --bg-tertiary: rgba(255, 255, 255, 0.1);
+    --bg-primary: #222;
     --bg-secondary: #555;
-    --color-tertiaryX: #555;
+    --bg-tertiary: rgba(255, 255, 255, 0.1);
     --text-secondary: #6B7280; /* too light for icons on team/projects */
     --text-secondary: #bbb;
     --text-primary: #eee;
+    --text-header: #aaa;
+    --text-header-hover: #fff;
     --border-light: #aaa;
     --border-medium: #666;
     --bg-footer: #222;
@@ -227,9 +235,9 @@ body {
   font-family: var(--font-body);
   line-height: 1.5;
 }
-a,
-a:link,
-a:visited {
+a:not(.btn),
+a:not(.btn):link,
+a:not(.btn):visited {
   color: var(--link-color);
   text-decoration: none;
 }
@@ -246,7 +254,7 @@ a:hover {
   width: 189px !important;
   flex-shrink: 0;
 }
-#side-nav-absolute::-webkit-scrollbar, #side-nav-content::-webkit-scrollbar {
+#side-nav-fixed::-webkit-scrollbar, #side-nav-content::-webkit-scrollbar {
     display: none;
 }
 .main-nav-full {
@@ -282,7 +290,7 @@ a:hover {
   :root {
       --header-height: 60px;
   }
-  #side-nav-absolute {
+  #side-nav-fixed {
     width:  100% !important;
     right: 0px !important;
   }
@@ -909,10 +917,10 @@ hr {
 .content a, .contentfull a, .content-color a {
   text-decoration: none;
 }
-.content a:link, .content a:visited, .contentfull a:link, .contentfull a:visited, .content-color a:link, .content-color a:visited {
+.content a:not(.btn):link, .content a:not(.btn):visited, .contentfull a:not(.btn):link, .contentfull a:not(.btn):visited, .content-color a:not(.btn):link, .content-color a:not(.btn):visited {
   /* color: #0366d6; */
 }
-.dark .content a:link, .dark .content a:visited, .dark .content-color a:link, .dark .content-color a:visited  {
+.dark .content a:not(.btn):link, .dark .content a:not(.btn):visited, .dark .content-color a:not(.btn):link, .dark .content-color a:not(.btn):visited {
   color: #acb;
 }
 .lite { /* Also in DS */
@@ -1273,7 +1281,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 }
 .btn:link,
 .btn:visited {
-  color: var(--chip-text);
+  /* color: var(--chip-text); */
 }
 .btn:hover {
   background: var(--accent-soft);
@@ -1334,17 +1342,25 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   color: #fff;
 }
 
-.dark .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white) {
+/*
+.dark .btn {
+  background-color: #375a7f;
+}
+*/
+
+.dark .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):not(.btn-clear) {
   color: #fff;
   background-color: #375a7f;
   border: 1px solid #375a7f;
 }
+
 .dark .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):hover,
-.dark .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):focus {
+.dark .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white):not(.btn-clear):focus {
   background-color: #304454;
   border-color: #304454;
   color: #fff;
 }
+
 
 /* color is !important so surrounding a href color from menu.css does not override */
 .btn-primary {
@@ -1366,12 +1382,16 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     border-color: #6fa1d8;
 }
 .btn-clear {
-    background-color: var(--color-whitetextborder);
-    border-color: #222;
+    background-color: none;
+    background: none;
+    border-color: #aaa;
     color: #222 !important;
 }
 .dark .btn-clear {
     background-color: var(--color-whitetextborder);
+    background-color: none;
+    background: none;
+    border: 1px solid #375a7f !important;
     border-color: #fff;
     color: #fff !important;
 }
@@ -3167,10 +3187,10 @@ body.sidebar-hovered {
 }
 
 /* Navigation Menu */
-#side-nav-absolute {
+#side-nav-fixed {
     position: fixed;
-    top: var(--top-nav-offset, var(--header-height));
-    height: calc(100vh - var(--top-nav-offset, var(--header-height)));
+    top: var(--headerbar-offset, var(--header-height));
+    height: calc(100vh - var(--headerbar-offset, var(--header-height)));
     display: flex;
     flex-direction: row;
     overflow-y: auto;
@@ -3178,7 +3198,7 @@ body.sidebar-hovered {
     background-colorX: rgb(250, 250, 250);
     z-index: 10050;
 }
-.dark #side-nav-absolute {
+.dark #side-nav-fixed {
     background-color: #666667;
 }
 #side-nav-content {
@@ -3198,7 +3218,7 @@ body.sidebar-hovered {
     overflow: visible;
 }
 
-.sidebar.collapsed #side-nav-absolute {
+.sidebar.collapsed #side-nav-fixed {
     overflow: visible;
 }
 .nav-item {

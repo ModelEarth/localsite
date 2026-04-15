@@ -18,6 +18,80 @@
   text-align: center;
 }
 
+.samples-section {
+  container-type: inline-size;
+}
+
+.samples-section[data-corner-radius="less-rounded"] {
+  --button-radius: var(--control-radius);
+}
+
+.samples-section[data-corner-radius="rectangle"] {
+  --button-radius: 0px;
+}
+
+.samples-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.samples-header .samples-title {
+  margin-bottom: 0;
+}
+
+.samples-header-controls {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.samples-control-label {
+  font-family: var(--font-subheadline);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+#cornerRadius {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 160px;
+  max-width: 100%;
+  padding: 8px 12px;
+  padding-right: 34px;
+  font-family: var(--font-subheadline);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+  background-color: var(--bg-card);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--button-shadow);
+  outline: none;
+  cursor: pointer;
+}
+
+.dark #cornerRadius {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23b8c0cc'/%3E%3C/svg%3E");
+}
+
+#cornerRadius:hover,
+#cornerRadius:focus {
+  border-color: var(--accent);
+}
+
 .palette-overview {
   display: flex;
   align-items: flex-start;
@@ -142,6 +216,22 @@
 
   .palette-main-group {
     flex-basis: auto;
+    width: 100%;
+  }
+}
+
+@container (max-width: 560px) {
+  .samples-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .samples-header-controls {
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+
+  #cornerRadius {
     width: 100%;
   }
 }

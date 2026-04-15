@@ -28,7 +28,7 @@ Copy population lookups [from this CoLab](https://colab.research.google.com/driv
 DONE: Output countries.csv file with 2-char country codes and similar columns to [us-states.csv](https://github.com/ModelEarth/localsite/blob/main/info/data/map-filters/us-states.csv). - Abhishek L
 
 
-TO DO: Move python from our [State Filters CoLab](https://colab.research.google.com/drive/1CsIjLujiiBoGJlIHCBvDZit3QSVg07zR?usp=sharing) into our [data-pipeline admin](../../../../data-pipeline/admin) to annually for both states and countries.
+TO DO: Move python from our [State Filters CoLab](https://colab.research.google.com/drive/1CsIjLujiiBoGJlIHCBvDZit3QSVg07zR?usp=sharing) into our [data-pipeline admin](../../../../data-pipeline/admin) to run annually for both states and countries.
 
 [How to add a Github token to push from CoLab](/localsite/start/steps/github-token/)
 
