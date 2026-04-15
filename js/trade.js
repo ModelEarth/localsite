@@ -39,7 +39,7 @@ window.TradeShared = (function () {
     style.textContent =
       "#trade-shared-controls {" +
       "  display:flex; flex-wrap:wrap; gap:1.5em; align-items:center;" +
-      "  padding:0.5em 0 0.5em;" +
+      "  padding:0 0 0.5em;" +
       "}" +
       "#trade-shared-controls label {" +
       "  display:flex; align-items:center; gap:0.5em;" +
