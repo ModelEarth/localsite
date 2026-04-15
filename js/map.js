@@ -291,11 +291,12 @@ function loadMap1(calledBy, show, dp_incoming) {
       //if (location.host.indexOf('localhost') >= 0) {
         //dp.categories = "farm = Direct from Farm, market = Farmers Markets";
         dp.categories = {
-          "Direct from Farm": {"title":"Direct from Farm","color":"#b2df8a","aliases":["direct from farm","direct-from-farm","on-farm market","on farm market","on-farm-market","farm stand","farm stands"]},
-          "Farmers Markets": {"title":"Farmers Markets","color":"#33a02c","aliases":["farmers market","farmers markets","farmers-market"]}
+          "Farmers Market":      {"title":"Farmers Market",      "color":"#33a02c","aliases":["farmers market"]},
+          "Direct from Farm":    {"title":"Direct from Farm",    "color":"#b2df8a","aliases":["on-farm market"]},
+          "Community Farm":      {"title":"Community Farm","color":"#6a3d9a","aliases":["csa enterprise"]},
+          "Food Hub":            {"title":"Food Hub",            "color":"#ff7f00","aliases":["food hub"]}
         };
-        // Green colors above
-        // #b2df8a, #33a02c 
+        // Green: #33a02c (Farmers Market), #b2df8a (Direct from Farm), Purple: #6a3d9a (CSA), Orange: #ff7f00 (Food Hub)
         dp.valueColumn = "type";
         dp.valueColumnLabel = "Type";
         // https://model.earth/community-data
