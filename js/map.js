@@ -101,6 +101,124 @@ function clearListDisplay() {
 
 let dp = {}; // So available on .detail click for popMapPoint() and zoomMapPoint().
 
+function normalizeCategoryText(value) {
+  if (value === undefined || value === null) {
+    return "";
+  }
+  return value.toString().trim().toLowerCase().replace(/[_-]+/g, " ").replace(/\s+/g, " ");
+}
+function getRowValue(row, keyName) {
+  if (!row || !keyName) {
+    return undefined;
+  }
+  if (row[keyName] !== undefined) {
+    return row[keyName];
+  }
+  let lowerKeyName = keyName.toLowerCase();
+  if (row[lowerKeyName] !== undefined) {
+    return row[lowerKeyName];
+  }
+  let rowKeys = Object.keys(row);
+  for (let i = 0; i < rowKeys.length; i++) {
+    if (rowKeys[i].toLowerCase() === lowerKeyName) {
+      return row[rowKeys[i]];
+    }
+  }
+  return undefined;
+}
+function splitCategoryValues(value) {
+  if (value === undefined || value === null) {
+    return [];
+  }
+  return value.toString().split(",").map(function(categoryValue) {
+    return categoryValue.trim();
+  }).filter(function(categoryValue) {
+    return categoryValue.length > 0;
+  });
+}
+function getConfiguredCategoryMatch(dp, rawValue) {
+  if (!dp || !dp.categories || Array.isArray(dp.categories)) {
+    return null;
+  }
+  let normalizedValue = normalizeCategoryText(rawValue);
+  if (!normalizedValue) {
+    return null;
+  }
+  let categoryKeys = Object.keys(dp.categories);
+  for (let i = 0; i < categoryKeys.length; i++) {
+    let categoryKey = categoryKeys[i];
+    let categoryConfig = dp.categories[categoryKey] || {};
+    let candidates = [categoryKey];
+    if (categoryConfig.title) {
+      candidates.push(categoryConfig.title);
+    }
+    if (Array.isArray(categoryConfig.aliases)) {
+      candidates = candidates.concat(categoryConfig.aliases);
+    }
+    for (let j = 0; j < candidates.length; j++) {
+      if (normalizeCategoryText(candidates[j]) === normalizedValue) {
+        return {"key": categoryKey, "config": categoryConfig};
+      }
+    }
+  }
+  return null;
+}
+function getCategoryKey(dp, rawValue) {
+  let configuredCategory = getConfiguredCategoryMatch(dp, rawValue);
+  if (configuredCategory) {
+    return configuredCategory.key;
+  }
+  return rawValue ? rawValue.toString().trim() : "";
+}
+function getCategoryColor(dp, rawValue) {
+  let configuredCategory = getConfiguredCategoryMatch(dp, rawValue);
+  if (configuredCategory && configuredCategory.config && configuredCategory.config.color) {
+    return configuredCategory.config.color;
+  }
+  if (dp && typeof dp.scale === "function" && rawValue !== undefined && rawValue !== null && rawValue !== "") {
+    return dp.scale(rawValue);
+  }
+  if (dp && dp.color) {
+    return dp.color;
+  }
+  return "#777";
+}
+function categoryValueMatchesFilter(dp, rawValue, filterValue) {
+  let normalizedFilter = normalizeCategoryText(filterValue);
+  if (!normalizedFilter) {
+    return false;
+  }
+  let rawValues = splitCategoryValues(rawValue);
+  if (rawValues.length === 0 && rawValue) {
+    rawValues = [rawValue.toString().trim()];
+  }
+  for (let i = 0; i < rawValues.length; i++) {
+    let rawCategory = rawValues[i];
+    let normalizedRawCategory = normalizeCategoryText(rawCategory);
+    if (!normalizedRawCategory) {
+      continue;
+    }
+    if (normalizedRawCategory === normalizedFilter) {
+      return true;
+    }
+    if (normalizedRawCategory.indexOf(normalizedFilter) >= 0 || normalizedFilter.indexOf(normalizedRawCategory) >= 0) {
+      return true;
+    }
+    let rawConfiguredCategory = getConfiguredCategoryMatch(dp, rawCategory);
+    let filterConfiguredCategory = getConfiguredCategoryMatch(dp, filterValue);
+    if (rawConfiguredCategory && filterConfiguredCategory && rawConfiguredCategory.key === filterConfiguredCategory.key) {
+      return true;
+    }
+    if (rawConfiguredCategory && normalizeCategoryText(rawConfiguredCategory.key) === normalizedFilter) {
+      return true;
+    }
+    if (filterConfiguredCategory && normalizeCategoryText(filterConfiguredCategory.key) === normalizedRawCategory) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // TO DO: Can we avoid calling outside of the localsite repo by files in community, including community/map/starter/embed-map.js 
 function loadMap1(calledBy, show, dp_incoming) {
   if (param["showtopmap"] != "true") { // Prevents older map from appearing at top of new team repo maps
@@ -172,7 +290,10 @@ function loadMap1(calledBy, show, dp_incoming) {
     if (theState) {
       //if (location.host.indexOf('localhost') >= 0) {
         //dp.categories = "farm = Direct from Farm, market = Farmers Markets";
-        dp.categories = {"on-farm-market": {"title":"Direct from Farm","color":"#b2df8a"}, "farmers-market": {"title":"Farmers Markets","color":"#33a02c"}};
+        dp.categories = {
+          "Direct from Farm": {"title":"Direct from Farm","color":"#b2df8a","aliases":["direct from farm","direct-from-farm","on-farm market","on farm market","on-farm-market","farm stand","farm stands"]},
+          "Farmers Markets": {"title":"Farmers Markets","color":"#33a02c","aliases":["farmers market","farmers markets","farmers-market"]}
+        };
         // Green colors above
         // #b2df8a, #33a02c 
         dp.valueColumn = "type";
@@ -208,7 +329,7 @@ function loadMap1(calledBy, show, dp_incoming) {
     dp.stateRequired = "true";
     dp.addlisting = "https://www.ams.usda.gov/services/local-regional/food-directories-update";
     // community/farmfresh/ 
-    dp.mapInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community-data/process/python/farmfresh/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
+    dp.mapInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community-data/locations/farmfresh/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
   } else if (show == "buses") {
     dp.listTitle = "Bus Locations";
     dp.dataset = "https://api.marta.io/buses";
@@ -1487,19 +1608,21 @@ function showList(dp,map) {
 
       } else if (hash.subcat == "null") {
         console.log("Check for subcat ");
-        if (elementRaw[dp.catColumn] == hash.cat && !elementRaw[dp.subcatColumn]) {
+        if (getRowValue(elementRaw, dp.catColumn) == hash.cat && !getRowValue(elementRaw, dp.subcatColumn)) {
           foundMatch++; // Blank subcatgory column found.
         }
       } else if (hash.subcat) {
         // TO DO - include other filters
         //console.log("Check for subcat match for " + hash.subcat + " in " + elementRaw[dp.subcatColumn]);
 
-        if (elementRaw[dp.subcatColumn].toLowerCase().indexOf(hash.subcat.toLowerCase()) >= 0) {
+        let rowSubcatValue = getRowValue(elementRaw, dp.subcatColumn);
+        if (rowSubcatValue && rowSubcatValue.toLowerCase().indexOf(hash.subcat.toLowerCase()) >= 0) {
           foundMatch++; // Subcat found in Subcategory.
         }
       } else if (hash.cat) {
         console.log("Look for cat " + hash.cat + " in catColumn: " + dp.catColumn);
-        if (elementRaw[dp.valueColumn] && elementRaw[dp.valueColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
+        let rowValueColumn = getRowValue(elementRaw, dp.valueColumn);
+        if (rowValueColumn && categoryValueMatchesFilter(dp, rowValueColumn, hash.cat)) {
           foundMatch++; // Cat found in Category valueColumn, which may contain multiple cats
           catFound++;
           console.log("catFound in valueColumn");
@@ -1507,16 +1630,18 @@ function showList(dp,map) {
         if (!foundMatch) {
           //console.log("Attempt cat search " + hash.cat.toLowerCase() + " in " + dp.catColumn);
           
-          if (elementRaw[dp.catColumn]) {
+          let rowCatColumn = getRowValue(elementRaw, dp.catColumn);
+          let rowSubcatColumn = getRowValue(elementRaw, dp.subcatColumn);
+          if (rowCatColumn) {
             //console.log("Column exists: " + elementRaw[dp.catColumn]);
           }
-          if (elementRaw[dp.catColumn] && elementRaw[dp.catColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
+          if (rowCatColumn && categoryValueMatchesFilter(dp, rowCatColumn, hash.cat)) {
             foundMatch++; // Cat found in Category
             catFound++;
             console.log("catFound in catColumn");
           }
           // Also check for the cat in the subcat column.
-          else if (elementRaw[dp.subcatColumn] && elementRaw[dp.subcatColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
+          else if (rowSubcatColumn && categoryValueMatchesFilter(dp, rowSubcatColumn, hash.cat)) {
             foundMatch++; // Cat found in Category
             catFound++;
             console.log("catFound in subcatColumn")
@@ -1620,18 +1745,22 @@ function showList(dp,map) {
       //console.log("element[dp.valueColumn] " + element[dp.valueColumn]);
 
       // Split row's category's on commas.
-      let rowsCatArray = element[dp.valueColumn].split(",");
+      let rowsCatArray = splitCategoryValues(element[dp.valueColumn]);
       for(var i = 0 ; i < rowsCatArray.length ; i++) {
         // Reactivate and test aerospace
         //$("#" + rowsCatArray[i]).prop('checked', true);
-        let catKey = rowsCatArray[i].trim(); // From element[dp.valueColumn] - Uses first value for icon color
+        let catKey = getCategoryKey(dp, rowsCatArray[i]); // From element[dp.valueColumn] - Uses configured key when available
         if(!catList[catKey]) {
           catList[catKey] = {};
-          catList[catKey].count = 1;
-        } else {
-          catList[catKey].count++;
         }
-        iconColor = dp.scale(catKey);
+        if (!Number.isFinite(catList[catKey].count)) {
+          catList[catKey].count = 0;
+        }
+        catList[catKey].count++;
+        if (dp.categories && dp.categories[catKey] && dp.categories[catKey].title && !catList[catKey].title) {
+          catList[catKey].title = dp.categories[catKey].title;
+        }
+        iconColor = getCategoryColor(dp, rowsCatArray[i]);
 
         if (!iconColor && dp.color) { 
           iconColor = dp.color;
@@ -1729,7 +1858,7 @@ function showList(dp,map) {
         // TO REACTIVATE
         
         if (dp.valueColumn && element[dp.valueColumn]) {
-          let bulletColorFromColorScale = dp.scale(element[dp.valueColumn]);
+          let bulletColorFromColorScale = getCategoryColor(dp, element[dp.valueColumn]);
           if (bulletColorFromColorScale != undefined) {
             bulletColor = bulletColorFromColorScale;
           }
@@ -2332,12 +2461,13 @@ function renderCatList(catList,cat) {
           
           // Add the count beside each category.
           if (catList[key].count || dp.categories) {
+            let categoryCount = catList[key].count || 0;
             // The number of occurances of the category
             if (show == "solidwaste" || show == "wastewater") {
               // Show the count
-              catNavSide += "<span>&nbsp;(" + catList[key].count + ")</span>";
-            } else if (catList[key].count) {
-              catNavSide += "<span class='local'>&nbsp;(" + catList[key].count + ")</span>";
+              catNavSide += "<span>&nbsp;(" + categoryCount + ")</span>";
+            } else {
+              catNavSide += "<span class='local'>&nbsp;(" + categoryCount + ")</span>";
             }
           }
 
@@ -3352,7 +3482,7 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
         //console.log("dp.valueColumn value Category: " + element["Category"]);
         
         // A function that returns colors based on the categories in the Values column
-        iconColor = dp.scale(element[dp.valueColumn]);
+        iconColor = getCategoryColor(dp, element[dp.valueColumn]);
 
       } else if (dp.color) {
         iconColor = dp.color;
