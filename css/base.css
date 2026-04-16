@@ -534,7 +534,6 @@ body.dark {
   }
   .floatRight {
     float:none !important;
-    width:100% !important;
     margin-left:0px;
     margin-bottom:40px;
   }
