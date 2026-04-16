@@ -3,30 +3,34 @@
     <div class="swiper-wrapper">
       <div class="swiper-slide" data-hash="explore">
         <img class="imgcrop" src="/localsite/img/hero/daisy.png">
+        <div class="slide-autoplay-toggle swiper-no-swiping noSwipingClass" role="button" tabindex="0" aria-label="Toggle slideshow autoplay"></div>
         <div class="slideText swiper-no-swiping" style="top:48%">
-          <b>Edit Localsite Parameters</b><br>
-          Scroll down to view localsite parameters that you can add to your HTML pages.
+          <b>Dreamstudio Earth</b><br>
+          Collaborative Data Visualization
         </div>
       </div>
 
       <div class="swiper-slide" data-hash="plant">
         <img class="imgcrop" src="/localsite/img/hero/plant.png" style="opacity:0.9;">
+        <div class="slide-autoplay-toggle swiper-no-swiping noSwipingClass" role="button" tabindex="0" aria-label="Toggle slideshow autoplay"></div>
         <div class="slideText slideTextLowerRight">
-          Copy our <a href="/localsite/start/template/" style="color:#fff">starter</a> index.html.
+          <a href="/localsite/start/template/" style="color:#fff">Create a Start Page</a>
         </div>
       </div>
 
       <div class="swiper-slide" fetchpriority="low" data-hash="2to1-ratio" style="position: relative;">
         <img class="imgcrop" loading="lazy" src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <div class="slide-autoplay-toggle swiper-no-swiping noSwipingClass" role="button" tabindex="0" aria-label="Toggle slideshow autoplay"></div>
         <div class="slideText slideTextLowerRight">
-          Add your parameters
+          Water, Energy, Air
         </div>
       </div>
 
       <div class="swiper-slide" fetchpriority="low" data-hash="sun">
         <img class="imgcrop" loading="lazy" src="/localsite/img/hero/solar-rect.png">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white" style="position: relative; border: 10px solid red;"></div>
+        <div class="slide-autoplay-toggle swiper-no-swiping noSwipingClass" role="button" tabindex="0" aria-label="Toggle slideshow autoplay"></div>
         <div class="slideText slideTextLowerRight slideTextRight">
          Tall cropped image example
         </div>
@@ -35,6 +39,7 @@
       <div class="swiper-slide" fetchpriority="low" data-hash="communities">
         <img class="imgcrop" loading="lazy" src="/localsite/img/hero/sustainable-communities.jpg" style="opacity:0.9;width:100%;max-width:3000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+        <div class="slide-autoplay-toggle swiper-no-swiping noSwipingClass" role="button" tabindex="0" aria-label="Toggle slideshow autoplay"></div>
         <div class="slideText slideTextLeft">
           <div class="title">Localsite</div>
           <div class="subtitle">Location Framework</div>
@@ -62,7 +67,14 @@
 
   <div id="slides-controls-shell">
     <div id="swiper-controls-right">
-      <div id="swiper-height-toggle" title="Toggle slideshow height">⇕</div>
+      <div id="swiper-height-toggle" aria-label="Slideshow height controls">
+        <button type="button" class="swiper-height-button swiper-height-up" data-height-direction="up" aria-label="Decrease slideshow height" title="Decrease slideshow height">
+          <span class="swiper-height-triangle" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="swiper-height-button swiper-height-down" data-height-direction="down" aria-label="Increase slideshow height" title="Increase slideshow height">
+          <span class="swiper-height-triangle" aria-hidden="true"></span>
+        </button>
+      </div>
       <div class="swiper-button-play swiper-button-play-lower swiper-button-play-sample1" style="display:none"><i class="material-symbols-outlined">play_arrow</i></div>
       <div class="swiper-button-pause swiper-button-pause-lower swiper-button-pause-sample1" style="display:none"><i class="material-symbols-outlined">pause</i></div>
     </div>
