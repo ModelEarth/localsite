@@ -249,14 +249,15 @@ function loadMap1(calledBy, show, dp_incoming) {
     theState = hash.state.split(",")[0].toUpperCase()
   }
   onElmReady('#state_select', function() {
-
-    if (theState != "") {
-      //  = $("#state_select").find(":selected").val()
-      let kilometers_wide = $("#state_select").find(":selected").attr("km");
+    if (theState) {
+      let normalizedState = theState.split(",")[0].toUpperCase();
+      $("#state_select").val(normalizedState);
+      let selectedState = $("#state_select").find(":selected");
+      let kilometers_wide = selectedState.attr("km");
       //zoom = 1/kilometers_wide * 1800000;
-      dp.zoom = zoomFromKm2(kilometers_wide,theState);
-      dp.latitude = $("#state_select").find(":selected").attr("lat");
-      dp.longitude = $("#state_select").find(":selected").attr("lon");
+      dp.zoom = zoomFromKm2(kilometers_wide, normalizedState);
+      dp.latitude = selectedState.attr("lat");
+      dp.longitude = selectedState.attr("lon");
       //alert("dp.longitude " + dp.longitude)
 
       // The above loads async. 
@@ -2464,13 +2465,7 @@ function renderCatList(catList,cat) {
           // Add the count beside each category.
           if (catList[key].count || dp.categories) {
             let categoryCount = catList[key].count || 0;
-            // The number of occurances of the category
-            if (show == "solidwaste" || show == "wastewater") {
-              // Show the count
-              catNavSide += "<span>&nbsp;(" + categoryCount + ")</span>";
-            } else {
-              catNavSide += "<span class='local'>&nbsp;(" + categoryCount + ")</span>";
-            }
+            catNavSide += "<span>&nbsp;(" + categoryCount + ")</span>";
           }
 
           catNavSide += "</div></div>"

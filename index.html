@@ -56,20 +56,29 @@ body {
   background-color: rgba(33,33,33,0.6);
   border-radius: 30px;
   padding: 30px 40px 30px 40px;
+  z-index: 9;
 }
 .slideTextLeft {
   text-align: left;
   left: 80px;
   top: 90px;
 }
+.slideTextLowerRight {
+  position: absolute;
+  bottom: 52px;
+  right: 10px;
+  z-index: 99999;
+}
 .slideTextRight {
   text-align: left;
   border-radius: 0px;
   border-top-left-radius: 30px;
   border-bottom-left-radius: 30px;
-  right: 0px;
-  bottom: 0px;
-  z-index: 99999;
+  right: 0;
+}
+/* Raise wrapper above the .swiper-button-play overlay (z-index:1) so slide content is selectable */
+#sample1 .swiper-wrapper {
+  z-index: 2;
 }
 .swiper-slide .imgcrop { /* could also use: .swiper-slide img */
     opacity: 0.9;
@@ -169,6 +178,79 @@ text-align:left; overflow:scroll;
 -->
 <link rel='stylesheet' href='/localsite/css/swiper/swiper.css'>
 
+<style>
+/* Extend play/pause hit area 3px upward, bottom stays at 2% */
+.swiper-button-play, .swiper-button-pause {
+  top: calc(2% - 5px);
+}
+/* Override swiper.css max-height: 500px — must come after the link above */
+#sample1 {
+  max-height: 350px;
+  transition: max-height 0.4s ease;
+}
+#sample1.video-playing, #sample1.video-expanded {
+  max-height: 500px;
+}
+/* Slide 42px taller than container so overflow:hidden clips YouTube controls at bottom */
+#sample1 .swiper-slide {
+  height: 392px;
+  transition: height 0.4s ease;
+}
+#sample1.video-playing .swiper-slide, #sample1.video-expanded .swiper-slide {
+  height: 542px;
+}
+/* Center overlaid play button in the visible area above the clipped controls (21px = half of 42px clip) */
+.plyr__control--overlaid {
+  top: calc(50% - 9px);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  right: auto;
+  transition: top 0.4s ease;
+}
+/* Lower play button: material icon, remove PNG background, keep in flow so toggle isn't covered */
+.swiper-button-play-lower, .swiper-button-pause-lower {
+  position: relative;
+  background-image: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.swiper-button-play-lower .material-symbols-outlined,
+.swiper-button-pause-lower .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 700;
+  font-size: 28px;
+  line-height: 1;
+}
+#swiper-height-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  font-size: 32px;
+  user-select: none;
+}
+#swiper-height-toggle:hover { opacity: 1; }
+#swiper-controls-right .material-symbols-outlined,
+#swiper-controls-right #swiper-height-toggle {
+  color: #666;
+  opacity: 0.6;
+}
+.dark #swiper-controls-right .material-symbols-outlined,
+.dark #swiper-controls-right #swiper-height-toggle {
+  color: #e0e0e0;
+  opacity: 0.85;
+}
+.dark .swiper-pagination-bullet {
+  background: #555;
+  opacity: 0.8;
+}
+.dark .swiper-pagination-bullet-active {
+  background: #ddd;
+}
+</style>
+
 <script src='/localsite/js/polyfill.min.js?features=es6,Array.prototype.includes,CustomEvent,Object.entries,Object.values,URL'></script>
 <script src='/localsite/js/plyr.min.js'></script>
 
@@ -185,7 +267,7 @@ text-align:left; overflow:scroll;
         <!-- Oddly the loader icon appears when clicking back to the first slide 
           (when intended pause occurs), so we omit loading icon here. -->
         <!--<div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>-->
-        <div class="slideText" style="top:48%">
+        <div class="slideText swiper-no-swiping" style="top:48%">
           <b>Edit Localsite Parameters</b><br>
           Scroll down to view localsite parameters that you can add to your HTML pages.
         </div>
@@ -195,9 +277,8 @@ text-align:left; overflow:scroll;
       <div class="swiper-slide" data-hash="plant">
         <!-- Also leave off lazy on the second to avoid loading icon. -->
         <img class="imgcrop" src="/localsite/img/hero/plant.png" style="opacity:0.9;">
-        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="slideText" style="position:absolute; bottom:-20px; right: 0px; z-index:999999999">
-          Copy our starter index.html.
+        <div class="slideText slideTextLowerRight">
+          Copy our <a href="/localsite/start/template/" style="color:#fff">starter</a> index.html.
         </div>
       </div>
 
@@ -205,7 +286,7 @@ text-align:left; overflow:scroll;
       <div class="swiper-slide" fetchpriority="low" data-hash="2to1-ratio" style="position: relative;">
         <img class="imgcrop" loading="lazy" src="/localsite/img/hero/2to1-ratio.png" style="opacity:0.9;width:100%;max-width:2000px">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-        <div class="slideText" style="position:absolute; bottom:-20px; right: 0px; z-index:999999999">
+        <div class="slideText slideTextLowerRight">
           Add your parameters
         </div>
       </div>
@@ -216,7 +297,7 @@ text-align:left; overflow:scroll;
         <!--img class="swiper-lazy swiper-blur" src="/localsite/img/hero/solar-rect.png" style="width:100%;max-width:2000px;"-->
         <img class="imgcrop" loading="lazy" src="/localsite/img/hero/solar-rect.png">
         <div class="swiper-lazy-preloader swiper-lazy-preloader-white" style="position: relative; border: 10px solid red;"></div>
-        <div class="slideText slideTextRight">
+        <div class="slideText slideTextLowerRight slideTextRight">
          Tall cropped image example
         </div>
       </div>
@@ -243,7 +324,14 @@ text-align:left; overflow:scroll;
         <script>
             player = new Plyr('#player1', {autopause:'true',hideControls:'true'});
 
+            player.on('play', function() {
+                document.getElementById('sample1').classList.add('video-playing');
+            });
+            player.on('pause', function() {
+                document.getElementById('sample1').classList.remove('video-playing');
+            });
             player.on('ended', function(event) {
+                document.getElementById('sample1').classList.remove('video-playing');
                 player.restart(); // To avoid seeimg menu of other videos.
                 // player.play(); // infinite loop
             });
@@ -257,7 +345,7 @@ text-align:left; overflow:scroll;
             */
             window.player = player;
         </script>
-        <div class="slideTextBox">
+        <div class="slideTextBox swiper-no-swiping">
           <div class="title">Tilford Yard</div>
           <div class="subtitle" data-swiper-parallax="-200"></div>
           <div class="text" data-swiper-parallax="-100">
@@ -291,12 +379,13 @@ text-align:left; overflow:scroll;
   </div>
 
   <!-- Swiper Pagination -->
-  <div style="width:94%"><!-- bug -->
-    <div style="position:relative;float:right;">
-      <div class="swiper-button-play swiper-button-play-lower swiper-button-play-sample1" style="display:none"></div>
-      <div class="swiper-button-pause swiper-button-pause-lower swiper-button-pause-sample1" style="display:none"></div>
+  <div style="width:100%; position:relative;">
+    <div id="swiper-controls-right" style="position:absolute;right:0;top:0;display:flex;align-items:center;padding-right:20px;">
+      <div id="swiper-height-toggle" title="Toggle slideshow height">⇕</div>
+      <div class="swiper-button-play swiper-button-play-lower swiper-button-play-sample1" style="display:none"><i class="material-symbols-outlined">play_arrow</i></div>
+      <div class="swiper-button-pause swiper-button-pause-lower swiper-button-pause-sample1" style="display:none"><i class="material-symbols-outlined">pause</i></div>
     </div>
-    <div style="overflow: auto;">
+    <div style="text-align:center;">
       <div class="swiper-pagination swiper-pagination-sample1" style="margin-top:15px;"></div>
     </div>
   </div>
@@ -326,6 +415,7 @@ text-align:left; overflow:scroll;
 */
 const buildSwiperSlider = sliderElm => {
     const sliderIdentifier = sliderElm.id;
+    let autoplayStopTimer = null;
     const homeSwiper = new Swiper(`#${sliderElm.id}`, {
         slidesPerView: 1,
         spaceBetween: 0,
@@ -344,6 +434,9 @@ const buildSwiperSlider = sliderElm => {
         },
         
         effect: 'fade',
+        fadeEffect: { crossFade: true },
+        autoplay: { delay: 3000 },
+        simulateTouch: false,
         mousewheelX: true, // Avoiding because also invokes verticle scroll on desktop.
         releaseOnEdgesX: true,
 
@@ -391,8 +484,11 @@ const buildSwiperSlider = sliderElm => {
     });
 
     $(".swiper-pagination-" + sliderIdentifier + " .swiper-pagination-bullet").click(function(){
-      $(".swiper-button-pause-" + sliderIdentifier).hide();
-      $(".swiper-button-play-" + sliderIdentifier).show();
+      clearTimeout(autoplayStopTimer);
+      autoplayStopTimer = null;
+      $(".swiper-button-play-" + sliderIdentifier).hide();
+      homeSwiper.autoplay.start();
+      $(".swiper-button-pause-" + sliderIdentifier).show();
     });
     $(".swiper-button-prev-" + sliderIdentifier).click(function(){
       $(".swiper-button-pause-" + sliderIdentifier).hide();
@@ -414,7 +510,8 @@ const buildSwiperSlider = sliderElm => {
       $(".swiper-button-pause-" + sliderIdentifier).show();
       $(".swiper-button-pause-" + sliderIdentifier).addClass("showPauseQuick");
       //alert("stop")
-      setTimeout(() => {
+      autoplayStopTimer = setTimeout(() => {
+        autoplayStopTimer = null;
         $(".swiper-button-pause-" + sliderIdentifier).hide();
         $(".swiper-button-pause-" + sliderIdentifier).removeClass("showPauseQuick"); // to do: figure out why not fading
         $(".swiper-button-pause-" + sliderIdentifier).removeClass("overrideShowPauseQuick"); // Allows pause not to be retained briefly when clicking actual pause button.
@@ -435,6 +532,12 @@ const allSliders = document.querySelectorAll('.swiper-container');
 
 // Loop over all of the fetched sliders and apply Swiper on each one.
 allSliders.forEach(slider => buildSwiperSlider(slider));
+
+document.getElementById('swiper-height-toggle').addEventListener('click', function() {
+  const container = document.getElementById('sample1');
+  const expanded = container.classList.toggle('video-expanded');
+  this.title = expanded ? 'Collapse slideshow height' : 'Expand slideshow height';
+});
 
 //$(".swiper-button-play").show();
 //$(".swiper-button-play").css('opacity', '0.8');
