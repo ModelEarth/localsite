@@ -2402,7 +2402,7 @@ function renderCatList(catList,cat) {
     return; // Avoid rerendering
   }
   if (catList && Object.keys(catList).length > 0) {
-    let catNavSide = "<div class='all_categories'><div class='legendDot'></div>All Categories</div>";
+    let catNavSide = "<div id='catItem-all' class='all_categories'><div class='legendDot'></div>All Categories</div>";
 
     //console.log("Object.keys(catList)");
     //console.log(Object.keys(catList));
@@ -2458,7 +2458,8 @@ function renderCatList(catList,cat) {
               maxCatTitleChars = catTitle.length;
             }
           }
-          catNavSide += "<div title='" + key + "'><div style='background:" + catList[key].color + ";' class='legendDot'></div><div style='overflow:hidden'>" + catTitle;
+          let catItemId = "catItem-" + key.replace(/ /g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
+          catNavSide += "<div id='" + catItemId + "' title='" + key + "'><div style='background:" + catList[key].color + ";' class='legendDot'></div><div style='overflow:hidden'>" + catTitle;
           
           // Add the count beside each category.
           if (catList[key].count || dp.categories) {
@@ -3848,16 +3849,7 @@ function hashChangedMap() {
               let kilometers_wide = $("#state_select").find(":selected").attr("km");
               //zoom = 1/kilometers_wide * 1800000;
       
-              if (kilometers_wide > 1000000) { // Alaska
-                  zoom = 4
-              } else if (kilometers_wide > 600000) { // Texas-scale
-                  zoom = 6
-              } else if (kilometers_wide > 105000) { // CA and similar medium-large states
-                  zoom = 7
-              } else {
-                  zoom = 8; // Default for most states
-              }
-              if (["CA","KY"].includes(theState)) { zoom = zoom - 1; }
+              zoom = zoomFromKm2(kilometers_wide, theState);
               dp.latitude = $("#state_select").find(":selected").attr("lat");
               dp.longitude = $("#state_select").find(":selected").attr("lon");
               //alert("dp.longitude  " + dp.longitude)
@@ -3927,7 +3919,7 @@ function zoomFromKm2(kilometers_wide, theState) {
   } else if (kilometers_wide > 105000) { // CA, ID and similar medium-large states
     zoom = 7
   }
-  if (["CA","KY"].includes(theState)) { // States needing one step more zoomed out
+  if (["CA","KY","ME","MN","MT"].includes(theState)) { // States needing one step more zoomed out
     zoom = zoom - 1;
   }
   return zoom;

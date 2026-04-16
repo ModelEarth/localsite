@@ -249,7 +249,9 @@ function hashChanged() {
     if (priorHash.show && hash.show !== priorHash.show) {
         hideSide("list");
     } else if (hash.state !== priorHash.state) {
-        hideSide("list");
+        if (!($("#mainCatList").length > 0 && $("#mainCatList").is(":visible"))) {
+            hideSide("list");
+        }
 
         // Seemed to get repopulated with Georgia.
         //$(".listTitle").hide(); // Recyclers
@@ -3053,16 +3055,20 @@ function populateFieldsFromHash() {
     waitForElm('#keywordsTB').then((elm) => {
         $("#keywordsTB").val(hash.q);
     });
-    waitForElm('#mainCatList').then((elm) => {
-        if (hash.cat) {
-            var catString = hash.cat.replace(/_/g, ' ');
-            consoleLog("#catSearch val: " + catString);
-            $("#catSearch").val(catString);
-            $('.catList > div').filter(function(){
-                return $(this).text() === catString
-            }).addClass('catListSelected');
-        }
-    });
+    if (hash.cat) {
+        var catString = hash.cat.replace(/_/g, ' ');
+        consoleLog("#catSearch val: " + catString);
+        $("#catSearch").val(catString);
+        waitForElm('#catItem-' + hash.cat).then(function() {
+            $('.catList > div').removeClass('catListSelected');
+            $('#catItem-' + hash.cat).addClass('catListSelected');
+        });
+    } else {
+        waitForElm('#catItem-all').then(function() {
+            $('.catList > div').removeClass('catListSelected');
+            $('#catItem-all').addClass('catListSelected');
+        });
+    }
     /*
     // This occurs in showList when checkboxes are added.
     if (param["search"]) {
