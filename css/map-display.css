@@ -200,6 +200,7 @@
 .catListSelected {
 	border: solid 1px #aaa !important;
 	background-color: #333;
+	color: #fff;
     border-left: solid 5px #aaf !important;
 } 
 #resultsPanel {
