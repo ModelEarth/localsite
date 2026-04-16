@@ -3801,6 +3801,92 @@ catArray = [];
         if ($("#state_select_holder").length) {
             $("#state_select_holder").appendTo("#geoview_statelist").show();
         }
+
+        // Build state quick-list below the dropdown
+        waitForElm('#state_select').then(() => {
+            if (document.getElementById('state_quick_list')) return;
+
+            if (!document.getElementById('state-quick-list-css')) {
+                const style = document.createElement('style');
+                style.id = 'state-quick-list-css';
+                style.textContent = [
+                    '#state_select_holder select { display: none; }',
+                    '#state_quick_list {',
+                    '  margin-top: 4px;',
+                    '  max-height: 350px;',
+                    '  overflow-y: scroll;',
+                    '  min-width: 200px;',
+                    '}',
+                    '#state_quick_list .state-list-item {',
+                    '  padding: 7px 16px;',
+                    '  cursor: pointer;',
+                    '  color: #1A1A1A;',
+                    '  border-bottom: 1px solid var(--border-light, #E5E7EB);',
+                    '  transition: background 0.12s;',
+                    '  font-size: 14px;',
+                    '  line-height: 1.4;',
+                    '}',
+                    '#state_quick_list .state-list-item:first-child {',
+                    '  border-top: 1px solid var(--border-light, #E5E7EB);',
+                    '}',
+                    '#state_quick_list .state-list-item:hover {',
+                    '  background: rgba(0,0,0,0.07);',
+                    '}',
+                    '#state_quick_list .state-list-item.active {',
+                    '  font-weight: 600;',
+                    '}',
+                    '.dark #state_quick_list {',
+                    '  background: var(--bg-primary, #222);',
+                    '}',
+                    '.dark #state_quick_list .state-list-item {',
+                    '  color: #eee;',
+                    '  border-bottom-color: #444;',
+                    '}',
+                    '.dark #state_quick_list .state-list-item:first-child {',
+                    '  border-top-color: #444;',
+                    '}',
+                    '.dark #state_quick_list .state-list-item:hover {',
+                    '  background: rgba(255,255,255,0.1);',
+                    '}'
+                ].join('\n');
+                document.head.appendChild(style);
+            }
+
+            const list = document.createElement('div');
+            list.id = 'state_quick_list';
+
+            document.querySelectorAll('#state_select option').forEach(function(opt) {
+                if (!opt.value) return;
+                if (opt.style.display === 'none') return;
+                const item = document.createElement('div');
+                item.className = 'state-list-item';
+                item.dataset.value = opt.value;
+                item.textContent = opt.text;
+                item.setAttribute('role', 'option');
+                item.setAttribute('tabindex', '0');
+                item.addEventListener('click', function() {
+                    const sel = document.getElementById('state_select');
+                    sel.value = this.dataset.value;
+                    $(sel).trigger('change');
+                });
+                item.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+                });
+                list.appendChild(item);
+            });
+
+            elm.appendChild(list);
+
+            function syncActiveState() {
+                const val = (document.getElementById('state_select') || {}).value || '';
+                document.querySelectorAll('#state_quick_list .state-list-item').forEach(function(el) {
+                    el.classList.toggle('active', el.dataset.value === val);
+                });
+            }
+
+            $(document).on('change', '#state_select', syncActiveState);
+            document.addEventListener('hashChangeEvent', syncActiveState);
+        });
     });
 
     // Move state select to relocatedStateMenu if it exists
@@ -9305,6 +9391,7 @@ $(document).on("click", "#filterClickLocation", function(event) {
         return;
     }
     filterClickLocation();
+    $("#state_select").hide();
     event.stopPropagation();
     return;
 

@@ -3547,7 +3547,11 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
             fillOpacity: 1,
             radius: radius
         }).addTo(layerGroup);
-        circle.setRadius(100);
+        let r2init = 1400 * Math.pow(2, 8 - zoom);
+        if (zoom >= 14 && zoom <= 15) r2init *= 1.4; // levels 4-5 a little larger
+        if (zoom === 16) r2init *= 2.0;
+        if (zoom === 17) r2init *= 1.7;
+        circle.setRadius(whichmap === "map2" ? Math.max(3, r2init) : 100);
         // For both colors above, but it's a light blue that looks like water
         // dp.scale(element[dp.valueColumn])
         // radius was 50.  Aiming for 1 to 10. 8.5 radius arrives from markerRadius(zoom,map)
@@ -3679,11 +3683,13 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
   map.on('zoomend', function() { // zoomend
     //L.layerGroup().eachLayer(function (marker) {
     layerGroup.eachLayer(function (marker) { // This hits every point individually. A CSS change might be less script processing intensive
-      //console.log('zoom ' + map.getZoom());
       if (marker.setRadius) {
-        // Only reached when circles are used instead of map points.
-        console.log("marker.setRadius diabled for test")
-        //marker.setRadius(markerRadius(zoom,map));
+        let z = map.getZoom();
+        let r2 = 1400 * Math.pow(2, 8 - z);
+        if (z >= 14 && z <= 15) r2 *= 1.4; // levels 4-5 a little larger
+        if (z === 16) r2 *= 2.0;
+        if (z === 17) r2 *= 1.7;
+        marker.setRadius(whichmap === "map2" ? Math.max(3, r2) : 100);
       }
     });
 
@@ -3919,7 +3925,7 @@ function zoomFromKm2(kilometers_wide, theState) {
   } else if (kilometers_wide > 105000) { // CA, ID and similar medium-large states
     zoom = 7
   }
-  if (["CA","KY","ME","MN","MT"].includes(theState)) { // States needing one step more zoomed out
+  if (["AZ","CA","HI","KY","ME","MN","MT","NM","NV","WY"].includes(theState)) { // States needing one step more zoomed out
     zoom = zoom - 1;
   }
   return zoom;

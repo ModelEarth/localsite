@@ -383,6 +383,28 @@ input.filterClick[type="text"] {
 .geoviewSelectOption.focused {
     background: #e6e6e6;
 }
+
+/* Dark mode */
+.dark #geoview_container {
+    background: #2a2a2a;
+    border-color: #555;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.dark #geoview_statelist {
+    border-left-color: #555;
+}
+.dark .geoviewSelectOption {
+    color: #ccc;
+}
+.dark .geoviewSelectOption:hover {
+    background: rgba(255,255,255,0.1);
+}
+.dark .geoviewSelectOption.selected {
+    background: rgba(255,255,255,0.12);
+}
+.dark .geoviewSelectOption.focused {
+    background: rgba(255,255,255,0.15);
+}
 .filterClickActive {
   background-color: #eee;
 }
