@@ -12,4 +12,4 @@ Add a folder in an existing repo or create a new repo in your [Github Account](h
 3. Optionally, [add Localsite parameters](../../) for locations (state and counties) and impact sets (air, water, land, energy, health, prosperity) to embed maps and visualizations [for local communities](/io/) and [international goals](/data-commons/docs).
 -->
 
-[Site Install Steps](/team/admin/server/)
+[Site Install Steps](/team/setup/)
