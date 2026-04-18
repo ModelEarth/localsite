@@ -235,12 +235,6 @@ body {
   font-family: var(--font-body);
   line-height: 1.5;
 }
-a:not(.btn),
-a:not(.btn):link,
-a:not(.btn):visited {
-  color: var(--link-color);
-  text-decoration: none;
-}
 a:hover {
   color: var(--link-hover);
 }
@@ -1277,6 +1271,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   display: inline-flex;
   align-items: center;
   box-shadow: var(--button-shadow);
+  text-decoration: none;
 }
 .btn:link,
 .btn:visited {

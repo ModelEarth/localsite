@@ -3327,6 +3327,61 @@ function setupModelsiteSelect() {
     });
 }
 
+function isCurrentHostLocalhost() {
+    return window.location
+        && (window.location.hostname == 'localhost' || window.location.hostname == '127.0.0.1');
+}
+function getAccesslocalCookieValue() {
+    if (typeof Cookies == 'undefined') {
+        return "";
+    }
+    return Cookies.get('accesslocal') || "";
+}
+function getAccesslocalSetting() {
+    const accesslocal = getAccesslocalCookieValue();
+    if (accesslocal == "true" || accesslocal == "enabled") {
+        return "enabled";
+    }
+    if (accesslocal == "false" || accesslocal == "block") {
+        return "block";
+    }
+    if (accesslocal == "install") {
+        return "install";
+    }
+    return "";
+}
+function syncAccesslocalControl() {
+    const accesslocalElement = document.getElementById("accesslocal");
+    if (accesslocalElement) {
+        accesslocalElement.value = getAccesslocalSetting();
+    }
+}
+function updateAccesslocalVisibility(devmode) {
+    const accesslocalHolder = document.getElementById("accesslocalHolder");
+    if (!accesslocalHolder) {
+        return;
+    }
+    accesslocalHolder.style.display = (!isCurrentHostLocalhost() && devmode == "dev") ? "" : "none";
+}
+window.shouldAccessLocalhost = function() {
+    return isCurrentHostLocalhost() || getAccesslocalSetting() == "enabled";
+};
+function setAccesslocal(accesslocal) {
+    if (typeof Cookies != 'undefined') {
+        if (accesslocal == "enabled") {
+            Cookies.set('accesslocal', 'enabled');
+        } else if (accesslocal == "block") {
+            Cookies.set('accesslocal', 'block');
+        } else {
+            Cookies.remove('accesslocal');
+        }
+    }
+    syncAccesslocalControl();
+    if (accesslocal == "install") {
+        window.location = "/team/setup";
+    }
+}
+
 // Copied from setting.js initElements()
 function initSitelook() {
     let sitesource;
@@ -3350,6 +3405,9 @@ function initSitelook() {
         if (Cookies.get('stylelook')) {
             $("#stylelook").val(Cookies.get('stylelook'));
             stylelook = Cookies.get('stylelook');
+        }
+        if (Cookies.get('accesslocal')) {
+            syncAccesslocalControl();
         }
         if (Cookies.get('sitesource')) {
             $("#sitesource").val(Cookies.get('sitesource'));
@@ -3396,6 +3454,7 @@ function initSitelook() {
             Cookies.set('modelsite', modelsite);
         }
     }
+    syncAccesslocalControl();
     setSitelook(sitelook);
     setStylelook(stylelook);
     setDevmode(devmode);
@@ -3602,6 +3661,7 @@ function setDevmode(devmode) {
   } else {
     removeElement(getUrlID3(devCssUrl, theroot));
   }
+  updateAccesslocalVisibility(devmode);
 }
 function setOnlinemode(onlinemode) {
   if (onlinemode == "true") {

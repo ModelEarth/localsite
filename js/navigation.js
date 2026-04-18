@@ -1842,18 +1842,25 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
         let siteFavicon = null;
 
         // First, try to fetch current config from the server
-        try {
-            const apiUrl = 'http://localhost:8081/api/config/current';
-            const response = await fetch(apiUrl); // Since a connection error would be network-level, it cannot be surpressed by javascript
-            if (response.ok) {
-                const config = await response.json();
-                if (config.site_favicon) {
-                    siteFavicon = config.site_favicon;
-                    console.log('[FaviconManager] Found site_favicon:', siteFavicon);
+        const allowLocalhostAccess = (typeof window.shouldAccessLocalhost == 'function')
+            ? window.shouldAccessLocalhost()
+            : (window.location.hostname == 'localhost' || window.location.hostname == '127.0.0.1');
+        if (allowLocalhostAccess) {
+            try {
+                const apiUrl = 'http://localhost:8081/api/config/current';
+                const response = await fetch(apiUrl); // Since a connection error would be network-level, it cannot be surpressed by javascript
+                if (response.ok) {
+                    const config = await response.json();
+                    if (config.site_favicon) {
+                        siteFavicon = config.site_favicon;
+                        console.log('[FaviconManager] Found site_favicon:', siteFavicon);
+                    }
                 }
+            } catch (error) {
+                console.log('Could not fetch server config, falling back to client-side detection:', error);
             }
-        } catch (error) {
-            console.log('Could not fetch server config, falling back to client-side detection:', error);
+        } else {
+            console.log('[FaviconManager] Skipping localhost config fetch because accesslocal is not enabled.');
         }
         
         // Fallback to client-side detection if server config not available
@@ -8513,6 +8520,9 @@ $(document).on("change", "#sitelook", function(event) { // Dark mode
         Cookies.set('sitelook', $("#sitelook").val());
     }
     setSitelook($("#sitelook").val());
+});
+$(document).on("change", "#accesslocal", function(event) {
+    setAccesslocal($("#accesslocal").val());
 });
 function shouldSyncStylelookToHash() {
     const pathname = (window.location && window.location.pathname ? window.location.pathname : '').replace(/\\/g, '/');
