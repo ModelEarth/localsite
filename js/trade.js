@@ -1,14 +1,14 @@
 // localsite/js/trade.js
-// Shared trade controls: Year, Indicator, Currency, Top flows
+// Shared trade controls: Year, Factor, Currency, Top flows
 // Used by profile/charts/sankey and profile/trade/map
 
 window.TradeShared = (function () {
 
   var METRICS = {
-    amount:           { label: "Amount Spent",        unit: "M EUR",       scale: 1,    sourceKeys: ["amount"],                                     scoreDirection: "higher" },
-    Employment_total: { label: "Employment",          unit: "M jobs",      scale: 1e6,  sourceKeys: ["Employment_total", "Employment_people_total"], scoreDirection: "higher" },
+    CO2_total:        { label: "CO\u2082 Emissions",  unit: "Gt CO\u2082", scale: 1e12, sourceKeys: ["CO2_total"],                                 scoreDirection: "lower"  },
     Water_total:      { label: "Water Use",           unit: "Gm\u00B3",    scale: 1e9,  sourceKeys: ["Water_total"],                                scoreDirection: "lower"  },
-    CO2_total:        { label: "CO\u2082 Emissions",  unit: "Gt CO\u2082", scale: 1e12, sourceKeys: ["CO2_total"],                                 scoreDirection: "lower"  }
+    Employment_total: { label: "Employment",          unit: "M jobs",      scale: 1e6,  sourceKeys: ["Employment_total", "Employment_people_total"], scoreDirection: "higher" },
+    amount:           { label: "Amount Spent",        unit: "M EUR",       scale: 1,    sourceKeys: ["amount"],                                     scoreDirection: "higher" }
   };
 
   var CURRENCY_NAMES = {
@@ -38,20 +38,28 @@ window.TradeShared = (function () {
     style.id = "trade-shared-styles";
     style.textContent =
       "#trade-shared-controls {" +
-      "  display:flex; flex-wrap:wrap; gap:1.5em; align-items:center;" +
+      "  display:flex; flex-wrap:wrap; gap:1rem 1.5rem; align-items:center;" +
       "  padding:0 0 0.5em;" +
+      "  box-sizing:border-box;" +
       "}" +
       "#trade-shared-controls label {" +
       "  display:flex; align-items:center; gap:0.5em;" +
-      "  font-size:0.93em; color:var(--text-primary);" +
+      "  font-size:0.93em; color:var(--text-primary, #333);" +
+      "  min-width:0;" +
       "}" +
       "#trade-shared-controls select {" +
       "  padding:0.25em 0.5em; font-size:0.93em;" +
-      "  border:1px solid #ccc; border-radius:4px; background:var(--bg-tertiary);" +
+      "  border:1px solid #ccc; border-radius:4px; background:var(--bg-tertiary, #fff);" +
       "}" +
       "#trade-shared-controls input[type=range] { width:120px; cursor:pointer; }" +
       "#trade-topn-label { font-weight:600; min-width:2em; text-align:right; }";
     document.head.appendChild(style);
+  }
+
+  function _syncCurrencyVisibility(metricKey) {
+    var currencyLabel = document.getElementById("trade-currency-label");
+    if (!currencyLabel) { return; }
+    currencyLabel.hidden = metricKey !== "amount";
   }
 
   function _buildControls(container, years, currencies) {
@@ -76,9 +84,9 @@ window.TradeShared = (function () {
     yearLabel.appendChild(yearSelect);
     container.appendChild(yearLabel);
 
-    // Factors
+    // Factor
     var metricLabel = document.createElement("label");
-    metricLabel.appendChild(document.createTextNode("Factors: "));
+    metricLabel.appendChild(document.createTextNode("Factor: "));
     var metricSelect = document.createElement("select");
     metricSelect.id = "factor";
     Object.keys(METRICS).forEach(function (key) {
@@ -107,9 +115,9 @@ window.TradeShared = (function () {
     currencyLabel.appendChild(currencySelect);
     container.appendChild(currencyLabel);
 
-    // Inflows
+    // Top flows
     var topnLabel = document.createElement("label");
-    topnLabel.appendChild(document.createTextNode("Inflows: "));
+    topnLabel.appendChild(document.createTextNode("Top flows: "));
     var topnSlider = document.createElement("input");
     topnSlider.type = "range"; topnSlider.id = "trade-topn-slider";
     topnSlider.min = "5"; topnSlider.max = "50"; topnSlider.step = "1";
@@ -120,6 +128,7 @@ window.TradeShared = (function () {
     topnLabel.appendChild(topnSlider);
     topnLabel.appendChild(topnDisplay);
     container.appendChild(topnLabel);
+    _syncCurrencyVisibility(metricSelect.value);
 
     // Event listeners — each fires _dispatch so other pages can react
     yearSelect.addEventListener("change", function () {
@@ -128,6 +137,7 @@ window.TradeShared = (function () {
     });
     metricSelect.addEventListener("change", function () {
       _state.metric = metricSelect.value;
+      _syncCurrencyVisibility(_state.metric);
       _dispatch();
     });
     currencySelect.addEventListener("change", function () {
@@ -165,16 +175,6 @@ window.TradeShared = (function () {
     if (container) {
       _injectStyles();
       _buildControls(container, options.years || [], options.currencies || ["EUR"]);
-      var attr = document.getElementById("sankey-attribution");
-      if (attr) {
-        var yearEl     = document.getElementById("trade-year-select");
-        var currencyEl = document.getElementById("trade-currency-select");
-        var msg = document.createElement("div");
-        msg.id = "trade-debug";
-        msg.textContent = "trade.js init: year=" + (yearEl ? yearEl.value : "?") + " (" + (yearEl ? yearEl.options.length : 0) + " options)" +
-          " currency=" + (currencyEl ? currencyEl.value : "?") + " (" + (currencyEl ? currencyEl.options.length : 0) + " options)";
-        attr.appendChild(msg);
-      }
     }
   }
 
@@ -194,6 +194,7 @@ window.TradeShared = (function () {
       _state.metric = partial.metric;
       var ms = document.getElementById("factor");
       if (ms) { ms.value = partial.metric; }
+      _syncCurrencyVisibility(_state.metric);
       changed = true;
     }
     if (partial.currency !== undefined && partial.currency !== _state.currency) {
@@ -249,6 +250,7 @@ window.TradeShared = (function () {
       select.value = available[0] || "EUR";
       _state.currency = select.value;
     }
+    _syncCurrencyVisibility(_state.metric);
   }
 
   return {
