@@ -1,21 +1,489 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-us">
 <head>
-  <meta charset="utf-8">
-  <title>Trade Flow Sankey Redirect</title>
-  <script>
-  (function () {
-    const isFile = window.location.protocol === "file:";
-    const normalizedPath = (window.location.pathname || "").replace(/\\/g, "/");
-    const isLocalsiteProfileMirror = /\/localsite\/profile\//i.test(normalizedPath);
-    const isLocalsiteProfileRoot = /^\/profile\//i.test(normalizedPath);
-    const target = isFile
-      ? "../../charts/sankey/index.html"
-      : (isLocalsiteProfileMirror ? "/localsite/profile/charts/sankey/index.html" : (isLocalsiteProfileRoot ? "/profile/charts/sankey/index.html" : "../../charts/sankey/index.html"));
-    const suffix = (window.location.search || "") + (window.location.hash || "");
-    window.location.replace(target + suffix);
-  })();
-  </script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Worldwide Trade Impact And Resource Dashboard</title>
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ModelEarth/localsite@main/css/base.css" id="/localsite/css/base.css" />
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ModelEarth/localsite@main/js/localsite.js?showheader=true&showsearch=true&showfilters=true"></script>
+<style>
+  body {
+    background: #fafbfc;
+  }
+  .content.contentpadding {
+    max-width: 1480px;
+  }
+  .sankey-page-header {
+    margin: 1em 0 0.4em;
+  }
+  .sankey-page-header h2 {
+    margin: 0 0 0.2em;
+    font-size: 1.7em;
+  }
+  .sankey-page-header p {
+    margin: 0;
+    color: #555;
+    font-size: 0.96em;
+    line-height: 1.6;
+    max-width: 980px;
+  }
+  .sankey-header-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75em;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  #score-help-button {
+    padding: 0.45em 0.8em;
+    border: 1px solid #cfd6df;
+    border-radius: 999px;
+    background: #fff;
+    color: #1f2937;
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #score-help-button:hover {
+    background: #f8fafc;
+  }
+  #score-help-panel {
+    margin: 0 0 1em;
+    padding: 0.85em 1em;
+    border: 1px solid #dde1e7;
+    border-radius: 6px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 0.92em;
+    line-height: 1.55;
+  }
+  #score-help-panel[hidden] {
+    display: none;
+  }
+  #score-help-panel p {
+    margin: 0 0 0.45em;
+  }
+  #score-help-panel p:last-child {
+    margin-bottom: 0;
+  }
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75em;
+    margin: 0.9em 0 1.1em;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.2em;
+    padding: 0.35em 0.9em;
+    border: 1px solid #d7dee8;
+    border-radius: 999px;
+    background: #f4f7fb;
+    color: #36506c;
+    font-size: 0.92em;
+    font-weight: 600;
+  }
+  #sankey-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2em;
+    align-items: end;
+    padding: 0.9em 1em;
+    background: #f4f6f8;
+    border: 1px solid #dde1e7;
+    border-radius: 6px;
+    margin-bottom: 0.75em;
+  }
+  #sankey-controls .control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35em;
+    min-width: 170px;
+  }
+  #sankey-controls label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #556070;
+  }
+  #sankey-controls select {
+    padding: 0.45em 0.65em;
+    font-size: 0.94em;
+    border: 1px solid #cfd6df;
+    border-radius: 4px;
+    background: #fff;
+    color: #223242;
+  }
+  #sankey-controls input[type=range] {
+    width: 140px;
+    cursor: pointer;
+  }
+  #topn-label {
+    min-width: 2.2em;
+    color: #223242;
+    font-size: 0.94em;
+    font-weight: 700;
+    text-align: right;
+  }
+  #status-text {
+    font-size: 0.9em;
+    color: #5c6775;
+    font-style: italic;
+    margin: 0 0 0.85em;
+    min-height: 1.4em;
+  }
+  #chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1em;
+  }
+  .panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 570px;
+    padding: 1em;
+    background: #fff;
+    border: 1px solid #e3e8ee;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  }
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    align-items: flex-start;
+    margin-bottom: 0.9em;
+  }
+  .panel-copy h2 {
+    margin: 0 0 0.3em;
+    font-size: 1.08em;
+    color: #243447;
+  }
+  .panel-copy p {
+    margin: 0;
+    color: #677382;
+    font-size: 0.9em;
+    line-height: 1.5;
+  }
+  .panel-head .control {
+    min-width: 180px;
+  }
+  .panel-head .control label {
+    display: block;
+    margin-bottom: 0.35em;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #5a6676;
+  }
+  .panel-head .control select {
+    width: 100%;
+    padding: 0.42em 0.6em;
+    font-size: 0.92em;
+    border: 1px solid #cfd6df;
+    border-radius: 4px;
+    background: #fff;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75em;
+    margin-bottom: 0.85em;
+  }
+  .stat {
+    min-height: 4.6em;
+    padding: 0.75em 0.85em;
+    border: 1px solid #e4e8ee;
+    border-radius: 6px;
+    background: #f8fafc;
+  }
+  .stat .label {
+    display: block;
+    margin-bottom: 0.35em;
+    color: #6b7786;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .stat .value {
+    display: block;
+    color: #223242;
+    font-size: 0.97rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .chart-wrap {
+    position: relative;
+    flex: 1;
+    min-height: 430px;
+    overflow: hidden;
+    border: 1px solid #e5e9ef;
+    border-radius: 6px;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 252, 0.98)),
+      repeating-linear-gradient(
+        0deg,
+        rgba(35, 52, 71, 0.03),
+        rgba(35, 52, 71, 0.03) 1px,
+        transparent 1px,
+        transparent 28px
+      );
+  }
+  .chart-wrap svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .tooltip {
+    position: fixed;
+    z-index: 1000;
+    width: min(320px, calc(100vw - 24px));
+    padding: 0.85em 0.95em;
+    border: 1px solid rgba(35, 52, 71, 0.16);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.14s ease, transform 0.14s ease;
+  }
+  .tooltip.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .tooltip.is-click {
+    border-color: rgba(37, 99, 235, 0.2);
+    background: rgba(248, 251, 255, 0.99);
+  }
+  .tooltip-title {
+    margin: 0 0 0.65em;
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #223242;
+  }
+  .tooltip-body {
+    display: grid;
+    gap: 0.5em;
+  }
+  .tooltip-row {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 0.7em;
+    align-items: start;
+  }
+  .tooltip-key {
+    color: #677382;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .tooltip-value {
+    color: #223242;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.35;
+    word-break: break-word;
+  }
+  .sankey-link {
+    cursor: pointer;
+    transition: filter 0.18s ease, stroke-width 0.18s ease;
+  }
+  .interactive-mark {
+    cursor: pointer;
+    transition: opacity 0.18s ease, stroke-opacity 0.18s ease, fill-opacity 0.18s ease;
+  }
+  .sankey-link:hover {
+    stroke-width: 4px;
+    filter: drop-shadow(0 0 4px rgba(37, 99, 235, 0.28));
+  }
+  .sankey-link.is-selected,
+  .bar-mark.is-selected {
+    filter: drop-shadow(0 0 7px rgba(37, 99, 235, 0.2));
+  }
+  .sankey-node {
+    transition: opacity 0.18s ease;
+  }
+  .sankey-node:hover {
+    opacity: 0.96;
+  }
+  .node-label {
+    font-size: 12px;
+    fill: #243040;
+    font-weight: 700;
+    dominant-baseline: middle;
+  }
+  .node-value {
+    font-size: 11px;
+    fill: #5f6977;
+    dominant-baseline: middle;
+  }
+  .bar-grid-line {
+    stroke: rgba(35, 52, 71, 0.08);
+    stroke-dasharray: 4 6;
+  }
+  .bar-grid-text {
+    fill: #7a8390;
+    font-size: 11px;
+  }
+  .bar-label {
+    fill: #243040;
+    font-size: 12px;
+    font-weight: 700;
+    dominant-baseline: middle;
+  }
+  .bar-value {
+    fill: #5f6977;
+    font-size: 11px;
+    font-weight: 700;
+    dominant-baseline: middle;
+  }
+  .bar-hint {
+    fill: #7a8390;
+    font-size: 10px;
+    dominant-baseline: middle;
+  }
+  #sankey-attribution {
+    margin-top: 1em;
+    padding-top: 0.75em;
+    border-top: 1px solid #dde1e7;
+    font-size: 0.85em;
+    color: #666;
+    line-height: 1.8;
+  }
+  #sankey-attribution a {
+    color: #2563eb;
+    text-decoration: none;
+  }
+  #sankey-attribution a:hover {
+    text-decoration: underline;
+  }
+  @media (max-width: 1180px) {
+    #chart-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 760px) {
+    #sankey-controls,
+    .panel-head {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    #sankey-controls .control,
+    .panel-head .control {
+      min-width: 100%;
+    }
+    .stats {
+      grid-template-columns: 1fr;
+    }
+    .panel {
+      min-height: 520px;
+    }
+  }
+</style>
 </head>
-<body></body>
+<body>
+<div class="content contentpadding">
+
+  <div class="sankey-page-header">
+    <div class="sankey-header-row">
+      <div>
+        <h2>Worldwide Trade Impact And Resource Dashboard</h2>
+        <p>
+          Compare trade impact pathways and resource profiles using the same country, year, and flow controls across all four panels.
+          Data is loaded from repository-hosted trade-data assets and aligned with the Sankey page layout.
+        </p>
+      </div>
+      <button id="score-help-button" type="button" aria-expanded="false" aria-controls="score-help-panel">Score Help</button>
+    </div>
+  </div>
+
+  <div id="score-help-panel" hidden>
+    <p><strong>How the partner-country score works:</strong> the score ranks import/export partner countries from best to worst on a 0 to 100 scale.</p>
+    <p><strong>Dollar Value:</strong> score = 100 x partner dollar trade value / largest partner dollar trade value.</p>
+    <p><strong>CO&#x2082; Emissions and Water Use:</strong> score = 100 x (0.6 x trade strength + 0.4 x lower impact per dollar efficiency).</p>
+    <p><strong>Employment:</strong> score = 100 x (0.6 x trade strength + 0.4 x higher jobs per dollar efficiency).</p>
+    <p><strong>Trade strength</strong> is the partner&rsquo;s dollar trade value relative to the largest partner. <strong>Efficiency</strong> compares indicator per dollar traded across the visible partner-country set.</p>
+  </div>
+
+  <div class="hero-meta">
+    <span id="selection-pill" class="pill">Selection: --</span>
+  </div>
+
+  <div id="sankey-controls" aria-label="Dataset controls">
+    <div class="control">
+      <label for="country-select">Country</label>
+      <select id="country-select"></select>
+    </div>
+    <div class="control">
+      <label for="year-select">Year</label>
+      <select id="year-select"></select>
+    </div>
+    <div class="control">
+      <label for="flow-select">Flow</label>
+      <select id="flow-select">
+        <option value="domestic">Domestic</option>
+        <option value="imports">Imports</option>
+        <option value="exports">Exports</option>
+      </select>
+    </div>
+    <div class="control">
+      <label for="topn-slider">Top flows</label>
+      <div>
+        <input type="range" id="topn-slider" min="5" max="50" step="1" value="5">
+        <span id="topn-label">5</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="status-text">Preparing dashboard...</div>
+  <div id="chart-grid" aria-label="Trade dashboard panels"></div>
+
+  <div id="sankey-attribution">
+    <strong>Data source:</strong>
+    <a href="https://github.com/savar25/trade-data" target="_blank" rel="noopener">savar25/trade-data</a>
+    &middot; repository paths under <code>year/</code> and <code>sankey-datasets/</code>
+    &middot; industry labels from <code>year/[year]/industry.csv</code>
+  </div>
+
+</div>
+
+<div id="hover-tooltip" class="tooltip" aria-hidden="true"></div>
+<div id="click-tooltip" class="tooltip is-click" aria-hidden="true"></div>
+
+<script>
+window.TRADE_DASHBOARD_CONFIG = {
+  datasetBasePath: "https://cdn.jsdelivr.net/gh/savar25/trade-data@main/sankey-datasets",
+  yearBasePath: "https://cdn.jsdelivr.net/gh/savar25/trade-data@main/year",
+  rawYearBasePath: "https://raw.githubusercontent.com/savar25/trade-data/main/year"
+};
+
+(function () {
+  const scoreHelpButton = document.getElementById("score-help-button");
+  const scoreHelpPanel = document.getElementById("score-help-panel");
+  if (!scoreHelpButton || !scoreHelpPanel) {
+    return;
+  }
+  scoreHelpButton.addEventListener("click", function () {
+    const isHidden = scoreHelpPanel.hasAttribute("hidden");
+    if (isHidden) {
+      scoreHelpPanel.removeAttribute("hidden");
+    } else {
+      scoreHelpPanel.setAttribute("hidden", "");
+    }
+    scoreHelpButton.setAttribute("aria-expanded", String(isHidden));
+  });
+}());
+</script>
+<script src="https://cdn.jsdelivr.net/gh/savar25/trade-data@main/sankey-data.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/savar25/trade-data@main/trade-resource-data.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/savar25/trade-data@main/chart.js"></script>
+</body>
 </html>
