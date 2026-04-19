@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exiobase Industry Trade Flow Sankey</title>
+<style>
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: #fff;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    color: #475569;
+  }
+  #embed-status {
+    padding: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  #embed-status.error {
+    color: #b91c1c;
+  }
+</style>
+</head>
+<body>
+<div id="embed-status">Loading Sankey embed...</div>
+<script>
+(function () {
+  function ensureStatusNode() {
+    let node = document.getElementById("embed-status");
+    if (!node) {
+      document.body.innerHTML = "";
+      node = document.createElement("div");
+      node.id = "embed-status";
+      document.body.appendChild(node);
+    }
+    return node;
+  }
+
+  function setStatus(message, isError) {
+    const node = ensureStatusNode();
+    node.textContent = message;
+    node.className = isError ? "error" : "";
+  }
+
+  function cloneHeadAssets(sourceDocument) {
+    const selectors = ["link[rel='stylesheet']", "style"];
+    sourceDocument.head.querySelectorAll(selectors.join(",")).forEach(function (node) {
+      const clone = document.importNode(node, true);
+      document.head.appendChild(clone);
+    });
+  }
+
+  function appendExecutableScript(sourceScript) {
+    return new Promise(function (resolve, reject) {
+      const script = document.createElement("script");
+      Array.from(sourceScript.attributes).forEach(function (attribute) {
+        if (attribute.name === "src") {
+          script.src = new URL(attribute.value, document.baseURI).href;
+        } else {
+          script.setAttribute(attribute.name, attribute.value);
+        }
+      });
+
+      if (!sourceScript.src) {
+        script.textContent = sourceScript.textContent;
+      }
+
+      script.addEventListener("load", function () {
+        resolve();
+      });
+      script.addEventListener("error", function () {
+        reject(new Error("Failed to load script: " + (script.src || "inline script")));
+      });
+
+      document.body.appendChild(script);
+
+      if (!sourceScript.src) {
+        resolve();
+      }
+    });
+  }
+
+  async function bootstrapEmbed() {
+    const response = await fetch("index.html", { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error("Unable to load index.html (HTTP " + response.status + ")");
+    }
+
+    const html = await response.text();
+    const sourceDocument = new DOMParser().parseFromString(html, "text/html");
+    document.title = sourceDocument.title || document.title;
+
+    cloneHeadAssets(sourceDocument);
+
+    const content = document.createDocumentFragment();
+    Array.from(sourceDocument.body.childNodes).forEach(function (node) {
+      if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "SCRIPT") {
+        return;
+      }
+      content.appendChild(document.importNode(node, true));
+    });
+
+    document.body.innerHTML = "";
+    document.body.appendChild(content);
+
+    const scripts = Array.from(sourceDocument.head.querySelectorAll("script"))
+      .concat(Array.from(sourceDocument.body.querySelectorAll("script")));
+
+    for (const sourceScript of scripts) {
+      await appendExecutableScript(sourceScript);
+    }
+  }
+
+  bootstrapEmbed().catch(function (error) {
+    console.error(error);
+    setStatus(
+      "Unable to load the direct Sankey embed. This page needs to be served over HTTP so it can fetch index.html and its scripts.",
+      true
+    );
+  });
+})();
+</script>
+</body>
+</html>
