@@ -235,12 +235,6 @@ body {
   font-family: var(--font-body);
   line-height: 1.5;
 }
-a:not(.btn),
-a:not(.btn):link,
-a:not(.btn):visited {
-  color: var(--link-color);
-  text-decoration: none;
-}
 a:hover {
   color: var(--link-hover);
 }
@@ -534,7 +528,6 @@ body.dark {
   }
   .floatRight {
     float:none !important;
-    width:100% !important;
     margin-left:0px;
     margin-bottom:40px;
   }
@@ -1278,6 +1271,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   display: inline-flex;
   align-items: center;
   box-shadow: var(--button-shadow);
+  text-decoration: none;
 }
 .btn:link,
 .btn:visited {
@@ -1490,8 +1484,9 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     display: inline-flex;
   }
 }
-
-
+.btn-control {
+  border-radius: var(--control-radius);
+}
 
 
 
@@ -3232,7 +3227,7 @@ body.sidebar-hovered {
     display: flex;
     align-items: center;
     padding: 12px 12px 12px 12px;
-    background: none;
+    background: var(--bg-secondary);
     border: 0px solid transparent;
     border-radius: 50px;
     color: var(--text-secondary);

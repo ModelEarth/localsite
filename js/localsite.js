@@ -968,7 +968,7 @@ function loadLocalTemplate() {
       if (typeof relocatedScopeMenu != "undefined") {
         // DROPDOWN #selectScope was REMOVED  relocatedScopeMenu.appendChild(selectScope); // For apps hero
       }
-      waitForElm('#filterClickLocation').then((elm) => {
+      onElmReady('#filterClickLocation', function() {
         if (param.showstates != "false") {
             $("#geoviewSelectHolder").show();
             // Only show counties tab if sub-selections exist
@@ -985,7 +985,7 @@ function loadLocalTemplate() {
         //$("#headerbar").prependTo("#main-container");
       });
       
-      waitForElm('#main-container').then((elm) => {
+      onElmReady('#main-container', function() {
         $("#main-header").insertBefore("#main-container");
 
         //$("#headerbaroffset").prependTo("#main-container");
@@ -1031,14 +1031,14 @@ function hideHeaderBar() {
   $('.bothSideIcons').removeClass('sideIconsLower');
 }
 function showHeaderBar() {
-  waitForElm('#headerbar').then((elm) => {
+  onElmReady('#headerbar', function() {
     console.log("showHeaderBar")
     //$('.headerOffset').show();
     $('#headerbar').show();
     $('#headerbar').removeClass("headerbarhide");
     $('.bothSideIcons').addClass('sideIconsLower');
     $(".pagecolumn").addClass("pagecolumnLower"); // Didn't seem to be working
-    waitForElm('#main-nav').then((elm) => {
+    onElmReady('#main-nav', function() {
       $("#main-nav").addClass("pagecolumnLower");
     });
     if (param.shortheader != "true") {
@@ -2369,23 +2369,37 @@ function waitForVariable(variable, callback) { // Declare variable using var sin
 
 // TO DO: Optimize by checking just the nodes in the mutations
 // https://stackoverflow.com/questions/5525071/how-to-wait-until-an-element-exists
+function isSimpleClassSelector(selector) {
+  return (selector || "").match(/^\.[^\s>+~#.:[\],]+$/) !== null;
+}
+
+function isSimpleIdSelector(selector) {
+  return (selector || "").startsWith('#') && (selector || "").match(/^[#][^\s>+~.:[\],]+$/) !== null;
+}
+
 function waitForElmLookup(selector) {
     const rawSelector = `${selector || ''}`.trim();
     if (!rawSelector) return null;
-    if (rawSelector.startsWith('.')) {
-        return document.querySelector(rawSelector);
+    if (isSimpleClassSelector(rawSelector)) {
+        return document.getElementsByClassName(rawSelector.slice(1))[0] || null;
     }
-    const id = rawSelector.startsWith('#') ? rawSelector.slice(1) : rawSelector;
-    return document.getElementById(id);
+    if (isSimpleIdSelector(rawSelector)) {
+        return document.getElementById(rawSelector.slice(1));
+    }
+    try {
+        return document.querySelector(rawSelector);
+    } catch (error) {
+        const id = rawSelector.startsWith('#') ? rawSelector.slice(1) : rawSelector;
+        return document.getElementById(id);
+    }
 }
 
 function waitForElm(selector) {
+    const existingElement = waitForElmLookup(selector);
+    if (existingElement) {
+        return Promise.resolve(existingElement);
+    }
     return new Promise(resolve => {
-        const existingElement = waitForElmLookup(selector);
-        if (existingElement) {
-            //consoleLog("waitForElm found " + selector);
-            return resolve(existingElement);
-        }
         if (document.body) {
           waitForElmKickoff(selector,resolve);
         } else {
@@ -2395,6 +2409,15 @@ function waitForElm(selector) {
           });
         }
     });
+}
+
+function onElmReady(selector, callback) {
+  const existingElement = waitForElmLookup(selector);
+  if (existingElement) {
+    callback(existingElement);
+    return;
+  }
+  waitForElm(selector).then(callback);
 }
 function waitForElmKickoff(selector, resolve) {
   //consoleLog("waitForElm waiting for " + selector);
@@ -3161,38 +3184,6 @@ function parseYamlScalar(value) {
     return parsed;
 }
 
-function parseModelsitesFile(text) {
-    const options = [];
-    const lines = text.split(/\r?\n/);
-    let current = null;
-
-    for (let i = 0; i < lines.length; i += 1) {
-        const line = lines[i];
-        const trimmed = line.trim();
-        if (!trimmed || trimmed.startsWith("#")) {
-            continue;
-        }
-        const header = trimmed.match(/^\[modelsite\s+"([^"]+)"\]$/);
-        if (header) {
-            if (current && current.value && current.label) {
-                options.push(current);
-            }
-            current = { value: header[1] };
-            continue;
-        }
-        const pair = trimmed.match(/^([A-Za-z0-9_-]+)\s*=\s*(.+)$/);
-        if (pair && current) {
-            const key = pair[1];
-            const val = pair[2].trim();
-            current[key] = /^(true|false)$/i.test(val) ? val.toLowerCase() === "true" : val;
-        }
-    }
-    if (current && current.value && current.label) {
-        options.push(current);
-    }
-    return options;
-}
-
 function parseModelsiteYaml(yamlText) {
     const options = [];
     const lines = yamlText.split(/\r?\n/);
@@ -3280,10 +3271,10 @@ async function loadModelsiteOptions() {
         : (location.protocol + "//" + location.host);
     const currentOriginRoot = location.protocol + "//" + location.host;
     const candidatePaths = Array.from(new Set([
-        webRoot + "/modelsites.ini",
-        currentOriginRoot + "/modelsites.ini",
-        webRoot + "/team/modelsites.ini",
-        "https://raw.githubusercontent.com/ModelEarth/team/main/modelsites.ini"
+        webRoot + "/sites.yaml",
+        currentOriginRoot + "/sites.yaml",
+        webRoot + "/team/sites.yaml",
+        "https://raw.githubusercontent.com/ModelEarth/team/main/sites.yaml"
     ]));
 
     for (let i = 0; i < candidatePaths.length; i += 1) {
@@ -3294,16 +3285,14 @@ async function loadModelsiteOptions() {
                 continue;
             }
             const text = await response.text();
-            const parsedOptions = modelsitePath.endsWith(".ini")
-                ? parseModelsitesFile(text)
-                : parseModelsiteYaml(text);
+            const parsedOptions = parseModelsiteYaml(text);
             if (parsedOptions.length) {
                 return parsedOptions;
             }
             consoleLog("No valid entries in " + modelsitePath + ". Using fallback modelsite options.");
         } catch (error) {}
     }
-    consoleLog("modelsites.ini not found. Using fallback modelsite options.");
+    consoleLog("sites.yaml not found. Using fallback modelsite options.");
     return fallbackOptions;
 }
 
@@ -3338,6 +3327,61 @@ function setupModelsiteSelect() {
     });
 }
 
+function isCurrentHostLocalhost() {
+    return window.location
+        && (window.location.hostname == 'localhost' || window.location.hostname == '127.0.0.1');
+}
+function getAccesslocalCookieValue() {
+    if (typeof Cookies == 'undefined') {
+        return "";
+    }
+    return Cookies.get('accesslocal') || "";
+}
+function getAccesslocalSetting() {
+    const accesslocal = getAccesslocalCookieValue();
+    if (accesslocal == "true" || accesslocal == "enabled") {
+        return "enabled";
+    }
+    if (accesslocal == "false" || accesslocal == "block") {
+        return "block";
+    }
+    if (accesslocal == "install") {
+        return "install";
+    }
+    return "";
+}
+function syncAccesslocalControl() {
+    const accesslocalElement = document.getElementById("accesslocal");
+    if (accesslocalElement) {
+        accesslocalElement.value = getAccesslocalSetting();
+    }
+}
+function updateAccesslocalVisibility(devmode) {
+    const accesslocalHolder = document.getElementById("accesslocalHolder");
+    if (!accesslocalHolder) {
+        return;
+    }
+    accesslocalHolder.style.display = (!isCurrentHostLocalhost() && devmode == "dev") ? "" : "none";
+}
+window.shouldAccessLocalhost = function() {
+    return isCurrentHostLocalhost() || getAccesslocalSetting() == "enabled";
+};
+function setAccesslocal(accesslocal) {
+    if (typeof Cookies != 'undefined') {
+        if (accesslocal == "enabled") {
+            Cookies.set('accesslocal', 'enabled');
+        } else if (accesslocal == "block") {
+            Cookies.set('accesslocal', 'block');
+        } else {
+            Cookies.remove('accesslocal');
+        }
+    }
+    syncAccesslocalControl();
+    if (accesslocal == "install") {
+        window.location = "/team/setup";
+    }
+}
+
 // Copied from setting.js initElements()
 function initSitelook() {
     let sitesource;
@@ -3361,6 +3405,9 @@ function initSitelook() {
         if (Cookies.get('stylelook')) {
             $("#stylelook").val(Cookies.get('stylelook'));
             stylelook = Cookies.get('stylelook');
+        }
+        if (Cookies.get('accesslocal')) {
+            syncAccesslocalControl();
         }
         if (Cookies.get('sitesource')) {
             $("#sitesource").val(Cookies.get('sitesource'));
@@ -3407,6 +3454,7 @@ function initSitelook() {
             Cookies.set('modelsite', modelsite);
         }
     }
+    syncAccesslocalControl();
     setSitelook(sitelook);
     setStylelook(stylelook);
     setDevmode(devmode);
@@ -3613,6 +3661,7 @@ function setDevmode(devmode) {
   } else {
     removeElement(getUrlID3(devCssUrl, theroot));
   }
+  updateAccesslocalVisibility(devmode);
 }
 function setOnlinemode(onlinemode) {
   if (onlinemode == "true") {

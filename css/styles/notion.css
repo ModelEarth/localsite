@@ -13,8 +13,6 @@
   --text-main: #373530;
   --text-muted: #787774;
   --border-subtle: rgba(55, 53, 47, 0.09);
-  --chip-bg: #f1f1ef;
-  --chip-text: #787774;
   --link-color: #0969da;
   --link-hover: #0550ae;
   --panel-radius: 3px;
@@ -174,6 +172,8 @@
   --badge-warning-text: #ead198;
   --badge-info-bg: rgba(72, 124, 165, 0.24);
   --badge-info-text: #aac8df;
+  --text-main: #cdcdcd;
+  --text-muted: #999;
 }
 
 .dark.notion .color-name,

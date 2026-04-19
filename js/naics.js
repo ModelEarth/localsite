@@ -42,12 +42,12 @@ if (typeof hiddenhash == 'undefined') {
 function initialWidgetLoad() {
     let hash = getHash();
     if (hash.catyear) {
-        waitForElm('#catyear').then(function() {
+        onElmReady('#catyear', function() {
             $("#catyear").val(hash.catyear);
         });
     }
     if (hash.catsize) {
-        waitForElm('#catsize').then(function() {
+        onElmReady('#catsize', function() {
             $("#catsize").val(hash.catsize);
         });
     }
@@ -55,8 +55,8 @@ function initialWidgetLoad() {
         hiddenhash.indicators = "ACID,ETOX,EUTR,GHG,HTOX,LAND,OZON,PEST,SMOG,WATR";
     }
     refreshNaicsWidget(true);
-    waitForElm('#sectorListTitles').then((elm) => {
-        waitForElm('#sector-list .sector-list-table').then((elm) => {
+    onElmReady('#sectorListTitles', function() {
+        onElmReady('#sector-list .sector-list-table', function() {
             $("#sectorListTitles").prependTo($("#sector-list > div"));
             $("<style>#sector-list > div { margin-top:50px !important}</style>").prependTo($("#sector-list > div"));
         });
@@ -400,7 +400,7 @@ function refreshNaicsWidget(initialLoad) {
             let industryLocDataFile = getIndustryLocFileString(hash.catsize);
             if (location.host.indexOf('localhost') >= 0) {
                 //alert("industryLocDataFile " + industryLocDataFile)
-                waitForElm('#tabulator-industrytable-intro').then((elm) => {
+                onElmReady('#tabulator-industrytable-intro', function() {
                     // Occurs everytime state or county changes.
                     //$("#tabulator-industrytable-datalink").html("<a href='" + industryLocDataFile + "''>" + industryLocDataFile + "</a><br>");
                     $("#tabulator-industrytable-realitystream").attr("href", "/realitystream/#features.path=" + industryLocDataFile);
@@ -1721,7 +1721,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                         if (naicsRowCount > 0) {
                             lowerMessage += "Purple&nbsp;text&nbsp;indicates approximated values. List does not yet include data for industries without state-level payroll reporting by BLS or BEA. - <a href='/localsite/info/data/'>More&nbsp;Details</a>";
                             
-                            waitForElm('#econ_list').then((elm) => {
+                            onElmReady('#econ_list', function() {
                                 $("#top-content-columns").show();
                                 $("#econ_list").html("<div id='sector_list'>" + text + "</div><br><p style='font-size:13px'>" + lowerMessage + "</p>");
                             });
@@ -1765,7 +1765,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                         // Quick hack - might need better way to wait for naics
                         loadScript(theroot + '../localsite/js/d3.v5.min.js', function(results) {
                             loadScript(theroot + '../io/charts/bubble/js/bubble.js', function(results) {
-                                waitForElm('#bubble-graph-id').then((elm) => {
+                                onElmReady('#bubble-graph-id', function() {
                                     //setTimeout(() => {
                                         // This may run before naics is available.
                                         hash.naics = naicshash;
@@ -2285,7 +2285,7 @@ function getEpaSectors() {
             //alert(thestate + " sectorsJsonFile " + sectorsJsonFile);
         }
     }
-    waitForElm('#tabulator-sectortable-intro').then((elm) => {
+    onElmReady('#tabulator-sectortable-intro', function() {
         $("#tabulator-sectortable-intro").text("#tabulator-sectortable - " + sectorsJsonFile)
     });
     let promises = [

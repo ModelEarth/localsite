@@ -101,6 +101,124 @@ function clearListDisplay() {
 
 let dp = {}; // So available on .detail click for popMapPoint() and zoomMapPoint().
 
+function normalizeCategoryText(value) {
+  if (value === undefined || value === null) {
+    return "";
+  }
+  return value.toString().trim().toLowerCase().replace(/[_-]+/g, " ").replace(/\s+/g, " ");
+}
+function getRowValue(row, keyName) {
+  if (!row || !keyName) {
+    return undefined;
+  }
+  if (row[keyName] !== undefined) {
+    return row[keyName];
+  }
+  let lowerKeyName = keyName.toLowerCase();
+  if (row[lowerKeyName] !== undefined) {
+    return row[lowerKeyName];
+  }
+  let rowKeys = Object.keys(row);
+  for (let i = 0; i < rowKeys.length; i++) {
+    if (rowKeys[i].toLowerCase() === lowerKeyName) {
+      return row[rowKeys[i]];
+    }
+  }
+  return undefined;
+}
+function splitCategoryValues(value) {
+  if (value === undefined || value === null) {
+    return [];
+  }
+  return value.toString().split(",").map(function(categoryValue) {
+    return categoryValue.trim();
+  }).filter(function(categoryValue) {
+    return categoryValue.length > 0;
+  });
+}
+function getConfiguredCategoryMatch(dp, rawValue) {
+  if (!dp || !dp.categories || Array.isArray(dp.categories)) {
+    return null;
+  }
+  let normalizedValue = normalizeCategoryText(rawValue);
+  if (!normalizedValue) {
+    return null;
+  }
+  let categoryKeys = Object.keys(dp.categories);
+  for (let i = 0; i < categoryKeys.length; i++) {
+    let categoryKey = categoryKeys[i];
+    let categoryConfig = dp.categories[categoryKey] || {};
+    let candidates = [categoryKey];
+    if (categoryConfig.title) {
+      candidates.push(categoryConfig.title);
+    }
+    if (Array.isArray(categoryConfig.aliases)) {
+      candidates = candidates.concat(categoryConfig.aliases);
+    }
+    for (let j = 0; j < candidates.length; j++) {
+      if (normalizeCategoryText(candidates[j]) === normalizedValue) {
+        return {"key": categoryKey, "config": categoryConfig};
+      }
+    }
+  }
+  return null;
+}
+function getCategoryKey(dp, rawValue) {
+  let configuredCategory = getConfiguredCategoryMatch(dp, rawValue);
+  if (configuredCategory) {
+    return configuredCategory.key;
+  }
+  return rawValue ? rawValue.toString().trim() : "";
+}
+function getCategoryColor(dp, rawValue) {
+  let configuredCategory = getConfiguredCategoryMatch(dp, rawValue);
+  if (configuredCategory && configuredCategory.config && configuredCategory.config.color) {
+    return configuredCategory.config.color;
+  }
+  if (dp && typeof dp.scale === "function" && rawValue !== undefined && rawValue !== null && rawValue !== "") {
+    return dp.scale(rawValue);
+  }
+  if (dp && dp.color) {
+    return dp.color;
+  }
+  return "#777";
+}
+function categoryValueMatchesFilter(dp, rawValue, filterValue) {
+  let normalizedFilter = normalizeCategoryText(filterValue);
+  if (!normalizedFilter) {
+    return false;
+  }
+  let rawValues = splitCategoryValues(rawValue);
+  if (rawValues.length === 0 && rawValue) {
+    rawValues = [rawValue.toString().trim()];
+  }
+  for (let i = 0; i < rawValues.length; i++) {
+    let rawCategory = rawValues[i];
+    let normalizedRawCategory = normalizeCategoryText(rawCategory);
+    if (!normalizedRawCategory) {
+      continue;
+    }
+    if (normalizedRawCategory === normalizedFilter) {
+      return true;
+    }
+    if (normalizedRawCategory.indexOf(normalizedFilter) >= 0 || normalizedFilter.indexOf(normalizedRawCategory) >= 0) {
+      return true;
+    }
+    let rawConfiguredCategory = getConfiguredCategoryMatch(dp, rawCategory);
+    let filterConfiguredCategory = getConfiguredCategoryMatch(dp, filterValue);
+    if (rawConfiguredCategory && filterConfiguredCategory && rawConfiguredCategory.key === filterConfiguredCategory.key) {
+      return true;
+    }
+    if (rawConfiguredCategory && normalizeCategoryText(rawConfiguredCategory.key) === normalizedFilter) {
+      return true;
+    }
+    if (filterConfiguredCategory && normalizeCategoryText(filterConfiguredCategory.key) === normalizedRawCategory) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // TO DO: Can we avoid calling outside of the localsite repo by files in community, including community/map/starter/embed-map.js 
 function loadMap1(calledBy, show, dp_incoming) {
   if (param["showtopmap"] != "true") { // Prevents older map from appearing at top of new team repo maps
@@ -130,15 +248,16 @@ function loadMap1(calledBy, show, dp_incoming) {
   if (hash.state) {
     theState = hash.state.split(",")[0].toUpperCase()
   }
-  waitForElm('#state_select').then((elm) => {
-
-    if (theState != "") {
-      //  = $("#state_select").find(":selected").val()
-      let kilometers_wide = $("#state_select").find(":selected").attr("km");
+  onElmReady('#state_select', function() {
+    if (theState) {
+      let normalizedState = theState.split(",")[0].toUpperCase();
+      $("#state_select").val(normalizedState);
+      let selectedState = $("#state_select").find(":selected");
+      let kilometers_wide = selectedState.attr("km");
       //zoom = 1/kilometers_wide * 1800000;
-      zoom = zoomFromKm2(kilometers_wide,theState);
-      dp.latitude = $("#state_select").find(":selected").attr("lat");
-      dp.longitude = $("#state_select").find(":selected").attr("lon");
+      dp.zoom = zoomFromKm2(kilometers_wide, normalizedState);
+      dp.latitude = selectedState.attr("lat");
+      dp.longitude = selectedState.attr("lon");
       //alert("dp.longitude " + dp.longitude)
 
       // The above loads async. 
@@ -172,9 +291,13 @@ function loadMap1(calledBy, show, dp_incoming) {
     if (theState) {
       //if (location.host.indexOf('localhost') >= 0) {
         //dp.categories = "farm = Direct from Farm, market = Farmers Markets";
-        dp.categories = {"on-farm-market": {"title":"Direct from Farm","color":"#b2df8a"}, "farmers-market": {"title":"Farmers Markets","color":"#33a02c"}};
-        // Green colors above
-        // #b2df8a, #33a02c 
+        dp.categories = {
+          "Farmers Market":      {"title":"Farmers Market",      "color":"#33a02c","aliases":["farmers market"]},
+          "Direct from Farm":    {"title":"Direct from Farm",    "color":"#b2df8a","aliases":["on-farm market"]},
+          "Community Farm":      {"title":"Community Farm","color":"#6a3d9a","aliases":["csa enterprise"]},
+          "Food Hub":            {"title":"Food Hub",            "color":"#ff7f00","aliases":["food hub"]}
+        };
+        // Green: #33a02c (Farmers Market), #b2df8a (Direct from Farm), Purple: #6a3d9a (CSA), Orange: #ff7f00 (Food Hub)
         dp.valueColumn = "type";
         dp.valueColumnLabel = "Type";
         // https://model.earth/community-data
@@ -208,7 +331,7 @@ function loadMap1(calledBy, show, dp_incoming) {
     dp.stateRequired = "true";
     dp.addlisting = "https://www.ams.usda.gov/services/local-regional/food-directories-update";
     // community/farmfresh/ 
-    dp.mapInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community-data/process/python/farmfresh/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
+    dp.mapInfo = "Farmers markets and local farms providing fresh produce directly to consumers. <a style='white-space: nowrap' href='https://model.earth/community-data/locations/farmfresh/'>About Data</a> | <a href='https://www.ams.usda.gov/local-food-directories/farmersmarkets'>Update Listings</a>";
   } else if (show == "buses") {
     dp.listTitle = "Bus Locations";
     dp.dataset = "https://api.marta.io/buses";
@@ -1487,19 +1610,21 @@ function showList(dp,map) {
 
       } else if (hash.subcat == "null") {
         console.log("Check for subcat ");
-        if (elementRaw[dp.catColumn] == hash.cat && !elementRaw[dp.subcatColumn]) {
+        if (getRowValue(elementRaw, dp.catColumn) == hash.cat && !getRowValue(elementRaw, dp.subcatColumn)) {
           foundMatch++; // Blank subcatgory column found.
         }
       } else if (hash.subcat) {
         // TO DO - include other filters
         //console.log("Check for subcat match for " + hash.subcat + " in " + elementRaw[dp.subcatColumn]);
 
-        if (elementRaw[dp.subcatColumn].toLowerCase().indexOf(hash.subcat.toLowerCase()) >= 0) {
+        let rowSubcatValue = getRowValue(elementRaw, dp.subcatColumn);
+        if (rowSubcatValue && rowSubcatValue.toLowerCase().indexOf(hash.subcat.toLowerCase()) >= 0) {
           foundMatch++; // Subcat found in Subcategory.
         }
       } else if (hash.cat) {
         console.log("Look for cat " + hash.cat + " in catColumn: " + dp.catColumn);
-        if (elementRaw[dp.valueColumn] && elementRaw[dp.valueColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
+        let rowValueColumn = getRowValue(elementRaw, dp.valueColumn);
+        if (rowValueColumn && categoryValueMatchesFilter(dp, rowValueColumn, hash.cat)) {
           foundMatch++; // Cat found in Category valueColumn, which may contain multiple cats
           catFound++;
           console.log("catFound in valueColumn");
@@ -1507,16 +1632,18 @@ function showList(dp,map) {
         if (!foundMatch) {
           //console.log("Attempt cat search " + hash.cat.toLowerCase() + " in " + dp.catColumn);
           
-          if (elementRaw[dp.catColumn]) {
+          let rowCatColumn = getRowValue(elementRaw, dp.catColumn);
+          let rowSubcatColumn = getRowValue(elementRaw, dp.subcatColumn);
+          if (rowCatColumn) {
             //console.log("Column exists: " + elementRaw[dp.catColumn]);
           }
-          if (elementRaw[dp.catColumn] && elementRaw[dp.catColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
+          if (rowCatColumn && categoryValueMatchesFilter(dp, rowCatColumn, hash.cat)) {
             foundMatch++; // Cat found in Category
             catFound++;
             console.log("catFound in catColumn");
           }
           // Also check for the cat in the subcat column.
-          else if (elementRaw[dp.subcatColumn] && elementRaw[dp.subcatColumn].toLowerCase().indexOf(hash.cat.toLowerCase()) >= 0) {
+          else if (rowSubcatColumn && categoryValueMatchesFilter(dp, rowSubcatColumn, hash.cat)) {
             foundMatch++; // Cat found in Category
             catFound++;
             console.log("catFound in subcatColumn")
@@ -1620,18 +1747,22 @@ function showList(dp,map) {
       //console.log("element[dp.valueColumn] " + element[dp.valueColumn]);
 
       // Split row's category's on commas.
-      let rowsCatArray = element[dp.valueColumn].split(",");
+      let rowsCatArray = splitCategoryValues(element[dp.valueColumn]);
       for(var i = 0 ; i < rowsCatArray.length ; i++) {
         // Reactivate and test aerospace
         //$("#" + rowsCatArray[i]).prop('checked', true);
-        let catKey = rowsCatArray[i].trim(); // From element[dp.valueColumn] - Uses first value for icon color
+        let catKey = getCategoryKey(dp, rowsCatArray[i]); // From element[dp.valueColumn] - Uses configured key when available
         if(!catList[catKey]) {
           catList[catKey] = {};
-          catList[catKey].count = 1;
-        } else {
-          catList[catKey].count++;
         }
-        iconColor = dp.scale(catKey);
+        if (!Number.isFinite(catList[catKey].count)) {
+          catList[catKey].count = 0;
+        }
+        catList[catKey].count++;
+        if (dp.categories && dp.categories[catKey] && dp.categories[catKey].title && !catList[catKey].title) {
+          catList[catKey].title = dp.categories[catKey].title;
+        }
+        iconColor = getCategoryColor(dp, rowsCatArray[i]);
 
         if (!iconColor && dp.color) { 
           iconColor = dp.color;
@@ -1729,7 +1860,7 @@ function showList(dp,map) {
         // TO REACTIVATE
         
         if (dp.valueColumn && element[dp.valueColumn]) {
-          let bulletColorFromColorScale = dp.scale(element[dp.valueColumn]);
+          let bulletColorFromColorScale = getCategoryColor(dp, element[dp.valueColumn]);
           if (bulletColorFromColorScale != undefined) {
             bulletColor = bulletColorFromColorScale;
           }
@@ -2272,7 +2403,7 @@ function renderCatList(catList,cat) {
     return; // Avoid rerendering
   }
   if (catList && Object.keys(catList).length > 0) {
-    let catNavSide = "<div class='all_categories'><div class='legendDot'></div>All Categories</div>";
+    let catNavSide = "<div id='catItem-all' class='all_categories'><div class='legendDot'></div>All Categories</div>";
 
     //console.log("Object.keys(catList)");
     //console.log(Object.keys(catList));
@@ -2328,17 +2459,13 @@ function renderCatList(catList,cat) {
               maxCatTitleChars = catTitle.length;
             }
           }
-          catNavSide += "<div title='" + key + "'><div style='background:" + catList[key].color + ";' class='legendDot'></div><div style='overflow:hidden'>" + catTitle;
+          let catItemId = "catItem-" + key.replace(/ /g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
+          catNavSide += "<div id='" + catItemId + "' title='" + key + "'><div style='background:" + catList[key].color + ";' class='legendDot'></div><div style='overflow:hidden'>" + catTitle;
           
           // Add the count beside each category.
           if (catList[key].count || dp.categories) {
-            // The number of occurances of the category
-            if (show == "solidwaste" || show == "wastewater") {
-              // Show the count
-              catNavSide += "<span>&nbsp;(" + catList[key].count + ")</span>";
-            } else if (catList[key].count) {
-              catNavSide += "<span class='local'>&nbsp;(" + catList[key].count + ")</span>";
-            }
+            let categoryCount = catList[key].count || 0;
+            catNavSide += "<span>&nbsp;(" + categoryCount + ")</span>";
           }
 
           catNavSide += "</div></div>"
@@ -3067,13 +3194,10 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
 
       // Originally only map1 was getting updated.
 
-      console.log("Removing prior layer:", priorLayer, "from both maps");
-      // Remove prior layer from both maps when switching topics
-      if (overlays1[priorLayer]) {
-        map1.removeLayer(overlays1[priorLayer]);
-      }
-      if (overlays2[priorLayer]) {
-        map2.removeLayer(overlays2[priorLayer]);
+      console.log("Removing prior layer:", priorLayer, "from", whichmap);
+      // Each map removes only its own prior layer to avoid removing newly added layers from the other map
+      if (overlays[priorLayer]) {
+        map.removeLayer(overlays[priorLayer]);
       }
     }
     //alert("addOverlay - typeof overlays[dataTitle] " + typeof overlays[dataTitle])
@@ -3352,7 +3476,7 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
         //console.log("dp.valueColumn value Category: " + element["Category"]);
         
         // A function that returns colors based on the categories in the Values column
-        iconColor = dp.scale(element[dp.valueColumn]);
+        iconColor = getCategoryColor(dp, element[dp.valueColumn]);
 
       } else if (dp.color) {
         iconColor = dp.color;
@@ -3418,7 +3542,11 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
             fillOpacity: 1,
             radius: radius
         }).addTo(layerGroup);
-        circle.setRadius(100);
+        let r2init = 1400 * Math.pow(2, 8 - zoom);
+        if (zoom >= 14 && zoom <= 15) r2init *= 1.4; // levels 4-5 a little larger
+        if (zoom === 16) r2init *= 2.0;
+        if (zoom === 17) r2init *= 1.7;
+        circle.setRadius(whichmap === "map2" ? Math.max(3, r2init) : 100);
         // For both colors above, but it's a light blue that looks like water
         // dp.scale(element[dp.valueColumn])
         // radius was 50.  Aiming for 1 to 10. 8.5 radius arrives from markerRadius(zoom,map)
@@ -3550,11 +3678,13 @@ function addIcons(dp,map,whichmap,layerGroup,zoom,markerType) {  // layerGroup r
   map.on('zoomend', function() { // zoomend
     //L.layerGroup().eachLayer(function (marker) {
     layerGroup.eachLayer(function (marker) { // This hits every point individually. A CSS change might be less script processing intensive
-      //console.log('zoom ' + map.getZoom());
       if (marker.setRadius) {
-        // Only reached when circles are used instead of map points.
-        console.log("marker.setRadius diabled for test")
-        //marker.setRadius(markerRadius(zoom,map));
+        let z = map.getZoom();
+        let r2 = 1400 * Math.pow(2, 8 - z);
+        if (z >= 14 && z <= 15) r2 *= 1.4; // levels 4-5 a little larger
+        if (z === 16) r2 *= 2.0;
+        if (z === 17) r2 *= 1.7;
+        marker.setRadius(whichmap === "map2" ? Math.max(3, r2) : 100);
       }
     });
 
@@ -3709,7 +3839,7 @@ function hashChangedMap() {
     // Why are new map points not appearing
 
     loadScript(theroot + 'js/map-filters.js', function(results) { // map.js depends on map-filters.js
-      waitForElm('#state_select').then((elm) => {
+      onElmReady('#state_select', function() {
         // Async, so this occurs while the rest proceeds.
         let dp = {};
         // Copied from map-filters.js
@@ -3720,13 +3850,7 @@ function hashChangedMap() {
               let kilometers_wide = $("#state_select").find(":selected").attr("km");
               //zoom = 1/kilometers_wide * 1800000;
       
-              if (theState == "HI") { // Hawaii
-                  zoom = 6
-              } else if (kilometers_wide > 1000000) { // Alaska
-                  zoom = 4
-              } else {
-                  zoom = 7; // For Georgia map
-              }
+              zoom = zoomFromKm2(kilometers_wide, theState);
               dp.latitude = $("#state_select").find(":selected").attr("lat");
               dp.longitude = $("#state_select").find(":selected").attr("lon");
               //alert("dp.longitude  " + dp.longitude)
@@ -3787,23 +3911,17 @@ $(document).ready(function () {
 
 function zoomFromKm2(kilometers_wide, theState) {
   //alert(kilometers_wide) // undefined for the 1st of 3.
-  let zoom = 5;
+  let zoom = 8; // Default for most states
   if (!kilometers_wide) return zoom;
   if (kilometers_wide > 1000000) { // Alaska
     zoom = 4
-  } else if (kilometers_wide > 600000) { // Texas
-    zoom = 5
-  } else if (kilometers_wide > 105000) { // Hawaii and Idaho
+  } else if (kilometers_wide > 600000) { // Texas-scale
     zoom = 6
+  } else if (kilometers_wide > 105000) { // CA, ID and similar medium-large states
+    zoom = 7
   }
-  if (theState == "AL" || theState == "AR" || theState == "GA" || theState == "CO" || theState == "IA") { // Zoom closer for some states
-    zoom = zoom + 1;
-  }
-  if (theState == "HI" || theState == "IN") {
-    zoom = zoom + 2;
-  }
-  if (theState == "DE") {
-    zoom = zoom + 3;
+  if (["AZ","CA","HI","KY","ME","MN","MT","NM","NV","WY"].includes(theState)) { // States needing one step more zoomed out
+    zoom = zoom - 1;
   }
   return zoom;
 }
