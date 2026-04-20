@@ -1709,6 +1709,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .btn-secondary:hover {
   background: var(--color-secondary-hover);
   border-color: var(--color-secondary-hover);
+  color: #fff;
 }
 .btn-tertiary {
   background: var(--color-tertiary);
@@ -1718,6 +1719,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .btn-tertiary:hover {
   background: var(--color-tertiary-hover);
   border-color: var(--color-tertiary-hover);
+  color: #fff;
 }
 .btn-success {
   background: var(--color-success);
