@@ -1,14 +1,14 @@
 // localsite/js/trade.js
-// Shared trade controls: Year, Factor, Currency, Top flows
+// Shared trade controls: Year, Factor, Currency, Inflows
 // Used by profile/charts/sankey and profile/trade/map
 
 window.TradeShared = (function () {
 
   var METRICS = {
+    amount:           { label: "Total Amount",        unit: "M EUR",       scale: 1,    sourceKeys: ["amount"],                                     scoreDirection: "higher" },
     CO2_total:        { label: "CO\u2082 Emissions",  unit: "Gt CO\u2082", scale: 1e12, sourceKeys: ["CO2_total"],                                 scoreDirection: "lower"  },
     Water_total:      { label: "Water Use",           unit: "Gm\u00B3",    scale: 1e9,  sourceKeys: ["Water_total"],                                scoreDirection: "lower"  },
-    Employment_total: { label: "Employment",          unit: "M jobs",      scale: 1e6,  sourceKeys: ["Employment_total", "Employment_people_total"], scoreDirection: "higher" },
-    amount:           { label: "Amount Spent",        unit: "M EUR",       scale: 1,    sourceKeys: ["amount"],                                     scoreDirection: "higher" }
+    Employment_total: { label: "Employment",          unit: "M jobs",      scale: 1e6,  sourceKeys: ["Employment_total", "Employment_people_total"], scoreDirection: "higher" }
   };
 
   var CURRENCY_NAMES = {
@@ -25,7 +25,7 @@ window.TradeShared = (function () {
     ISK: "Icelandic Krona",    NZD: "New Zealand Dollar", RUB: "Russian Rouble"
   };
 
-  var _state = { year: "", metric: "CO2_total", currency: "EUR", topn: 15 };
+  var _state = { year: "", metric: "amount", currency: "EUR", topn: 15 };
   var _callbacks = [];
 
   function _currencyName(code) {
@@ -94,7 +94,7 @@ window.TradeShared = (function () {
       opt.value = key; opt.textContent = METRICS[key].label;
       metricSelect.appendChild(opt);
     });
-    metricSelect.value = _state.metric || "CO2_total";
+    metricSelect.value = _state.metric || "amount";
     metricLabel.appendChild(metricSelect);
     container.appendChild(metricLabel);
 
@@ -115,9 +115,9 @@ window.TradeShared = (function () {
     currencyLabel.appendChild(currencySelect);
     container.appendChild(currencyLabel);
 
-    // Top flows
+    // Inflows
     var topnLabel = document.createElement("label");
-    topnLabel.appendChild(document.createTextNode("Top flows: "));
+    topnLabel.appendChild(document.createTextNode("Inflows: "));
     var topnSlider = document.createElement("input");
     topnSlider.type = "range"; topnSlider.id = "trade-topn-slider";
     topnSlider.min = "5"; topnSlider.max = "50"; topnSlider.step = "1";
