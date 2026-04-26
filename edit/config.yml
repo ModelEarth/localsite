@@ -1,5 +1,7 @@
 # yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
 
+app_title: Edit My Page
+
 backend:
   name: github
   repo: modelearth/webroot

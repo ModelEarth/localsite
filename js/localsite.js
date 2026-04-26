@@ -2844,6 +2844,7 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
 
       // Appends rather than overwrites
       loadIntoDiv(pageFolder,divID,html, function() {
+        _attachMarkdownEditMenu(pagePath, divID);
         // Call the main callback after loadIntoDiv finishes
         if (typeof callback === 'function') {
           //alert("valid") // BUGBUG Not reaching
@@ -5349,10 +5350,244 @@ function initTopNavOffset() {
   }
 }
 
+// ── Markdown inline editor ────────────────────────────────────────────────────
+
+var _mdEditorStyled = false;
+function _injectMdEditorStyles() {
+    if (_mdEditorStyled) return;
+    _mdEditorStyled = true;
+    var s = document.createElement('style');
+    s.textContent = '.md-edit-menu{position:absolute;top:8px;right:8px;z-index:10;font-family:system-ui,sans-serif}'
+        + '.md-edit-trigger{background:rgba(255,255,255,.92);border:1px solid #d1d5db;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:18px;padding:0;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.1)}'
+        + '.md-edit-trigger:hover{background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}'
+        + '.md-edit-dropdown{display:none;position:absolute;right:0;top:34px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.12);min-width:140px;overflow:hidden}'
+        + '.md-edit-item{padding:9px 16px;cursor:pointer;font-size:13px;color:#374151}'
+        + '.md-edit-item:hover{background:#f9fafb}'
+        + '.md-editor-overlay{position:absolute;inset:0;z-index:20;background:#fff;display:flex;flex-direction:column;min-height:300px;font-family:system-ui,sans-serif}'
+        + '.md-editor-header{display:flex;align-items:center;padding:8px 12px;border-bottom:1px solid #e5e7eb;font-size:13px;color:#6b7280;flex-shrink:0}'
+        + '.md-editor-title{flex:1;font-weight:500;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+
+        + '.md-editor-textarea{flex:1;font-family:monospace;font-size:13px;border:none;border-bottom:1px solid #e5e7eb;padding:12px;resize:none;outline:none;line-height:1.6;min-height:200px}'
+        + '.md-editor-confirm{display:none;align-items:center;gap:8px;padding:10px 12px;background:#fffbeb;border-top:1px solid #fde68a;flex-shrink:0;font-size:13px;color:#92400e}'
+        + '.md-editor-confirm.active{display:flex}'
+        + '.md-save-btn{padding:5px 14px;background:#2563eb;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px}'
+        + '.md-save-btn:hover{background:#1d4ed8}'
+        + '.md-discard-btn{padding:5px 14px;background:#fff;border:1px solid #d1d5db;border-radius:4px;cursor:pointer;font-size:13px;color:#374151}'
+        + '.md-discard-btn:hover{background:#f9fafb}';
+    document.head.appendChild(s);
+}
+
+function _attachMarkdownEditMenu(pagePath, divID) {
+    if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
+    var container = document.getElementById(divID);
+    if (!container || container.querySelector('.md-edit-menu')) return;
+    _injectMdEditorStyles();
+
+    var menu     = document.createElement('div');   menu.className = 'md-edit-menu local'; menu.style.display = 'none';
+    var trigger  = document.createElement('button'); trigger.className = 'md-edit-trigger'; trigger.title = 'Edit options'; trigger.innerHTML = '<span class="material-icons" style="font-size:16px;line-height:1">edit_note</span>';
+    var dropdown = document.createElement('div');   dropdown.className = 'md-edit-dropdown';
+    var item     = document.createElement('div');   item.className = 'md-edit-item'; item.textContent = 'Edit Content';
+
+    dropdown.appendChild(item);
+    menu.appendChild(trigger);
+    menu.appendChild(dropdown);
+    container.appendChild(menu);
+
+    trigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    });
+    document.addEventListener('click', function() { dropdown.style.display = 'none'; });
+    item.addEventListener('click', function() {
+        dropdown.style.display = 'none';
+        launchCMS({inline:true, target:container, configUrl:'/localsite/edit/config.yml'});
+    });
+}
+
+function _openMarkdownEditor(pagePath, divID) {
+    var container = document.getElementById(divID);
+    if (!container || container.querySelector('.md-editor-overlay')) return;
+
+    var prevMinHeight = container.style.minHeight;
+    container.style.minHeight = '360px';
+
+    fetch(pagePath).then(function(r) { return r.text(); }).then(function(originalContent) {
+        var overlay  = document.createElement('div'); overlay.className = 'md-editor-overlay';
+        var header   = document.createElement('div'); header.className = 'md-editor-header';
+        var title    = document.createElement('span'); title.className = 'md-editor-title';
+        title.textContent = '✏ ' + pagePath.split('/').pop();
+        var closeBtn = document.createElement('button'); closeBtn.className = 'md-editor-close';
+        closeBtn.title = 'Close editor'; closeBtn.innerHTML = '&#x2715;';
+        header.appendChild(title); header.appendChild(closeBtn);
+
+        var textarea = document.createElement('textarea'); textarea.className = 'md-editor-textarea';
+        textarea.value = originalContent;
+
+        var confirmBar  = document.createElement('div'); confirmBar.className = 'md-editor-confirm';
+        var confirmMsg  = document.createElement('span'); confirmMsg.style.flex = '1'; confirmMsg.textContent = 'Save changes?';
+        var saveBtn     = document.createElement('button'); saveBtn.className = 'md-save-btn'; saveBtn.textContent = 'Save Changes';
+        var discardBtn  = document.createElement('button'); discardBtn.className = 'md-discard-btn'; discardBtn.textContent = "Don't Save";
+        confirmBar.appendChild(confirmMsg); confirmBar.appendChild(saveBtn); confirmBar.appendChild(discardBtn);
+
+        overlay.appendChild(header); overlay.appendChild(textarea); overlay.appendChild(confirmBar);
+        container.appendChild(overlay);
+        textarea.focus();
+
+        function closeEditor() { overlay.remove(); container.style.minHeight = prevMinHeight; }
+
+        closeBtn.addEventListener('click', function() {
+            if (textarea.value === originalContent) { closeEditor(); }
+            else { confirmBar.classList.add('active'); textarea.focus(); }
+        });
+        discardBtn.addEventListener('click', closeEditor);
+        saveBtn.addEventListener('click', function() {
+            _saveMarkdown(pagePath, textarea.value, function(ok) { if (ok) closeEditor(); });
+        });
+    }).catch(function() { container.style.minHeight = prevMinHeight; });
+}
+
+function _saveMarkdown(pagePath, content, callback) {
+    var isRemote = /^https?:\/\//i.test(pagePath);
+    if (!isRemote) {
+        fetch('/api/save-file', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: pagePath, content: content })
+        }).then(function(r) {
+            if (r.ok) { callback(true); return; }
+            _mdCopyFallback(content, callback);
+        }).catch(function() { _mdCopyFallback(content, callback); });
+    } else {
+        _mdCopyFallback(content, callback);
+    }
+}
+
+function _mdCopyFallback(content, callback) {
+    navigator.clipboard.writeText(content).then(function() {
+        alert('Copied to clipboard (no local save endpoint available).');
+        callback(true);
+    }).catch(function() {
+        alert('Could not save or copy. Please save manually.');
+        callback(false);
+    });
+}
+
+// ── Site config / CMS launcher ───────────────────────────────────────────────
+
+// Parse /config.yaml and expose as window.CMS_SITE_CONFIG so the cms fork's
+// site-config.js can read it without the fork needing to fetch config.yaml itself.
+fetch('/config.yaml').then(function(r) { return r.text(); }).then(function(t) {
+    function scalar(key) {
+        var m = t.match(new RegExp('^' + key + ':\\s*([^\\n#]+)', 'm'));
+        return m ? m[1].trim() : null;
+    }
+    function bool(key) { var v = scalar(key); return v === 'true' ? true : v === 'false' ? false : null; }
+    function list(key) {
+        var m = t.match(new RegExp('^' + key + ':\\n((?:[ \\t]+-[ \\t]+[^\\n]+\\n?)*)', 'm'));
+        if (!m) return [];
+        return m[1].split('\n').reduce(function(a, l) {
+            var lm = l.match(/^[ \t]+-[ \t]+(.+)/); if (lm) a.push(lm[1].trim()); return a;
+        }, []);
+    }
+    var logoBlock = t.match(/^logo:\s*\n((?:[ \t]+\S[^\n]*\n?)*)/m);
+    var logo = {};
+    if (logoBlock) logoBlock[1].split('\n').forEach(function(l) {
+        var lm = l.match(/^[ \t]+([\w_]+):\s*(\S+)/);
+        if (lm) logo[lm[1]] = lm[2] === 'true' ? true : lm[2] === 'false' ? false : lm[2];
+    });
+    window.CMS_SITE_CONFIG = {
+        app_title:     scalar('app_title'),
+        inline_editor: bool('inline_editor'),
+        logo:          logo,
+        extra_css:     list('extra_css'),
+        extra_js:      list('extra_js')
+    };
+    if (window.CMS_SITE_CONFIG.inline_editor) window.cmsInlineEditor = true;
+}).catch(function() {});
+
+function launchCMS(options) {
+    var inline = (options && options.inline != null) ? options.inline : !!window.cmsInlineEditor;
+    var target = options && options.target
+        ? (typeof options.target === 'string' ? document.querySelector(options.target) : options.target)
+        : null;
+    var configUrl = options && options.configUrl;
+    if (configUrl && !document.querySelector('link[rel="cms-config-url"]')) {
+        var cfgLink = document.createElement('link');
+        cfgLink.rel = 'cms-config-url';
+        cfgLink.type = 'application/yaml';
+        cfgLink.href = configUrl;
+        document.head.appendChild(cfgLink);
+    }
+
+    if (inline) {
+        var root = document.getElementById('nc-root');
+        if (root) {
+            // CMS already mounted — just re-show the hidden editor and close bar
+            root.style.display = '';
+            var existingBar = document.querySelector('.cms-close-bar');
+            if (existingBar) existingBar.style.display = '';
+            if (target) target.style.display = 'none';
+            return;
+        }
+
+        root = document.createElement('div');
+        root.id = 'nc-root';
+        root.style.position = 'relative';
+        root.style.width = '100%';
+        window.requestAnimationFrame(function() {
+            var top = root.getBoundingClientRect().top;
+            root.style.height = Math.max(400, window.innerHeight - top) + 'px';
+        });
+
+        var closeBar = document.createElement('div');
+        closeBar.className = 'cms-close-bar';
+        var closeBtn = document.createElement('button');
+        closeBtn.className = 'md-editor-close';
+        closeBtn.title = 'Close editor';
+        closeBtn.innerHTML = '&#x2715;';
+        closeBtn.addEventListener('click', (function(r, bar, tgt) {
+            return function() { r.style.display = 'none'; bar.style.display = 'none'; if (tgt) tgt.style.display = ''; };
+        })(root, closeBar, target));
+        closeBar.appendChild(closeBtn);
+
+        if (target) target.style.display = 'none';
+        if (target && target.parentNode) {
+            target.parentNode.insertBefore(closeBar, target.nextSibling);
+            target.parentNode.insertBefore(root, closeBar.nextSibling);
+        } else {
+            document.body.appendChild(closeBar);
+            document.body.appendChild(root);
+        }
+    }
+
+    var style = document.createElement('style');
+    style.textContent = '* { user-select: text !important; }';
+    document.head.appendChild(style);
+    document.addEventListener('contextmenu', function(e) { e.stopImmediatePropagation(); }, true);
+    if (!document.querySelector('script[src="/cms/package/dist/sveltia-cms.js"]')) {
+        var script = document.createElement('script');
+        script.src = '/cms/package/dist/sveltia-cms.js';
+        document.body.appendChild(script);
+    }
+}
+
+function initNcRoot() {
+    var ncRoot = document.getElementById('nc-root');
+    if (ncRoot && !ncRoot.style.height) {
+        ncRoot.style.position = 'relative';
+        ncRoot.style.width = '100%';
+        window.requestAnimationFrame(function() {
+            var top = ncRoot.getBoundingClientRect().top;
+            ncRoot.style.height = Math.max(400, window.innerHeight - top) + 'px';
+        });
+    }
+}
+
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initTopNavOffset);
+  document.addEventListener('DOMContentLoaded', function() { initTopNavOffset(); initNcRoot(); });
 } else {
   initTopNavOffset();
+  initNcRoot();
 }
 
 consoleLog("end localsite");

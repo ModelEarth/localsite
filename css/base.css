@@ -4341,3 +4341,37 @@ body.dark #earthPlayInFilters:hover,
 body.dark #earthPlayInFilters:focus {
   color: #fff;
 }
+
+/* Inline CMS editor mount point. min-height ensures app.svelte detects a non-zero
+   height and uses position:relative (inline flow) instead of falling back to fixed. */
+#nc-root {
+  position: relative;
+  width: 100%;
+}
+#nc-root .powered-by {
+  display: none;
+}
+.cms-close-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.md-editor-close {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.md-editor-close:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
