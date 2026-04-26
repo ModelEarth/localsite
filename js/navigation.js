@@ -2766,7 +2766,7 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
     }
 }
 
-const navParam = getNavParam();
+var navParam = (typeof navParam !== 'undefined') ? navParam : getNavParam();
 //const testParam = getNavParam('https://example.com?features.path=dashboard&user.name=john#features.story=onboarding&user.age=25&features.path=old-dashboard');
 //console.log(JSON.stringify(testParam, null, 2));
 //alert(testParam.features.story);
@@ -2775,7 +2775,7 @@ const navParam = getNavParam();
 StandaloneNavigation.instance = null;
 
 // Global instance
-let standaloneNav;
+var standaloneNav;
 
 // Initialize navigation function
 function initializeStandaloneNav() {
@@ -2932,7 +2932,7 @@ window.refreshFavicon = function() {
 
 /// Navigation.js
 
-const stateFromCountryAndStateNumber = {
+var stateFromCountryAndStateNumber = stateFromCountryAndStateNumber || {
   "US01": "AL", "US02": "AK", "US04": "AZ", "US05": "AR", "US06": "CA",
   "US08": "CO", "US09": "CT", "US10": "DE", "US11": "DC", "US12": "FL",
   "US13": "GA", "US15": "HI", "US16": "ID", "US17": "IL", "US18": "IN",
@@ -3113,8 +3113,9 @@ catArray = [];
 // Avoid since does not work when localsite.js loads navigation.js.
 /////document.addEventListener('DOMContentLoaded', function() { // $(document).ready
 
+if (typeof $ !== 'undefined') {
     // Gets overwritten
-    if (param.state) {
+    if (param && param.state) {
         $("#state_select").val(param.state.split(",")[0]);
     }
     
@@ -4168,6 +4169,7 @@ catArray = [];
     //    return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
     //}
 //});
+} // end if (typeof $ !== 'undefined')
 
 function readCsvData(_data, columnsNum, valueCol) {
   if (typeof columnsNum !== "undefined") {
@@ -7243,9 +7245,9 @@ if(typeof localObject == 'undefined') { var localObject = {};}
 if(typeof localObject.layers == 'undefined') {
     localObject.layers = {}; // Holds layers.
 }
-const page_scripts = document.getElementsByTagName("script");
-let earthFooter = false;
-let showLeftIcon = false;
+var page_scripts = document.getElementsByTagName("script");
+var earthFooter = false;
+var showLeftIcon = false;
 if(typeof param=='undefined'){ var param={}; }
 
 if (window.location.protocol != 'https:' && location.host.indexOf('localhost') < 0) {
@@ -7697,7 +7699,6 @@ function toggleShowNavColumn() {
     let headerFixedHeight = $("#headerLarge").height();
     $('#cloneLeft').css("top",headerFixedHeight + "px");
 }
-let localsiteTitle = "";
 function applyNavigation() { // Waits for localsite.js 'localStart' variable so local_app path is available.
 
     // To do: fetch the existing background-image.
@@ -8526,7 +8527,7 @@ $(document).on("change", "#accesslocal", function(event) {
 });
 function shouldSyncStylelookToHash() {
     const pathname = (window.location && window.location.pathname ? window.location.pathname : '').replace(/\\/g, '/');
-    return pathname.indexOf('/localsite/css/styles/') >= 0;
+    return pathname.indexOf('/cms/themes/') >= 0;
 }
 $(document).on("change", "#stylelook", function(event) { // Style theme
     const nextStylelook = normalizeSharedStylelookValue($("#stylelook").val(), "base");

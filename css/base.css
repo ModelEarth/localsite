@@ -57,7 +57,7 @@ Used in localsite, modelearth, io, neighborhood, trees
 }
 
 
-/* Shared theme layer for localsite/css/styles/*.css overrides */
+/* Shared theme layer for cms/themes/*.css overrides */
 :root {
   --bg-page: #fafafa;
   --bg-card: #ffffff;
@@ -1504,17 +1504,18 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   font-family: var(--font-subheadline);
 }
 .typography-toggle {
-  position: sticky;
-  top: 0;
+  position: relative;
+  width: 100%;
   z-index: 100;
-  margin-bottom: 40px;
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 16px;
   background: var(--bg-card);
   box-shadow: var(--card-shadow);
-  transition: transform 0.2s ease;
+}
+.typography-toggle.typography-toggle-fixed {
+  position: fixed;
 }
 .typography-toggle.typography-toggle-hidden {
   transform: translateY(-100%);

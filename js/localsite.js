@@ -3519,7 +3519,7 @@ function getStylelookThemeUrl(styleLook) {
       return "";
     }
     if (localStylelookThemes.includes(styleLook)) {
-      return local_app.localsite_root() + 'css/styles/' + encodeURIComponent(styleLook) + '.css';
+      return local_app.web_root() + '/cms/themes/' + encodeURIComponent(styleLook) + '.css';
     }
     if (cvStylelookThemes.includes(styleLook)) {
       const cvThemeRoot = (location.host.indexOf('localhost') >= 0 || location.host.indexOf('127.0.0.1') >= 0)
