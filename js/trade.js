@@ -5,7 +5,7 @@
 window.TradeShared = (function () {
 
   var METRICS = {
-    amount:           { label: "Total Amount",        unit: "M EUR",       scale: 1,    sourceKeys: ["amount"],                                     scoreDirection: "higher" },
+    amount:           { label: "Amount Spent",        unit: "M EUR",       scale: 1,    sourceKeys: ["amount"],                                     scoreDirection: "higher" },
     CO2_total:        { label: "CO\u2082 Emissions",  unit: "Gt CO\u2082", scale: 1e12, sourceKeys: ["CO2_total"],                                 scoreDirection: "lower"  },
     Water_total:      { label: "Water Use",           unit: "Gm\u00B3",    scale: 1e9,  sourceKeys: ["Water_total"],                                scoreDirection: "lower"  },
     Employment_total: { label: "Employment",          unit: "M jobs",      scale: 1e6,  sourceKeys: ["Employment_total", "Employment_people_total"], scoreDirection: "higher" }
@@ -25,11 +25,105 @@ window.TradeShared = (function () {
     ISK: "Icelandic Krona",    NZD: "New Zealand Dollar", RUB: "Russian Rouble"
   };
 
+  var CURRENCY_SYMBOLS = {
+    EUR: "\u20ac", USD: "$",   JPY: "\u00a5", GBP: "\u00a3", CHF: "CHF ",
+    SEK: "kr ",   NOK: "kr ",  DKK: "kr ",   CZK: "K\u010d ", PLN: "z\u0142 ",
+    HUF: "Ft ",   RON: "lei ", HRK: "kn ",   BGN: "\u043b\u0432 ", TRY: "\u20ba",
+    AUD: "A$",    CAD: "C$",   HKD: "HK$",   SGD: "S$",      KRW: "\u20a9",
+    ZAR: "R ",    MXN: "MX$",  INR: "\u20b9", CNY: "\u00a5", BRL: "R$",
+    IDR: "Rp ",   ILS: "\u20aa", MYR: "RM ", PHP: "\u20b1", THB: "\u0e3f",
+    ISK: "kr ",   NZD: "NZ$",  RUB: "\u20bd"
+  };
+
   var _state = { year: "", metric: "amount", currency: "EUR", topn: 15 };
+  var _currencyRatesByYear = {};
   var _callbacks = [];
+  var _exactAmountFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
 
   function _currencyName(code) {
-    return CURRENCY_NAMES[code] || code;
+    var normalized = String(code || "").trim().toUpperCase();
+    return CURRENCY_NAMES[normalized] || normalized;
+  }
+
+  function _currencySymbol(code) {
+    var normalized = String(code || "").trim().toUpperCase();
+    return CURRENCY_SYMBOLS[normalized] || (normalized ? normalized + " " : "");
+  }
+
+  function _parseNumber(value) {
+    var parsed = Number(value);
+    return isFinite(parsed) ? parsed : 0;
+  }
+
+  function _formatMagnitudeWordValue(value) {
+    var numericValue = _parseNumber(value);
+    var absolute = Math.abs(numericValue);
+    var thresholds = [
+      { size: 1e12, label: "Trillion" },
+      { size: 1e9,  label: "Billion" },
+      { size: 1e6,  label: "Million" },
+      { size: 1e3,  label: "Thousand" }
+    ];
+    var threshold = thresholds.find(function (entry) {
+      return absolute >= entry.size;
+    });
+
+    if (!threshold) {
+      return numericValue.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    }
+
+    var scaled = numericValue / threshold.size;
+    var maximumFractionDigits = Math.abs(scaled) >= 100 ? 0 : 1;
+    var precision = Math.pow(10, maximumFractionDigits);
+    var rounded = Math.round(scaled * precision) / precision;
+
+    return rounded.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: maximumFractionDigits
+    }) + " " + threshold.label;
+  }
+
+  function currencyRateForYear(year, currencyCode) {
+    var normalized = String(currencyCode || "").trim().toUpperCase() || "EUR";
+    if (normalized === "EUR") {
+      return 1;
+    }
+    var yearRates = _currencyRatesByYear[String(year || "").trim()] || {};
+    return _parseNumber(yearRates[normalized]) || 1;
+  }
+
+  function convertAmountValue(value, year, currencyCode) {
+    return _parseNumber(value) * currencyRateForYear(year, currencyCode);
+  }
+
+  function formatCurrencyMagnitudeWordValue(value, currencyCode) {
+    return _currencySymbol(currencyCode) + _formatMagnitudeWordValue(_parseNumber(value) * 1e6);
+  }
+
+  function formatCurrencyCompactValue(value, currencyCode) {
+    var numericValue = _parseNumber(value) * 1e6;
+    var formatter = Math.abs(numericValue) >= 1e6
+      ? { notation: "compact", maximumFractionDigits: 1 }
+      : { maximumFractionDigits: 0 };
+    return _currencySymbol(currencyCode) + numericValue.toLocaleString(undefined, formatter);
+  }
+
+  function formatCurrencyExactValue(value, currencyCode) {
+    return _currencySymbol(currencyCode) + _exactAmountFormatter.format(_parseNumber(value) * 1e6);
+  }
+
+  function formatAmountExact(value, year, currencyCode) {
+    var currency = String(currencyCode || "").trim().toUpperCase() || _state.currency || "EUR";
+    return formatCurrencyExactValue(convertAmountValue(value, year, currency), currency);
+  }
+
+  function formatAmountCompact(value, year, currencyCode) {
+    var currency = String(currencyCode || "").trim().toUpperCase() || _state.currency || "EUR";
+    return formatCurrencyCompactValue(convertAmountValue(value, year, currency), currency);
+  }
+
+  function setCurrencyRates(ratesByYear) {
+    _currencyRatesByYear = ratesByYear || {};
   }
 
   function _injectStyles() {
@@ -259,8 +353,20 @@ window.TradeShared = (function () {
     setState: setState,
     setYears: setYears,
     setCurrencies: setCurrencies,
+    setCurrencyRates: setCurrencyRates,
+    currencyRateForYear: currencyRateForYear,
+    convertAmountValue: convertAmountValue,
+    currencyName: _currencyName,
+    currencySymbol: _currencySymbol,
+    formatMagnitudeWordValue: _formatMagnitudeWordValue,
+    formatCurrencyExactValue: formatCurrencyExactValue,
+    formatCurrencyCompactValue: formatCurrencyCompactValue,
+    formatCurrencyMagnitudeWordValue: formatCurrencyMagnitudeWordValue,
+    formatAmountExact: formatAmountExact,
+    formatAmountCompact: formatAmountCompact,
     METRICS: METRICS,
-    CURRENCY_NAMES: CURRENCY_NAMES
+    CURRENCY_NAMES: CURRENCY_NAMES,
+    CURRENCY_SYMBOLS: CURRENCY_SYMBOLS
   };
 
 })();
