@@ -684,7 +684,8 @@ window.TradePartner = (function () {
 
     // ---- Balance mode: diverging imbalance chart ----
     if (activeSelection.flow === "balance") {
-      if (header) { header.textContent = countryFullName(activeSelection.country) + " - Top Trade Imbalances"; }
+      var bMetricLabel = (TradeShared.METRICS[activeSelection.metric] || {}).label || "";
+      if (header) { header.textContent = countryFullName(activeSelection.country) + " - Top Trade Imbalances" + (bMetricLabel ? " - " + bMetricLabel : ""); }
       var bMetricKey = activeSelection.metric;
       var bYear      = activeSelection.year;
       var bCurrency  = activeSelection.currency || "EUR";
@@ -749,7 +750,8 @@ window.TradePartner = (function () {
     }
 
     var flowLabel = activeSelection.flow === "exports" ? "Export" : "Import";
-    if (header) { header.textContent = countryFullName(activeSelection.country) + " - Top " + flowLabel + " Partners"; }
+    var metricLabel = (TradeShared.METRICS[activeSelection.metric] || {}).label || "";
+    if (header) { header.textContent = countryFullName(activeSelection.country) + " - Top " + flowLabel + " Partners" + (metricLabel ? " - " + metricLabel : ""); }
 
     var metricKey    = activeSelection.metric;
     var metric       = TradeShared.METRICS[metricKey];
