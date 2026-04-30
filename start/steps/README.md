@@ -69,16 +69,21 @@ Fork <a href="https://github.com/ModelEarth/webroot">webroot</a> to work across 
 
 Or you can fork individual repos:<br>
 Always fork <a href="https://github.com/ModelEarth/localsite">localsite</a> so we can review your contributions using [Github Pages](https://docs.github.com/en/pages/quickstart).  
-Fork the [home repo](https://github.com/ModelEarth/home) if you're working on our ["Everybody's Homepage" frontend](../../../home/).  
-Fork the [profile repo](https://github.com/ModelEarth/home) if you're working with [Exiobase Trade Flow](/profile/trade), [SuiteCRM](/profile/crm) or [Project Preference Ratings](/profile/preferences/). 
+Fork <a href="https://github.com/ModelEarth/chat">chat</a> if you're contributing to our AI chat interface.  
+Fork <a href="https://github.com/ModelEarth/cloud">cloud</a> if you're contributing to our cloud infrastructure and deployment.  
+Fork <a href="https://github.com/ModelEarth/codechat">codechat</a> if you're contributing to our RAG-based code chat.  
 Fork <a href="https://github.com/ModelEarth/data-commons">data-commons</a> if you're adding [data visualizations](/localsite/timeline/) using the Google Data Commons javascript API.  
+Fork <a href="https://github.com/ModelEarth/data-pipeline">data-pipeline</a> if you're contributing Python to data prep.  
+Fork <a href="https://github.com/ModelEarth/desktop">desktop</a> if you're contributing to our desktop app.  
+Fork <a href="https://github.com/ModelEarth/exiobase">exiobase</a> if you're contributing to our Exiobase trade flow data.  
 Fork <a href="https://github.com/ModelEarth/feed">feed player</a> if you're adding to our React Vite visual [Feed viewer](https://model.earth/feed/) and memberSense for Discord.  
-Fork [useeio.js](https://github.com/ModelEarth/useeio.js) if you're contributing to our <a href="../../../profile/footprint/">US State Reports</a> and [Trade Flow](../../../profile/trade/) visualizations.  
+Fork the [home repo](https://github.com/ModelEarth/home) if you're working on our ["Everybody's Homepage" frontend](../../../home/).  
+Fork the [profile repo](https://github.com/ModelEarth/profile) if you're working with [Exiobase Trade Flow](/profile/trade), [SuiteCRM](/profile/crm) or [Project Preference Ratings](/profile/preferences/).  
+Fork <a href="https://github.com/ModelEarth/project">project</a> to contribute to our Abundance Engine.  
 Fork <a href="https://github.com/ModelEarth/realitystream">realitystream</a> if you're contributing python to our Machine Learning visualizations.  
 Fork <a href="https://github.com/ModelEarth/requests">requests</a> if you're adding python to our image and video [Storyboard Generation](https://model.earth/data-pipeline/research/stream).  
-Fork <a href="https://github.com/datascape/open-webui/actions">openwebui (Datascape fork)</a> to contribute within our [Open WebUI location projects](/projects/location/) using Python and Vite.  
-Fork <a href="https://github.com/ModelEarth/earthscape">earthscape</a> if you're contributing to the our fork of [Chatbot UI](https://model.earth/earthscape/app/) using NextJS React and Supabase for team tools.  
-Fork <a href="https://github.com/ModelEarth/data-pipeline">data-pipeline</a> if you're contributing Python to data prep.  
+Fork <a href="https://github.com/ModelEarth/swiper">swiper</a> if you're contributing to our Swiper carousel components.  
+Fork <a href="https://github.com/ModelEarth/team">team</a> if you're contributing to our team collaboration tools.  
 
 <!--
 It's designed to serve infinite content based on parameters.  
@@ -117,35 +122,41 @@ This will allow us to use GitHub Pages to review edits you make to other repos.
 
 **Step 3.** 
 
-You can use GitHub Desktop to clone additional repos you plan to edit.
+Note: As an alternative to the following manual process, the command "push using guidance in team/AGENTS.md" in our [webroot](https://model.earth/webroot) will create a fork and automatically send a PR if you've made local edits.
+
+You can use GitHub Desktop to clone additional repos you plan to edit into your webroot.
 
 Or enter your GitHub account to insert in the cmds below.
 
 <input type="text" id="gitAccount" class="textInput" style="width:210px" placeholder="YOUR ACCOUNT"  autofocus onfocus="this.select()" oninput="updateGitCmds()"><br>
 
-Indicate the repos you're planning to edit and have already forked.
+Indicate the repos you're planning to edit and have already forked. In the commands below, repos you've indicated as forked will be cloned/pulled from your own fork, while repos you're just using (not editing) come straight from modelearth.
 
 <!-- Also add to checkboxIds array -->
 
 <div style="float:left;font-size:18px;padding-right:20px">
-<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">Localsite<br>
-<input id="homeForked" type="checkbox" onclick="updateGitCmds()">Home<br>
-<input id="profileForked" type="checkbox" onclick="updateGitCmds()">Profile<br>
+<input id="chatForked" type="checkbox" onclick="updateGitCmds()">Chat<br>
+<input id="cloudForked" type="checkbox" onclick="updateGitCmds()">Cloud<br>
+<input id="codechatForked" type="checkbox" onclick="updateGitCmds()">CodeChat<br>
+<input id="community-dataForked" type="checkbox" onclick="updateGitCmds()">Community-Data<br>
 <input id="data-commonsForked" type="checkbox" onclick="updateGitCmds()">Data-Commons<br>
-<input id="projectsForked" type="checkbox" onclick="updateGitCmds()">Projects<br>
-<input id="requestsForked" type="checkbox" onclick="updateGitCmds()">Requests Storyboard<br>
-<input id="realitystreamForked" type="checkbox" onclick="updateGitCmds()">RealityStream ML<br>
-<input id="marioForked" type="checkbox" onclick="updateGitCmds()">Mario Trade Flow<br>
+<input id="data-pipelineForked" type="checkbox" onclick="updateGitCmds()">Data-Pipeline (Python)<br>
+<input id="desktopForked" type="checkbox" onclick="updateGitCmds()">Desktop<br>
+<input id="exiobaseForked" type="checkbox" onclick="updateGitCmds()">Exiobase<br>
+<input id="feedForked" type="checkbox" onclick="updateGitCmds()">FeedPlayer (React)<br>
+<input id="homeForked" type="checkbox" onclick="updateGitCmds()">Home<br>
 </div>
 <div style="float:left;font-size:18px">
-<input id="feedForked" type="checkbox" onclick="updateGitCmds()">FeedPlayer (React)<br>
 <input id="ioForked" type="checkbox" onclick="updateGitCmds()">IO Widgets (React)<br>
-<input id="useeio.jsForked" type="checkbox" onclick="updateGitCmds()">USEEIO.js (State Models)<br>
-<input id="planetForked" type="checkbox" onclick="updateGitCmds()">Planet (Javascript AI)<br>
-<input id="earthscapeForked" type="checkbox" onclick="updateGitCmds()">Earthscape (React AI)<br>
-<input id="openWebUIForked" type="checkbox" onclick="updateGitCmds()">Open WebUI (Python AI)<br>
-<input id="data-pipelineForked" type="checkbox" onclick="updateGitCmds()">Data-Pipeline (Python)<br>
-<input id="community-dataForked" type="checkbox" onclick="updateGitCmds()">Community-Data<br>
+<input id="localsiteForked" type="checkbox" onclick="updateGitCmds()">Localsite<br>
+<input id="marioForked" type="checkbox" onclick="updateGitCmds()">Mario Trade Flow<br>
+<input id="profileForked" type="checkbox" onclick="updateGitCmds()">Profile<br>
+<input id="projectForked" type="checkbox" onclick="updateGitCmds()">Project (Abundance Engine)<br>
+<input id="projectsForked" type="checkbox" onclick="updateGitCmds()">Projects<br>
+<input id="realitystreamForked" type="checkbox" onclick="updateGitCmds()">RealityStream ML<br>
+<input id="requestsForked" type="checkbox" onclick="updateGitCmds()">Requests (Arts Engine)<br>
+<input id="swiperForked" type="checkbox" onclick="updateGitCmds()">Swiper<br>
+<input id="teamForked" type="checkbox" onclick="updateGitCmds()">Team<br>
 </div>
 <div style="clear:both"></div><br>
 
@@ -154,23 +165,27 @@ You don't need to pull all the repos - typically just 2 or 3 (including localsit
 
 As an alternative to GitHub Desktop, you can run some of the following in your local webroot to pull down repos.
 
-<textarea id="cloneCmd" class="codetext" rows="16">
-git clone https://github.com/ModelEarth/localsite localsite
-git clone https://github.com/ModelEarth/home home
+<textarea id="cloneCmd" class="codetext" rows="20">
+git clone https://github.com/ModelEarth/chat chat
+git clone https://github.com/ModelEarth/cloud cloud
+git clone https://github.com/ModelEarth/codechat codechat
+git clone https://github.com/ModelEarth/community-data community-data
 git clone https://github.com/ModelEarth/data-commons data-commons
-git clone https://github.com/ModelEarth/profile profile
-git clone https://github.com/ModelEarth/projects projects
-git clone https://github.com/ModelEarth/requests requests
-git clone https://github.com/ModelEarth/realitystream realitystream
-git clone https://github.com/ModelEarth/mario mario
-git clone https://github.com/ModelEarth/feed feed
-git clone https://github.com/ModelEarth/io io
-git clone https://github.com/ModelEarth/useeio.js useeio.js
-git clone https://github.com/ModelEarth/planet planet
-git clone https://github.com/ModelEarth/earthscape earthscape
-git clone https://github.com/datascape/open-webui open-webui
 git clone https://github.com/ModelEarth/data-pipeline data-pipeline
-git clone https://github.com/ModelEarth/community-data community-data</textarea>
+git clone https://github.com/ModelEarth/desktop desktop
+git clone https://github.com/ModelEarth/exiobase exiobase
+git clone https://github.com/ModelEarth/feed feed
+git clone https://github.com/ModelEarth/home home
+git clone https://github.com/ModelEarth/io io
+git clone https://github.com/ModelEarth/localsite localsite
+git clone https://github.com/ModelEarth/mario mario
+git clone https://github.com/ModelEarth/profile profile
+git clone https://github.com/ModelEarth/project project
+git clone https://github.com/ModelEarth/projects projects
+git clone https://github.com/ModelEarth/realitystream realitystream
+git clone https://github.com/ModelEarth/requests requests
+git clone https://github.com/ModelEarth/swiper swiper
+git clone https://github.com/ModelEarth/team team</textarea>
 
 
 ## Occasionally refresh your local files
@@ -190,7 +205,27 @@ cd data-pipeline && git pull https://github.com/ModelEarth/data-pipeline main &&
 cd projects && git pull https://github.com/ModelEarth/projects main && cd ../
 cd requests && git pull https://github.com/ModelEarth/requests main && cd ../
 -->
-<textarea id="refreshCmd" class="codetext" rows="16"></textarea>
+<textarea id="refreshCmd" class="codetext" rows="20">
+cd chat && git pull https://github.com/modelearth/chat && cd ../
+cd cloud && git pull https://github.com/modelearth/cloud && cd ../
+cd codechat && git pull https://github.com/modelearth/codechat && cd ../
+cd community-data && git pull https://github.com/modelearth/community-data && cd ../
+cd data-commons && git pull https://github.com/modelearth/data-commons && cd ../
+cd data-pipeline && git pull https://github.com/modelearth/data-pipeline && cd ../
+cd desktop && git pull https://github.com/modelearth/desktop && cd ../
+cd exiobase && git pull https://github.com/modelearth/exiobase && cd ../
+cd feed && git pull https://github.com/modelearth/feed && cd ../
+cd home && git pull https://github.com/modelearth/home && cd ../
+cd io && git pull https://github.com/modelearth/io && cd ../
+cd localsite && git pull https://github.com/modelearth/localsite && cd ../
+cd mario && git pull https://github.com/modelearth/mario && cd ../
+cd profile && git pull https://github.com/modelearth/profile && cd ../
+cd project && git pull https://github.com/modelearth/project && cd ../
+cd projects && git pull https://github.com/modelearth/projects && cd ../
+cd realitystream && git pull https://github.com/modelearth/realitystream && cd ../
+cd requests && git pull https://github.com/modelearth/requests && cd ../
+cd swiper && git pull https://github.com/modelearth/swiper && cd ../
+cd team && git pull https://github.com/modelearth/team && cd ../</textarea>
 
 That's it! &nbsp;You can stop the steps here. Your updated local site should be visible at: [localhost:8887/localsite](http://localhost:8887/localsite/)
 
