@@ -63,6 +63,26 @@
     history.replaceState(null, '', `${window.location.pathname}${window.location.search}${nextHash ? `#${nextHash}` : ''}`);
   }
 
+  function buildAdminHref(baseHref, eventId, hashKey) {
+    const href = `${baseHref || ''}`.trim();
+    if (!href) return '';
+    const nextEventId = `${eventId || ''}`.trim();
+    if (!nextEventId) return href;
+    const nextHashKey = `${hashKey || 'node'}`.trim() || 'node';
+    const parts = href.split('#');
+    const pathPart = parts[0] || '';
+    const existingHash = parts[1] || '';
+    const params = new URLSearchParams(existingHash);
+    params.set(nextHashKey, nextEventId);
+    const hashText = params.toString();
+    return `${pathPart}${hashText ? `#${hashText}` : ''}`;
+  }
+
+  function shouldShowAdminLink(baseHref) {
+    if (!`${baseHref || ''}`.trim()) return false;
+    return !window.location.pathname.includes('/admin');
+  }
+
   function escapeHtml(value) {
     return `${value || ''}`
       .replace(/&/g, '&amp;')
@@ -70,6 +90,17 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
+  }
+
+  function toDisplayText(value) {
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'string') return value;
+    if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+    try {
+      return JSON.stringify(value);
+    } catch (err) {
+      return String(value);
+    }
   }
 
   function escapeSelectorValue(value) {
@@ -156,6 +187,7 @@
     const detailsDate = document.getElementById('hud-detail-date');
     const detailsCost = document.getElementById('hud-detail-cost');
     const detailsSummary = document.getElementById('hud-detail-summary');
+    const adminLink = document.getElementById('hud-admin-link');
 
     if (titleEl) titleEl.textContent = meta.titleText || '';
     if (nameEl) {
@@ -172,13 +204,25 @@
       sourceLink.href = hasSourceUrl ? meta.sourceUrl : '#';
     }
     if (detailsRoot) {
-      const detailParts = [meta.detailSource, meta.detailPublishedDate, meta.detailCost, meta.detailSummary]
-        .filter(function(value) { return Boolean((value || '').trim()); });
+      const detailSourceText = toDisplayText(meta.detailSource);
+      const detailDateText = toDisplayText(meta.detailPublishedDate);
+      const detailCostText = toDisplayText(meta.detailCost);
+      const detailSummaryText = toDisplayText(meta.detailSummary);
+      const detailParts = [detailSourceText, detailDateText, detailCostText, detailSummaryText]
+        .filter(function(value) { return Boolean(value.trim()); });
       detailsRoot.hidden = detailParts.length === 0;
-      if (detailsSource) detailsSource.textContent = meta.detailSource || '';
-      if (detailsDate) detailsDate.textContent = meta.detailPublishedDate || '';
-      if (detailsCost) detailsCost.textContent = meta.detailCost || '';
-      if (detailsSummary) detailsSummary.textContent = meta.detailSummary || '';
+      if (detailsSource) detailsSource.textContent = detailSourceText;
+      if (detailsDate) detailsDate.textContent = detailDateText;
+      if (detailsCost) detailsCost.textContent = detailCostText;
+      if (detailsSummary) detailsSummary.textContent = detailSummaryText;
+    }
+    if (adminLink) {
+      const adminHref = state.options.adminLinkHref || '';
+      const hash = getHashParams();
+      const adminEventId = hash.event || hash.node || meta.eventId || getCurrentEventId() || '';
+      const adminHashKey = state.options.adminLinkHashKey || 'node';
+      adminLink.hidden = !shouldShowAdminLink(adminHref);
+      adminLink.href = adminHref ? buildAdminHref(adminHref, adminEventId, adminHashKey) : '#';
     }
     updateHudVisibility();
     if (overviewButton) overviewButton.textContent = getBootstrapOverviewLabel(meta.overviewLabel || 'Overview');
@@ -300,6 +344,12 @@
           </div>
           <div class="met-counter" id="met-counter"></div>
           ${detailsMarkup}
+          <a id="hud-admin-link" class="mission-admin-link" href="#" hidden>
+            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+              <path d="M3 17.25V21h3.75l11-11-3.75-3.75-11 11Zm14.71-9.04a1.003 1.003 0 0 0 0-1.42l-2.5-2.5a1.003 1.003 0 0 0-1.42 0l-1.96 1.96 3.75 3.75 2.13-1.79Z"></path>
+            </svg>
+            <span>Admin</span>
+          </a>
         </div>
       </div>
       <div id="mission-menu" class="event-hud-${mode}" aria-hidden="true">
