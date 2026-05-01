@@ -56,6 +56,13 @@
     var cfg = parseCmsConfig(text);
     window.CMS_SITE_CONFIG = cfg;
     if (cfg.inline_editor) window.cmsInlineEditor = true;
+    if (!document.querySelector('link[rel="cms-config-url"]')) {
+      var cfgLink = document.createElement('link');
+      cfgLink.rel = 'cms-config-url';
+      cfgLink.type = 'application/yaml';
+      cfgLink.href = path;
+      document.head.appendChild(cfgLink);
+    }
   }
 
   function tryPath(index) {
@@ -91,7 +98,8 @@ function launchCMS(options) {
     var target = options && options.target
         ? (typeof options.target === 'string' ? document.querySelector(options.target) : options.target)
         : null;
-    var configUrl = options && options.configUrl;
+    var configUrl = (options && options.configUrl) || sessionStorage.getItem('webrootYamlPath') || null;
+    if (configUrl === 'none') configUrl = null;
     if (configUrl && !document.querySelector('link[rel="cms-config-url"]')) {
         var cfgLink = document.createElement('link');
         cfgLink.rel = 'cms-config-url';
@@ -102,13 +110,14 @@ function launchCMS(options) {
 
     if (inline) {
         var root = document.getElementById('nc-root');
-        if (root) {
+        if (root && root.children.length) {
             root.style.display = '';
             var existingBar = document.querySelector('.cms-close-bar');
             if (existingBar) existingBar.style.display = '';
             if (target) target.style.display = 'none';
             return;
         }
+        if (root) root.parentNode.removeChild(root);
 
         root = document.createElement('div');
         root.id = 'nc-root';

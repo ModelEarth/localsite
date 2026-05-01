@@ -6,11 +6,39 @@
     <title>Edit via Sveltia CMS</title>
     <link type="text/css" rel="stylesheet" href="/localsite/css/base.css" id="/localsite/css/base.css" />
     <script type="text/javascript" src="/localsite/js/localsite.js?showheader=true&showsearch=true"></script>
-  </head>
+ <script>
+loadMarkdown("README.md", "readmeDiv", "_parent");
+</script>
+</head>
+
   <body>
     <div class="content contentpadding">
-      <div id="nc-root"></div>
+
+      <h1>File Editor</h1>
+
+      The Edit Files uses Sveltia CMS to edit the collections/files defined in webroot.yaml — it's a full Sveltia CMS interface, not a targeted editor for a particular div on the page.  Settings are loaded from webroot.yaml via localsite/js/cms.js<br><br>
+      <!--
+      /localsite/js/cms.js' loads /cms/package/dist/sveltia-cms.js
+      -->
+
+      <div id="editPageBtn" class="btn btn-med" onclick="var opts = {inline:true, target:'#editPageBtn'}; loadScript('/localsite/js/cms.js', function() { launchCMS(opts); });">Edit Files</div><br><br>
+
+     
+      <!--
+      sveltia-cms.js (in the cms repo) hardcodes nc-root as its mount point — we can't rename what the CMS
+    script actually uses. But we can fix the conflict in launchCMS by treating an empty #nc-root as a static placeholder and removing
+    it before the CMS creates its real one.
+        -->
+   
+    
+
+      <div id="readmeDiv"></div>
+
+      The icon to the right edits just the readme file.<br><br>
+
+      <a href="../../cms/themes/">Theme Styles</a> | <a href="https://sveltiacms.app">About Sveltia CMS</a>
+
     </div>
-    <script src="/cms/package/dist/sveltia-cms.js"></script>
+
   </body>
 </html>

@@ -5360,7 +5360,7 @@ function _injectMdEditorStyles() {
     s.textContent = '.md-edit-menu{position:absolute;top:8px;right:8px;z-index:10;font-family:system-ui,sans-serif}'
         + '.md-edit-trigger{background:rgba(255,255,255,.92);border:1px solid #d1d5db;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:18px;padding:0;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.1)}'
         + '.md-edit-trigger:hover{background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}'
-        + '.md-edit-dropdown{display:none;position:absolute;right:0;top:34px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.12);min-width:140px;overflow:hidden}'
+        + '.md-edit-dropdown{display:none;position:fixed;background:#fff;border:1px solid #e5e7eb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.12);min-width:140px;overflow:hidden;z-index:9999}'
         + '.md-edit-item{padding:9px 16px;cursor:pointer;font-size:13px;color:#374151}'
         + '.md-edit-item:hover{background:#f9fafb}'
         + '.md-editor-overlay{position:absolute;inset:0;z-index:20;background:#fff;display:flex;flex-direction:column;min-height:300px;font-family:system-ui,sans-serif}'
@@ -5388,19 +5388,60 @@ function _attachMarkdownEditMenu(pagePath, divID) {
     var dropdown = document.createElement('div');   dropdown.className = 'md-edit-dropdown';
     var item     = document.createElement('div');   item.className = 'md-edit-item'; item.textContent = 'Edit Content';
 
+    var ghAccounts = {'locations.georgia.org': 'georgiadata', 'locations.pages.dev': 'georgiadata'};
+    var ghAccount  = ghAccounts[location.hostname] || 'modelearth';
+    var ghUrl = 'https://github.com/modelearth';
+    if (pagePath) {
+        var p = pagePath;
+        if (p.indexOf('raw.githubusercontent.com') >= 0) {
+            var raw = p.replace('https://raw.githubusercontent.com/', '').split('/');
+            // raw: [user, repo, branch, ...path]
+            if (raw.length >= 3) {
+                ghUrl = 'https://github.com/' + raw[0] + '/' + raw[1] + '/blob/' + raw.slice(2).join('/');
+            }
+        } else {
+            var repoName = location.pathname.replace(/^\//, '').split('/')[0];
+            var pageDir  = location.pathname.replace(/^\/[^\/]+\//, '').replace(/[^\/]+\.[^\/]+$/, '').replace(/\/$/, '');
+            var filename = p.split('/').pop();
+            var filePath = (pageDir ? pageDir + '/' : '') + filename;
+            if (repoName) {
+                ghUrl = 'https://github.com/' + ghAccount + '/' + repoName
+                    + (filePath ? '/blob/main/' + filePath : '');
+            }
+        }
+    }
+    var ghItem = document.createElement('div'); ghItem.className = 'md-edit-item'; ghItem.textContent = 'View on Github';
+
     dropdown.appendChild(item);
+    dropdown.appendChild(ghItem);
     menu.appendChild(trigger);
     menu.appendChild(dropdown);
     container.appendChild(menu);
 
     trigger.addEventListener('click', function(e) {
         e.stopPropagation();
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        if (dropdown.style.display === 'block') {
+            dropdown.style.display = 'none';
+        } else {
+            var rect = trigger.getBoundingClientRect();
+            dropdown.style.top  = (rect.bottom + 2) + 'px';
+            dropdown.style.left = (rect.right - 140) + 'px';
+            dropdown.style.display = 'block';
+        }
     });
     document.addEventListener('click', function() { dropdown.style.display = 'none'; });
     item.addEventListener('click', function() {
         dropdown.style.display = 'none';
-        launchCMS({inline:true, target:container, configUrl:'/localsite/edit/config.yml'});
+        const cmsJsPath = local_app.localsite_root() + 'js/cms.js';
+        loadScript(cmsJsPath, function() {
+            // TODO: Will we change config.yml to webroot.yaml
+            //launchCMS({inline:true, target:container, configUrl:'/localsite/edit/config.yml'});
+            launchCMS({inline:true, target:container, configUrl:'/docker/webroot.yaml'});
+        });
+    });
+    ghItem.addEventListener('click', function() {
+        dropdown.style.display = 'none';
+        window.open(ghUrl, '_blank');
     });
 }
 
