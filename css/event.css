@@ -1,0 +1,398 @@
+#hud.event-hud {
+    pointer-events: none;
+    z-index: 110;
+    container-type: inline-size;
+}
+
+#hud.event-hud-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px 32px;
+}
+
+#hud.event-hud-inline {
+    position: relative;
+    width: auto;
+    padding: 0;
+}
+
+#hud-left {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+    pointer-events: auto;
+    cursor: pointer;
+    padding: 8px 12px 8px 14px;
+    background: rgba(10, 12, 20, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    transition: all 0.3s;
+    max-width: max-content;
+}
+
+#hud.event-hud-inline #hud-left {
+    min-width: min(380px, 100%);
+    box-shadow: 0 14px 28px rgba(8, 24, 28, 0.18);
+}
+
+#hud-left:hover,
+#hud-left:focus-within {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+#hud-left.is-open {
+    display: none;
+}
+
+.mission-name-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.mission-dropdown-arrow {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
+    color: rgba(255, 255, 255, 0.72);
+    margin-top: 2px;
+}
+
+.mission-dropdown-arrow svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+}
+
+#event {
+    display: none;
+    width: 100%;
+}
+
+#mission-menu {
+    display: none;
+    pointer-events: auto;
+    z-index: 113;
+    min-width: 320px;
+}
+
+#mission-menu.event-hud-overlay {
+    position: absolute;
+    top: 24px;
+    left: 32px;
+}
+
+#mission-menu.event-hud-inline {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    left: auto;
+    width: min(420px, calc(100vw - 32px));
+}
+
+#mission-menu.open {
+    display: block;
+}
+
+.mission-menu-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.mission-menu-panel {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(10, 12, 20, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
+}
+
+.mission-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 2px 2px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 2px;
+}
+
+.mission-menu-header-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.mission-menu-close {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.mission-menu-close:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.mission-menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: min(62vh, 540px);
+    overflow: auto;
+    padding-right: 2px;
+}
+
+.mission-menu-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.025);
+    color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.mission-menu-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.mission-menu-item.active {
+    background: rgba(110, 198, 255, 0.08);
+    border-color: rgba(110, 198, 255, 0.24);
+    color: #fff;
+}
+
+.mission-menu-item-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.38);
+}
+
+.mission-menu-item-name {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    line-height: 1.1;
+}
+
+.mission-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.mission-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.mission-source-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.62);
+    background: rgba(255, 255, 255, 0.06);
+    transition: background 0.2s ease, color 0.2s ease;
+    pointer-events: auto;
+}
+
+.mission-source-link:hover,
+.mission-source-link:focus-visible {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    outline: none;
+}
+
+.mission-source-link svg {
+    display: block;
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.mission-source-link[hidden] {
+    display: none !important;
+}
+
+.mission-name {
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff 0%, #6ec6ff 60%, #ff6b35 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.mission-name-long {
+    font-size: 30px;
+}
+
+.mission-name-xlong {
+    font-size: 24px;
+}
+
+.mission-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 1px;
+    min-height: 18px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.mission-status[hidden] {
+    display: none !important;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #52f57a;
+    box-shadow: 0 0 0 6px rgba(82, 245, 122, 0.14);
+    flex: 0 0 auto;
+}
+
+.met-counter {
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, 0.25);
+    letter-spacing: 1.5px;
+    margin-top: 4px;
+    min-height: 16px;
+}
+
+.met-counter[hidden] {
+    display: none !important;
+}
+
+.mission-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    max-width: min(560px, 100%);
+}
+
+.mission-details-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mission-detail-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+}
+
+.mission-detail-cost {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.mission-detail-summary {
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.76);
+}
+
+.mission-detail-chip:empty,
+.mission-detail-cost:empty,
+.mission-detail-summary:empty {
+    display: none;
+}
+
+body.dark #hud.event-hud-inline #hud-left,
+.dark #hud.event-hud-inline #hud-left {
+    background: rgba(7, 12, 18, 0.92);
+}
+
+@container (max-width: 560px) {
+    #hud.event-hud-overlay {
+        padding: 18px 18px 0;
+    }
+
+    #mission-menu.event-hud-overlay {
+        top: 18px;
+        left: 18px;
+        width: min(420px, calc(100vw - 36px));
+    }
+
+    .mission-name {
+        font-size: 28px;
+    }
+
+    .mission-name-long,
+    .mission-name-xlong {
+        font-size: 22px;
+    }
+}
+
+@container (max-width: 430px) {
+    #hud.event-hud-inline #hud-left {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .mission-menu-item-name {
+        font-size: 16px;
+    }
+}
