@@ -558,7 +558,9 @@
       ? options.requestedEventId || ''
       : (getHashParams().event || '');
     state.options.openMenuByDefault = !requestedEventId;
-    const defaultEventId = options.defaultEventId || 'orion2026';
+    const defaultEventId = Object.prototype.hasOwnProperty.call(options || {}, 'defaultEventId')
+      ? (options.defaultEventId || '')
+      : 'orion2026';
     window.__pageDefaultEventId = defaultEventId;
     window.__initialEventId = requestedEventId || defaultEventId;
     window.__latestInitialEventMeta = null;
@@ -580,10 +582,12 @@
         return config;
       });
     window.__initialEventSpecTextPromise = (!requestedEventId || requestedEventId === defaultEventId)
-      ? fetch(`${getEventsBasePath()}/${defaultEventId}.yaml`, { cache: 'no-cache' }).then(function(response) {
-          if (!response.ok) throw new Error(`Unable to load event spec: ${defaultEventId}.yaml`);
-          return response.text();
-        })
+      ? (defaultEventId
+          ? fetch(`${getEventsBasePath()}/${defaultEventId}.yaml`, { cache: 'no-cache' }).then(function(response) {
+              if (!response.ok) throw new Error(`Unable to load event spec: ${defaultEventId}.yaml`);
+              return response.text();
+            })
+          : Promise.resolve(''))
       : window.__eventsConfigPromise.then(function(config) {
           const specFile = resolveSpecFileForEvent(config, window.__initialEventId, defaultEventId);
           return fetch(`${getEventsBasePath()}/${specFile}`, { cache: 'no-cache' }).then(function(response) {
