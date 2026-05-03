@@ -3255,7 +3255,7 @@ function renderModelsiteOptions(selectElm, options) {
         if (config.style) {
             optionElm.style.cssText = String(config.style);
         }
-        if (config.class && String(config.class).split(/\s+/).includes("local")) {
+        if (!isCurrentHostLocalhost() && config.class && String(config.class).split(/\s+/).includes("local")) {
             optionElm.style.display = "none";
         }
         if (config.selected === true || String(config.selected).toLowerCase() === "true") {
@@ -3266,35 +3266,17 @@ function renderModelsiteOptions(selectElm, options) {
 }
 
 async function loadModelsiteOptions() {
-    const fallbackOptions = defaultModelsiteOptions();
-    const webRoot = (window.local_app && typeof window.local_app.web_root === "function")
-        ? String(window.local_app.web_root()).replace(/\/+$/, "")
-        : (location.protocol + "//" + location.host);
-    const currentOriginRoot = location.protocol + "//" + location.host;
-    const candidatePaths = Array.from(new Set([
-        webRoot + "/sites.yaml",
-        currentOriginRoot + "/sites.yaml",
-        webRoot + "/team/sites.yaml",
-        "https://raw.githubusercontent.com/ModelEarth/team/main/sites.yaml"
-    ]));
-
-    for (let i = 0; i < candidatePaths.length; i += 1) {
-        const modelsitePath = candidatePaths[i];
-        try {
-            const response = await fetch(modelsitePath, { cache: "no-store" });
-            if (!response.ok) {
-                continue;
-            }
-            const text = await response.text();
-            const parsedOptions = parseModelsiteYaml(text);
-            if (parsedOptions.length) {
-                return parsedOptions;
-            }
-            consoleLog("No valid entries in " + modelsitePath + ". Using fallback modelsite options.");
-        } catch (error) {}
+    if (typeof window.loadWebrootYaml === 'function') {
+        const config = await window.loadWebrootYaml();
+        const ids = Object.keys(config.sites || {});
+        if (ids.length) {
+            return ids.map(function(id) {
+                var site = config.sites[id];
+                return { value: id, label: site.title || id, selected: id === config.default, class: site.visibility || '' };
+            });
+        }
     }
-    consoleLog("sites.yaml not found. Using fallback modelsite options.");
-    return fallbackOptions;
+    return defaultModelsiteOptions();
 }
 
 function setupModelsiteSelect() {
@@ -5513,6 +5495,111 @@ function _mdCopyFallback(content, callback) {
     });
 }
 
+function defineLaunchCMS() {
+    if (typeof window.launchCMS === 'function') {
+        return window.launchCMS;
+    }
+
+    function getExistingCmsShell() {
+        return document.querySelector('.sui.app-shell');
+    }
+
+    function resolveCmsTarget(target) {
+        if (!target) return null;
+        if (typeof target === 'string') return document.querySelector(target);
+        if (target && target.nodeType === 1) return target;
+        return null;
+    }
+
+    function prepareInlineCmsRoot(target) {
+        var anchor = resolveCmsTarget(target) || document.getElementById('editPageBtn') || document.body;
+        var ncRoot = document.getElementById('nc-root');
+        var appShell = getExistingCmsShell();
+
+        if (!ncRoot) {
+            ncRoot = document.createElement('div');
+            ncRoot.id = 'nc-root';
+        }
+
+        ncRoot.style.display = 'block';
+        ncRoot.style.position = 'relative';
+        ncRoot.style.width = '100%';
+        ncRoot.style.minHeight = ncRoot.style.minHeight || '600px';
+        ncRoot.style.height = '';
+        ncRoot.style.inset = '';
+
+        if (appShell && appShell.parentNode !== ncRoot) {
+            ncRoot.appendChild(appShell);
+        }
+
+        if (anchor === document.body) {
+            document.body.appendChild(ncRoot);
+        } else if (ncRoot.parentNode !== anchor.parentNode || ncRoot.previousElementSibling !== anchor) {
+            anchor.insertAdjacentElement('afterend', ncRoot);
+        }
+
+        window.requestAnimationFrame(function() {
+            var top = ncRoot.getBoundingClientRect().top;
+            ncRoot.style.height = Math.max(400, window.innerHeight - top) + 'px';
+        });
+
+        return ncRoot;
+    }
+
+    function prepareFullPageCmsRoot() {
+        var ncRoot = document.getElementById('nc-root');
+        var appShell = getExistingCmsShell();
+        if (ncRoot && appShell && appShell.parentNode === ncRoot) {
+            document.body.appendChild(appShell);
+        }
+        if (ncRoot && !ncRoot.children.length) {
+            ncRoot.remove();
+        }
+    }
+
+    window.launchCMS = function(options) {
+        options = options || {};
+        var inline = (typeof options.inline === 'boolean') ? options.inline : !!window.cmsInlineEditor;
+        var appShell = getExistingCmsShell();
+
+        if (inline) {
+            prepareInlineCmsRoot(options.target);
+        } else {
+            prepareFullPageCmsRoot();
+        }
+
+        if (window.CMS && appShell) {
+            return Promise.resolve();
+        }
+
+        window.CMS_MANUAL_INIT = true;
+
+        var startCms = function() {
+            if (window.CMS && typeof window.CMS.init === 'function') {
+                window.CMS.init();
+                return;
+            }
+            console.error('launchCMS: window.CMS.init is not available after loading Sveltia CMS.');
+        };
+
+        var cmsScriptPath = '/cms/package/dist/sveltia-cms.js';
+        var ready = (typeof window.loadWebrootYaml === 'function')
+            ? window.loadWebrootYaml().catch(function() {
+                return { path: null, text: null, default: '', sites: {} };
+            })
+            : Promise.resolve();
+
+        return ready.then(function() {
+            loadScript(cmsScriptPath, startCms);
+        });
+    };
+
+    return window.launchCMS;
+}
+
+window.defineLaunchCMS = defineLaunchCMS;
+defineLaunchCMS();
+
 
 function initNcRoot() {
     var ncRoot = document.getElementById('nc-root');
@@ -5532,5 +5619,77 @@ if (document.readyState === 'loading') {
   initTopNavOffset();
   initNcRoot();
 }
+
+// Loads webroot.yaml using a 3-path fallback chain with sessionStorage caching.
+// Parses default: and sites: into window.WEBROOT_CONFIG.
+// Returns a Promise<{ path, text, default, sites }> shared across all callers.
+(function() {
+    var WEBROOT_PATHS = ['/webroot.yaml', '/docker/webroot.yaml', '/cms/webroot.yaml'];
+    var SESSION_KEY = 'webrootYamlPath';
+    var _promise = null;
+
+    function parseWebrootConfig(text) {
+        var config = { default: '', sites: {} };
+        var lines = text.split('\n');
+        var scope = 'root';
+        var currentId = null;
+        for (var i = 0; i < lines.length; i++) {
+            var raw = lines[i];
+            var trimmed = raw.replace(/^\s+/, '');
+            var indent = raw.length - trimmed.length;
+            if (!trimmed || trimmed[0] === '#') continue;
+            var km = trimmed.match(/^([\w._-]+):\s*(.*)/);
+            if (!km) continue;
+            var key = km[1], val = km[2].trim().replace(/^["']|["']$/g, '');
+            if (indent === 0) {
+                scope = 'root'; currentId = null;
+                if (key === 'default') config.default = val;
+                else if (key === 'sites' && !val) scope = 'sites';
+                continue;
+            }
+            if (scope === 'sites' && indent === 2 && !val) { currentId = key; config.sites[currentId] = {}; continue; }
+            if (scope === 'sites' && indent === 4 && currentId) config.sites[currentId][key] = val;
+        }
+        return config;
+    }
+
+    window.loadWebrootYaml = function() {
+        if (_promise) return _promise;
+        _promise = new Promise(function(resolve) {
+            function done(path, text) {
+                sessionStorage.setItem(SESSION_KEY, path);
+                var config = parseWebrootConfig(text);
+                window.WEBROOT_CONFIG = config;
+                resolve({ path: path, text: text, default: config.default, sites: config.sites });
+            }
+            function tryPath(i) {
+                if (i >= WEBROOT_PATHS.length) {
+                    sessionStorage.setItem(SESSION_KEY, 'none');
+                    resolve({ path: null, text: null, default: '', sites: {} });
+                    return;
+                }
+                fetch(WEBROOT_PATHS[i])
+                    .then(function(r) { return r.ok ? r.text() : null; })
+                    .then(function(t) { t !== null ? done(WEBROOT_PATHS[i], t) : tryPath(i + 1); })
+                    .catch(function() { tryPath(i + 1); });
+            }
+            var cached = sessionStorage.getItem(SESSION_KEY);
+            if (cached && cached !== 'none') {
+                fetch(cached)
+                    .then(function(r) { return r.ok ? r.text() : null; })
+                    .then(function(t) {
+                        if (t !== null) done(cached, t);
+                        else { sessionStorage.removeItem(SESSION_KEY); tryPath(0); }
+                    })
+                    .catch(function() { sessionStorage.removeItem(SESSION_KEY); tryPath(0); });
+            } else if (cached !== 'none') {
+                tryPath(0);
+            } else {
+                resolve({ path: null, text: null, default: '', sites: {} });
+            }
+        });
+        return _promise;
+    };
+})();
 
 consoleLog("end localsite");

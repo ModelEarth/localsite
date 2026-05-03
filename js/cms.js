@@ -2,8 +2,9 @@
 // window.CMS_SITE_CONFIG + window.launchCMS for use by the CMS fork and page buttons.
 
 (function() {
-  var WEBROOT_PATHS = ['/webroot.yaml', '/docker/webroot.yaml', '/cms/webroot.yaml'];
-  var SESSION_KEY = 'webrootYamlPath';
+  if (typeof window.defineLaunchCMS === 'function') {
+    window.defineLaunchCMS();
+  }
 
   function parseCmsConfig(text) {
     var lines = text.split('\n');
@@ -51,8 +52,7 @@
     return cfg;
   }
 
-  function applyConfig(path, text) {
-    sessionStorage.setItem(SESSION_KEY, path);
+  function applyCmsConfig(path, text) {
     var cfg = parseCmsConfig(text);
     window.CMS_SITE_CONFIG = cfg;
     if (cfg.inline_editor) window.cmsInlineEditor = true;
@@ -65,97 +65,37 @@
     }
   }
 
-  function tryPath(index) {
-    if (index >= WEBROOT_PATHS.length) {
-      sessionStorage.setItem(SESSION_KEY, 'none');
-      return;
-    }
-    fetch(WEBROOT_PATHS[index])
-      .then(function(r) { return r.ok ? r.text() : null; })
-      .then(function(text) {
-        if (text !== null) { applyConfig(WEBROOT_PATHS[index], text); }
-        else { tryPath(index + 1); }
-      })
-      .catch(function() { tryPath(index + 1); });
-  }
+  if (typeof window.loadWebrootYaml === 'function') {
+    window.loadWebrootYaml().then(function(result) {
+      if (result.text) applyCmsConfig(result.path, result.text);
+    });
+  } else {
+    // standalone fallback when loaded without localsite.js
+    var WEBROOT_PATHS = ['/webroot.yaml', '/docker/webroot.yaml', '/cms/webroot.yaml'];
+    var SESSION_KEY = 'webrootYamlPath';
 
-  var cached = sessionStorage.getItem(SESSION_KEY);
-  if (cached && cached !== 'none') {
-    fetch(cached)
-      .then(function(r) { return r.ok ? r.text() : null; })
-      .then(function(text) {
-        if (text !== null) { applyConfig(cached, text); }
-        else { sessionStorage.removeItem(SESSION_KEY); tryPath(0); }
-      })
-      .catch(function() { sessionStorage.removeItem(SESSION_KEY); tryPath(0); });
-  } else if (cached !== 'none') {
-    tryPath(0);
+    function tryPath(index) {
+      if (index >= WEBROOT_PATHS.length) { sessionStorage.setItem(SESSION_KEY, 'none'); return; }
+      fetch(WEBROOT_PATHS[index])
+        .then(function(r) { return r.ok ? r.text() : null; })
+        .then(function(text) {
+          if (text !== null) { sessionStorage.setItem(SESSION_KEY, WEBROOT_PATHS[index]); applyCmsConfig(WEBROOT_PATHS[index], text); }
+          else { tryPath(index + 1); }
+        })
+        .catch(function() { tryPath(index + 1); });
+    }
+
+    var cached = sessionStorage.getItem(SESSION_KEY);
+    if (cached && cached !== 'none') {
+      fetch(cached)
+        .then(function(r) { return r.ok ? r.text() : null; })
+        .then(function(text) {
+          if (text !== null) { applyCmsConfig(cached, text); }
+          else { sessionStorage.removeItem(SESSION_KEY); tryPath(0); }
+        })
+        .catch(function() { sessionStorage.removeItem(SESSION_KEY); tryPath(0); });
+    } else if (cached !== 'none') {
+      tryPath(0);
+    }
   }
 })();
-
-function launchCMS(options) {
-    var inline = (options && options.inline != null) ? options.inline : !!window.cmsInlineEditor;
-    var target = options && options.target
-        ? (typeof options.target === 'string' ? document.querySelector(options.target) : options.target)
-        : null;
-    var configUrl = (options && options.configUrl) || sessionStorage.getItem('webrootYamlPath') || null;
-    if (configUrl === 'none') configUrl = null;
-    if (configUrl && !document.querySelector('link[rel="cms-config-url"]')) {
-        var cfgLink = document.createElement('link');
-        cfgLink.rel = 'cms-config-url';
-        cfgLink.type = 'application/yaml';
-        cfgLink.href = configUrl;
-        document.head.appendChild(cfgLink);
-    }
-
-    if (inline) {
-        var root = document.getElementById('nc-root');
-        if (root && root.children.length) {
-            root.style.display = '';
-            var existingBar = document.querySelector('.cms-close-bar');
-            if (existingBar) existingBar.style.display = '';
-            if (target) target.style.display = 'none';
-            return;
-        }
-        if (root) root.parentNode.removeChild(root);
-
-        root = document.createElement('div');
-        root.id = 'nc-root';
-        root.style.position = 'relative';
-        root.style.width = '100%';
-        window.requestAnimationFrame(function() {
-            var top = root.getBoundingClientRect().top;
-            root.style.height = Math.max(400, window.innerHeight - top) + 'px';
-        });
-
-        var closeBar = document.createElement('div');
-        closeBar.className = 'cms-close-bar';
-        var closeBtn = document.createElement('button');
-        closeBtn.className = 'md-editor-close';
-        closeBtn.title = 'Close editor';
-        closeBtn.innerHTML = '&#x2715;';
-        closeBtn.addEventListener('click', (function(r, bar, tgt) {
-            return function() { r.style.display = 'none'; bar.style.display = 'none'; if (tgt) tgt.style.display = ''; };
-        })(root, closeBar, target));
-        closeBar.appendChild(closeBtn);
-
-        if (target) target.style.display = 'none';
-        if (target && target.parentNode) {
-            target.parentNode.insertBefore(closeBar, target.nextSibling);
-            target.parentNode.insertBefore(root, closeBar.nextSibling);
-        } else {
-            document.body.appendChild(closeBar);
-            document.body.appendChild(root);
-        }
-    }
-
-    var style = document.createElement('style');
-    style.textContent = '* { user-select: text !important; }';
-    document.head.appendChild(style);
-    document.addEventListener('contextmenu', function(e) { e.stopImmediatePropagation(); }, true);
-    if (!document.querySelector('script[src="/cms/package/dist/sveltia-cms.js"]')) {
-        var script = document.createElement('script');
-        script.src = '/cms/package/dist/sveltia-cms.js';
-        document.body.appendChild(script);
-    }
-}

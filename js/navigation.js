@@ -1243,7 +1243,6 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
         this.eventListeners = [];
         this.featherTimeout = null;
         this.resizeTimeout = null;
-        this.faviconUpdateInterval = null;
         this.currentFavicon = null;
         
         StandaloneNavigation.instance = this;
@@ -1295,7 +1294,7 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
         }
         
         this.initializeNavFeatherIcons();
-        this.startPeriodicFaviconUpdate();
+        this.updateLogoFromConfig();
     }
     
     // TO DO - Try using variable set in localsite.js instead 
@@ -1837,72 +1836,34 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
         });
     }
     
-    // Update logo and favicon based on SITE_FAVICON environment variable or config
+    // Update logo and favicon from webroot.yaml site.favicon, with JS global fallbacks
     async updateLogoFromConfig() {
         let siteFavicon = null;
 
-        // First, try to fetch current config from the server
-        const allowLocalhostAccess = (typeof window.shouldAccessLocalhost == 'function')
-            ? window.shouldAccessLocalhost()
-            : (window.location.hostname == 'localhost' || window.location.hostname == '127.0.0.1');
-        if (allowLocalhostAccess) {
+        if (typeof window.loadWebrootYaml === 'function') {
             try {
-                const apiUrl = 'http://localhost:8081/api/config/current';
-                const response = await fetch(apiUrl); // Since a connection error would be network-level, it cannot be surpressed by javascript
-                if (response.ok) {
-                    const config = await response.json();
-                    if (config.site_favicon) {
-                        siteFavicon = config.site_favicon;
-                        console.log('[FaviconManager] Found site_favicon:', siteFavicon);
-                    }
-                }
-            } catch (error) {
-                console.log('Could not fetch server config, falling back to client-side detection:', error);
-            }
-        } else {
-            console.log('[FaviconManager] Skipping localhost config fetch because accesslocal is not enabled.');
+                const { sites, default: defaultId } = await window.loadWebrootYaml();
+                const defaultSite = sites && defaultId && sites[defaultId];
+                if (defaultSite && defaultSite.favicon) siteFavicon = defaultSite.favicon;
+            } catch (e) {}
         }
-        
-        // Fallback to client-side detection if server config not available
-        if (!siteFavicon) {
-            // Check if it's available as a global variable
-            if (typeof SITE_FAVICON !== 'undefined' && SITE_FAVICON) {
-                siteFavicon = SITE_FAVICON;
-            }
-            // Check if it's in a config object
-            else if (typeof window.config !== 'undefined' && window.config.SITE_FAVICON) {
-                siteFavicon = window.config.SITE_FAVICON;
-            }
-            // Check if it's in process.env (if available in browser context)
-            else if (typeof process !== 'undefined' && process.env && process.env.SITE_FAVICON) {
-                siteFavicon = process.env.SITE_FAVICON;
-            }
+
+        if (!siteFavicon && typeof SITE_FAVICON !== 'undefined' && SITE_FAVICON) {
+            siteFavicon = SITE_FAVICON;
         }
-        
-        // Update both sidebar logo and page favicon if a custom favicon is found
-        console.log('[FaviconManager] Final siteFavicon:', siteFavicon, 'currentFavicon:', this.currentFavicon);
+        if (!siteFavicon && typeof window.config !== 'undefined' && window.config.SITE_FAVICON) {
+            siteFavicon = window.config.SITE_FAVICON;
+        }
+
         if (siteFavicon && siteFavicon !== this.currentFavicon) {
-            console.log('[FaviconManager] Updating favicon from', this.currentFavicon, 'to', siteFavicon);
-            
-            // Update sidebar logo
             const logoImg = document.getElementById('sidebar-logo');
-            if (logoImg) {
-                logoImg.src = siteFavicon;
-                console.log('[FaviconManager] Updated sidebar logo to:', siteFavicon);
-            } else {
-                console.log('[FaviconManager] No sidebar-logo element found');
-            }
-            
-            // Update page favicon
+            if (logoImg) logoImg.src = siteFavicon;
             try {
                 await this.updatePageFavicon(siteFavicon);
                 this.currentFavicon = siteFavicon;
-                console.log('[FaviconManager] Successfully updated page favicon to:', siteFavicon);
             } catch (error) {
                 console.warn('[FaviconManager] Failed to update page favicon:', error);
             }
-        } else {
-            console.log('[FaviconManager] No favicon update needed - same as current or no favicon found');
         }
     }
     
@@ -1951,20 +1912,6 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
         document.head.appendChild(shortcutFavicon);
     }
     
-    // Start periodic updates to check for favicon changes
-    startPeriodicFaviconUpdate() {
-        // Disabled periodic favicon updates to reduce unnecessary API calls
-        // The favicon will be set once on initialization
-        console.log('[FaviconManager] Periodic updates disabled');
-        /*
-        // Check for updates every 30 seconds
-        this.faviconUpdateInterval = setInterval(() => {
-            this.updateLogoFromConfig().catch(error => {
-                console.log('Periodic favicon update failed:', error);
-            });
-        }, 30000);
-        */
-    }
     
     // Manual refresh method for external use
     async refreshFavicon() {
@@ -2747,10 +2694,6 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
         if (this.resizeTimeout) {
             clearTimeout(this.resizeTimeout);
         }
-        if (this.faviconUpdateInterval) {
-            clearInterval(this.faviconUpdateInterval);
-        }
-        
         // Remove any tooltips
         this.hideTooltip();
         
@@ -7728,6 +7671,39 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         document.head.appendChild($favicon)
       }
     }
+    
+    // Site detection and attribute application from webroot.yaml
+    (async function() {
+        if (typeof window.loadWebrootYaml !== 'function') return;
+        try {
+            const { sites, default: defaultId } = await window.loadWebrootYaml();
+            if (!sites) return;
+            let matchedId = null, matchedSite = null;
+            if (modelsite && sites[modelsite]) {
+                matchedId = modelsite; matchedSite = sites[modelsite];
+            }
+            if (!matchedSite) {
+                for (const id in sites) {
+                    const site = sites[id];
+                    if (!site.domain_contains) continue;
+                    const domains = site.domain_contains.split(',').map(d => d.trim()).filter(Boolean);
+                    if (domains.some(d => location.href.indexOf(d) >= 0)) {
+                        matchedId = id; matchedSite = site; break;
+                    }
+                }
+            }
+            if (!matchedSite && defaultId && sites[defaultId]) {
+                matchedId = defaultId; matchedSite = sites[defaultId];
+            }
+            if (param.icon) {
+                changeFavicon(param.icon);
+            } else {
+                const favicon = (matchedSite && matchedSite.favicon) || (defaultId && sites[defaultId] && sites[defaultId].favicon);
+                if (favicon) changeFavicon(local_app.web_root() + favicon);
+            }
+        } catch(e) {}
+    })();
+
     if (modelsite=="dreamstudio" || modelsite=="planet.live" || location.href.indexOf("dreamstudio.com") >= 0 || param.startTitle == "DreamStudio" || location.href.indexOf("/swarm/") >= 0 || location.href.toLowerCase().indexOf("lineara") >= 0 || location.href.indexOf("planet.live") >= 0) {
         param.titleArray = [];
         let siteRoot = "";
@@ -7751,14 +7727,14 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             }
             showClassInline(".dreamstudio");
         }
-        if (param.icon) {
-            changeFavicon(param.icon);
-        } else if (modelsite=="planet.live" || location.href.indexOf("planet.live") >= 0 || location.href.indexOf("datahaus") >= 0) {
-            // not appearing
-            changeFavicon(local_app.web_root() + "/localsite/img/logo/planetlive/faveye.png");
-        } else {
-            changeFavicon(local_app.web_root() + "/localsite/img/logo/dreamstudio/favicon.png");
-        }
+////////        if (param.icon) {
+////////            changeFavicon(param.icon);
+////////        } else if (modelsite=="planet.live" || location.href.indexOf("planet.live") >= 0 || location.href.indexOf("datahaus") >= 0) {
+////////            // not appearing
+////////            changeFavicon(local_app.web_root() + "/localsite/img/logo/planetlive/faveye.png");
+////////        } else {
+////////            changeFavicon(local_app.web_root() + "/localsite/img/logo/dreamstudio/favicon.png");
+////////        }
         if (location.host.indexOf("dreamstudio") >= 0) {
             //param.headerLogo = param.headerLogo.replace(/\/dreamstudio\//g,"\/");
         }
@@ -7766,19 +7742,6 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         // modelsite will not always be available
         //alert("modelsite " + modelsite)
         //showClassInline("." + modelsite); // Not working for planet yet
-
-    } else if (location.href.indexOf("atlanta") >= 0) {
-        showLeftIcon = true;
-        $(".siteTitleShort").text("Civic Tech Atlanta");
-        param.titleArray = ["civic tech","atlanta"]
-        param.headerLogo = "<a href='https://codeforatlanta.org'><img src='" + local_app.web_root() + "/community/img/logo/orgs/civic-tech-atlanta-text.png' style='width:186px;padding-top:8px'></a>";
-        
-        localsiteTitle = "Civic Tech Atlanta";
-        changeFavicon(local_app.web_root() + "/localsite/img/logo/neighborhood/favicon.png")
-        showClassInline(".neighborhood");
-        earthFooter = true;
-        showClassInline(".georgia"); // Temp side nav
-        showClassInline(".earth"); // Temp side nav
 
     // Skips pages with custom site titles in param.titleArray
     } else if ((modelsite=="model.georgia" && location.host.indexOf('localhost') >= 0 && !Array.isArray(param.titleArray)) || (defaultState == "GA" && !Array.isArray(param.titleArray) && location.host.indexOf('localhost') >= 0 && navigator && navigator.brave)   || param.startTitle == "Georgia.org" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) {
@@ -7805,7 +7768,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.web_root() + "/localsite/img/logo/states/GA.png' style='width:160px;margin-top:0px'></a>";
         param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.web_root() + "/localsite/img/logo/states/GA-icon.png' style='width:52px;padding:0px;margin-top:-2px'></a>";
         localsiteTitle = "Georgia.org";
-        changeFavicon(local_app.web_root() + "/localsite/img/logo/states/GA-favicon.png");
+////////        changeFavicon(local_app.web_root() + "/localsite/img/logo/states/GA-favicon.png");
         if (location.host.indexOf('localhost') >= 0) {
             showClassInline(".acct");
             showClassInline(".garesource");
@@ -7832,7 +7795,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         param.titleArray = ["neighbor","hood"]
         param.headerLogoSmall = "<img src='" + local_app.web_root() + "/localsite/img/logo/neighborhood/favicon.png' style='width:40px;opacity:0.7'>"
         localsiteTitle = "Neighborhood.org";
-        changeFavicon(local_app.web_root() + "/localsite/img/logo/neighborhood/favicon.png")
+////////        changeFavicon(local_app.web_root() + "/localsite/img/logo/neighborhood/favicon.png")
         showClassInline(".neighborhood");
         showClassInline(".earth");
         earthFooter = true;
@@ -7845,7 +7808,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         }
         param.showLeftIcon = false;
         localsiteTitle = "DemocracyLab 2.0";
-        changeFavicon(local_app.web_root() + "/localsite/img/logo/democracylab/favicon.png")
+////////        changeFavicon(local_app.web_root() + "/localsite/img/logo/democracylab/favicon.png")
         $(".siteTitleShort").text("Democracy Lab");
         param.titleArray = ["democracy","lab"]
         //param.headerLogo = "<img src='" + local_app.web_root() + "/localsite/img/logo/partners/democracylab/democracy-lab-2.png' style='width:190px;margin-top:15px'>";
@@ -7855,13 +7818,6 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         param.headerLogoSmall = "<img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab-2.png' style='width:120px;margin:4px 8px 0 0'>";
         //param.headerLogoNoText = "<a href='https://democracylab2.org'><img src='https://neighborhood.org/community/img/logo/orgs/democracy-lab-2.png' style='width:50px;padding-top:0px;margin-top:-1px'></a>";
         showClassInline(".dlab");
-    } else if (modelsite=="membercommons" || location.host.indexOf("membercommons.org") >= 0) {
-        localsiteTitle = "MemberCommons";
-        $(".siteTitleShort").text("MemberCommons");
-        param.titleArray = ["Member","Commons"];
-        param.headerLogoSmall = "<img src='" + local_app.web_root() + "/localsite/img/logo/neighborhood/favicon.png' style='width:40px;opacity:0.7'>"
-        changeFavicon(local_app.web_root() + "/localsite/img/logo/neighborhood/favicon.png")
-        showClassInline(".membercommons");
     } else if (!Array.isArray(param.titleArray) && !param.headerLogo) {
     //} else if (location.host.indexOf('model.earth') >= 0) {
         showLeftIcon = true;
@@ -7872,7 +7828,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         
         // Works correctly for model.earth sitemodel, but not reached by geo.
         //alert("changeFavicon")
-        changeFavicon(local_app.web_root() + "/localsite/img/logo/modelearth/model-earth.png")
+////////        changeFavicon(local_app.web_root() + "/localsite/img/logo/modelearth/model-earth.png")
         showClassInline(".earth");
         console.log(".earth display");
         earthFooter = true;
