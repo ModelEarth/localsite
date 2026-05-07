@@ -3344,6 +3344,7 @@ function updateAccesslocalVisibility(devmode) {
     if (!accesslocalHolder) {
         return;
     }
+    // We avoid showing the accesslocal menu when already on localhost.
     accesslocalHolder.style.display = (!isCurrentHostLocalhost() && devmode == "dev") ? "" : "none";
 }
 window.shouldAccessLocalhost = function() {
