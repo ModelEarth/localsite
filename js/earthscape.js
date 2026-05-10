@@ -318,7 +318,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             })
         });
         data = await response.json();
-        geoIds = data.entities.map(entity => entity.candidates[0].dcid);
+        geoIds = data.entities.map(entity => entity?.candidates?.[0]?.dcid).filter(Boolean);
 
         // Fetch state names
         const response2 = await fetch(`https://api.datacommons.org/v2/node?key=${api_key}`, {
@@ -451,29 +451,14 @@ for (const geoId in geoValues) {
     //console.log("GeoId:", geoId, "Name:", geoValues[geoId].name);
     if (timelineData.byVariable[chartVariable]?.byEntity?.[geoId]?.orderedFacets?.[0]?.observations) {
         const isPopulationGoal = getHash().goal === "population";
-        // Replace the observation filtering logic with this:
-const filteredObservations = timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0].observations.filter(obs => {
-    // Handle both ISO dates (YYYY-MM-DD) and simple years (YYYY)
-    const yearPart = obs.date.split('-')[0];
-    const year = parseInt(yearPart);
+        const filteredObservations = timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0].observations.filter(obs => {
+    if (!isPopulationGoal) return true;
+    const year = parseInt(obs.date.split('-')[0]);
     return year >= MIN_YEAR;
-    
-    // Special handling for population data
-    if (isPopulationGoal) {
-        return year >= MIN_YEAR;
-    }
-    return true; // Keep all observations for other goals
-}).map(obs => {
-    // Normalize date format to just the year for population data
-    if (isPopulationGoal) {
-        return {
-            date: obs.date.split('-')[0], // Keep only the year part
-            value: obs.value
-            
-        };
-    }
-    return obs; // Return original for other data
-});
+}).map(obs => ({
+    date: obs.date.split('-')[0],
+    value: obs.value
+}));
       
         formattedData.push({
             name: geoValues[geoId].name,
@@ -560,15 +545,18 @@ dataCopy.forEach(location => {
         : location.latestValue !== null);
     console.log("validData:",validData)
     if (showAll === 'showSelected') {
-        selectedData = formattedData.filter(location => {
-            const geoId = Object.keys(geoValues).find(id => geoValues[id].name === location.name);
-            if (!geoId) return false;
-            const countryCode = geoId.includes('country/') ? geoId.replace('country/', '') : geoId;
-            //console.log(`Checking ${location.name}, geoId: ${geoId}, code: ${countryCode}`); // Debug
-            console.log("Filtered Countries:", selectedData);
-           return selectedCountries3Char.includes(countryCode);
-           
-        });
+        if (scope !== 'country') {
+            selectedData = validData
+                .sort((a, b) => b.latestValue - a.latestValue)
+                .slice(0, Math.min(5, validData.length));
+        } else {
+            selectedData = formattedData.filter(location => {
+                const geoId = Object.keys(geoValues).find(id => geoValues[id].name === location.name);
+                if (!geoId) return false;
+                const countryCode = geoId.includes('country/') ? geoId.replace('country/', '') : geoId;
+                return selectedCountries3Char.includes(countryCode);
+            });
+        }
     } else if (showAll === 'showTop5') {
        selectedData = validData
         .sort((a, b) => 

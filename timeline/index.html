@@ -123,11 +123,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updateStateMenuVisibility() {
   const hash = getHash();
-  const scope = String(hash.scope || '').toLowerCase();
+  const scope = String(hash.scope || 'country').toLowerCase();
   const entitySelect = document.getElementById('entityId');
   if (entitySelect) {
     entitySelect.style.display = (scope === 'county' || scope.indexOf('zip') >= 0) ? '' : 'none';
   }
+  document.querySelectorAll('.scope-country').forEach(el => {
+    el.style.display = (scope === 'country') ? '' : 'none';
+  });
 }
 
 </script>
@@ -1135,48 +1138,67 @@ p.set('rs_dcid', list.join(','));
             if (!list) return;
             const opts = options || {};
             const limit = Number.isFinite(opts.limit) ? opts.limit : 40;
-            const rowStyle = String(opts.rowStyle || '');
             const hoverBg = opts.hoverBg || null;
             const closeOnSelect = opts.closeOnSelect !== false;
             const closeTarget = opts.closeTarget || panel;
+            const onSelect = opts.onSelect || null;
             list.innerHTML = '';
             const addable = getAddableCountriesForMenu(query).slice(0, limit);
+
+            function doAdd(names) {
+                try {
+                    if (typeof window.addCountryToCharts === 'function') {
+                        (Array.isArray(names) ? names : [names]).forEach(n => window.addCountryToCharts(n));
+                    }
+                } catch (e) {}
+                if (closeOnSelect && closeTarget) { try { closeTarget.style.display = 'none'; } catch (e) {} }
+                if (onSelect) { try { onSelect(); } catch (e) {} }
+            }
+
             if (addable.length > 0) {
-                const addAllRow = document.createElement('div');
-                addAllRow.className = 'bottom-legend-menu-item';
-                addAllRow.textContent = 'Add All';
-                addAllRow.setAttribute('role', 'menuitem');
-                addAllRow.tabIndex = 0;
-                addAllRow.style.fontWeight = '600';
-                if (rowStyle) addAllRow.style.cssText = rowStyle + '; font-weight: 600;';
-                addAllRow.addEventListener('click', () => {
-                    try {
-                        if (typeof window.addCountryToCharts === 'function') {
-                            addable.forEach((name) => window.addCountryToCharts(name));
-                        }
-                        if (closeOnSelect && closeTarget) closeTarget.style.display = 'none';
-                    } catch (e) { /* ignore */ }
+                const allRow = document.createElement('label');
+                allRow.className = 'bottom-legend-menu-item';
+                allRow.style.cssText = 'display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; padding:8px 12px; border-radius:4px;';
+                const allCb = document.createElement('input');
+                allCb.type = 'checkbox';
+                allCb.style.cssText = 'width:15px; height:15px; cursor:pointer; flex-shrink:0;';
+                allCb.addEventListener('change', (e) => {
+                    e.stopPropagation();
+                    if (allCb.checked) doAdd(addable.slice());
                 });
-                list.appendChild(addAllRow);
+                if (hoverBg) {
+                    allRow.addEventListener('mouseenter', () => { allRow.style.background = hoverBg; });
+                    allRow.addEventListener('mouseleave', () => { allRow.style.background = ''; });
+                }
+                allRow.appendChild(allCb);
+                const allSpan = document.createElement('span');
+                allSpan.textContent = 'All';
+                allRow.appendChild(allSpan);
+                list.appendChild(allRow);
                 const divider = document.createElement('div');
                 divider.style.cssText = 'border-top: 1px solid rgba(0,0,0,0.14); margin: 4px 6px;';
                 list.appendChild(divider);
             }
+
             addable.forEach((name) => {
-                const row = document.createElement('div');
+                const row = document.createElement('label');
                 row.className = 'bottom-legend-menu-item';
-                row.textContent = name;
-                row.setAttribute('role', 'menuitem');
-                row.tabIndex = 0;
-                if (rowStyle) row.style.cssText = rowStyle;
+                row.style.cssText = 'display:flex; align-items:center; gap:8px; cursor:pointer; padding:8px 12px; border-radius:4px;';
                 if (hoverBg) {
                     row.addEventListener('mouseenter', () => { row.style.background = hoverBg; });
-                    row.addEventListener('mouseleave', () => { row.style.background = 'transparent'; });
+                    row.addEventListener('mouseleave', () => { row.style.background = ''; });
                 }
-                row.addEventListener('click', () => {
-                    try { if (typeof window.addCountryToCharts === 'function') window.addCountryToCharts(name); } catch (e) {}
-                    try { if (closeOnSelect && closeTarget) closeTarget.style.display = 'none'; } catch (e) {}
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.style.cssText = 'width:15px; height:15px; cursor:pointer; flex-shrink:0;';
+                cb.addEventListener('change', (e) => {
+                    e.stopPropagation();
+                    if (cb.checked) doAdd(name);
                 });
+                row.appendChild(cb);
+                const span = document.createElement('span');
+                span.textContent = name;
+                row.appendChild(span);
                 list.appendChild(row);
             });
         }
@@ -1953,10 +1975,11 @@ function buildFloatingLegendFromChart() {
     }
 
     // Build unified legend items (authoritative in #legend-content)
-    // Group countries by continent for 'continents' view
+    // Group countries by continent for 'continents' view (only meaningful for country scope)
+    const currentScope = (typeof getHash === 'function') ? String(getHash().scope || 'country').toLowerCase() : 'country';
     const continentGroups = {};
     labelMap.forEach((info, label) => {
-        const continent = getContinentForCountry(label);
+        const continent = (currentScope === 'country') ? getContinentForCountry(label) : 'Other';
         if (!continentGroups[continent]) continentGroups[continent] = [];
         continentGroups[continent].push({ label, info });
     });
@@ -2163,7 +2186,7 @@ function buildFloatingLegendFromChart() {
                 inlinePanel.style.display = 'none';
                 const inlineInput = document.createElement('input');
                 inlineInput.type = 'text';
-                inlineInput.placeholder = 'Search countries...';
+                inlineInput.placeholder = 'Search locations...';
                 inlineInput.className = 'legend-more-inline-input';
                 inlinePanel.appendChild(inlineInput);
                 const inlineList = document.createElement('div');
@@ -2172,9 +2195,9 @@ function buildFloatingLegendFromChart() {
                 const renderInlinePanel = () => {
                     renderMoreLocationsMenuList(inlineList, inlinePanel, inlineInput.value, {
                         limit: 50,
-                        rowStyle: 'padding: 8px 12px; cursor: pointer; border-radius: 4px;',
                         hoverBg: 'rgba(0,102,255,0.1)',
-                        closeOnSelect: false
+                        closeOnSelect: false,
+                        onSelect: () => renderInlinePanel()
                     });
                 };
                 inlineInput.addEventListener('input', renderInlinePanel);
@@ -2963,6 +2986,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup toggle buttons for Locations/Continents view
     const locationsBtn = document.getElementById('view-locations-btn');
     const continentsBtn = document.getElementById('view-continents-btn');
+    // Hide Continents tab for non-country scopes; reset to Locations view if needed
+    if (continentsBtn) {
+        const isCountryScope = currentScope === 'country';
+        continentsBtn.style.display = isCountryScope ? '' : 'none';
+        if (!isCountryScope && window._legendViewMode === 'continents') {
+            window._legendViewMode = 'locations';
+        }
+    }
     if (locationsBtn && continentsBtn) {
         const setAllContinentPanels = (open) => {
             try {
