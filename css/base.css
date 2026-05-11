@@ -111,8 +111,8 @@ Used in localsite, modelearth, io, neighborhood, trees
   --alert-success-text: var(--color-success);
   --alert-danger-bg: rgba(214, 65, 39, 0.08);
   --alert-danger-text: var(--color-danger);
-  --alert-warning-bg: rgba(250, 166, 33, 0.08);
-  --alert-warning-text: var(--color-warning);
+  --alert-warning-bg: rgba(251, 191, 36, 0.12);
+  --alert-warning-text: #a16207;
   --alert-info-bg: rgba(186, 219, 229, 0.15);
   --alert-info-text: #1a738b;
   --alert-info-accent: var(--color-info);
@@ -209,8 +209,8 @@ Used in localsite, modelearth, io, neighborhood, trees
   --alert-success-text: #b7d59f;
   --alert-danger-bg: rgba(214, 65, 39, 0.18);
   --alert-danger-text: #f1b1a8;
-  --alert-warning-bg: rgba(250, 166, 33, 0.18);
-  --alert-warning-text: #f5cd83;
+  --alert-warning-bg: rgba(250, 166, 33, 0.14);
+  --alert-warning-text: #e8b15e;
   --color-info: #084975;
   --color-info-hover: #063a5d;
   --alert-info-bg: rgba(72, 124, 165, 0.24);
@@ -1806,6 +1806,9 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   flex-shrink: 0;
   border-radius: calc(var(--alert-radius) / 2);
   margin-top: 1px;
+}
+.alert code {
+  background: color-mix(in srgb, currentColor 10%, transparent);
 }
 .alert-primary {
   background: var(--alert-primary-bg);

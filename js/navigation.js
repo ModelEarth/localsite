@@ -7671,6 +7671,14 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         document.head.appendChild($favicon)
       }
     }
+
+    function resolveConfigAssetUrl(assetPath) {
+        if (!assetPath) return assetPath;
+        if (/^(?:[a-z]+:)?\/\//i.test(assetPath) || assetPath.indexOf('data:') === 0 || assetPath.charAt(0) === '/') {
+            return assetPath;
+        }
+        return local_app.web_root() + assetPath;
+    }
     
     // Site detection and attribute application from webroot.yaml
     (async function() {
@@ -7699,7 +7707,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                 changeFavicon(param.icon);
             } else {
                 const favicon = (matchedSite && matchedSite.favicon) || (defaultId && sites[defaultId] && sites[defaultId].favicon);
-                if (favicon) changeFavicon(local_app.web_root() + favicon);
+                if (favicon) changeFavicon(resolveConfigAssetUrl(favicon));
             }
         } catch(e) {}
     })();

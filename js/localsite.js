@@ -3348,7 +3348,14 @@ function updateAccesslocalVisibility(devmode) {
     accesslocalHolder.style.display = (!isCurrentHostLocalhost() && devmode == "dev") ? "" : "none";
 }
 window.shouldAccessLocalhost = function() {
-    return isCurrentHostLocalhost() || getAccesslocalSetting() == "enabled";
+    const accesslocal = getAccesslocalSetting();
+    if (accesslocal == "enabled") {
+        return true;
+    }
+    if (accesslocal == "block") {
+        return false;
+    }
+    return isCurrentHostLocalhost();
 };
 function setAccesslocal(accesslocal) {
     if (typeof Cookies != 'undefined') {
@@ -3361,6 +3368,12 @@ function setAccesslocal(accesslocal) {
         }
     }
     syncAccesslocalControl();
+    document.dispatchEvent(new CustomEvent('accesslocalChanged', {
+        detail: {
+            value: accesslocal,
+            setting: getAccesslocalSetting()
+        }
+    }));
     if (accesslocal == "install") {
         window.location = "/team/setup";
     }
