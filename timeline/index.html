@@ -708,6 +708,20 @@ body.main-nav-hidden #floating-legend.chart-visible {
         zipWrap.appendChild(zipLink);
       }
       container.appendChild(zipWrap);
+
+      // Date range label — far right of the scope nav bar
+      const existingRangeLabel = document.getElementById('date-range-label');
+      if (existingRangeLabel) existingRangeLabel.remove();
+      const rangeLabel = document.createElement('span');
+      rangeLabel.id = 'date-range-label';
+      rangeLabel.style.cssText = 'float:right; color:#aaa; font-size:12px; cursor:pointer; user-select:none; line-height:1.8;';
+      rangeLabel.title = 'Click to change date range';
+      rangeLabel.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (typeof openDateRangePopup === 'function') openDateRangePopup(rangeLabel);
+      });
+      container.appendChild(rangeLabel);
+      if (typeof updateDateRangeLabel === 'function') updateDateRangeLabel();
     }
 
     function updateTimelineNav() {
@@ -783,6 +797,148 @@ body.main-nav-hidden #floating-legend.chart-visible {
       }
     });
     window.addEventListener('hashchange', updateTimelineNav);
+  </script>
+
+  <script>
+  // ── Date range picker ──────────────────────────────────────────────────────
+
+  function getDateRangeCacheKey(scope, dcid) {
+    const s = scope || (typeof getHash === 'function' ? (getHash().scope || 'country') : 'country');
+    const d = dcid  || (typeof getHash === 'function' ? (getHash()['features.dcid'] || '') : '');
+    return d ? 'timelineDateRange_' + s + '_' + d : null;
+  }
+
+  function saveDateRange(start, end, scope, dcid) {
+    try {
+      const key = getDateRangeCacheKey(scope, dcid);
+      if (key) localStorage.setItem(key, JSON.stringify({ start: start, end: end }));
+    } catch(e) {}
+  }
+
+  function loadDateRange(scope, dcid) {
+    try {
+      const key = getDateRangeCacheKey(scope, dcid);
+      if (!key) return null;
+      const val = localStorage.getItem(key);
+      if (!val) return null;
+      const p = JSON.parse(val);
+      if (p && typeof p.start === 'number' && typeof p.end === 'number') return p;
+    } catch(e) {}
+    return null;
+  }
+
+  // Called by earthscape.js via window hook before every chart refresh
+  window.onBeforeRefreshTimeline = function(scope, dcid) {
+    const saved = loadDateRange(scope, dcid);
+    if (saved) {
+      if (typeof setTimelineMinYear === 'function') setTimelineMinYear(saved.start);
+      if (typeof setTimelineMaxYear === 'function') setTimelineMaxYear(saved.end);
+    } else {
+      // No saved preference — let updateTimelineMinYearFromSelect set MIN, reset MAX
+      if (typeof setTimelineMaxYear === 'function') setTimelineMaxYear(9999);
+    }
+  };
+
+  function applyDateRange(start, end) {
+    if (typeof setTimelineMinYear === 'function') setTimelineMinYear(start);
+    if (typeof setTimelineMaxYear === 'function') setTimelineMaxYear(end);
+    const hash = typeof getHash === 'function' ? getHash() : {};
+    saveDateRange(start, end, hash.scope, hash['features.dcid']);
+    updateDateRangeLabel();
+    if (typeof refreshTimeline === 'function') refreshTimeline();
+  }
+
+  function resetDateRange() {
+    try {
+      const key = getDateRangeCacheKey();
+      if (key) localStorage.removeItem(key);
+    } catch(e) {}
+    if (typeof setTimelineMaxYear === 'function') setTimelineMaxYear(9999);
+    // Let updateTimelineMinYearFromSelect restore the dataset default MIN
+    const sel = document.getElementById('chartVariable');
+    if (sel && typeof updateTimelineMinYearFromSelect === 'function') updateTimelineMinYearFromSelect(sel);
+    updateDateRangeLabel();
+    if (typeof refreshTimeline === 'function') refreshTimeline();
+  }
+
+  function updateDateRangeLabel() {
+    const label = document.getElementById('date-range-label');
+    if (!label) return;
+    const years = window._timelineYears;
+    if (!years || !years.length) { label.textContent = ''; return; }
+    const dataMin = years[0];
+    const dataMax = years[years.length - 1];
+    const curMin = window._timelineMinYear || dataMin;
+    const curMax = (window._timelineMaxYear && window._timelineMaxYear < 9999) ? window._timelineMaxYear : dataMax;
+    const lo = Math.max(curMin, dataMin);
+    const hi = Math.min(curMax, dataMax);
+    label.textContent = lo + '–' + hi;
+  }
+
+  function openDateRangePopup(anchorEl) {
+    ensureDateRangePopup();
+    const popup = document.getElementById('date-range-popup');
+    if (!popup) return;
+    const years = window._timelineYears || [];
+    const dataMin = years.length ? parseInt(years[0]) : 1960;
+    const dataMax = years.length ? parseInt(years[years.length - 1]) : new Date().getFullYear();
+    const curMin = window._timelineMinYear || dataMin;
+    const curMax = (window._timelineMaxYear && window._timelineMaxYear < 9999) ? window._timelineMaxYear : dataMax;
+    document.getElementById('date-range-start').value = Math.max(curMin, dataMin);
+    document.getElementById('date-range-start').min = dataMin;
+    document.getElementById('date-range-start').max = dataMax;
+    document.getElementById('date-range-end').value = Math.min(curMax, dataMax);
+    document.getElementById('date-range-end').min = dataMin;
+    document.getElementById('date-range-end').max = dataMax;
+    document.getElementById('date-range-avail').textContent = 'Available: ' + dataMin + '–' + dataMax;
+    // Position below the anchor
+    const rect = anchorEl.getBoundingClientRect();
+    popup.style.top  = (rect.bottom + window.scrollY + 6) + 'px';
+    popup.style.left = Math.max(8, rect.right + window.scrollX - 228) + 'px';
+    popup.style.display = 'block';
+  }
+
+  function ensureDateRangePopup() {
+    if (document.getElementById('date-range-popup')) return;
+    const popup = document.createElement('div');
+    popup.id = 'date-range-popup';
+    popup.style.cssText = 'display:none; position:absolute; z-index:9999; background:#fff; border:1px solid #ddd; border-radius:8px; padding:16px; box-shadow:0 4px 16px rgba(0,0,0,0.14); width:228px; font-family:Arial,sans-serif;';
+    popup.innerHTML =
+      '<div style="font-size:13px;font-weight:600;margin-bottom:6px;color:#333;">Date Range</div>' +
+      '<div id="date-range-avail" style="font-size:11px;color:#aaa;margin-bottom:10px;"></div>' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">' +
+        '<input type="number" id="date-range-start" style="width:72px;padding:5px 6px;border:1px solid #ccc;border-radius:4px;font-size:13px;">' +
+        '<span style="color:#888;font-size:14px;">–</span>' +
+        '<input type="number" id="date-range-end" style="width:72px;padding:5px 6px;border:1px solid #ccc;border-radius:4px;font-size:13px;">' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;">' +
+        '<button id="date-range-apply" style="padding:6px 16px;background:#0066ff;color:#fff;border:none;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;">Apply</button>' +
+        '<button id="date-range-reset" style="padding:6px 12px;background:#f0f0f0;color:#555;border:none;border-radius:4px;font-size:12px;cursor:pointer;">Reset</button>' +
+      '</div>';
+    document.body.appendChild(popup);
+
+    document.getElementById('date-range-apply').addEventListener('click', function() {
+      const start = parseInt(document.getElementById('date-range-start').value);
+      const end   = parseInt(document.getElementById('date-range-end').value);
+      if (!isNaN(start) && !isNaN(end) && start <= end) {
+        popup.style.display = 'none';
+        applyDateRange(start, end);
+      }
+    });
+
+    document.getElementById('date-range-reset').addEventListener('click', function() {
+      popup.style.display = 'none';
+      resetDateRange();
+    });
+
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+      if (popup.style.display === 'none') return;
+      if (!popup.contains(e.target) && e.target.id !== 'date-range-label') {
+        popup.style.display = 'none';
+      }
+    }, true);
+  }
   </script>
 
   <div style="float:right">

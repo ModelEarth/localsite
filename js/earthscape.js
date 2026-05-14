@@ -185,11 +185,19 @@ let allCountriesCache = null;
 //Timelinechart for scopes country, state, and county
 let geoValues = {};
 let MIN_YEAR = 1960; // Minimum year to filter data
+let MAX_YEAR = 9999; // Maximum year to filter data (9999 = no limit)
 function setTimelineMinYear(year) {
     const parsedYear = parseInt(year, 10);
     if (!Number.isNaN(parsedYear)) {
         MIN_YEAR = parsedYear;
         window._timelineMinYear = parsedYear;
+    }
+}
+function setTimelineMaxYear(year) {
+    const parsedYear = parseInt(year, 10);
+    if (!Number.isNaN(parsedYear)) {
+        MAX_YEAR = parsedYear;
+        window._timelineMaxYear = parsedYear;
     }
 }
 function updateTimelineMinYearFromSelect(selectEl) {
@@ -201,8 +209,12 @@ function updateTimelineMinYearFromSelect(selectEl) {
     if (startYear) {
         setTimelineMinYear(startYear);
     }
+    // Reset max year when a new dataset is selected
+    MAX_YEAR = 9999;
+    window._timelineMaxYear = 9999;
 }
 window.setTimelineMinYear = setTimelineMinYear;
+window.setTimelineMaxYear = setTimelineMaxYear;
 window.updateTimelineMinYearFromSelect = updateTimelineMinYearFromSelect;
 
 /**
@@ -452,9 +464,8 @@ for (const geoId in geoValues) {
     if (timelineData.byVariable[chartVariable]?.byEntity?.[geoId]?.orderedFacets?.[0]?.observations) {
         const isPopulationGoal = getHash().goal === "population";
         const filteredObservations = timelineData.byVariable[chartVariable].byEntity[geoId].orderedFacets[0].observations.filter(obs => {
-    if (!isPopulationGoal) return true;
     const year = parseInt(obs.date.split('-')[0]);
-    return year >= MIN_YEAR;
+    return year >= MIN_YEAR && year <= MAX_YEAR;
 }).map(obs => ({
     date: obs.date.split('-')[0],
     value: obs.value
@@ -772,6 +783,7 @@ dataCopy.forEach(location => {
     }
 
     window._timelineYears = years;
+    if (typeof window.updateDateRangeLabel === 'function') { try { window.updateDateRangeLabel(); } catch(e) {} }
     window._timelineCountryDataByName = {};
     formattedData.forEach(function(loc){ window._timelineCountryDataByName[loc.name] = loc; });
     window._timelineSelectedLabels = selectedData.map(function(loc){ return loc.name; });
@@ -1072,7 +1084,9 @@ function refreshTimeline() {
             }
             let chartText = document.getElementById('chartVariable').options[document.getElementById('chartVariable').selectedIndex].text;
 
-            //alert(chartVariable + " " + chartText)
+            if (typeof window.onBeforeRefreshTimeline === 'function') {
+                try { window.onBeforeRefreshTimeline(scope, chartVariable); } catch(e) {}
+            }
             getTimelineChart(scope, chartVariable, entityId, showAll, chartText);
         //},3000);
     //});
