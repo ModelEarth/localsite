@@ -127,7 +127,7 @@
   }
 
   function getHudRoot() {
-    return document.getElementById('hud');
+    return document.getElementById('headsup');
   }
 
   function getMissionMenu() {
@@ -320,7 +320,7 @@
         `
       : '';
     return `
-      <div id="hud" class="event-hud event-hud-${mode}">
+      <div id="headsup" class="event-hud event-hud-${mode}">
         <div id="hud-left" role="button" tabindex="0" aria-label="Choose mission">
           <div class="mission-title-row">
             <div class="mission-title" id="mission-title-text"></div>
@@ -374,6 +374,12 @@
     if (hudLeft) hudLeft.classList.toggle('is-open', state.menuOpen);
     if (missionMenu) missionMenu.classList.toggle('open', state.menuOpen);
     if (eventSelect) eventSelect.style.display = 'none';
+    if (state.menuOpen && missionMenu) {
+      const firstFocusable = missionMenu.querySelector('button, [tabindex="0"]');
+      if (firstFocusable) firstFocusable.focus();
+    } else if (!state.menuOpen && hudLeft) {
+      hudLeft.focus();
+    }
     if (hudLeft) hudLeft.setAttribute('aria-hidden', state.menuOpen ? 'true' : 'false');
     if (missionMenu) missionMenu.setAttribute('aria-hidden', state.menuOpen ? 'false' : 'true');
   }
