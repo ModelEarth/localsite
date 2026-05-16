@@ -140,6 +140,12 @@
     color: rgba(255, 255, 255, 0.4);
 }
 
+.mission-menu-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .mission-menu-close {
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.06);
@@ -154,6 +160,12 @@
 
 .mission-menu-close:hover {
     background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.mission-menu-alt.mission-menu-alt-active {
+    background: rgba(120, 200, 255, 0.18);
+    border-color: rgba(120, 200, 255, 0.35);
     color: #fff;
 }
 

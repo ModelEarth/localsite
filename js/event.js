@@ -15,8 +15,47 @@
   const state = {
     config: null,
     options: {},
-    menuOpen: false
+    menuOpen: false,
+    altListMode: false,
+    altConfig: null,
+    altConfigPromise: null
   };
+
+  function detectSection() {
+    const path = (typeof window !== 'undefined' && window.location && window.location.pathname) || '';
+    if (/\/project(\/|$)/.test(path)) return 'project';
+    if (/\/space(\/|$)/.test(path)) return 'space';
+    return '';
+  }
+
+  function getAltSection() {
+    const section = detectSection();
+    if (section === 'space') return { label: 'Projects', folder: '../project/', eventsBase: '../project/events' };
+    if (section === 'project') return { label: 'Space', folder: '../space/', eventsBase: '../space/events' };
+    return null;
+  }
+
+  function loadAltConfig() {
+    if (state.altConfig) return Promise.resolve(state.altConfig);
+    if (state.altConfigPromise) return state.altConfigPromise;
+    const alt = getAltSection();
+    if (!alt) return Promise.resolve(null);
+    state.altConfigPromise = fetch(`${alt.eventsBase}/events.json`, { cache: 'no-cache' })
+      .then(function(response) {
+        if (!response.ok) throw new Error(`Unable to load ${alt.eventsBase}/events.json`);
+        return response.json();
+      })
+      .then(function(config) {
+        state.altConfig = config;
+        return config;
+      })
+      .catch(function(error) {
+        console.error(error);
+        state.altConfigPromise = null;
+        return null;
+      });
+    return state.altConfigPromise;
+  }
 
   function parseYamlScalar(yamlText, key) {
     const match = `${yamlText || ''}`.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'));
@@ -357,7 +396,10 @@
         <div class="mission-menu-panel" role="dialog" aria-label="Choose mission">
           <div class="mission-menu-header">
             <div class="mission-menu-header-title">Missions</div>
-            <button class="mission-menu-close" type="button">Close</button>
+            <div class="mission-menu-header-actions">
+              <button class="mission-menu-close" type="button">Close</button>
+              <button class="mission-menu-close mission-menu-alt" type="button" data-alt-section="" style="display:none"></button>
+            </div>
           </div>
           <div class="mission-menu-list" id="mission-menu-list"></div>
         </div>
@@ -408,7 +450,32 @@
   function refreshMissionMenu() {
     const list = document.getElementById('mission-menu-list');
     const select = document.getElementById('event');
-    if (!list || !select || !state.config || !Array.isArray(state.config.events)) return;
+    if (!list) return;
+    const alt = getAltSection();
+    const altButton = document.querySelector('.mission-menu-alt');
+    if (altButton) {
+      if (alt) {
+        altButton.style.display = '';
+        altButton.textContent = alt.label;
+        altButton.dataset.altSection = alt.label;
+        altButton.classList.toggle('mission-menu-alt-active', state.altListMode);
+      } else {
+        altButton.style.display = 'none';
+      }
+    }
+    const useAlt = state.altListMode && state.altConfig && Array.isArray(state.altConfig.events);
+    if (useAlt) {
+      list.innerHTML = state.altConfig.events.map(function(eventEntry) {
+        return `
+          <button type="button" class="mission-menu-item" data-event-id="${escapeHtml(eventEntry.id)}" data-alt-target="${escapeHtml(alt ? alt.folder : '')}">
+            <div class="mission-menu-item-label">${escapeHtml(eventEntry.id)}</div>
+            <div class="mission-menu-item-name">${escapeHtml(eventEntry.label || eventEntry.id)}</div>
+          </button>
+        `;
+      }).join('');
+      return;
+    }
+    if (!select || !state.config || !Array.isArray(state.config.events)) return;
     const currentEventId = getCurrentEventId();
     list.innerHTML = state.config.events.map(function(eventEntry) {
       const option = select.querySelector(`option[value="${escapeSelectorValue(eventEntry.id)}"]`);
@@ -459,7 +526,7 @@
     const sourceLink = document.getElementById('hud-source-link');
     const missionMenu = getMissionMenu();
     const backdrop = missionMenu ? missionMenu.querySelector('.mission-menu-backdrop') : null;
-    const closeButton = missionMenu ? missionMenu.querySelector('.mission-menu-close') : null;
+    const closeButton = missionMenu ? missionMenu.querySelector('.mission-menu-close:not(.mission-menu-alt)') : null;
     const eventSelect = document.getElementById('event');
     if (hudLeft && !hudLeft.dataset.eventHudBound) {
       hudLeft.addEventListener('click', function() {
@@ -491,6 +558,21 @@
       });
       closeButton.dataset.eventHudBound = 'true';
     }
+    const altButton = missionMenu ? missionMenu.querySelector('.mission-menu-alt') : null;
+    if (altButton && !altButton.dataset.eventHudBound) {
+      altButton.addEventListener('click', async function(domEvent) {
+        domEvent.stopPropagation();
+        if (!state.altListMode) {
+          await loadAltConfig();
+          if (!state.altConfig) return;
+          state.altListMode = true;
+        } else {
+          state.altListMode = false;
+        }
+        refreshMissionMenu();
+      });
+      altButton.dataset.eventHudBound = 'true';
+    }
     if (eventSelect && !eventSelect.dataset.eventHudBound) {
       eventSelect.addEventListener('change', function() {
         selectMissionFromMenu(eventSelect.value);
@@ -502,6 +584,11 @@
         const button = domEvent.target.closest('.mission-menu-item');
         if (!button) return;
         const missionId = button.getAttribute('data-event-id') || '';
+        const altTarget = button.getAttribute('data-alt-target') || '';
+        if (altTarget && missionId) {
+          window.location.href = `${altTarget}#event=${encodeURIComponent(missionId)}`;
+          return;
+        }
         if (missionId) {
           selectMissionFromMenu(missionId);
         }
