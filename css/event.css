@@ -374,6 +374,13 @@
     display: none;
 }
 
+.mission-admin-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .mission-admin-link {
     display: inline-flex;
     align-items: center;
@@ -403,6 +410,10 @@
 
 .mission-admin-link[hidden] {
     display: none !important;
+}
+
+.mission-scenario-data-link {
+    margin-left: 0;
 }
 
 .event-admin-grid {

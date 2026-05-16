@@ -173,6 +173,15 @@
     return document.getElementById('mission-menu');
   }
 
+  function updateMissionMenuTitle() {
+    const titleEl = document.querySelector('#mission-menu .mission-menu-header-title');
+    if (!titleEl) return;
+    const title = state.altListMode
+      ? (state.options.altMissionMenuTitle || state.options.missionMenuTitle || 'Missions')
+      : (state.options.missionMenuTitle || 'Missions');
+    titleEl.textContent = title;
+  }
+
   function hasInitialMetaTargets(targetIds) {
     return (targetIds || []).every((id) => document.getElementById(id));
   }
@@ -383,22 +392,28 @@
           </div>
           <div class="met-counter" id="met-counter"></div>
           ${detailsMarkup}
-          <a id="hud-admin-link" class="mission-admin-link" href="#" hidden>
-            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-              <path d="M3 17.25V21h3.75l11-11-3.75-3.75-11 11Zm14.71-9.04a1.003 1.003 0 0 0 0-1.42l-2.5-2.5a1.003 1.003 0 0 0-1.42 0l-1.96 1.96 3.75 3.75 2.13-1.79Z"></path>
-            </svg>
-            <span>Admin</span>
-          </a>
+          <div class="mission-admin-row">
+            <a id="hud-admin-link" class="mission-admin-link" href="#" hidden>
+              <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                <path d="M3 17.25V21h3.75l11-11-3.75-3.75-11 11Zm14.71-9.04a1.003 1.003 0 0 0 0-1.42l-2.5-2.5a1.003 1.003 0 0 0-1.42 0l-1.96 1.96 3.75 3.75 2.13-1.79Z"></path>
+              </svg>
+              <span>Admin</span>
+            </a>
+            <a id="hud-scenario-data-link" class="mission-admin-link mission-scenario-data-link" href="#projectOverview" hidden>
+              <span>Scenario data</span>
+            </a>
+          </div>
         </div>
       </div>
       <div id="mission-menu" class="event-hud-${mode}" aria-hidden="true">
         <div class="mission-menu-backdrop"></div>
         <div class="mission-menu-panel" role="dialog" aria-label="Choose mission">
           <div class="mission-menu-header">
-            <div class="mission-menu-header-title">Missions</div>
+            <div class="mission-menu-header-title">${escapeHtml(state.options.missionMenuTitle || 'Missions')}</div>
             <div class="mission-menu-header-actions">
               <button class="mission-menu-close" type="button">Close</button>
               <button class="mission-menu-close mission-menu-alt" type="button" data-alt-section="" style="display:none"></button>
+              <button class="mission-menu-close mission-menu-new" type="button">New</button>
             </div>
           </div>
           <div class="mission-menu-list" id="mission-menu-list"></div>
@@ -417,7 +432,8 @@
     if (missionMenu) missionMenu.classList.toggle('open', state.menuOpen);
     if (eventSelect) eventSelect.style.display = 'none';
     if (state.menuOpen && missionMenu) {
-      const firstFocusable = missionMenu.querySelector('button, [tabindex="0"]');
+      const firstMissionItem = missionMenu.querySelector('.mission-menu-item');
+      const firstFocusable = firstMissionItem || missionMenu.querySelector('[tabindex="0"]');
       if (firstFocusable) firstFocusable.focus();
     } else if (!state.menuOpen && hudLeft) {
       hudLeft.focus();
@@ -451,6 +467,7 @@
     const list = document.getElementById('mission-menu-list');
     const select = document.getElementById('event');
     if (!list) return;
+    updateMissionMenuTitle();
     const alt = getAltSection();
     const altButton = document.querySelector('.mission-menu-alt');
     if (altButton) {
@@ -462,6 +479,10 @@
       } else {
         altButton.style.display = 'none';
       }
+    }
+    const newButton = document.querySelector('.mission-menu-new');
+    if (newButton) {
+      newButton.hidden = !getHashParams().event;
     }
     const useAlt = state.altListMode && state.altConfig && Array.isArray(state.altConfig.events);
     if (useAlt) {
@@ -572,6 +593,20 @@
         refreshMissionMenu();
       });
       altButton.dataset.eventHudBound = 'true';
+    }
+    const newButton = missionMenu ? missionMenu.querySelector('.mission-menu-new') : null;
+    if (newButton && !newButton.dataset.eventHudBound) {
+      newButton.addEventListener('click', function() {
+        const hashKeys = Object.keys(getHashParams());
+        if (typeof goHash === 'function') {
+          goHash({}, hashKeys);
+        } else {
+          setHashParams({});
+        }
+        newButton.hidden = true;
+        setMissionMenuOpen(false);
+      });
+      newButton.dataset.eventHudBound = 'true';
     }
     if (eventSelect && !eventSelect.dataset.eventHudBound) {
       eventSelect.addEventListener('change', function() {
@@ -730,6 +765,10 @@
     window.__eventsConfigPromise.then(function(config) {
       state.config = config;
       hydrateEventMenu(window.__initialEventId || window.__pageDefaultEventId || '');
+      if (state.menuOpen) {
+        const firstMissionItem = document.querySelector('#mission-menu .mission-menu-item');
+        if (firstMissionItem) firstMissionItem.focus();
+      }
       if (window.__latestInitialEventMeta) {
         applyInitialMetaToDom();
       }
