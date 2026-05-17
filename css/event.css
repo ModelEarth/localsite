@@ -23,7 +23,6 @@
     flex-direction: column;
     gap: 4px;
     pointer-events: auto;
-    cursor: pointer;
     padding: 8px 12px 8px 14px;
     background: rgba(10, 12, 20, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -57,10 +56,15 @@
 }
 
 .mission-dropdown-arrow {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
     width: 30px;
     height: 30px;
     flex: 0 0 auto;
     color: rgba(255, 255, 255, 0.72);
+    cursor: pointer;
     margin-top: 2px;
 }
 

@@ -369,7 +369,7 @@
       : '';
     return `
       <div id="headsup" class="event-hud event-hud-${mode}">
-        <div id="hud-left" role="button" tabindex="0" aria-label="Choose mission">
+        <div id="hud-left">
           <div class="mission-title-row">
             <div class="mission-title" id="mission-title-text"></div>
             <a id="hud-source-link" class="mission-source-link" href="#" target="_blank" rel="noopener noreferrer" aria-label="Open source article" title="Open source article" hidden>
@@ -380,11 +380,11 @@
           </div>
           <div class="mission-name-row">
             <div class="mission-name" id="mission-name"></div>
-            <div class="mission-dropdown-arrow" aria-hidden="true">
+            <button type="button" class="mission-dropdown-arrow" aria-label="Choose mission" aria-expanded="false" aria-controls="mission-menu">
               <svg viewBox="0 0 16 16" focusable="false" aria-hidden="true">
                 <path d="M4.5 6.25a1 1 0 0 1 1.42.04L8 8.54l2.08-2.25a1 1 0 0 1 1.46 1.36l-2.8 3.02a1 1 0 0 1-1.46 0l-2.8-3.02a1 1 0 0 1 .02-1.42Z"></path>
               </svg>
-            </div>
+            </button>
           </div>
           <div class="mission-status">
             <div class="status-dot"></div>
@@ -426,9 +426,11 @@
   function setMissionMenuOpen(open) {
     state.menuOpen = Boolean(open);
     const hudLeft = document.getElementById('hud-left');
+    const dropdownArrow = hudLeft ? hudLeft.querySelector('.mission-dropdown-arrow') : null;
     const missionMenu = getMissionMenu();
     const eventSelect = document.getElementById('event');
     if (hudLeft) hudLeft.classList.toggle('is-open', state.menuOpen);
+    if (dropdownArrow) dropdownArrow.setAttribute('aria-expanded', state.menuOpen ? 'true' : 'false');
     if (missionMenu) missionMenu.classList.toggle('open', state.menuOpen);
     if (eventSelect) eventSelect.style.display = 'none';
     if (state.menuOpen && missionMenu) {
@@ -549,17 +551,14 @@
     const backdrop = missionMenu ? missionMenu.querySelector('.mission-menu-backdrop') : null;
     const closeButton = missionMenu ? missionMenu.querySelector('.mission-menu-close:not(.mission-menu-alt)') : null;
     const eventSelect = document.getElementById('event');
-    if (hudLeft && !hudLeft.dataset.eventHudBound) {
-      hudLeft.addEventListener('click', function() {
+    const dropdownArrow = hudLeft ? hudLeft.querySelector('.mission-dropdown-arrow') : null;
+    if (dropdownArrow && !dropdownArrow.dataset.eventHudBound) {
+      dropdownArrow.addEventListener('click', function(domEvent) {
+        domEvent.preventDefault();
+        domEvent.stopPropagation();
         toggleMissionMenu();
       });
-      hudLeft.addEventListener('keydown', function(domEvent) {
-        if (domEvent.key === 'Enter' || domEvent.key === ' ') {
-          domEvent.preventDefault();
-          toggleMissionMenu();
-        }
-      });
-      hudLeft.dataset.eventHudBound = 'true';
+      dropdownArrow.dataset.eventHudBound = 'true';
     }
     if (sourceLink && !sourceLink.dataset.eventHudBound) {
       sourceLink.addEventListener('click', function(domEvent) {
