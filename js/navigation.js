@@ -1843,8 +1843,24 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
         if (typeof window.loadWebrootYaml === 'function') {
             try {
                 const { sites, default: defaultId } = await window.loadWebrootYaml();
-                const defaultSite = sites && defaultId && sites[defaultId];
-                if (defaultSite && defaultSite.favicon) siteFavicon = defaultSite.favicon;
+                // Match site by modelsite cookie first, then domain_contains, then default
+                const modelsite = (typeof Cookies !== 'undefined') ? Cookies.get('modelsite') : null;
+                let matchedSite = null;
+                if (modelsite && sites && sites[modelsite]) {
+                    matchedSite = sites[modelsite];
+                }
+                if (!matchedSite && sites) {
+                    for (const id in sites) {
+                        const site = sites[id];
+                        if (!site.domain_contains) continue;
+                        const domains = site.domain_contains.split(',').map(d => d.trim()).filter(Boolean);
+                        if (domains.some(d => location.href.indexOf(d) >= 0)) {
+                            matchedSite = site; break;
+                        }
+                    }
+                }
+                const site = matchedSite || (defaultId && sites && sites[defaultId]);
+                if (site && site.favicon) siteFavicon = site.favicon;
             } catch (e) {}
         }
 
@@ -7788,7 +7804,23 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             showClassInline(".georgia");
         }
         showClassInline(".geo");
-        
+
+        if (location.host.indexOf('localhost') < 0) {
+            var hiddenStyle = document.createElement('style');
+            hiddenStyle.id = 'georgia-side-nav-hidden';
+            hiddenStyle.textContent = '#side-nav-content { display: none !important }';
+            document.head.appendChild(hiddenStyle);
+            waitForElm('#side-nav-content').then(function() {
+                window.loadWebrootYaml && window.loadWebrootYaml().then(function(cfg) {
+                    var site = cfg.sites && cfg.sites['model.georgia'];
+                    if (!site || site.sideNavLive !== 'false') {
+                        var s = document.getElementById('georgia-side-nav-hidden');
+                        if (s) s.remove();
+                    }
+                });
+            });
+        }
+
         if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
             // To activate when filter are ready
             //showClassInline(".earth");

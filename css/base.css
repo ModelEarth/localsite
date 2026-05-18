@@ -2376,6 +2376,9 @@ body.dark .config-field select {
 .headerbar a:link:hover, .headerbar a:visited:hover {
     color: #444;
 }
+.dark .headerbar a:link:hover, .dark .headerbar a:visited:hover {
+    color: #aaa;
+}
 .headerbar {
   border-bottom: 1px solid rgb(238,238,238/95%); /* #eee */
   border-bottom: 1px solid rgb(238,238,238);
