@@ -7702,23 +7702,28 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         try {
             const { sites, default: defaultId } = await window.loadWebrootYaml();
             if (!sites) return;
-            let matchedId = null, matchedSite = null;
+            let matchedId = null, matchedSite = null, matchMethod = null;
             if (modelsite && sites[modelsite]) {
-                matchedId = modelsite; matchedSite = sites[modelsite];
+                matchedId = modelsite; matchedSite = sites[modelsite]; matchMethod = 'modelsite cookie';
             }
             if (!matchedSite) {
                 for (const id in sites) {
                     const site = sites[id];
                     if (!site.domain_contains) continue;
                     const domains = site.domain_contains.split(',').map(d => d.trim()).filter(Boolean);
-                    if (domains.some(d => location.href.indexOf(d) >= 0)) {
-                        matchedId = id; matchedSite = site; break;
+                    const hit = domains.find(d => location.href.indexOf(d) >= 0);
+                    if (hit) {
+                        matchedId = id; matchedSite = site; matchMethod = 'domain_contains "' + hit + '"'; break;
                     }
                 }
             }
             if (!matchedSite && defaultId && sites[defaultId]) {
-                matchedId = defaultId; matchedSite = sites[defaultId];
+                matchedId = defaultId; matchedSite = sites[defaultId]; matchMethod = 'default';
             }
+            console.log('domain_contains filter from webroot.yaml  - ' + (matchedSite && matchedSite.domain_contains || 'none'));
+            console.log('domain_contains - ' + location.host + (matchMethod === 'default'
+                ? ' no domain match, using default "' + matchedId + '"'
+                : ' matched "' + matchedId + '" via ' + matchMethod));
             if (param.icon) {
                 changeFavicon(param.icon);
             } else {
@@ -7800,6 +7805,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         } else if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
             showClassInline(".acct");
             showClassInline(".garesource");
+            showClassInline(".georgia");
         } else {
             showClassInline(".georgia");
         }
