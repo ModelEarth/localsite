@@ -594,7 +594,7 @@ body.dark {
   }
 }
 
-/* Also in nav.css - allows #main-nav to extend to footer */
+/* allows #main-nav to extend to footer */
 .flexbody {
     display: flex;
     height: 100vh;
@@ -2927,9 +2927,8 @@ h2 .num {
   padding-top: 7px !important;
 }
 
-/* Nav.css */
-
-/* overrides base.css */
+/* from previous nav.css */
+/* overrides base.css (above) - try integrating  */
 .headerbar { 
     left: var(--side-nav-width, 62px);
 }

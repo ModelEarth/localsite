@@ -800,7 +800,8 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 /* End For main-nav from header.html */
 
 #rightTopMenu select {
-    width: 280px;
+    width: 100%;
+    max-width: 300px;
     padding: 8px;
     font-size: 16px;
     line-height: 1;
@@ -884,6 +885,39 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     float: left;
     min-width: 120px;
 }
+/* Inside the right-side menu, stack label above the select so width:100% on
+   #rightTopMenu select fills the menu width (instead of shrink-fitting to
+   option text). Also keeps "Dev Mode" etc. from sharing a line with their select. */
+.menuExpandedScroll .setLeft {
+    float: none;
+    max-width: none;
+    min-width: 0;
+    display: block;
+    margin-bottom: 4px;
+}
+.menuExpandedScroll .setOverflow {
+    float: none;
+    display: block;
+    width: 100%;
+    min-width: 0;
+}
+.menuExpandedScroll .setRight {
+    width: 100%;
+    max-width: 300px;
+}
+.menuExpandedScroll input[type="text"] {
+    max-width: 300px;
+}
+/* navigation.js injects `.local{display:inline-block !important}` globally, which
+   shrink-fits the wrappers around #devmode / #onlinemode / #basemapSelector and
+   prevents their selects from reaching 100%. Force block layout inside this menu. */
+.menuExpandedScroll .dev,
+.menuExpandedScroll .local,
+.menuExpandedScroll .earth,
+.menuExpandedScroll .localonly {
+    display: block !important;
+    width: 100%;
+}
 #rightSideTabs {
 	width:500px;
 }
@@ -964,8 +998,7 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
     clear: both;
     width: 100%;
     overflow: auto;
-    padding-left: 16px;
-    padding-right: 25px;
+    padding-left: 14px;
     cursor: pointer;
 }
 .rightTopItem:hover {

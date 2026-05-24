@@ -316,18 +316,38 @@
     flex: 0 0 auto;
 }
 
+.met-counter-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 14px;
+    margin-top: 4px;
+}
+
 .met-counter {
     font-size: 12px;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     color: rgba(255, 255, 255, 0.25);
     letter-spacing: 1.5px;
-    margin-top: 4px;
     min-height: 16px;
 }
 
 .met-counter[hidden] {
     display: none !important;
+}
+
+.met-counter-launch-time {
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.met-counter-launch-time:empty {
+    display: none;
 }
 
 .mission-details {

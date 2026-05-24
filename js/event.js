@@ -390,7 +390,10 @@
             <div class="status-dot"></div>
             <span id="phase-text"></span>
           </div>
-          <div class="met-counter" id="met-counter"></div>
+          <div class="met-counter-row" id="met-counter-row">
+            <div class="met-counter" id="met-counter"></div>
+            <span class="met-counter-launch-time" id="met-counter-launch-time"></span>
+          </div>
           ${detailsMarkup}
           <div class="mission-admin-row">
             <a id="hud-admin-link" class="mission-admin-link" href="#" hidden>

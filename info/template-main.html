@@ -386,11 +386,13 @@
                     <option value="antarctic" lat="-90" lon="0">Antarctica</option>
                   </select>
             </div></div>
-            <div style="float:left">
-                    <input id="globeLatitude" class="dark mylat filterClick mobileWide textInput" placeholder="Latitude" type="text" style="width:90px; margin-top:0px; margin-right: 5px" />
+            <div style="float:left; margin-top:8px; display:flex; align-items:center;">
+                    <label for="globeLatitude" style="margin-right:6px">Lat</label>
+                    <input id="globeLatitude" class="dark mylat filterClick mobileWide textInput" placeholder="Latitude" type="text" style="width:90px; margin-top:0px; margin-right: 10px; background-color:#777; color:#ddd; border:0;" />
             </div>
-            <div style="float:left">
-                    <input id="globeLongitude" class="dark mylon filterClick mobileWide textInput" placeholder="Longitude" type="text" style="width:90px; margin-top:0px;" />
+            <div style="float:left; margin-top:8px; display:flex; align-items:center;">
+                    <label for="globeLongitude" style="margin-right:6px">Lon</label>
+                    <input id="globeLongitude" class="dark mylon filterClick mobileWide textInput" placeholder="Longitude" type="text" style="width:90px; margin-top:0px; background-color:#777; color:#ddd; border:0;" />
             </div>
             <div class="setDiv"></div>
 
@@ -772,7 +774,7 @@
 <div class="search-filters-css lite" style="display:none">
 <div id="bigThumbPanelHolder" style="display:none;position: relative;">
 
-  <div class="hideApps close-X" style="position:absolute;right:0;top:0;z-index:1">✕</div>
+  <div class="hideApps close-X">✕</div>
 
   <div id="honeycombPanelHolder" style="overflow:auto;position:relative">
   <a name="sections"></a>
