@@ -784,6 +784,13 @@ input.filterClick[type="text"] {
     float: left;
     text-align: center;
     color: #777;
+    cursor: pointer;
+}
+.bigThumbMenuContent,
+.bigThumbMenuContent *,
+.bigThumbHolder,
+.bigThumbHolder * {
+    cursor: pointer !important;
 }
 .bigThumbHolder:hover {
   color: #333;
@@ -897,18 +904,21 @@ input.filterClick[type="text"] {
   display: grid;
   overflow: auto;
   padding: 15px;
-  padding-left: 0px;
+  padding-left: 20px;
   padding-bottom: 10px;
+  margin-bottom: 15px;
   container-type: inline-size;
   container-name: bigThumbMenuInner;
 }
-/* Layout toggle bar (grid vs. stack) injected at top of #bigThumbMenuInner */
+/* Layout toggle bar (grid vs. stack) injected at top of #bigThumbMenuInner.
+   Negative left margin lets it span over the parent's left padding. */
 .bigThumbLayoutToggle {
   grid-column: 1 / -1;
   display: flex;
   justify-content: flex-end;
   gap: 2px;
   padding: 0 4px 6px 4px;
+  margin-left: -20px;
 }
 .bigThumbLayoutToggle .bigThumbLayoutBtn {
   cursor: pointer;
@@ -965,16 +975,26 @@ input.filterClick[type="text"] {
     width: 100%;
   }
 }
-/* Stack layout: each row is a large title with a small circle icon to the right */
+/* Stack layout: each row is a large title with a small circle icon on the left.
+   Wraps into multiple columns when the container is wide. */
 .bigThumbMenuInner.layoutStack {
-  display: block;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  column-gap: 8px;
 }
 .bigThumbMenuInner.layoutStack .bigThumbMenuContent {
   float: none;
-  width: 100%;
+  width: auto;
   display: block;
   padding: 4px 8px;
   box-sizing: border-box;
+}
+.bigThumbMenuInner.layoutStack .bigThumbStatus {
+  display: none;
+}
+/* Hide the close-X when bigThumbMenuInner has been moved into the Settings panel */
+#listingsPanel .bigThumbLayoutToggle .hideApps {
+  display: none;
 }
 .bigThumbMenuInner.layoutStack .bigThumbWidth {
   width: 100%;

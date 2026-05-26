@@ -2223,7 +2223,14 @@ function showList(dp,map) {
 
     // Show the side columns
     if (!$("#listcolumn").is(":visible")) { // #listcolumn may already be visible if icon clicked while page is loading.
-        $("#showListInBar").show();
+        // filter.html (which contains #showListInBar) loads async, so wait
+        // for the element before showing — otherwise the first call silently
+        // no-ops and the icon only appears after #showSideFromBar is toggled.
+        waitForElm('#showListInBar').then(function() {
+            if (!$("#listcolumn").is(":visible")) {
+                $("#showListInBar").show();
+            }
+        });
     }
     //$("#showSideFromBar").show(); // Added 2024 May 28
     $(".sidelistHolder").show();
@@ -2364,11 +2371,22 @@ function showList(dp,map) {
 } // showList
 
 $(document).on("click", ".showList", function(event) {
+  // .sidebar-hidden sets #side-nav { display:none !important }, which hides
+  // #listcolumn (a child of #side-nav-fixed). Remove it so the list can render
+  // without first requiring a click on #showSideFromBar.
+  $("body").removeClass("sidebar-hidden");
   $("#listcolumn").show();
   if ($("#main-nav").is(":hidden")) {
     // Display showNavColumn in bar
     $("#showNavColumn").hide();
     $("#showSideFromBar").show();
+    // showListBodyMargin's outer condition (#main-container > .datascape)
+    // doesn't match the actual DOM (#main-container > #main-content > .datascape),
+    // so it never adds .listcolumnOnly. Add it here so listcolumn sits at left:0
+    // instead of the main-nav-aligned left:189px override.
+    $("#listcolumn").addClass("listcolumnOnly");
+  } else {
+    $("#listcolumn").removeClass("listcolumnOnly");
   }
   showListBodyMargin();
   $(".showList").hide();

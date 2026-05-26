@@ -7815,7 +7815,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         var sideNavKey = isLocalhost ? 'sideNavLocal' : 'sideNavLive';
         var hiddenStyle = document.createElement('style');
         hiddenStyle.id = 'georgia-side-nav-hidden';
-        hiddenStyle.textContent = '#side-nav-content { display: none !important } #side-nav.expanded #main-nav { display: block !important } .main-nav-full { width: 189px !important }';
+        hiddenStyle.textContent = '#side-nav-content { display: none !important } #side-nav.expanded #main-nav { display: block !important } .main-nav-full { width: 189px !important } .listcolumn:not(.listcolumnOnly) { left: 189px !important }';
         document.head.appendChild(hiddenStyle);
         waitForElm('#side-nav-content').then(function() {
             window.loadWebrootYaml && window.loadWebrootYaml().then(function(cfg) {
@@ -9550,6 +9550,11 @@ function showApps(menuDiv) {
             }
         } else { // Show Apps, Close Locations (if no geoview)
             updateHash({"appview":"topics"});
+            // Silently remove sidetab from the hash so closeSideTabs() doesn't fire a
+            // hashchange (which would also close #bigThumbPanelHolder), then close the
+            // entire side settings panel via the same function the .showWideX X uses.
+            updateHash({}, true, "sidetab");
+            closeSideTabs();
             console.log("call showThumbMenu from navidation.js");
             if (!hash.geoview) {
 
@@ -9578,10 +9583,12 @@ function showApps(menuDiv) {
             $("#bigThumbMenuInner").appendTo(menuDiv);
             showThumbMenu(hash.show, menuDiv);
             //$('.showApps').addClass("filterClickActive");
-            waitForElm('#bigThumbPanelHolder').then((elm) => { 
+            waitForElm('#bigThumbPanelHolder').then((elm) => {
+                // Scroll so the top of #bigThumbPanelHolder is visible (just below the header).
+                // Previously subtracted #filterFieldsHolder.height() too, which pushed
+                // #bigThumbLayoutToggle above the fold.
                 $('html,body').animate({
-                    //- $("#filterFieldsHolder").height()  
-                    scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
+                    scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height()
                 });
             });
         }
