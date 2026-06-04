@@ -120,10 +120,14 @@
     padding: 12px;
     background: rgba(10, 12, 20, 0.9);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
+}
+@media (min-width: 600px) {
+    .mission-menu-panel {
+        border-radius: 10px;
+    }
 }
 
 .mission-menu-header {
