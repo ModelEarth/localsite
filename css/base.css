@@ -230,7 +230,7 @@ Used in localsite, modelearth, io, neighborhood, trees
   --color-info-text: #ffffff;
 }
 body {
-  background: var(--bg-page);
+  background-color: var(--bg-page);
   color: var(--text-main);
   font-family: var(--font-body);
   line-height: 1.5;
