@@ -234,10 +234,10 @@ window.local_app = window.local_app || {};
     };
     
     local_app.custom_data_root = local_app.custom_data_root || function() { // Unique US states - will use javascript, domain, cookies and json.
-            let theroot = location.protocol + '//' + location.host + '/georgia-data/';
-            if (location.host.indexOf('localhost') < 0) {
-              theroot = "https://neighborhood.org/georgia-data/";
-            }
+            let theroot = location.protocol + '//' + location.host;
+            //if (location.host.indexOf('localhost') < 0) {
+            //  theroot = ""; // Could be pointed at a site-specific domain and folder for additional map .csv files.
+            //}
             return (theroot);
     };
 
