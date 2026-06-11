@@ -439,7 +439,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.datastates = ["GA"];
       } else if (show == "360") {
         dp.listTitle = "Birdseye Views";
-        dp.dataset =  local_app.custom_data_root() + "360/GeorgiaPowerSites.csv";
+        dp.dataset =  local_app.custom_data_root() + "/explore/locations/360/GeorgiaPower360.csv";
         dp.search = {"In Location Name": "name", "In City": "CITY", "In Property URL": "property_link"};
         dp.color = "#ff9819"; // orange - Since there is no type column. An item column is filtered.
         dp.markerType = "google";
@@ -1409,7 +1409,7 @@ function showList(dp,map) {
       } else {
         showIt = false; // Hide others to show profile below map with all.
       }
-    } 
+    }
 
     /*
     if (keyword == allItemsPhrase) { // Use a div argument instead
@@ -2059,7 +2059,10 @@ function showList(dp,map) {
           }
           output += "<div class='detailLinks'>";
             if (element.mapframe) {
-                output += "<a href='#show=360&name=" + name.replace(/'/g,'&#39;') + "&m=" + encodeURIComponent(element.mapframe) + "'>Birdseye View<br>";
+                // stopPropagation so the click doesn't also bubble to the .detail handler,
+                // which would call goHash() and create a duplicate history entry (requiring
+                // two browser-back clicks to return to the list).
+                output += "<a onclick='event.stopPropagation()' href='#show=360&name=" + name.replace(/ & /g," AND ").replace(/ /g,"_").replace(/'/g,'&#39;') + "&m=" + encodeURIComponent(element.mapframe) + "'>Birdseye View<br>";
                 //console.log("encodeURIComponent " + encodeURIComponent(element.mapframe))
             }
             if (element.property_link) {
@@ -2196,12 +2199,15 @@ function showList(dp,map) {
       //alert("a catList " + catList);
       renderCatList(catList,hash.cat);
     }
-    if (hash.name && $("#detaillist > [name=\""+ hash.name.replace(/_/g,' ').replace(/ AND /g,' & ') + "\"]").length) {
+    if (hash.m && $("#detaillist > [m=\"" + hash.m + "\"]").length) {
+      // Isolate the listing tied to the active 360 (Birdseye) view by its m attribute (kuula_XXXX).
+      $("#detaillist > [m=\"" + hash.m + "\"]").show();
+    } else if (hash.name && $("#detaillist > [name=\""+ hash.name.replace(/_/g,' ').replace(/ AND /g,' & ') + "\"]").length) {
       let listingName = hash.name.replace(/_/g,' ').replace(/ AND /g,' & ');
       //$("#detaillist > [name=\""+ listingName.replace(/'/g,'&#39;') +"\"]").show(); // To do: check if this or next line for apostrophe in name.
-      
+
       $("#detaillist > [name=\""+ listingName +"\"]").show();
-      
+
       //alert("show detail for " + hash.name);
       // Clickit
       /*
@@ -3824,9 +3830,21 @@ function hashChangedMap() {
         $("#changeHublistHeight").hide();
         $("#detaillist .detail").hide(); // Hide all
         let thename = hash.name.replace(/_/g,' ').replace(/ AND /g,' & ');
-        $("#detaillist > [name=\"" + thename + "\"]").show();
+        let listing = $("#detaillist > [name=\"" + thename + "\"]");
+        listing.show();
+        // Center the side map (map2) on the listing's point, like the detail click handler
+        // does. Arriving via hash (e.g. a Birdseye View link) skips that click, so without
+        // this the location's mappoint is missing from #map2.
+        let latitude = listing.attr("latitude");
+        let longitude = listing.attr("longitude");
+        if (latitude && longitude) {
+          centerMap(latitude, longitude, thename, map1, "map1");
+          centerMap(latitude, longitude, thename, map2, "map2");
+        } else {
+          console.log("No lat lon for listing " + thename);
+        }
         //let mapframe = $("#detaillist > [name=\"" + thename + "\"]").attr("m");
-        let mapframe = $("#detaillist > [name=\"" + thename + "\"]").attr("m");
+        let mapframe = listing.attr("m");
         if (mapframe) {
           mapframe = getMapframeUrl(mapframe);
           //alert("Redundent call");
@@ -3896,23 +3914,55 @@ function hashChangedMap() {
     loadMap1(whatChanged, hash.show);
   }
   
+  // .displayOnload (display:block) is no longer set statically in the markup, so the
+  // #map1 container starts hidden. Add it only when there is no 360 iframe (hash.m),
+  // so the birdseye iframe shows alone when hash.m is present. #map1 lives in
+  // template-main.html (loads asynchronously), so wait for it before toggling.
+  onElmReady('#map1', function (mapEl) {
+    let mapHolder = $(mapEl).parent(); // wrapper around #map1
+    if (hash.m) {
+      mapHolder.removeClass("displayOnload");
+    } else {
+      mapHolder.addClass("displayOnload");
+    }
+  });
+
   if (hash.m != priorHash.m) { // For 360 iFrame
     //$(".mapframeClass").hide();
     //$("#mapframe").prop("src", "about:blank");
     if (hash.m) {
       let mapframe = getMapframeUrl(hash.m);
       if (mapframe) {
-        $("#mapframe").prop("src", mapframe);
-        //alert("mapframe changed " + mapframe)
-        $(".mapframeClass").show();
-        window.scrollTo({
-          top: $('#mapframe').offset().top - 95,
-          left: 0
+        // #mapframe lives in template-main.html, which loads asynchronously, so wait
+        // for it before setting the src and scrolling (onElmReady is immediate if present).
+        onElmReady('#mapframe', function (frame) {
+          $(frame).prop("src", mapframe);
+          //alert("mapframe changed " + mapframe)
+          $(".mapframeClass").show();
+          let frameOffset = $(frame).offset();
+          if (frameOffset) {
+            window.scrollTo({
+              top: frameOffset.top - 95,
+              left: 0
+            });
+          }
         });
       }
     } else {
-      $("#mapframe").prop("src", "");
-      $(".mapframeClass").hide();
+      // hash.m was removed, so hide the 360 iframe. Use the same onElmReady process
+      // as the show branch since #mapframe lives in template-main.html (async load).
+      onElmReady('#mapframe', function (frame) {
+        $(frame).prop("src", "");
+        $(".mapframeClass").hide();
+      });
+      // The leaflet map was hidden while the 360 iframe was showing, so its tiles were
+      // sized against a hidden (zero-size) container. Now that #map1 is visible again,
+      // refresh the tiles. Wait for #map1 (async from template-main.html) before calling.
+      onElmReady('#map1', function () {
+        if (map1 && typeof map1.invalidateSize === 'function') {
+          map1.invalidateSize(); // Refresh map tiles.
+        }
+      });
     }
   }
 }

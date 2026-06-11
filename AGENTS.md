@@ -69,11 +69,15 @@ For debugging multi-step behavior, prefer combining all trace steps into one fin
 
 ### DOM Element Waiting
 - **NEVER use setTimeout() for waiting for DOM elements**
-- **ALWAYS use waitForElm(selector)** from localsite/js/localsite.js instead
-- Check if localsite/js/localsite.js is included in the page before using waitForElm
+- **ALWAYS use waitForElm(selector) or onElmReady(selector, callback)** from localsite/js/localsite.js instead
+- Check if localsite/js/localsite.js is included in the page before using them
 - If not included, ask user if localsite/js/localsite.js should be added to the page
-- Example: `waitForElm('#element-id').then(() => { /* code */ });`
-- waitForElm does not use timeouts and waits indefinitely until element appears
+- Neither uses timeouts; they wait indefinitely until the element appears
+- **waitForElm(selector)**: returns a Promise that resolves with the element
+  - Example: `waitForElm('#element-id').then((elm) => { /* code */ });`
+- **onElmReady(selector, callback)**: runs the callback immediately if the element already exists, otherwise waits via waitForElm
+  - Preferred in handlers that may run repeatedly (e.g. hashChangeEvent) and target elements loaded asynchronously (such as content from template-main.html)
+  - Example: `onElmReady('#element-id', (elm) => { /* code */ });`
 
 ### Hash Management and URL State
 Use these functions from localsite/js/localsite.js for hash-based state management:
