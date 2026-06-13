@@ -7876,6 +7876,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         //alert("changeFavicon")
 ////////        changeFavicon(local_app.web_root() + "/localsite/img/logo/modelearth/model-earth.png")
         showClassInline(".earth");
+        showClassInline(".acct"); 
         console.log(".earth display");
         earthFooter = true;
     }
