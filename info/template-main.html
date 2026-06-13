@@ -455,39 +455,51 @@
         <!-- Account Panel -->
         <div id="accountPanel" class="menuExpanded topMenuOffset dark" style="display:none">
           <div class="menuExpandedScroll">
-            <div style="font-size:16pt; margin-bottom:20px">Account</div>
-            <div id="accountPanelInserts"></div>
+            <div id="accountPanelInserts">
+            <!-- Auth UI injected dynamically by auth-plugin.js from chat/public/betterauth -->
+          </div>
+          <script>
+          waitForElm('#accountPanelInserts').then(function(){
+            var s=document.createElement('script');
+            s.src= location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+              ? '/betterauth/js/auth-plugin.js'
+              : 'https://api.model.earth/betterauth/js/auth-plugin.js';
+            document.head.appendChild(s);
+          });
+          </script>
 
-            <div style="display:none" class="local">
+            <div style="margin-bottom:4px;font-size:.78em;letter-spacing:0.06em;text-transform:uppercase;color:#94a3b8;font-weight:600;">Email</div>
+            <div style="font-size:.8em;color:#64748b;margin-bottom:10px;">(stored only in browser)</div>
 
-              <div class="sign-in-container" style="margin-left:auto;">
-                  Not yet active (localhost only)<br>
-                  <button id="signInBtn" class="btn btn-primary sign-in-btn bthButton" style="margin-top:10px;width:220px" onclick="showAuthModal()">Auth.js Sign In</button>
-                  <br><br>
-              </div>
-            </div>
+            <input id="input123" autocompleteX="off"
+              class="mobileWide si-input"
+              type="text" value=""
+              placeholder="you@example.com"
+              style="width:100%;max-width:300px;min-width:220px;box-sizing:border-box;margin-bottom:14px;padding:10px 14px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:8px;color:#e2e8f0;font-size:12pt;font-family:inherit;outline:none;transition:border-color 0.2s;">
 
-            <div style="margin-bottom:5px;">Email 
-              <span style="font-size:.9em;">(stored only in browser)</span>
-            </div>
-
-            <input id="input123" autocompleteX="off" style="width:220px;margin-bottom:7px" class="mobileWide textInput si-input" type="text" value=""><br>
-
-            <div id="gravatarLine" style="display:none">
+            <div id="gravatarLine" style="display:none;margin-bottom:12px;">
               <input type="checkbox" id="getGravatar" style="margin-right:4px" checked><span style="font-size:.9em;">Display <a href="https://gravatar.com/" target="gravatar">my gravatar.com image</a></span>
-            </div><br>
+            </div>
 
             <div id="gravatarImg"></div>
 
-            <div class="uIn btn btn-success" style="margin-bottom:20px;float:left">Save</div>
+            <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;">
+              <div class="uIn btn"
+                style="padding:6px 12px;background:transparent;border:1.5px solid rgba(48,148,206,0.7);border-radius:8px;color:#25a2eb;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);letter-spacing:0.02em;min-width:90px;text-align:center;box-sizing:border-box;">
+                Save
+              </div>
 
-            <div class="georgia" style="display:none;margin-bottom:20px">
-              <a class="btn btn-success use-5" href="/resources/" style="display:none; width:220px">Staff Resources</a>
-              <a class="btn btn-warning" href="https://partner.exploregeorgia.org/login" style="width:220px">Partner Resources</a>
+              <div class="georgia" style="display:none;margin-bottom:0">
+                <a class="btn btn-success use-5" href="/resources/" style="display:none; width:220px">Staff Resources</a>
+                <a class="btn btn-warning" href="https://partner.exploregeorgia.org/login" style="width:220px">Partner Resources</a>
+              </div>
+
+              <a class="uOut"
+                style="display:block;padding:9px 32px;background:transparent;border:1.5px solid rgba(255,255,255,0.1);border-radius:8px;color:#64748b;font-size:11pt;font-weight:500;cursor:pointer;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);letter-spacing:0.02em;min-width:220px;text-align:center;box-sizing:border-box;text-decoration:none;">
+                Clear Email
+              </a>
             </div>
-
-            <a class="uOut btn btn-primary" style="margin:0 0 20px 0; width:220px">Clear Email</a>
-            <br><br><br>
+            <br><br>
 
           </div>
         </div>
