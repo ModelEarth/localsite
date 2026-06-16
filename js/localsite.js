@@ -945,6 +945,10 @@ function loadLocalTemplate() {
     $.get(datascapeFile, function(theTemplate) { // Get and append template-main.html to #datascape
       $(theTemplate).appendTo(datascapeFileDiv);
 
+      // The account panel (#accountPanelInserts) now exists — load the chat
+      // repo's in-page sign-in UI into it (config-driven via webroot.yaml).
+      initAuthPlugin();
+
       //$("#insertedTextSource").remove(); // For map/index.html. Avoids dup header.
 
       //$('img').each(function() {
@@ -4277,20 +4281,105 @@ function adjustAnythingLLMNavigation() {
 // Saving incase anyone wants to include AnythingLLM in webroot
 //document.addEventListener('DOMContentLoaded', adjustAnythingLLMNavigation);
 
-// Auth Modal Integration - lazy load and show modal
+// ── Auth Modal Integration ──────────────────────────────────────────────
+// localsite is the universal include on every site, so showAuthModal() is the
+// shared dispatcher. It contains NO auth UI or logic itself — it looks up WHERE
+// the auth modal lives (the adjacent "chat" repo today, configurable in
+// docker/webroot.yaml) and loads it. The team repo and every other site reach
+// auth by calling this function.
+var _authConfigCache = null;
+
+// Minimal extractor for the flat keys under the top-level "auth:" block in
+// docker/webroot.yaml. Avoids pulling in a full YAML parser for a few keys.
+function parseAuthYaml(text, isLocal) {
+  var lines = text.split(/\r?\n/);
+  var inBlock = false, kv = {};
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    if (/^auth:\s*$/.test(line)) { inBlock = true; continue; }
+    if (inBlock) {
+      if (/^\S/.test(line)) break; // next top-level key or comment ends the block
+      var mm = line.match(/^\s+([A-Za-z0-9_]+):\s*["']?([^"'#\n]*?)["']?\s*(?:#.*)?$/);
+      if (mm) kv[mm[1]] = mm[2].trim();
+    }
+  }
+  var env = isLocal ? 'development' : 'production';
+  var out = {};
+  if (kv.enabled === 'false') out.enabled = false;
+  if (kv['modal_url_' + env]) out.modal_url = kv['modal_url_' + env];
+  if (kv['plugin_url_' + env]) out.plugin_url = kv['plugin_url_' + env];
+  var api = kv['api_url_' + env];
+  if (api) out.api_url = (api.charAt(0) === '/') ? (location.origin + api) : api;
+  return out;
+}
+
+function resolveAuthConfig(callback) {
+  if (_authConfigCache) { callback(_authConfigCache); return; }
+  if (window.webrootAuth) { _authConfigCache = window.webrootAuth; callback(_authConfigCache); return; }
+
+  var webRoot = (typeof local_app !== 'undefined' && local_app.web_root) ? local_app.web_root() : '';
+  var isLocal = ['localhost', '127.0.0.1', '::1'].indexOf(location.hostname) !== -1;
+
+  // Built-in fallback: the chat app lives under "/chat" when the webroot is the
+  // deploy root. (If the deploy root IS the chat repo, set the paths without the
+  // "/chat" prefix via webroot.yaml or window.webrootAuth.)
+  var defaults = {
+    enabled: true,
+    modal_url: webRoot + '/chat/auth/js/auth-modal.js',
+    plugin_url: webRoot + '/chat/auth/js/auth-plugin.js',
+    api_url: location.origin + webRoot + '/chat/api'
+  };
+
+  // Best-effort: read the auth: block from docker/webroot.yaml when served
+  // (Python/unified webroot servers). Falls back to defaults otherwise.
+  fetch(webRoot + '/docker/webroot.yaml', { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.text() : Promise.reject(); })
+    .then(function (text) {
+      var cfg = parseAuthYaml(text, isLocal);
+      _authConfigCache = {
+        enabled: cfg.enabled !== false,
+        modal_url: cfg.modal_url || defaults.modal_url,
+        plugin_url: cfg.plugin_url || defaults.plugin_url,
+        api_url: cfg.api_url || defaults.api_url
+      };
+      callback(_authConfigCache);
+    })
+    .catch(function () { _authConfigCache = defaults; callback(_authConfigCache); });
+}
+
+// Loads the chat repo's in-page auth UI (auth-plugin.js), which injects a
+// sign-in button + session state into #accountPanelInserts and opens the
+// 6-provider modal on click. Called when template-main.html (which holds that
+// mount) is inserted, so the launcher only appears where the account panel
+// exists — not as a floating button on header-less pages.
+var _authPluginRequested = false;
+function initAuthPlugin() {
+  if (_authPluginRequested) return;
+  _authPluginRequested = true;
+  resolveAuthConfig(function (cfg) {
+    if (cfg.enabled === false || !cfg.plugin_url) { return; }
+    // Pre-set the API base so the plugin uses the configured value.
+    if (cfg.api_url) { window.AUTH_API_URL = cfg.api_url; }
+    loadScript(cfg.plugin_url);
+  });
+}
+
 function showAuthModal() {
   if (typeof window.authModal !== 'undefined' && window.authModal) {
     window.authModal.show();
-  } else {
-    // Lazy load the auth modal script
-    const authModalPath = local_app.localsite_root() + '../team/js/auth-modal.js';
-    loadScript(authModalPath, function() {
-      // Modal initializes immediately when script loads, so show it
-      if (window.authModal) {
-        window.authModal.show();
-      }
-    });
+    return;
   }
+  resolveAuthConfig(function (cfg) {
+    if (cfg.enabled === false) {
+      consoleLog('[Auth] sign-in disabled in webroot.yaml');
+      return;
+    }
+    // The chat modal reads window.AUTH_API_URL for its OAuth + session calls.
+    if (cfg.api_url) { window.AUTH_API_URL = cfg.api_url; }
+    loadScript(cfg.modal_url, function () {
+      if (window.authModal) { window.authModal.show(); }
+    });
+  });
 }
 
 // ========================================

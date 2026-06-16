@@ -456,18 +456,12 @@
         <div id="accountPanel" class="menuExpanded topMenuOffset dark" style="display:none">
           <div class="menuExpandedScroll">
             <div style="font-size:16pt; margin-bottom:20px">Account</div>
+            <!-- Sign-in UI is injected here by the auth modal sourced from the
+                 chat repo (see localsite showAuthModal() + docker/webroot.yaml).
+                 localsite itself contains no auth interface. -->
             <div id="accountPanelInserts"></div>
 
-            <div style="display:none" class="local">
-
-              <div class="sign-in-container" style="margin-left:auto;">
-                  Not yet active (localhost only)<br>
-                  <button id="signInBtn" class="btn btn-primary sign-in-btn bthButton" style="margin-top:10px;width:220px" onclick="showAuthModal()">Auth.js Sign In</button>
-                  <br><br>
-              </div>
-            </div>
-
-            <div style="margin-bottom:5px;">Email 
+            <div style="margin-bottom:5px;">Email
               <span style="font-size:.9em;">(stored only in browser)</span>
             </div>
 
