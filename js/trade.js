@@ -2,6 +2,74 @@
 // Shared trade controls: Year, Factor, Currency, Inflows
 // Used by profile/charts/sankey, io/charts/sankey/desktop, and profile/trade/map
 
+// ---------------------------------------------------------------------------
+// Optional embed auto-loading. Pages like profile/trade/map/state.html load
+// Leaflet, D3, topojson, echarts, localsite's base.css/localsite.js, and the
+// state trade dataset themselves via their own <head> tags, so none of that
+// runs by default here. A third-party embed that includes only this one
+// script can opt in by appending ?autoload=1 to trade.js's own src — that's
+// the signal (read from document.currentScript, which is only valid while
+// this script is first executing) that it's the sole include and needs the
+// rest of the stack pulled in dynamically.
+// window.TradeEmbedReady resolves once those extra files are loaded (or
+// immediately, when autoload wasn't requested), so an embedding page can do
+// window.TradeEmbedReady.then(startMap) instead of calling startMap directly.
+// ?showheader=false and/or ?showsearch=false can ride along on the same src
+// to suppress localsite's own header chrome — e.g. when the embedding page
+// already provides its own navigation and doesn't want a duplicate header.
+// Both default to "true", matching localsite.js's own defaults.
+// ---------------------------------------------------------------------------
+window.TradeEmbedReady = (function () {
+  var thisScript = document.currentScript;
+  var scriptSrc = thisScript ? thisScript.src : "";
+  var autoload = /[?&]autoload=1(&|$)/.test(scriptSrc);
+
+  if (!autoload) {
+    return Promise.resolve();
+  }
+
+  var base = scriptSrc.replace(/\/js\/trade\.js.*$/, "");
+
+  function queryParam(name, defaultValue) {
+    var match = new RegExp("[?&]" + name + "=([^&]*)").exec(scriptSrc);
+    return match ? decodeURIComponent(match[1]) : defaultValue;
+  }
+
+  var showheader = queryParam("showheader", "true");
+  var showsearch = queryParam("showsearch", "true");
+
+  function loadStyle(href) {
+    return new Promise(function (resolve) {
+      var link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      link.onload = resolve;
+      link.onerror = resolve;
+      document.head.appendChild(link);
+    });
+  }
+
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var script = document.createElement("script");
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = function () { reject(new Error("Failed to load " + src)); };
+      document.head.appendChild(script);
+    });
+  }
+
+  loadStyle(base + "/css/base.css");
+  loadStyle("https://unpkg.com/leaflet/dist/leaflet.css");
+
+  return loadScript(base + "/js/localsite.js?showheader=" + showheader + "&showsearch=" + showsearch)
+    .then(function () { return loadScript("https://unpkg.com/leaflet/dist/leaflet.js"); })
+    .then(function () { return loadScript("https://d3js.org/d3.v7.min.js"); })
+    .then(function () { return loadScript("https://cdn.jsdelivr.net/npm/topojson-client@3"); })
+    .then(function () { return loadScript("https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"); })
+    .then(function () { return loadScript("https://cdn.jsdelivr.net/gh/ModelEarth/profile@main/state-trade-data.js"); });
+})();
+
 window.TradeShared = (function () {
 
   var METRICS = {

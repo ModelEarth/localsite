@@ -1375,7 +1375,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       var strVarCss = "<style>";
       if (param["show"] == "suppliers" || param["show"] == "smart") {
         console.log("Custom for suppliers and smart");
-        if (location.host == 'georgia.org' || location.host == 'www.georgia.org') {
+        if (location.host == 'georgia.org' || location.host == 'georgia.org') {
           // display:block !important // Caused space above fixed header in Drupal. Prevented movement to top during scrolling.
           strVarCss += ".headerOffsetOne {height:75px;}.headerOffset {height:75px !important;}"; 
         }

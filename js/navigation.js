@@ -9699,7 +9699,7 @@ function openMapLocationFilter() {
             scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
         });
     });
-    if (location.host == 'georgia.org' || location.host == 'www.georgia.org') { 
+    if (location.host == 'georgia.org' || location.host == 'georgia.org') { 
         $("#header.nav-up").show();
     }
 }
@@ -9720,7 +9720,7 @@ function closeLocationFilter() {
     // Close inline state dropdown if open
     $("#inlineStateDropdown").hide();
     
-    if (location.host == 'georgia.org' || location.host == 'www.georgia.org') {
+    if (location.host == 'georgia.org' || location.host == 'georgia.org') {
         $("#header.nav-up").hide();
     }
 

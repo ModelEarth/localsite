@@ -738,7 +738,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.valueColumnLabel = "EV Industry";
         dp.markerType = "google";
         dp.search = {"EV Industry": "EV Industry", "In Location Name": "name", "In Address": "address", "In County Name": "county", "In Website URL": "website"};
-      } else if (show == "smart") { // param["data"] for legacy: https://www.georgia.org/smart-mobility
+      } else if (show == "smart") { // param["data"] for legacy: https://georgia.org/smart-mobility
         dp.shortTitle = "Smart Data Projects";
         dp.listTitle = "Data Driven Decision Making";
         //dp.listSubtitle = "Smart & Sustainable Movement of Goods & Services";
@@ -2594,7 +2594,7 @@ function popMapPoint(dp, map, latitude, longitude, name, color) {
   // Didn't work here
   /*
   if (dp.markerType == "google") {
-      if (location.host == 'georgia.org' || location.host == 'www.georgia.org') {
+      if (location.host == 'georgia.org' || location.host == 'georgia.org') {
         circle = L.marker([element[dp.latColumn], element[dp.lonColumn]]).addTo(dp.group);
       } else {
         // If this line returns an error, try setting dp1.latColumn and dp1.latColumn to the names of your latitude and longitude columns.
@@ -2663,7 +2663,7 @@ function zoomMapPoint(dp, map, latitude, longitude, name, color) {
   // Didn't work here
   /*
   if (dp.markerType == "google") {
-      if (location.host == 'georgia.org' || location.host == 'www.georgia.org') {
+      if (location.host == 'georgia.org' || location.host == 'georgia.org') {
         circle = L.marker([element[dp.latColumn], element[dp.lonColumn]]).addTo(dp.group);
       } else {
         // If this line returns an error, try setting dp1.latColumn and dp1.latColumn to the names of your latitude and longitude columns.
