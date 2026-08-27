@@ -1366,7 +1366,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   background-color: #137AD1;
   border-color: #137AD1;
 }
-.btn-primary:visited {
+.btn-primary:visited, .btn-secondary:visited {
     color: #fff !important;
 }
 .btn-primary:hover {

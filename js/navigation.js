@@ -8065,7 +8065,8 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
 
                                     if (location.href.indexOf('desktop') >= 0 || modelsite=="dreamstudio" || location.host.indexOf('dreamstudio') >= 0 || location.href.indexOf('dreamstudio') >= 0 || location.href.indexOf('/swarm/') >= 0 || location.href.indexOf('/LinearA/') >= 0 || location.href.indexOf("planet.live") >= 0 || modelsite=="planet.live") {
                                         let prependFolder = "";
-                                        let storiesFile = "https://dreamstudio.com/seasons/episodes.md";
+                                        //let storiesFile = "https://dreamstudio.com/seasons/episodes.md";
+                                        let storiesFile = "/seasons/episodes.md";
                                         //console.log("location.href index: " + location.href.indexOf("/dreamstudio/"));
                                         if(location.host.indexOf('localhost') >= 0 && location.pathname.toLowerCase().indexOf('/dreamstudio') === 0) {
                                             prependFolder = "/dreamstudio"
