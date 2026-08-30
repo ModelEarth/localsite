@@ -140,7 +140,8 @@
 
 .sideMenuColumnNarrow .layerSectionTitle {
 	font-size: 1.2em;
-	width: 160px; /* required for background color to be visible */
+	width: max-content; /* Fit the background to the text so long titles don't overflow past it and become invisible (white text on white page). */
+	min-width: 160px;
 	color: #fff;
 	background-color: #333;
 	margin-top: -8px;
