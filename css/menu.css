@@ -139,6 +139,8 @@
 }
 
 .sideMenuColumnNarrow .layerSectionTitle {
+	display: inline-block !important; /* !important needed: menu.js's $().show() sets an inline style="display:block", which otherwise beats a plain (non-!important) rule here and stretches the title to the floated parent's width instead of shrink-wrapping the text. */
+	white-space: nowrap;
 	font-size: 1.2em;
 	width: max-content; /* Fit the background to the text so long titles don't overflow past it and become invisible (white text on white page). */
 	min-width: 160px;
