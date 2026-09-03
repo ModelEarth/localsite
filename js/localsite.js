@@ -1543,6 +1543,13 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
   if (fullsite || param.material_icons == "true") {
     // This was inside FULL SITE above, but it is needed for menus embedded in external sites.
     !function() {
+      // Same process is also implemented in core/js/browserutil.js (used on core/net WebForms
+      // pages) - this flag lets whichever of the two scripts runs first claim the job.
+      if (window.materialIconsFontCheckStarted) {
+        return;
+      }
+      window.materialIconsFontCheckStarted = true;
+
       // Setting up listener for font checking
       var font = "1rem 'Material Symbols Outlined'";
       var canTrackFontLoad = !!(document.fonts && document.fonts.load);
