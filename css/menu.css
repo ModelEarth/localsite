@@ -377,9 +377,11 @@
   margin-top: 0px;
 }
 
-/* Open nav icons when rolling over. Originally Bootstrap. */
-ul.nav li.dropdown:hover ul.dropdown-menu {
-    display: block;    
+/* Open nav icons when rolling over. Originally Bootstrap.
+   Matches .dropdown-menu regardless of tag, since some menus (e.g. the
+   topbar search box) use a div.dropdown-menu instead of ul.dropdown-menu. */
+ul.nav li.dropdown:hover .dropdown-menu {
+    display: block;
 }
 .nav-pills .dropdown-menu {
     margin-top: 0px;
