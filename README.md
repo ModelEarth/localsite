@@ -13,8 +13,9 @@ The&nbsp;[localsite&nbsp;repo](https://github.com/modelearth/localsite/) provide
 ## Get Involved
 
 [DreamStudio](https://dreamstudio.com) - Collaborative Data Science, ML and AI Insights  
-[Webroot Setup](https://model.earth/webroot/) - Localsite Starter Steps, simple push/pull cmds
-[PartnerTools](https://github.com/PartnerTools/webroot) - Base webroot with Rust endpoints and Vercel chat
+[CloudRoot Hosting](https://model.earth/cloudroot/) - For Cloudflare, Vercel, Netlify   
+[Webroot Setup](https://model.earth/webroot/) - Start commands for local Rust and Python pipelines   
+[PartnerTools](https://github.com/PartnerTools/webroot) - Base webroot with Rust endpoints and Vercel chat  
 [Model.Earth](https://model.earth) - Environmental Impacts, International Trade Flow
 
 
