@@ -3314,11 +3314,29 @@ function setupModelsiteSelect() {
             const hasMatch = Array.from(selectElm.options).some(function(optionElm) {
                 return optionElm.value === selectedValue;
             });
-            if (hasMatch) {
-                selectElm.value = selectedValue;
+            if (!hasMatch) {
+                // The modelsite cookie points to a site not listed in this webroot's
+                // options (e.g. a cookie set while browsing a different webroot).
+                // Add it so the dropdown reflects what's actually active instead of
+                // silently falling back to the first listed option.
+                const cookieOptionElm = document.createElement("option");
+                cookieOptionElm.value = selectedValue;
+                cookieOptionElm.textContent = labelFromModelsiteValue(selectedValue);
+                selectElm.appendChild(cookieOptionElm);
             }
+            selectElm.value = selectedValue;
         }
     });
+}
+
+function labelFromModelsiteValue(value) {
+    return String(value)
+        .split(/[.\-_]+/)
+        .filter(Boolean)
+        .map(function(word) {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(" ");
 }
 
 function isCurrentHostLocalhost() {
@@ -5734,7 +5752,8 @@ if (document.readyState === 'loading') {
 // Parses default: and sites: into window.WEBROOT_CONFIG.
 // Returns a Promise<{ path, text, default, sites }> shared across all callers.
 (function() {
-    var WEBROOT_PATHS = ['/webroot.yaml', '/docker/webroot.yaml', '/cms/webroot.yaml'];
+    // docker/webroot.yaml is a legacy location being phased out; keep it here until repos migrate.
+    var WEBROOT_PATHS = ['/webroot.yaml', '/docker/webroot.yaml'];
     var SESSION_KEY = 'webrootYamlPath';
     var _promise = null;
 

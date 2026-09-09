@@ -7696,12 +7696,15 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         return local_app.web_root() + assetPath;
     }
     
-    // Site detection and attribute application from webroot.yaml
-    (async function() {
-        if (typeof window.loadWebrootYaml !== 'function') return;
-        try {
-            const { sites, default: defaultId } = await window.loadWebrootYaml();
-            if (!sites) return;
+    // Site detection and attribute application from webroot.yaml. Resolves the site
+    // (matching the modelsite cookie, then domain_contains, then webroot.yaml's default),
+    // corrects a stale/foreign modelsite cookie against it, and updates the favicon.
+    // Returns the (possibly corrected) modelsite so the caller can use it for branding.
+    function resolveSiteFromWebroot() {
+        if (typeof window.loadWebrootYaml !== 'function') return Promise.resolve(modelsite);
+        return window.loadWebrootYaml().then(function(result) {
+            const sites = result.sites, defaultId = result.default;
+            if (!sites) return modelsite;
             let matchedId = null, matchedSite = null, matchMethod = null;
             if (modelsite && sites[modelsite]) {
                 matchedId = modelsite; matchedSite = sites[modelsite]; matchMethod = 'modelsite cookie';
@@ -7720,6 +7723,15 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             if (!matchedSite && defaultId && sites[defaultId]) {
                 matchedId = defaultId; matchedSite = sites[defaultId]; matchMethod = 'default';
             }
+            // The modelsite cookie is host-only, so it's shared across every localhost port -
+            // a leftover cookie from a different local project can point at a site this
+            // webroot.yaml doesn't define. When that happens, reset it to this webroot's
+            // resolved site so branding, later page loads, and the #modelsite dropdown are correct.
+            if (modelsite && matchMethod !== 'modelsite cookie' && !sites[modelsite] && matchedId) {
+                modelsite = matchedId;
+                Cookies.set('modelsite', matchedId);
+                setModelsite(matchedId);
+            }
             console.log('domain_contains filter from webroot.yaml  - ' + (matchedSite && matchedSite.domain_contains || 'none'));
             console.log('domain_contains - ' + location.host + (matchMethod === 'default'
                 ? ' no domain match, using default "' + matchedId + '"'
@@ -7730,8 +7742,32 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                 const favicon = (matchedSite && matchedSite.favicon) || (defaultId && sites[defaultId] && sites[defaultId].favicon);
                 if (favicon) changeFavicon(resolveConfigAssetUrl(favicon));
             }
-        } catch(e) {}
-    })();
+            return modelsite;
+        }).catch(function() { return modelsite; });
+    }
+
+    // dreamstudio.com's own domain root is unambiguous - brand it immediately without
+    // waiting on webroot.yaml (there may not even be one for that domain).
+    const isDreamstudioDomainRoot = /(^|\.)dreamstudio\.com$/.test(location.hostname);
+
+    if (isDreamstudioDomainRoot) {
+        runBranding(modelsite || "dreamstudio");
+        resolveSiteFromWebroot(); // Background-only: still corrects cookie/favicon, doesn't gate branding.
+    } else {
+        // Defer the whole branding chain (header, logo, title, footer, side nav, etc.) until
+        // webroot.yaml resolves, so a stale/foreign modelsite cookie is corrected *before*
+        // branding renders instead of after. This trades a small delay for correctness on
+        // first load; see the NOTE below for a way to avoid the delay being felt at all.
+        resolveSiteFromWebroot().then(function(resolvedModelsite) {
+            runBranding(resolvedModelsite);
+        });
+    }
+    // NOTE: if this deferral ever becomes a noticeable delay (slow/offline webroot.yaml
+    // fetch), a generic/neutral placeholder header could be rendered immediately here and
+    // then swapped out once runBranding() applies the resolved site's real branding - that
+    // would let markup/other page setup proceed without waiting on this fetch at all.
+
+    function runBranding(modelsite) {
 
     if (modelsite=="dreamstudio" || modelsite=="planet.live" || location.href.indexOf("dreamstudio.com") >= 0 || param.startTitle == "DreamStudio" || location.href.indexOf("/swarm/") >= 0 || location.href.toLowerCase().indexOf("lineara") >= 0 || location.href.indexOf("planet.live") >= 0) {
         param.titleArray = [];
@@ -8318,6 +8354,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         }
         // END SIDE NAV WITH HIGHLIGHT ON SCROLL
     });
+    } // end runBranding
 } // end applyNavigation function
 
 

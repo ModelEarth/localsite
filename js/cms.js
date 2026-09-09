@@ -71,7 +71,8 @@
     });
   } else {
     // standalone fallback when loaded without localsite.js
-    var WEBROOT_PATHS = ['/webroot.yaml', '/docker/webroot.yaml', '/cms/webroot.yaml'];
+    // docker/webroot.yaml is a legacy location being phased out; keep it here until repos migrate.
+    var WEBROOT_PATHS = ['/webroot.yaml', '/docker/webroot.yaml'];
     var SESSION_KEY = 'webrootYamlPath';
 
     function tryPath(index) {
