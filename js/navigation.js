@@ -8068,6 +8068,17 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                     headerFile = local_app.web_root() + "/localsite/header.html";
                 }
 
+                // Generic helper so a repo's own header.html (custom param.headerFile) can rewrite its
+                // nav links from an absolute "/prefix/..." form to a relative "/..." form.
+                window.stripNavPrefix = window.stripNavPrefix || function(prefix) {
+                    if (!prefix) return;
+                    var re = new RegExp("\\/" + prefix + "\\/", "g");
+                    $("#sidecolumnContent a").each(function() {
+                        var href = $(this).attr('href');
+                        if (href) $(this).attr('href', href.replace(re, "/"));
+                    });
+                };
+
                 //if (earthFooter && param.showSideTabs != "false") { // Sites including modelearth and neighborhood
                 //  $(".showSideTabs").show(); // Before load headerFile for faster display.
                 //}

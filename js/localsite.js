@@ -1001,13 +1001,6 @@ function loadLocalTemplate() {
 
         // Replace paths in div
 
-        if(location.host.indexOf("desktop") >= 0) {
-          waitForElm('#desktop-nav').then((elm) => {
-            $("#desktop-nav a").each(function() {
-              $(this).attr('href', $(this).attr('href').replace(/\/desktop\//g,"\/"));
-            });
-          });
-        }
         if(location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0 || location.host.indexOf("8888") >= 0) {
           $("#dreamstudio-nav a").each(function() {
             $(this).attr('href', $(this).attr('href').replace(/\/dreamstudio\//g,"\/"));
