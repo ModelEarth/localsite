@@ -4348,20 +4348,35 @@ function resolveAuthConfig(callback) {
     api_url: location.origin + webRoot + '/chat/api'
   };
 
-  // Best-effort: read the auth: block from docker/webroot.yaml when served
-  // (Python/unified webroot servers). Falls back to defaults otherwise.
+  function applyYamlText(text) {
+    var cfg = parseAuthYaml(text, isLocal);
+    _authConfigCache = {
+      enabled: cfg.enabled !== false,
+      modal_url: cfg.modal_url || defaults.modal_url,
+      plugin_url: cfg.plugin_url || defaults.plugin_url,
+      api_url: cfg.api_url || defaults.api_url
+    };
+    callback(_authConfigCache);
+  }
+
+  // Read the auth: block from whichever webroot.yaml loadWebrootYaml() resolved -
+  // a repo's own /webroot.yaml override when it has one, else the shared
+  // docker/webroot.yaml. This reuses the exact same resolution (and fetch,
+  // memoized there) that branding/site config already goes through, so a
+  // repo's own override applies to auth config too instead of this always
+  // reading the shared file directly regardless of what a repo declared.
+  if (typeof window.loadWebrootYaml === 'function') {
+    window.loadWebrootYaml().then(function (result) {
+      if (result && result.text) { applyYamlText(result.text); }
+      else { _authConfigCache = defaults; callback(_authConfigCache); }
+    }).catch(function () { _authConfigCache = defaults; callback(_authConfigCache); });
+    return;
+  }
+
+  // Fallback for the rare page that doesn't have loadWebrootYaml available.
   fetch(webRoot + '/docker/webroot.yaml', { cache: 'no-store' })
     .then(function (r) { return r.ok ? r.text() : Promise.reject(); })
-    .then(function (text) {
-      var cfg = parseAuthYaml(text, isLocal);
-      _authConfigCache = {
-        enabled: cfg.enabled !== false,
-        modal_url: cfg.modal_url || defaults.modal_url,
-        plugin_url: cfg.plugin_url || defaults.plugin_url,
-        api_url: cfg.api_url || defaults.api_url
-      };
-      callback(_authConfigCache);
-    })
+    .then(applyYamlText)
     .catch(function () { _authConfigCache = defaults; callback(_authConfigCache); });
 }
 
