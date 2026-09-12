@@ -5811,6 +5811,14 @@ if (document.readyState === 'loading') {
                     .catch(function() { tryPath(i + 1); });
             }
             var cached = sessionStorage.getItem(SESSION_KEY);
+
+            // TEMP — remove in Nov 2026 once browser session caches are cleared.
+            // Clears a stale cached docker/webroot.yaml path for dreamstudio.com/planet.live.
+            if (cached === '/docker/webroot.yaml' && /(^|\.)(dreamstudio\.com|planet\.live)$/.test(location.hostname)) {
+                sessionStorage.removeItem(SESSION_KEY);
+                cached = null;
+            }
+
             if (cached && cached !== 'none') {
                 fetch(cached)
                     .then(function(r) { return r.ok ? r.text() : null; })
