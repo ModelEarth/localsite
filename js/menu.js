@@ -373,7 +373,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                         }
                     }
                     partnerCheckboxes += '<div class="layerSectionAccess user-' + menuaccess + '" id="' + formatLinkId(item.section,item.title + "_parent") + '" style="display:none">'; //  onmouseleave="hideMenuNav(this.id)"
-                    partnerCheckboxes += '<div ' + layerSectionDisplay + ' id="' + formatLinkId(item.section,item.title) + '" class="dontsplit layerSection layerSectionOpen layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '" onmouseenter="showMenuNav(this.id)" onmouseleave="hideMenuNav(this.id)"><div style="clearX:both; pointer-events: auto;" data-layer-section="' + item.section + '"' + linktext + '" class="layerSectionClick" onclick="showSubmenu(this.parentElement.id)">';
+                    partnerCheckboxes += '<div ' + layerSectionDisplay + ' id="' + formatLinkId(item.section,item.title) + '" class="dontsplit layerSection layerSectionOpen layerSection-' + item.section.toLowerCase().replace(/ /g,"-") + '" menulevel="' + menulevel + '" onmouseenter="showMenuNav(this.id)" onmouseleave="hideMenuNav(this.id)"><div style="clearX:both; pointer-events: auto;" data-layer-section="' + item.section + '"' + linktext + ' class="layerSectionClick" onclick="showSubmenu(this.parentElement.id)">';
                     if (partnerMenu.showArrows) {
                         partnerCheckboxes += '<div class="sectionArrowHolder"><div class="leftArrow"></div></div>';
                     }
