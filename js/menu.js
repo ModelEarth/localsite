@@ -379,7 +379,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
                     }
                     if (item.icon) {
                         if (item.icon.includes("<")) {
-                            partnerCheckboxes += '<div style="float:left;padding-right:10px;color:#4F4F4F">' + item.icon + '</div>';
+                            partnerCheckboxes += '<div class="layerSectionIconHtml">' + item.icon + '</div>';
                         } else {
                             partnerCheckboxes += '<img class="layerSectionIcon" src="' + item.icon + '" style="float:left; height:18px; padding-right:12px">';  
                         }

@@ -136,6 +136,17 @@
 	overflow: visible;
 	float: left; /* For ideMenuNav(id) */
 }
+/* Inline-HTML section icons (menu.js's item.icon.includes("<") branch - raw SVG/HTML icon
+   markup relying on currentColor). With the title hidden in the narrow rail, this icon is the
+   only thing left to see, so it needs its own contrast there in dark mode. */
+.layerSectionIconHtml {
+	float: left;
+	padding-right: 10px;
+	color: #4F4F4F;
+}
+.dark .sideMenuColumnNarrow .layerSectionIconHtml {
+	color: #ccc;
+}
 .sideMenuColumnWide .layerSectionTitle:hover {
 	background-color: #eee;
 	border-radius: 10px;
