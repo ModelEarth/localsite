@@ -264,6 +264,16 @@ function hideMenuNav(id) { //onmouseleave
 function formatLinkId(section,title) {
     return (section + "-" + title).replace(/\&/g, "").replace(/ /g, "_").replace(/^.*\/\/[^\/]+/, '').toLowerCase();
 }
+// Closes a section opened by showSubmenu() (e.g. #related_pages-related_pages) when clicking
+// anywhere outside it - showSubmenu only ever opens .openMenu, nothing previously closed it.
+$(document).on("click", function (event) {
+    $(".layerSection.openMenu").each(function () {
+        if (!$(event.target).closest(this).length) {
+            $(this).removeClass("openMenu");
+            $(this).find(".layerCbRow").hide();
+        }
+    });
+});
 function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon on map - Master
     if ($(partnerMenu.menuDiv).text().length > 0) {
         console.log("displaypartnerCheckboxes already loaded: " + partnerMenu.menuDiv)
