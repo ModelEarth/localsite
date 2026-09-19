@@ -1153,7 +1153,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 }
 .dark code, .dark .codetext {
   color: #ddd;
-  background-color: #111;
+  background-color: rgba(17, 17, 17, 0.4);
 }
 .link {
   color:#4091dd;
