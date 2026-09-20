@@ -481,6 +481,9 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
     -moz-border-radius: 5px;
     border-radius: 5px;
 }
+.nav-pills>li>a:hover {
+    background-color: #fff;
+}
 .nav-tabs>li>a, .nav-pills>li>a {
 	text-decoration: none;
     padding-right: 12px;
