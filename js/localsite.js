@@ -1122,6 +1122,18 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         
         document.body.appendChild(divForBodyLoaded);
 
+        // Reveal .local elements on localhost (or ?view=local); hide them everywhere else.
+        // Moved here from navigation.js so it also applies to pages that don't load navigation.js.
+        if (location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
+          $("<div />", {
+              html: '<style>.local{display:inline-block !important}.local-block{display:block !important}.localonly{display:block !important}.hidelocal{display:none}</style>'
+            }).appendTo("body");
+        } else {
+          $("<div />", {
+              html: '<style>.local{display:none}.localonly{display:none}</style>'
+            }).appendTo("body");
+        }
+
         let sitelook;
         if (typeof Cookies != 'undefined' && Cookies.get('sitelook')) {
           sitelook = Cookies.get('sitelook');

@@ -8373,17 +8373,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
 waitForElm('#bodyloaded').then((elm) => {
   consoleLog("#bodyloaded becomes available");
   waitForElm('#datascape').then((elm) => { // Wait for navigation.js to set
-    let modelsite = Cookies.get('modelsite');
-    if(location.host.indexOf('localhost') >= 0 || param["view"] == "local") {
-      var div = $("<div />", {
-          html: '<style>.local{display:inline-block !important}.local-block{display:block !important}.localonly{display:block !important}.hidelocal{display:none}</style>'
-        }).appendTo("body");
-    } else {
-      // Inject style rule
-        var div = $("<div />", {
-          html: '<style>.local{display:none}.localonly{display:none}</style>'
-        }).appendTo("body");
-    }
+    // .local reveal style moved to localsite.js so it also applies to pages that don't load navigation.js.
 
     // LOAD HTML TEMPLATE - Holds search filters and maps
     // View html source: https://model.earth/localsite/map
