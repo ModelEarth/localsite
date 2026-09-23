@@ -483,6 +483,7 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
 }
 .nav-pills>li>a:hover {
     background-color: #fff;
+    color: #333;
 }
 .nav-tabs>li>a, .nav-pills>li>a {
 	text-decoration: none;
