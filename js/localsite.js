@@ -948,6 +948,7 @@ function loadLocalTemplate() {
       // The account panel (#accountPanelInserts) now exists — load the chat
       // repo's in-page sign-in UI into it (config-driven via webroot.yaml).
       initAuthPlugin();
+      initAccountButton();
 
       //$("#insertedTextSource").remove(); // For map/index.html. Avoids dup header.
 
@@ -4406,6 +4407,22 @@ function initAuthPlugin() {
     // Pre-set the API base so the plugin uses the configured value.
     if (cfg.api_url) { window.AUTH_API_URL = cfg.api_url; }
     loadScript(cfg.plugin_url);
+  });
+}
+
+// Adds a site's own sign-in button to the account panel when webroot.yaml names one at the top level,
+// e.g. accountButton: "Outlook". Each name maps to the script that draws its button.
+var ACCOUNT_BUTTON_SCRIPTS = {
+  Outlook: '/display/team/outlook-button.js' // Microsoft sign-in (display repo)
+};
+function initAccountButton() {
+  if (typeof window.loadWebrootYaml !== 'function') { return; }
+  window.loadWebrootYaml().then(function (result) {
+    var m = result && result.text && result.text.match(/^accountButton:\s*["']?([^"'#\r\n]*?)["']?\s*(?:#.*)?$/m);
+    var script = m && ACCOUNT_BUTTON_SCRIPTS[m[1].trim()];
+    if (!script) { return; }
+    var webRoot = (typeof local_app !== 'undefined' && local_app.web_root) ? local_app.web_root() : '';
+    loadScript(webRoot + script);
   });
 }
 

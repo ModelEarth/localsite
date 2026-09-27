@@ -769,6 +769,7 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
 }
 .dark #main-container a:not(.btn):link, .dark #main-container a:not(.btn):visited {
   color: #acb;
+  color: #8ab4f8;
 }
 .dark #main-container  b a:link, .dark #main-container  b a:visited {
   color: #ccc;
