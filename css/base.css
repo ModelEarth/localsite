@@ -42,7 +42,7 @@ Used in localsite, modelearth, io, neighborhood, trees
 }
 .dark {
     --bg-primary: #222;
-    --bg-secondary: #555;
+    --bg-secondary: #2b2926;
     --bg-tertiary: #374151;
     --text-secondary: #6B7280; /* too light for icons on team/projects */
     --text-secondary: #bbb;
@@ -3215,7 +3215,7 @@ body.sidebar-hovered {
     z-index: 1;
 }
 .dark #side-nav-fixed {
-    background-color: #666667;
+    background-color: #44444533;
 }
 #side-nav-content {
     flex: 1;

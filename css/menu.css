@@ -513,8 +513,10 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
     min-width: 190px;
     padding-right: 0px;
 	border-right: 1px solid #ddd;
-	heightX: 100%;
 	top: var(--header-height);
+}
+.dark .main-nav {
+	border-right: 0;
 }
 @media (max-width: 600px) {
 	.main-nav {
@@ -858,7 +860,7 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
     min-height: 200px;
     height: 100%;
     color: #cfcfcf;
-    background-color: #555;
+    background-color: #55555555;
     box-sizing: border-box;
     position: relative;
     font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif; /* avoiding 'Nunito Sans' for menu */
@@ -927,7 +929,6 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
     margin-bottom: 4px;
 }
 .menuExpandedScroll .setOverflow {
-    float: none;
     display: block;
     width: 100%;
     min-width: 0;
@@ -1038,7 +1039,7 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
     border-bottom-left-radius: 28px;
 }
 .rightTopItem.active {
-    background-color: #555;
+    background-color: #55555555;
     border-top-left-radius: 28px;
     border-bottom-left-radius: 28px;
 }
