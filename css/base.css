@@ -1259,7 +1259,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
     cursor: pointer;
 }
 .btn {
-  padding: 10px 20px;
+  padding: 6px 15px;
   background: var(--chip-bg);
   border: 1px solid var(--border-subtle);
   border-radius: var(--button-radius);
@@ -3430,6 +3430,7 @@ body.sidebar-hovered {
 .subnav-link:hover {
     background: var(--bg-tertiary);
     color: var(--text-primary);
+    text-decoration: none;
 }
 
 /* Dark mode hover styles - make nav and subnav hovers darker */

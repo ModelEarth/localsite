@@ -9170,7 +9170,7 @@ function showClassInline(theclass) {
     // :not(body) because stylelook themes add their name to body (body.georgia). An inline body ignores
     // margin-right, so .bodyRightMargin couldn't narrow the page when #rightSideTabs opened.
     var style = document.createElement('style');
-    style.textContent = theclass + ':not(body) {display: inline !important} ' + theclass + '-hide {display:none}' + theclass + '-x {display:none}';
+    style.textContent = theclass + ':not(body) {display: inline !important; background-image: none !important} ' + theclass + '-hide {display:none}' + theclass + '-x {display:none}';
     document.head.appendChild(style);
 }
 function imagineLocation() {

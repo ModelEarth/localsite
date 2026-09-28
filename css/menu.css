@@ -770,8 +770,7 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
 	min-width: 0; /* Allow map/filter bar to shrink when sidebar opens */
 }
 .dark #main-container a:not(.btn):link, .dark #main-container a:not(.btn):visited {
-  color: #acb;
-  color: #8ab4f8;
+  color: #aaa;
 }
 .dark #main-container  b a:link, .dark #main-container  b a:visited {
   color: #ccc;
@@ -835,11 +834,10 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
 #rightTopMenu select {
     width: 100%;
     max-width: 300px;
-    padding: 8px;
-    font-size: 16px;
+    padding: 10px;
+	font-size: 12.5pt;
     line-height: 1;
     border-radius: 6px;
-    font-size: 16pt;
     color: #ddd;
     background-color: #777;
     margin-right: 30px;
@@ -860,10 +858,13 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
     min-height: 200px;
     height: 100%;
     color: #cfcfcf;
-    background-color: #55555555;
+    background-color: #555;
     box-sizing: border-box;
     position: relative;
     font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif; /* avoiding 'Nunito Sans' for menu */
+}
+.dark .menuExpanded {
+    background-color: #77777777;
 }
 .menuExpanded h2, .menuExpanded h3, .menuExpanded h4 {
 	color: #ccc;
@@ -926,7 +927,9 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
     max-width: none;
     min-width: 0;
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
+	margin-top: 14px;
+	font-size: 15.8px;
 }
 .menuExpandedScroll .setOverflow {
     display: block;
@@ -1044,9 +1047,12 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
     border-bottom-left-radius: 28px;
 }
 .rightTopItem.active {
-    background-color: #55555555;
+    background-color: #555;
     border-top-left-radius: 28px;
     border-bottom-left-radius: 28px;
+}
+.dark .rightTopItem.active {
+	background-color: #77777777;
 }
 .rightTopItem i {
     width:37.5px;
@@ -1060,7 +1066,6 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
     padding: 5px 3px 8px 2px;
     float:left;
     color: #fff;
-    font-size: 19px;
 }
 .rightTopItem .contactIcon {
     font-size: 30px !important;
