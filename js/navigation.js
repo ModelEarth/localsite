@@ -9167,8 +9167,10 @@ function showClassInline(theclass) {
     //alert("showClassInline " + theclass);
     // Load when body head becomes available, faster than waiting for all DOM .js files to load.
     // Append -hide to hide a div for a site.
+    // :not(body) because stylelook themes add their name to body (body.georgia). An inline body ignores
+    // margin-right, so .bodyRightMargin couldn't narrow the page when #rightSideTabs opened.
     var style = document.createElement('style');
-    style.textContent = theclass + ' {display: inline !important} ' + theclass + '-hide {display:none}' + theclass + '-x {display:none}';
+    style.textContent = theclass + ':not(body) {display: inline !important} ' + theclass + '-hide {display:none}' + theclass + '-x {display:none}';
     document.head.appendChild(style);
 }
 function imagineLocation() {
