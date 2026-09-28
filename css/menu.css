@@ -940,6 +940,11 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
 .menuExpandedScroll input[type="text"] {
     max-width: 300px;
 }
+/* explore/css/site.css floats .layerSelector right, and a floated select honors the 30px margin-right
+   that the unfloated selects ignore, shifting #basemapSelector 30px left of the selects above it. */
+.menuExpandedScroll .layerSelector {
+    float: none;
+}
 /* On localhost, localsite.js injects `.local{display:inline-block !important}` globally, which
    shrink-fits the wrappers around #devmode / #onlinemode / #basemapSelector and
    prevents their selects from reaching 100%. Force block layout inside this menu.
