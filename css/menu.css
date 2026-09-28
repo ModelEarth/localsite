@@ -939,12 +939,12 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
 .menuExpandedScroll input[type="text"] {
     max-width: 300px;
 }
-/* navigation.js injects `.local{display:inline-block !important}` globally, which
+/* On localhost, localsite.js injects `.local{display:inline-block !important}` globally, which
    shrink-fits the wrappers around #devmode / #onlinemode / #basemapSelector and
-   prevents their selects from reaching 100%. Force block layout inside this menu. */
+   prevents their selects from reaching 100%. Force block layout inside this menu.
+   .earth is left out: it's shown only by showClassInline(".earth") in navigation.js (Model Earth sites). */
 .menuExpandedScroll .dev,
 .menuExpandedScroll .local,
-.menuExpandedScroll .earth,
 .menuExpandedScroll .localonly {
     display: block !important;
     width: 100%;

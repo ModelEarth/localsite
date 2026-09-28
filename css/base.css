@@ -2229,12 +2229,14 @@ body.dark .config-field select {
   border-color: rgba(148, 163, 184, 0.35);
 }
 .dark select {
-  background-color: #000;
   color: #fff;
   /* white arrow */
   background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="white" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 5px center; /* Custom white arrow */
-  background-color: #888;
+  background-color: #444;
   margin-leftX: 1px; /* prevents border from being cropped when dropdown selected */
+}
+.dark select:hover {
+  background-color: #222;
 }
 
 .notdark {
@@ -3206,10 +3208,11 @@ body.sidebar-hovered {
     overflow-y: auto;
     background-colorX: #efefef;
     background-colorX: rgb(250, 250, 250);
-    /* No z-index here on purpose: keeping this auto lets #side-nav-content and
-       #main-nav (both flex items with their own z-index) stack independently
-       against page elements like #mobileRailBar, instead of being trapped as
-       one unit under this container's stacking context. */
+    /* position:fixed always makes this a stacking context, so the z-index values on
+       #side-nav-content and #main-nav only order them inside it. With z-index:auto, a later
+       fixed element with z-index:auto (explore's full-page .moduleBackground) paints over the nav.
+       z-index:1 keeps it above those, and still below #mobileRailBar (10100). */
+    z-index: 1;
 }
 .dark #side-nav-fixed {
     background-color: #666667;
