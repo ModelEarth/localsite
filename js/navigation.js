@@ -4588,10 +4588,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                   satellite = L.tileLayer(mbUrl, {id: 'mapbox.satellite',   attribution: mbAttr}),
                   streets = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr});
 
-              var OpenStreetMap_BlackAndWhite = L.tileLayer('//{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-                  maxZoom: 18,
-                  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              });
+              // Despite its name, OpenStreetMap_BlackAndWhite is CARTO's light_all (Positron) style built from OpenStreetMap data, not an openstreetmap.org tile.
+              // CARTO when window.cartoApiKey works, otherwise Esri Light Gray Canvas plus its labels. See cartoOrEsri in localsite.js.
+              var OpenStreetMap_BlackAndWhite = cartoOrEsri('light_all', ['World_Light_Gray_Base', 'World_Light_Gray_Reference']);
 
               //let dataParameters = {}; // Temp
 
@@ -4620,9 +4619,8 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                       maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
                   }),
                   // OpenStreetMap_BlackAndWhite:
-                  'Grey' : L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-                      maxZoom: 18, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-                  }),
+                  // CARTO light_all (place names built in) when window.cartoApiKey works, otherwise Esri Light Gray Canvas plus its labels.
+                  'Grey' : cartoOrEsri('light_all', ['World_Light_Gray_Base', 'World_Light_Gray_Reference'], {attributionPrefix: '<a href="https://neighborhood.org">Neighborhood.org</a> | '}),
                 }
 
 

@@ -32,6 +32,89 @@ if (typeof modelsiteUniversal == 'undefined') {
   // Universal modelsite fallback for pages that run before the cookie exists.
   var modelsiteUniversal = "";
 }
+// CARTO basemaps key, used by map.js, navigation.js, explore/js/moduleEmbed.js and team/js/leaflet.js.
+// Since 2026 basemaps.cartocdn.com returns an "API KEY REQUIRED" watermark tile without a key. Maps fall back to Esri Canvas tiles (no key)
+// when this is "" or the key stops working (see cartoKeyCheck below).
+// Free up to 5M requests/month non-commercial, 1M/month commercial. Manage the key by entering an email at https://carto.com/basemaps/apikey (emailed sign-in link).
+// The key is visible in browser JS, so in the CARTO Basemaps dashboard restrict it to the web domains that serve these pages.
+// Domain restriction is optional but recommended. CARTO suggests a separate key for local development listing localhost, 127.0.0.1 and *.localhost.
+// A page can set window.cartoApiKey before loading localsite.js to use a different key.
+// Attribution is required on CARTO maps: © OpenStreetMap contributors, © CARTO
+if (typeof window.cartoApiKey == 'undefined') {
+  window.cartoApiKey = "cb1_43t1_1_7f806b81d5e3c92c7283b797";
+}
+
+// CARTO answers HTTP 200 even when a key fails: a missing or invalid key gets an "API KEY REQUIRED" watermark tile,
+// which lacks the Last-Modified header real tiles have. A key restricted to other domains gets a 403.
+// CARTO doesn't document its over-quota response, so either signal counts as a failed key.
+// cartoKeyCheck() probes one tile per page load (Last-Modified is readable cross-origin) and resolves true when the key works.
+// On failure it clears window.cartoApiKey, so maps built afterwards use Esri.
+function cartoKeyCheck() {
+  if (!window.cartoKeyPromise) {
+    if (!window.cartoApiKey) {
+      window.cartoKeyPromise = Promise.resolve(false);
+    } else {
+      let status = "";
+      window.cartoKeyPromise = fetch('https://a.basemaps.cartocdn.com/light_all/0/0/0.png?key=' + encodeURIComponent(window.cartoApiKey), {cache: 'no-store'})
+        .then(response => { status = response.status; return response.ok && Boolean(response.headers.get('Last-Modified')); })
+        .catch(error => { status = "error (" + error.message + ")"; return false; })
+        .then(works => {
+          if (!works) {
+            console.warn("CARTO basemap tiles not loading (invalid, over quota or domain restricted). Using Esri basemaps. Probe returned HTTP " + status + (status == 200 ? " without Last-Modified, so a watermark tile." : "."));
+            window.cartoApiKey = "";
+          }
+          return works;
+        });
+    }
+  }
+  return window.cartoKeyPromise;
+}
+
+// Returns a Leaflet layer of the CARTO style (e.g. "light_all") that swaps to Esri Canvas tiles when cartoKeyCheck() fails
+// or CARTO tiles stop loading. esriCanvas lists Esri Canvas service names. Esri base tiles have no place names, so where
+// the CARTO style includes names, also pass the matching Reference (labels) service, e.g. ["World_Light_Gray_Base", "World_Light_Gray_Reference"].
+// A FeatureGroup, so bringToFront() and bringToBack() still work. options.labels keeps a swapped labels layer on top of the basemap.
+function cartoOrEsri(cartoStyle, esriCanvas, options) {
+  options = options || {};
+  const prefix = options.attributionPrefix || '';
+  const esriLayers = () => esriCanvas.map((name, i) => L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/' + name + '/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 18, maxNativeZoom: 16, // Esri Canvas tiles stop at 16, then scale up
+    attribution: i === 0 ? prefix + 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' : ''
+  }));
+  if (!window.cartoApiKey) {
+    return L.featureGroup(esriLayers());
+  }
+  const cartoLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/' + cartoStyle + '/{z}/{x}/{y}.png?key=' + window.cartoApiKey, {
+    maxZoom: 18,
+    attribution: prefix + '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+  });
+  const group = L.featureGroup([cartoLayer]);
+  let swapped = false;
+  const useEsri = (reason) => {
+    if (swapped) return;
+    swapped = true;
+    console.warn("CARTO basemap: " + reason + " Swapped CARTO " + cartoStyle + " to Esri " + esriCanvas.join(" + ") + ". See https://carto.com/basemaps/apikey");
+    group.clearLayers();
+    const layers = esriLayers();
+    layers.forEach(layer => group.addLayer(layer));
+    if (group._map) { // Layers added later stack above the others, so restore the basemap or labels position.
+      if (options.labels) {
+        layers.forEach(layer => layer.bringToFront());
+      } else {
+        layers.slice().reverse().forEach(layer => layer.bringToBack());
+      }
+    }
+  };
+  let tileErrors = 0;
+  cartoLayer.on('tileerror', () => { // Covers a key that fails mid-session
+    if (++tileErrors >= 3) {
+      window.cartoApiKey = "";
+      useEsri("3 CARTO tiles failed to load (key may be over quota or domain restricted).");
+    }
+  });
+  cartoKeyCheck().then(works => { if (!works) useEsri("Key check failed."); });
+  return group;
+}
 consoleLog("start localsite");
 
 // Common function to find script with delay handling for DOM recognition
