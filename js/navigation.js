@@ -4578,15 +4578,12 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
               }
               var mapCenter = [lat,lon];
 
-              var mbAttr = '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="https://www.openstreetmap.org/">OpenStreetMap</a> | ' +
-                  '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                  'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
-              const mapboxToken = (typeof window !== "undefined" && typeof window.mapboxAccessToken === "string") ? window.mapboxAccessToken : "";
-              const mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png' + (mapboxToken ? ('?access_token=' + mapboxToken) : '');
-
-              var grayscale = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
-                  satellite = L.tileLayer(mbUrl, {id: 'mapbox.satellite',   attribution: mbAttr}),
-                  streets = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr});
+              // Mapbox tiles need window.mapboxAccessToken, which isn't set, so Esri tiles (no key) are used for satellite and streets.
+              var esriImageryAttr = '<a href="https://neighborhood.org">Neighborhood.org</a> | Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community';
+              var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 19, attribution: esriImageryAttr}),
+                  streets = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+                      maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  });
 
               // Despite its name, OpenStreetMap_BlackAndWhite is CARTO's light_all (Positron) style built from OpenStreetMap data, not an openstreetmap.org tile.
               // CARTO when window.cartoApiKey works, otherwise Esri Light Gray Canvas plus its labels. See cartoOrEsri in localsite.js.
@@ -4613,14 +4610,15 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                     // Line above does not work, so we remove map:
 
                     var basemaps1 = {
-                  'Satellite' : L.tileLayer(mbUrl, {maxZoom: 25, id: 'mapbox.satellite', attribution: mbAttr}),
+                  // OpenStreetMap_BlackAndWhite:
+                  // CARTO light_all (place names built in) when window.cartoApiKey works, otherwise Esri Light Gray Canvas plus its labels.
+                  'Grayscale' : cartoOrEsri('light_all', ['World_Light_Gray_Base', 'World_Light_Gray_Reference'], {attributionPrefix: '<a href="https://neighborhood.org">Neighborhood.org</a> | '}),
                   // OpenStreetMap
                   'Street Map' : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                       maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
                   }),
-                  // OpenStreetMap_BlackAndWhite:
-                  // CARTO light_all (place names built in) when window.cartoApiKey works, otherwise Esri Light Gray Canvas plus its labels.
-                  'Grey' : cartoOrEsri('light_all', ['World_Light_Gray_Base', 'World_Light_Gray_Reference'], {attributionPrefix: '<a href="https://neighborhood.org">Neighborhood.org</a> | '}),
+                  'Satellite' : L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 19, attribution: esriImageryAttr}),
+                  ...darkBasemaps('<a href="https://neighborhood.org">Neighborhood.org</a> | '), // Dark Mode and Darker Mode, see localsite.js
                 }
 
 
@@ -4659,7 +4657,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
             
                 layerControls[whichmap] = L.control.layers(basemaps1, geoOverlays, {position: 'bottomleft'}).addTo(map); // Push multple layers
                 if (onlineApp) {
-                    basemaps1["Grey"].addTo(map);
+                    // Grayscale unless the viewer chose another. Remembered per map, and follows light/dark mode like map1 (see trackBasemap in localsite.js).
+                    basemaps1[basemapForSitelook(basemaps1, 'localsiteBasemap_' + whichmap)].addTo(map);
+                    trackBasemap(map, basemaps1, 'localsiteBasemap_' + whichmap);
                 }
 
             //} else if (geojsonLayer) { // INDICATES TOPO WAS ALREADY LOADED
@@ -4739,10 +4739,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
             }
 
             var baseLayers = {
-              "Open Street Map": OpenStreetMap_BlackAndWhite,
-              "Grayscale Mapbox": grayscale,
-              "Streets Mapbox": streets,
-              "Satellite Mapbox": satellite
+              "Grayscale": OpenStreetMap_BlackAndWhite,
+              "Streets": streets,
+              "Satellite": satellite
             };
             
               //dataParameters.forEach(function(ele) {
@@ -4795,7 +4794,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
 
                       //layerControls[whichmap] = L.control.layers(basemaps1, geoOverlays).addTo(map); // Push multple layers
-                      //basemaps1["Grey"].addTo(map);
+                      //basemaps1["Grayscale"].addTo(map);
 
 
 

@@ -3095,12 +3095,15 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       //'Grayscale' : L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
       // CARTO light_all (place names built in) when window.cartoApiKey works, otherwise Esri Light Gray Canvas plus its labels. See cartoOrEsri in localsite.js.
       'Grayscale' : cartoOrEsri('light_all', ['World_Light_Gray_Base', 'World_Light_Gray_Reference'], {attributionPrefix: '<a href="https://neighborhood.org">Neighborhood.org</a> | '}),
-      'Satellite' : L.tileLayer(mbUrl, {maxZoom: 25, id: 'mapbox.satellite', attribution: mbAttr}),
+      // Mapbox satellite needs window.mapboxAccessToken, which isn't set, so Esri World Imagery (no key) is used.
+      'Satellite' : L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
+      }),
       //'Streets' : L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr}),
       'OpenStreetMap' : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
       }),
-      
+      ...darkBasemaps('<a href="https://neighborhood.org">Neighborhood.org</a> | '), // Dark Mode and Darker Mode, see localsite.js
     }
   }
 
@@ -3156,7 +3159,8 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
         if (whichmap == "map2") {
           basemaps["OpenStreetMap"].addTo(map);
         } else {
-          basemaps["Grayscale"].addTo(map); // Set the initial baselayer.
+          basemaps[basemapForSitelook(basemaps, 'localsiteBasemap')].addTo(map); // Set the initial baselayer, Grayscale unless the viewer chose another.
+          trackBasemap(map, basemaps, 'localsiteBasemap'); // After the initial add, so it isn't saved as the viewer's choice
         }
       } else {
         $(".mapLoadingIcon").hide();

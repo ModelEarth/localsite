@@ -74,20 +74,25 @@ function cartoKeyCheck() {
 // or CARTO tiles stop loading. esriCanvas lists Esri Canvas service names. Esri base tiles have no place names, so where
 // the CARTO style includes names, also pass the matching Reference (labels) service, e.g. ["World_Light_Gray_Base", "World_Light_Gray_Reference"].
 // A FeatureGroup, so bringToFront() and bringToBack() still work. options.labels keeps a swapped labels layer on top of the basemap.
+// options.filter is a CSS filter for the CARTO tiles, options.esriFilter for the Esri tiles (e.g. to brighten a dark style).
 function cartoOrEsri(cartoStyle, esriCanvas, options) {
   options = options || {};
   const prefix = options.attributionPrefix || '';
-  const esriLayers = () => esriCanvas.map((name, i) => L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/' + name + '/MapServer/tile/{z}/{y}/{x}', {
+  const withFilter = (layer, filter) => {
+    if (filter) layer.on('add', () => { layer.getContainer().style.filter = filter; });
+    return layer;
+  };
+  const esriLayers = () => esriCanvas.map((name, i) => withFilter(L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/' + name + '/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 18, maxNativeZoom: 16, // Esri Canvas tiles stop at 16, then scale up
     attribution: i === 0 ? prefix + 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' : ''
-  }));
+  }), options.esriFilter));
   if (!window.cartoApiKey) {
     return L.featureGroup(esriLayers());
   }
-  const cartoLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/' + cartoStyle + '/{z}/{x}/{y}.png?key=' + window.cartoApiKey, {
+  const cartoLayer = withFilter(L.tileLayer('https://{s}.basemaps.cartocdn.com/' + cartoStyle + '/{z}/{x}/{y}.png?key=' + window.cartoApiKey, {
     maxZoom: 18,
     attribution: prefix + '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
-  });
+  }), options.filter);
   const group = L.featureGroup([cartoLayer]);
   let swapped = false;
   const useEsri = (reason) => {
@@ -115,6 +120,70 @@ function cartoOrEsri(cartoStyle, esriCanvas, options) {
   cartoKeyCheck().then(works => { if (!works) useEsri("Key check failed."); });
   return group;
 }
+
+// Dark Mode brightens CARTO dark_all for near-white roads over black to charcoal greys. Darker Mode is CARTO dark_all as is.
+// Same as Dark Mode and Darker Mode in team/js/leaflet.js. Used by map.js (map1) and navigation.js (#geomap).
+function darkBasemaps(attributionPrefix) {
+  const esriDark = ['World_Dark_Gray_Base', 'World_Dark_Gray_Reference'];
+  return {
+    'Dark Mode': cartoOrEsri('dark_all', esriDark, {attributionPrefix: attributionPrefix, filter: 'brightness(4.2) contrast(1.25)', esriFilter: 'brightness(1.15) contrast(2.4)'}),
+    'Darker Mode': cartoOrEsri('dark_all', esriDark, {attributionPrefix: attributionPrefix})
+  };
+}
+
+// The basemap a viewer picks in a map's layers control is remembered in localStorage under storageKey.
+// While the site is in dark mode (body.dark, set by setSitelook), a saved Grayscale shows as Dark Mode.
+// In light mode a saved Dark Mode or Darker Mode shows as Grayscale, and returns when the viewer switches back to dark mode in Settings.
+function getSavedBasemap(basemaps, storageKey) {
+  let saved = '';
+  try {
+    saved = localStorage.getItem(storageKey) || '';
+  } catch (e) {}
+  return basemaps[saved] ? saved : 'Grayscale';
+}
+function basemapForSitelook(basemaps, storageKey) {
+  const saved = getSavedBasemap(basemaps, storageKey);
+  const dark = document.body.classList.contains('dark');
+  if (dark && saved == 'Grayscale' && basemaps['Dark Mode']) {
+    return 'Dark Mode';
+  }
+  if (!dark && (saved == 'Dark Mode' || saved == 'Darker Mode')) {
+    return 'Grayscale';
+  }
+  return saved;
+}
+// Call after adding the initial basemap, so that add isn't saved as the viewer's choice.
+function trackBasemap(map, basemaps, storageKey) {
+  map.localsiteBasemaps = basemaps; // Updated if the layers control is rebuilt
+  map.basemapStorageKey = storageKey;
+  if (map.basemapTracked) return;
+  map.basemapTracked = true;
+  window.localsiteBasemapMaps = window.localsiteBasemapMaps || [];
+  window.localsiteBasemapMaps.push(map);
+  map.on('baselayerchange', function(e) {
+    if (map.switchingBasemap) return; // Light/dark swaps don't change the viewer's saved choice
+    try {
+      localStorage.setItem(map.basemapStorageKey, e.name);
+    } catch (err) {}
+  });
+}
+function switchBasemap(map, name) {
+  const basemaps = map.localsiteBasemaps;
+  if (!basemaps || !basemaps[name] || map.hasLayer(basemaps[name])) return;
+  map.switchingBasemap = true;
+  Object.values(basemaps).forEach(layer => {
+    if (map.hasLayer(layer)) map.removeLayer(layer);
+  });
+  basemaps[name].addTo(map);
+  map.switchingBasemap = false;
+}
+document.addEventListener('sitelookchange', function() {
+  (window.localsiteBasemapMaps || []).forEach(map => {
+    if (map.getContainer() && document.body.contains(map.getContainer())) {
+      switchBasemap(map, basemapForSitelook(map.localsiteBasemaps, map.basemapStorageKey));
+    }
+  });
+});
 consoleLog("start localsite");
 
 // Common function to find script with delay handling for DOM recognition
@@ -3767,6 +3836,8 @@ function setSitelook(siteLook) {
         //    element.dispatchEvent(new Event('change'));
         //});
     }
+    // Lets maps follow light/dark changes, e.g. map.js swaps Grayscale and Dark Mode
+    document.dispatchEvent(new CustomEvent('sitelookchange', {detail: {dark: document.body.classList.contains("dark")}}));
 }
 function setDevmode(devmode) {
   const devCssUrl = theroot + 'css/dev.css';

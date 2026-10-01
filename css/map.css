@@ -326,6 +326,9 @@
 #listingMenu > div:hover {
   background: #eee;
 }
+.dark #listingMenu > div:hover {
+  background: #333; /* Menu is #555 in dark mode (.dark .filterBubble) */
+}
 .showItemMenu {
   font-size: 22px;
   padding-top: 4px;
