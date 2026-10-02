@@ -4470,12 +4470,12 @@ function adjustAnythingLLMNavigation() {
 // localsite is the universal include on every site, so showAuthModal() is the
 // shared dispatcher. It contains NO auth UI or logic itself — it looks up WHERE
 // the auth modal lives (the adjacent "chat" repo today, configurable in
-// docker/webroot.yaml) and loads it. The team repo and every other site reach
+// home/webroot.yaml) and loads it. The team repo and every other site reach
 // auth by calling this function.
 var _authConfigCache = null;
 
 // Minimal extractor for the flat keys under the top-level "auth:" block in
-// docker/webroot.yaml. Avoids pulling in a full YAML parser for a few keys.
+// home/webroot.yaml. Avoids pulling in a full YAML parser for a few keys.
 function parseAuthYaml(text, isLocal) {
   var lines = text.split(/\r?\n/);
   var inBlock = false, kv = {};
@@ -4528,7 +4528,7 @@ function resolveAuthConfig(callback) {
 
   // Read the auth: block from whichever webroot.yaml loadWebrootYaml() resolved -
   // a repo's own /webroot.yaml override when it has one, else the shared
-  // docker/webroot.yaml. This reuses the exact same resolution (and fetch,
+  // home/webroot.yaml. This reuses the exact same resolution (and fetch,
   // memoized there) that branding/site config already goes through, so a
   // repo's own override applies to auth config too instead of this always
   // reading the shared file directly regardless of what a repo declared.
@@ -4541,7 +4541,7 @@ function resolveAuthConfig(callback) {
   }
 
   // Fallback for the rare page that doesn't have loadWebrootYaml available.
-  fetch(webRoot + '/docker/webroot.yaml', { cache: 'no-store' })
+  fetch(webRoot + '/home/webroot.yaml', { cache: 'no-store' })
     .then(function (r) { return r.ok ? r.text() : Promise.reject(); })
     .then(applyYamlText)
     .catch(function () { _authConfigCache = defaults; callback(_authConfigCache); });
@@ -5737,7 +5737,7 @@ function _attachMarkdownEditMenu(pagePath, divID) {
         loadScript(cmsJsPath, function() {
             // TODO: Will we change config.yml to webroot.yaml
             //launchCMS({inline:true, target:container, configUrl:'/localsite/edit/config.yml'});
-            launchCMS({inline:true, target:container, configUrl:'/docker/webroot.yaml'});
+            launchCMS({inline:true, target:container, configUrl:'/home/webroot.yaml'});
         });
     });
     ghItem.addEventListener('click', function() {
@@ -5943,8 +5943,9 @@ if (document.readyState === 'loading') {
 // Parses default: and sites: into window.WEBROOT_CONFIG.
 // Returns a Promise<{ path, text, default, sites }> shared across all callers.
 (function() {
-    // docker/webroot.yaml is a legacy location being phased out; keep it here until repos migrate.
-    var WEBROOT_PATHS = ['/webroot.yaml', '/docker/webroot.yaml'];
+    // home/webroot.yaml holds the shared defaults. docker/webroot.yaml is the legacy location
+    // (docker repo discontinued); keep it last until every deployed webroot has home/webroot.yaml.
+    var WEBROOT_PATHS = ['/webroot.yaml', '/home/webroot.yaml', '/docker/webroot.yaml'];
     var SESSION_KEY = 'webrootYamlPath';
     var _promise = null;
 
@@ -5996,8 +5997,8 @@ if (document.readyState === 'loading') {
             var cached = sessionStorage.getItem(SESSION_KEY);
 
             // TEMP — remove in Nov 2026 once browser session caches are cleared.
-            // Clears a stale cached docker/webroot.yaml path for dreamstudio.com/planet.live.
-            if (cached === '/docker/webroot.yaml' && /(^|\.)(dreamstudio\.com|planet\.live)$/.test(location.hostname)) {
+            // Clears a stale cached docker/webroot.yaml path so home/webroot.yaml is picked up.
+            if (cached === '/docker/webroot.yaml') {
                 sessionStorage.removeItem(SESSION_KEY);
                 cached = null;
             }

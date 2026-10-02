@@ -71,8 +71,9 @@
     });
   } else {
     // standalone fallback when loaded without localsite.js
-    // docker/webroot.yaml is a legacy location being phased out; keep it here until repos migrate.
-    var WEBROOT_PATHS = ['/webroot.yaml', '/docker/webroot.yaml'];
+    // home/webroot.yaml holds the shared defaults. docker/webroot.yaml is the legacy location
+    // (docker repo discontinued); keep it last until every deployed webroot has home/webroot.yaml.
+    var WEBROOT_PATHS = ['/webroot.yaml', '/home/webroot.yaml', '/docker/webroot.yaml'];
     var SESSION_KEY = 'webrootYamlPath';
 
     function tryPath(index) {
