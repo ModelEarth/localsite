@@ -3214,8 +3214,10 @@ body.sidebar-hovered {
     /* position:fixed always makes this a stacking context, so the z-index values on
        #side-nav-content and #main-nav only order them inside it. With z-index:auto, a later
        fixed element with z-index:auto (explore's full-page .moduleBackground) paints over the nav.
-       z-index:1 keeps it above those, and still below #mobileRailBar (10100). */
-    z-index: 1;
+       It also caps the fixed #listcolumn child (z-index:1000), so this must exceed Leaflet's
+       panes (400-700) and .leaflet-top/.leaflet-bottom controls (1000), and the filter bar,
+       for the list to paint over #map1. Still below #mobileRailBar (10100). */
+    z-index: 1001;
 }
 .dark #side-nav-fixed {
     background-color: #44444533;
