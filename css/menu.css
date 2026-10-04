@@ -864,7 +864,7 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
     font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif; /* avoiding 'Nunito Sans' for menu */
 }
 .dark .menuExpanded {
-    background-color: #77777777;
+    background-color: #535353; /* opaque: #77777777 looked light over pages without a dark body background */
 }
 .menuExpanded h2, .menuExpanded h3, .menuExpanded h4 {
 	color: #ccc;
