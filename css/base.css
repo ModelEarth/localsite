@@ -3220,7 +3220,7 @@ body.sidebar-hovered {
     z-index: 1001;
 }
 .dark #side-nav-fixed {
-    background-color: #44444533;
+    background-color: #363636; /* opaque: #44444533 looked light over pages without a dark body background */
 }
 #side-nav-content {
     flex: 1;

@@ -1052,7 +1052,7 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
     border-bottom-left-radius: 28px;
 }
 .dark .rightTopItem.active {
-	background-color: #77777777;
+	background-color: #535353;
 }
 .rightTopItem i {
     width:37.5px;
