@@ -914,7 +914,7 @@ hr {
   text-decoration: none;
 }
 .content a:not(.btn):link, .content a:not(.btn):visited, .contentfull a:not(.btn):link, .contentfull a:not(.btn):visited, .content-color a:not(.btn):link, .content-color a:not(.btn):visited {
-  /* color: #0366d6; */
+  color: #0366d6;
 }
 .dark .content a:not(.btn):link, .dark .content a:not(.btn):visited, .dark .content-color a:not(.btn):link, .dark .content-color a:not(.btn):visited {
   color: #acb;
