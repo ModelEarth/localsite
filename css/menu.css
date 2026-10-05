@@ -156,7 +156,7 @@
 }
 
 .sideMenuColumnNarrow .layerSectionTitle {
-	display: inline-block !important; /* !important needed: menu.js's $().show() sets an inline style="display:block", which otherwise beats a plain (non-!important) rule here and stretches the title to the floated parent's width instead of shrink-wrapping the text. */
+	display: none !important; /* !important beats menu.js's inline show()/hide(); only the hovered or open section pops out (below). */
 	white-space: nowrap;
 	font-size: 1.2em;
 	width: max-content; /* Fit the background to the text so long titles don't overflow past it and become invisible (white text on white page). */
@@ -171,6 +171,9 @@
 	border-top-right-radius: 2px;
  	border-top-right-radius: 22px;
 	border-bottom-right-radius: 22px;
+}
+.sideMenuColumnNarrow .layerSection:hover .layerSectionTitle, .sideMenuColumnNarrow .openMenu .layerSectionTitle {
+	display: inline-block !important;
 }
 .openMenu {
 	margin-bottom: 12px;
