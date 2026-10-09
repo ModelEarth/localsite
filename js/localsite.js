@@ -5254,6 +5254,11 @@ function handlePanelAction(action, panelId, panelType) {
     const menu = document.getElementById(panelId + 'Menu');
     if (menu) menu.style.display = 'none';
     refreshPanelToggleIcon(panelId + 'MenuControl', panelId);
+
+    // Per-panel follow-up via passed options (e.g. map.js clears #id= when Details is hidden)
+    if (typeof menuOptions.onHide === 'function') {
+      menuOptions.onHide(panelId, panelType);
+    }
   } else if (action === 'inspect') {
     // Toggle inspect mode
     if (!window.listingsApp) return;

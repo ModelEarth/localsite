@@ -3780,21 +3780,11 @@ body.sidebar-hovered {
   }
 }
 .basePanel {
-    background: white;
     border-radius: var(--border-radius);
 }
 .basePanelTop {
   border-top-left-radius: var(--border-radius);
   border-top-right-radius: var(--border-radius);
-}
-.dark .basePanel {
-    background: #333;
-}
-.basePanelBackground { /* For control that overlap scrolling list */
-    background: white;
-}
-.dark .basePanelBackground {
-    background: #333;
 }
 /* Not needed for team/js/map.js widget
 
