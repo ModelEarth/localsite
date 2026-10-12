@@ -4091,11 +4091,12 @@ body.sidebar-hidden #openNav {
 .menuToggleHolderMap:hover::before {
   background: #333;
 }
+/* Dark mode: dark circle with a light arrow, visible over light and dark map tiles */
 .dark .menuToggleHolderMap::before {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.35);
 }
 .dark .menuToggleHolderMap:hover::before {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.6);
 }
 .menuToggleHolderMap .material-icons {
   transition: color 0.2s ease;
@@ -4105,8 +4106,11 @@ body.sidebar-hidden #openNav {
 .menuToggleHolderMap:hover .menu-toggle-arrow {
   color: white;
 }
+.dark .menuToggleHolderMap .menu-toggle-arrow {
+  color: #eee;
+}
 .dark .menuToggleHolderMap:hover .menu-toggle-arrow {
-  color: #aaa;
+  color: #fff;
 }
 /* Common circle background styling for menu toggle icons */
 .menuToggleHolderMap .material-icons.circle-bg {
@@ -4114,7 +4118,7 @@ body.sidebar-hidden #openNav {
   font-size: 34px;
 }
 .dark .menuToggleHolderMap .material-icons.circle-bg {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(32, 32, 32, 0.75);
 }
 /* Circle background for non-map panels */
 .menuIconHolder:not(.menuToggleHolderMap) .material-icons.circle-bg {
