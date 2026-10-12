@@ -5002,7 +5002,8 @@ function startTour(panelId, isReload = false) {
     }
 
     // Don't navigate - already on the correct id
-    // Set timeout for 8 seconds to advance to next slide
+    // Set timeout for 11 seconds to advance to next slide (time for the detail map's tour glide in
+    // team/js/map.js: 3s zoom out, 2s pause, 1.8s zoom in, then a few seconds on the point)
     // Each slide sets its own timeout when it loads
     tourState.timeoutId = setTimeout(() => {
       // Check if detailplay is still in hash (user might have removed it)
@@ -5024,7 +5025,7 @@ function startTour(panelId, isReload = false) {
         const currentHash = getHash();
         goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true', view: currentHash.view || '' });
       }
-    }, 8000);
+    }, 11000);
   } else {
     // Fresh start from clicking "Start Tour" - continue from current position
     const hash = (typeof getHash === 'function') ? getHash() : {};
@@ -5091,6 +5092,8 @@ window.stopTour = stopTour;
  * @param {string} iconType - 'pause' or 'arrow'
  */
 function updateTourIcon(panelId, iconType) {
+  syncTourPlayButtons(panelId, iconType);
+
   const iconElement = document.getElementById(panelId + 'MenuToggleIcon');
   const circleElement = document.querySelector(`#${panelId}MenuControl .material-icons:not([id])`);
 
@@ -5130,6 +5133,34 @@ function updateTourIcon(panelId, iconType) {
       }
     }
   }
+}
+
+/**
+ * Tour play buttons (.tour-play-button, e.g. #tourPlayButton in requests/engine) share the
+ * "Start Tour" menu action (data-action="starttour"). data-tour-panel names the panel (default locationDetails).
+ * Synced by updateTourIcon: a play arrow while stopped, a pause icon (class "playing") while touring.
+ * @param {string} panelId - ID of the panel
+ * @param {string} iconType - 'pause' or 'arrow'
+ */
+function syncTourPlayButtons(panelId, iconType) {
+  const playing = iconType === 'pause';
+  document.querySelectorAll('.tour-play-button').forEach(btn => {
+    if ((btn.dataset.tourPanel || 'locationDetails') !== panelId) return;
+    btn.classList.toggle('playing', playing);
+    btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
+    btn.title = playing ? 'Pause Tour' : 'Start Tour';
+    const icon = btn.querySelector('.material-icons');
+    if (icon) icon.textContent = playing ? 'pause' : 'play_arrow';
+  });
+}
+if (!window.tourPlayButtonsBound) {
+  window.tourPlayButtonsBound = true;
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.tour-play-button');
+    if (!btn) return;
+    e.preventDefault();
+    toggleTour(btn.dataset.tourPanel || 'locationDetails');
+  });
 }
 
 /**
