@@ -4968,6 +4968,15 @@ function startTour(panelId, isReload = false, startHash = {}) {
   tourState.listingIds = listingIds;
 
   if (tourState.listingIds.length === 0) {
+    // Play clicked before the listings loaded: start once the first listing card appears
+    if (!isReload && !tourState.waitingForListings && typeof waitForElm === 'function') {
+      tourState.waitingForListings = true;
+      waitForElm('.listing-card[data-listing-id]').then(() => {
+        tourState.waitingForListings = false;
+        if (!tourState.isPlaying) startTour(panelId, false, startHash);
+      });
+      return;
+    }
     console.warn('No listings available for tour');
     return;
   }
