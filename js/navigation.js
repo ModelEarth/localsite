@@ -8619,7 +8619,9 @@ $(document).on("change", "#devmode", function(event) { // Public or Dev
     if (devmode != "dev") {
         let hash = getHash();
         if (hash.sidetab == "settings") {
-            if (typeof goHash === 'function') {
+            if (typeof goHashNoHistory === 'function') {
+                goHashNoHistory({"sidetab":""}, "settings"); // sidetab changes don't add browser history entries
+            } else if (typeof goHash === 'function') {
                 goHash({"sidetab":""}, "settings");
             } else {
                 updateHash({"sidetab":""}, true, "settings");
@@ -8793,6 +8795,113 @@ $(document).on("click", ".showEarth", function(event) {
     updateHash({"sidetab":"","geoview":"earth","earth":getEarthHashValue((typeof getHash === 'function') ? getHash() : {}, latLonZoom)});
     event.stopPropagation();
 });
+
+// Back and Forward icons (.historyBack, .historyForward, beside the Settings title) step through the
+// browser history, for kiosk windows without browser buttons. Each shows only when there's a page to go to:
+// the Navigation API's canGoBack/canGoForward where available, else Back when the history has more than
+// one entry, with Forward hidden (its position in the history isn't known).
+$(document).on("click", ".historyBack", function(event) {
+    history.back();
+    event.stopPropagation();
+});
+$(document).on("click", ".historyForward", function(event) {
+    history.forward();
+    event.stopPropagation();
+});
+function updateHistoryNav() {
+    const nav = window.navigation;
+    const canBack = nav && 'canGoBack' in nav ? nav.canGoBack : history.length > 1;
+    const canForward = nav && 'canGoForward' in nav ? nav.canGoForward : false;
+    document.querySelectorAll('.historyBack').forEach(btn => { btn.style.display = canBack ? '' : 'none'; });
+    document.querySelectorAll('.historyForward').forEach(btn => { btn.style.display = canForward ? '' : 'none'; });
+}
+if (window.navigation && typeof window.navigation.addEventListener === 'function') {
+    window.navigation.addEventListener('currententrychange', updateHistoryNav);
+}
+window.addEventListener('popstate', updateHistoryNav);
+document.addEventListener('hashChangeEvent', updateHistoryNav, false);
+waitForElm('.historyBack').then(updateHistoryNav); // once the template's icons are in the page
+
+// Link icon (.showPageUrl, beside the Settings title): a popup with the current URL and a copy icon, since a
+// kiosk window has no address bar. Kept current as the hash changes. Closes on a click elsewhere or Escape.
+function updatePageUrlPopup() {
+    document.querySelectorAll('.pageUrlText').forEach(el => { el.textContent = location.href; });
+    document.querySelectorAll('.copyPageField .material-icons').forEach(icon => { icon.textContent = 'content_copy'; });
+}
+// Fixed under the link icon, right edges aligned, widening leftward (kept 16px inside the window)
+function placePageUrlPopup(popup, btn) {
+    const rect = btn.getBoundingClientRect();
+    popup.style.top = (rect.bottom + 6) + 'px';
+    popup.style.right = Math.max(16, window.innerWidth - rect.right) + 'px';
+}
+function closePageUrlPopup() {
+    document.querySelectorAll('.pageUrlPopup').forEach(popup => { popup.hidden = true; });
+    document.querySelectorAll('.showPageUrl').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+}
+$(document).on("click", ".showPageUrl", function(event) {
+    const popup = this.closest('.menuTitleRow').querySelector('.pageUrlPopup');
+    const opening = popup.hidden;
+    closePageUrlPopup();
+    if (opening) {
+        updatePageUrlPopup();
+        placePageUrlPopup(popup, this);
+        popup.hidden = false;
+        this.setAttribute('aria-expanded', 'true');
+    }
+    event.stopPropagation();
+});
+// Copies the field to the icon's left; the icon turns to a check mark
+$(document).on("click", ".copyPageField", function(event) {
+    const field = this.parentElement.querySelector('.pageUrlField');
+    const icon = this.querySelector('.material-icons');
+    if (field && navigator.clipboard) {
+        navigator.clipboard.writeText(field.textContent).then(() => { icon.textContent = 'check'; }, () => { icon.textContent = 'error'; });
+    }
+    event.stopPropagation();
+});
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.pageUrlPopup, .showPageUrl')) closePageUrlPopup();
+});
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') closePageUrlPopup();
+});
+window.addEventListener('resize', function() {
+    document.querySelectorAll('.pageUrlPopup:not([hidden])').forEach(popup => {
+        const btn = popup.closest('.menuTitleRow').querySelector('.showPageUrl');
+        if (btn) placePageUrlPopup(popup, btn);
+    });
+});
+window.addEventListener('popstate', updatePageUrlPopup);
+document.addEventListener('hashChangeEvent', updatePageUrlPopup, false);
+
+// .reloadPage (beside .showEarth): reloads the page. Browsers leave full screen on a reload and only
+// re-enter it from a user gesture, so when reloading from full screen the first click or key press
+// afterward (other than Escape) returns to it. The hash, e.g. detailfull=true, carries the rest of the view.
+$(document).on("click", ".reloadPage", function(event) {
+    try {
+        if (document.fullscreenElement) sessionStorage.setItem('reloadFullscreen', '1');
+    } catch (e) {}
+    location.reload();
+});
+(function restoreFullscreenAfterReload() {
+    let wasFullscreen = false;
+    try {
+        wasFullscreen = sessionStorage.getItem('reloadFullscreen') === '1';
+        sessionStorage.removeItem('reloadFullscreen');
+    } catch (e) {}
+    if (!wasFullscreen) return;
+    const onGesture = (e) => {
+        if (e.type === 'keydown' && e.key === 'Escape') return;
+        document.removeEventListener('pointerdown', onGesture, true);
+        document.removeEventListener('keydown', onGesture, true);
+        const page = document.documentElement;
+        if (!document.fullscreenElement && page.requestFullscreen) {
+            page.requestFullscreen().catch(() => {});
+        }
+    };
+    document.addEventListener('pointerdown', onGesture, true);
+    document.addEventListener('keydown', onGesture, true);
+})();
 
 // Auto-close right navigation when dropdowns change in settings panel on narrow screens
 $(document).on("change", ".settingsPanel select", function(event) {
@@ -9591,7 +9700,10 @@ function showApps(menuDiv) {
             // Silently remove sidetab from the hash so closeSideTabs() doesn't fire a
             // hashchange (which would also close #bigThumbPanelHolder), then close the
             // entire side settings panel via the same function the .showWideX X uses.
+            // replaceState (as in goHashNoHistory): sidetab changes don't add browser history entries
+            isPopstateNavigation = true;
             updateHash({}, true, "sidetab");
+            isPopstateNavigation = false;
             closeSideTabs();
             console.log("call showThumbMenu from navidation.js");
             if (!hash.geoview) {
@@ -9643,7 +9755,8 @@ function filterClickLocation(loadGeoTable) {
     console.log("filterClickLocation() " + loadGeoTable);
     let hash = getHash();
     if (hash.sidetab == "locale" && hash.geoview) {
-        goHash({'sidetab':'','locpop':''});
+        // Closing the Locale tab: sidetab changes don't add browser history entries
+        (typeof goHashNoHistory === 'function' ? goHashNoHistory : goHash)({'sidetab':'','locpop':''});
     } else if (hash.geoview) {
         goHash({'geoview':'','locpop':''});
     } else if (hash.state) {

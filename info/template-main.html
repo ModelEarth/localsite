@@ -57,6 +57,12 @@
             <i class="material-icons show-on-load" style="font-size:34px;opacity:0.7;" data="apps">&#xE894;</i>
           </div>
         </div>
+        <!-- Reload the page, staying in browser full screen (reloadPage in navigation.js) -->
+        <div class="earth" style="display:none; float:left; padding:10px; padding-left:0">
+          <div class="reloadPage" title="Reload page" style="cursor:pointer">
+            <i class="material-icons show-on-load" style="font-size:34px;opacity:0.7;">refresh</i>
+          </div>
+        </div>
         <div class="hideNarrow" style="float:left">
             <div class="closeSideTabs expandToFullscreen" style="border:0px; padding:10px; padding-left:5px">
                 <i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D0;</i>
@@ -285,7 +291,26 @@
         <div class="settingsPanel menuExpanded topMenuOffset" style="display:none">
           <div class="menuExpandedScroll">
 
-          <div class="menuTitle">Settings</div>
+          <!-- Link (a popup with the current URL), Back and Forward (browser history, shown only when there's a page
+               to go to) and Close (the side panel). Useful in a kiosk window, which has no address bar or browser
+               buttons. In navigation.js. -->
+          <div class="menuTitleRow">
+            <div class="menuTitle">Settings</div>
+            <div class="menuTitleIcons">
+              <button type="button" class="showPageUrl" title="Page URL" aria-label="Page URL" aria-expanded="false"><i class="material-icons">link</i></button>
+              <button type="button" class="historyBack" title="Back" aria-label="Back" style="display:none"><i class="material-icons">arrow_back</i></button>
+              <button type="button" class="historyForward" title="Forward" aria-label="Forward" style="display:none"><i class="material-icons">arrow_forward</i></button>
+              <button type="button" class="closeSideTabs" title="Close" aria-label="Close"><i class="material-icons">close</i></button>
+            </div>
+            <!-- Current URL with a copy icon, then how to exit a kiosk window -->
+            <div class="pageUrlPopup" hidden>
+              <div class="pageUrlRow">
+                <div class="pageUrlField pageUrlText"></div>
+                <button type="button" class="copyPageField" title="Copy URL" aria-label="Copy URL"><i class="material-icons">content_copy</i></button>
+              </div>
+              <div class="pageUrlLabel">Exit kiosk: Cmd+Q (Mac), Alt+F4 (Windows, Linux)</div>
+            </div>
+          </div>
 
           <div class="setLeft">Style</div>
             <div class="setOverflow"><div class="setRight">

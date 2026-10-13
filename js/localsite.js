@@ -1556,7 +1556,9 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       });
       $(document).on("click", ".showSearch", function(event) {
         showSearchFilter();
-        if (typeof goHash === 'function') {
+        if (typeof goHashNoHistory === 'function') {
+            goHashNoHistory({'sidetab':''}); // sidetab changes don't add browser history entries
+        } else if (typeof goHash === 'function') {
             goHash({'sidetab':''});
         } else {
             updateHash({"sidetab":""});
@@ -4929,12 +4931,13 @@ const tourState = window.tourState;
 /**
  * Toggles tour play/pause
  * @param {string} panelId - ID of the panel
+ * @param {Object} startHash - Optional hash values sent with the tour's first stop when starting
  */
-function toggleTour(panelId) {
+function toggleTour(panelId, startHash = {}) {
   if (tourState.isPlaying) {
     stopTour(panelId);
   } else {
-    startTour(panelId);
+    startTour(panelId, false, startHash);
   }
 }
 
@@ -4942,8 +4945,9 @@ function toggleTour(panelId) {
  * Starts the tour
  * @param {string} panelId - ID of the panel
  * @param {boolean} isReload - Whether this is a reload/resume from hash
+ * @param {Object} startHash - Optional hash values sent in the same goHash call as the first stop (e.g. { detailfull: 'true' })
  */
-function startTour(panelId, isReload = false) {
+function startTour(panelId, isReload = false, startHash = {}) {
   const menuOptions = (typeof getPanelMenuOptions === 'function') ? getPanelMenuOptions(panelId) : {};
   let listingIds = [];
 
@@ -5003,7 +5007,7 @@ function startTour(panelId, isReload = false) {
 
     // Don't navigate - already on the correct id
     // Set timeout for 11 seconds to advance to next slide (time for the detail map's tour glide in
-    // team/js/map.js: 3s zoom out, 2s pause, 1.8s zoom in, then a few seconds on the point)
+    // team/js/map.js: 3.5s zoom out and pan, 2s pause, 1.8s zoom in, then a few seconds on the point)
     // Each slide sets its own timeout when it loads
     tourState.timeoutId = setTimeout(() => {
       // Check if detailplay is still in hash (user might have removed it)
@@ -5051,7 +5055,7 @@ function startTour(panelId, isReload = false) {
 
     if (typeof goHash === 'function') {
       const currentHash = getHash();
-      goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true', view: currentHash.view || '' });
+      goHash({ ...startHash, id: tourState.listingIds[tourState.currentIndex], detailplay: 'true', view: currentHash.view || '' });
     }
 
     // Note: The page reload will trigger startTour(panelId, true) which will set the timeout
@@ -5076,6 +5080,9 @@ function stopTour(panelId) {
 
   // Update icon back to arrow
   updateTourIcon(panelId, 'arrow');
+
+  // Lets the map halt a glide in motion (team/js/map.js)
+  document.dispatchEvent(new CustomEvent('tourStopped', { detail: { panelId } }));
 
   // Remove detailplay from hash
   if (typeof goHash === 'function') {
@@ -5159,7 +5166,9 @@ if (!window.tourPlayButtonsBound) {
     const btn = e.target.closest('.tour-play-button');
     if (!btn) return;
     e.preventDefault();
-    toggleTour(btn.dataset.tourPanel || 'locationDetails');
+    // data-tour-hash (e.g. "detailfull=true") adds hash values when the tour starts
+    const startHash = Object.fromEntries(new URLSearchParams(btn.dataset.tourHash || ''));
+    toggleTour(btn.dataset.tourPanel || 'locationDetails', startHash);
   });
 }
 
