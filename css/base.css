@@ -2289,6 +2289,10 @@ body.dark .config-field select {
   margin-right: 4.5px;
   float: left;
 }
+#headerLogo img { /* Keep the logo on one line when a CSS reset (e.g. Tailwind preflight) sets img to block */
+  display: inline;
+  max-width: none;
+}
 @media (max-width: 600px) {
   #headerLogo img {
     max-width: 400px;
