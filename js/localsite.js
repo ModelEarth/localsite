@@ -5720,7 +5720,7 @@ function _injectMdEditorStyles() {
     s.textContent = '.md-edit-menu{position:absolute;top:8px;right:8px;z-index:10;font-family:system-ui,sans-serif}'
         + '.md-edit-trigger{background:rgba(255,255,255,.92);border:1px solid #d1d5db;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:18px;padding:0;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.1)}'
         + '.md-edit-trigger:hover{background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}'
-        + '.md-edit-choice{margin:0 0 12px;padding:10px 14px;border-radius:12px;background:#f3f4f6;font:14px/1.5 system-ui,sans-serif;color:#374151}'
+        + '.md-edit-choice{margin:0 0 12px;padding:10px 14px 10px 0;border-radius:12px;background:#f3f4f6;font:14px/1.5 system-ui,sans-serif;color:#374151}'
         + '.md-edit-choice button{margin:6px 8px 0 0;padding:5px 14px;border:1px solid #d1d5db;border-radius:16px;background:#fff;cursor:pointer;font-size:13px;color:#374151}'
         + '.md-edit-choice button:hover{background:#f9fafb}'
         + '.dark .md-edit-choice{background:#333;color:#eee}'
