@@ -1097,7 +1097,7 @@ function loadLocalTemplate() {
     $.get(datascapeFile, function(theTemplate) { // Get and append template-main.html to #datascape
       $(theTemplate).appendTo(datascapeFileDiv);
 
-      // The account panel (#accountPanelInserts) now exists — load the chat
+      // The account panel (#accountPanelInserts) now exists — load the auth
       // repo's in-page sign-in UI into it (config-driven via support/site/config.yaml).
       initAuthPlugin();
       initAccountButton();
@@ -4471,8 +4471,8 @@ function adjustAnythingLLMNavigation() {
 // ── Auth Modal Integration ──────────────────────────────────────────────
 // localsite is the universal include on every site, so showAuthModal() is the
 // shared dispatcher. It contains NO auth UI or logic itself — it looks up WHERE
-// the auth modal lives (the adjacent "chat" repo today, configurable in
-// support/site/config.yaml) and loads it. The team repo and every other site reach
+// the auth modal lives (the auth repo: the local submodule on localhost, CloudRoot's
+// cloud.model.earth elsewhere, configurable in support/site/config.yaml) and loads it. The team repo and every other site reach
 // auth by calling this function.
 var _authConfigCache = null;
 
@@ -4507,14 +4507,22 @@ function resolveAuthConfig(callback) {
   var webRoot = (typeof local_app !== 'undefined' && local_app.web_root) ? local_app.web_root() : '';
   var isLocal = ['localhost', '127.0.0.1', '::1'].indexOf(location.hostname) !== -1;
 
-  // Built-in fallback: the chat app lives under "/chat" when the webroot is the
-  // deploy root. (If the deploy root IS the chat repo, set the paths without the
-  // "/chat" prefix via support/site/config.yaml or window.webrootAuth.)
-  var defaults = {
+  // Built-in fallback, from the auth repo. On localhost, the widget comes from the webroot's
+  // own auth submodule and the API from /api on this origin, a local server using the local
+  // .env, so localhost never calls cloud.model.earth. Elsewhere, both come from the CloudRoot
+  // Worker at cloud.model.earth, whose ALLOWED_ORIGINS must include the page's origin.
+  // Override either via support/site/config.yaml's auth: block or window.webrootAuth.
+  var AUTH_HOST = 'https://cloud.model.earth';
+  var defaults = isLocal ? {
     enabled: true,
-    modal_url: webRoot + '/chat/auth/js/auth-modal.js',
-    plugin_url: webRoot + '/chat/auth/js/auth-plugin.js',
-    api_url: location.origin + webRoot + '/chat/api'
+    modal_url: webRoot + '/auth/public/js/auth-modal.js',
+    plugin_url: webRoot + '/auth/public/js/auth-plugin.js',
+    api_url: location.origin + webRoot + '/api'
+  } : {
+    enabled: true,
+    modal_url: AUTH_HOST + '/auth/js/auth-modal.js',
+    plugin_url: AUTH_HOST + '/auth/js/auth-plugin.js',
+    api_url: AUTH_HOST + '/api'
   };
 
   function applyYamlText(text) {
@@ -4546,7 +4554,7 @@ function resolveAuthConfig(callback) {
     .catch(function () { _authConfigCache = defaults; callback(_authConfigCache); });
 }
 
-// Loads the chat repo's in-page auth UI (auth-plugin.js), which injects a
+// Loads the auth repo's in-page auth UI (auth-plugin.js), which injects a
 // sign-in button + session state into #accountPanelInserts and opens the
 // 6-provider modal on click. Called when template-main.html (which holds that
 // mount) is inserted, so the launcher only appears where the account panel
@@ -4589,7 +4597,7 @@ function showAuthModal() {
       consoleLog('[Auth] sign-in disabled in support/site/config.yaml');
       return;
     }
-    // The chat modal reads window.AUTH_API_URL for its OAuth + session calls.
+    // The auth modal reads window.AUTH_API_URL for its OAuth + session calls.
     if (cfg.api_url) { window.AUTH_API_URL = cfg.api_url; }
     loadScript(cfg.modal_url, function () {
       if (window.authModal) { window.authModal.show(); }
