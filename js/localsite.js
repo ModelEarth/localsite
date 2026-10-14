@@ -1098,7 +1098,7 @@ function loadLocalTemplate() {
       $(theTemplate).appendTo(datascapeFileDiv);
 
       // The account panel (#accountPanelInserts) now exists — load the chat
-      // repo's in-page sign-in UI into it (config-driven via webroot.yaml).
+      // repo's in-page sign-in UI into it (config-driven via support/site/config.yaml).
       initAuthPlugin();
       initAccountButton();
 
@@ -3705,7 +3705,7 @@ function getStylelookThemeUrl(styleLook) {
       return "";
     }
     if (localStylelookThemes.includes(styleLook)) {
-      return local_app.web_root() + '/cms/themes/' + encodeURIComponent(styleLook) + '.css';
+      return local_app.localsite_root() + 'css/themes/' + encodeURIComponent(styleLook) + '.css';
     }
     if (cvStylelookThemes.includes(styleLook)) {
       const cvThemeRoot = (location.host.indexOf('localhost') >= 0 || location.host.indexOf('127.0.0.1') >= 0)
@@ -4472,12 +4472,12 @@ function adjustAnythingLLMNavigation() {
 // localsite is the universal include on every site, so showAuthModal() is the
 // shared dispatcher. It contains NO auth UI or logic itself — it looks up WHERE
 // the auth modal lives (the adjacent "chat" repo today, configurable in
-// home/webroot.yaml) and loads it. The team repo and every other site reach
+// support/site/config.yaml) and loads it. The team repo and every other site reach
 // auth by calling this function.
 var _authConfigCache = null;
 
 // Minimal extractor for the flat keys under the top-level "auth:" block in
-// home/webroot.yaml. Avoids pulling in a full YAML parser for a few keys.
+// support/site/config.yaml. Avoids pulling in a full YAML parser for a few keys.
 function parseAuthYaml(text, isLocal) {
   var lines = text.split(/\r?\n/);
   var inBlock = false, kv = {};
@@ -4509,7 +4509,7 @@ function resolveAuthConfig(callback) {
 
   // Built-in fallback: the chat app lives under "/chat" when the webroot is the
   // deploy root. (If the deploy root IS the chat repo, set the paths without the
-  // "/chat" prefix via webroot.yaml or window.webrootAuth.)
+  // "/chat" prefix via support/site/config.yaml or window.webrootAuth.)
   var defaults = {
     enabled: true,
     modal_url: webRoot + '/chat/auth/js/auth-modal.js',
@@ -4528,12 +4528,9 @@ function resolveAuthConfig(callback) {
     callback(_authConfigCache);
   }
 
-  // Read the auth: block from whichever webroot.yaml loadWebrootYaml() resolved -
-  // a repo's own /webroot.yaml override when it has one, else the shared
-  // home/webroot.yaml. This reuses the exact same resolution (and fetch,
-  // memoized there) that branding/site config already goes through, so a
-  // repo's own override applies to auth config too instead of this always
-  // reading the shared file directly regardless of what a repo declared.
+  // Read the auth: block from the site config loadWebrootYaml() loaded
+  // (support/site/config.yaml), reusing the same fetch (memoized there)
+  // that branding/site config already goes through.
   if (typeof window.loadWebrootYaml === 'function') {
     window.loadWebrootYaml().then(function (result) {
       if (result && result.text) { applyYamlText(result.text); }
@@ -4543,7 +4540,7 @@ function resolveAuthConfig(callback) {
   }
 
   // Fallback for the rare page that doesn't have loadWebrootYaml available.
-  fetch(webRoot + '/home/webroot.yaml', { cache: 'no-store' })
+  fetch(webRoot + '/support/site/config.yaml', { cache: 'no-store' })
     .then(function (r) { return r.ok ? r.text() : Promise.reject(); })
     .then(applyYamlText)
     .catch(function () { _authConfigCache = defaults; callback(_authConfigCache); });
@@ -4566,7 +4563,7 @@ function initAuthPlugin() {
   });
 }
 
-// Adds a site's own sign-in button to the account panel when webroot.yaml names one at the top level,
+// Adds a site's own sign-in button to the account panel when support/site/config.yaml names one at the top level,
 // e.g. accountButton: "Outlook". Each name maps to the script that draws its button.
 var ACCOUNT_BUTTON_SCRIPTS = {
   Outlook: '/display/team/outlook-button.js' // Microsoft sign-in (display repo)
@@ -4589,7 +4586,7 @@ function showAuthModal() {
   }
   resolveAuthConfig(function (cfg) {
     if (cfg.enabled === false) {
-      consoleLog('[Auth] sign-in disabled in webroot.yaml');
+      consoleLog('[Auth] sign-in disabled in support/site/config.yaml');
       return;
     }
     // The chat modal reads window.AUTH_API_URL for its OAuth + session calls.
@@ -5715,6 +5712,11 @@ function _injectMdEditorStyles() {
     s.textContent = '.md-edit-menu{position:absolute;top:8px;right:8px;z-index:10;font-family:system-ui,sans-serif}'
         + '.md-edit-trigger{background:rgba(255,255,255,.92);border:1px solid #d1d5db;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:18px;padding:0;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.1)}'
         + '.md-edit-trigger:hover{background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}'
+        + '.md-edit-choice{margin:0 0 12px;padding:10px 14px;border-radius:12px;background:#f3f4f6;font:14px/1.5 system-ui,sans-serif;color:#374151}'
+        + '.md-edit-choice button{margin:6px 8px 0 0;padding:5px 14px;border:1px solid #d1d5db;border-radius:16px;background:#fff;cursor:pointer;font-size:13px;color:#374151}'
+        + '.md-edit-choice button:hover{background:#f9fafb}'
+        + '.dark .md-edit-choice{background:#333;color:#eee}'
+        + '.dark .md-edit-choice button{background:#444;border-color:#555;color:#eee}'
         + '.md-edit-dropdown{display:none;position:fixed;background:#fff;border:1px solid #e5e7eb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.12);min-width:140px;overflow:hidden;z-index:9999}'
         + '.md-edit-item{padding:9px 16px;cursor:pointer;font-size:13px;color:#374151}'
         + '.md-edit-item:hover{background:#f9fafb}'
@@ -5732,6 +5734,47 @@ function _injectMdEditorStyles() {
     document.head.appendChild(s);
 }
 
+// Title of the current site in support/site/config.yaml sites, matched like navigation.js:
+// modelsite cookie, then domain_contains, then the default site.
+function _getCurrentSiteTitle() {
+    if (typeof window.loadWebrootYaml !== 'function') return Promise.resolve('');
+    return window.loadWebrootYaml().then(function(result) {
+        var sites = result.sites || {};
+        var modelsite = (typeof Cookies !== 'undefined') ? Cookies.get('modelsite') : null;
+        var site = (modelsite && sites[modelsite]) || null;
+        if (!site) {
+            for (var id in sites) {
+                if (!sites[id].domain_contains) continue;
+                var domains = sites[id].domain_contains.split(',').map(function(d) { return d.trim(); }).filter(Boolean);
+                if (domains.some(function(d) { return location.href.indexOf(d) >= 0; })) { site = sites[id]; break; }
+            }
+        }
+        site = site || sites[result.default];
+        return (site && site.title) || '';
+    }).catch(function() { return ''; });
+}
+
+// Sveltia CMS config that edits one Markdown file, e.g. a README, in the visitor's fork of its repo.
+function _markdownFileCmsConfig(file, fork) {
+    var dir = file.path.indexOf('/') >= 0 ? file.path.replace(/\/[^\/]+$/, '') : '';
+    return {
+        load_config_file: false,
+        backend: { name: 'github', repo: fork, branch: file.branch },
+        media_folder: dir ? dir + '/img' : 'img',
+        collections: [{
+            name: 'page',
+            label: 'Page',
+            editor: { preview: false },
+            files: [{
+                name: 'markdown',
+                label: file.path.split('/').pop(),
+                file: file.path,
+                fields: [{ label: 'Body', name: 'body', widget: 'markdown' }]
+            }]
+        }]
+    };
+}
+
 function _attachMarkdownEditMenu(pagePath, divID) {
     if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
     var container = document.getElementById(divID);
@@ -5743,16 +5786,26 @@ function _attachMarkdownEditMenu(pagePath, divID) {
     var dropdown = document.createElement('div');   dropdown.className = 'md-edit-dropdown';
     var item     = document.createElement('div');   item.className = 'md-edit-item'; item.textContent = 'Edit Content';
 
+    // Loaded now so "Edit Content" can open the GitHub sign-in popup within the click.
+    const cmsJsPath = local_app.localsite_root() + 'js/cms.js';
+    loadScript(cmsJsPath);
+    loadScript(local_app.localsite_root() + 'js/content-repo.js');
+
     var ghAccounts = {'locations.georgia.org': 'georgiadata', 'locations.pages.dev': 'georgiadata'};
     var ghAccount  = ghAccounts[location.hostname] || 'modelearth';
     var ghUrl = 'https://github.com/modelearth';
+    var ghFile = null; // { repo: 'owner/name', branch, path } of the displayed Markdown file
     if (pagePath) {
         var p = pagePath;
         if (p.indexOf('raw.githubusercontent.com') >= 0) {
-            var raw = p.replace('https://raw.githubusercontent.com/', '').split('/');
-            // raw: [user, repo, branch, ...path]
-            if (raw.length >= 3) {
-                ghUrl = 'https://github.com/' + raw[0] + '/' + raw[1] + '/blob/' + raw.slice(2).join('/');
+            var raw = p.split(/[?#]/)[0].replace('https://raw.githubusercontent.com/', '').split('/');
+            // raw: [user, repo, branch, ...path], or [user, repo, 'refs', 'heads', branch, ...path]
+            var refParts = (raw[2] === 'refs' && raw[3] === 'heads') ? 3 : 1;
+            if (raw.length >= 2 + refParts) {
+                var rawBranch = raw[1 + refParts];
+                var rawPath = raw.slice(2 + refParts).join('/');
+                ghUrl = 'https://github.com/' + raw[0] + '/' + raw[1] + '/blob/' + rawBranch + '/' + rawPath;
+                ghFile = { repo: raw[0] + '/' + raw[1], branch: rawBranch, path: rawPath };
             }
         } else {
             var repoName = location.pathname.replace(/^\//, '').split('/')[0];
@@ -5762,6 +5815,7 @@ function _attachMarkdownEditMenu(pagePath, divID) {
             if (repoName) {
                 ghUrl = 'https://github.com/' + ghAccount + '/' + repoName
                     + (filePath ? '/blob/main/' + filePath : '');
+                ghFile = { repo: ghAccount + '/' + repoName, branch: 'main', path: filePath };
             }
         }
     }
@@ -5781,17 +5835,98 @@ function _attachMarkdownEditMenu(pagePath, divID) {
             var rect = trigger.getBoundingClientRect();
             dropdown.style.top  = (rect.bottom + 2) + 'px';
             dropdown.style.left = (rect.right - 140) + 'px';
+            // While the editor is open below this content, the item closes it instead.
+            item.textContent = (window.isCmsOpen && window.isCmsOpen(container)) ? 'Close Editor' : 'Edit Content';
             dropdown.style.display = 'block';
         }
     });
     document.addEventListener('click', function() { dropdown.style.display = 'none'; });
     item.addEventListener('click', function() {
         dropdown.style.display = 'none';
-        const cmsJsPath = local_app.localsite_root() + 'js/cms.js';
-        loadScript(cmsJsPath, function() {
-            // TODO: Will we change config.yml to webroot.yaml
-            //launchCMS({inline:true, target:container, configUrl:'/localsite/edit/config.yml'});
-            launchCMS({inline:true, target:container, configUrl:'/home/webroot.yaml'});
+        // Open the GitHub sign-in popup right away (before any async step, so it isn't blocked),
+        // then start Sveltia CMS signed in, editing this Markdown file in the visitor's fork of
+        // its repo. Without a known file, edit the site's collections in the visitor's fork of
+        // DesktopFolders/content (support/site/config.yaml backend).
+        if (!window.ContentRepo) {
+            console.warn('Edit Content: content-repo.js has not loaded yet. Try again.');
+            return;
+        }
+        if (window.isCmsOpen && window.isCmsOpen(container)) {
+            window.closeCMS();
+            var openChoice = container.querySelector('.md-edit-choice');
+            if (openChoice) openChoice.remove();
+            return;
+        }
+        var file = (ghFile && ghFile.path) ? ghFile : null;
+        var repo = window.ContentRepo;
+        var choice = container.querySelector('.md-edit-choice');
+        if (!choice) {
+            choice = document.createElement('div');
+            choice.className = 'md-edit-choice';
+            container.insertBefore(choice, container.firstChild);
+        }
+        choice.textContent = 'Signing in to GitHub…';
+
+        function launch(fork, branch) {
+            loadScript(cmsJsPath, function() {
+                // Offer only GitHub sign-in, and title the CMS with the current site's title.
+                _getCurrentSiteTitle().then(function(siteTitle) {
+                    var config = file ? _markdownFileCmsConfig(file, fork) : { backend: { repo: fork, branch: 'main' } };
+                    if (file) config.backend.branch = branch;
+                    config.backend.auth_methods = ['oauth'];
+                    if (siteTitle) config.app_title = siteTitle + ' CMS';
+                    // Open this file's editor directly rather than the collection list.
+                    launchCMS({inline:true, target:container, configUrl:window.SITE_CONFIG_PATH, config:config,
+                        route: file ? '#/collections/page/entries/markdown' : undefined});
+                });
+            });
+        }
+
+        // "Editing <repo> on <branch> · Open a pull request" once the editor is chosen.
+        function showEditing(fork, branch) {
+            choice.textContent = 'Editing ' + fork + (file ? ' on ' + branch : '');
+            var compare = null;
+            if (file && fork.toLowerCase() !== file.repo.toLowerCase()) {
+                compare = 'https://github.com/' + file.repo + '/compare/' + file.branch + '...' + fork.split('/')[0] + ':' + fork.split('/')[1] + ':' + branch + '?expand=1';
+            } else if (file && branch !== file.branch) {
+                compare = 'https://github.com/' + file.repo + '/compare/' + file.branch + '...' + branch + '?expand=1';
+            }
+            if (compare) {
+                choice.append(' · ');
+                var link = document.createElement('a');
+                link.href = compare; link.target = '_blank'; link.textContent = 'Open a pull request';
+                choice.append(link);
+            }
+        }
+
+        repo.connect('repo', file ? file.repo : null).then(function(fork) {
+            var isOwner = file && fork.toLowerCase() === file.repo.toLowerCase();
+            if (!isOwner) {
+                showEditing(fork, file ? file.branch : 'main');
+                launch(fork, file ? file.branch : 'main');
+                return;
+            }
+            // GitHub doesn't let an account fork its own repo, so owners pick where to edit.
+            var branchName = 'content-edits';
+            choice.textContent = 'You own ' + file.repo + ', so it can\'t be forked. Edit ' + file.path + ' on:';
+            choice.append(document.createElement('br'));
+            var onBase = document.createElement('button');
+            onBase.type = 'button'; onBase.textContent = file.branch;
+            onBase.title = 'Commit edits directly to ' + file.branch;
+            var onBranch = document.createElement('button');
+            onBranch.type = 'button'; onBranch.textContent = branchName + ' branch';
+            onBranch.title = 'Commit edits to a ' + branchName + ' branch, then open a pull request';
+            onBase.onclick = function() { showEditing(fork, file.branch); launch(fork, file.branch); };
+            onBranch.onclick = function() {
+                choice.textContent = 'Preparing the ' + branchName + ' branch…';
+                repo.ensureBranch(file.repo, file.branch, branchName).then(function() {
+                    showEditing(fork, branchName);
+                    launch(fork, branchName);
+                }).catch(function(err) { choice.textContent = 'Edit Content: ' + err.message; });
+            };
+            choice.append(onBase, onBranch);
+        }).catch(function(err) {
+            choice.textContent = 'Edit Content: ' + err.message;
         });
     });
     ghItem.addEventListener('click', function() {
@@ -5884,10 +6019,42 @@ function defineLaunchCMS() {
         return null;
     }
 
+    // Sveltia CMS opens its entry editor (.content-editor) and Asset Editor (.wrapper[role=group])
+    // as full-window fixed overlays at z-index 100, under the localsite #header (z-index 10001)
+    // and #side-nav-content (10150), which hid their toolbar and Save button. While one is open,
+    // lift #nc-root above both.
+    function injectInlineCmsStyles() {
+        if (document.getElementById('inline-cms-styles')) return;
+        var style = document.createElement('style');
+        style.id = 'inline-cms-styles';
+        style.textContent = '#nc-root:has(.content-editor, .wrapper[role="group"]) { z-index: 10200; }'
+            // Entry fields fill their pane up to 1000px (Sveltia caps them at 768px).
+            + ' #nc-root section.field[role="group"] > * { max-width: 1000px; }'
+            // Sveltia reopens the last sidebar panel even when it's disabled for the entry, e.g. Slug
+            // on a single file like a README ("This entry doesn't have a slug."). Hide it then.
+            + ' #nc-root .sidebar:has(.tabs [role="radio"][aria-checked="true"][aria-disabled="true"]) > #entry-sidebar-content { display: none; }'
+            // Sveltia uses class="content" on its own elements, which picked up base.css's page-level
+            // .content rules (max-width 1100px/1500px, auto margins, side padding, font size), e.g.
+            // narrowing the Body field. :where() keeps this at class specificity, so it overrides
+            // base.css (loaded earlier) while Sveltia's scoped .content.svelte-* rules still win.
+            + ' :where(#nc-root) .content { max-width: none; margin: 0; padding-left: 0; padding-right: 0; font-size: inherit; line-height: inherit; }'
+            // Hide the editor pane's "Edit" title row. Its menu repeats the toolbar menu's Revert/Reset
+            // items, plus View on GitHub, which the Markdown edit menu has. Kept when it holds a locale
+            // switcher (i18n) or the preview toggle (smaller screens), which have no h3 title.
+            + ' #nc-root [id$="-pane-header"]:has(h3) { display: none; }'
+            // Hide the sidebar's Validation tab and panel; the editors here have only simple required
+            // fields. Saving still validates: errors show under each field and in a toast. The tab is
+            // found by position, as its label is translated (sidebar.js: Slug, Validation, History, Backlinks).
+            + ' #nc-root .sidebar .tabs > .inner > [role="radio"]:nth-child(2) { display: none; }'
+            + ' #nc-root .sidebar:has(.tabs > .inner > [role="radio"]:nth-child(2)[aria-checked="true"]) > #entry-sidebar-content { display: none; }';
+        document.head.appendChild(style);
+    }
+
     function prepareInlineCmsRoot(target) {
         var anchor = resolveCmsTarget(target) || document.getElementById('editPageBtn') || document.body;
         var ncRoot = document.getElementById('nc-root');
         var appShell = getExistingCmsShell();
+        injectInlineCmsStyles();
 
         if (!ncRoot) {
             ncRoot = document.createElement('div');
@@ -5930,6 +6097,25 @@ function defineLaunchCMS() {
         }
     }
 
+    // Sveltia CMS can't be unloaded once started, so closing hides #nc-root; launchCMS shows it
+    // again, still signed in. Also drops Sveltia's #/... route from the address bar.
+    window.closeCMS = function() {
+        var ncRoot = document.getElementById('nc-root');
+        if (ncRoot) ncRoot.style.display = 'none';
+        if (location.hash.indexOf('#/') === 0) {
+            history.replaceState(null, '', location.pathname + location.search);
+        }
+    };
+
+    // Whether the inline CMS is showing, optionally right after target (the element it was opened below).
+    window.isCmsOpen = function(target) {
+        var ncRoot = document.getElementById('nc-root');
+        if (!ncRoot || ncRoot.style.display === 'none' || !getExistingCmsShell()) return false;
+        if (!target) return true;
+        var anchor = resolveCmsTarget(target);
+        return !!anchor && ncRoot.previousElementSibling === anchor;
+    };
+
     window.launchCMS = function(options) {
         options = options || {};
         var inline = (typeof options.inline === 'boolean') ? options.inline : !!window.cmsInlineEditor;
@@ -5941,29 +6127,51 @@ function defineLaunchCMS() {
             prepareFullPageCmsRoot();
         }
 
+        // options.route, e.g. '#/collections/page/entries/markdown', opens that view of the CMS.
         if (window.CMS && appShell) {
+            if (options.route) location.hash = options.route; // Sveltia follows hash changes
             return Promise.resolve();
         }
+        if (options.route) history.replaceState(null, '', options.route);
 
         window.CMS_MANUAL_INIT = true;
 
+        // options.config is passed to CMS.init(). Include load_config_file: false to skip
+        // support/site/config.yaml. Sveltia CMS ignores init calls after the first one.
         var startCms = function() {
             if (window.CMS && typeof window.CMS.init === 'function') {
-                window.CMS.init();
+                // The top-level i18n block in support/site/config.yaml is the site's hosting setting,
+                // not Sveltia CMS i18n, so it's cleared unless options.config sets its own.
+                var config = Object.assign({ i18n: undefined }, options.config);
+                // GitHub sign-in relay from the cms: block (CloudRoot Worker's /api/cms/auth).
+                // Without it, Sveltia CMS signs in through Netlify's default service.
+                var siteCms = window.CMS_SITE_CONFIG || {};
+                if (siteCms.auth_base_url) {
+                    config.backend = Object.assign({
+                        base_url: siteCms.auth_base_url,
+                        auth_endpoint: siteCms.auth_endpoint || 'api/cms/auth'
+                    }, config.backend);
+                }
+                window.CMS.init({ config: config });
                 return;
             }
             console.error('launchCMS: window.CMS.init is not available after loading Sveltia CMS.');
         };
 
-        var cmsScriptPath = '/cms/package/dist/sveltia-cms.js';
+        // Use a local build of the git-ignored sveltia-cms reference clone when present, otherwise the npm release.
+        var localCmsScript = '/sveltia-cms/package/dist/sveltia-cms.js';
+        var cdnCmsScript = 'https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js';
+        var cmsScriptPath = fetch(localCmsScript, { method: 'HEAD' })
+            .then(function(r) { return r.ok ? localCmsScript : cdnCmsScript; })
+            .catch(function() { return cdnCmsScript; });
         var ready = (typeof window.loadWebrootYaml === 'function')
             ? window.loadWebrootYaml().catch(function() {
                 return { path: null, text: null, default: '', sites: {} };
             })
             : Promise.resolve();
 
-        return ready.then(function() {
-            loadScript(cmsScriptPath, startCms);
+        return Promise.all([cmsScriptPath, ready]).then(function(results) {
+            loadScript(results[0], startCms);
         });
     };
 
@@ -5993,13 +6201,11 @@ if (document.readyState === 'loading') {
   initNcRoot();
 }
 
-// Loads webroot.yaml using a 3-path fallback chain with sessionStorage caching.
+// Loads the webroot's site config (support/site/config.yaml), remembering in sessionStorage when there isn't one.
 // Parses default: and sites: into window.WEBROOT_CONFIG.
 // Returns a Promise<{ path, text, default, sites }> shared across all callers.
+window.SITE_CONFIG_PATH = '/support/site/config.yaml';
 (function() {
-    // home/webroot.yaml holds the shared defaults. docker/webroot.yaml is the legacy location
-    // (docker repo discontinued); keep it last until every deployed webroot has home/webroot.yaml.
-    var WEBROOT_PATHS = ['/webroot.yaml', '/home/webroot.yaml', '/docker/webroot.yaml'];
     var SESSION_KEY = 'webrootYamlPath';
     var _promise = null;
 
@@ -6037,39 +6243,19 @@ if (document.readyState === 'loading') {
                 window.WEBROOT_CONFIG = config;
                 resolve({ path: path, text: text, default: config.default, sites: config.sites });
             }
-            function tryPath(i) {
-                if (i >= WEBROOT_PATHS.length) {
-                    sessionStorage.setItem(SESSION_KEY, 'none');
-                    resolve({ path: null, text: null, default: '', sites: {} });
-                    return;
-                }
-                fetch(WEBROOT_PATHS[i])
-                    .then(function(r) { return r.ok ? r.text() : null; })
-                    .then(function(t) { t !== null ? done(WEBROOT_PATHS[i], t) : tryPath(i + 1); })
-                    .catch(function() { tryPath(i + 1); });
-            }
-            var cached = sessionStorage.getItem(SESSION_KEY);
-
-            // TEMP — remove in Nov 2026 once browser session caches are cleared.
-            // Clears a stale cached docker/webroot.yaml path so home/webroot.yaml is picked up.
-            if (cached === '/docker/webroot.yaml') {
-                sessionStorage.removeItem(SESSION_KEY);
-                cached = null;
-            }
-
-            if (cached && cached !== 'none') {
-                fetch(cached)
-                    .then(function(r) { return r.ok ? r.text() : null; })
-                    .then(function(t) {
-                        if (t !== null) done(cached, t);
-                        else { sessionStorage.removeItem(SESSION_KEY); tryPath(0); }
-                    })
-                    .catch(function() { sessionStorage.removeItem(SESSION_KEY); tryPath(0); });
-            } else if (cached !== 'none') {
-                tryPath(0);
-            } else {
+            function none() {
+                sessionStorage.setItem(SESSION_KEY, 'none');
                 resolve({ path: null, text: null, default: '', sites: {} });
             }
+            // 'none' means this session already found no config, so skip the request
+            if (sessionStorage.getItem(SESSION_KEY) === 'none') {
+                resolve({ path: null, text: null, default: '', sites: {} });
+                return;
+            }
+            fetch(window.SITE_CONFIG_PATH)
+                .then(function(r) { return r.ok ? r.text() : null; })
+                .then(function(t) { t !== null ? done(window.SITE_CONFIG_PATH, t) : none(); })
+                .catch(none);
         });
         return _promise;
     };

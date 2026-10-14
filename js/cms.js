@@ -1,5 +1,5 @@
-// Fetches the cms: block from the first available webroot.yaml and exposes
-// window.CMS_SITE_CONFIG + window.launchCMS for use by the CMS fork and page buttons.
+// Fetches the cms: block from the site config (support/site/config.yaml) and exposes
+// window.CMS_SITE_CONFIG + window.launchCMS for use by Sveltia CMS and page buttons.
 
 (function() {
   if (typeof window.defineLaunchCMS === 'function') {
@@ -35,6 +35,8 @@
         if (!key) continue;
         if      (key === 'app_title')     cfg.app_title = val;
         else if (key === 'inline_editor') cfg.inline_editor = (val === 'true');
+        else if (key === 'auth_base_url') cfg.auth_base_url = val;
+        else if (key === 'auth_endpoint') cfg.auth_endpoint = val;
         else if (key === 'logo' && !val)  { scope = 'logo'; logoIndent = indent; cfg.logo = {}; }
         else if (key === 'extra_css')     { scope = 'list'; listKey = 'extra_css'; listIndent = indent; }
         else if (key === 'extra_js')      { scope = 'list'; listKey = 'extra_js';  listIndent = indent; }
@@ -71,33 +73,17 @@
     });
   } else {
     // standalone fallback when loaded without localsite.js
-    // home/webroot.yaml holds the shared defaults. docker/webroot.yaml is the legacy location
-    // (docker repo discontinued); keep it last until every deployed webroot has home/webroot.yaml.
-    var WEBROOT_PATHS = ['/webroot.yaml', '/home/webroot.yaml', '/docker/webroot.yaml'];
+    var SITE_CONFIG_PATH = '/support/site/config.yaml';
     var SESSION_KEY = 'webrootYamlPath';
 
-    function tryPath(index) {
-      if (index >= WEBROOT_PATHS.length) { sessionStorage.setItem(SESSION_KEY, 'none'); return; }
-      fetch(WEBROOT_PATHS[index])
+    if (sessionStorage.getItem(SESSION_KEY) !== 'none') {
+      fetch(SITE_CONFIG_PATH)
         .then(function(r) { return r.ok ? r.text() : null; })
         .then(function(text) {
-          if (text !== null) { sessionStorage.setItem(SESSION_KEY, WEBROOT_PATHS[index]); applyCmsConfig(WEBROOT_PATHS[index], text); }
-          else { tryPath(index + 1); }
+          if (text !== null) { sessionStorage.setItem(SESSION_KEY, SITE_CONFIG_PATH); applyCmsConfig(SITE_CONFIG_PATH, text); }
+          else { sessionStorage.setItem(SESSION_KEY, 'none'); }
         })
-        .catch(function() { tryPath(index + 1); });
-    }
-
-    var cached = sessionStorage.getItem(SESSION_KEY);
-    if (cached && cached !== 'none') {
-      fetch(cached)
-        .then(function(r) { return r.ok ? r.text() : null; })
-        .then(function(text) {
-          if (text !== null) { applyCmsConfig(cached, text); }
-          else { sessionStorage.removeItem(SESSION_KEY); tryPath(0); }
-        })
-        .catch(function() { sessionStorage.removeItem(SESSION_KEY); tryPath(0); });
-    } else if (cached !== 'none') {
-      tryPath(0);
+        .catch(function() { sessionStorage.setItem(SESSION_KEY, 'none'); });
     }
   }
 })();

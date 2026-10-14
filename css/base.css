@@ -57,7 +57,7 @@ Used in localsite, modelearth, io, neighborhood, trees
 }
 
 
-/* Shared theme layer for cms/themes/*.css overrides */
+/* Shared theme layer for css/themes/*.css overrides */
 :root {
   --bg-page: #fafafa;
   --bg-card: #ffffff;

@@ -1836,7 +1836,7 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
         });
     }
     
-    // Update logo and favicon from webroot.yaml site.favicon, with JS global fallbacks
+    // Update logo and favicon from support/site/config.yaml site.favicon, with JS global fallbacks
     async updateLogoFromConfig() {
         let siteFavicon = null;
 
@@ -7693,8 +7693,8 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         return local_app.web_root() + assetPath;
     }
     
-    // Site detection and attribute application from webroot.yaml. Resolves the site
-    // (matching the modelsite cookie, then domain_contains, then webroot.yaml's default),
+    // Site detection and attribute application from support/site/config.yaml. Resolves the site
+    // (matching the modelsite cookie, then domain_contains, then support/site/config.yaml's default),
     // corrects a stale/foreign modelsite cookie against it, and updates the favicon.
     // Returns the (possibly corrected) modelsite so the caller can use it for branding.
     function resolveSiteFromWebroot() {
@@ -7722,14 +7722,14 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             }
             // The modelsite cookie is host-only, so it's shared across every localhost port -
             // a leftover cookie from a different local project can point at a site this
-            // webroot.yaml doesn't define. When that happens, reset it to this webroot's
+            // support/site/config.yaml doesn't define. When that happens, reset it to this webroot's
             // resolved site so branding, later page loads, and the #modelsite dropdown are correct.
             if (modelsite && matchMethod !== 'modelsite cookie' && !sites[modelsite] && matchedId) {
                 modelsite = matchedId;
                 Cookies.set('modelsite', matchedId);
                 setModelsite(matchedId);
             }
-            console.log('domain_contains filter from webroot.yaml  - ' + (matchedSite && matchedSite.domain_contains || 'none'));
+            console.log('domain_contains filter from support/site/config.yaml  - ' + (matchedSite && matchedSite.domain_contains || 'none'));
             console.log('domain_contains - ' + location.host + (matchMethod === 'default'
                 ? ' no domain match, using default "' + matchedId + '"'
                 : ' matched "' + matchedId + '" via ' + matchMethod));
@@ -7744,7 +7744,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
     }
 
     // dreamstudio.com's own domain root is unambiguous - brand it immediately without
-    // waiting on webroot.yaml (there may not even be one for that domain).
+    // waiting on support/site/config.yaml (there may not even be one for that domain).
     const isDreamstudioDomainRoot = /(^|\.)dreamstudio\.com$/.test(location.hostname);
 
     if (isDreamstudioDomainRoot) {
@@ -7752,14 +7752,14 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         resolveSiteFromWebroot(); // Background-only: still corrects cookie/favicon, doesn't gate branding.
     } else {
         // Defer the whole branding chain (header, logo, title, footer, side nav, etc.) until
-        // webroot.yaml resolves, so a stale/foreign modelsite cookie is corrected *before*
+        // support/site/config.yaml resolves, so a stale/foreign modelsite cookie is corrected *before*
         // branding renders instead of after. This trades a small delay for correctness on
         // first load; see the NOTE below for a way to avoid the delay being felt at all.
         resolveSiteFromWebroot().then(function(resolvedModelsite) {
             runBranding(resolvedModelsite);
         });
     }
-    // NOTE: if this deferral ever becomes a noticeable delay (slow/offline webroot.yaml
+    // NOTE: if this deferral ever becomes a noticeable delay (slow/offline support/site/config.yaml
     // fetch), a generic/neutral placeholder header could be rendered immediately here and
     // then swapped out once runBranding() applies the resolved site's real branding - that
     // would let markup/other page setup proceed without waiting on this fetch at all.
@@ -8565,7 +8565,7 @@ $(document).on("change", "#accesslocal", function(event) {
 });
 function shouldSyncStylelookToHash() {
     const pathname = (window.location && window.location.pathname ? window.location.pathname : '').replace(/\\/g, '/');
-    return pathname.indexOf('/cms/themes/') >= 0;
+    return pathname.indexOf('/css/themes/') >= 0;
 }
 $(document).on("change", "#stylelook", function(event) { // Style theme
     const nextStylelook = normalizeSharedStylelookValue($("#stylelook").val(), "base");

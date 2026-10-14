@@ -1,34 +1,40 @@
-# AGENTS.md — ModelEarth / sveltia-cms work notes
+# AGENTS.md — ModelEarth / Sveltia CMS work notes
 
-Tracking files for cms submodule work live here in `localsite/editor/`:
-- `PLAN-theming.md` — theming PR roadmap (logo, CSS variables, themes folder)
+Pages load Sveltia CMS from its npm release, or from a local build of `sveltia-cms/`, a git-ignored
+clone of `sveltia/sveltia-cms` kept as a read-only reference. Never commit, push, fork, or send PRs
+from it. Customize the editor from localsite (config, `launchCMS()`, theme CSS) instead of the CMS source.
+
+Tracking files live here in `localsite/edit/`:
+- `PLAN-theming.md` — theming from localsite (CSS variables, themes folder)
 - `PLAN-inline.md` — inline editor implementation plan
-- `PR-NOTES.md` — detailed change specs for upstream PRs
 
 ---
 
-## Repo layout (cms/ submodule)
+## Repo layout
 
 | Path | Purpose |
 |---|---|
-| `cms/src/` | Svelte source — edit here, then rebuild |
-| `cms/package/dist/` | Build output — `pnpm build` from `cms/` root (requires Node ≥22) |
-| `cms/package/schema/` | JSON schema — auto-regenerated on build from `src/lib/types/public.js` |
-| `cms/themes/` | CSS variable theme overrides; `themes/index.html` is the preview page |
+| `sveltia-cms/src/` | Upstream Svelte source — read only |
+| `sveltia-cms/package/dist/` | Optional local build, used by `launchCMS()` when present — `pnpm build` from `sveltia-cms/` |
+| `support/site/config.yaml` | Site config: `backend`, `collections`, and the `cms:` block read by `localsite/js/cms.js` |
+| `localsite/css/themes/` | CSS variable theme overrides; `themes/index.html` is the preview page |
 
 ## Build
 
+Optional: pull `sveltia-cms` to update it, then build locally. Without a build, pages use
+the npm release from unpkg.
+
 ```bash
-source ~/.nvm/nvm.sh && nvm use 22
-cd cms
+cd sveltia-cms
+source ~/.nvm/nvm.sh && nvm use   # Node version from .nvmrc
+pnpm install
 pnpm build
 ```
 
 ## Theme files
 
-CSS files in `cms/themes/` are the source of truth.
-`cms/themes/index.html` loads them from `/sveltia-cms/themes/`.
-Do not duplicate them back into localsite.
+CSS files in `localsite/css/themes/` are the source of truth.
+`localsite/css/themes/index.html` is the preview page.
 
 ## Inline editor
 

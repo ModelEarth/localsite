@@ -7,38 +7,355 @@
     <link type="text/css" rel="stylesheet" href="/localsite/css/base.css" id="/localsite/css/base.css" />
     <script type="text/javascript" src="/localsite/js/localsite.js?showheader=true&showsearch=true"></script>
  <script>
-loadMarkdown("README.md", "readmeDiv", "_parent");
+loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/heads/main/README.md", "readmeDiv", "_parent");
 </script>
+    <script type="text/javascript" src="/localsite/js/content-repo.js"></script>
+    <style>
+      .contentImageGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 14px;
+        margin: 12px 0 20px;
+      }
+      .contentImageCard {
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .contentImageCard img {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        display: block;
+        border-radius: 14px;
+      }
+      .contentImageCard .contentImageBody {
+        padding: 8px 10px 10px;
+        font-size: 14px;
+      }
+      .contentImageCard .contentImageRow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .contentImageCard .contentImageName {
+        text-transform: capitalize;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .contentImageCard .contentImageRow .btn {
+        flex-shrink: 0;
+      }
+      .contentImageStatus {
+        font-size: 13px;
+        color: #555;
+      }
+      .contentImageStatus:not(:empty) {
+        margin-top: 6px;
+      }
+      /* Buttons sit right of the text, and wrap below it on the left when narrow */
+      .contentIntro {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px 20px;
+      }
+      .contentIntroText {
+        flex: 1 1 280px;
+      }
+      .contentIntroActions {
+        display: flex;
+        gap: 8px;
+      }
+      .contentSetup {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 14px;
+        margin: 8px 0 4px;
+        font-size: 14px;
+      }
+      .contentSetup ol {
+        margin: 8px 0;
+        padding-left: 20px;
+      }
+      .contentAccount {
+        margin: 6px 0 4px;
+      }
+      .dark .contentImageStatus {
+        color: #bbb;
+      }
+    </style>
 </head>
 
   <body>
     <div class="content contentpadding">
 
       <h1>File Editor</h1>
-
-      The Edit Files uses Sveltia CMS to edit the collections/files defined in webroot.yaml — it's a full Sveltia CMS interface, not a targeted editor for a particular div on the page.  Settings are loaded from webroot.yaml via localsite/js/cms.js<br><br>
       <!--
-      /localsite/js/cms.js' loads /cms/package/dist/sveltia-cms.js
+      launchCMS() in localsite.js loads /sveltia-cms/package/dist/sveltia-cms.js when a local build exists,
+      otherwise the npm release from unpkg. Sveltia CMS mounts inside #nc-root, which launchCMS
+      inserts after the button, so the editor appears inline.
       -->
-
-      <div id="editPageBtn" class="btn btn-med" onclick="var opts = {inline:true, target:'#editPageBtn'}; loadScript('/localsite/js/cms.js', function() { launchCMS(opts); });">Edit Files</div><br><br>
-
-     
-      <!--
-      sveltia-cms.js (in the cms repo) hardcodes nc-root as its mount point — we can't rename what the CMS
-    script actually uses. But we can fix the conflict in launchCMS by treating an empty #nc-root as a static placeholder and removing
-    it before the CMS creates its real one.
-        -->
-   
-    
 
       <div id="readmeDiv"></div>
 
       The icon to the right edits just the readme file.<br><br>
 
-      <a href="../../cms/themes/">Theme Styles</a> | <a href="https://sveltiacms.app">About Sveltia CMS</a>
+      <h2>Example: edit one file on GitHub</h2>
+
+      Edit README opens Sveltia CMS with its own config, passed to <code>CMS.init()</code> through <code>launchCMS({config})</code>. It edits only <code>edit/README.md</code> in the ModelEarth/localsite repo and skips support/site/config.yaml (<code>load_config_file: false</code>). On localhost, choose "Sign In with Token" and paste a GitHub personal access token.<br><br>
+
+      <div id="editReadmeBtn" class="btn btn-med" onclick="openEditor('readme')">Edit README</div><br><br>
+
+      <pre class="codetext" id="readmeConfigExample"></pre>
+
+      <h2>Save images to your own content repo</h2>
+
+      <div class="contentIntro">
+        <div class="contentIntroText">Sign in with GitHub to save a US state image to your own fork of <a href="https://github.com/DesktopFolders/content">DesktopFolders/content</a>.</div>
+        <div class="contentIntroActions">
+          <div id="contentSignInBtn" class="btn btn-med" onclick="contentSignIn()">GitHub Signin</div>
+          <div id="editContentBtn" class="btn btn-med" onclick="openEditor('content')" style="display:none">Edit My Content</div>
+        </div>
+      </div>
+      <div class="contentAccount" id="contentAccount"></div>
+
+      <div class="local contentSetup">
+        <b>Activate GitHub sign-in</b> (shown on localhost)
+        <ol>
+          <li><a href="https://github.com/settings/applications/new" target="_blank">Register a GitHub OAuth app</a> with Application name <b><span id="setupAppName">[site title]</span> CMS</b> (GitHub's popup shows "Authorize" plus this name) and Authorization callback URL <code>https://cloud.model.earth/api/cms/callback</code></li>
+          <li>Add its <code>CMS_GITHUB_CLIENT_ID</code> and <code>CMS_GITHUB_CLIENT_SECRET</code> to your local env file, then run <code>./automation/sync-config.sh</code> in CloudRoot (<a href="https://github.com/ModelEarth/cloudroot/blob/main/automation/README.md#cms-sign-in" target="_blank">CMS sign-in steps</a>)</li>
+          <li><a href="https://github.com/ModelEarth/cloudroot/settings/secrets/actions" target="_blank">Check the CloudRoot secrets</a>, then <a href="https://github.com/ModelEarth/cloudroot/actions/workflows/deploy-worker.yml" target="_blank">run Deploy Worker</a></li>
+          <li>Uncomment <code>auth_base_url</code> and <code>auth_endpoint</code> in the <code>cms:</code> block of <a href="/support/site/config.yaml" target="_blank">support/site/config.yaml</a></li>
+        </ol>
+        Until then, sign-in goes through Netlify's service ("Authorize Netlify CMS"). For the editors' "Sign In with Token" option, <a href="https://github.com/settings/tokens/new?scopes=public_repo&description=Content%20Tools" target="_blank">create a personal access token</a>.
+      </div>
+
+      <div class="contentImageGrid" id="contentImageGrid"></div>
+
+      <h2>Edit site files</h2>
+
+      Edit Files uses Sveltia CMS to edit the collections/files defined in support/site/config.yaml — it's a full Sveltia CMS interface, not a targeted editor for a particular div on the page. Settings are loaded from support/site/config.yaml via localsite/js/cms.js. Your edits are saved in your own fork of DesktopFolders/content, which is created the first time you sign in.<br><br>
+
+      <div id="editPageBtn" class="btn btn-med" onclick="openEditor('files')">Edit Files</div>
+      <div class="contentImageStatus" id="filesEditorStatus"></div><br>
+
+      <a href="../css/themes/">Theme Styles</a> | <a href="https://sveltiacms.app">About Sveltia CMS</a>
 
     </div>
+
+    <script>
+    var readmeEditorConfig = {
+      load_config_file: false,
+      app_title: 'Content Tools',
+      logo: { src: '/localsite/img/icon/edit/content-tools.svg' },
+      backend: { name: 'github', repo: 'ModelEarth/localsite', branch: 'main' },
+      media_folder: 'edit/img',
+      collections: [{
+        name: 'edit',
+        label: 'Edit page',
+        editor: { preview: false },
+        files: [{
+          name: 'readme',
+          label: 'README',
+          file: 'edit/README.md',
+          fields: [{ label: 'Body', name: 'body', widget: 'markdown' }]
+        }]
+      }]
+    };
+    // Edits the visitor's fork of DesktopFolders/content, with saved images in img/.
+    function contentEditorConfig(fork) {
+      return {
+        load_config_file: false,
+        app_title: 'Content Tools',
+        logo: { src: '/localsite/img/icon/edit/content-tools.svg' },
+        backend: { name: 'github', repo: fork, branch: 'main' },
+        media_folder: 'img',
+        public_folder: '/img',
+        collections: [{
+          name: 'pages',
+          label: 'Pages',
+          folder: 'pages',
+          create: true,
+          editor: { preview: false },
+          fields: [
+            { label: 'Title', name: 'title', widget: 'string' },
+            { label: 'Body', name: 'body', widget: 'markdown' }
+          ]
+        }]
+      };
+    }
+    var editorLaunchOptions = {
+      // The site config's collections, stored in the visitor's fork of DesktopFolders/content.
+      files: function() {
+        var status = document.getElementById('filesEditorStatus');
+        status.textContent = ContentRepo.getToken() ? 'Opening your content repo…' : '';
+        return ContentRepo.connect('repo').then(function(fork) {
+          status.textContent = 'Editing ' + fork;
+          return { inline: true, target: '#editPageBtn', config: { backend: { repo: fork, branch: 'main' } } };
+        }).catch(function(err) {
+          status.textContent = err.message;
+          return null;
+        });
+      },
+      readme: function() { return { inline: true, target: '#editReadmeBtn', config: readmeEditorConfig }; },
+      content: function() {
+        var fork = ContentRepo.getFork();
+        return fork ? { inline: true, target: '#contentImageGrid', config: contentEditorConfig(fork) } : null;
+      }
+    };
+    var activeEditor = null;
+
+    // Each editor's button, and the element the editor opens below.
+    var editorButtons = { readme: 'editReadmeBtn', files: 'editPageBtn', content: 'editContentBtn' };
+    var editorTargets = { readme: '#editReadmeBtn', files: '#editPageBtn', content: '#contentImageGrid' };
+
+    // While its editor is open, a button reads "Close Editor".
+    function setEditorButton(name, open) {
+      var button = document.getElementById(editorButtons[name]);
+      if (!button) return;
+      if (!button.dataset.label) button.dataset.label = button.textContent;
+      button.textContent = open ? 'Close Editor' : button.dataset.label;
+    }
+
+    function openEditor(name) {
+      if (!editorLaunchOptions[name]) return;
+      if (activeEditor === name && window.isCmsOpen && isCmsOpen(editorTargets[name])) {
+        closeCMS();
+        setEditorButton(name, false);
+        return;
+      }
+      // Sveltia CMS runs one config per page load, so switching editors reloads with #editor=name.
+      if (activeEditor && activeEditor !== name) {
+        updateHash({ editor: name });
+        window.location.reload();
+        return;
+      }
+      // Called within the click, so a sign-in popup from "files" isn't blocked.
+      Promise.resolve(editorLaunchOptions[name]()).then(function(options) {
+        if (!options) return;
+        activeEditor = name;
+        updateHash({ editor: name });
+        loadScript('/localsite/js/cms.js', function() { launchCMS(options); });
+        setEditorButton(name, true);
+      });
+    }
+
+    document.getElementById('readmeConfigExample').textContent = 'launchCMS({ inline: true, target: \'#editReadmeBtn\', config: '
+      + JSON.stringify(readmeEditorConfig, null, 2) + ' });';
+
+    // ── Save us-states images to the visitor's content fork ──
+    var US_STATES_IMAGES = { owner: 'ModelEarth', repo: 'us-states', branch: 'master', path: 'images/backgrounds/960x540/landscape' };
+
+    function showContentAccount() {
+      var account = document.getElementById('contentAccount');
+      var signedIn = !!ContentRepo.getToken();
+      var fork = ContentRepo.getFork();
+      document.getElementById('contentSignInBtn').style.display = signedIn ? 'none' : '';
+      document.getElementById('editContentBtn').style.display = fork ? '' : 'none';
+      account.textContent = '';
+      if (!signedIn) return;
+      ContentRepo.getUser().then(function(user) {
+        account.append('Signed in as ');
+        var userLink = document.createElement('a');
+        userLink.href = user.html_url; userLink.textContent = '@' + user.login; userLink.target = '_blank';
+        account.append(userLink);
+        if (fork) {
+          account.append(' · Your content repo: ');
+          var forkLink = document.createElement('a');
+          forkLink.href = 'https://github.com/' + fork + '/tree/main/img'; forkLink.textContent = fork + '/img'; forkLink.target = '_blank';
+          account.append(forkLink);
+        }
+        account.append(' · ');
+        var signOut = document.createElement('a');
+        signOut.href = '#'; signOut.textContent = 'Sign out';
+        signOut.onclick = function(e) { e.preventDefault(); ContentRepo.signOut(); showContentAccount(); };
+        account.append(signOut);
+      }).catch(function() {
+        // Expired or revoked token
+        ContentRepo.signOut();
+        showContentAccount();
+      });
+    }
+
+    function contentSignIn() {
+      ContentRepo.signIn('public_repo').then(showContentAccount).catch(function(err) {
+        document.getElementById('contentAccount').textContent = err.message;
+      });
+    }
+
+    function saveContentImage(file, status) {
+      // Sign in first if needed; signIn() opens its popup right away, within the click.
+      var ready = ContentRepo.getToken() ? Promise.resolve() : ContentRepo.signIn('public_repo');
+      status.textContent = 'Saving…';
+      ready
+        .then(function() {
+          status.textContent = ContentRepo.getFork() ? 'Saving…' : 'Creating your fork of ' + ContentRepo.upstream + '…';
+          return ContentRepo.ensureFork();
+        })
+        .then(function(fork) {
+          status.textContent = 'Saving…';
+          return ContentRepo.saveFromUrl(fork, 'img/' + file.name, file.download_url,
+            'Add img/' + file.name + ' from ' + US_STATES_IMAGES.owner + '/' + US_STATES_IMAGES.repo);
+        })
+        .then(function(saved) {
+          status.textContent = 'Saved to ';
+          var link = document.createElement('a');
+          link.href = saved.html_url; link.textContent = saved.path; link.target = '_blank';
+          status.append(link);
+          showContentAccount();
+        })
+        .catch(function(err) { status.textContent = err.message; });
+    }
+
+    // Lists the folder with the GitHub API (no key needed), like explore.js on requests/index.html.
+    function loadContentImages(count) {
+      var grid = document.getElementById('contentImageGrid');
+      var s = US_STATES_IMAGES;
+      fetch('https://api.github.com/repos/' + s.owner + '/' + s.repo + '/contents/' + s.path + '?ref=' + s.branch)
+        .then(function(r) { return r.ok ? r.json() : Promise.reject(new Error('GitHub API: ' + r.status)); })
+        .then(function(files) {
+          files.filter(function(f) { return f.type === 'file' && /\.(jpe?g|png|gif|webp)$/i.test(f.name); })
+            .slice(0, count)
+            .forEach(function(file) {
+              var card = document.createElement('div'); card.className = 'contentImageCard';
+              var img = document.createElement('img'); img.src = file.download_url; img.alt = file.name; img.loading = 'lazy';
+              var body = document.createElement('div'); body.className = 'contentImageBody';
+              var name = document.createElement('div'); name.className = 'contentImageName';
+              name.textContent = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+              var btn = document.createElement('div'); btn.className = 'btn btn-med'; btn.textContent = 'Save';
+              btn.title = 'Save to your content repo';
+              var status = document.createElement('div'); status.className = 'contentImageStatus';
+              btn.onclick = function() { saveContentImage(file, status); };
+              var row = document.createElement('div'); row.className = 'contentImageRow';
+              row.append(name, btn);
+              body.append(row, status);
+              card.append(img, body);
+              grid.append(card);
+            });
+        })
+        .catch(function(err) {
+          grid.textContent = 'Could not load images (' + err.message + '). The GitHub API allows 60 requests an hour without a key.';
+        });
+    }
+
+    // Loads the cms: block (auth_base_url) before a sign-in click needs it.
+    loadScript('/localsite/js/cms.js');
+    loadContentImages(5);
+    showContentAccount();
+    // OAuth app name for the localhost setup steps, from support/site/config.yaml sites.
+    _getCurrentSiteTitle().then(function(title) {
+      if (title) document.getElementById('setupAppName').textContent = title;
+    });
+
+    var initialEditor = getHash().editor;
+    if (editorLaunchOptions[initialEditor]) openEditor(initialEditor);
+    </script>
 
   </body>
 </html>
