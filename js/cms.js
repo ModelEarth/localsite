@@ -67,6 +67,21 @@
     }
   }
 
+  // Sveltia CMS sets <html data-theme> from its Appearance preference. While that's Auto (the default,
+  // which follows the system setting), follow the page's .dark mode instead. A Light or Dark choice in
+  // Sveltia's settings (data-auto-theming="false") is left alone.
+  function syncCmsTheme() {
+    var root = document.documentElement;
+    if (!document.body || root.dataset.autoTheming !== 'true') return;
+    var theme = document.body.classList.contains('dark') ? 'dark' : 'light';
+    if (root.dataset.theme !== theme) root.dataset.theme = theme;
+  }
+  new MutationObserver(syncCmsTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-auto-theming'] });
+  document.addEventListener('sitelookchange', syncCmsTheme);
+  if (document.body) {
+    new MutationObserver(syncCmsTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  }
+
   if (typeof window.loadWebrootYaml === 'function') {
     window.loadWebrootYaml().then(function(result) {
       if (result.text) applyCmsConfig(result.path, result.text);
