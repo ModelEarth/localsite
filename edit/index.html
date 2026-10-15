@@ -76,7 +76,7 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
         width: 100%;
         padding: 12px 16px;
         border-radius: 14px;
-        margin: 8px 0 4px;
+        margin: 8px 0 20px;
         font-size: 14px;
       }
       .contentSetup ol {
@@ -102,6 +102,24 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
       inserts after the button, so the editor appears inline.
       -->
 
+      <div class="local contentSetup" id="contentSetup">
+        <b>Activate GitHub sign-in</b> (shown on localhost)<br>
+        The site admin registers one GitHub OAuth app, once. All site users sign in through that same app: GitHub asks each of them to authorize it, and the token it issues works only with their own account and forks. Users don't register an app of their own.
+        <ol>
+          <li><a href="https://github.com/settings/applications/new" target="_blank">Register a GitHub OAuth app</a> with Application name <b><span id="setupAppName">[site title]</span> CMS</b> (GitHub's popup shows "Authorize" plus this name), your site's address as Homepage URL, and Redirect URI <code>https://cloud.model.earth/api/cms/callback</code>.
+            <ul>
+              <li>Leave off "Allow wildcard matching": the sign-in server always uses this exact URI, so GitHub sends sign-in codes only there.</li>
+              <li>Leave off "Enable Device Flow": it's for command-line tools and devices without a browser, where users type a code at github.com/login/device. Sign-in here uses the browser popup instead, and with Device Flow on, anyone with the app's public client ID could ask users to enter a code that appears to come from your app.</li>
+              <li>Checking "Expire user access tokens" will require daily logins: each token stops working after 8 hours, and users sign in again. A leaked token is then usable for only 8 hours, rather than until the user revokes the app.</li>
+            </ul>
+          </li>
+          <li>Add its <code>CMS_GITHUB_CLIENT_ID</code> and <code>CMS_GITHUB_CLIENT_SECRET</code> to your local env file, then run <code>./automation/sync-config.sh</code> in CloudRoot (<a href="https://github.com/ModelEarth/cloudroot/blob/main/automation/README.md#cms-sign-in" target="_blank">CMS sign-in steps</a>)</li>
+          <li><a href="https://github.com/ModelEarth/cloudroot/settings/secrets/actions" target="_blank">Check the CloudRoot secrets</a>, then <a href="https://github.com/ModelEarth/cloudroot/actions/workflows/deploy-worker.yml" target="_blank">run Deploy Worker</a></li>
+          <li>Uncomment <code>auth_base_url</code> and <code>auth_endpoint</code> in the <code>cms:</code> block of <a href="/support/site/config.yaml" target="_blank">support/site/config.yaml</a></li>
+        </ol>
+        Until then, sign-in goes through Netlify's service ("Authorize Netlify CMS"). For the editors' "Sign In with Token" option, <a href="https://github.com/settings/tokens/new?scopes=public_repo&description=Content%20Tools" target="_blank">create a personal access token</a>.
+      </div>
+
       <div id="readmeDiv"></div>
 
       The icon to the right edits just the readme file.<br><br>
@@ -124,17 +142,6 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
         </div>
       </div>
       <div class="contentAccount" id="contentAccount"></div>
-
-      <div class="local contentSetup">
-        <b>Activate GitHub sign-in</b> (shown on localhost)
-        <ol>
-          <li><a href="https://github.com/settings/applications/new" target="_blank">Register a GitHub OAuth app</a> with Application name <b><span id="setupAppName">[site title]</span> CMS</b> (GitHub's popup shows "Authorize" plus this name) and Authorization callback URL <code>https://cloud.model.earth/api/cms/callback</code></li>
-          <li>Add its <code>CMS_GITHUB_CLIENT_ID</code> and <code>CMS_GITHUB_CLIENT_SECRET</code> to your local env file, then run <code>./automation/sync-config.sh</code> in CloudRoot (<a href="https://github.com/ModelEarth/cloudroot/blob/main/automation/README.md#cms-sign-in" target="_blank">CMS sign-in steps</a>)</li>
-          <li><a href="https://github.com/ModelEarth/cloudroot/settings/secrets/actions" target="_blank">Check the CloudRoot secrets</a>, then <a href="https://github.com/ModelEarth/cloudroot/actions/workflows/deploy-worker.yml" target="_blank">run Deploy Worker</a></li>
-          <li>Uncomment <code>auth_base_url</code> and <code>auth_endpoint</code> in the <code>cms:</code> block of <a href="/support/site/config.yaml" target="_blank">support/site/config.yaml</a></li>
-        </ol>
-        Until then, sign-in goes through Netlify's service ("Authorize Netlify CMS"). For the editors' "Sign In with Token" option, <a href="https://github.com/settings/tokens/new?scopes=public_repo&description=Content%20Tools" target="_blank">create a personal access token</a>.
-      </div>
 
       <div class="contentImageGrid" id="contentImageGrid"></div>
 
@@ -199,7 +206,7 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
           status.textContent = 'Editing ' + fork;
           return { inline: true, target: '#editPageBtn', config: { backend: { repo: fork, branch: 'main' } } };
         }).catch(function(err) {
-          status.textContent = err.message;
+          showSignInError(status, err);
           return null;
         });
       },
@@ -283,9 +290,23 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
       });
     }
 
+    // Shows a sign-in error in el. When the relay has no OAuth app yet, points to the
+    // setup steps at the top of the page (visible on localhost), or to the site admin.
+    function showSignInError(el, err) {
+      el.textContent = err.message;
+      if (err.code !== 'MISCONFIGURED_CLIENT') return;
+      if (document.getElementById('contentSetup').offsetParent) {
+        var link = document.createElement('a');
+        link.href = '#contentSetup'; link.textContent = 'Setup steps';
+        el.append(' ', link);
+      } else {
+        el.append(' Ask the site admin to activate GitHub sign-in.');
+      }
+    }
+
     function contentSignIn() {
       ContentRepo.signIn('public_repo').then(showContentAccount).catch(function(err) {
-        document.getElementById('contentAccount').textContent = err.message;
+        showSignInError(document.getElementById('contentAccount'), err);
       });
     }
 
@@ -310,7 +331,7 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
           status.append(link);
           showContentAccount();
         })
-        .catch(function(err) { status.textContent = err.message; });
+        .catch(function(err) { showSignInError(status, err); });
     }
 
     // Lists the folder with the GitHub API (no key needed), like explore.js on requests/index.html.

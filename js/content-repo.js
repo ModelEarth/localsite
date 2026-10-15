@@ -5,7 +5,7 @@
 
 (function() {
     var UPSTREAM = 'DesktopFolders/content';
-    var TOKEN_KEY = 'contentRepoToken';   // sessionStorage: cleared when the tab closes
+    var TOKEN_KEY = 'contentRepoToken';   // localStorage: shared by every page until sign-out
     var FORK_KEY = 'contentRepoFork';     // localStorage: the visitor's fork, e.g. "octocat/content"
     var API = 'https://api.github.com';
 
@@ -50,20 +50,29 @@
                 var result = {};
                 try { result = JSON.parse(match[2]); } catch (e) { result = { error: 'Malformed sign-in response.' }; }
                 if (match[1] === 'success' && result.token) {
-                    sessionStorage.setItem(TOKEN_KEY, result.token);
+                    localStorage.setItem(TOKEN_KEY, result.token);
                     resolve(result.token);
                 } else {
-                    reject(new Error(result.error || 'Sign-in failed.'));
+                    // code is e.g. MISCONFIGURED_CLIENT when the relay has no OAuth app yet.
+                    var error = new Error(result.error || 'Sign-in failed.');
+                    error.code = result.errorCode;
+                    reject(error);
                 }
             }
             window.addEventListener('message', onMessage);
         });
     }
 
-    function getToken() { return sessionStorage.getItem(TOKEN_KEY); }
+    function getToken() { return localStorage.getItem(TOKEN_KEY); }
 
+    var CMS_USER_KEY = 'sveltia-cms.user';
+
+    // Also signs Sveltia CMS out when it holds the same token.
     function signOut() {
-        sessionStorage.removeItem(TOKEN_KEY);
+        var token = getToken(), cached = null;
+        try { cached = JSON.parse(localStorage.getItem(CMS_USER_KEY)); } catch (e) {}
+        if (token && cached && cached.token === token) localStorage.removeItem(CMS_USER_KEY);
+        localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(FORK_KEY);
     }
 
@@ -144,12 +153,13 @@
 
     // Lets Sveltia CMS start signed in with this token, so it skips its own sign-in page.
     // Sveltia signs in automatically from a cached { backendName, token } user (the
-    // Netlify/Decap CMS format). An existing cached user is left alone.
+    // Netlify/Decap CMS format). A different cached token is replaced, since it may have
+    // expired (GitHub OAuth apps can expire tokens after 8 hours).
     function useTokenInCms(token) {
-        var key = 'sveltia-cms.user', cached = null;
-        try { cached = JSON.parse(localStorage.getItem(key)); } catch (e) {}
-        if (cached && cached.token) return;
-        localStorage.setItem(key, JSON.stringify({ backendName: 'github', token: token }));
+        var cached = null;
+        try { cached = JSON.parse(localStorage.getItem(CMS_USER_KEY)); } catch (e) {}
+        if (cached && cached.token === token) return;
+        localStorage.setItem(CMS_USER_KEY, JSON.stringify({ backendName: 'github', token: token }));
     }
 
     // Signs in if needed (call from a click so the popup isn't blocked), makes sure the
