@@ -87,13 +87,14 @@ function cartoOrEsri(cartoStyle, esriCanvas, options) {
   const esriLayers = () => esriCanvas.map((name, i) => withFilter(L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/' + (name.includes('/') ? name : 'Canvas/' + name) + '/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 18, maxNativeZoom: 16, // Esri Canvas tiles stop at 16, then scale up
     isMapTitles: /Reference|Boundaries_and_Places/.test(name),
+    zIndex: /Reference|Boundaries_and_Places/.test(name) ? MAP_TITLES_ZINDEX : MAP_BACKGROUND_ZINDEX,
     attribution: i === 0 ? prefix + 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' : ''
   }), options.esriFilter));
   if (!window.cartoApiKey) {
     return L.featureGroup(esriLayers());
   }
   const cartoLayer = withFilter(L.tileLayer('https://{s}.basemaps.cartocdn.com/' + cartoStyle + '/{z}/{x}/{y}.png?key=' + window.cartoApiKey, {
-    maxZoom: 18,
+    maxZoom: 18, zIndex: MAP_BACKGROUND_ZINDEX,
     attribution: prefix + '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
   }), options.filter);
   const group = L.featureGroup([cartoLayer]);
@@ -109,7 +110,8 @@ function cartoOrEsri(cartoStyle, esriCanvas, options) {
       if (options.labels) {
         layers.forEach(layer => layer.bringToFront());
       } else {
-        layers.slice().reverse().forEach(layer => layer.bringToBack());
+        // Explicit z-indexes rather than bringToBack, which stacks relative to whatever tiles are on the map now
+        layers.forEach(layer => layer.setZIndex(layer.options.isMapTitles ? MAP_TITLES_ZINDEX : MAP_BACKGROUND_ZINDEX));
       }
     }
   };
@@ -187,6 +189,13 @@ document.addEventListener('sitelookchange', function() {
     }
   });
 });
+
+// Tile stacking order. Leaflet's built-in layers control set z-indexes; createLayersControl doesn't, so tiles set their own.
+// Background tiles are below Leaflet's default of 1, so any tile layer, even one without a z-index, draws above them.
+// Titles sit above transit lines. (Within Leaflet's tile pane, so lines, markers and popups in other panes stay on top.)
+const MAP_BACKGROUND_ZINDEX = -1;
+const MAP_OVERLAY_TILES_ZINDEX = 10;
+const MAP_TITLES_ZINDEX = 99;
 
 // MAP HASH - shared by localsite/js/map.js and team/js/leaflet.js
 // tiles (top or main map) and tiles2 (side or detail map) hold the background tiles,
@@ -599,11 +608,11 @@ const MAP_TRANSIT_LAYERS = [
   {id: 'marta-bus', label: 'MARTA Bus', states: ['GA'], create: () => transitRouteLayer(theroot + 'map/transit/marta-bus.geojson', 2, 0.7, MARTA_ATTRIBUTION)},
   // OpenPTMap: worldwide rail, tram and bus routes from OpenStreetMap, as a transparent overlay
   {id: 'public-transit', label: 'Public Transit', create: () => L.tileLayer('https://pt.facilmap.org/tile/{z}/{x}/{y}.png', {
-    minZoom: 3, maxZoom: 19, maxNativeZoom: 18, tileSize: 256, opacity: 0.8,
+    minZoom: 3, maxZoom: 19, maxNativeZoom: 18, tileSize: 256, opacity: 0.8, zIndex: MAP_OVERLAY_TILES_ZINDEX,
     attribution: '<a href="https://wiki.openstreetmap.org/wiki/Openptmap">OpenPTMap</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   })},
   {id: 'freight-rail', label: 'Freight Rail', create: () => L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
-    minZoom: 2, maxZoom: 19, tileSize: 256, attribution: '<a href="https://www.openrailwaymap.org/">OpenRailwayMap</a>'
+    minZoom: 2, maxZoom: 19, tileSize: 256, zIndex: MAP_OVERLAY_TILES_ZINDEX, attribution: '<a href="https://www.openrailwaymap.org/">OpenRailwayMap</a>'
   })}
 ];
 const MARTA_ATTRIBUTION = '<a href="https://itsmarta.com/app-developer-resources.aspx">MARTA GTFS</a>';

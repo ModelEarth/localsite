@@ -3103,10 +3103,12 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       'Grayscale' : cartoOrEsri('light_all', ['World_Light_Gray_Base', 'World_Light_Gray_Reference'], {attributionPrefix: '<a href="https://neighborhood.org">Neighborhood.org</a> | '}),
       // Mapbox satellite needs window.mapboxAccessToken, which isn't set, so Esri World Imagery (no key) is used.
       'Satellite' : L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            zIndex: MAP_BACKGROUND_ZINDEX,
             maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
       }),
       //'Streets' : L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr}),
       'OpenStreetMap' : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          zIndex: MAP_BACKGROUND_ZINDEX,
           maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
       }),
       ...darkBasemaps('<a href="https://neighborhood.org">Neighborhood.org</a> | '), // Dark Mode and Darker Mode, see localsite.js

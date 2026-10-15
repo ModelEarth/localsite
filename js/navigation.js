@@ -4616,9 +4616,10 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                   'Grayscale' : cartoOrEsri('light_all', ['World_Light_Gray_Base', 'World_Light_Gray_Reference'], {attributionPrefix: '<a href="https://neighborhood.org">Neighborhood.org</a> | '}),
                   // OpenStreetMap
                   'Street Map' : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                      zIndex: MAP_BACKGROUND_ZINDEX,
                       maxZoom: 19, attribution: '<a href="https://neighborhood.org">Neighborhood.org</a> | <a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
                   }),
-                  'Satellite' : L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 19, attribution: esriImageryAttr}),
+                  'Satellite' : L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 19, zIndex: MAP_BACKGROUND_ZINDEX, attribution: esriImageryAttr}),
                   ...darkBasemaps('<a href="https://neighborhood.org">Neighborhood.org</a> | '), // Dark Mode and Darker Mode, see localsite.js
                 }
 
