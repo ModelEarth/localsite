@@ -1,0 +1,283 @@
+/* Maestro (maestropro.io) style overrides for the shared theme layer in base.css */
+
+/* Metropolis webfont (Unlicense) via Fontsource on jsDelivr.
+   maestropro.io self-hosts .otf files without CORS headers, so they can't be loaded cross-origin.
+   @font-face only downloads a weight when an element using Metropolis renders. */
+@font-face {
+  font-family: 'Metropolis';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(https://cdn.jsdelivr.net/npm/@fontsource/metropolis@5.3.0/files/metropolis-latin-400-normal.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Metropolis';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400;
+  src: url(https://cdn.jsdelivr.net/npm/@fontsource/metropolis@5.3.0/files/metropolis-latin-400-italic.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Metropolis';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(https://cdn.jsdelivr.net/npm/@fontsource/metropolis@5.3.0/files/metropolis-latin-500-normal.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Metropolis';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url(https://cdn.jsdelivr.net/npm/@fontsource/metropolis@5.3.0/files/metropolis-latin-600-normal.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Metropolis';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(https://cdn.jsdelivr.net/npm/@fontsource/metropolis@5.3.0/files/metropolis-latin-700-normal.woff2) format('woff2');
+}
+
+.maestro {
+  --font-primary: 'Metropolis', Helvetica, Arial, sans-serif;
+  --font-secondary: 'Metropolis', Helvetica, Arial, sans-serif;
+  --font-headline: 'Metropolis', Helvetica, Arial, sans-serif;
+  --font-subheadline: 'Metropolis', Helvetica, Arial, sans-serif;
+  --font-body: 'Metropolis', Helvetica, Arial, sans-serif;
+  --bg-page: #f6f6f6;
+  --bg-card: #ffffff;
+  --accent: #801343;
+  --accent-hover: #661134;
+  --accent-soft: #fdf2f8;
+  --text-main: #262626;
+  --text-muted: #5d5d5d;
+  --border-subtle: #e7e7e7;
+  --chip-bg: #f1f1f1;
+  --chip-text: #4f4f4f;
+  --link-color: #801343;
+  --link-hover: #501e37;
+  --panel-radius: 12px;
+  --button-radius: 9999px;
+  --chip-radius: 9999px;
+  --alert-radius: 12px;
+  --button-shadow: none;
+  --button-shadow-hover: none;
+  --card-shadow: none;
+  --soft-bg-green: #ecf7ef;
+  --soft-bg-blue: #f0f9ff;
+  --soft-bg-yellow: #fff5e6;
+  --soft-bg-red: #fdf2f8;
+  --soft-bg-purple: #fdf4ff;
+  --notion-gray: #f1f1f1;
+  --notion-brown: #ffefe5;
+  --notion-orange: #fff5e6;
+  --notion-yellow: #ffe2b8;
+  --notion-green: #ecf7ef;
+  --notion-blue: #f0f9ff;
+  --notion-purple: #fdf4ff;
+  --notion-pink: #fdf2f8;
+  --notion-red: #fef2f2;
+  --notion-gray-text: #5d5d5d;
+  --notion-brown-text: #b23b0a;
+  --notion-orange-text: #d9480d;
+  --notion-yellow-text: #a15c03;
+  --notion-green-text: #16823e;
+  --notion-blue-text: #0069a8;
+  --notion-purple-text: #a800b7;
+  --notion-pink-text: #c71966;
+  --notion-red-text: #c10007;
+  /* Buttons are black pills, as on maestropro.io. Raspberry stays the accent for links and highlights. */
+  --color-primary: #262626;
+  --color-primary-hover: #454545;
+  --color-secondary: var(--accent);
+  --color-secondary-hover: var(--accent-hover);
+  --color-tertiary: #ff9400;
+  --color-tertiary-hover: #d07802;
+  --color-success: var(--notion-green-text);
+  --color-success-hover: #11622f;
+  --color-danger: #e7000b;
+  --color-danger-hover: #c10007;
+  --color-warning: #d07802;
+  --color-warning-hover: #a15c03;
+  --color-info: #0084d1;
+  --color-info-hover: #0069a8;
+  --color-info-text: #ffffff;
+  --color-light: #f1f1f1;
+  --color-light-hover: #e7e7e7;
+  --color-light-text: var(--text-main);
+  --color-dark: #262626;
+  --color-dark-hover: #000000;
+  --alert-primary-bg: rgba(128, 19, 67, 0.07);
+  --alert-primary-text: #801343;
+  --alert-primary-accent: #801343;
+  --alert-success-bg: var(--notion-green);
+  --alert-danger-bg: var(--notion-red);
+  --alert-warning-bg: var(--notion-orange);
+  --alert-warning-text: #a15c03;
+  --alert-info-bg: var(--notion-blue);
+  --alert-info-text: #0069a8;
+  --badge-primary-bg: #f1f1f1;
+  --badge-primary-text: #262626;
+  --badge-secondary-bg: #ffe0ee;
+  --badge-secondary-text: #801343;
+  --badge-success-bg: var(--notion-green);
+  --badge-danger-bg: var(--notion-red);
+  --badge-warning-bg: var(--notion-orange);
+  --badge-info-bg: var(--notion-blue);
+  /* Brand gradient from the Maestro logo: orange to raspberry */
+  --heatmap-0: #fff5e6;
+  --heatmap-1: #ffcf8a;
+  --heatmap-2: #ff9400;
+  --heatmap-3: #e62077;
+  --heatmap-4: #a31654;
+  --heatmap-5: #501e37;
+  --heatmap-hot-0: #fef2f2;
+  --heatmap-hot-1: #ffe2e2;
+  --heatmap-hot-2: #ffa2a2;
+  --heatmap-hot-3: #ff6467;
+  --heatmap-hot-4: #e7000b;
+  --heatmap-hot-5: #9f0712;
+  --heatmap-cool-0: #fff5e6;
+  --heatmap-cool-1: #ffe2b8;
+  --heatmap-cool-2: #ffcf8a;
+  --heatmap-cool-3: #ffa82e;
+  --heatmap-cool-4: #d07802;
+  --heatmap-cool-5: #a15c03;
+  --heatmap-warm-0: #f0f9ff;
+  --heatmap-warm-1: #dff2fe;
+  --heatmap-warm-2: #b8e6fe;
+  --heatmap-warm-3: #74d4ff;
+  --heatmap-warm-4: #0084d1;
+  --heatmap-warm-5: #0069a8;
+  --bg-footer: #ffffff;
+  --bg-footer-swatch: #ffffff;
+}
+
+.maestro .palette-title,
+.maestro .samples-title,
+.maestro .component-label,
+.maestro .card-title {
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.maestro .btn {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.maestro .card {
+  border: 1px solid var(--border-subtle);
+  box-shadow: none;
+}
+
+.maestro .color-name {
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.dark.maestro,
+.dark .maestro {
+  --bg-footer: #0f0f0f;
+  --bg-footer-swatch: #0f0f0f;
+  --bg-page: #141414;
+  --bg-card: #262626;
+  --accent: #eb418c;
+  --accent-hover: #f162a1;
+  --accent-soft: rgba(230, 32, 119, 0.16);
+  --text-main: #f6f6f6;
+  --text-muted: #b0b0b0;
+  --border-subtle: rgba(246, 246, 246, 0.1);
+  --chip-bg: rgba(246, 246, 246, 0.08);
+  --chip-text: #b0b0b0;
+  --link-color: #f162a1;
+  --link-hover: #fccee8;
+  /* Buttons invert to light pills with dark text */
+  --color-primary: #f6f6f6;
+  --color-primary-hover: #d1d1d1;
+  --color-dark: #000000;
+  --color-dark-hover: #262626;
+  --color-light: rgba(246, 246, 246, 0.12);
+  --color-light-hover: rgba(246, 246, 246, 0.2);
+  --color-light-text: #f6f6f6;
+  --color-info: #00a6f4;
+  --color-info-hover: #0084d1;
+  --color-info-text: #ffffff;
+  --soft-bg-green: rgba(68, 180, 97, 0.16);
+  --soft-bg-blue: rgba(0, 166, 244, 0.16);
+  --soft-bg-yellow: rgba(255, 148, 0, 0.16);
+  --soft-bg-red: rgba(230, 32, 119, 0.16);
+  --soft-bg-purple: rgba(225, 42, 251, 0.16);
+  --notion-gray: rgba(176, 176, 176, 0.2);
+  --notion-brown: rgba(255, 120, 64, 0.2);
+  --notion-orange: rgba(255, 148, 0, 0.2);
+  --notion-yellow: rgba(255, 188, 92, 0.2);
+  --notion-green: rgba(68, 180, 97, 0.2);
+  --notion-blue: rgba(0, 166, 244, 0.2);
+  --notion-purple: rgba(225, 42, 251, 0.2);
+  --notion-pink: rgba(230, 32, 119, 0.2);
+  --notion-red: rgba(251, 44, 54, 0.2);
+  --notion-gray-text: #b0b0b0;
+  --notion-brown-text: #ffc0a1;
+  --notion-orange-text: #ff9c70;
+  --notion-yellow-text: #ffbc5c;
+  --notion-green-text: #8fd2a0;
+  --notion-blue-text: #74d4ff;
+  --notion-purple-text: #f4a8ff;
+  --notion-pink-text: #fda5d5;
+  --notion-red-text: #ffa2a2;
+  --alert-primary-bg: rgba(230, 32, 119, 0.2);
+  --alert-primary-text: #fccee8;
+  --alert-primary-accent: #eb418c;
+  --alert-success-bg: rgba(68, 180, 97, 0.22);
+  --alert-success-text: #8fd2a0;
+  --alert-danger-bg: rgba(251, 44, 54, 0.22);
+  --alert-danger-text: #ffa2a2;
+  --alert-warning-bg: rgba(255, 148, 0, 0.22);
+  --alert-warning-text: #ffcf8a;
+  --alert-info-bg: rgba(0, 166, 244, 0.22);
+  --alert-info-text: #74d4ff;
+  --badge-primary-bg: rgba(246, 246, 246, 0.12);
+  --badge-primary-text: #f6f6f6;
+  --badge-secondary-bg: rgba(230, 32, 119, 0.22);
+  --badge-secondary-text: #fda5d5;
+  --badge-success-bg: rgba(68, 180, 97, 0.22);
+  --badge-success-text: #8fd2a0;
+  --badge-danger-bg: rgba(251, 44, 54, 0.22);
+  --badge-danger-text: #ffa2a2;
+  --badge-warning-bg: rgba(255, 148, 0, 0.22);
+  --badge-warning-text: #ffcf8a;
+  --badge-info-bg: rgba(0, 166, 244, 0.22);
+  --badge-info-text: #74d4ff;
+}
+
+/* base.css forces white .btn-primary text and a blue .dark .btn-primary, so set the inverted pill explicitly */
+.dark.maestro .btn-primary,
+.dark .maestro .btn-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #262626 !important;
+}
+
+.dark.maestro .btn-primary:hover,
+.dark .maestro .btn-primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.dark.maestro .color-name,
+.dark .maestro .color-name,
+.dark.maestro .samples-title,
+.dark .maestro .samples-title {
+  color: #d1d1d1;
+}
+
+/* Sveltia CMS UI variable overrides */
+.maestro {
+  --sui-base-hue: 334; /* raspberry */
+  --sui-font-family-default: 'Metropolis', Helvetica, Arial, sans-serif;
+  --sui-control-font-family: var(--sui-font-family-default);
+}

@@ -28,10 +28,11 @@ localObject.us_stateIDs = {AL:1,AK:2,AZ:4,AR:5,CA:6,CO:8,CT:9,DE:10,FL:12,GA:13,
 window.localsiteStylelookMenu = [
     { type: "option", settingsValue: "base", settingsLabel: "Base", typographyValue: "base", typographyLabel: "Base Style" },
     { type: "option", settingsValue: "notion", settingsLabel: "Notion", typographyValue: "notion", typographyLabel: "Notion Style" },
-    { type: "option", settingsValue: "georgia", settingsLabel: "Georgia", typographyValue: "georgia", typographyLabel: "Georgia Style" },
     { type: "option", settingsValue: "claude", settingsLabel: "Claude", typographyValue: "claude", typographyLabel: "Claude Style" },
+    { type: "option", settingsValue: "xai", settingsLabel: "SpaceXSI", typographyValue: "xai", typographyLabel: "SpaceXSI Style" },
     { type: "option", settingsValue: "openai", settingsLabel: "OpenAI", typographyValue: "openai", typographyLabel: "OpenAI Style" },
-    { type: "option", settingsValue: "xai", settingsLabel: "XAI", typographyValue: "xai", typographyLabel: "XAI Style" },
+    { type: "option", settingsValue: "georgia", settingsLabel: "Georgia", typographyValue: "georgia", typographyLabel: "Georgia Style" },
+    { type: "option", settingsValue: "maestro", settingsLabel: "Maestro", typographyValue: "maestro", typographyLabel: "Maestro Style" },
     { type: "divider", settingsLabel: "── CV Themes ──", typographyLabel: "──────── CV Themes ────────" },
     { type: "option", settingsValue: "elegant", settingsLabel: "Elegant", typographyValue: "elegant", typographyLabel: "Surfer Style" },
     { type: "option", settingsValue: "macchiato", settingsLabel: "Macchiato", typographyValue: "macchiato", typographyLabel: "Macchiato Style" }
@@ -4655,12 +4656,13 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                 // Add
                 geoOverlays[layerName] = L.geoJson(topodata, {style:styleShape, onEachFeature: onEachFeature}).addTo(map); // Called within addTo(map)
             
-                layerControls[whichmap] = L.control.layers(basemaps1, geoOverlays, {position: 'bottomleft'}).addTo(map); // Push multple layers
+                layerControls[whichmap] = createLayersControl(basemaps1, geoOverlays, {position: 'bottomleft'}).addTo(map); // Push multple layers. Map style button (localsite.js)
                 if (onlineApp) {
                     // Grayscale unless the viewer chose another. Remembered per map, and follows light/dark mode like map1 (see trackBasemap in localsite.js).
                     basemaps1[basemapForSitelook(basemaps1, 'localsiteBasemap_' + whichmap)].addTo(map);
                     trackBasemap(map, basemaps1, 'localsiteBasemap_' + whichmap);
                 }
+                trackLocalsiteMapTitles(map, layerControls[whichmap], false); // Map Titles checkbox (localsite.js)
 
             //} else if (geojsonLayer) { // INDICATES TOPO WAS ALREADY LOADED
             } else if (map.hasLayer(geoOverlays[layerName])) {
@@ -8214,11 +8216,19 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                                 //alert("climbpath value: " + climbpath);
 
                                 waitForElm('#headerLogo').then((elm) => {
+                                    // Logos that already contain their own <a> aren't wrapped, since nested links get split apart.
+                                    const setHeaderLogo = function(logoHtml) {
+                                        if (/<a[\s>]/i.test(logoHtml)) {
+                                            $('#headerLogo').html(logoHtml);
+                                            $('#headerLogo a').first().attr('id', 'headerLogoLink');
+                                        } else {
+                                            $('#headerLogo').html("<a id='headerLogoLink' href='" + climbpath + "' style='text-decoration:none'>" + logoHtml + "</a>");
+                                        }
+                                    };
                                     if (!param.headerLogo && param.headerLogoSmall) {
-                                        $('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogoSmall + "</a>");
+                                        setHeaderLogo(param.headerLogoSmall);
                                     } else if (param.headerLogo) {
-                                        //alert("Display param.headerLogo")
-                                        $('#headerLogo').html("<a href='" + climbpath + "' style='text-decoration:none'>" + param.headerLogo + "</a>");
+                                        setHeaderLogo(param.headerLogo);
                                     } else if (param.favicon) {
                                         let imageUrl = climbpath + ".." + param.favicon;
                                         $('#headerLogo').css('background-image', 'url(' + imageUrl + ')');

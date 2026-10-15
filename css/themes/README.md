@@ -1,6 +1,6 @@
-# Sveltia CMS Themes
+# CSS Themes
 
-CSS variable overrides for theming the Sveltia CMS UI. Each file scopes
+CSS variable overrides for theming site-specific UI and the Sveltia CMS editor. Each file scopes
 overrides to a body class so multiple themes can coexist in one stylesheet.
 
 ## Usage
@@ -33,9 +33,30 @@ set the matching class on `<body>`:
 | `grok.css` | `grok` | Grok — deep violet |
 | `xai.css` | `xai` | xAI — orbit blue |
 | `georgia.css` | `georgia` | Georgia.org — pine green |
+| `maestro.css` | `maestro` | Maestro (maestropro.io) — black pills, raspberry accent |
+
+Themes with design notes also have a matching `.md` file (`codex.md`, `grok.md`,
+`maestro.md`, `openai.md`, `xai.md`), shown on the preview page when that theme
+is selected.
 
 `palette.css` and `heatmap.css` are shared utilities included by the preview
 page; they do not need to be loaded for individual themes.
+
+## Adding a theme
+
+Register the body class in each of these places:
+
+- `localsite/js/localsite.js`: `localStylelookThemes`, so the stylesheet loads on demand
+- `localsite/js/navigation.js`: `localsiteStylelookMenu`, for the style dropdown
+- `themes/index.html`: `localThemeClasses`, the `colorPalettes` entry,
+  `softBackgroundPalettes`, `softColorPalettes`, and `markdownStyles` if the theme has a `.md` file
+
+## Fonts
+
+Most themes name system or commonly installed fonts and fall back gracefully.
+`maestro.css` loads its Metropolis webfont with `@font-face` rules pointing to
+the Fontsource `.woff2` files on jsDelivr. A weight downloads only when text on
+the page uses it, so the rules cost nothing on pages without `.maestro`.
 
 ## Preview
 

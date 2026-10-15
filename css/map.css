@@ -753,3 +753,118 @@ label { /* override Drupal */
   transform: scale(1.5) !important;
   stroke-width: 2px;
 }
+/* Map style button and its panel of layer checkboxes and tiles radio buttons
+   (createLayersControl in localsite/js/localsite.js), shared by localsite and team maps */
+.layers-tiles-control {
+  position: relative;
+}
+.layers-tiles-button {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+.layers-tiles-button:hover,
+.layers-tiles-control.is-open .layers-tiles-button {
+  background: rgba(0, 0, 0, 0.95);
+}
+.layers-tiles-button .material-icons {
+  font-size: 18px;
+  line-height: 1;
+}
+.layers-tiles-panel {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 6px);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: max-content;
+  overflow: auto; /* max-height and max-width follow the map's size (_fitPanel) */
+  padding: 10px 12px;
+  background: #fff;
+  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  font-size: 13px;
+  line-height: 1.3;
+}
+.layers-tiles-panel[hidden] {
+  display: none;
+}
+.layers-tiles-top .layers-tiles-panel {
+  bottom: auto;
+  top: calc(100% + 6px);
+}
+.layers-tiles-right .layers-tiles-panel {
+  left: auto;
+  right: 0;
+}
+.layers-tiles-panel.layers-side {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 14px;
+}
+/* Lists over 11 items split into columns */
+.layers-tiles-columns {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.layers-tiles-column {
+  min-width: 110px;
+}
+.layers-tiles-heading {
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #777;
+}
+.layers-tiles-item {
+  display: grid;
+  grid-template-columns: auto 1fr; /* input, then name. Details sit under the name. */
+  column-gap: 6px;
+  align-items: center;
+  padding: 2px 0;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.layers-tiles-item input {
+  margin: 0;
+}
+.layers-tiles-details {
+  grid-column: 2;
+  white-space: normal;
+}
+.layers-tiles-details img,
+.layers-tiles-details video {
+  display: block;
+  max-width: 200px;
+  margin-top: 4px;
+  border-radius: 4px;
+}
+.layers-tiles-details p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #666;
+}
+.dark .layers-tiles-panel {
+  background: #242424;
+  color: #ddd;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+.dark .layers-tiles-heading,
+.dark .layers-tiles-details p {
+  color: #999;
+}

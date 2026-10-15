@@ -3057,6 +3057,12 @@ function loadDataset(whichmap,whichmap2,dp,basemaps1,basemaps2,attempts,callback
   });
 } // end function loadDataset
 
+// The active dataset id(s) for the layers hash: show, which may list several.
+function mapActiveLayerIds() {
+  const show = getHash().show || param.show || '';
+  return String(show).split(',').map(id => id.trim()).filter(Boolean);
+}
+
 // Move after processOutput once done creating
 function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) {
   //alert("renderMap " + whichmap);
@@ -3132,11 +3138,14 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
 
   } else {
     consoleLog("Initiate map " + mapDiv + " ");
-    overlays = { // This is universally available for both map1 and map2.
-      'Rail' : L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
-            minZoom: 2, maxZoom: 19, tileSize: 256, attribution: '<a href="https://www.openrailwaymap.org/">OpenRailwayMap</a>'
-        }),
-    };
+    overlays = {}; // This is universally available for both map1 and map2. Transit checkboxes are added below.
+    if (whichmap == "map1") { // The lat, lon and level hash set the first view. Later loads use the dataset's view.
+      const hashView = mapViewFromHash();
+      if (hashView) {
+        mapCenter = hashView.center;
+        if (hashView.zoom) zoom = hashView.zoom;
+      }
+    }
     //var containerExists = L.DomUtil.get(map); // NOT NEEDED
 
     // https://help.openstreetmap.org/questions/12935/error-map-container-is-already-initialized
@@ -3154,16 +3163,30 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
         dragging: !L.Browser.mobile, 
         tap: !L.Browser.mobile
       });
-      layerControls[whichmap] = L.control.layers(basemaps, overlays, {position: 'bottomleft'}).addTo(map); // Init layer checkboxes (add checkbox later)
+      layerControls[whichmap] = createLayersControl(basemaps, overlays, {position: 'bottomleft'}).addTo(map); // Init layer checkboxes (add checkbox later)
+      syncMapTransitLayers(map, layerControls[whichmap], hash.state || param.state, whichmap == "map1"); // MARTA (state=GA), Public Transit, Freight Rail
+      const tilesHashKey = whichmap == "map1" ? "tiles" : "tiles2";
+      const hashBasemap = tilesFromHash(tilesHashKey, basemaps);
       if (onlineApp) {
         if (whichmap == "map2") {
-          basemaps["OpenStreetMap"].addTo(map);
+          basemaps[hashBasemap || "OpenStreetMap"].addTo(map);
         } else {
-          basemaps[basemapForSitelook(basemaps, 'localsiteBasemap')].addTo(map); // Set the initial baselayer, Grayscale unless the viewer chose another.
+          basemaps[hashBasemap || basemapForSitelook(basemaps, 'localsiteBasemap')].addTo(map); // Set the initial baselayer, Grayscale unless the viewer chose another.
           trackBasemap(map, basemaps, 'localsiteBasemap'); // After the initial add, so it isn't saved as the viewer's choice
         }
       } else {
         $(".mapLoadingIcon").hide();
+      }
+      map.on('baselayerchange', function(e) {
+        if (map.switchingBasemap) return; // Light/dark swaps aren't the viewer's choice
+        goHashQuiet({[tilesHashKey]: mapTileKey(e.name)});
+      });
+      trackLocalsiteMapTitles(map, layerControls[whichmap], whichmap == "map1"); // Map Titles checkbox, last among the layers
+      if (whichmap == "map1") {
+        const control = layerControls[whichmap];
+        applyMapLayersFromHash(map, control, mapActiveLayerIds()); // Transit checkboxes. The dataset is checked when it's added.
+        trackMapLayersHash(map, control, mapActiveLayerIds);
+        trackMapView(map);
       }
       console.log("layerControls[whichmap]");
       console.log(layerControls[whichmap]);
@@ -3224,7 +3247,9 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       console.log("Removing prior layer:", priorLayer, "from", whichmap);
       // Each map removes only its own prior layer to avoid removing newly added layers from the other map
       if (overlays[priorLayer]) {
+        map.restoringLayers = true; // Not the viewer unchecking it, so the layers hash stays as is
         map.removeLayer(overlays[priorLayer]);
+        map.restoringLayers = false;
       }
     }
     //alert("addOverlay - typeof overlays[dataTitle] " + typeof overlays[dataTitle])
@@ -3243,6 +3268,14 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       
       //if (typeof overlays[dataTitle] != "object") { // Prevent adding duplicate checkbox
       if (1==1) { // Works for map2, but map1 is still not populated (and prior now gets deleted)
+        layerGroup.mapLayerId = dp.show || mapActiveLayerIds()[0]; // Id in the layers hash
+        // A reloaded dataset (after a state change, for example) replaces its earlier checkbox
+        layerControls[whichmap].getLayerItems().filter(item => item.layer !== layerGroup && item.layer.mapLayerId === layerGroup.mapLayerId).forEach(item => {
+          map.restoringLayers = true;
+          if (map.hasLayer(item.layer)) map.removeLayer(item.layer);
+          map.restoringLayers = false;
+          layerControls[whichmap].removeLayer(item.layer);
+        });
         layerControls[whichmap].addOverlay(layerGroup, dataTitle); // Add layer checkbox - works
         //if (whichmap == "map1") { // Temp
           addIcons(dp,map,whichmap,layerGroup,zoom,markerType); // Adds for both map1 and map2
@@ -3262,7 +3295,13 @@ function renderMap(dp,map,whichmap,parentDiv,basemaps,zoom,markerType,callback) 
       }
       if (overlays) {
         // Checks the box, which displays the layer. (Basically boxes and icons are ready at this point.)
-        map.addLayer(overlays[dataTitle]);
+        // On map1 the layers hash can leave the dataset unchecked, until a different dataset is shown.
+        const hashLayers = whichmap == "map1" ? getMapLayersFromHash() : null;
+        const showChanged = map.layersActiveId !== undefined && map.layersActiveId !== layerGroup.mapLayerId;
+        map.layersActiveId = layerGroup.mapLayerId;
+        if (!hashLayers || hashLayers.includes(layerGroup.mapLayerId) || showChanged) {
+          map.addLayer(overlays[dataTitle]);
+        }
       }
 
   }
@@ -3867,10 +3906,14 @@ function hashChangedMap() {
 
   let whatChanged = "";
   console.log("hashChangedMap: hash.show =", hash.show, ", priorHash.show =", priorHash.show);
-  if (hash.layers !== priorHash.layers) {
-    //applyIO(hiddenhash.naics);
-    whatChanged = "hashChangedMap() in map.js layers";
-  } else if (hash.show !== priorHash.show) {
+  if (hash.state !== priorHash.state) { // MARTA checkboxes come and go with GA
+    if (map1 && map1.hasLayer && layerControls.map1) syncMapTransitLayers(map1, layerControls.map1, hash.state || param.state);
+    if (map2 && map2.hasLayer && layerControls.map2) syncMapTransitLayers(map2, layerControls.map2, hash.state || param.state, false);
+  }
+  if (hash.layers !== priorHash.layers && hash.show === priorHash.show && map1 && map1.hasLayer && layerControls.map1) {
+    applyMapLayersFromHash(map1, layerControls.map1, mapActiveLayerIds()); // Checkboxes follow the layers hash without reloading
+  }
+  if (hash.show !== priorHash.show) {
     //applyIO(hiddenhash.naics);
     console.log("Show value changed from", priorHash.show, "to", hash.show);
     whatChanged = "hash.show hashChangedMap() in map.js";

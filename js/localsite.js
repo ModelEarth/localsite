@@ -71,8 +71,10 @@ function cartoKeyCheck() {
 }
 
 // Returns a Leaflet layer of the CARTO style (e.g. "light_all") that swaps to Esri Canvas tiles when cartoKeyCheck() fails
-// or CARTO tiles stop loading. esriCanvas lists Esri Canvas service names. Esri base tiles have no place names, so where
-// the CARTO style includes names, also pass the matching Reference (labels) service, e.g. ["World_Light_Gray_Base", "World_Light_Gray_Reference"].
+// or CARTO tiles stop loading. esriCanvas lists Esri Canvas service names, or other Esri services as "Folder/Name"
+// (e.g. "Reference/World_Boundaries_and_Places"). Esri base tiles have no place names, so where the CARTO style includes
+// names, also pass a Reference (labels) service, e.g. ["World_Light_Gray_Base", "World_Light_Gray_Reference"].
+// Those labels are marked isMapTitles, for the Map Titles checkbox (trackLocalsiteMapTitles).
 // A FeatureGroup, so bringToFront() and bringToBack() still work. options.labels keeps a swapped labels layer on top of the basemap.
 // options.filter is a CSS filter for the CARTO tiles, options.esriFilter for the Esri tiles (e.g. to brighten a dark style).
 function cartoOrEsri(cartoStyle, esriCanvas, options) {
@@ -82,8 +84,9 @@ function cartoOrEsri(cartoStyle, esriCanvas, options) {
     if (filter) layer.on('add', () => { layer.getContainer().style.filter = filter; });
     return layer;
   };
-  const esriLayers = () => esriCanvas.map((name, i) => withFilter(L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/' + name + '/MapServer/tile/{z}/{y}/{x}', {
+  const esriLayers = () => esriCanvas.map((name, i) => withFilter(L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/' + (name.includes('/') ? name : 'Canvas/' + name) + '/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 18, maxNativeZoom: 16, // Esri Canvas tiles stop at 16, then scale up
+    isMapTitles: /Reference|Boundaries_and_Places/.test(name),
     attribution: i === 0 ? prefix + 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' : ''
   }), options.esriFilter));
   if (!window.cartoApiKey) {
@@ -122,12 +125,12 @@ function cartoOrEsri(cartoStyle, esriCanvas, options) {
 }
 
 // Dark Mode brightens CARTO dark_all for near-white roads over black to charcoal greys. Darker Mode is CARTO dark_all as is.
-// Same as Dark Mode and Darker Mode in team/js/leaflet.js. Used by map.js (map1) and navigation.js (#geomap).
+// With Esri tiles, Darker Mode's titles are World_Boundaries_and_Places (white with dark edges), which suit a dark map
+// but not a light one. Same as Dark Mode and Darker Mode in team/js/leaflet.js. Used by map.js (map1) and navigation.js (#geomap).
 function darkBasemaps(attributionPrefix) {
-  const esriDark = ['World_Dark_Gray_Base', 'World_Dark_Gray_Reference'];
   return {
-    'Dark Mode': cartoOrEsri('dark_all', esriDark, {attributionPrefix: attributionPrefix, filter: 'brightness(4.2) contrast(1.25)', esriFilter: 'brightness(1.15) contrast(2.4)'}),
-    'Darker Mode': cartoOrEsri('dark_all', esriDark, {attributionPrefix: attributionPrefix})
+    'Dark Mode': cartoOrEsri('dark_all', ['World_Dark_Gray_Base', 'World_Dark_Gray_Reference'], {attributionPrefix: attributionPrefix, filter: 'brightness(4.2) contrast(1.25)', esriFilter: 'brightness(1.15) contrast(2.4)'}),
+    'Darker Mode': cartoOrEsri('dark_all', ['World_Dark_Gray_Base', 'Reference/World_Boundaries_and_Places'], {attributionPrefix: attributionPrefix})
   };
 }
 
@@ -184,6 +187,458 @@ document.addEventListener('sitelookchange', function() {
     }
   });
 });
+
+// MAP HASH - shared by localsite/js/map.js and team/js/leaflet.js
+// tiles (top or main map) and tiles2 (side or detail map) hold the background tiles,
+// layers holds the checked layer checkboxes, and lat, lon and level hold the main map's view.
+// These change without browser history entries, so Back skips each pan, zoom and checkbox change.
+
+// Updates the hash without adding a history entry or firing hashChangeEvent.
+function goHashQuiet(addToHash, removeFromHash) {
+  const wasPopstate = isPopstateNavigation;
+  isPopstateNavigation = true; // updateHash uses replaceState
+  updateHash(addToHash, true, removeFromHash);
+  isPopstateNavigation = wasPopstate;
+  nextPriorHash = getHash(); // So the next hashChangeEvent doesn't treat these values as changed
+}
+function getHashList(key) {
+  return String(getHash()[key] || '').split(',').map(value => value.trim()).filter(Boolean);
+}
+
+// Tiles keys are shared with the team map's style keys, so a link works on both maps.
+const MAP_TILE_KEYS = {'Grayscale': 'light', 'Satellite': 'satellite', 'OpenStreetMap': 'openstreetmap', 'Dark Mode': 'darkgray', 'Darker Mode': 'dark'};
+function mapTileKey(name) {
+  return MAP_TILE_KEYS[name] || String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+}
+// The first value in the tiles hash (a comma-separated series is allowed) that names one of the map's
+// basemaps, by tiles key or by name. Returns the basemaps key, or null.
+function tilesFromHash(hashKey, basemaps) {
+  const names = Object.keys(basemaps || {});
+  for (const value of getHashList(hashKey)) {
+    const match = names.find(name => name === value || mapTileKey(name) === value.toLowerCase());
+    if (match) return match;
+  }
+  return null;
+}
+
+// "layers" lists the checked layer ids. It's left out when only the defaults are checked: the active dataset(s)
+// in "show" and MAP_DEFAULT_LAYER_IDS (Map Titles). It's "none" when nothing is checked.
+// Returns the list, or null for the defaults.
+const MAP_DEFAULT_LAYER_IDS = ['map-titles'];
+function mapLayerDefaults(activeIds) {
+  return activeIds.concat(MAP_DEFAULT_LAYER_IDS);
+}
+function getMapLayersFromHash() {
+  const layers = getHashList('layers');
+  if (!layers.length) return null;
+  return layers.includes('none') ? [] : layers;
+}
+function writeMapLayersHash(checkedIds, activeIds) {
+  const sameAsActive = checkedIds.length === activeIds.length && activeIds.every(id => checkedIds.includes(id));
+  if (sameAsActive) {
+    if (getHash().layers !== undefined) goHashQuiet({}, 'layers');
+  } else {
+    goHashQuiet({'layers': checkedIds.length ? checkedIds.join(',') : 'none'});
+  }
+}
+// Each overlay layer carries its hash id as layer.mapLayerId.
+function checkedMapLayerIds(map, control) {
+  return control.getLayerItems().filter(obj => obj.overlay && obj.layer.mapLayerId && map.hasLayer(obj.layer)).map(obj => obj.layer.mapLayerId);
+}
+// Checked ids, counting default layers without a checkbox right now as they were: an active dataset that's still
+// loading is checked, and Map Titles (while the tiles have none) keeps its state in the layers hash.
+function currentMapLayerIds(map, control, activeIds) {
+  const listed = control.getLayerItems().filter(obj => obj.overlay).map(obj => obj.layer.mapLayerId);
+  const hashLayers = getMapLayersFromHash();
+  const unlisted = mapLayerDefaults(activeIds).filter(id => !listed.includes(id) && (activeIds.includes(id) || !hashLayers || hashLayers.includes(id)));
+  return checkedMapLayerIds(map, control).concat(unlisted);
+}
+function saveMapLayersHash(map, control, activeIds) {
+  writeMapLayersHash(currentMapLayerIds(map, control, activeIds), mapLayerDefaults(activeIds));
+}
+// Writes the layers hash as checkboxes change. getActiveIds returns the active dataset id(s).
+function trackMapLayersHash(map, control, getActiveIds) {
+  map.on('overlayadd overlayremove', function() {
+    if (map.restoringLayers) return;
+    saveMapLayersHash(map, control, getActiveIds());
+  });
+}
+// Checks and unchecks the overlays to match the layers hash (or the defaults: the active dataset and Map Titles).
+// Returns the layers list so a layer added later can be checked against it.
+function applyMapLayersFromHash(map, control, activeIds) {
+  const layers = getMapLayersFromHash();
+  const wanted = layers || mapLayerDefaults(activeIds);
+  map.restoringLayers = true;
+  control.getLayerItems().filter(obj => obj.overlay && obj.layer.mapLayerId).forEach(obj => {
+    const on = wanted.includes(obj.layer.mapLayerId);
+    if (on && !map.hasLayer(obj.layer)) map.addLayer(obj.layer);
+    if (!on && map.hasLayer(obj.layer)) map.removeLayer(obj.layer);
+  });
+  map.restoringLayers = false;
+  return layers;
+}
+
+// Writes the map's center and zoom to lat, lon and level as the viewer pans and zooms.
+function trackMapView(map) {
+  map.on('moveend', function() {
+    const center = map.getCenter();
+    goHashQuiet({'lat': center.lat.toFixed(4), 'lon': center.lng.toFixed(4), 'level': map.getZoom()});
+  });
+}
+// The view in the lat, lon and level hash, or null.
+function mapViewFromHash() {
+  const hash = getHash();
+  const lat = parseFloat(hash.lat), lon = parseFloat(hash.lon), level = parseInt(hash.level);
+  if (isNaN(lat) || isNaN(lon)) return null;
+  return {center: [lat, lon], zoom: isNaN(level) ? null : level};
+}
+
+// LAYERS AND TILES PANEL
+// A "Map style" button that opens a panel of layer checkboxes followed by tiles radio buttons, side by side
+// when there are more than 8 checkboxes (and the map is wide enough). Lists over 11 items split into columns. Used in place of Leaflet's built-in layers control by
+// localsite/js/map.js and the team maps (team/js/leaflet.js, team/js/map.js), so every map looks the same.
+// Styles reside in localsite/css/map.css.
+// Each item is {layer, name, overlay, details}. details ({description, image, video}) is optional richer
+// content shown under the item's name, passed to addOverlay/addBaseLayer or set as layer.mapLayerDetails.
+// Like Leaflet's control, it fires overlayadd, overlayremove and baselayerchange on the map ({layer, name}).
+function createLayersControl(tiles, layers, options) {
+  if (!L.Control.LayersAndTiles) {
+    L.Control.LayersAndTiles = L.Control.extend({
+      options: {position: 'bottomleft', title: 'Map style'},
+
+      initialize: function(tiles, layers, options) {
+        L.Util.setOptions(this, options);
+        this._items = [];
+        Object.entries(tiles || {}).forEach(([name, layer]) => this._addItem(layer, name, false));
+        Object.entries(layers || {}).forEach(([name, layer]) => this._addItem(layer, name, true));
+      },
+
+      onAdd: function(map) {
+        const container = L.DomUtil.create('div', 'layers-tiles-control layers-tiles-' + this.options.position.replace(/(top|bottom)(left|right)/, '$1 layers-tiles-$2'));
+        this._button = L.DomUtil.create('button', 'layers-tiles-button', container);
+        this._button.type = 'button';
+        this._button.title = this.options.title;
+        this._button.setAttribute('aria-label', this.options.title);
+        this._button.setAttribute('aria-haspopup', 'true');
+        this._button.setAttribute('aria-expanded', 'false');
+        this._button.innerHTML = '<span class="material-icons" aria-hidden="true">layers</span>';
+        this._panel = L.DomUtil.create('div', 'layers-tiles-panel', container);
+        this._panel.hidden = true;
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.disableScrollPropagation(container);
+        this._button.addEventListener('click', () => this.toggle());
+        this._onDocumentClick = event => { if (!container.contains(event.target)) this.close(); };
+        this._onKeydown = event => { if (event.key === 'Escape') this.close(); };
+        document.addEventListener('click', this._onDocumentClick);
+        document.addEventListener('keydown', this._onKeydown);
+        map.on('layeradd layerremove', this._onLayerChange, this);
+        this._render();
+        return container;
+      },
+
+      onRemove: function(map) {
+        map.off('layeradd layerremove', this._onLayerChange, this);
+        document.removeEventListener('click', this._onDocumentClick);
+        document.removeEventListener('keydown', this._onKeydown);
+      },
+
+      // overlayIndex (optional) places the checkbox before the overlay now at that position
+      addOverlay: function(layer, name, details, overlayIndex) {
+        this._addItem(layer, name, true, details, overlayIndex);
+        this._render();
+        return this;
+      },
+      addBaseLayer: function(layer, name, details) {
+        this._addItem(layer, name, false, details);
+        this._render();
+        return this;
+      },
+      removeLayer: function(layer) {
+        this._items = this._items.filter(item => item.layer !== layer);
+        this._render();
+        return this;
+      },
+      getLayerItems: function() {
+        return this._items.slice();
+      },
+
+      isOpen: function() {
+        return Boolean(this._panel && !this._panel.hidden);
+      },
+      open: function() {
+        if (!this._panel || this.isOpen()) return this;
+        this._panel.hidden = false;
+        this._container.classList.add('is-open');
+        this._button.setAttribute('aria-expanded', 'true');
+        this._fitPanel();
+        this._map.fire('layerstilesopen');
+        return this;
+      },
+      close: function() {
+        if (!this.isOpen()) return this;
+        this._panel.hidden = true;
+        this._container.classList.remove('is-open');
+        this._button.setAttribute('aria-expanded', 'false');
+        return this;
+      },
+      toggle: function() {
+        return this.isOpen() ? this.close() : this.open();
+      },
+
+      // Fits the panel within the map, which clips anything outside it. Layers sit beside tiles only when there's room.
+      _fitPanel: function() {
+        const size = this._map.getSize();
+        this._panel.style.maxHeight = Math.max(120, size.y - 60) + 'px';
+        this._panel.style.maxWidth = Math.max(160, size.x - 20) + 'px';
+        const layerCount = this._items.filter(item => item.overlay).length;
+        this._panel.classList.toggle('layers-side', layerCount > 8);
+        if (this._panel.scrollWidth > this._panel.clientWidth) {
+          this._panel.classList.remove('layers-side');
+        }
+      },
+
+      // Overlays with layer.pinnedLast (Map Titles) stay at the end of the layers list
+      _addItem: function(layer, name, overlay, details, overlayIndex) {
+        const item = {layer: layer, name: name, overlay: overlay, details: details || layer.mapLayerDetails || null};
+        const overlays = this._items.filter(other => other.overlay);
+        let before = overlayIndex === undefined ? null : overlays[overlayIndex];
+        if (!before && overlay && !layer.pinnedLast) before = overlays.find(other => other.layer.pinnedLast) || null;
+        if (before) {
+          this._items.splice(this._items.indexOf(before), 0, item);
+        } else {
+          this._items.push(item);
+        }
+      },
+
+      _render: function() {
+        if (!this._panel) return;
+        const layers = this._items.filter(item => item.overlay);
+        const tiles = this._items.filter(item => !item.overlay);
+        this._panel.innerHTML = '';
+        if (layers.length) this._panel.appendChild(this._renderSection('Layers', layers, 'checkbox'));
+        if (tiles.length) this._panel.appendChild(this._renderSection('Tiles', tiles, 'radio'));
+        if (this.isOpen()) this._fitPanel();
+      },
+
+      // Lists over 11 items split into columns of near-even height, filled top to bottom
+      _renderSection: function(title, items, type) {
+        const section = L.DomUtil.create('div', 'layers-tiles-section');
+        L.DomUtil.create('div', 'layers-tiles-heading', section).textContent = title;
+        const columnsDiv = L.DomUtil.create('div', 'layers-tiles-columns', section);
+        const perColumn = Math.ceil(items.length / Math.ceil(items.length / 11));
+        let column;
+        items.forEach((item, index) => {
+          if (index % perColumn === 0) column = L.DomUtil.create('div', 'layers-tiles-column', columnsDiv);
+          const label = L.DomUtil.create('label', 'layers-tiles-item', column);
+          const input = L.DomUtil.create('input', '', label);
+          input.type = type;
+          if (type === 'radio') input.name = 'layers-tiles-' + L.Util.stamp(this);
+          input.checked = Boolean(this._map && this._map.hasLayer(item.layer));
+          input.addEventListener('change', () => this._onInputChange(item, input));
+          item.input = input;
+          L.DomUtil.create('span', 'layers-tiles-name', label).textContent = item.name;
+          if (item.details) label.appendChild(this._renderDetails(item.details));
+        });
+        return section;
+      },
+
+      // Richer content for an item: an image, a video and a description, in that order
+      _renderDetails: function(details) {
+        const div = L.DomUtil.create('div', 'layers-tiles-details');
+        if (details.image) {
+          const img = L.DomUtil.create('img', '', div);
+          img.src = details.image;
+          img.alt = details.imageAlt || '';
+          img.loading = 'lazy';
+        }
+        if (details.video) {
+          const video = L.DomUtil.create('video', '', div);
+          video.src = details.video;
+          video.muted = true;
+          video.loop = true;
+          video.playsInline = true;
+          video.autoplay = true;
+        }
+        if (details.description) {
+          L.DomUtil.create('p', '', div).textContent = details.description;
+        }
+        return div;
+      },
+
+      _onInputChange: function(item, input) {
+        const map = this._map;
+        if (item.overlay) {
+          if (input.checked) map.addLayer(item.layer); else map.removeLayer(item.layer);
+          return;
+        }
+        this._items.filter(other => !other.overlay && other !== item && map.hasLayer(other.layer)).forEach(other => map.removeLayer(other.layer));
+        map.addLayer(item.layer);
+      },
+
+      // Keeps the inputs in step with layers added or removed elsewhere, and fires Leaflet's control events
+      _onLayerChange: function(e) {
+        const item = this._items.find(candidate => candidate.layer === e.layer);
+        if (!item) return;
+        const added = e.type === 'layeradd';
+        if (item.input) item.input.checked = this._map.hasLayer(item.layer);
+        const type = item.overlay ? (added ? 'overlayadd' : 'overlayremove') : (added ? 'baselayerchange' : null);
+        if (type) this._map.fire(type, item);
+      }
+    });
+  }
+  return new L.Control.LayersAndTiles(tiles, layers, options);
+}
+
+// Route lines from a GeoJSON file (see map/transit/gtfs-to-geojson.py), fetched the first time the layer's checkbox is checked.
+// Each route uses its GTFS route color, with a popup naming the route. Lines with an "offset" property (rail lines
+// sharing track) are drawn side by side using Leaflet.PolylineOffset, which loads only for those files.
+function transitRouteLayer(url, lineWeight, lineOpacity, attribution) {
+  const group = L.layerGroup();
+  let requested = false;
+  const escapeText = text => String(text || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  group.on('add', function() {
+    if (requested) return;
+    requested = true;
+    fetch(url).then(function(response) {
+      if (!response.ok) throw new Error(response.status + ' ' + response.statusText);
+      return response.json();
+    }).then(function(data) {
+      const needsOffset = data.features.some(feature => feature.properties.offset);
+      if (needsOffset && !L.PolylineOffset) {
+        return new Promise(resolve => { // Without the plugin, the lines are drawn centered on the track
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/leaflet-polylineoffset@1.1.1/leaflet.polylineoffset.min.js';
+          script.onload = script.onerror = () => resolve(data);
+          document.head.appendChild(script);
+        });
+      }
+      return data;
+    }).then(function(data) {
+      L.geoJSON(data, {
+        attribution: attribution,
+        style: feature => ({
+          color: feature.properties.color || '#555', weight: lineWeight, opacity: lineOpacity,
+          offset: L.PolylineOffset ? (feature.properties.offset || 0) * (lineWeight + 1) : 0 // Pixels to the side of travel
+        }),
+        onEachFeature: function(feature, layer) {
+          const p = feature.properties;
+          const name = p.route_type === 3 ? 'Route ' + p.name : (p.name === p.long_name ? p.name : p.long_name || p.name);
+          let popup = '<b>' + escapeText(name) + '</b>';
+          if (p.route_type === 3 && p.long_name) popup += '<br>' + escapeText(p.long_name);
+          if (p.url) popup += '<br><a href="' + escapeText(p.url) + '" target="_blank" rel="noopener">Route details</a>';
+          layer.bindPopup(popup);
+        }
+      }).addTo(group);
+    }).catch(function(error) {
+      requested = false; // Retry the next time the checkbox is checked
+      console.warn('transitRouteLayer could not load ' + url + ': ' + error.message);
+    });
+  });
+  return group;
+}
+// MAP TITLES
+// A checkbox (layers id map-titles) for the tiles' separate titles (place names) layer, listed last among the layers.
+// It's present only while the current tiles have a separate titles layer (CARTO tiles have them built in),
+// and checked unless the viewer or the layers hash turns it off.
+function createMapTitlesLayer() {
+  const layer = L.layerGroup();
+  layer.mapLayerId = 'map-titles';
+  layer.pinnedLast = true;
+  layer.on('add remove', function(e) { // Remembers the viewer's choice while the checkbox comes and goes with the tiles
+    const map = e.target._map;
+    if (map && !map.restoringLayers) layer.viewerOff = e.type === 'remove';
+  });
+  return layer;
+}
+// Lists or removes the Map Titles checkbox. useHash is false for maps the layers hash doesn't describe.
+function syncMapTitles(map, control, titlesLayer, hasTitles, useHash = true) {
+  const listed = control.getLayerItems().some(item => item.layer === titlesLayer);
+  if (!hasTitles) {
+    if (listed) {
+      map.restoringLayers = true;
+      if (map.hasLayer(titlesLayer)) map.removeLayer(titlesLayer);
+      map.restoringLayers = false;
+      control.removeLayer(titlesLayer);
+    }
+    return;
+  }
+  if (listed) return;
+  control.addOverlay(titlesLayer, 'Map Titles');
+  const hashLayers = useHash ? getMapLayersFromHash() : null;
+  if (hashLayers ? hashLayers.includes('map-titles') : !titlesLayer.viewerOff) {
+    map.restoringLayers = true;
+    map.addLayer(titlesLayer);
+    map.restoringLayers = false;
+  }
+}
+// localsite basemaps hold their titles within the basemap (cartoOrEsri marks them isMapTitles),
+// so the Map Titles checkbox shows or hides those tiles.
+function trackLocalsiteMapTitles(map, control, useHash = true) {
+  const titlesLayer = createMapTitlesLayer();
+  const titleTiles = () => {
+    const tiles = [];
+    map.eachLayer(layer => { if (layer.options && layer.options.isMapTitles) tiles.push(layer); });
+    return tiles;
+  };
+  const showTitles = () => titleTiles().forEach(tiles => tiles.setOpacity(map.hasLayer(titlesLayer) ? 1 : 0));
+  titlesLayer.on('add remove', showTitles);
+  const sync = () => {
+    syncMapTitles(map, control, titlesLayer, titleTiles().length > 0, useHash);
+    showTitles();
+  };
+  map.on('baselayerchange', sync);
+  map.on('layeradd', e => { if (e.layer.options && e.layer.options.isMapTitles) sync(); }); // Includes a CARTO to Esri swap
+  sync();
+  return titlesLayer;
+}
+
+// Transit checkboxes in display order: MARTA when the state hash includes GA, then public transit and
+// railways everywhere. states limits a layer to those states.
+const MAP_TRANSIT_LAYERS = [
+  {id: 'marta-rail', label: 'MARTA Rail', states: ['GA'], create: () => transitRouteLayer(theroot + 'map/transit/marta-rail.geojson', 4, 0.9, MARTA_ATTRIBUTION)},
+  {id: 'marta-bus', label: 'MARTA Bus', states: ['GA'], create: () => transitRouteLayer(theroot + 'map/transit/marta-bus.geojson', 2, 0.7, MARTA_ATTRIBUTION)},
+  // OpenPTMap: worldwide rail, tram and bus routes from OpenStreetMap, as a transparent overlay
+  {id: 'public-transit', label: 'Public Transit', create: () => L.tileLayer('https://pt.facilmap.org/tile/{z}/{x}/{y}.png', {
+    minZoom: 3, maxZoom: 19, maxNativeZoom: 18, tileSize: 256, opacity: 0.8,
+    attribution: '<a href="https://wiki.openstreetmap.org/wiki/Openptmap">OpenPTMap</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  })},
+  {id: 'freight-rail', label: 'Freight Rail', create: () => L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
+    minZoom: 2, maxZoom: 19, tileSize: 256, attribution: '<a href="https://www.openrailwaymap.org/">OpenRailwayMap</a>'
+  })}
+];
+const MARTA_ATTRIBUTION = '<a href="https://itsmarta.com/app-developer-resources.aspx">MARTA GTFS</a>';
+
+// The transit layers for a comma-separated list of states
+function mapTransitLayerDefs(states) {
+  const stateList = String(states || '').toUpperCase().split(',').map(state => state.trim());
+  return MAP_TRANSIT_LAYERS.filter(def => !def.states || def.states.some(state => stateList.includes(state)));
+}
+
+// Keeps a map's transit checkboxes in step with the states, adding and removing MARTA as GA comes and goes.
+// Transit checkboxes stay at the top of the list, above the datasets. A newly added layer is checked
+// when the layers hash lists it.
+// restoreFromHash is false for second maps, since the layers hash belongs to the main map.
+function syncMapTransitLayers(map, control, states, restoreFromHash = true) {
+  const wanted = mapTransitLayerDefs(states);
+  const transitItems = () => control.getLayerItems().filter(item => item.overlay && item.layer.isTransitLayer);
+  transitItems().filter(item => !wanted.some(def => def.id === item.layer.mapLayerId)).forEach(item => {
+    if (map.hasLayer(item.layer)) map.removeLayer(item.layer);
+    control.removeLayer(item.layer);
+  });
+  const hashLayers = restoreFromHash ? (getMapLayersFromHash() || []) : [];
+  wanted.forEach((def, index) => {
+    if (transitItems().some(item => item.layer.mapLayerId === def.id)) return;
+    const layer = def.create();
+    layer.mapLayerId = def.id;
+    layer.isTransitLayer = true;
+    control.addOverlay(layer, def.label, null, index);
+    if (hashLayers.includes(def.id)) {
+      map.restoringLayers = true;
+      map.addLayer(layer);
+      map.restoringLayers = false;
+    }
+  });
+}
 consoleLog("start localsite");
 
 // Common function to find script with delay handling for DOM recognition
@@ -1019,6 +1474,9 @@ function get_localsite_root() { // Also in two other places
 function clearHash(toClear) {
   let hash = getHashOnly(); // Include all existing
   let clearArray = toClear.split(/\s*,\s*/);
+  if (!clearArray.some(key => key in hash)) {
+    return; // Nothing to clear, so no history entry (else Back steps through a duplicate)
+  }
   for(var i = 0; i < clearArray.length; i++) {
     delete hash[clearArray[i]];
   }
@@ -2888,10 +3346,42 @@ function addBrInSpans(html) {
   });
 }
 
+// Markdown files that returned 404 earlier this session, so loadMarkdown skips requesting them again.
+// The browser logs each failed request as an error itself, so skipping is the only way to avoid repeats.
+var MISSING_MARKDOWN_KEY = 'loadMarkdownMissing';
+function missingMarkdownUrl(pagePath) {
+  try {
+    return new URL(pagePath, location.href).href; // Relative paths differ by page, so compare full URLs
+  } catch (e) {
+    return pagePath;
+  }
+}
+function getMissingMarkdown() {
+  try {
+    return JSON.parse(sessionStorage.getItem(MISSING_MARKDOWN_KEY)) || [];
+  } catch (e) {
+    return [];
+  }
+}
+function rememberMissingMarkdown(pagePath) {
+  const missing = getMissingMarkdown();
+  const url = missingMarkdownUrl(pagePath);
+  if (missing.indexOf(url) < 0) {
+    missing.push(url);
+    try {
+      sessionStorage.setItem(MISSING_MARKDOWN_KEY, JSON.stringify(missing));
+    } catch (e) {}
+  }
+}
+
 function loadMarkdown(pagePath, divID, target, attempts, callback) {
   // Include markdown="1" on div tags to process <div> content as markdown.
   if (typeof attempts === 'undefined') {
     attempts = 1;
+    if (getMissingMarkdown().indexOf(missingMarkdownUrl(pagePath)) >= 0) {
+      console.warn("loadMarkdown skipped " + pagePath + " (404 earlier this session)");
+      return;
+    }
   }
   // WAIT FOR SCRIPT THAT LOADS README.md Files
   loadScript(theroot + 'js/d3.v5.min.js', function(results) {
@@ -3025,6 +3515,11 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
         }
       });
 
+    }).catch(function(error) { // A missing file (404) otherwise surfaces as an uncaught error from d3
+      console.warn("loadMarkdown could not load " + pagePath + " into " + divID + ": " + error.message);
+      if (/^404\b/.test(error.message)) {
+        rememberMissingMarkdown(pagePath);
+      }
     });
   });
   });
@@ -3681,7 +4176,7 @@ waitForBody(applyColorSchemeClass);
 function setSitemode(sitemode) {
   // Not copied over from settings.js
 }
-const localStylelookThemes = ['notion', 'claude', 'openai', 'codex', 'grok', 'xai', 'georgia'];
+const localStylelookThemes = ['notion', 'claude', 'openai', 'codex', 'grok', 'xai', 'georgia', 'maestro'];
 const cvStylelookThemes = [
   'creative-studio',
   'data-driven',
@@ -6256,8 +6751,8 @@ window.SITE_CONFIG_PATH = '/support/site/config.yaml';
                 window.WEBROOT_CONFIG = config;
                 resolve({ path: path, text: text, default: config.default, sites: config.sites });
             }
-            function none() {
-                sessionStorage.setItem(SESSION_KEY, 'none');
+            function none(remember) {
+                if (remember) sessionStorage.setItem(SESSION_KEY, 'none');
                 resolve({ path: null, text: null, default: '', sites: {} });
             }
             // 'none' means this session already found no config, so skip the request
@@ -6265,10 +6760,13 @@ window.SITE_CONFIG_PATH = '/support/site/config.yaml';
                 resolve({ path: null, text: null, default: '', sites: {} });
                 return;
             }
+            // Only a 404 is remembered. Other failures, such as a fetch cut off by a reload, retry on the next page.
             fetch(window.SITE_CONFIG_PATH)
-                .then(function(r) { return r.ok ? r.text() : null; })
-                .then(function(t) { t !== null ? done(window.SITE_CONFIG_PATH, t) : none(); })
-                .catch(none);
+                .then(function(r) {
+                    if (r.ok) return r.text().then(function(t) { done(window.SITE_CONFIG_PATH, t); });
+                    none(r.status === 404);
+                })
+                .catch(function() { none(false); });
         });
         return _promise;
     };

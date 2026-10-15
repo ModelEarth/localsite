@@ -19,24 +19,114 @@
 <link rel="stylesheet" href="heatmap.css">
 
 <script>
-function updateStyleAbout(typographyValue) {
-  const aboutStyleDivHolder = document.getElementById('aboutStyleDivHolder');
-  const aboutStyleDiv = document.getElementById('aboutStyleDiv');
-  const markdownStyles = ['grok', 'codex', 'xai', 'openai'];
+// Themes with a matching .md file get an About button. display=about in the hash opens the text.
+// ("display" rather than "show", which the maps use for their active dataset.)
+const markdownStyles = ['grok', 'codex', 'xai', 'openai', 'maestro'];
 
-  if (!aboutStyleDivHolder || !aboutStyleDiv) {
+function updateStyleAbout(typographyValue) {
+  const aboutButton = document.getElementById('aboutStyleButton');
+  const aboutDivHolder = document.getElementById('aboutDivHolder');
+  const aboutDiv = document.getElementById('aboutDiv');
+
+  if (!aboutButton || !aboutDivHolder || !aboutDiv) {
     return;
   }
 
-  if (markdownStyles.includes(typographyValue)) {
-    const theStyle = `${typographyValue}.md`;
-    aboutStyleDivHolder.style.display = 'block';
-    aboutStyleDiv.innerHTML = '';
-    loadMarkdown(theStyle, "aboutStyleDiv", "_parent");
-  } else {
-    aboutStyleDivHolder.style.display = 'none';
-    aboutStyleDiv.innerHTML = '';
+  const hasMarkdown = markdownStyles.includes(typographyValue);
+  const showAbout = hasMarkdown && getDisplayList().includes('about');
+  aboutButton.style.display = hasMarkdown ? '' : 'none';
+  aboutButton.setAttribute('aria-expanded', showAbout);
+  aboutDivHolder.style.display = showAbout ? 'block' : 'none';
+
+  if (!showAbout) {
+    aboutDiv.innerHTML = '';
+    delete aboutDiv.dataset.style;
+    return;
   }
+  if (aboutDiv.dataset.style !== typographyValue) {
+    aboutDiv.dataset.style = typographyValue;
+    aboutDiv.innerHTML = '';
+    loadMarkdown(`${typographyValue}.md`, "aboutDiv", "_parent");
+  }
+}
+
+// A theme named in support/site/config.yaml sites (e.g. maestro) brands the page with that site's
+// title, favicon, logo and home_url. Any of these may be blank, and the config file may be missing.
+// The page's own branding is saved first so switching to another theme restores it.
+let siteBrandingOriginal = null;
+
+function setPageFavicon(href) {
+  let link = document.querySelector('link[rel="icon"]');
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.head.appendChild(link);
+  }
+  link.href = href;
+}
+
+function applyThemeSiteBranding(typographyValue) {
+  if (typeof window.loadWebrootYaml !== 'function') {
+    return;
+  }
+  window.loadWebrootYaml().then(function(result) {
+    const site = (result.sites && result.sites[typographyValue]) || null;
+    if (!site && !siteBrandingOriginal) {
+      return; // Nothing applied yet, so nothing to restore
+    }
+    waitForElm('#headerLogoLink').then(function(logoLink) {
+      if (typographySelect.value !== typographyValue) {
+        return; // Theme changed again while waiting
+      }
+      if (!siteBrandingOriginal) {
+        const favicon = document.querySelector('link[rel="icon"]');
+        siteBrandingOriginal = {
+          title: document.title,
+          favicon: favicon ? favicon.getAttribute('href') : '',
+          logoHref: logoLink.getAttribute('href'),
+          logoHtml: logoLink.innerHTML
+        };
+      }
+      const original = siteBrandingOriginal;
+      const theSite = site || {};
+      document.title = theSite.title || original.title;
+      const favicon = theSite.favicon || original.favicon;
+      if (favicon) {
+        setPageFavicon(favicon);
+      }
+      logoLink.setAttribute('href', theSite.home_url || original.logoHref);
+      if (theSite.logo) {
+        const img = document.createElement('img');
+        img.src = theSite.logo;
+        img.alt = theSite.title || '';
+        img.style.height = '36px';
+        logoLink.replaceChildren(img);
+      } else {
+        logoLink.innerHTML = original.logoHtml;
+      }
+    });
+  });
+}
+
+// display can be a comma-separated list, e.g. display=about,rail. About adds or removes only its own value.
+function getDisplayList() {
+  return (readHash().display || '').split(',').map(value => value.trim()).filter(Boolean);
+}
+
+function setShowAbout(open, addToHash) {
+  const displayList = getDisplayList().filter(value => value !== 'about');
+  if (open) {
+    displayList.push('about');
+  }
+  if (displayList.length) {
+    pushHash({ ...addToHash, display: displayList.join(',') });
+  } else {
+    pushHash({ ...addToHash }, 'display');
+  }
+}
+
+function toggleStyleAbout() {
+  setShowAbout(!getDisplayList().includes('about'));
 }
 </script>
 </head>
@@ -44,6 +134,11 @@ function updateStyleAbout(typographyValue) {
 
 <div class="typography-toggle">
   <select id="typographySelect"></select>
+  <button type="button" id="aboutStyleButton" class="btn btn-med btn-tertiary" style="display:none" aria-controls="aboutDivHolder" aria-expanded="false" onclick="toggleStyleAbout()">About</button>
+</div>
+
+<div id="aboutDivHolder" class="content contentpadding" style="display:none">
+  <div id="aboutDiv"></div>
 </div>
 
 <div class="content contentpadding hideWhenThemes">
@@ -409,6 +504,32 @@ const xaiColorPalette = {
   ]
 };
 
+const maestroColorPalette = {
+  primaryColor: [
+    { name: "Raspberry", hex: "#801343" }
+  ],
+  mainColors: [
+    { name: "Ink", hex: "#262626" },
+    { name: "Raspberry", hex: "#801343" },
+    { name: "Orange", hex: "#FF9400" },
+    { name: "Dark Pink", hex: "#E62077" },
+    { name: "Peach", hex: "#FF7840" },
+    { name: "Stone", hex: "#5D5D5D" },
+    { name: "Sky", hex: "#0084D1" },
+    { name: "Green", hex: "#16823E" }
+  ],
+  supportingColors: [
+    { name: "Dark Raspberry", hex: "#501E37" },
+    { name: "Fuchsia", hex: "#A800B7" },
+    { name: "Orange Tint", hex: "#FFF5E6" },
+    { name: "Pink Tint", hex: "#FDF2F8" },
+    { name: "Fuchsia Tint", hex: "#FDF4FF" },
+    { name: "Border", hex: "#E7E7E7" },
+    { name: "Page", hex: "#F6F6F6" },
+    { name: "Paper", hex: "#FFFFFF" }
+  ]
+};
+
 const colorPalettes = {
   notion: notionColorPalette,
   claude: claudeColorPalette,
@@ -416,6 +537,7 @@ const colorPalettes = {
   codex: codexColorPalette,
   grok: grokColorPalette,
   xai: xaiColorPalette,
+  maestro: maestroColorPalette,
   georgia: georgiaColorPalette
 };
 
@@ -476,9 +598,12 @@ const readHash = typeof getHash === 'function' ? getHash : function() {
 };
 
 // Silent update (no event) — used only for initial load.
-const writeHash = typeof updateHash === 'function' ? updateHash : function(updates) {
+const writeHash = typeof updateHash === 'function' ? updateHash : function(updates, removeFromHash) {
   const current = readHash();
   const merged = { ...current, ...updates };
+  if (removeFromHash) {
+    removeFromHash.split(',').forEach(key => delete merged[key]);
+  }
   const hashString = Object.keys(merged)
     .filter(key => merged[key] !== '')
     .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(merged[key])}`)
@@ -493,7 +618,7 @@ const pushHash = typeof goHash === 'function' ? goHash : writeHash;
 const typographySelect = document.getElementById('typographySelect');
 const cornerRadiusSelect = document.getElementById('cornerRadius');
 const samplesSection = document.querySelector('.samples-section');
-const localThemeClasses = ['georgia', 'notion', 'claude', 'openai', 'codex', 'grok', 'xai'];
+const localThemeClasses = ['georgia', 'notion', 'claude', 'openai', 'codex', 'grok', 'xai', 'maestro'];
 const localTypographyThemes = localThemeClasses.concat(['base']);
 const cvTypographyThemes = [
   'creative-studio',
@@ -570,6 +695,13 @@ const softBackgroundPalettes = {
     { name: "Soft Silver", hex: "#F3F5FA", var: "--soft-bg-red" },
     { name: "Soft Nova", hex: "#F1F3FF", var: "--soft-bg-purple" }
   ],
+  maestro: [
+    { name: "Soft Green", hex: "#ECF7EF", var: "--soft-bg-green" },
+    { name: "Soft Sky", hex: "#F0F9FF", var: "--soft-bg-blue" },
+    { name: "Soft Orange", hex: "#FFF5E6", var: "--soft-bg-yellow" },
+    { name: "Soft Pink", hex: "#FDF2F8", var: "--soft-bg-red" },
+    { name: "Soft Fuchsia", hex: "#FDF4FF", var: "--soft-bg-purple" }
+  ],
   georgia: [
     { name: "Soft Pine", hex: "#F4F8F5", var: "--soft-bg-green" },
     { name: "Soft Blueberry", hex: "#F2F6F9", var: "--soft-bg-blue" },
@@ -629,6 +761,13 @@ const softColorPalettes = {
     { name: "Ice", hex: "#F5F7FB", var: "--notion-yellow" },
     { name: "Silver", hex: "#EFF2F8", var: "--notion-red" },
     { name: "Nova", hex: "#EEF0FF", var: "--notion-purple" }
+  ],
+  maestro: [
+    { name: "Green", hex: "#ECF7EF", var: "--notion-green" },
+    { name: "Sky", hex: "#F0F9FF", var: "--notion-blue" },
+    { name: "Orange", hex: "#FFE2B8", var: "--notion-yellow" },
+    { name: "Red", hex: "#FEF2F2", var: "--notion-red" },
+    { name: "Fuchsia", hex: "#FDF4FF", var: "--notion-purple" }
   ],
   georgia: [
     { name: "Soft Pine", hex: "#E8F5E8", var: "--notion-green" },
@@ -758,6 +897,7 @@ function syncSharedStylelook(typographyValue, persistCookie) {
 function applyTypographySelection(typographyValue, persistCookie) {
   syncSharedStylelook(typographyValue, persistCookie);
   updateStyleAbout(typographyValue);
+  applyThemeSiteBranding(typographyValue);
   updateSamplesTitle(typographyValue);
 
   typographyValue = normalizeTypographyStyleValue(typographyValue);
@@ -821,7 +961,10 @@ function initializeTypographyDemo() {
   document.addEventListener('hashChangeEvent', function() {
     const hash = readHash();
     const newStyle = hash.style;
-    if (!newStyle || newStyle === (window.priorHash && window.priorHash.style)) return;
+    if (!newStyle || newStyle === (window.priorHash && window.priorHash.style)) {
+      updateStyleAbout(typographySelect.value); // display=about may have been added or removed
+      return;
+    }
     const normalizedStyle = normalizeTypographyStyleValue(newStyle);
     const validated = allTypographyThemes.includes(normalizedStyle) ? normalizedStyle : 'georgia';
     if (typographySelect.value !== validated) {
@@ -834,7 +977,7 @@ function initializeTypographyDemo() {
   typographySelect.addEventListener('change', function() {
     const val = this.value;
     localStorage.setItem('typographySelection', val);
-    pushHash({ style: val });
+    setShowAbout(false, { style: val }); // A new theme closes About
     applyTypographySelection(val, true);
   });
 }
@@ -940,10 +1083,6 @@ function initializeTypographyDemo() {
   }
 })();
 </script>
-
-<div id="aboutStyleDivHolder" class="content contentpadding">
-  <div id="aboutStyleDiv"></div>
-</div>
 
 <style>
 /* ── CMS UI mockup elements ───────────────────────────────────────────── */
