@@ -74,6 +74,10 @@ function applyThemeSiteBranding(typographyValue) {
     if (!site && !siteBrandingOriginal) {
       return; // Nothing applied yet, so nothing to restore
     }
+    // Same side nav hiding a site gets from sideNavLive: false in config.yaml (navigation.js)
+    if (typeof window.hideSideNavForSite === 'function') {
+      window.hideSideNavForSite(site ? typographyValue : '');
+    }
     waitForElm('#headerLogoLink').then(function(logoLink) {
       if (typographySelect.value !== typographyValue) {
         return; // Theme changed again while waiting
@@ -95,6 +99,11 @@ function applyThemeSiteBranding(typographyValue) {
         setPageFavicon(favicon);
       }
       logoLink.setAttribute('href', theSite.home_url || original.logoHref);
+      // The site's logo already shows its name, so #headerSiteTitle is hidden while the logo is displayed.
+      const siteTitle = document.getElementById('headerSiteTitle');
+      if (siteTitle) {
+        siteTitle.style.display = theSite.logo ? 'none' : '';
+      }
       if (theSite.logo) {
         const img = document.createElement('img');
         img.src = theSite.logo;

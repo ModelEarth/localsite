@@ -696,6 +696,41 @@ function findScript(scriptName = 'localsite.js') {
 }
 
 // Ensure local_app exists and extend it with all required methods
+// The folder localsite.js was loaded from, e.g. "https://model.earth/localsite/", "http://localhost:8887/folder/localsite/"
+// (localsite within folders) or "https://cdn.jsdelivr.net/gh/ModelEarth/localsite@main/" (no adjacent localsite).
+// Its supporting files (js/, css/, header.html, info/) are always relative to it. Null when the script isn't found.
+function localsiteScriptBase() {
+  const scripts = document.getElementsByTagName('script');
+  for (let i = 0; i < scripts.length; i++) {
+    const match = (scripts[i].src || '').split(/[?#]/)[0].match(/^(.*\/)js\/localsite\.js$/);
+    if (match) return match[1];
+  }
+  return null;
+}
+// The webroot holding localsite (including any folders), when localsite.js is in a folder named localsite. Else null.
+function localsiteWebrootFromScript() {
+  const base = localsiteScriptBase();
+  return base && /\/localsite\/$/.test(base) ? base.replace(/\/localsite\/$/, '') : null;
+}
+// A file in localsite, e.g. localsitePath("img/logo/modelearth/model-earth.png"), wherever localsite.js was loaded from:
+// the site root, within folders, or a CDN. Use instead of "/localsite/...", which assumes localsite is at the site root.
+function localsitePath(path) {
+  return local_app.localsite_root() + String(path).replace(/^\//, '');
+}
+// A file in another repo of the webroot holding localsite, e.g. webrootPath("/team/projects/map/cities.csv").
+// Use instead of root-absolute paths like "/team/...", which assume the webroot is the site root.
+// When localsite.js comes from the page's own site, the path stays on that site (with any folders before localsite),
+// so local servers on any port use their own files. From a CDN or another site, it's under local_app.web_root().
+function webrootPath(path) {
+  path = '/' + String(path).replace(/^\//, '');
+  const base = localsiteScriptBase();
+  if (!base) return path;
+  const sameSite = location.protocol === 'file:' ? base.indexOf('file:') === 0 : base.indexOf(location.origin + '/') === 0;
+  if (!sameSite) return local_app.web_root() + path;
+  const webroot = localsiteWebrootFromScript();
+  return webroot ? webroot + path : path;
+}
+
 window.local_app = window.local_app || {};
 
 // Add localsite methods to local_app (extending existing object if it already has web_root)
@@ -720,6 +755,12 @@ window.local_app = window.local_app || {};
     local_app.localsite_root = local_app.localsite_root || function() {
             if (localsite_repo) { // Use cached value if available
               return(localsite_repo);
+            }
+            // The folder localsite.js came from, at the root, within folders, or on a CDN
+            const scriptBase = localsiteScriptBase();
+            if (scriptBase) {
+              localsite_repo = scriptBase;
+              return scriptBase;
             }
             //alert("get localsite_repo");
 
@@ -825,14 +866,16 @@ window.local_app = window.local_app || {};
             }
             
             let hostnameAndPort = extractHostnameAndPort(myScript.src);
+            // The webroot holding localsite, including any folders (null when localsite.js is on a CDN)
+            const scriptWebroot = localsiteWebrootFromScript();
             if (hostnameAndPort != window.location.hostname + ((window.location.port) ? ':'+window.location.port :'')) {
-              // External webroot
-              modelearth_repo = hostnameAndPort; // Cache result
-              return (hostnameAndPort);
+              // External webroot. A CDN copy of localsite has no sibling repos, so those come from model.earth.
+              modelearth_repo = scriptWebroot || theroot; // Cache result
+              return (modelearth_repo);
             }
             // Currently assuming all other ports don't have localsite folder.
             if ((location.host.indexOf('localhost') >= 0 && location.port == "8887") || location.host.indexOf('127.0.0.1') >= 0) {
-              theroot = location.protocol + '//' + location.host;
+              theroot = scriptWebroot || (location.protocol + '//' + location.host);
             }
             modelearth_repo = theroot; // Cache result
             return (theroot);
@@ -1446,6 +1489,13 @@ function get_localsite_root() { // Also in two other places
     //alert(localsite_repo);
     return(localsite_repo3);
   }
+  // The folder localsite.js came from: at the root, within folders, or on a CDN such as jsDelivr,
+  // whose path (/gh/ModelEarth/localsite@main/) the host-based fallback below would drop.
+  const scriptBase = localsiteScriptBase();
+  if (scriptBase) {
+    localsite_repo3 = scriptBase;
+    return scriptBase;
+  }
 
   let scripts = document.getElementsByTagName('script'); 
 
@@ -1848,7 +1898,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
             // Show/hide gravatar image based on checkbox and valid email
             if (gravatarChecked && isValidEmail(email)) {
                 // https://pajhome.org.uk/crypt/md5/md5.js
-              loadScript('/localsite/js/md5.js', function(results) { // For gravatar image display
+              loadScript(localsitePath('js/md5.js'), function(results) { // For gravatar image display
                 let userImg = $.gravatar(email);
                 if (userImg) {
                   localStorage.userImg = userImg;
@@ -1878,7 +1928,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
                 if ($("#getGravatar").is(":checked")) {
                   // BUGBUG - Redirect above will bypass.
-                  loadScript('/localsite/js/md5.js', function(results) {
+                  loadScript(localsitePath('js/md5.js'), function(results) {
                     let userImg = $.gravatar(email);
                     if (userImg) {
                       localStorage.userImg = userImg;
@@ -2843,7 +2893,7 @@ function showSearchFilter() {
     // template-main.html may still be loading; once its container arrives, load filter.html into it
     waitForElm('#filterFieldsHolder').then(function() {
       if (!document.getElementById('filterFieldContent')) {
-        $("#filterFieldsHolder").load(local_app.web_root() + "/localsite/map/filter.html");
+        $("#filterFieldsHolder").load(localsitePath("map/filter.html"));
       }
     });
   } else {
@@ -2860,7 +2910,7 @@ function showSearchFilter() {
         
       if (document.getElementById("filterFieldContent") == null) { 
         //alert("load filter.html")
-        let filterFile = local_app.web_root() + "/localsite/map/filter.html";
+        let filterFile = localsitePath("map/filter.html");
         $("#filterFieldsHolder").load(filterFile, function( response, status, xhr ) {
 
         }); // End $("#filters").load
@@ -3943,7 +3993,10 @@ function renderModelsiteOptions(selectElm, options) {
 async function loadModelsiteOptions() {
     if (typeof window.loadWebrootYaml === 'function') {
         const config = await window.loadWebrootYaml();
-        const ids = Object.keys(config.sites || {});
+        // Sites with modelsite: false in config.yaml are left out of the #modelsite dropdown
+        const ids = Object.keys(config.sites || {}).filter(function(id) {
+            return String(config.sites[id].modelsite) !== 'false';
+        });
         if (ids.length) {
             return ids.map(function(id) {
                 var site = config.sites[id];
@@ -4068,7 +4121,7 @@ function setAccesslocal(accesslocal) {
         }
     }));
     if (accesslocal == "install") {
-        window.location = "/team/setup";
+        window.location = webrootPath("/team/setup");
     }
 }
 
@@ -5166,7 +5219,7 @@ function buildMenuConfig(panelType, panelId, datasourcePath = '', panelLabel = '
       label: `${panelType} Insights`,
       action: 'link',
       icon: 'insights',
-      href: `/team/projects/#path=${datasourcePath}`,
+      href: webrootPath(`/team/projects/#path=${datasourcePath}`),
       display: 'none',
       class: 'local'
     });
@@ -5184,7 +5237,7 @@ function buildMenuConfig(panelType, panelId, datasourcePath = '', panelLabel = '
       label: 'View Insights',
       action: 'link',
       icon: 'insights',
-      href: `/team/projects/#path=${datasourcePath}`,
+      href: webrootPath(`/team/projects/#path=${datasourcePath}`),
       display: 'none',
       class: 'local'
     });
@@ -6676,7 +6729,7 @@ function defineLaunchCMS() {
         };
 
         // Use a local build of the git-ignored sveltia-cms reference clone when present, otherwise the npm release.
-        var localCmsScript = '/sveltia-cms/package/dist/sveltia-cms.js';
+        var localCmsScript = webrootPath('/sveltia-cms/package/dist/sveltia-cms.js');
         var cdnCmsScript = 'https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js';
         var cmsScriptPath = fetch(localCmsScript, { method: 'HEAD' })
             .then(function(r) { return r.ok ? localCmsScript : cdnCmsScript; })
@@ -6721,7 +6774,17 @@ if (document.readyState === 'loading') {
 // Loads the webroot's site config (support/site/config.yaml), remembering in sessionStorage when there isn't one.
 // Parses default: and sites: into window.WEBROOT_CONFIG.
 // Returns a Promise<{ path, text, default, sites }> shared across all callers.
-window.SITE_CONFIG_PATH = '/support/site/config.yaml';
+window.SITE_CONFIG_PATH = siteConfigPath(); // Within the webroot holding localsite, which may be in folders
+function siteConfigPath() {
+    var path = webrootPath('/support/site/config.yaml');
+    // model.earth serves the webroot repo's files from model.earth/webroot/
+    var url = new URL(path, location.href);
+    if ((url.hostname === 'model.earth' || url.hostname === 'www.model.earth') && url.pathname.indexOf('/webroot/') !== 0) {
+        url.pathname = '/webroot' + url.pathname;
+        return url.origin === location.origin ? url.pathname : url.href;
+    }
+    return path;
+}
 (function() {
     var SESSION_KEY = 'webrootYamlPath';
     var _promise = null;
@@ -6765,7 +6828,9 @@ window.SITE_CONFIG_PATH = '/support/site/config.yaml';
                 resolve({ path: null, text: null, default: '', sites: {} });
             }
             // 'none' means this session already found no config, so skip the request
-            if (sessionStorage.getItem(SESSION_KEY) === 'none') {
+            // TEMPORARY: model.earth ignores 'none', since it was saved before the config moved to /webroot/. Remove this exemption after Nov 1, 2026.
+            var ignoreNone = location.hostname === 'model.earth' || location.hostname === 'www.model.earth';
+            if (!ignoreNone && sessionStorage.getItem(SESSION_KEY) === 'none') {
                 resolve({ path: null, text: null, default: '', sites: {} });
                 return;
             }

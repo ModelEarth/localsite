@@ -491,7 +491,7 @@ function hashChanged() {
             //element.datasource = local_app.web_root() + "/localsite/info/data/map-filters/us-states.json";
             //element.datasource = local_app.web_root() + "/localsite/info/data/map-filters/us-states-edited.csv";
             // https://github.com/ModelEarth/localsite/blob/main/info/data/map-filters/us-states.csv
-            element.datasource = local_app.web_root() + "/localsite/info/data/map-filters/us-states-full.csv";
+            element.datasource = localsitePath("info/data/map-filters/us-states-full.csv");
             let formatType = "simple";
 
             
@@ -554,7 +554,7 @@ function hashChanged() {
         } else if (hash.geoview == "countries") {
             // COUNTRIES
             // TO DO: Remove countries.csv and other non-full.csv files from python file generation.
-            const csvFilePath = local_app.web_root() + "/localsite/info/data/map-filters/countries-full.csv"; // Or use the full version
+            const csvFilePath = localsitePath("info/data/map-filters/countries-full.csv"); // Or use the full version
             
             const element = {};
             element.scope = "countries";
@@ -1024,17 +1024,17 @@ function hashChanged() {
                     theStateNameLowercase = theStateName.toLowerCase();
                     imageUrl = "https://model.earth/us-states/images/backgrounds/1280x720/landscape/" + theStateNameLowercase.replace(/\s+/g, '-') + ".jpg";
                     if (theStateNameLowercase == "georgia") {
-                        imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
+                        imageUrl = webrootPath("/apps/img/hero/state/GA/GA-hero.jpg");
                     }
                     if (theStateNameLowercase == "district of columbia") {
                         // DC doesn't have a hero image, use default stars image
                         imageUrl = "../localsite/img/hero/stars.jpg";
                     }
                     if (theStateName.length == 0) {
-                        imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
+                        imageUrl = webrootPath("/apps/img/hero/state/GA/GA-hero.jpg");
                     }
                 } else {
-                    imageUrl = "/apps/img/hero/state/GA/GA-hero.jpg";
+                    imageUrl = webrootPath("/apps/img/hero/state/GA/GA-hero.jpg");
                 }
                 let imageUrl_scr = "url(" + imageUrl + ")";
                 //alert("imageUrl_scr  " + imageUrl_scr)
@@ -1056,7 +1056,7 @@ function hashChanged() {
     }
     if (hash.imgview != priorHash.imgview) {
         if (hash.imgview == "state") {
-            loadScript('/apps/js/apps-menus.js', function(results) {
+            loadScript(webrootPath('/apps/js/apps-menus.js'), function(results) {
                 showHeroMenu("feature", {}, "my_site");
             });
         }
@@ -1623,7 +1623,7 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
                                             <i class="subnav-icon" data-feather="check-square"></i>
                                             <span>Assigned Tasks</span>
                                         </a>
-                                        <a href="/localsite/timeline/" class="subnav-link">
+                                        <a href="${localsitePath('timeline/')}" class="subnav-link">
                                             <i class="subnav-icon" data-feather="calendar"></i>
                                             <span>UN Timelines</span>
                                         </a>
@@ -2889,6 +2889,29 @@ window.refreshFavicon = function() {
     }
 };
 
+// Hides the side nav for a site in support/site/config.yaml that has sideNavLive: false (sideNavLocal on localhost,
+// which falls back to sideNavLive when not set). The style is added right away so the nav doesn't flash,
+// then removed if the site's config doesn't hide it. Called again with another site key, it re-checks.
+window.hideSideNavForSite = function(siteKey) {
+    var isLocalhost = location.host.indexOf('localhost') >= 0;
+    if (!document.getElementById('site-side-nav-hidden')) {
+        var hiddenStyle = document.createElement('style');
+        hiddenStyle.id = 'site-side-nav-hidden';
+        hiddenStyle.textContent = '#side-nav-content { display: none !important } #side-nav.expanded #main-nav { display: block !important } .main-nav-full { width: 189px !important } .listcolumn:not(.listcolumnOnly) { left: 189px !important }';
+        document.head.appendChild(hiddenStyle);
+    }
+    waitForElm('#side-nav-content').then(function() {
+        window.loadWebrootYaml && window.loadWebrootYaml().then(function(cfg) {
+            var site = cfg.sites && cfg.sites[siteKey];
+            var sideNavValue = site && ((isLocalhost && site.sideNavLocal !== undefined) ? site.sideNavLocal : site.sideNavLive);
+            if (sideNavValue !== 'false') {
+                var s = document.getElementById('site-side-nav-hidden');
+                if (s) s.remove();
+            }
+        });
+    });
+};
+
 
 /// Navigation.js
 
@@ -3162,7 +3185,7 @@ if (typeof $ !== 'undefined') {
         } else {
             console.log("State needed")
         }
-        d3.csv("/community/start/maps/counties/topo/GA_county_regions.csv").then(function(detail_data) {
+        d3.csv(webrootPath("/community/start/maps/counties/topo/GA_county_regions.csv")).then(function(detail_data) {
             // Similar to aside
             let dp = {
               numColumns: ["county_num","economic_region","wia_region","io_region"], // Omit "name" since not number.
@@ -3415,7 +3438,7 @@ if (typeof $ !== 'undefined') {
     }
     function applyGeoviewSelection(value) {
         if (value == "space") {
-            window.location.href = "/space/";
+            window.location.href = webrootPath("/space/");
             return;
         }
         if (value == "earth" && $("#mainEarthDisplay").is(":visible")) {
@@ -3570,7 +3593,7 @@ if (typeof $ !== 'undefined') {
         const activeSection = getActiveFilterSection();
         $("#filterFieldMenu").hide();
         if (action === "aboutfilters") {
-            window.location = "/localsite/info/data/map-filters/";
+            window.location = localsitePath("info/data/map-filters/");
             refreshFilterToggleIcon();
             event.stopPropagation();
             return;
@@ -4022,7 +4045,7 @@ if (typeof $ !== 'undefined') {
         // TODO: set search to empty array if all search boxes are checked.
         if(!hash.show && location.href.indexOf('/localsite/info/') < 0) {
             updateHash({"geoview":""});
-            window.location = "/localsite/info/" + location.hash;
+            window.location = localsitePath("info/") + location.hash;
             return;
         }
         goHash({"q":searchQuery,"search":search,"geoview":""}); // triggers hash change event.
@@ -4418,7 +4441,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
           topoObjName = "topoob.objects.data";
         }  else if (hash.geoview == "country") { // USA  && stateAbbr.length != 2
           layerName = "States";
-          url = local_app.web_root() + "/localsite/map/topo/states-10m.json"; // name parameter is full state name
+          url = localsitePath("map/topo/states-10m.json"); // name parameter is full state name
           topoObjName = "topoob.objects.states";
         } else if (stateAbbr && stateAbbr.length <= 2 && hash.geoview != "countries") { // COUNTIES
           layerName = stateAbbr + " Counties";
@@ -5371,11 +5394,11 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                 //let csvFilePath = local_app.community_data_root() + "us/state/" + theState + "/" + theState + "counties.csv";
                 
                 // All states in one file
-                let csvFilePath = "/localsite/info/data/map-filters/us-counties-full.csv";
+                let csvFilePath = localsitePath("info/data/map-filters/us-counties-full.csv");
                 if (hash.geoview == "zip") {
                     csvFilePath = local_app.community_data_root() + "us/zipcodes/zipcodes6.csv";
                 } else if (hash.show == "cameraready" && hash.state == "GA") {
-                    csvFilePath = "/localsite/info/data/map-filters/state-county-sections-ga.csv";
+                    csvFilePath = localsitePath("info/data/map-filters/state-county-sections-ga.csv");
                 }
                 //alert("csvFilePath " + csvFilePath)
                 let allowedStates = [];
@@ -6758,7 +6781,7 @@ function populateCityList(callback) {
         return;
     }
     console.log("cityList");
-    var file = "/team/projects/map/cities.csv";
+    var file = webrootPath("/team/projects/map/cities.csv");
     $.get(file, function(data) {
         var cityList;
         var lines = data.split('\n');
@@ -7338,7 +7361,7 @@ function thumbClick(show,path) {
     if (path && !window.location.pathname.includes(path)) {
         // Leave current page
         var hashString = decodeURIComponent($.param(hash));
-        window.location = "/localsite/" + path + "#" + hashString;
+        window.location = localsitePath(path) + "#" + hashString;
     } else { // Remain in current page
         if (show != priorShow) {
             delete hiddenhash.show;
@@ -7549,7 +7572,7 @@ function iNav(set) {
     let hashString = decodeURIComponent($.param(hash)); // decode to display commas in URL
     if (location.href.indexOf('/info') == -1) {
         //updateHash({"geoview":""}); // Close location filter before redirect.
-        location.href = local_app.web_root() + "/localsite/info/#" + hashString;
+        location.href = localsitePath("info/#") + hashString;
     } else {
         goHash({"set":set,"indicators":hash.indicators});
     }
@@ -7775,20 +7798,20 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         localsiteTitle = "DreamStudio";
         $(".siteTitleShort").text("DreamStudio");
         
-        param.headerLogoNoText = "<img src='/localsite/img/logo/dreamstudio/favicon.png' style='float:left;width:38px;margin-right:7px'>";
+        param.headerLogoNoText = "<img src='" + localsitePath("img/logo/dreamstudio/favicon.png") + "' style='float:left;width:38px;margin-right:7px'>";
         if (modelsite=="planet.live" || location.href.indexOf("planet.live") >= 0) {
             localsiteTitle = "Planet.Live"
             $(".siteTitleShort").text("Planet.Live")
             param.titleArray = ["planet","live"]
-            param.headerLogoSmall = "<img src='/localsite/img/logo/planetlive/faveye.png' style='width:40px;opacity:0.85'>"
-            param.headerLogoNoText = "<img src='/localsite/img/logo/planetlive/faveye.png' style='float:left;width:38px;margin-right:7px'>";
-            param.headerLogo = "<a href='" + siteRoot + "/'><img src='/localsite/img/logo/planetlive/faveye.png' style='float:left;width:38px;margin-right:10px;margin-top:-0.5px'><img src='/localsite/img/logo/planetlive/planet.live.png' alt='planet.live' style='height:24px; margin-top:8px' class='headerLogoDesktop'></a>";
+            param.headerLogoSmall = "<img src='" + localsitePath("img/logo/planetlive/faveye.png") + "' style='width:40px;opacity:0.85'>"
+            param.headerLogoNoText = "<img src='" + localsitePath("img/logo/planetlive/faveye.png") + "' style='float:left;width:38px;margin-right:7px'>";
+            param.headerLogo = "<a href='" + siteRoot + "/'><img src='" + localsitePath("img/logo/planetlive/faveye.png") + "' style='float:left;width:38px;margin-right:10px;margin-top:-0.5px'><img src='" + localsitePath("img/logo/planetlive/planet.live.png") + "' alt='planet.live' style='height:24px; margin-top:8px' class='headerLogoDesktop'></a>";
             
             // Quick fix, need to adjust for period in class name on datah page.
             showClassInline(".planetlive");
         } else {
             if (!param.headerLogo) {
-                param.headerLogo = "<a href='" + siteRoot + "/'><img src='/localsite/img/logo/dreamstudio/favicon.png' style='float:left;width:38px;margin-right:7px'><img src='/localsite/img/logo/dreamstudio/text.png' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
+                param.headerLogo = "<a href='" + siteRoot + "/'><img src='" + localsitePath("img/logo/dreamstudio/favicon.png") + "' style='float:left;width:38px;margin-right:7px'><img src='" + localsitePath("img/logo/dreamstudio/text.png") + "' alt='DreamStudio' style='height:22px; margin-top:9px' class='headerLogoDesktop'></a>";
             }
             showClassInline(".dreamstudio");
         }
@@ -7830,8 +7853,8 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         $(".siteTitleShort").text("Model Georgia");
         param.titleArray = [];
         console.log("local_app.localsite_root() " + local_app.localsite_root()); // https://model.earth was in here: https://map.georgia.org/localsite/map/#show=recyclers
-        param.headerLogo = "<a href='https://georgia.org'><img src='" + local_app.web_root() + "/localsite/img/logo/states/GA.png' style='width:160px;margin-top:0px'></a>";
-        param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + local_app.web_root() + "/localsite/img/logo/states/GA-icon.png' style='width:52px;padding:0px;margin-top:-2px'></a>";
+        param.headerLogo = "<a href='https://georgia.org'><img src='" + localsitePath("img/logo/states/GA.png") + "' style='width:160px;margin-top:0px'></a>";
+        param.headerLogoNoText = "<a href='https://georgia.org'><img src='" + localsitePath("img/logo/states/GA-icon.png") + "' style='width:52px;padding:0px;margin-top:-2px'></a>";
         localsiteTitle = "Georgia.org";
 ////////        changeFavicon(local_app.web_root() + "/localsite/img/logo/states/GA-favicon.png");
         if (location.host.indexOf('localhost') >= 0) {
@@ -7847,21 +7870,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         }
         showClassInline(".geo");
 
-        var isLocalhost = location.host.indexOf('localhost') >= 0;
-        var sideNavKey = isLocalhost ? 'sideNavLocal' : 'sideNavLive';
-        var hiddenStyle = document.createElement('style');
-        hiddenStyle.id = 'georgia-side-nav-hidden';
-        hiddenStyle.textContent = '#side-nav-content { display: none !important } #side-nav.expanded #main-nav { display: block !important } .main-nav-full { width: 189px !important } .listcolumn:not(.listcolumnOnly) { left: 189px !important }';
-        document.head.appendChild(hiddenStyle);
-        waitForElm('#side-nav-content').then(function() {
-            window.loadWebrootYaml && window.loadWebrootYaml().then(function(cfg) {
-                var site = cfg.sites && cfg.sites['model.georgia'];
-                if (!site || site[sideNavKey] !== 'false') {
-                    var s = document.getElementById('georgia-side-nav-hidden');
-                    if (s) s.remove();
-                }
-            });
-        });
+        hideSideNavForSite('model.georgia');
 
         if (location.host.indexOf("locations.pages.dev") >= 0 || location.host.indexOf("locations.georgia.org") >= 0) {
             // To activate when filter are ready
@@ -7875,7 +7884,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
     } else if ((modelsite=="neighborhood.org" || param.startTitle == "Neighborhood.org" || location.host.indexOf('neighborhood.org') >= 0)) {
         showLeftIcon = true;
         param.titleArray = ["neighbor","hood"]
-        param.headerLogoSmall = "<img src='" + local_app.web_root() + "/localsite/img/logo/neighborhood/favicon.png' style='width:40px;opacity:0.7'>"
+        param.headerLogoSmall = "<img src='" + localsitePath("img/logo/neighborhood/favicon.png") + "' style='width:40px;opacity:0.7'>"
         localsiteTitle = "Neighborhood.org";
 ////////        changeFavicon(local_app.web_root() + "/localsite/img/logo/neighborhood/favicon.png")
         showClassInline(".neighborhood");
@@ -7906,7 +7915,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         $(".siteTitleShort").text("Model Earth");
         param.titleArray = ["model","earth"];
         localsiteTitle = "Model Earth";
-        param.headerLogoSmall = "<img src='" + local_app.web_root() + "/localsite/img/logo/modelearth/model-earth.png' style='width:34px; margin-right:2px' class='logoTopPadding'>";
+        param.headerLogoSmall = "<img src='" + localsitePath("img/logo/modelearth/model-earth.png") + "' style='width:34px; margin-right:2px' class='logoTopPadding'>";
         
         // Works correctly for model.earth sitemodel, but not reached by geo.
         //alert("changeFavicon")
@@ -8065,7 +8074,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                     modelpath = ""; // Use the current repo when custom headerFile provided. Allows for site to reside within repo.
                     headerFile = param.headerFile;
                 } else {
-                    headerFile = local_app.web_root() + "/localsite/header.html";
+                    headerFile = localsitePath("header.html");
                 }
 
                 // Generic helper so a repo's own header.html (custom param.headerFile) can rewrite its
@@ -8123,10 +8132,10 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                                         }
                                         waitForElm('#resourcesPanel').then((elm) => {
                                             // TO DO - Lazy load elsewhere, and avoid if already loaded
-                                            loadMarkdown(storiesFile, "storiesDiv", "_parent");
+                                            loadMarkdown(webrootPath(storiesFile), "storiesDiv", "_parent");
                                             //let resourcesFile = prependFolder + "/resources.md";
                                             let resourcesFile = "/requests/resources/resources.md";
-                                            loadMarkdown(resourcesFile, "resourcesMenu", "_parent");
+                                            loadMarkdown(webrootPath(resourcesFile), "resourcesMenu", "_parent");
                                         });
                                     }
                                 });
@@ -8329,7 +8338,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         } else if (earthFooter || param.footer || location.href.indexOf("dreamstudio") >= 0 || location.href.indexOf("planet.live") >= 0) {
             var footerClimbpath = "";
             // Had ..
-            let footerFile = modelpath + "/localsite/footer.html"; // modelpath remains relative for site desgnated above as having a local copy of io and community.
+            let footerFile = localsitePath("footer.html"); // Wherever localsite was loaded from
             if (param.footer) {
                 footerFile = param.footer; // Custom
 
@@ -8367,7 +8376,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
 
             let targetColumn = "#main-nav";
             // Had ..
-            $(targetColumn).load( modelpath + "/localsite/nav.html", function( response, status, xhr ) {
+            $(targetColumn).load( localsitePath("nav.html"), function( response, status, xhr ) {
                 activateSideColumn();
             });
         }
@@ -8930,7 +8939,7 @@ function showEarth(show) {
         $("#hero_holder").show();
         closeSideTabs();
     } else {
-        includeCSS3('/localsite/css/leaflet.css',''); // For zoom icons
+        includeCSS3(localsitePath('css/leaflet.css'),''); // For zoom icons
         //$("#globalMapHolder").hide(); // Home page nullschool map.
         $("#globalMapHolder").show();
 
@@ -9293,7 +9302,7 @@ function showClassInline(theclass) {
 function imagineLocation() {
     if (location.href.indexOf('/info') == -1) {
         updateHash({"geoview":""}); // Prevents location filter from remaining open after redirect.
-        location.href = local_app.web_root() + "/localsite/info/" + location.hash;
+        location.href = localsitePath("info/") + location.hash;
         return;
     }
     updateHash({"imgview":"state","geoview":"","appview":""}); // Should this reside in hideAdvanced()?
@@ -10410,6 +10419,12 @@ waitForElm('#keywordsTB').then(function() {
   var navResultsEl = initAutocomplete(input, function(value, resultsEl, inputEl) {
     fetchLocationItems(value, resultsEl, inputEl, function(item) {
       inputEl.value = item.title;
+      // On pages whose filename contains "state" (such as state.html), update the state hash right away
+      var pageName = location.pathname.split('/').pop().toLowerCase();
+      var stateCode = (item.address.stateCode || '').toUpperCase();
+      if (pageName.indexOf('state') >= 0 && /^[A-Z]{2}$/.test(stateCode)) {
+        goHash({'state':stateCode});
+      }
       lookupSelectedLocationLatLon(item)
         .then(function(coords) {
           if (!coords) return;

@@ -492,7 +492,7 @@ function loadMap1(calledBy, show, dp_incoming) {
       } else if (show == "wastewater") {
         dp.listTitle = "Georgia Wastewater Facilities (2023)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.mapInfo = "View&nbsp;<a href='/recycling/georgia/'>Solid Waste and Recycling&nbsp;Datasets</a>.";
+        dp.mapInfo = "View&nbsp;<a href='" + webrootPath('/recycling/georgia/') + "'>Solid Waste and Recycling&nbsp;Datasets</a>.";
         // Wastewater tab. Path including gid from sheet's Share > Publish [choose tab]
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=2016874057&single=true&output=csv";
         
@@ -527,7 +527,7 @@ function loadMap1(calledBy, show, dp_incoming) {
       } else if (show == "landfills") {
         dp.listTitle = "Georgia Landfills (2017)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.<br>Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='/recycling/georgia/'>Wastewater and Recycling&nbsp;Datasets</a>.";
+        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates.<br>Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='" + webrootPath('/recycling/georgia/') + "'>Wastewater and Recycling&nbsp;Datasets</a>.";
 
         // From Landfills tab (temporary until Solid Waste ready)
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=2088666243&single=true&output=csv";
@@ -552,7 +552,7 @@ function loadMap1(calledBy, show, dp_incoming) {
       } else if (show == "solidwaste") {
         dp.listTitle = "Georgia Solid Waste (Oct 2023)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates. Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='/recycling/georgia/'>More&nbsp;Recycling&nbsp;Datasets</a>.";
+        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates. Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='" + webrootPath('/recycling/georgia/') + "'>More&nbsp;Recycling&nbsp;Datasets</a>.";
       
         // From Solid Waste 2023-10 tab
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=1567915085&single=true&output=csv";
@@ -573,7 +573,7 @@ function loadMap1(calledBy, show, dp_incoming) {
       } else if (show == "solidwaste-old") { // This tab can be deleted in Google Sheet
         dp.listTitle = "Georgia Solid Waste (Old)";
         dp.editLink = "https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing";
-        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates. Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='/recycling/georgia/'>More&nbsp;Recycling&nbsp;Datasets</a>.";
+        dp.mapInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing' target='georgia_recyclers_sheet'>Google&nbsp;Sheet</a> to provide updates. Source: <a href='https://epd.georgia.gov/about-us/land-protection-branch/solid-waste/regulated-solid-waste-facilities'>EPD Regulated Solid Waste</a>. &nbsp;View&nbsp;<a href='" + webrootPath('/recycling/georgia/') + "'>More&nbsp;Recycling&nbsp;Datasets</a>.";
       
         // From "Solid Waste Old" tab
         dp.googleCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRBRXb005Plt3mmmJunBMk6IejMu-VAJOPdlHWXUpyecTAF-SK4OpfSjPHNMN_KAePShbNsiOo2hZzt/pub?gid=809637033&single=true&output=csv";
@@ -596,8 +596,8 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.listTitle = "GDEcD Team Map";
         dp.dataTitle = "GDEcD Team Map";
         dp.datatype = "csv";
-        dp.dataset1 = "/display/team/map/cities.csv";
-        dp.dataset =  "/team/projects/map/cities.csv";
+        dp.dataset1 = webrootPath("/display/team/map/cities.csv");
+        dp.dataset =  webrootPath("/team/projects/map/cities.csv");
         dp.markerType = "google";
         dp.nameColumn = "city";
         dp.search = {"In City": "City", "In County Name": "County"};
@@ -696,7 +696,7 @@ function loadMap1(calledBy, show, dp_incoming) {
           //dp.nameColumn = "organizationname";
           //dp.titleColumn = "organizationname";
 
-          dp.mapInfo = "<span>View <a href='/recycling/georgia/'>Recycling Datasets</a>.</span><br>Submit updates by posting comments in our 5 <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing'>Google Sheet Tabs</a>.";
+          dp.mapInfo = "<span>View <a href='" + webrootPath('/recycling/georgia/') + "'>Recycling Datasets</a>.</span><br>Submit updates by posting comments in our 5 <a href='https://docs.google.com/spreadsheets/d/1YmfBPEFpfmaKmxcnxijPU8-esVkhaVBE1wLZqPNOKtY/edit?usp=sharing'>Google Sheet Tabs</a>.";
           
           //dp.latColumn = "latitude";
           //dp.lonColumn = "longitude";
@@ -733,7 +733,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         // Dark green map points indicate electric vehicle parts manufacturing.<br>
         dp.mapInfo = "From 2020 to 2022 Georgia added more than 20 EV-related projects. <a href='https://www.georgiatrend.com/2022/07/29/electric-revolution/'>Learn&nbsp;more</a>";
         // <br>Dark Green: Electric Vehicle (EV) Industry<br>Lite Green: Potential EV Parts Manufacturer<br>Dark Blue: Internal Combustion Engine (ICE)
-        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing' target='vehicles_data'>Google Sheet</a> to submit updates. <a href='/localsite/info/input/'>Contact Us</a> to become an editor. Learn about <a href='../../community/projects/mobility/'>data&nbsp;sources</a>.";
+        dp.listInfo = "Post comments in our <a href='https://docs.google.com/spreadsheets/d/1OX8TsLby-Ddn8WHa7yLKNpEERYN_RlScMrC0sbnT1Zs/edit?usp=sharing' target='vehicles_data'>Google Sheet</a> to submit updates. <a href='" + localsitePath('info/input/') + "'>Contact Us</a> to become an editor. Learn about <a href='../../community/projects/mobility/'>data&nbsp;sources</a>.";
         dp.valueColumn = "ev industry";
         dp.valueColumnLabel = "EV Industry";
         dp.markerType = "google";
@@ -789,7 +789,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         // Fulton County 5631 restaurants
         dp.listTitle = "Restaurant Ratings";
         dp.dataTitle = "Restaurant Ratings";
-        dp.dataset = "/community/tools/map.csv";
+        dp.dataset = webrootPath("/community/tools/map.csv");
         dp.latitude = 32.9;
         dp.longitude = -83.4; 
         dp.name = "Fulton County Restaurants";
@@ -802,7 +802,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.latColumn = "latitude";
         dp.lonColumn = "longitude";
 
-        dp.dataset = "/community/farmfresh/usa/georgia/fulton_county_restaurants.csv"; // Just use 50
+        dp.dataset = webrootPath("/community/farmfresh/usa/georgia/fulton_county_restaurants.csv"); // Just use 50
         dp.dataTitle = "Restaurant Scores";
         dp.titleColumn = "restaurant";
         dp.mapInfo = "Fulton County";
@@ -815,7 +815,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         // CURBSIDE PICKUP
         dp.listTitle = "Restaurants with Curbside Pickup";
         dp.mapInfo = "Data provided by coastapp.com. <a href='https://coastapp.com/takeoutcovid/atl/' target='_blank'>Make Updates</a>";
-        dp.dataset = "/community/places/usa/ga/restaurants/atlanta-coastapp.csv";
+        dp.dataset = webrootPath("/community/places/usa/ga/restaurants/atlanta-coastapp.csv");
         dp.dataTitle = "Curbside Pickup";
         // 
         dp.markerType = "google";
@@ -840,7 +840,7 @@ function loadMap1(calledBy, show, dp_incoming) {
 
         dp.listTitle = "Businesses";
         dp.dataTitle = "Businesses";
-        dp.dataset = "/apps/benchmarks/data/beyond_businesses.csv";
+        dp.dataset = webrootPath("/apps/benchmarks/data/beyond_businesses.csv");
         dp.latitude = 32.71;
         dp.longitude = -117.16;
         dp.zoom = 11;
@@ -852,7 +852,7 @@ function loadMap1(calledBy, show, dp_incoming) {
         dp.nameColumn = "Name";
         dp.listTitle = "Buildings";
         dp.dataTitle = "Buildings";
-        dp.dataset = "/apps/benchmarks/data/beyond_carbon.csv";
+        dp.dataset = webrootPath("/apps/benchmarks/data/beyond_carbon.csv");
         dp.latitude = 32.71;
         dp.longitude = -117.16;
         dp.zoom = 11;
@@ -2189,7 +2189,7 @@ function showList(dp,map) {
           spreadsheetLink = " <a href='" + dp.editLink + "'>Google Sheet</a>";
         }
       }
-      $("#mainList").append("<b>Volunteer Project</b><br>" + subcatObject["null"].count + " " + hash.cat.toLowerCase() + " listings need a subcategory.<br><a href='/localsite/info/input/'>Contact us</a> to help update the " + spreadsheetLink + ".<br>");
+      $("#mainList").append("<b>Volunteer Project</b><br>" + subcatObject["null"].count + " " + hash.cat.toLowerCase() + " listings need a subcategory.<br><a href='" + localsitePath('info/input/') + "'>Contact us</a> to help update the " + spreadsheetLink + ".<br>");
       //  Volunteer
       $("#mainList").append("<br>");
     }

@@ -88,10 +88,13 @@
     });
   } else {
     // standalone fallback when loaded without localsite.js
-    var SITE_CONFIG_PATH = '/support/site/config.yaml';
+    // model.earth serves the webroot repo's files from model.earth/webroot/
+    var SITE_CONFIG_PATH = (location.hostname === 'model.earth' || location.hostname === 'www.model.earth') ? '/webroot/support/site/config.yaml' : '/support/site/config.yaml';
     var SESSION_KEY = 'webrootYamlPath';
 
-    if (sessionStorage.getItem(SESSION_KEY) !== 'none') {
+    // TEMPORARY: model.earth ignores 'none', since it was saved before the config moved to /webroot/. Remove this exemption after Nov 1, 2026.
+    var ignoreNone = location.hostname === 'model.earth' || location.hostname === 'www.model.earth';
+    if (ignoreNone || sessionStorage.getItem(SESSION_KEY) !== 'none') {
       fetch(SITE_CONFIG_PATH)
         .then(function(r) { return r.ok ? r.text() : null; })
         .then(function(text) {

@@ -606,7 +606,7 @@ async function loadImpactData(naicsCode) {
         // Always use the national model (411 sectors) for detailed impact data.
         // State models only have ~146 aggregated sectors (e.g., "327" not "327320"),
         // so they won't match specific NAICS codes.
-        let endpoint = '/io/build/api';
+        let endpoint = webrootPath('/io/build/api');
         let modelName = 'USEEIOv2.0.1-411';
 
         const baseUrl = endpoint + '/' + modelName;
@@ -702,7 +702,7 @@ async function loadImpactData(naicsCode) {
 
     } catch (error) {
         console.error('[IndustryDetail] Error loading impact data:', error);
-        container.innerHTML = '<p style="color:#666;">Could not load environmental impact data. <a href="/io/charts/inflow-outflow/#naics=' + naicsCode + '" style="color:#007bff;">View in Inflow-Outflow Chart</a></p>';
+        container.innerHTML = '<p style="color:#666;">Could not load environmental impact data. <a href="' + webrootPath('/io/charts/inflow-outflow/') + '#naics=' + naicsCode + '" style="color:#007bff;">View in Inflow-Outflow Chart</a></p>';
     }
 }
 
@@ -727,7 +727,7 @@ function loadSupplyChain(naicsCode) {
     }
 
     const stateParam = hash.state ? '&state=' + hash.state : '';
-    const inflowOutflowUrl = '/io/charts/inflow-outflow/#naics=' + naicsCode + stateParam;
+    const inflowOutflowUrl = webrootPath('/io/charts/inflow-outflow/') + '#naics=' + naicsCode + stateParam;
 
     let html = '<div style="padding:20px; background:#f8f9fa; border-radius:8px;">';
     html += '  <p style="margin-bottom:15px; color:#555;">Explore which industries supply inputs to and receive outputs from this sector using the interactive Inflow-Outflow chart.</p>';

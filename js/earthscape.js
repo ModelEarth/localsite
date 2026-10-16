@@ -9,10 +9,10 @@ const api_key = "AIzaSyCTI4Xz-UW_G2Q2RfknhcfdAnTHq5X5XuI";
 
 
 function loadEarthScape(my) {
-    loadScript(theroot + 'js/d3.v5.min.js', function (results) {
-        waitForVariable('customD3loaded', function () {
-            d3.csv(my.dataset).then(function (data) {
-                console.log("File loaded " + my.dataset);
+    earthscape_loadD3().then(function () {
+        d3.csv(my.dataset).then(function (data) {
+            console.log("File loaded " + my.dataset);
+            earthscape_loadTabulator().then(function () {
                 $(document).ready(function () {
                     earthscape_TableDisplay(my, data);
                 });
@@ -22,64 +22,125 @@ function loadEarthScape(my) {
 }
 
 function loadEarthScape2(my) {
-    loadScript(theroot + 'js/d3.v5.min.js', function (results) {
-        waitForVariable('customD3loaded', function () {
-
-            // Initialize an empty array to store the data for each year
-            let allData = [];
-
-            // Load data for years 2017 to 2021
-            for (let year = 2017; year <= 2021; year++) {
-                let dataset = my.dataset.replace(/this_is_year/g, year.toString());
-                d3.csv(dataset).then(function (data) {
-                    console.log("File loaded " + dataset);
-                    // Add the year to each row of data
-                    data.forEach(function (row) {
-                        row['Year'] = year;
-                    });
-                    // Add the data for this year to the array
-                    allData = allData.concat(data);
-                    // Check if this is the last year, then display the table
-                    if (year === 2021) {
-                        $(document).ready(function () {
-                            // Display the table after all years' data is loaded
-                            earthscape_TableDisplay2(my, allData);
-                        });
-                    }
-                });
-            }
+    // Displays the table once every year has loaded. Missing years are skipped.
+    earthscape_loadYears(Object.assign({ startYear: 2017, endYear: 2021 }, my)).then(function (allData) {
+        earthscape_loadTabulator().then(function () {
+            $(document).ready(function () {
+                earthscape_TableDisplay2(my, allData);
+            });
         });
     });
 }
 
-// Tabulator grid below diagram
-function earthscape_TableDisplay(my, data) {
-    console.log("Python file data:");
-    console.log(data); // An array of objects
-    console.log("Python file columns:");
-    //columns = data["columns"];
-    //console.log(columns);
+// Loads one file per year into a single Tabulator grid, then resolves with {table, rows}.
+// my.dataset   - URL with "this_is_year" in place of the year. An array of URLs is tried in order, e.g. local then GitHub.
+// my.startYear - First year to look for (default 2018).
+// my.endYear   - Last year to look for (default: the current year). Years not found are skipped, so new years appear on their own.
+// my.parse     - Optional parse(text, year, url) returning a row or an array of rows. Default: CSV rows via d3.
+// my.yearField - Field that receives the year when parse doesn't set it (default "Year").
+// my.onData    - Optional onData(rows) to sort or add fields before display. May return a Promise, e.g. to fetch more per-year data.
+// Also accepts the earthscape_TableDisplay options: my.columns, my.maxHeight, my.initialSort, my.index, my.layout, my.tableOptions.
+function loadEarthScapeYears(my) {
+    return earthscape_loadYears(my).then(function (loadedRows) {
+        return Promise.resolve(my.onData ? my.onData(loadedRows) : loadedRows).then(function (result) {
+            return result || loadedRows;
+        });
+    }).then(function (rows) {
+        return Promise.all([earthscape_loadTabulator(), waitForElm("#" + my.elementID)]).then(function () {
+            return { table: earthscape_TableDisplay(my, rows), rows: rows };
+        });
+    });
+}
 
-    let table = new Tabulator("#" + my.elementID, {
+// Fetches each year's file in parallel and resolves with the parsed rows, oldest year first.
+function earthscape_loadYears(my) {
+    const startYear = parseInt(my.startYear || 2018, 10);
+    const endYear = parseInt(my.endYear || new Date().getFullYear(), 10);
+    const yearField = my.yearField || "Year";
+    const urls = [].concat(my.dataset);
+    const years = [];
+    for (let year = startYear; year <= endYear; year++) years.push(year);
+
+    const parserReady = my.parse ? Promise.resolve() : earthscape_loadD3();
+    return parserReady
+        .then(function () {
+            return Promise.all(years.map(function (year) { return earthscape_fetchFirst(urls, year); }));
+        })
+        .then(function (results) {
+            let rows = [];
+            results.filter(Boolean).forEach(function (result) {
+                const parsed = my.parse ? my.parse(result.text, result.year, result.url) : d3.csvParse(result.text);
+                [].concat(parsed || []).forEach(function (row) {
+                    if (row[yearField] === undefined) row[yearField] = result.year;
+                    rows.push(row);
+                });
+            });
+            return rows;
+        });
+}
+
+// Resolves with {year, url, text} from the first URL that has the file, or null when no source has that year.
+async function earthscape_fetchFirst(urls, year) {
+    for (const pattern of urls) {
+        const url = pattern.replace(/this_is_year/g, year);
+        try {
+            const response = await fetch(url);
+            const type = response.headers.get("content-type") || "";
+            // Some dev servers answer a missing file with an HTML page instead of a 404.
+            if (!response.ok || (type.includes("text/html") && !/\.html?$/i.test(url))) continue;
+            console.log("File loaded " + url);
+            return { year: year, url: url, text: await response.text() };
+        } catch (error) {
+            // Source unreachable: try the next one.
+        }
+    }
+    return null;
+}
+
+function earthscape_loadD3() {
+    return new Promise(function (resolve) {
+        loadScript(theroot + 'js/d3.v5.min.js', function () {
+            waitForVariable('customD3loaded', resolve);
+        });
+    });
+}
+
+// Loads Tabulator when the page hasn't included it, preventing "ReferenceError: Tabulator is not defined".
+function earthscape_loadTabulator() {
+    if (typeof Tabulator !== "undefined") return Promise.resolve();
+    includeCSS3(theroot + 'css/tabulator.min.css');
+    includeCSS3(theroot + 'css/base-tabulator.css');
+    return new Promise(function (resolve) {
+        loadScript(theroot + 'js/tabulator.min.js', function () {
+            waitForVariable('Tabulator', resolve);
+        });
+    });
+}
+
+// Tabulator grid below diagram. Returns the table.
+// Uses autoColumns unless my.columns is provided. Set my.maxHeight to false for no height limit.
+function earthscape_TableDisplay(my, data) {
+    let options = {
         data: data,
-        //layout:"fitColumns",      //fit columns to width of table
-        //responsiveLayout:"hide",  //hide columns that dont fit on the table
-        //tooltips:true,          //show tool tips on cells
-        maxHeight: "300px",        // For frozenRows
         addRowPos: "top",          //when adding a new row, add it to the top of the table
         history: true,             //allow undo and redo actions on the table
         paginationSize: 7,         //allow 7 rows per page of data
         movableColumns: true,      //allow column order to be changed
-        //cellHozAlign:"right",   //Not compatible with autoColumns:true
         resizableRows: true,       //allow row order to be changed
-        //initialSort:[             //set the initial sort order of the data
-        //    {column:"progress", dir:"desc"},
-        //],
-        autoColumns: true,
         scrollHorizontal: true,
-        //columnMinWidth: 300,      //all columns
+    };
+    if (my.maxHeight !== false) options.maxHeight = my.maxHeight || "300px"; // For frozenRows
+    if (my.columns) {
+        options.columns = my.columns;
+    } else {
+        options.autoColumns = true; // cellHozAlign:"right" is not compatible with autoColumns
+    }
+    if (my.index) options.index = my.index;
+    if (my.layout) options.layout = my.layout;
+    if (my.initialSort) options.initialSort = my.initialSort; // e.g. [{column:"Year", dir:"desc"}]
+    Object.assign(options, my.tableOptions || {});
 
-    });
+    return new Tabulator("#" + my.elementID, options);
 }
 
 

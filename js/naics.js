@@ -84,7 +84,7 @@ document.addEventListener('hashChangeEvent', function (elem) {
 // Used in old version, but it contains 2,4,6 naics
 // https://github.com/ModelEarth/community-data/blob/master/us/id_lists/industry_id_list.csv
 //let industryTitleFile = local_app.community_data_root() + "us/state/" + stateAbbr + "/industries_state" + stateID + "_naics6_state_all.tsv";
-let industryTitleFile = "/localsite/info/naics/lookup/6-digit_2012_Codes.csv"; // Source: https://www.census.gov/eos/www/naics/downloadables/downloadables.html
+let industryTitleFile = localsitePath("info/naics/lookup/6-digit_2012_Codes.csv"); // Source: https://www.census.gov/eos/www/naics/downloadables/downloadables.html
 function getIndustryLocFileString(catsize) {
     //return local_app.community_data_root() + "industries/naics/US/country/US-2021-Q1-naics-" + catsize + "-digits.csv"; // Removed
     let hash = getHash();
@@ -403,7 +403,7 @@ function refreshNaicsWidget(initialLoad) {
                 onElmReady('#tabulator-industrytable-intro', function() {
                     // Occurs everytime state or county changes.
                     //$("#tabulator-industrytable-datalink").html("<a href='" + industryLocDataFile + "''>" + industryLocDataFile + "</a><br>");
-                    $("#tabulator-industrytable-realitystream").attr("href", "/realitystream/#features.path=" + industryLocDataFile);
+                    $("#tabulator-industrytable-realitystream").attr("href", webrootPath("/realitystream/#features.path=" + industryLocDataFile));
                 });
             }
             d3.csv(industryLocDataFile).then( function(county_data) {
@@ -1719,7 +1719,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                         }
                         consoleLog("NAICS count: top " + naicsRowCount + " displayed out of " + top_data_ids.length);
                         if (naicsRowCount > 0) {
-                            lowerMessage += "Purple&nbsp;text&nbsp;indicates approximated values. List does not yet include data for industries without state-level payroll reporting by BLS or BEA. - <a href='/localsite/info/data/'>More&nbsp;Details</a>";
+                            lowerMessage += "Purple&nbsp;text&nbsp;indicates approximated values. List does not yet include data for industries without state-level payroll reporting by BLS or BEA. - <a href='" + localsitePath('info/data/') + "'>More&nbsp;Details</a>";
                             
                             onElmReady('#econ_list', function() {
                                 $("#top-content-columns").show();
@@ -2147,10 +2147,10 @@ function applyIO(naics) {
     //naics = {}; // Kill it
     let hash = getHash(); // Includes hiddenhash
     var config = useeio.urlConfig();
-    let endpoint = "/io/build/api";
+    let endpoint = webrootPath("/io/build/api");
     // Change && to || in these two lines to test locally.
     if (hash.beta == "true") {
-        endpoint = "/profile/impacts/2020";
+        endpoint = webrootPath("/profile/impacts/2020");
     }
     let theModel = 'USEEIOv2.0.1-411';
     if (hash.beta == "true") {
@@ -2275,13 +2275,13 @@ getEpaSectors();
 function getEpaSectors() {
     let hash = getHash();
     // sectorsJsonFile is not used
-    let sectorsJsonFile = "/io/build/api/USEEIOv2.0.1-411/sectors.json"; // 411 sectors
+    let sectorsJsonFile = webrootPath("/io/build/api/USEEIOv2.0.1-411/sectors.json"); // 411 sectors
     if (hash.beta == "true") {
         if (hash.state) {
             let thestate = hash.state.split(",")[0].toUpperCase();
             theModel = thestate + "EEIOv1.0-s-20"
             // if (hash.state == "GA" || hash.state == "ME") {
-            sectorsJsonFile = "/profile/impacts/2020/" + theModel + "/sectors.json"; // 146/2 = 73
+            sectorsJsonFile = webrootPath("/profile/impacts/2020/" + theModel + "/sectors.json"); // 146/2 = 73
             //alert(thestate + " sectorsJsonFile " + sectorsJsonFile);
         }
     }
@@ -2343,7 +2343,7 @@ function showSectorTabulatorList(attempts) {
                     const demandHash = `demand=${sector.code}/${sector.location}`;
                     const stateParam = stateCode ? `&state=${stateCode}` : '';
                     const indexHash = `index=${sector.index}`; // legacy support for old links
-                    return `<a href="/profile/footprint/sector_profile.html#${demandHash}${stateParam}">${sector.name}</a>`;
+                    return `<a href="${webrootPath('/profile/footprint/sector_profile.html')}#${demandHash}${stateParam}">${sector.name}</a>`;
                   }
                 },
                 {title:"Code", field:"code", width:70, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
@@ -2749,8 +2749,8 @@ function getEpaModel() {
     return useeio.modelOf({
       //endpoint: 'http://localhost:8887/profile/impacts/2020',
 
-      // Relative path avoids CORS error
-      endpoint: '/profile/impacts/2020',
+      // Same site as localsite avoids a CORS error (webrootPath keeps any folders before localsite)
+      endpoint: webrootPath('/profile/impacts/2020'),
 
       model: theModel,
       asJsonFiles: true,
