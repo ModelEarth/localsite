@@ -5480,6 +5480,80 @@ function updateMenuLabels(menuId, panelId, panelType) {
   }
 }
 
+// Tour speed: a multiple of the original pace (1), from localStorage tourSpeed, chosen in a page's
+// speed menu (e.g. #tourSpeedSelect in requests/engine). Defaults to 0.5, half the original pace.
+// Scales the default stop time here and, in team/js/map.js, the detail map's glide and the gallery's image changes.
+const TOUR_SPEEDS = [0.25, 0.5, 0.75, 1, 1.5, 2];
+function tourSpeed() {
+  let speed = NaN;
+  try { speed = parseFloat(localStorage.getItem('tourSpeed')); } catch (e) {}
+  return TOUR_SPEEDS.includes(speed) ? speed : 0.5;
+}
+window.tourSpeed = tourSpeed;
+
+// Per Location: how long the tour stays at each location, from localStorage tourPerLocation, chosen in a page's
+// menu (e.g. #tourPerLocationSelect in requests/engine): 12, 20, 30 or 60 seconds, or "images" (the default) to stay
+// while the location's image gallery shows each of its images once (11 seconds at the original pace without images).
+// Never shorter than a page reports the stop needs, e.g. for the detail map's glide (setTourStopInfo).
+const TOUR_PER_LOCATION = ['12', '20', '30', '60', 'images'];
+function tourPerLocation() {
+  let value = null;
+  try { value = localStorage.getItem('tourPerLocation'); } catch (e) {}
+  return TOUR_PER_LOCATION.includes(value) ? value : 'images';
+}
+window.tourPerLocation = tourPerLocation;
+
+// A page reports what it knows of the current stop, which can come after the stop's advance was scheduled:
+// minMs (the least time the stop needs) and imagesMs (the time for its images to each show once).
+// team/js/map.js reports both. The advance is rescheduled to match.
+function setTourStopInfo(info) {
+  const id = typeof getHash === 'function' ? getHash().id : null;
+  if (!tourState.stopInfo || tourState.stopInfo.id !== id) tourState.stopInfo = { id };
+  Object.assign(tourState.stopInfo, info);
+  scheduleTourAdvance();
+}
+window.setTourStopInfo = setTourStopInfo;
+
+// Time at the current stop, from Per Location and the stop's reported needs
+function tourStopMs() {
+  const id = typeof getHash === 'function' ? getHash().id : null;
+  const info = tourState.stopInfo && tourState.stopInfo.id === id ? tourState.stopInfo : {};
+  const per = tourPerLocation();
+  const wanted = per === 'images' ? (info.imagesMs || 11000 / tourSpeed()) : Number(per) * 1000;
+  return Math.max(wanted, info.minMs || 0);
+}
+
+// Advances the tour once the current stop's time has passed since it started
+function scheduleTourAdvance() {
+  const id = typeof getHash === 'function' ? getHash().id : null;
+  if (!tourState.isPlaying || !tourState.stopStartedAt || tourState.stopId !== id) return;
+  if (tourState.timeoutId) clearTimeout(tourState.timeoutId);
+  const remaining = Math.max(0, tourStopMs() - (Date.now() - tourState.stopStartedAt));
+  tourState.timeoutId = setTimeout(() => advanceTour(tourState.panelId), remaining);
+}
+
+// Moves the tour to the next location, looping back to the first
+function advanceTour(panelId) {
+  // Check if detailplay is still in hash (user might have removed it)
+  const currentHash = (typeof getHash === 'function') ? getHash() : {};
+  if (!currentHash.detailplay || currentHash.detailplay !== 'true') {
+    // User removed detailplay, stop the tour
+    stopTour(panelId);
+    return;
+  }
+
+  tourState.currentIndex++;
+
+  if (tourState.currentIndex >= tourState.listingIds.length) {
+    // Tour completed, loop back to start
+    tourState.currentIndex = 0;
+  }
+
+  if (typeof goHash === 'function') {
+    goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true', view: currentHash.view || '' });
+  }
+}
+
 // Tour state management
 window.tourState = {
   isPlaying: false,
@@ -5576,31 +5650,14 @@ function startTour(panelId, isReload = false, startHash = {}) {
       tourState.currentIndex = 0;
     }
 
-    // Don't navigate - already on the correct id
-    // Set timeout for 11 seconds to advance to next slide (time for the detail map's tour glide in
-    // team/js/map.js: 3.5s zoom out and pan, 2s pause, 1.8s zoom in, then a few seconds on the point)
-    // Each slide sets its own timeout when it loads
-    tourState.timeoutId = setTimeout(() => {
-      // Check if detailplay is still in hash (user might have removed it)
-      const currentHash = (typeof getHash === 'function') ? getHash() : {};
-      if (!currentHash.detailplay || currentHash.detailplay !== 'true') {
-        // User removed detailplay, stop the tour
-        stopTour(panelId);
-        return;
-      }
-
-      tourState.currentIndex++;
-
-      if (tourState.currentIndex >= tourState.listingIds.length) {
-        // Tour completed, loop back to start
-        tourState.currentIndex = 0;
-      }
-
-      if (typeof goHash === 'function') {
-        const currentHash = getHash();
-        goHash({ id: tourState.listingIds[tourState.currentIndex], detailplay: 'true', view: currentHash.view || '' });
-      }
-    }, 11000);
+    // Don't navigate - already on the correct id.
+    // Each slide schedules its own advance when it loads (scheduleTourAdvance). A repeat call for the same
+    // slide keeps the time it started.
+    if (tourState.stopId !== currentId) {
+      tourState.stopId = currentId;
+      tourState.stopStartedAt = Date.now();
+    }
+    scheduleTourAdvance();
   } else {
     // Fresh start from clicking "Start Tour" - continue from current position
     const hash = (typeof getHash === 'function') ? getHash() : {};
@@ -5643,6 +5700,7 @@ window.startTour = startTour;
  */
 function stopTour(panelId) {
   tourState.isPlaying = false;
+  tourState.stopId = null; // resuming starts the stop's time over
 
   if (tourState.timeoutId) {
     clearTimeout(tourState.timeoutId);
