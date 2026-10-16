@@ -51,7 +51,7 @@ function updateStyleAbout(typographyValue) {
 }
 
 // A theme named in support/site/config.yaml sites (e.g. maestro) brands the page with that site's
-// title, favicon, logo and home_url. Any of these may be blank, and the config file may be missing.
+// title, favicon, logo, logo_height and home_url. Any of these may be blank, and the config file may be missing.
 // The page's own branding is saved first so switching to another theme restores it.
 let siteBrandingOriginal = null;
 
@@ -108,7 +108,7 @@ function applyThemeSiteBranding(typographyValue) {
         const img = document.createElement('img');
         img.src = theSite.logo;
         img.alt = theSite.title || '';
-        img.style.height = '36px';
+        img.style.height = theSite.logo_height || '36px';
         logoLink.replaceChildren(img);
       } else {
         logoLink.innerHTML = original.logoHtml;
