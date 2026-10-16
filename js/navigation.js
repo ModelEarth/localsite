@@ -8912,6 +8912,7 @@ $(document).on("click", ".reloadPage", function(event) {
     if (!wasFullscreen) return;
     const onGesture = (e) => {
         if (e.type === 'keydown' && e.key === 'Escape') return;
+        if (e.target.closest && e.target.closest('#detailArrows')) return; // the tour arrows (team/js/map.js) keep the window's size
         document.removeEventListener('pointerdown', onGesture, true);
         document.removeEventListener('keydown', onGesture, true);
         const page = document.documentElement;
