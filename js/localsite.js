@@ -6404,12 +6404,15 @@ function _markdownFileCmsConfig(file, fork) {
 }
 
 function _attachMarkdownEditMenu(pagePath, divID) {
-    if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
+    // A page can show the menu off localhost too by including localsite.js?mdedit=live
+    var mdEditLive = paramIncludeFile.mdedit === 'live';
+    if (!mdEditLive && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
     var container = document.getElementById(divID);
     if (!container || container.querySelector('.md-edit-menu')) return;
     _injectMdEditorStyles();
 
-    var menu     = document.createElement('div');   menu.className = 'md-edit-menu local'; menu.style.display = 'none';
+    var menu     = document.createElement('div');
+    if (mdEditLive) { menu.className = 'md-edit-menu'; } else { menu.className = 'md-edit-menu local'; menu.style.display = 'none'; }
     var trigger  = document.createElement('button'); trigger.className = 'md-edit-trigger'; trigger.title = 'Edit options'; trigger.innerHTML = '<span class="material-icons" style="font-size:16px;line-height:1">edit_note</span>';
     var dropdown = document.createElement('div');   dropdown.className = 'md-edit-dropdown';
     var item     = document.createElement('div');   item.className = 'md-edit-item'; item.textContent = 'Edit Content';
