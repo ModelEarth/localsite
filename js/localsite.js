@@ -4897,6 +4897,9 @@ function formatCell(input, format) {
             return (input / 1e-9).toFixed(3) + ' Billionth';
         } else if (input <= 1e-6) { // millionth or less
             return (input / 1e-6).toFixed(3) + ' Millionth';
+        } else if (input >= 0.001) {
+            // Round to 3 decimals, removing trailing zeros
+            return input.toFixed(3).replace(/0+$/, '').replace(/\.$/, '');
         }
         // Show up to 15 decimal places, removing trailing zeros
         let formatted = input.toFixed(15).replace(/0+$/, '').replace(/\.$/, '');
@@ -4918,32 +4921,9 @@ function formatCell(input, format) {
         // Round to one decimal. Remove .0
         return input.toFixed(1).replace(/\.0$/, '');
     } else if (input < 0) {
-        // Small negative values - for very small numbers, use named suffixes
-        if (input <= -1e-33) { // decillionth or less
-            return (input / 1e-33).toFixed(3) + ' Decillionth';
-        } else if (input <= -1e-30) { // nonillionth or less
-            return (input / 1e-30).toFixed(3) + ' Nonillionth';
-        } else if (input <= -1e-27) { // octillionth or less
-            return (input / 1e-27).toFixed(3) + ' Octillionth';
-        } else if (input <= -1e-24) { // septillionth or less
-            return (input / 1e-24).toFixed(3) + ' Septillionth';
-        } else if (input <= -1e-21) { // sextillionth or less
-            return (input / 1e-21).toFixed(3) + ' Sextillionth';
-        } else if (input <= -1e-18) { // quintillionth or less
-            return (input / 1e-18).toFixed(3) + ' Quintillionth';
-        } else if (input <= -1e-15) { // quadrillionth or less
-            return (input / 1e-15).toFixed(3) + ' Quadrillionth';
-        } else if (input <= -1e-12) { // trillionth or less
-            return (input / 1e-12).toFixed(3) + ' Trillionth';
-        } else if (input <= -1e-9) { // billionth or less
-            return (input / 1e-9).toFixed(3) + ' Billionth';
-        } else if (input <= -1e-6) { // millionth or less
-            return (input / 1e-6).toFixed(3) + ' Millionth';
-        }
-        // Show up to 15 decimal places, removing trailing zeros
-        let formatted = input.toFixed(15).replace(/0+$/, '').replace(/\.$/, '');
-        console.log('Small negative formatting:', input, '->', formatted);
-        return formatted === '' || formatted === '-' ? '0' : formatted;
+        // Small negative values: format the positive amount, then add the minus sign
+        const formatted = formatCell(-input, 'easy');
+        return formatted === '0' ? '0' : '-' + formatted;
     } else {
         // Fallback for any edge cases
         return input.toExponential(1);
