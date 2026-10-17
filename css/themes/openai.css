@@ -111,6 +111,13 @@
   --heatmap-warm-3: #7ea3ea;
   --heatmap-warm-4: #4f82df;
   --heatmap-warm-5: #2563eb;
+  /* Dark mode scale: near the dark card color at 0, brightest at 5 */
+  --heatmap-dark-0: #175646;
+  --heatmap-dark-1: #0d8a6b;
+  --heatmap-dark-2: #31b293;
+  --heatmap-dark-3: #65c7af;
+  --heatmap-dark-4: #97dac7;
+  --heatmap-dark-5: #c8ebdf;
 }
 
 .openai .palette-title,

@@ -317,13 +317,13 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
         <div id="impactIconsHolder" style="float:right;" class="fullMobile fullNarrow">
             <div class="impactIcons">
                 <!-- to do: check if indicators match USEEIO 2.0 -->
-                <div class="impactIcon_Air" onclick="goHash({'set':'air','indicators':'GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS'});">Air</div>
-                <div class="impactIcon_Water" onclick="goHash({'set':'water','indicators':'WATR,ACID,EUTR,ETOX'});">Water</div>
-                <div class="impactIcon_Land" onclick="goHash({'set':'land','indicators':'LAND,MNRL,PEST,METL,CRHW,CMSW,FMSW,CCDD'});">Land</div>
+                <div class="impactIcon_Air" onclick="iNav('air');">Air</div>
+                <div class="impactIcon_Water" onclick="iNav('water');">Water</div>
+                <div class="impactIcon_Land" onclick="iNav('land');">Land</div>
                 <div class="showMobile showMobileFull" style="clear:both;margin:0px;padding:0px;border:0px;display:none"></div>
-                <div class="impactIcon_Energy" onclick="goHash({'set':'energy','indicators':'ENRG,NNRG,RNRG'});">Energy</div>
-                <div class="impactIcon_Health" onclick="goHash({'set':'health','indicators':'HTOX,HCAN,HNCN,HTOX,HRSP'});">Health</div>
-                <div class="impactIcon_Prosperity" onclick="goHash({'set':'prosperity','indicators':'VADD,JOBS'});">Prosperity</div>
+                <div class="impactIcon_Energy" onclick="iNav('energy');">Energy</div>
+                <div class="impactIcon_Health" onclick="iNav('health');">Health</div>
+                <div class="impactIcon_Prosperity" onclick="iNav('prosperity');">Prosperity</div>
                 <div class="local btn btn-primary" onclick="location.href='/realitystream/#' + window.location.hash.substr(1); return false;" style="display:none;min-width:133px;font-size:15px;border:none;">
 					RealityStream
 				</div>

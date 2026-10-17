@@ -100,6 +100,13 @@
   --heatmap-warm-3: #8dbadd;
   --heatmap-warm-4: #67a3d2;
   --heatmap-warm-5: #487ca5;
+  /* Dark mode scale: near the dark card color at 0, brightest at 5 */
+  --heatmap-dark-0: #274330;
+  --heatmap-dark-1: #235d39;
+  --heatmap-dark-2: #4cae5c;
+  --heatmap-dark-3: #7ac385;
+  --heatmap-dark-4: #a8d8af;
+  --heatmap-dark-5: #d6edd9;
   --bg-footer: #e8e7e3;
   --bg-footer-swatch: #e8e7e3;
 }

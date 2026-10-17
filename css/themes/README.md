@@ -84,6 +84,13 @@ Themes override the following CSS custom properties:
 | `--chip-bg` / `--chip-text` | Chip colors |
 | `--notion-green/blue/yellow/red/purple` | Semantic highlight colors |
 | `--soft-bg-*` | Very soft background tints |
+| `--heatmap-0` … `--heatmap-5` | Six-step light-mode scale for charts and heatmaps (low → high), plus `-hot-`, `-cool-` and `-warm-` variants |
+| `--heatmap-dark-0` … `--heatmap-dark-5` | Dark-mode scale: step 0 sits near the theme's dark `--bg-card`, step 5 is brightest |
+
+Charts pick the dark scale when `body` has the `dark` class. Each theme defines its dark scale in its main block,
+next to `--heatmap-*`, so the preview page can show both scales side by side. A new theme's dark scale starts from
+its darkest light step that has at least 1.5 contrast with its dark `--bg-card`, mixed halfway toward that card
+color for step 0, followed by the lighter light steps.
 
 ## Sveltia CMS UI variables
 

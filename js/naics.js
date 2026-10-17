@@ -52,7 +52,9 @@ function initialWidgetLoad() {
         });
     }
     if (!hash.indicators) {
-        hiddenhash.indicators = "ACID,ETOX,EUTR,GHG,HTOX,LAND,OZON,PEST,SMOG,WATR";
+        // A set without indicators (set=land) gets its indicators from the shared list in impact-sets.js
+        hiddenhash.indicators = (typeof impactSetIndicators === 'function' && impactSetIndicators(hash.set))
+            || "ACID,ETOX,EUTR,GHG,HTOX,LAND,OZON,PEST,SMOG,WATR";
     }
     refreshNaicsWidget(true);
     onElmReady('#sectorListTitles', function() {
@@ -114,18 +116,10 @@ function refreshNaicsWidget(initialLoad) {
         if (!hash.set) {
             $('#pageTitle').hide();
         } else {
-            if (hash.set == "air") {
-                $('#pageTitle').text('Air and Climate')
-            } else if (hash.set == "water") {
-                $('#pageTitle').text('Water Use and Quality')
-            } else if (hash.set == "land") {
-                $('#pageTitle').text('Land Use')
-            } else if (hash.set == "energy") {
-                $('#pageTitle').text('Energy Use')
-            } else if (hash.set == "prosperity") {
-                $('#pageTitle').text('Jobs and Value Added')
-            } else if (hash.set == "health") {
-                $('#pageTitle').text('Health Impact')
+            // Headings come from the shared list in impact-sets.js
+            const impactSet = typeof impactSetById === 'function' ? impactSetById(hash.set) : null;
+            if (impactSet) {
+                $('#pageTitle').text(impactSet.heading);
             }
             $('#pageTitle').show();
         }

@@ -40,6 +40,24 @@
 .heatmap-scale.primary .level-4 { background: var(--heatmap-4); }
 .heatmap-scale.primary .level-5 { background: var(--heatmap-5); }
 
+/* Dark mode scale, shown below the primary scale in light and dark mode */
+.heatmap-scale.dark-scale .level-0 { background: var(--heatmap-dark-0); }
+.heatmap-scale.dark-scale .level-1 { background: var(--heatmap-dark-1); }
+.heatmap-scale.dark-scale .level-2 { background: var(--heatmap-dark-2); }
+.heatmap-scale.dark-scale .level-3 { background: var(--heatmap-dark-3); }
+.heatmap-scale.dark-scale .level-4 { background: var(--heatmap-dark-4); }
+.heatmap-scale.dark-scale .level-5 { background: var(--heatmap-dark-5); }
+.heatmap-scale.dark-scale .heatmap-cell.level-0,
+.heatmap-scale.dark-scale .heatmap-cell.level-1 { color: #fff; }
+.heatmap-scale.dark-scale .heatmap-cell.level-2,
+.heatmap-scale.dark-scale .heatmap-cell.level-3,
+.heatmap-scale.dark-scale .heatmap-cell.level-4,
+.heatmap-scale.dark-scale .heatmap-cell.level-5 { color: #1f2937; }
+/* Step 2 is deeper in these themes, so white text reads better */
+.grok .heatmap-scale.dark-scale .heatmap-cell.level-2,
+.georgia .heatmap-scale.dark-scale .heatmap-cell.level-2,
+.maestro .heatmap-scale.dark-scale .heatmap-cell.level-2 { color: #fff; }
+
 .heatmap-scale.hot .level-0 { background: var(--heatmap-hot-0); }
 .heatmap-scale.hot .level-1 { background: var(--heatmap-hot-1); }
 .heatmap-scale.hot .level-2 { background: var(--heatmap-hot-2); }

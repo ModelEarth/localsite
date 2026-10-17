@@ -178,6 +178,13 @@ Used in localsite, modelearth, io, neighborhood, trees
   --heatmap-warm-3: #5aabda;
   --heatmap-warm-4: #2e8cc7;
   --heatmap-warm-5: #084975;
+  /* Dark mode scale: near the dark card color at 0, brightest at 5 */
+  --heatmap-dark-0: #224a48;
+  --heatmap-dark-1: #1a6b6b;
+  --heatmap-dark-2: #2a9a9a;
+  --heatmap-dark-3: #42c0c0;
+  --heatmap-dark-4: #7dd3d3;
+  --heatmap-dark-5: #b8e6e6;
 }
 .dark {
   --bg-page: #111827;

@@ -1731,6 +1731,7 @@ function loadLeafletAndMapFilters() {
   //alert("param.showheader " + param.showheader);
 
   if (param.showheader != "false" || param.showsearch == "true") {
+    loadScript(theroot + 'js/impact-sets.js'); // Impact sets shared by the header icons (iNav), naics.js and dropdowns
     loadScript(theroot + 'js/navigation.js', function(results) {
       //$(document).ready(function () {
       // Apparently this is NOT triggered when backing up and reloading. Reload must be hit a second time.
@@ -2181,8 +2182,10 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
         loadScript(theroot + '../io/build/lib/useeio_widgets.js', function(results) {
           loadScript(theroot + 'js/d3.v5.min.js', function(results) {
             waitForVariable('customD3loaded', function() {
-              loadScript(theroot + 'js/naics.js', function(results) {
-                console.log("everything");
+              loadScript(theroot + 'js/impact-sets.js', function() { // Impact set titles and indicators for naics.js
+                loadScript(theroot + 'js/naics.js', function(results) {
+                  console.log("everything");
+                });
               });
             });
           });

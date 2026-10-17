@@ -7555,19 +7555,8 @@ function toggleDiv(theClass) {
 function iNav(set) {
     let hash = getHashOnly();
     hash.set = set;
-    if (set=="air") {
-        hash.indicators = "GHG,GCC,MGHG,OGHG,HRSP,OZON,SMOG,HAPS";
-    } else if (set=="water") {
-        hash.indicators = "WATR,ACID,EUTR,ETOX";
-    } else if (set=="land") {
-        hash.indicators = "LAND,MNRL,PEST,METL,CRHW,CMSW,FMSW,CCDD";
-    } else if (set=="energy") {
-        hash.indicators = "ENRG,NNRG,RNRG";
-    } else if (set=="health") {
-        hash.indicators = "HTOX,HCAN,HNCN,HTOX,HRSP";
-    } else if (set=="prosperity") {
-        hash.indicators = "VADD,JOBS";
-    }
+    // Indicators for the set come from the shared list in impact-sets.js
+    hash.indicators = typeof impactSetIndicators === 'function' ? impactSetIndicators(set) : '';
     delete hash.geoview;
     let hashString = decodeURIComponent($.param(hash)); // decode to display commas in URL
     if (location.href.indexOf('/info') == -1) {

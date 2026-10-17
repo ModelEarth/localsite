@@ -111,6 +111,13 @@
   --heatmap-warm-3: #9eafff;
   --heatmap-warm-4: #758cff;
   --heatmap-warm-5: #4b6bfb;
+  /* Dark mode scale: near the dark card color at 0, brightest at 5 */
+  --heatmap-dark-0: #20317c;
+  --heatmap-dark-1: #3552d8;
+  --heatmap-dark-2: #667efc;
+  --heatmap-dark-3: #90aaff;
+  --heatmap-dark-4: #b9cbff;
+  --heatmap-dark-5: #dbe5ff;
 }
 
 .xai .palette-title,
