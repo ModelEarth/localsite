@@ -20,6 +20,11 @@
     border-right: 1px solid #fff;
     border-bottom: 1px solid #ccc;
 }
+/* 4px more than Tabulator's 4px padding to the left of the first column */
+.tabulator-row .tabulator-cell:first-child,
+.tabulator .tabulator-header .tabulator-col:first-child .tabulator-col-content {
+    padding-left: 8px;
+}
 /* Enables scrolling when top row set with frozenRows */
 .tabulator-tableHolder {
     overflow-x: scroll;
