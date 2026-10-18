@@ -4873,8 +4873,8 @@ function formatCell(input, format) {
     } else if (input >= 1000) {
         return (input / 1000).toFixed(1) + ' K';
     } else if (input >= 1) {
-        // Round to one decimal. Remove .0
-        return input.toFixed(1).replace(/\.0$/, '');
+        // Round to 3 decimals, removing trailing zeros (3.12345 → 3.123)
+        return input.toFixed(3).replace(/0+$/, '').replace(/\.$/, '');
     } else if (input > 0) {
         // Small positive values - for very small numbers, use named suffixes
         if (input <= 1e-33) { // decillionth or less
@@ -4897,13 +4897,10 @@ function formatCell(input, format) {
             return (input / 1e-9).toFixed(3) + ' Billionth';
         } else if (input <= 1e-6) { // millionth or less
             return (input / 1e-6).toFixed(3) + ' Millionth';
-        } else if (input >= 0.001) {
-            // Round to 3 decimals, removing trailing zeros
-            return input.toFixed(3).replace(/0+$/, '').replace(/\.$/, '');
         }
-        // Show up to 15 decimal places, removing trailing zeros
-        let formatted = input.toFixed(15).replace(/0+$/, '').replace(/\.$/, '');
-        //console.log('Small positive formatting:', input, '->', formatted);
+        // Below 1: 3 significant digits, removing trailing zeros (0.0023456 → 0.00234, 0.00000345678 → 0.00000346)
+        const decimals = Math.min(2 - Math.floor(Math.log10(input)), 20);
+        let formatted = input.toFixed(decimals).replace(/0+$/, '').replace(/\.$/, '');
         return formatted === '' ? '0' : formatted;
     } else if (input === 0) {
         return '0';
@@ -4918,8 +4915,8 @@ function formatCell(input, format) {
     } else if (input <= -1000) {
         return (input / 1e3).toFixed(1) + ' K';
     } else if (input <= -1) {
-        // Round to one decimal. Remove .0
-        return input.toFixed(1).replace(/\.0$/, '');
+        // Round to 3 decimals, removing trailing zeros (-3.12345 → -3.123)
+        return input.toFixed(3).replace(/0+$/, '').replace(/\.$/, '');
     } else if (input < 0) {
         // Small negative values: format the positive amount, then add the minus sign
         const formatted = formatCell(-input, 'easy');
