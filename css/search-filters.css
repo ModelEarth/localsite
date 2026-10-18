@@ -674,23 +674,47 @@ input.filterClick[type="text"] {
 }
 #geomapHolder .hideAdvanced.close-X {
   position: absolute;
-  top: 6px;
-  right: 8px;
+  top: 4px;
+  right: 6px;
   padding: 0;
   margin: 0;
   font-size: 14px;
   color: #555;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.9);
   z-index: 1000;
 }
 .dark #geomapHolder .hideAdvanced.close-X {
   background: rgba(34, 34, 34, 0.5);
+  color: #fff;
+}
+#geomapHolder .multipleStatesToggle {
+  position: absolute;
+  top: 4px;
+  right: 40px;
+  margin: 0;
+  padding: 3px 10px;
+  font-size: 13px;
+  line-height: 20px;
+  color: #333;
+  white-space: nowrap;
+  border-radius: 13px;
+  background-color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  z-index: 1000;
+}
+#geomapHolder .multipleStatesToggle input {
+  margin: 0 4px 0 0;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.dark #geomapHolder .multipleStatesToggle {
+  background-color: rgba(34, 34, 34, 0.9);
   color: #fff;
 }
 @media (max-width: 1350px) {

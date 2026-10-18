@@ -1086,7 +1086,10 @@ function mix(incoming, target) { // Combine two objects, priority to incoming. D
    return target2;
 }
 function getHash() {
-  return (mix(getHashOnly(),hiddenhash)); // Includes hiddenhash
+  let hash = mix(getHashOnly(),hiddenhash); // Includes hiddenhash
+  // geoview=us works the same as geoview=country. The URL keeps "us", since updateHash() builds from getHashOnly().
+  if (hash.geoview === 'us') hash.geoview = 'country';
+  return hash;
 }
 function ensureHideWhenGeoviewStyle() {
   if (document.getElementById('hide-when-geoview-style')) return;

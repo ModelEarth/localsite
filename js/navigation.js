@@ -91,6 +91,7 @@ window.populateStylelookSelect = function(selectElement, mode) {
 /* Allows map to remove selected shapes when backing up. */
 document.addEventListener('hashChangeEvent', function (elem) {
     console.log("navigation.js detects URL hashChangeEvent");
+    syncMultipleStates();
     hashChanged();
 }, false);
 if(typeof hiddenhash == 'undefined') {
@@ -120,6 +121,32 @@ function hashStateList(hash) {
 function hashHasSpecificState(hash) {
     return hashStateList(hash).length > 0;
 }
+// "Multiple States" checkbox in #geomapHolder (local only for now).
+// Unchecked: a map click selects only that state. Checked: map clicks add and remove states.
+function multipleStatesChecked() {
+    const checkbox = document.getElementById("multipleStates");
+    return !!(checkbox && checkbox.checked);
+}
+function setMultipleStates(checked) {
+    const checkbox = document.getElementById("multipleStates");
+    if (checkbox) checkbox.checked = checked;
+}
+// Multiple states in the hash (from a link, the table checkboxes or Back) check the box
+function syncMultipleStates() {
+    if (hashStateList(getHash()).length > 1) {
+        setMultipleStates(true);
+    }
+}
+document.addEventListener("change", function(e) {
+    if (e.target && e.target.id === "multipleStates" && !e.target.checked) {
+        // Unchecking keeps only the first state in the hash
+        const stateList = hashStateList(getHash());
+        if (stateList.length > 1) {
+            goHash({'state':stateList[0]});
+        }
+    }
+});
+waitForElm('#multipleStates').then(syncMultipleStates);
 function updateGeoviewSelectText() {
     let hash = getHash();
     let updated = false;
@@ -5040,7 +5067,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                   } else {
 
                       hash.state = hashStateList(hash).join(","); // Drop "all"
-                      if (hash.state) {
+                      if (!multipleStatesChecked()) {
+                        hash.state = theStateID; // Only the latest state clicked
+                      } else if (hash.state) {
                         if (hash.state.includes(theStateID)) {
                             //if (hash.state.includes(",")) { // Assuming user is removing state.
                             //    hash.state = hash.state.replace(/&/g, '%26');
@@ -5858,9 +5887,12 @@ function showTabulatorList(element) {
                         console.log("statetable rowSelected " + stateId + " (programmatic: " + programmaticSelection + ")");
                         testAlert("statetable rowSelected " + stateId);
                         if (!programmaticSelection && hash.geoview == "country" && stateId && stateId.length === 2) {
-                            let stateList = hashStateList(hash); // Without "all"
+                            let stateList = hashStateList(getHash()); // Without "all"
                             if (!stateList.includes(stateId)) {
-                                stateList.push(stateId);
+                                stateList.unshift(stateId); // Newly checked state goes first
+                            }
+                            if (stateList.length > 1) {
+                                setMultipleStates(true); // Second checkbox checked
                             }
                             goHash({'state':stateList.join(",")});
                             return;
@@ -5919,6 +5951,9 @@ function showTabulatorList(element) {
                                 } else {
                                     hash.state = row._row.data.id;
                                 }
+                                if (hash.state.includes(",")) {
+                                    setMultipleStates(true); // Second checkbox checked
+                                }
                                 //goHash({'state':hash.state});
 
                                 consoleLog("ALERT state checked - called for everybox checked")
@@ -5956,7 +5991,7 @@ function showTabulatorList(element) {
                         console.log("statetable rowDeselected " + stateId + " (programmatic: " + programmaticSelection + ")");
                         testAlert("statetable rowDeselected " + stateId);
                         if (!programmaticSelection && hash.geoview == "country" && stateId && stateId.length === 2) {
-                            let stateList = hashStateList(hash); // Without "all"
+                            let stateList = hashStateList(getHash()); // Without "all"
                             stateList = stateList.filter(function(stateAbbr){ return stateAbbr !== stateId; });
                             goHash({'state':stateList.join(",")});
                             return;
@@ -6028,13 +6063,9 @@ function showTabulatorList(element) {
                         const stateId = rowData.id || rowData.State || rowData.state;
                         testAlert("statetable row clicked " + stateId);
                         if (stateId && stateId.length === 2) {
-                            let stateList = hashStateList(hash); // Without "all"
-                            if (stateList.includes(stateId)) {
-                                stateList = stateList.filter(function(stateAbbr){ return stateAbbr !== stateId; });
-                            } else {
-                                stateList.push(stateId);
-                            }
-                            goHash({'state':stateList.join(",")});
+                            // Clicking the row selects only that state. The checkboxes add multiple states (rowSelected above).
+                            setMultipleStates(false);
+                            goHash({'state':stateId});
                         }
                     });
                     if (hash.geoview != "countries") {
