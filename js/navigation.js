@@ -112,11 +112,21 @@ function updateCountiesTabText() {
         $(".countiesTabText").text("Counties");
     }
 }
+// The states in hash.state, without "all" (as in state=all on profile/), so clicking a state gives state=NC rather than state=NC,all
+function hashStateList(hash) {
+    return String((hash && hash.state) || "").split(",").filter(value => value && value.toLowerCase() !== "all");
+}
+// True when hash.state names a state. state=all is treated as no state.
+function hashHasSpecificState(hash) {
+    return hashStateList(hash).length > 0;
+}
 function updateGeoviewSelectText() {
     let hash = getHash();
     let updated = false;
+    // "all" (as in state=all on profile/) isn't a place name, so the menu keeps its default label
+    const notAll = value => value && value.toLowerCase() !== "all";
     if ((hash.geoview == "country" || hash.geoview == "state" || !hash.geoview) && hash.state) {
-        let states = hash.state.split(",").filter(Boolean);
+        let states = hash.state.split(",").filter(notAll);
         if (states.length === 1 && typeof getState === 'function') {
             $("#geoview_select_text").text(getState(states[0]) || states[0]);
             updated = true;
@@ -125,7 +135,7 @@ function updateGeoviewSelectText() {
             updated = true;
         }
     } else if (hash.geoview == "countries" && hash.country) {
-        let countries = hash.country.split(",").filter(Boolean);
+        let countries = hash.country.split(",").filter(notAll);
         if (countries.length === 1 && localObject["countries"]) {
             let match = localObject["countries"][countries[0]];
             $("#geoview_select_text").text(match ? match.CountryName : countries[0]);
@@ -720,9 +730,10 @@ function hashChanged() {
         closeLocationFilter();
     }
 
-    // Hide Counties tab until sub-selections exist
-    let showCountiesTab = hash.geo || hash.state || hash.geoview == "countries" || hash.geoview == "earth";
-    let hideForNoSelection = (hash.geoview == "country" && !hash.state) || (hash.geoview == "state" && !hash.geo);
+    // Hide Counties tab until sub-selections exist (state=all isn't one)
+    let hasState = hashHasSpecificState(hash);
+    let showCountiesTab = hash.geo || hasState || hash.geoview == "countries" || hash.geoview == "earth";
+    let hideForNoSelection = (hash.geoview == "country" && !hasState) || (hash.geoview == "state" && !hash.geo);
     if (hideForNoSelection) {
         $("#filterClickLocation").hide();
     } else if (showCountiesTab) {
@@ -4955,8 +4966,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
             }
 
             function newPrimaryState(stateList, stateAbbr) {
-                // Split the string into an array
-                let states = stateList.split(',');
+                // Split the string into an array, without "all" (state=all becomes the clicked county's state)
+                let states = hashStateList({state: stateList});
+                if (!states.length) return stateAbbr;
 
                 // Find the index of the stateAbbr in the array
                 let index = states.indexOf(stateAbbr);
@@ -5027,6 +5039,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                     goHash({'geoview':'country','geo':'','regiontitle':''});
                   } else {
 
+                      hash.state = hashStateList(hash).join(","); // Drop "all"
                       if (hash.state) {
                         if (hash.state.includes(theStateID)) {
                             //if (hash.state.includes(",")) { // Assuming user is removing state.
@@ -5845,7 +5858,7 @@ function showTabulatorList(element) {
                         console.log("statetable rowSelected " + stateId + " (programmatic: " + programmaticSelection + ")");
                         testAlert("statetable rowSelected " + stateId);
                         if (!programmaticSelection && hash.geoview == "country" && stateId && stateId.length === 2) {
-                            let stateList = hash.state ? hash.state.split(",").filter(Boolean) : [];
+                            let stateList = hashStateList(hash); // Without "all"
                             if (!stateList.includes(stateId)) {
                                 stateList.push(stateId);
                             }
@@ -5892,6 +5905,7 @@ function showTabulatorList(element) {
                             if (row._row.data["CountryName"] == "United States") {
                                 goHash({'geoview':'country'});
                             } else if(row._row.data.id) {
+                                hash.state = hashStateList(hash).join(","); // Drop "all"
                                 if (hash.state) {
                                     // Prepend new state to existing hash.state.
                                     let statesArray = hash.state.split(',');
@@ -5942,7 +5956,7 @@ function showTabulatorList(element) {
                         console.log("statetable rowDeselected " + stateId + " (programmatic: " + programmaticSelection + ")");
                         testAlert("statetable rowDeselected " + stateId);
                         if (!programmaticSelection && hash.geoview == "country" && stateId && stateId.length === 2) {
-                            let stateList = hash.state ? hash.state.split(",").filter(Boolean) : [];
+                            let stateList = hashStateList(hash); // Without "all"
                             stateList = stateList.filter(function(stateAbbr){ return stateAbbr !== stateId; });
                             goHash({'state':stateList.join(",")});
                             return;
@@ -6014,7 +6028,7 @@ function showTabulatorList(element) {
                         const stateId = rowData.id || rowData.State || rowData.state;
                         testAlert("statetable row clicked " + stateId);
                         if (stateId && stateId.length === 2) {
-                            let stateList = hash.state ? hash.state.split(",").filter(Boolean) : [];
+                            let stateList = hashStateList(hash); // Without "all"
                             if (stateList.includes(stateId)) {
                                 stateList = stateList.filter(function(stateAbbr){ return stateAbbr !== stateId; });
                             } else {
@@ -9567,9 +9581,9 @@ $(document).on("click", "#filterClickLocation", function(event) {
         $("#filterLocations").hide();
     }
     closeGeoviewList();
-    // When geoview=country and a state is selected, switch to geoview=state
+    // When geoview=country and a state is selected, switch to geoview=state (state=all counts as none)
     var clickHash = getHash();
-    if (clickHash.geoview == "country" && clickHash.state) {
+    if (clickHash.geoview == "country" && hashHasSpecificState(clickHash)) {
         goHash({"geoview": "state"});
         event.stopPropagation();
         return;
@@ -9769,7 +9783,7 @@ function filterClickLocation(loadGeoTable) {
         (typeof goHashNoHistory === 'function' ? goHashNoHistory : goHash)({'sidetab':'','locpop':''});
     } else if (hash.geoview) {
         goHash({'geoview':'','locpop':''});
-    } else if (hash.state) {
+    } else if (hashHasSpecificState(hash)) { // state=all opens the state select, as with no state
         goHash({'geoview':'state','locpop':''});
     } else {
         goHash({'geoview':'country','locpop':''});

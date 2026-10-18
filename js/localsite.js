@@ -1647,7 +1647,9 @@ function loadLocalTemplate() {
             $("#geoviewSelectHolder").show();
             // Only show counties tab if sub-selections exist
             let hash = getHash();
-            let hideCountiesTab = (hash.geoview == "country" && !hash.state) || (hash.geoview == "state" && !hash.geo);
+            // state=all counts as no state
+            let hasState = String(hash.state || "").split(",").some(value => value && value.toLowerCase() !== "all");
+            let hideCountiesTab = (hash.geoview == "country" && !hasState) || (hash.geoview == "state" && !hash.geo);
             if (!hideCountiesTab) {
                 $("#filterClickLocation").show(); // Show counties tab
             }

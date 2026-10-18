@@ -2337,7 +2337,7 @@ function showSectorTabulatorList(attempts) {
                     const demandHash = `demand=${sector.code}/${sector.location}`;
                     const stateParam = stateCode ? `&state=${stateCode}` : '';
                     const indexHash = `index=${sector.index}`; // legacy support for old links
-                    return `<a href="${webrootPath('/profile/footprint/sector_profile.html')}#${demandHash}${stateParam}">${sector.name}</a>`;
+                    return `<a href="${webrootPath('/profile/footprint/')}#${demandHash}${stateParam}">${sector.name}</a>`;
                   }
                 },
                 {title:"Code", field:"code", width:70, hozAlign:"right", headerSortStartingDir:"desc", sorter:"number" },
