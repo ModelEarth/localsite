@@ -132,6 +132,10 @@
 .dark .georgia {
   --bg-footer: #141d26;
   --bg-card: #1d2832;
+  /* Light text again: .georgia sets dark text, which otherwise outranks the .dark values in base.css */
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+  --border-subtle: rgba(255, 255, 255, 0.15);
   --color-primary: #084975;
   --color-primary-hover: #063a5d;
   --color-tertiary: #666666;
