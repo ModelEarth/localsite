@@ -900,6 +900,26 @@ input.filterClick[type="text"] {
     justify-content: center;
     border-bottomX: 1px solid #eee;
 }
+.dark #bigThumbMenu .bigThumbHolder,
+.dark #bigThumbMenu .bigThumbHolder a:link,
+.dark #bigThumbMenu .bigThumbHolder a:visited {
+  color: #bbb;
+}
+.dark #bigThumbMenu .bigThumbHolder:hover,
+.dark #bigThumbMenu .bigThumbHolder a:link:hover,
+.dark #bigThumbMenu .bigThumbHolder a:visited:hover {
+  color: #fff;
+}
+.dark #bigThumbMenu .bigThumbStatus {
+  background-color: #444;
+  border-color: #999;
+}
+.dark #bigThumbMenu .bigThumbSelected {
+  background-color: #777;
+}
+.dark #bigThumbMenu .bigThumbActive .bigThumbSelected {
+  background-color: #4a9eff;
+}
 .bigThumbMenuInner {
   display: grid;
   overflow: auto;
