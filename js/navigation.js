@@ -147,6 +147,21 @@ document.addEventListener("change", function(e) {
     }
 });
 waitForElm('#multipleStates').then(syncMultipleStates);
+// True when the location filter is narrow: the map is stacked above the state list (search-filters.css),
+// or the div containing #locationFilterHolder is under 800px.
+function locationFilterIsNarrow() {
+    const mapHolder = document.getElementById("geomapHolder");
+    if (mapHolder && mapHolder.offsetWidth > 0 && getComputedStyle(mapHolder).float === "none") {
+        return true;
+    }
+    const holder = document.getElementById("locationFilterHolder");
+    const container = holder && holder.parentElement;
+    return !!(container && container.clientWidth > 0 && container.clientWidth < 800);
+}
+// When narrow, choosing a single state drops geoview=country from the hash, which closes the location filter.
+function geoviewAfterStateChoice(geoview) {
+    return (geoview == "country" && locationFilterIsNarrow()) ? "" : geoview;
+}
 function updateGeoviewSelectText() {
     let hash = getHash();
     let updated = false;
@@ -5067,7 +5082,8 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                   } else {
 
                       hash.state = hashStateList(hash).join(","); // Drop "all"
-                      if (!multipleStatesChecked()) {
+                      const singleStateClick = !multipleStatesChecked();
+                      if (singleStateClick) {
                         hash.state = theStateID; // Only the latest state clicked
                       } else if (hash.state) {
                         if (hash.state.includes(theStateID)) {
@@ -5096,6 +5112,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                       }
                       var currentGeoview = getHash().geoview;
                       var nextGeoview = (currentGeoview == "country") ? "country" : "state";
+                      if (singleStateClick) {
+                        nextGeoview = geoviewAfterStateChoice(nextGeoview);
+                      }
                       goHash({'state':hash.state,'geoview':nextGeoview});
                 }
               }
@@ -6059,13 +6078,28 @@ function showTabulatorList(element) {
                             checkStateTableCheckbox(row, row.isSelected());
                             return;
                         }
+                        // The checkbox column adds states (rowSelected above), so clicks there are not row clicks.
+                        // A click in that cell beside the checkbox toggles the checkbox.
+                        if (e.target.type === 'checkbox') {
+                            return;
+                        }
+                        const clickedCell = e.target.closest ? e.target.closest('.tabulator-cell') : null;
+                        if (clickedCell && clickedCell.querySelector("input[type='checkbox']")) {
+                            row.toggleSelect();
+                            checkStateTableCheckbox(row, row.isSelected());
+                            return;
+                        }
                         const rowData = row.getData();
                         const stateId = rowData.id || rowData.State || rowData.state;
                         testAlert("statetable row clicked " + stateId);
                         if (stateId && stateId.length === 2) {
                             // Clicking the row selects only that state. The checkboxes add multiple states (rowSelected above).
                             setMultipleStates(false);
-                            goHash({'state':stateId});
+                            let rowHash = {'state':stateId};
+                            if (geoviewAfterStateChoice(hash.geoview) !== hash.geoview) {
+                                rowHash.geoview = ""; // Narrow: drop geoview=country
+                            }
+                            goHash(rowHash);
                         }
                     });
                     if (hash.geoview != "countries") {
@@ -9575,7 +9609,7 @@ $(document).on("change", "#state_select", function(event) {
         // Later a checkbox could be added to retain geo values across multiple states
         // Omitting for BC apps page  ,'geoview':'state'
         if (hash.geoview) {
-            var nextGeoview = (hash.geoview == "country") ? "country" : "state";
+            var nextGeoview = geoviewAfterStateChoice((hash.geoview == "country") ? "country" : "state");
             goHash({'state':this.value,'geo':'','name':'','regiontitle':'','geoview':nextGeoview}); // triggers renderGeomapShapes("geomap", hash); // County select map
         } else {
             goHash({'state':this.value,'geo':'','name':'','regiontitle':''}); // triggers renderGeomapShapes("geomap", hash); // County select map
@@ -9930,9 +9964,10 @@ function closeLocationFilter() {
         $("#header.nav-up").hide();
     }
 
-    if (typeof relocatedStateMenu != "undefined") {
-        // DEACTIVATED, OCCURRED ON LOAD OF /localsite/info/
-        //relocatedStateMenu.appendChild(state_select); // For apps hero
+    // Backing up from the location filter: return the state menu to the hero (apps and info pages).
+    // The #filterClickLocation click hides #state_select, so show it again.
+    if ($("#relocatedStateMenu").length && !getHash().geoview && !$("#state_select_holder").is(':visible')) {
+        $("#state_select").appendTo("#relocatedStateMenu").show();
     }
     if (typeof relocatedScopeMenu != "undefined") {
         // DROPDOWN #selectScope was REMOVED  relocatedScopeMenu.appendChild(selectScope); // For apps hero

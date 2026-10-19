@@ -56,6 +56,16 @@
 	overflow: hidden;
 	max-height: 16px;
 }
+/* County and total columns. #sector_list isn't within .content, so links otherwise use the browser's dark blue. */
+.dark #sector_list .cell-right a:link, .dark #sector_list .cell-right a:visited {
+	color: #acb; /* Matches .dark .content links in base.css */
+}
+.dark #sector_list .cell-right span[style*="9933aa"] { /* Purple approximated values, set inline in naics.js */
+	color: #d9a3f0 !important;
+}
+.dark #sector_list .row:first-of-type .cell, .dark #sector_list .row:first-of-type .cell-right {
+	border-bottom-color: #555;
+}
 @media (max-width: 1400px) {
 	#impactIconsHolder {
 		width: 100%;

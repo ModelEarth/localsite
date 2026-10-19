@@ -714,7 +714,7 @@ input.filterClick[type="text"] {
   cursor: pointer;
 }
 .dark #geomapHolder .multipleStatesToggle {
-  background-color: rgba(34, 34, 34, 0.9);
+  background-color: rgba(34, 34, 34, 0.3);
   color: #fff;
 }
 @media (max-width: 1350px) {

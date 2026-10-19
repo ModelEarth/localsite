@@ -8,6 +8,7 @@
 
 <script type="text/javascript" src="../js/localsite.js?display=everything&showheader=true&showsearch=true&showtopmap=true"></script>
 <script type="text/javascript" src="../js/industry-detail.js?v=8"></script>
+<script type="text/javascript" src="../js/impact-sets.js"></script><!-- Impact set list for the #hero-mini menu -->
 <style>
 .navlink-industries {
     font: 600 16px/1.8 "Lato", sans-serif !important;
@@ -16,9 +17,164 @@
 .dark .navlink-industries {
     color: #fff !important;
 }
+
+/* Hero - copied from apps/index.html. #hero-landscape-image has class="dark", so the hero is dark in both modes. */
+#hero_holder {
+    container-type: inline-size; /* Responsive to the parent div width rather than the browser width */
+}
+#hero-landscape-image.bgimg {
+    min-height: 600px;
+}
+#hero-mini {
+    max-width: 150px;
+    padding: 8px 0;
+    margin-bottom: 12px;
+}
+.heroImpactIcons div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px 6px 15px;
+    font-size: 16px;
+    color: #fff;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+}
+.heroImpactIcons .material-icons {
+    font-size: 18px;
+}
+.heroImpactIcons div:hover, .heroImpactIcons div:focus-visible {
+    background-color: rgba(255, 255, 255, 0.12);
+    outline: none;
+}
+.heroImpactIcons div.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-left-color: #66CF79; /* Matches #hero-rect links */
+    font-weight: 600;
+}
+#heroSelectCounties {
+    margin-top: 6px;
+}
+@container (max-width: 1000px) {
+    #hero-mini {
+        display: none;
+    }
+}
 </style>
 </head>
 <body>
+
+<div id="hero_holder" class="hideWhenGeoview">
+<div id="hero-landscape-image" class="dark bgimg displayOnload" style="display:none;">
+
+  <div id="hero-content">
+
+    <div id="stateName" class="hero-title" style="font-size:48px; font-weight:300">Location Modeling</div>
+
+    <br>
+
+    <div id="hero-mini" class="hideMobile">
+      <div id="heroImpactIcons" class="heroImpactIcons" role="menu" aria-label="Impact sets"></div>
+    </div>
+
+    <div id="hero-rect" class="displayOnload" style="display: none; margin-right:30px">
+
+      <!-- navigation.js moves #state_select here, and back here after the location filter closes -->
+      <div id="relocatedStateMenu"></div>
+
+      <div style="margin-bottom:10px; max-width:400px">
+        <div class="location_titles"></div><!-- Counties within state -->
+      </div>
+
+      <!-- Shown once a state is selected -->
+      <div id="heroSelectCounties" style="display:none">
+        <a href="#mapview=counties" onclick="$('#filterClickLocation').click();return false;">Select counties</a> to view local industry impacts.
+      </div>
+
+      <div id="parsedOutput"></div>
+
+    </div>
+
+  </div>
+  <div style="clear:both"></div>
+
+</div>
+</div>
+
+<script>
+(function() {
+  const impactIcons = {air:'air', water:'water_drop', land:'forest', energy:'lightbulb', health:'local_pharmacy', prosperity:'sentiment_satisfied_alt'};
+
+  // #hero-mini menu, built from the shared impact set list in impact-sets.js
+  const menu = document.getElementById('heroImpactIcons');
+  impactSets.forEach(function(set) {
+    const item = document.createElement('div');
+    item.dataset.set = set.id;
+    item.setAttribute('role', 'menuitem');
+    item.setAttribute('tabindex', '0');
+    item.title = set.heading;
+    item.innerHTML = "<span class='material-icons'>" + (impactIcons[set.id] || 'circle') + "</span><span>" + set.title + "</span>";
+    menu.appendChild(item);
+  });
+  // Plain JavaScript: localsite.js loads jQuery after this script runs.
+  menu.addEventListener('click', function(e) {
+    const item = e.target.closest('[data-set]');
+    if (!item) return;
+    const set = item.dataset.set;
+    if (typeof iNav === 'function') { // navigation.js
+      iNav(set);
+    } else {
+      goHash({'set':set, 'indicators':impactSetIndicators(set)});
+    }
+    const impactTop = document.getElementById('impactTopHolder');
+    if (impactTop) {
+      window.scrollTo({top: impactTop.getBoundingClientRect().top + window.scrollY - 54, behavior: 'smooth'});
+    }
+  });
+  menu.addEventListener('keydown', function(e) {
+    const item = e.target.closest('[data-set]');
+    if (item && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); item.click(); }
+  });
+
+  // States in hash.state, without "all"
+  function heroStates(hash) {
+    return String(hash.state || "").split(",").filter(value => value && value.toLowerCase() !== "all");
+  }
+  function updateHero() {
+    const hash = getHash();
+    const states = heroStates(hash);
+
+    // Highlight the active #hero-mini menu item
+    menu.querySelectorAll('[data-set]').forEach(function(item) {
+      const isActive = item.dataset.set === String(hash.set || "").toLowerCase();
+      item.classList.toggle('active', isActive);
+      if (isActive) { item.setAttribute('aria-current', 'true'); } else { item.removeAttribute('aria-current'); }
+    });
+
+    document.getElementById('heroSelectCounties').style.display = states.length ? '' : 'none';
+
+    const stateName = document.getElementById('stateName');
+    if (!states.length) {
+      stateName.textContent = "Location Modeling";
+      return;
+    }
+    onElmReady('#state_select', function(select) {
+      const names = states.map(st => {
+        const option = select.querySelector("option[value='" + st.toUpperCase() + "']");
+        return option ? option.text : "";
+      }).filter(Boolean);
+      stateName.textContent = names.length ? names.join(", ") : "Location Modeling";
+    });
+  }
+  document.addEventListener('hashChangeEvent', updateHero);
+  updateHero();
+
+  // Default hero image. navigation.js swaps in the state image when a state is selected.
+  if (!heroStates(getHash()).length) {
+    document.getElementById('hero-landscape-image').style.backgroundImage = "url(../img/hero/stars.jpg)";
+  }
+})();
+</script>
 
 <!-- DELETE
 <script>
