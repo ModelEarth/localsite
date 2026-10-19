@@ -100,9 +100,15 @@
 #heroSelectCounties {
     margin-top: 6px;
 }
+#stateName {
+    font-size: 48px;
+}
 @container (max-width: 1000px) {
     #hero-mini {
         display: none;
+    }
+    #stateName {
+        font-size: 34px;
     }
 }
 </style>
@@ -116,7 +122,7 @@
 
     <!-- US region from hash.usregion (#usregion_select). Replaces #stateName while present. -->
     <div id="regionName" class="hero-title" style="font-size:48px; font-weight:300; display:none"></div>
-    <div id="stateName" class="hero-title" style="font-size:48px; font-weight:300">Location Modeling</div>
+    <div id="stateName" class="hero-title" style="font-weight:300">Location Modeling</div><!-- font-size in the style above -->
 
     <br>
 
@@ -203,8 +209,9 @@
     const stateName = document.getElementById('stateName');
     // hash.usregion omits spaces (NewEngland), so a space goes back before each inner capital: New England
     const regionName = document.getElementById('regionName');
-    const region = String(hash.usregion || "").replace(/([a-z])([A-Z])/g, "$1 $2");
-    regionName.textContent = region;
+    // usRegionTitle (navigation.js) also gets the region from the states when hash.usregion is absent
+    const region = typeof usRegionTitle === 'function' ? usRegionTitle(hash) : String(hash.usregion || "").replace(/([a-z])([A-Z])/g, "$1 $2");
+    regionName.textContent = region ? region + " States" : ""; // As in usRegionServiceTitle() (navigation.js) for .showTopicLink
     regionName.style.display = region ? "" : "none";
     stateName.style.display = region ? "none" : "";
     if (!states.length) {
@@ -221,6 +228,7 @@
   }
   document.addEventListener('hashChangeEvent', updateHero);
   updateHero();
+  onElmReady('#usregion_select', updateHero); // Once the region menu loads, the region can come from the states
 
   // Default hero image. navigation.js swaps in the state image when a state is selected.
   if (!heroStates(getHash()).length) {

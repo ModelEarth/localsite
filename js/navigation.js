@@ -3582,10 +3582,12 @@ if (typeof $ !== 'undefined') {
             goHash({"geoview":""});
             return;
         }
-        if (value == "earth") {
-            window.scrollTo({top: 0, behavior: "instant"}); // Jump up to the Earth display rather than animating the scroll
+        if (value == "earth" || value == "country" || value == "state") {
+            window.scrollTo({top: 0, behavior: "instant"}); // Jump up to the map rather than animating the scroll
         }
-        if (value == "countries" || value == "earth") {
+        if (value == "country") { // "United States". getHash() reads geoview=us as country.
+            goHash({"geoview":"us"});
+        } else if (value == "countries" || value == "earth") {
             hiddenhash.state = "";
             goHash({"geoview":value,"state":"",});
         } else if (value == "state" && !getHash().state) {
@@ -7646,19 +7648,32 @@ function thumbClick(show,path) {
 }
 // Thumbnail images that are plain links (no thumbClick) carry the page's hash (usregion and the rest),
 // as thumbClick does. Their href holds only the state from when the menu was built (getDirectLink).
-$(document).on('click', '#bigThumbMenu .bigThumbHolder a[href]:not([onclick*="thumbClick"])', function(event) {
-    if (event.target.closest('.bigThumbStatus')) return; // The radio button only selects
-    const url = new URL(this.getAttribute('href'), location.href);
-    if (url.origin !== location.origin) return; // Another site keeps its own link
+// Returns the link's URL with the page's hash, or null for another site's link (which keeps its own).
+// set: the impact set from iNav. "" ("All") removes the set.
+function directLinkWithHash(href, set) {
+    const url = new URL(href, location.href);
+    if (url.origin !== location.origin) return null;
     let hash = getHashOnly();
     ['cat','naics','name','details','m','appview'].forEach(key => delete hash[key]); // As in submitThumb
     delete hash.show; // The prior topic. A link's own show (below) is kept. "All Industries" has none, so it clears show.
     const linkHash = Object.fromEntries(new URLSearchParams(url.hash.slice(1)));
     delete linkHash.state; // The current state wins over the one from when the menu was built
     hash = Object.assign(hash, linkHash); // The link's own values, such as show, win
-    event.preventDefault();
+    if (set !== undefined) {
+        delete hash.set;
+        delete hash.indicators; // The set's indicators load in the page from hash.set
+        delete hash.geoview;
+        if (set) hash.set = set;
+    }
     url.hash = decodeURIComponent($.param(hash));
-    location.href = url.href;
+    return url.href;
+}
+$(document).on('click', '#bigThumbMenu .bigThumbHolder a[href]:not([onclick*="thumbClick"])', function(event) {
+    if (event.target.closest('.bigThumbStatus')) return; // The radio button only selects
+    const href = directLinkWithHash(this.getAttribute('href'));
+    if (!href) return;
+    event.preventDefault();
+    location.href = href;
 });
 // set: the impact set from iNav, when an impact button submits the selected thumbnail. "" ("All") removes the set.
 function submitThumb(show, path, set) {
@@ -7886,8 +7901,8 @@ function iNav(set) {
         pendingThumb = null;
         $("#bigThumbPanelHolder").hide();
         $(".showApps").removeClass("filterClickActive");
-        if (thumb.href) {
-            location.href = thumb.href + (set ? (thumb.href.indexOf('#') >= 0 ? "&" : "#") + "set=" + set : "");
+        if (thumb.href) { // Carries the page's hash (usregion and the rest), as a thumbnail image click does
+            location.href = directLinkWithHash(thumb.href, set) || thumb.href + (set ? (thumb.href.indexOf('#') >= 0 ? "&" : "#") + "set=" + set : "");
         } else {
             submitThumb(thumb.show, thumb.path, set);
         }
@@ -8827,6 +8842,19 @@ $(document).ready(function () {
     });
     $(document).on("click", ".popAdvanced", function(event) {
         popAdvanced(); // Avoids adding locpop to the hash
+    });
+    // On a narrow browser the popup covers the page, so any click in it (such as choosing a state) also closes it.
+    // Not a click on a menu (select), which stays open for the choice. A native listener on document runs after
+    // the jQuery click handlers, including those that stop propagation (the geoview options).
+    document.addEventListener("click", function(event) {
+        if (!window.matchMedia("(max-width: 800px)").matches) return;
+        if (!event.target.closest || !event.target.closest("#draggableSearch") || event.target.closest("select")) return;
+        if (getHash().locpop) {
+            goHash({'locpop':''}); // hideAdvanced() closes it
+        } else {
+            $("#draggableSearch").hide();
+            returnGeoviewContainer();
+        }
     });
     $(document).on("click", ".hideThumbMenu", function(event) {
         $("#bigThumbPanelHolder").hide();
@@ -9960,7 +9988,7 @@ $(document).on("change", "#selectScope", function(event) {
 // .region_service titles. The first one, #regionService (#industryHeader in info/template-charts.html), shows the
 // US region title while hash.usregion is present. The others keep the location text, e.g. the primary state's name.
 function usRegionTitle(hash) {
-    return String(hash.usregion || "").replace(/([a-z])([A-Z])/g, "$1 $2"); // NewEngland to New England
+    return usRegionForHash(hash);
 }
 // #regionService title for a region, e.g. "New England States"
 function usRegionServiceTitle(hash) {
@@ -10109,38 +10137,51 @@ $(document).on("change", "#usregion_select", function(event) {
     }
     goHash({'usregion':this.value.replace(/\s/g, ""),'state':states.join(","),'geo':'','name':'','regiontitle':''});
 });
-// When hash.state changes, hash.usregion follows it: kept while every state is in the region,
-// removed once a state is outside it, and set when the states are exactly one region's states.
-let usRegionCheckedState; // hash.state when last checked
-function reconcileUsRegion() {
-    const regionSelect = document.getElementById('usregion_select');
-    if (!regionSelect || !document.querySelector('#state_select option[usregion]')) return false;
-    const hash = getHash();
-    const stateValue = String(hash.state || "");
-    if (stateValue === usRegionCheckedState) return false;
-    usRegionCheckedState = stateValue;
-    const states = stateValue.toUpperCase().split(",").map(st => st.trim()).filter(Boolean);
-    const regions = Array.from(regionSelect.options).filter(opt => opt.value).map(opt => opt.value);
+// The US region for the hash ("New England"): hash.usregion while every state is in it, otherwise the region
+// whose states are exactly hash.state, so the region name comes from the states when hash.usregion is absent.
+// Until the menus load, hash.usregion as is.
+function usRegionForHash(hash) {
     const usregion = String(hash.usregion || "");
-    let next = "";
-    const current = regions.find(region => region.replace(/\s/g, "") === usregion);
-    if (current && states.length && states.every(st => usRegionStates(current).includes(st))) {
-        next = usregion;
-    } else {
-        const key = states.slice().sort().join(",");
-        const match = regions.find(region => usRegionStates(region).sort().join(",") === key);
-        if (match) next = match.replace(/\s/g, "");
+    const regionSelect = document.getElementById('usregion_select');
+    if (!regionSelect || !document.querySelector('#state_select option[usregion]')) {
+        return usregion.replace(/([a-z])([A-Z])/g, "$1 $2"); // NewEngland to New England
     }
-    if (next === usregion) return false;
-    goHash({'usregion':next}); // Fires hashChangeEvent again, which updates the menu and the region titles
-    return true;
+    const states = String(hash.state || "").toUpperCase().split(",").map(st => st.trim()).filter(Boolean);
+    if (!states.length) return "";
+    const regions = Array.from(regionSelect.options).filter(opt => opt.value).map(opt => opt.value);
+    const current = regions.find(region => region.replace(/\s/g, "") === usregion);
+    if (current && states.every(st => usRegionStates(current).includes(st))) return current;
+    const key = states.slice().sort().join(",");
+    return regions.find(region => usRegionStates(region).sort().join(",") === key) || "";
+}
+// hash.usregion follows hash.state: kept while every state is in the region, removed once a state is outside it,
+// and set when the states are exactly one region's states. The titles already follow usRegionForHash(), so the
+// hash changes quietly (updateHash via goHashQuiet), without a refresh or a history entry.
+function reconcileUsRegion() {
+    if (!document.getElementById('usregion_select') || !document.querySelector('#state_select option[usregion]')) return;
+    const usregion = String(getHashOnly().usregion || "");
+    const next = usRegionForHash(getHash()).replace(/\s/g, "");
+    if (next === usregion) return;
+    if (next) {
+        goHashQuiet({'usregion':next});
+    } else {
+        goHashQuiet({}, ['usregion']);
+    }
+    filterStateQuickList();
+    updateModelTopicsLink(); // Its href holds the hash
 }
 document.addEventListener('hashChangeEvent', function() {
-    if (!reconcileUsRegion()) syncUsRegionSelect();
+    reconcileUsRegion();
+    syncUsRegionSelect();
 });
 onElmReady('#usregion_select', function() {
     placeUsRegionSelect();
-    if (!reconcileUsRegion()) syncUsRegionSelect();
+    reconcileUsRegion();
+    syncUsRegionSelect();
+    // Titles shown before the menus loaded could not get the region from the states
+    const regionService = $("#regionService");
+    if (regionService.length) regionService.text(usRegionServiceTitle(getHash()) || regionService.data("locationText") || "");
+    updateModelTopicsLink();
 });
 
 // Close inline dropdown when clicking elsewhere

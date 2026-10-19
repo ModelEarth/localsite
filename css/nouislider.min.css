@@ -271,6 +271,20 @@ body.dark:has(#slider-on-map) #upIconTray #headerIcons .playPauseButton:focus {
 }
 .earthCircleIcons:hover { opacity: 1; color: #fff; }
 .earthCircleIcons .material-icons { font-size: 20px; vertical-align: middle; }
+/* Close X for #mainEarthDisplay: a larger dark circle with a larger X */
+#earthClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #555;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+#earthClose:hover { background-color: #333; }
+#earthClose .material-icons { font-size: 22px; line-height: 1; display: block; -webkit-text-stroke: 1.2px #fff; } /* Block, so the X centers in the circle. The stroke outlines the X. */
 /* /Slider toggle button */
 
 /* Full 3-day slider below #mainEarthDisplay */
