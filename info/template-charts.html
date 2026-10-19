@@ -232,10 +232,14 @@ function showIndustryList() {
 	<div id="stateEnergySource" class="energy-note" style="margin-top:12px"></div>
 </section>
 
+<!-- One button per state when the hash has several (naics.js). Outside #industryTableHolder, which shows only on localhost and github.io. -->
+<div class="contentpadding" style="padding-top:0;padding-bottom:0">
+	<div id="chooseLocation" role="group" aria-label="Primary state" style="display:none"></div>
+</div>
+
 <!-- v2 -->
 <section id="industryTableHolder" style="display:none;">
 <div class="contentpadding" style="padding-top:0px">
-	<div id="chooseLocation" role="group" aria-label="Primary state" style="display:none"></div><!-- One button per state when the hash has several (naics.js) -->
 	<div id="tabulator-industrytable-intro"><b>Area Industries</b> (Visible on localhost) <!-- FIPS and NAICS case sensitive--></div>
 	<div id="tabulator-industrytable-datalink"></div>
 	<div style="clear:both"></div>
