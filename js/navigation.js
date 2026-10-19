@@ -99,6 +99,10 @@ if(typeof hiddenhash == 'undefined') {
 }
 function updateCountiesTabText() {
     let hash = getHash();
+    if (hash.geoview == "countries" || hash.geoview == "earth") { // Not a state's counties, even when a state remains in hiddenhash
+        $(".countiesTabText").text("States");
+        return;
+    }
     if (!hash.geo) {
         $(".countiesTabText").text(hash.state ? "Counties" : "States");
         return;
@@ -117,6 +121,7 @@ function updateCountiesTabText() {
         $(".countiesTabText").text("Counties");
     }
 }
+waitForElm('.countiesTabText').then(updateCountiesTabText); // filter.html can load after the first hashChanged()
 // The states in hash.state, without "all" (as in state=all on profile/), so clicking a state gives state=NC rather than state=NC,all
 function hashStateList(hash) {
     return String((hash && hash.state) || "").split(",").filter(value => value && value.toLowerCase() !== "all");
@@ -816,7 +821,10 @@ function hashChanged() {
     }
     if (hash.geoview == "earth" || hash.geoview == "countries") {
         onElmReady('#state_select', function() {
-            $("#state_select").hide();
+            // Not in the hero (#relocatedStateMenu in #hero-rect), where the state and region menus stay available
+            if (!$("#state_select").closest("#relocatedStateMenu").length) {
+                $("#state_select").hide();
+            }
         });
     } else if (hash.geoview == "country") {
         if (hash.geoview != priorHash.geoview) {
@@ -9926,16 +9934,31 @@ $(document).on("click", "#filterClickLocation", function(event) {
         $("#draggableSearch").hide();
         $("#filterLocations").hide();
     }
+    // With geoview=countries the tab reads "States" (updateCountiesTabText), so it opens the
+    // geoview menu with its state list rather than closing the map
+    var clickHash = getHash();
+    if (clickHash.geoview == "countries" && $("#geoview_container").length) {
+        if ($("#geoview_container").is(":visible")) {
+            closeGeoviewList();
+        } else {
+            openGeoviewList();
+        }
+        event.stopPropagation();
+        return;
+    }
     closeGeoviewList();
     // When geoview=country and a state is selected, switch to geoview=state (state=all counts as none)
-    var clickHash = getHash();
     if (clickHash.geoview == "country" && hashHasSpecificState(clickHash)) {
         goHash({"geoview": "state"});
         event.stopPropagation();
         return;
     }
     filterClickLocation();
-    $("#state_select").hide();
+    // Keep the hero's state and region menus (#hero-rect), which stay visible with geoview=countries.
+    // Hiding #state_select there also hid #usregion_holder (search-filters.css), leaving #hero-rect blank.
+    if (!$("#state_select").closest("#relocatedStateMenu").length) {
+        $("#state_select").hide();
+    }
     event.stopPropagation();
     return;
 

@@ -34,6 +34,9 @@
 #usregion_holder:has(+ #state_select[style*="display: none"]) {
   display: none; /* Hidden with the state menu, e.g. in the earth and countries views */
 }
+#geoview_container #geoview_statelist #usregion_holder { /* Beats the :has() rule above. Stays above the state list there, where #state_select is always hidden */
+  display: flex;
+}
 .hero-bucket #usregion_holder, #hero-rect #usregion_holder {
   margin-bottom: 10px;
 }
@@ -53,8 +56,13 @@
 #geoview_statelist .usregion-map { /* The map is already showing there */
   display: none;
 }
-#geoview_statelist #state_select { /* The state list below it chooses states there */
-  display: none;
+/* The location panel's state list (#state_quick_list) replaces #state_select there.
+   !important beats the inline display from .show() in navigation.js. */
+#geoview_statelist #state_select {
+  display: none !important;
+}
+#geoview_statelist #usregion_select {
+  width: 220px; /* The max-width of #geoview_statelist select */
 }
 .dark .usregion-map, #hero-rect .usregion-map {
   background-color: transparent;
