@@ -900,16 +900,16 @@ function hashChanged() {
                 if (appTitle) {
                     $("#pageTitle").text(appTitle); // Ex: Parts Manufacturing
                 } else {
-                    ////$(".region_service").text(hash.show.toTitleCaseFormat());
-                    $("#pageTitle").text(hash.show.toTitleCaseFormat());
+                    ////$(".region_service").text(showTopicTitle(hash.show));
+                    $("#pageTitle").text(showTopicTitle(hash.show));
                 }
                 */
-                showTitle = hash.show.toTitleCaseFormat();
+                showTitle = showTopicTitle(hash.show);
             }
 
             if (hash.show && local_app.loctitle) {
                 waitForElm('.region_service').then((elm) => {
-                    setRegionServiceText(local_app.loctitle + " - " + hash.show.toTitleCaseFormat());
+                    setRegionServiceText(local_app.loctitle + " - " + showTopicTitle(hash.show), showTopicTitle(hash.show));
                 });
 
             } else if (hash.state) {
@@ -928,7 +928,7 @@ function hashChanged() {
                         onElmReady('.region_service', function() {
                             setRegionServiceText(theStateName + " Industries");
                             if (showTitle) {
-                                setRegionServiceText(theStateName + " - " + hash.show.toTitleCaseFormat());
+                                setRegionServiceText(theStateName + " - " + showTopicTitle(hash.show), showTopicTitle(hash.show));
                             }
                         });
                     }
@@ -961,7 +961,7 @@ function hashChanged() {
             } else {
                 ////$(".region_service").text("Top " + $(".locationTabText").text() + " Industries");
                 waitForElm('.region_service').then((elm) => {
-                    setRegionServiceText(""); // Clear prior state
+                    setRegionServiceText("", hash.show ? showTopicTitle(hash.show) : ""); // Clear prior state. The topic shows large.
                     consoleLog("Clear prior state")
                 });
             }
@@ -983,7 +983,7 @@ function hashChanged() {
             $(".regiontitle").text(hash.regiontitle.replace(/\+/g," "));
             waitForElm('.region_service').then((elm) => {
                 if (hash.show) {
-                    setRegionServiceText(hash.regiontitle.replace(/\+/g," ") + " - " + hash.show.toTitleCaseFormat());
+                    setRegionServiceText(hash.regiontitle.replace(/\+/g," ") + " - " + showTopicTitle(hash.show), showTopicTitle(hash.show));
                 } else {
                     setRegionServiceText(hash.regiontitle.replace(/\+/g," "));
                 }
@@ -3199,7 +3199,7 @@ function populateFieldsFromHash() {
     $("#productCodes").val(hash.hs);
     if (hash.region) {
         if (hash.show) {
-            $(".regiontitle").val(hash.region + " - " + hash.show.toTitleCaseFormat());
+            $(".regiontitle").val(hash.region + " - " + showTopicTitle(hash.show));
         } else {
             $(".regiontitle").val(hash.region);
         }
@@ -7371,9 +7371,9 @@ function updateRegionService(section) {
         }
     }
     if (theLocation) {
-        setRegionServiceText(theLocation + " - " + section);
+        setRegionServiceText(theLocation + " - " + section, section);
     } else {
-        setRegionServiceText(section);
+        setRegionServiceText(section, section);
     }
 }
 
@@ -7584,10 +7584,72 @@ function displayHexagonMenu(layerName, localObject) {
   //$("#iconMenu").append(iconMenu);
     $("#honeyMenuHolder").show();
 }
+// The radio button beside each app menu thumbnail (.bigThumbStatus) only selects the app, keeping the menu open,
+// while the impact set buttons (#navImpactIcons, template-main.html) are on the page. Clicking an impact button
+// then submits both (iNav). Clicking the thumbnail image still goes to the app right away (thumbClick).
+var pendingThumb = null; // {show, path} or {href} of the selected thumbnail
+document.addEventListener('click', function(e) {
+    const radio = e.target.closest ? e.target.closest('#bigThumbMenu .bigThumbStatus') : null;
+    if (!radio || !document.getElementById('navImpactIcons')) return;
+    // Capture phase: runs before the link's thumbClick onclick and the .bigThumbHolder handler that closes the menu
+    e.preventDefault();
+    e.stopPropagation();
+    const content = radio.closest('.bigThumbMenuContent');
+    const link = radio.closest('a');
+    const show = content ? content.getAttribute('show') : "";
+    const onclickMatch = link && String(link.getAttribute('onclick') || "").match(/thumbClick\('([^']*)','([^']*)'\)/);
+    if (onclickMatch) {
+        pendingThumb = {show: onclickMatch[1], path: onclickMatch[2]};
+    } else if (link && link.getAttribute('href')) {
+        pendingThumb = {href: link.getAttribute('href')}; // A direct link without thumbClick
+    } else {
+        return;
+    }
+    $(".bigThumbMenuContent").removeClass("bigThumbActive");
+    $(content).addClass("bigThumbActive");
+    // A wave across the impact buttons (.impactAttention in base.css) draws attention to the next step
+    const impactButtons = document.getElementById('navImpactIcons');
+    impactButtons.classList.remove('impactAttention');
+    void impactButtons.offsetWidth; // Restarts the animation on repeat clicks
+    impactButtons.classList.add('impactAttention');
+}, true);
+document.addEventListener('animationend', function(e) {
+    // Last button's animation done
+    if (e.animationName === 'impactAttention' && e.target.matches('#navImpactIcons .impactIcon_All')) {
+        document.getElementById('navImpactIcons').classList.remove('impactAttention');
+    }
+});
 function thumbClick(show,path) {
+    pendingThumb = null;
+    submitThumb(show, path);
+}
+// Thumbnail images that are plain links (no thumbClick) carry the page's hash (usregion and the rest),
+// as thumbClick does. Their href holds only the state from when the menu was built (getDirectLink).
+$(document).on('click', '#bigThumbMenu .bigThumbHolder a[href]:not([onclick*="thumbClick"])', function(event) {
+    if (event.target.closest('.bigThumbStatus')) return; // The radio button only selects
+    const url = new URL(this.getAttribute('href'), location.href);
+    if (url.origin !== location.origin) return; // Another site keeps its own link
+    let hash = getHashOnly();
+    ['cat','naics','name','details','m','appview'].forEach(key => delete hash[key]); // As in submitThumb
+    delete hash.show; // The prior topic. A link's own show (below) is kept. "All Industries" has none, so it clears show.
+    const linkHash = Object.fromEntries(new URLSearchParams(url.hash.slice(1)));
+    delete linkHash.state; // The current state wins over the one from when the menu was built
+    hash = Object.assign(hash, linkHash); // The link's own values, such as show, win
+    event.preventDefault();
+    url.hash = decodeURIComponent($.param(hash));
+    location.href = url.href;
+});
+// set: the impact set from iNav, when an impact button submits the selected thumbnail. "" ("All") removes the set.
+function submitThumb(show, path, set) {
     let hash = getHashOnly(); // Not hiddenhash
     let priorShow = hash.show;
-    hash.show = show;
+    // "All Industries" (item industries) is the page without a topic, so it clears show. "" removes it (goHash).
+    hash.show = (show == "industries") ? "" : show;
+    if (set !== undefined) {
+        hash.set = set; // "" removes set from the hash (goHash), or is dropped below when leaving the page
+        delete hash.indicators; // The set's indicators load in the page from hash.set
+        delete hash.geoview;
+    }
     if (!hash.state && param.state) {
         hash.state = param.state; // At least until states are pulled from geo values.
     }
@@ -7603,10 +7665,12 @@ function thumbClick(show,path) {
     // !pageContainsInfoWidgets && // Prevented bioeconomy from leaving map page.
     if (path && !window.location.pathname.includes(path)) {
         // Leave current page
+        if (!hash.set) delete hash.set; // "All"
+        if (!hash.show) delete hash.show; // "All Industries"
         var hashString = decodeURIComponent($.param(hash));
         window.location = localsitePath(path) + "#" + hashString;
     } else { // Remain in current page
-        if (show != priorShow) {
+        if (hash.show != priorShow) {
             delete hiddenhash.show;
             delete hiddenhash.naics;
             delete param.show;
@@ -7796,8 +7860,21 @@ function toggleDiv(theClass) {
     */
 }
 function iNav(set) {
+    if (pendingThumb) { // An app menu thumbnail is selected: go to it with this impact set
+        const thumb = pendingThumb;
+        pendingThumb = null;
+        $("#bigThumbPanelHolder").hide();
+        $(".showApps").removeClass("filterClickActive");
+        if (thumb.href) {
+            location.href = thumb.href + (set ? (thumb.href.indexOf('#') >= 0 ? "&" : "#") + "set=" + set : "");
+        } else {
+            submitThumb(thumb.show, thumb.path, set);
+        }
+        return;
+    }
     let hash = getHashOnly();
     hash.set = set;
+    if (!set) delete hash.set; // "All": no set, so all impacts
     // The set's indicators load in the page from hash.set (impact-sets.js), so they stay out of the hash
     delete hash.indicators;
     delete hash.geoview;
@@ -9246,6 +9323,7 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
                 //    alert(key + val);
                 //});
             });
+            refreshShowTopicTitles(); // "Filming Locations" rather than "Cameraready Locations"
 
             console.log("The localObject 2");
             console.log(localObject);
@@ -9473,11 +9551,13 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
                 }
                 // Hidden to reduce clutter
                 $("#honeycombPanel").prepend("<div class='hideThumbMenu close-X' style='display:none; position:absolute; right:0px; top:0px;'><i class='material-icons' style='font-size:32px'>&#xE5CD;</i></div>");
-                var savedThumbLayout = (typeof localStorage !== 'undefined' && localStorage.getItem('bigThumbLayout')) || 'grid';
+                var savedThumbLayout = (typeof localStorage !== 'undefined' && localStorage.getItem('bigThumbLayout')) || 'circles';
+                if (savedThumbLayout === 'grid') savedThumbLayout = 'circles'; // Renamed from grid
                 var thumbLayoutClass = savedThumbLayout === 'stack' ? ' layoutStack' : '';
+                // List (stack) first, with the rectangles icon. Circles: drag_indicator turned to 6 dots, 3 across (search-filters.css).
                 var thumbToggleHtml = "<div class='bigThumbLayoutToggle'>" +
-                    "<i class='material-icons bigThumbLayoutBtn" + (savedThumbLayout === 'grid' ? ' active' : '') + "' data-layout='grid' title='Grid'>&#xE8F0;</i>" +
-                    "<i class='material-icons bigThumbLayoutBtn" + (savedThumbLayout === 'stack' ? ' active' : '') + "' data-layout='stack' title='List'>&#xE8EF;</i>" +
+                    "<i class='material-icons bigThumbLayoutBtn" + (savedThumbLayout === 'stack' ? ' active' : '') + "' data-layout='stack' title='List'>&#xE8F0;</i>" +
+                    "<i class='material-icons bigThumbLayoutBtn" + (savedThumbLayout === 'circles' ? ' active' : '') + "' data-layout='circles' title='Circles'>&#xE945;</i>" +
                     "</div>";
                 $(insertInto).append("<div id='bigThumbMenuInner' class='bigThumbMenuInner" + thumbLayoutClass + "'>" + thumbToggleHtml + sectionMenu + "</div>");
                 $("#bigThumbMenuInner .bigThumbLayoutToggle").append($(".hideApps.close-X").first());
@@ -9487,7 +9567,12 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
                     $('.bigThumbLayoutBtn').removeClass('active');
                     $('.bigThumbLayoutBtn[data-layout="' + layout + '"]').addClass('active');
                     if (typeof localStorage !== 'undefined') localStorage.setItem('bigThumbLayout', layout);
+                    balanceStackColumns();
                 });
+                if (typeof ResizeObserver !== 'undefined' && document.getElementById('bigThumbMenuInner')) {
+                    // Also runs when the menu opens, since its size changes from zero
+                    new ResizeObserver(balanceStackColumns).observe(document.getElementById('bigThumbMenuInner'));
+                }
 
                 if (stateAbbr == "GA") {
                 // if (hash.state && hash.state.split(",")[0].toUpperCase() == "GA") {
@@ -9527,6 +9612,38 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
     });
 }
 
+// Stack layout (#bigThumbMenuInner.layoutStack): fewer columns when the last row would leave blank space,
+// e.g. 5 topics in 3 columns rather than 4. Columns are at least 220px, as in search-filters.css, and stay
+// under 400px, so the rectangles don't get too big (10 topics stay in 3 columns rather than 2).
+function balanceStackColumns() {
+    const inner = document.getElementById('bigThumbMenuInner');
+    if (!inner) return;
+    if (!inner.classList.contains('layoutStack')) {
+        inner.style.gridTemplateColumns = "";
+        return;
+    }
+    const style = getComputedStyle(inner);
+    const width = inner.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    const count = Array.from(inner.querySelectorAll('.bigThumbMenuContent')).filter(function(el) {
+        const item = el.querySelector('.bigThumbWidth');
+        return item && item.offsetHeight > 0;
+    }).length;
+    if (!width || !count) return; // Hidden
+    const gap = parseFloat(style.columnGap) || 0;
+    const maxCols = Math.max(1, Math.min(count, Math.floor((width + gap) / (220 + gap))));
+    let best = maxCols;
+    let bestBlank = (maxCols - count % maxCols) % maxCols;
+    const minCols = Math.max(Math.ceil(maxCols / 2), Math.ceil((width + gap) / (400 + gap))); // At most halving the columns
+    for (let cols = maxCols - 1; cols >= minCols; cols--) {
+        const blank = (cols - count % cols) % cols;
+        if (blank < bestBlank) {
+            best = cols;
+            bestBlank = blank;
+        }
+    }
+    const columns = "repeat(" + best + ", minmax(0, 1fr))";
+    if (inner.style.gridTemplateColumns !== columns) inner.style.gridTemplateColumns = columns;
+}
 function showClassInline(theclass) {
     //alert("showClassInline " + theclass);
     // Load when body head becomes available, faster than waiting for all DOM .js files to load.
@@ -9820,13 +9937,89 @@ function usRegionServiceTitle(hash) {
     const title = usRegionTitle(hash);
     return title ? title + " States" : "";
 }
-function setRegionServiceText(text) {
+// topic: the show topic in the text ("Georgia - Bioeconomy"), which also goes alone to #showTopic above #regionService
+function setRegionServiceText(text, topic) {
     $(".region_service").not("#regionService").text(text);
+    if (topic && text === topic) text = ""; // No location: #regionService stays empty, so #showTopic shows large
     $("#regionService").data("locationText", text).text(usRegionServiceTitle(getHash()) || text);
+    if (topic !== undefined) {
+        // The location without the topic ("Georgia" from "Georgia - Parts Manufacturing"), for "Parts Manufacturing in Georgia"
+        const place = topic && text.endsWith(" - " + topic) ? text.slice(0, -(topic.length + 3)) : "";
+        $("#showTopic").data("place", place);
+        setShowTopic(topic);
+    }
 }
+// The show topic's title: its title in the Topics menu (localObject.layers), e.g. "Filming Locations" for
+// show=cameraready-locations, or until the layers load, the show value in title case: "Cameraready Locations"
+function showTopicTitle(show) {
+    const layer = show && typeof localObject != 'undefined' && localObject.layers && localObject.layers[show];
+    const title = layer && (layer.thumbtitle || layer.navtitle || layer.title || layer.section);
+    return title || showValueTitle(show);
+}
+function showValueTitle(show) {
+    return String(show || "").replace(/[-_]+/g, " ").toTitleCaseFormat();
+}
+// Once the layers load, the titles written from the show value switch to the Topics menu title
+function refreshShowTopicTitles() {
+    const show = getHash().show;
+    if (!show) return;
+    const fallback = showValueTitle(show);
+    const title = showTopicTitle(show);
+    if (title === fallback) return;
+    $(".region_service").each(function() {
+        $(this).text($(this).text().split(fallback).join(title));
+    });
+    const regionService = $("#regionService");
+    if (regionService.data("locationText")) {
+        regionService.data("locationText", String(regionService.data("locationText")).split(fallback).join(title));
+    }
+    if ($("#showTopic").data("topic") === fallback) setShowTopic(title);
+}
+// #showTopic is small above #regionService, and larger when #regionService is empty (template-charts.html)
+function setShowTopic(topic) {
+    $("#showTopic").data("topic", topic || "");
+    updateModelTopicsLink(); // Writes the topic
+}
+// "Model Topics" link above #showTopic. Its href is the current hash plus appview=topics, for opening in a new tab.
+// A plain click adds appview=topics with goHash, which opens the Topics menu (hashChanged).
+// With a set (#pageTitle shows it), the topic link above #pageTitle replaces #modelTopicsLink.
+function updateModelTopicsLink() {
+    const link = document.getElementById('modelTopicsLink');
+    if (!link) return;
+    const hash = getHashOnly();
+    const hasSet = !!getHash().set;
+    hash.appview = "topics";
+    const href = location.pathname + location.search + "#" + decodeURIComponent($.param(hash));
+    link.setAttribute('href', href);
+    // With a set, the topic is linked like #modelTopicsLink, which it replaces, and includes the location:
+    // "Parts Manufacturing in Georgia" above the set's #pageTitle, in place of #regionService ("Georgia - Parts Manufacturing").
+    // Without a set, the topic is plain text above #regionService.
+    const showTopic = $("#showTopic");
+    const topic = showTopic.data("topic") || "";
+    showTopic.empty().toggle(!!topic);
+    if (topic && hasSet) {
+        const place = usRegionServiceTitle(getHash()) || showTopic.data("place") || "";
+        showTopic.append($("<a class='showTopicLink'></a>").attr('href', href).text(place ? topic + " in " + place : topic));
+    } else if (topic) {
+        showTopic.text(topic);
+    }
+    $("#industryHeader").toggleClass("hasSet", hasSet); // Keeps the topic small (naics.css)
+    $("#industryHeader").toggleClass("hasSetTopic", !!(hasSet && topic)); // Hides #regionService (naics.css)
+    $(link).toggle(!(hasSet && topic));
+}
+onElmReady('#modelTopicsLink', updateModelTopicsLink);
+document.addEventListener('hashChangeEvent', updateModelTopicsLink);
+$(document).on('click', '#modelTopicsLink, #showTopic .showTopicLink', function(event) {
+    if (event.metaKey || event.ctrlKey || event.shiftKey) return; // New tab or window: use the href
+    event.preventDefault();
+    event.stopPropagation();
+    goHash({'appview':'topics'});
+    $('html,body').animate({scrollTop: 0}); // Up to the Topics menu at the top
+});
 document.addEventListener('hashChangeEvent', function() {
     const regionService = $("#regionService");
     if (regionService.length) regionService.text(usRegionServiceTitle(getHash()) || regionService.data("locationText") || "");
+    if (!getHash().show) setShowTopic(""); // The topic was removed
 });
 
 // US regions (#usregion_select): each #state_select option has a usregion attribute (BEA regions).

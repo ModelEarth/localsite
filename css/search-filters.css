@@ -834,6 +834,93 @@ input.filterClick[type="text"] {
     text-align: center;
     margin:0 auto;
 }
+/* No bottom space below the app menu, so the impact set buttons (#navImpactIcons) follow it closely */
+#bigThumbPanelHolder,
+#bigThumbPanelHolder #honeycombPanelHolder,
+#bigThumbPanelHolder #honeycombPanel,
+#bigThumbPanelHolder #bigThumbMenu,
+#bigThumbPanelHolder #honeyMenuHolder {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+#bigThumbPanelHolder #bigThumbMenu {
+    margin-bottom: 10px; /* Before the impact set buttons */
+}
+/* The thumbnails and the impact set buttons share #topicsPanel's background (.lite) and padding,
+   which replaces the padding and bottom margin of .bigThumbMenuInner and .contentpadding .bigThumbMenu there */
+#topicsPanel {
+    padding: 15px 20px 0 20px; /* The buttons' 15px bottom margin is the bottom space */
+}
+#bigThumbPanelHolder .bigThumbMenuInner.layoutStack {
+    margin-bottom: 10px; /* Below the rectangles */
+}
+#bigThumbPanelHolder .bigThumbMenuInner {
+    padding: 0;
+    margin-bottom: 0;
+    /* A container query container is the containing block for absolute children, which would keep the right column
+       on the grid. Its @container rules are for the narrow right-side panel, so they aren't needed in the Topics menu. */
+    container-type: normal;
+}
+/* In the Topics menu, the close X and the grid and list buttons form a column at the far right, X first.
+   It's positioned from #honeycombPanelHolder (position:relative, full width), not the centered thumbnail grid,
+   so it stays at the far right whatever the grid's width. */
+#bigThumbPanelHolder .bigThumbLayoutToggle {
+    position: absolute;
+    top: 0;
+    right: -11px; /* Into #topicsPanel's 20px right padding */
+    width: auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0;
+}
+#bigThumbPanelHolder .bigThumbLayoutToggle .hideApps.close-X {
+    order: -1; /* navigation.js appends the X after the layout buttons */
+    margin: 0 0 6px 0;
+    padding: 4px;
+}
+#bigThumbPanelHolder .bigThumbMenu {
+    padding-top: 0;
+    padding-right: 40px; /* Keeps the thumbnails clear of the right column */
+}
+@media (max-width: 600px) {
+    #topicsPanel {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    #bigThumbPanelHolder .bigThumbMenuInner {
+        padding-top: 0; /* .bigThumbMenuInner's 40px held the buttons, now in the right column */
+    }
+}
+/* Grid layout in the Topics menu: the columns stretch to fill the width beside the right column of buttons,
+   rather than fixed 180px cells (floated, or a set number of columns) leaving space on the right.
+   Each circle stays centered in its cell. */
+#bigThumbPanelHolder .bigThumbMenuInner:not(.layoutStack) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    width: 100%;
+    margin-bottom: 15px; /* Extra space after the circle thumbnails */
+}
+#bigThumbPanelHolder .bigThumbMenuInner:not(.layoutStack) .bigThumbMenuContent {
+    display: block;
+    float: none;
+}
+#bigThumbPanelHolder .bigThumbMenuInner:not(.layoutStack) .bigThumbWidth {
+    width: 100%;
+}
+/* Less space under the thumbnail titles (.bigThumbWidth is 170px tall).
+   .bigThumbHolder (absolute, 180px) matches, so the last row doesn't overflow its cell. */
+#bigThumbPanelHolder .bigThumbMenuInner:not(.layoutStack) .bigThumbWidth,
+#bigThumbPanelHolder .bigThumbMenuInner:not(.layoutStack) .bigThumbHolder {
+    height: 150px;
+}
+/* No scrolling in the Topics menu: the menu grows to fit the thumbnails.
+   #honeycombPanelHolder (display:flow-root in template-main.html) contains the floats. */
+#bigThumbPanelHolder .bigThumbMenu,
+#bigThumbPanelHolder .bigThumbMenuInner {
+    overflow: visible;
+}
 .bigThumbWidth { /* allows margin to reside within percent */
     floatX:left;
     position: relative;
@@ -950,10 +1037,13 @@ input.filterClick[type="text"] {
   background-color: #fff;
   border-radius: 50%;
   border: 1px solid #888;
-  display: inline-block;
+  display: flex; /* Centers .bigThumbSelected, which was off center where the text is left aligned (stack layout) */
+  align-items: center;
+  justify-content: center;
 }
 .bigThumbSelected {
-  margin-top: 2px;
+  margin: 0;
+  flex-shrink: 0;
   height: 12px;
   width: 12px;
   background-color: #ddd;
@@ -1028,6 +1118,13 @@ input.filterClick[type="text"] {
 .bigThumbLayoutToggle .bigThumbLayoutBtn.active {
   opacity: 1;
 }
+.bigThumbLayoutToggle .bigThumbLayoutBtn[data-layout="circles"] {
+  transform: rotate(90deg) scale(1.15); /* drag_indicator's 6 dots, 3 across. scale sizes the dots without changing the button's space. */
+  color: #888; /* Lighter grey */
+}
+.dark .bigThumbLayoutToggle .bigThumbLayoutBtn[data-layout="circles"] {
+  color: inherit;
+}
 .bigThumbLayoutToggle .hideApps.close-X {
   position: static;
   padding: 0 4px;
@@ -1069,12 +1166,14 @@ input.filterClick[type="text"] {
     width: 100%;
   }
 }
-/* Stack layout: each row is a large title with a small circle icon on the left.
+/* Stack layout (data-layout="stack"): each row is a rectangle with the image behind the title,
+   a dark band behind the title, and the radio button in the upper left corner as in the grid layout.
    Wraps into multiple columns when the container is wide. */
 .bigThumbMenuInner.layoutStack {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* navigation.js balanceStackColumns() reduces columns to avoid blank space */
   column-gap: 8px;
+  row-gap: 8px; /* Space after each row of rectangles */
 }
 .bigThumbMenuInner.layoutStack .bigThumbMenuContent {
   float: none;
@@ -1082,9 +1181,6 @@ input.filterClick[type="text"] {
   display: block;
   padding: 4px 8px;
   box-sizing: border-box;
-}
-.bigThumbMenuInner.layoutStack .bigThumbStatus {
-  display: none;
 }
 /* Hide the close-X when bigThumbMenuInner has been moved into the Settings panel */
 #listingsPanel .bigThumbLayoutToggle .hideApps {
@@ -1103,36 +1199,55 @@ input.filterClick[type="text"] {
 .bigThumbMenuInner.layoutStack .bigThumbHolder > a {
   position: relative;
   display: flex;
-  align-items: center;
-  flex-direction: row;
-  justify-content: flex-start;
-  gap: 12px;
+  align-items: flex-end; /* The title band sits along the bottom, clear of the radio button */
   width: 100%;
+  aspect-ratio: 5 / 2; /* Height follows the column width */
+  min-height: 90px;
+  max-height: 180px;
   top: auto; right: auto; left: auto; bottom: auto;
-  padding: 4px 0;
+  padding: 0;
+  border-radius: 6px;
+  overflow: hidden;
 }
+/* The image fills the rectangle behind the title */
 .bigThumbMenuInner.layoutStack .bigThumb {
-  width: 36px;
-  height: 36px;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   margin: 0;
-  flex-shrink: 0;
-  opacity: 1;
-  position: relative;
+  border-radius: 0;
+  opacity: 1; /* The former hover look is the default */
 }
+/* Hover darkens the image and the title band */
+.bigThumbMenuInner.layoutStack .bigThumbHolder > a:hover .bigThumb {
+  opacity: 1;
+  filter: brightness(0.75);
+}
+.bigThumbMenuInner.layoutStack .bigThumbHolder > a:hover .bigThumbText {
+  background-color: rgba(0, 0, 0, 0.75);
+}
+/* Dark band spanning the rectangle behind the title */
 .bigThumbMenuInner.layoutStack .bigThumbText {
-  font-size: 18px;
-  padding-top: 0;
-  text-align: left;
+  position: relative;
+  z-index: 1;
   flex: 1;
+  font-size: 18px;
+  font-weight: 400;
+  padding: 6px 12px;
+  text-align: left;
+  color: #fff !important; /* Over the link colors of .bigThumbHolder a */
+  background-color: rgba(0, 0, 0, 0.55);
 }
 .bigThumbMenuInner.layoutStack .bigThumbSecondary {
   display: none;
 }
+/* Radio button in the upper left corner over the image */
 .bigThumbMenuInner.layoutStack .bigThumbStatus {
-  top: 50%;
-  left: 50%;
+  top: 6px;
+  left: 6px;
   right: auto;
-  transform: translate(-50%, -50%);
+  z-index: 2;
 }
 @media (max-width: 600px) {
   .bigThumbMenuInner {

@@ -794,9 +794,11 @@
 
   <div class="hideApps close-X">✕</div>
 
-  <div id="honeycombPanelHolder" style="overflow:auto;position:relative">
+  <!-- Thumbnails and impact set buttons share this background and padding (#topicsPanel in search-filters.css) -->
+  <div id="topicsPanel" class="lite">
+  <div id="honeycombPanelHolder" style="display:flow-root;position:relative"><!-- flow-root contains the floated thumbnails without overflow:auto scrolling -->
   <a name="sections"></a>
-  <div id="honeycombPanel" class="filterFields lite" style="display: block;">
+  <div id="honeycombPanel" class="filterFields" style="display: block;">
     
     <!--
     <div style="float:left;display:flex;justify-content:left;">
@@ -812,10 +814,31 @@
 
   </div>
   </div>
+
+  <!-- IMPACT SETS: shown with the app menu (appview=topics), since they reside in #bigThumbPanelHolder. Styles: .impactIcons in base.css.
+  iNav() (navigation.js) goes to localsite/info on other pages, with the app selected by a .bigThumbStatus radio button. -->
+  <div id="navImpactIcons">
+    <div class="impactIcons">
+      <!-- closeAppsMenu() closes the Topics panel. iNav('') removes the set: all impacts. -->
+      <div class="impactIcon_Air" onclick="closeAppsMenu();iNav('air');">Air</div>
+      <div class="impactIcon_Water" onclick="closeAppsMenu();iNav('water');">Water</div>
+      <div class="impactIcon_Land" onclick="closeAppsMenu();iNav('land');">Land</div>
+      <div class="impactIcon_Energy" onclick="closeAppsMenu();iNav('energy');">Energy</div>
+      <div class="impactIcon_Health" onclick="closeAppsMenu();iNav('health');">Health</div>
+      <div class="impactIcon_Prosperity" onclick="closeAppsMenu();iNav('prosperity');">Prosperity</div>
+      <div class="impactIcon_All" onclick="closeAppsMenu();iNav('');">All</div>
+      <div class="local btn btn-primary" onclick="location.href='/realitystream/models/#' + window.location.hash.substr(1); return false;" style="display:none;min-width:133px;font-size:15px;border:none;">
+        RealityStream
+      </div>
+    </div>
+    <div style="clear:both"></div>
+  </div>
+  </div><!-- /#topicsPanel -->
 </div>
 </div>
 <div style="clear:both"></div>
 <!-- /APP MENU -->
+
 
 <!-- FLOATING FILTER -->
 <script>
@@ -1329,6 +1352,9 @@ Displayed by hashChanged() in navigation.js
 
   <br><textarea id="logText">LogText</textarea></div>
 
+
+<!-- localsite.js moves the page's #hero_holder here, so the map display and #list_main below follow the hero -->
+<div id="heroHolderPlaceholder"></div>
 
 <div class="displayMapForLoad" style="display:none;position:relative;overflow:hidden;">
 

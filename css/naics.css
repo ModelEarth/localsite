@@ -93,6 +93,26 @@
 .region_service {
 	font-weight:1000;
 }
+/* The show topic above #regionService (navigation.js setShowTopic), larger when #regionService is empty */
+#showTopic {
+	font-size: 18px;
+	font-weight: 600;
+	margin-bottom: 2px;
+}
+#industryHeader:not(.hasSet):has(#regionService:empty) #showTopic {
+	font-size: 32px;
+	font-weight: 400;
+}
+/* With a set and a topic, #showTopic reads "Parts Manufacturing in Georgia", so #regionService would repeat it */
+#industryHeader.hasSetTopic #regionService {
+	display: none;
+}
+/* Opens the Topics menu (appview=topics) */
+#modelTopicsLink {
+	display: inline-block;
+	font-size: 13px;
+	margin-bottom: 2px;
+}
 /* #chooseLocation: a button per state when the hash has several (naics.js). The primary (first) state is highlighted. */
 #chooseLocation {
 	display: flex;

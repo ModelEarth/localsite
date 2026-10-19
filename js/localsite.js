@@ -1617,6 +1617,14 @@ function loadLocalTemplate() {
     $.get(datascapeFile, function(theTemplate) { // Get and append template-main.html to #datascape
       $(theTemplate).appendTo(datascapeFileDiv);
 
+      // On pages with a hero (localsite/info), #hero_holder moves into #heroHolderPlaceholder (template-main.html),
+      // after the header and filters and before the map display (#map1) and listings (#list_main), which stay in place
+      const heroHolder = document.getElementById("hero_holder");
+      const heroPlaceholder = document.getElementById("heroHolderPlaceholder");
+      if (heroHolder && heroPlaceholder) {
+        heroPlaceholder.appendChild(heroHolder);
+      }
+
       // The account panel (#accountPanelInserts) now exists — load the auth
       // repo's in-page sign-in UI into it (config-driven via support/site/config.yaml).
       initAuthPlugin();

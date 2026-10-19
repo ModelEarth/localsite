@@ -282,11 +282,8 @@ function loadMap1(calledBy, show, dp_incoming) {
     //location.href = "/localsite/info/#show=" + show;
   }
 
-  if (show == "farmfresh") { // In naics.js we also default to GA for this one topic // && theState
-    if (!theState) {
-      theState = "GA"; // Since there is not yet a national dataset for map. Using NY for shorter topics menu.
-      updateHash({"state":theState});
-    }
+  if (show == "farmfresh") {
+    // Farm data is per state, with no national dataset yet. Without a state, no dataset loads (rather than adding state=GA to the hash).
     dp.listTitle = "USDA Farm Produce";
     if (theState) {
       //if (location.host.indexOf('localhost') >= 0) {

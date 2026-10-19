@@ -192,6 +192,11 @@ function showIndustryList() {
 		  </div>
 		</div>
 	</div>
+	<!-- href gets the current hash plus appview=topics (navigation.js). Hidden while a set is chosen and the topic link below opens the Topics menu instead. -->
+	<a id="modelTopicsLink" href="#appview=topics">Model Topics</a>
+	<!-- The show topic alone (setShowTopic in navigation.js). With a set: small and linked like #modelTopicsLink, above #pageTitle.
+	Without a set: plain text above #regionService, larger when #regionService is empty. -->
+	<div id="showTopic" style="display:none"></div>
 	<h1 id="pageTitle" class="h1-home" style="margin-bottom:0px;"></h1><!-- For 6 impact sets -->
 	<h1 id="regionService" class="region_service" style="margin-top:0;padding-top:0;"></h1><!-- The US region title while hash.usregion is present (navigation.js) -->
 	<h2 class="location_titles" style="font-size:24px;padding-top:0px;display:none"></h2>
@@ -350,7 +355,8 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
                 <div class="impactIcon_Energy" onclick="iNav('energy');">Energy</div>
                 <div class="impactIcon_Health" onclick="iNav('health');">Health</div>
                 <div class="impactIcon_Prosperity" onclick="iNav('prosperity');">Prosperity</div>
-                <div class="local btn btn-primary" onclick="location.href='/realitystream/#' + window.location.hash.substr(1); return false;" style="display:none;min-width:133px;font-size:15px;border:none;">
+                <div class="impactIcon_All" onclick="iNav('');">All</div><!-- No set: all impacts -->
+                <div class="local btn btn-primary" onclick="location.href='/realitystream/models/#' + window.location.hash.substr(1); return false;" style="display:none;min-width:133px;font-size:15px;border:none;">
 					RealityStream
 				</div>
             </div><br>
@@ -813,16 +819,7 @@ body.stateEnergyView, which hides the inflow-outflow grid (Impact Levels stays).
 <div style="clear:both;"></div>
 <!-- /INPUT OUTPUT -->
 <style>
-.impactIcons div {
-    float: left;
-    font-size: 13px;
-    border: 1px solid #ccc;
-    width: 100px;
-    padding: 10px 20px;
-    margin: 0 15px 15px 0;
-    text-align: center;
-    border-radius: 25px;
-}
+/* .impactIcons div buttons: base.css, since the top nav shows them on every page (template-main.html) */
 #hero-mini .impactIcons div {
 	border: 0px solid #ccc;
 	border-bottom: 1px solid #555;
@@ -835,15 +832,6 @@ body.stateEnergyView, which hides the inflow-outflow grid (Impact Levels stays).
 }
 #impact-widget-vertical #impactIcons div {
 	margin-bottom: 15px;
-}
-.impactIcons div.active {
-    border: 4px solid #aaa;
-    padding: 7px 17px;
-}
-.impactIcons div:hover {
-    cursor: pointer;
-    background-color: rgba(33,33,33,.8);
-    color: #fff;
 }
 
 /*

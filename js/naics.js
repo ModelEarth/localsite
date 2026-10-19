@@ -131,7 +131,9 @@ function refreshNaicsWidget(initialLoad) {
             $('#pageTitle').show();
         }
         $(".impactIcons div").removeClass("active");
-        if (hash.set) {
+        if (!hash.set) {
+            $(".impactIcons .impactIcon_All").addClass("active"); // All impacts
+        } else {
             const capitalizeSetName = hash.set.toLowerCase().replace(/\b[a-z]/g, function(letter) {
                 return letter.toUpperCase();
             });

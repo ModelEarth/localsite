@@ -469,6 +469,54 @@ body.dark {
     float: none;
   }
 }
+/* Impact set buttons: #navImpactIcons in the top nav (template-main.html) and #impactIconsHolder (template-charts.html).
+   naics.js adds .active to the current set. */
+.impactIcons div {
+  float: left;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  width: 100px;
+  padding: 10px 20px;
+  margin: 0 15px 15px 0;
+  text-align: center;
+  border-radius: 25px;
+}
+.impactIcons div.active {
+  border: 4px solid #aaa;
+  padding: 7px 17px;
+}
+.impactIcons div:hover {
+  cursor: pointer;
+  background-color: rgba(33,33,33,.8);
+  color: #fff;
+}
+.dark .impactIcons div {
+  border-color: #666;
+}
+.dark .impactIcons div.active {
+  border-color: #999;
+}
+/* A wave across the Topics menu's impact buttons after a thumbnail's radio button is clicked (navigation.js) */
+#navImpactIcons.impactAttention .impactIcons div {
+  animation: impactAttention 0.7s ease-in-out;
+}
+#navImpactIcons.impactAttention .impactIcons div:nth-child(2) { animation-delay: 0.08s; }
+#navImpactIcons.impactAttention .impactIcons div:nth-child(3) { animation-delay: 0.16s; }
+#navImpactIcons.impactAttention .impactIcons div:nth-child(4) { animation-delay: 0.24s; }
+#navImpactIcons.impactAttention .impactIcons div:nth-child(5) { animation-delay: 0.32s; }
+#navImpactIcons.impactAttention .impactIcons div:nth-child(6) { animation-delay: 0.40s; }
+#navImpactIcons.impactAttention .impactIcons div:nth-child(7) { animation-delay: 0.48s; } /* All */
+#navImpactIcons.impactAttention .impactIcons div:nth-child(8) { animation-delay: 0.56s; } /* RealityStream (localhost) */
+@keyframes impactAttention {
+  0%, 100% { transform: none; box-shadow: none; }
+  50% { transform: translateY(-4px) scale(1.06); box-shadow: 0 0 0 3px rgba(102, 207, 121, 0.7); border-color: #66CF79; }
+}
+@media (prefers-reduced-motion: reduce) {
+  @keyframes impactAttention {
+    0%, 100% { box-shadow: none; }
+    50% { box-shadow: 0 0 0 3px rgba(102, 207, 121, 0.7); border-color: #66CF79; }
+  }
+}
 /* Select sizes. Large: #state_select. Medium: #usregion_select. The right padding leaves room for the arrow. */
 .select-lg {
   font-size: 24px;
