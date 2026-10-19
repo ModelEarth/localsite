@@ -896,6 +896,11 @@ document.addEventListener('mousedown', function(e) {
     padding-left: 16px;
     resize: both; /* no effect - attempt to make all edges resizable */
   }
+  #draggableSearch {
+    bottom: auto; /* Height matches the content (#geoview_container from popAdvanced) */
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
   .draggable-title {
     position: absolute;
     cursor: move;

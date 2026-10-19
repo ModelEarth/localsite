@@ -433,6 +433,20 @@ input.filterClick[type="text"] {
     background: #e6e6e6;
 }
 
+/* Within the #draggableSearch popup (.popAdvanced in navigation.js), no longer a dropdown */
+#locationFilterPop #geoview_container {
+    position: static;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    padding: 8px;
+}
+.dark #locationFilterPop #geoview_container {
+    background: transparent;
+    box-shadow: none;
+}
+
 /* Dark mode */
 .dark #geoview_container {
     background: #2a2a2a;

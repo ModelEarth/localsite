@@ -3107,13 +3107,28 @@ function hideSide(which) {
 
 }
 function popAdvanced() {
-    waitForElm('#filterLocations').then((elm) => {        
+    waitForElm('#geoview_container').then((elm) => {
         console.log("popAdvanced");
         closeSideTabs();
         $("#filterClickLocation").removeClass("filterClickActive");
-        $("#filterLocations").appendTo($("#locationFilterPop"));
+        // Move #geoview_container into the popup. The marker holds its origin for returnGeoviewContainer().
+        if (!$("#geoview_container_origin").length) {
+            $("<div id='geoview_container_origin' style='display:none'></div>").insertBefore($("#geoview_container"));
+        }
+        $("#geoview_container").appendTo($("#locationFilterPop")).show();
         $("#draggableSearch").show();
     });
+}
+// Returns #geoview_container from the #draggableSearch popup to its origin
+function returnGeoviewContainer() {
+    if (!$("#geoview_container_origin").length) {
+        return;
+    }
+    $("#geoview_container").insertAfter($("#geoview_container_origin")).hide();
+    $("#geoview_container_origin").remove();
+    if (typeof closeGeoviewList === 'function') {
+        closeGeoviewList(); // Resets the geoview menu arrows and aria-expanded
+    }
 }
 function showSideTabs() {
     consoleLog("showSideTabs() in navigation.js");
@@ -3599,7 +3614,9 @@ if (typeof $ !== 'undefined') {
         refreshFilterToggleIcon();
     }
     function closeGeoviewList() {
-        $("#geoview_container").hide();
+        if (!$("#geoview_container").closest("#locationFilterPop").length) { // Stays open within the popup
+            $("#geoview_container").hide();
+        }
         $("#geoview_select").attr("aria-expanded", "false");
         $("#showLocations").hide();
         $("#hideLocations").show();
@@ -8787,6 +8804,12 @@ $(document).ready(function () {
     });
     $(document).on("click", ".hideAdvanced", function(event) {
         let hash = getHash();
+        if ($(this).closest("#draggableSearch").length && !hash.locpop) {
+            // The popup opened by .popAdvanced, without locpop in the hash
+            $("#draggableSearch").hide();
+            returnGeoviewContainer();
+            return;
+        }
         if (!hash.geoview) {
             $("#filterLocations").hide();
             // The floating #draggableSearch opens with locpop=true and no geoview (Change Location button)
@@ -8799,7 +8822,7 @@ $(document).ready(function () {
         }
     });
     $(document).on("click", ".popAdvanced", function(event) {
-        goHash({'locpop':'true'});
+        popAdvanced(); // Avoids adding locpop to the hash
     });
     $(document).on("click", ".hideThumbMenu", function(event) {
         $("#bigThumbPanelHolder").hide();
@@ -9671,6 +9694,7 @@ function hideAdvanced() {
     $("#imagineBar").hide();
     $("#filterClickLocation").removeClass("filterClickActive");
     $("#draggableSearch").hide();
+    returnGeoviewContainer();
 
     if (typeof relocatedStateMenu != "undefined") {
         // DEACTIVATED, OCCURRED ON LOAD OF /localsite/info/
@@ -9881,7 +9905,9 @@ function getPageFolder(pagePath) {
 var stateQuickListClick = false; // A click in #state_quick_list (#geoview_statelist) is changing #state_select
 $(document).on("change", "#state_select", function(event) {
     console.log("state_select change");
-    $("#geoview_container").hide();
+    if (!$("#geoview_container").closest("#locationFilterPop").length) { // Stays open within the .popAdvanced popup
+        $("#geoview_container").hide();
+    }
     closeAppsMenu();
     let hash = getHash();
 
@@ -10131,6 +10157,7 @@ $(document).on("click", "#filterClickLocation", function(event) {
     if ($("#draggableSearch").is(':visible')) {
         $("#draggableSearch").hide();
         $("#filterLocations").hide();
+        returnGeoviewContainer();
     }
     // With geoview=countries the tab reads "States" (updateCountiesTabText), so it opens the
     // geoview menu with its state list rather than closing the map
