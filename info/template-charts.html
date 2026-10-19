@@ -155,7 +155,7 @@ function showIndustryList() {
 <div id="industryListHolder" style="display:none; padding-top:0; padding-bottom:0">
 
 <div id="industryHeader" class="contentpadding" style="clear:both;padding-bottom:0px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px">
-	<div style="flex:1;min-width:200px">
+	<div style="flex:1;min-width:min(350px, 100%)"><!-- #detail_selection wraps below rather than narrowing the titles. min() avoids overflow on phones. -->
 		<h1 id="pageTitle" class="h1-home" style="margin-bottom:0px;"></h1><!-- For 6 impact sets -->
 		<h1 class="region_service" style="margin-top:0;padding-top:0;"></h1>
 		<h2 class="location_titles" style="font-size:24px;padding-top:0px;display:none"></h2>
@@ -210,6 +210,28 @@ function showIndustryList() {
 		</div>
 	</div>
 </div>
+
+<!-- Energy output for set=energy. Styles: STATE ENERGY below. On info/index.html, state-energy.js moves
+#stateEnergyTitle, #stateEnergyIntro and #stateEnergyCards into #heroBottomEnergy at the bottom of the hero. -->
+<section id="stateEnergy" class="contentpadding">
+	<h2 id="stateEnergyTitle">Electricity Generation</h2>
+	<div id="stateEnergyIntro" class="energy-note"></div>
+	<div id="stateEnergyCards" class="energy-cards"></div>
+
+	<h3 id="stateEnergyMixTitle">Resource Mix</h3>
+	<div id="stateEnergyMix"></div>
+
+	<h3 id="stateEnergyRatesTitle">CO<sub>2</sub>e Emission Rate</h3>
+	<div id="stateEnergyRates"></div>
+
+	<h3 id="stateEnergyTableTitle">eGRID Subregions</h3>
+	<div class="energy-table-options">
+		<div id="stateEnergyTableIntro" class="energy-note"></div>
+		<label id="stateEnergyAllSubregionsLabel"><input type="checkbox" id="stateEnergyAllSubregions"> Show all subregions</label>
+	</div>
+	<div id="tabulator-energytable"></div>
+	<div id="stateEnergySource" class="energy-note" style="margin-top:12px"></div>
+</section>
 
 <!-- v2 -->
 <section id="industryTableHolder" style="display:none;">
@@ -349,6 +371,18 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
             <style>
             	@media (max-width: 1200px) {
             	}
+				/* Explicit text colors, since the text was white on the white background outside dark mode */
+				#indicators {
+					color: #333;
+					background-color: #fff;
+				}
+				.dark #indicators {
+					color: #fff;
+					background-color: #444;
+				}
+				.dark #indicators:hover {
+					background-color: #222;
+				}
 
 				.mobileView .MuiGrid-grid-md-true {
 				    flex-basis: 100% !important;
@@ -360,7 +394,7 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 				
             </style>
 
-            <select id="indicators" class="filterClickX form-selectX picklist" onchange="goHash({'set':'','indicators':this.value});" style="max-width:200px;font-size:18px;">
+            <select id="indicators" class="filterClickX form-selectX picklist" onchange="goHash({'set':'','indicators':this.value});" style="max-width:202px;font-size:18px;">
 
 			<option value="">Specific impact areas...</option>
 
@@ -440,6 +474,252 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 </div>
 </section>
 <!-- /INDICATOR SETS -->
+
+
+<!-- STATE ENERGY
+set=energy shows EPA eGRID electricity data: all states, or the state in the hash. profile/js/state-energy.js fills the
+#stateEnergy section (after #industryHeader) and adds body.energyView. State models have no energy indicators (ENRG, NNRG, RNRG), so with a state it also adds
+body.stateEnergyView, which hides the USEEIO charts. Plan: profile/state/PLAN.md -->
+<style>
+#stateEnergy, .stateEnergyView #largeTite, .stateEnergyView #indicators, .stateEnergyView #iogridHolder, .stateEnergyView #impact {
+	display: none !important;
+}
+.energyView #stateEnergy {
+	display: block !important;
+}
+#stateEnergy {
+	container-type: inline-size;
+	padding-top: 0;
+	padding-bottom: 30px;
+	border-bottom: 1px solid #ccc;
+	color: #333;
+}
+#stateEnergy h2, #heroBottomEnergy h2 {
+	margin: 0 0 4px 0;
+	border: 0;
+}
+#stateEnergy h3 {
+	margin: 26px 0 10px 0;
+	font-size: 18px;
+}
+.energy-note {
+	font-size: 14px;
+	color: #555;
+}
+.energy-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+	gap: 12px;
+	margin-top: 16px;
+}
+.energy-card {
+	background: #f5f7f9;
+	border: 1px solid #e1e5e9;
+	border-radius: 8px;
+	padding: 12px 14px;
+}
+.energy-card-label {
+	font-size: 13px;
+	color: #555;
+}
+.energy-card-value {
+	font-size: 24px;
+	font-weight: 600;
+	line-height: 1.3;
+}
+.energy-card-sub {
+	font-size: 12px;
+	color: #666;
+}
+.energy-mix-row {
+	display: grid;
+	grid-template-columns: 110px 1fr;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 8px;
+}
+/* All states: one compact, clickable row per state */
+.energy-mix-row.energy-mix-compact {
+	grid-template-columns: 44px 1fr;
+	gap: 8px;
+	margin-bottom: 3px;
+	cursor: pointer;
+	border-radius: 4px;
+}
+/* The US row above the states shares their narrow label column, so its bar lines up with theirs */
+.energy-mix-states .energy-mix-row {
+	grid-template-columns: 44px 1fr;
+	gap: 8px;
+	margin-bottom: 3px;
+}
+/* The US (and the states combined) at the same height as the state bars */
+.energy-mix-states .energy-mix-label {
+	font-size: 13px;
+}
+.energy-mix-states .energy-mix-bar {
+	height: 16px;
+	border-radius: 3px;
+}
+/* Space between the state bars and the US bar */
+.energy-mix-gap {
+	height: 12px;
+}
+.energy-mix-compact .energy-mix-label {
+	font-size: 13px;
+}
+.energy-mix-compact .energy-mix-bar {
+	height: 16px;
+	border-radius: 3px;
+}
+.energy-mix-compact:hover, .energy-mix-compact:focus-visible {
+	background: rgba(0, 0, 0, 0.06);
+	outline: none;
+}
+.energy-mix-label {
+	font-size: 14px;
+	font-weight: 600;
+}
+.energy-mix-bar {
+	display: flex;
+	height: 30px;
+	border-radius: 6px;
+	overflow: hidden;
+	background: #eee;
+}
+.energy-mix-bar span {
+	display: block;
+	height: 100%;
+	min-width: 0;
+}
+.energy-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 16px;
+	margin-top: 10px;
+	font-size: 13px;
+}
+.energy-legend span {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	white-space: nowrap;
+}
+.energy-legend i {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	border-radius: 3px;
+}
+.energy-rate-row {
+	display: grid;
+	grid-template-columns: minmax(110px, 220px) 1fr 70px;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 6px;
+	font-size: 14px;
+}
+.energy-rate-track {
+	background: #eee;
+	border-radius: 4px;
+	height: 18px;
+	overflow: hidden;
+}
+.energy-rate-fill {
+	height: 100%;
+	border-radius: 4px;
+	background: #c0504d;
+}
+.energy-rate-row.energy-rate-state .energy-rate-fill {
+	background: #2f7ed8;
+}
+.energy-rate-row.energy-rate-us .energy-rate-fill {
+	background: #888;
+}
+.energy-rate-value {
+	text-align: right;
+	font-weight: 600;
+}
+.energy-table-options {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 8px;
+	font-size: 14px;
+}
+.energy-change-down {
+	color: #2e7d32;
+}
+.energy-change-up {
+	color: #c62828;
+}
+#tabulator-energytable .energy-own-row {
+	font-weight: 600;
+}
+@container (max-width: 600px) {
+	.energy-cards {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 8px;
+	}
+	.energy-card {
+		padding: 10px;
+	}
+	.energy-card-value {
+		font-size: 19px;
+	}
+	.energy-mix-row {
+		grid-template-columns: 1fr;
+		gap: 4px;
+	}
+	.energy-mix-row.energy-mix-compact, .energy-mix-states .energy-mix-row {
+		grid-template-columns: 36px 1fr;
+		gap: 6px;
+	}
+	.energy-rate-row {
+		grid-template-columns: 1fr 64px;
+	}
+	.energy-rate-row .energy-rate-track {
+		grid-column: 1 / -1;
+		grid-row: 2;
+	}
+}
+.dark #stateEnergy {
+	color: #ddd;
+	border-bottom-color: #444;
+}
+.dark .energy-note, .dark .energy-card-label, .dark .energy-card-sub {
+	color: #aaa;
+}
+.dark #stateEnergyTitle, .dark #stateEnergyIntro {
+	color: #fff;
+}
+.energyNationalLink {
+	white-space: nowrap;
+}
+/* The hero (class dark) and dark mode. Green matches the #hero-rect links. */
+.dark #stateEnergyIntro a:link, .dark #stateEnergyIntro a:visited {
+	color: #66CF79;
+}
+.dark .energy-card {
+	background: #2a2d31;
+	border-color: #3d4146;
+}
+.dark .energy-mix-compact:hover, .dark .energy-mix-compact:focus-visible {
+	background: rgba(255, 255, 255, 0.08);
+}
+.dark .energy-mix-bar, .dark .energy-rate-track {
+	background: #3a3a3a;
+}
+.dark .energy-change-down {
+	color: #81c784;
+}
+.dark .energy-change-up {
+	color: #ef9a9a;
+}
+</style>
+
+<!-- /STATE ENERGY -->
 
 
 <!-- INPUT OUTPUT -->
@@ -634,9 +914,10 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 </style>
 
 
-<div class="contentpadding" style="padding-top:0px; border-bottom:1px solid #ccc;">
+<div id="iogridHolder" class="contentpadding" style="padding-top:0px; border-bottom:1px solid #ccc;">
 
     <hr>
+	<div class="ioModelName" style="color:#888; font-size:14px"></div>
 	<span style="font-size:14px">
 		<b>Input and Output per Dollar Spent</b><span style="display:none" class="showforstates"> - Based on 2017 BEA and EPA data displayed for the top <span class=""></span> industries in 2021.<br></span><br>
 
@@ -664,6 +945,10 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 
 <!-- MOSAIC HEATMAP -->
 <style>
+/* The mosaic view (div inside #sector-list) holds #sectorListTitles, so less top margin than the widget's 100px */
+#sector-list > div > div {
+   margin-top: 50px !important;
+}
 ::-webkit-scrollbar {
    -webkit-appearance: none;
    width: 7px;
@@ -681,6 +966,7 @@ https://epa.maps.arcgis.com/apps/MapJournal/index.html?appid=0659c53852f4425fb34
 		<div id="sectorListTitles" style="margin-bottom:20px">
 			<h1 style="margin-bottom: 0px">Impact Levels</h1>
 			<span class="region_service"></span>
+			<div class="ioModelName" style="color:#888; font-size:14px"></div>
 		</div>
 		<div id="sector-list" class="sector-list"></div>
 		<!--

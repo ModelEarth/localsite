@@ -8548,6 +8548,11 @@ $(document).ready(function () {
         let hash = getHash();
         if (!hash.geoview) {
             $("#filterLocations").hide();
+            // The floating #draggableSearch opens with locpop=true and no geoview (Change Location button)
+            $("#draggableSearch").hide();
+            if (hash.locpop) {
+                goHash({'locpop':''});
+            }
         } else {
             goHash({'locpop':'','geoview':''}); // Triggers closure
         }

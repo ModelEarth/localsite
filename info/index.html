@@ -24,6 +24,50 @@
 }
 #hero-landscape-image.bgimg {
     min-height: 600px;
+    flex-direction: column;
+    opacity: 1; /* Rather than the .bgimg opacity (base.css), which faded the image toward the white page and faded the elements over it */
+    isolation: isolate; /* Keeps the ::before overlay behind the hero content */
+}
+/* Darkens only the image, matching the dark mode look of the image at .bgimg opacity over the #333 dark body */
+#hero-landscape-image.bgimg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: rgba(51, 51, 51, 0.35);
+    pointer-events: none;
+}
+/* Flex rather than the display:block !important of .displayOnload (base.css), so #heroBottom can sit at the bottom */
+#hero-landscape-image.bgimg.displayOnload {
+    display: flex !important;
+}
+/* Energy summary for set=energy. profile/js/state-energy.js moves #stateEnergyTitle, #stateEnergyIntro and #stateEnergyCards here. */
+#heroBottom {
+    display: none;
+    margin-top: auto;
+    background-color: rgba(51, 51, 51, 0.5);
+}
+.energyView #heroBottom {
+    display: block;
+}
+#heroBottomEnergy {
+    container-type: inline-size; /* For the .energy-cards container query */
+    padding: 20px 60px 24px 60px;
+}
+#heroBottomEnergy .energy-cards {
+    margin-top: 12px;
+}
+@media (max-width: 600px) {
+    #heroBottomEnergy {
+        padding: 16px;
+    }
+    #hero_holder #hero-content { /* Beats the padding: 0px in base.css */
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    #hero_holder #stateName {
+        display: none;
+    }
 }
 #hero-mini {
     max-width: 150px;
@@ -39,6 +83,7 @@
     color: #fff;
     border-left: 3px solid transparent;
     cursor: pointer;
+    min-width: 140px;
 }
 .heroImpactIcons .material-icons {
     font-size: 18px;
@@ -98,6 +143,10 @@
   </div>
   <div style="clear:both"></div>
 
+  <div id="heroBottom">
+    <div id="heroBottomEnergy"></div>
+  </div>
+
 </div>
 </div>
 
@@ -125,10 +174,6 @@
       iNav(set);
     } else {
       goHash({'set':set, 'indicators':impactSetIndicators(set)});
-    }
-    const impactTop = document.getElementById('impactTopHolder');
-    if (impactTop) {
-      window.scrollTo({top: impactTop.getBoundingClientRect().top + window.scrollY - 54, behavior: 'smooth'});
     }
   });
   menu.addEventListener('keydown', function(e) {

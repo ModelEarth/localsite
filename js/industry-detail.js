@@ -603,13 +603,14 @@ async function loadImpactData(naicsCode) {
             });
         }
 
-        // Always use the national model (411 sectors) for detailed impact data.
-        // State models only have ~146 aggregated sectors (e.g., "327" not "327320"),
-        // so they won't match specific NAICS codes.
-        let endpoint = webrootPath('/io/build/api');
-        let modelName = 'USEEIOv2.0.1-411';
+        // The state's model when a state is in the hash (73 BEA summary sectors, 16 indicators without energy),
+        // otherwise the national model (411 sectors, 23 indicators). ioModelSettings() resides in naics.js.
+        const ioModel = (typeof ioModelSettings === 'function')
+            ? ioModelSettings(hash)
+            : { state: '', endpoint: webrootPath('/io/build/api'), modelID: 'USEEIOv2.0.1-411' };
+        const modelName = ioModel.modelID;
 
-        const baseUrl = endpoint + '/' + modelName;
+        const baseUrl = ioModel.endpoint + '/' + modelName;
 
         // Fetch sectors, indicators, D matrix, and q vector in parallel
         const [sectors, indicators, matrixD, vectorQ] = await Promise.all([
@@ -624,8 +625,15 @@ async function loadImpactData(naicsCode) {
             return;
         }
 
-        // Find the sector matching this NAICS code
-        const sector = sectors.find(s => s.code === naicsCode || s.code.startsWith(naicsCode) || naicsCode.startsWith(s.code));
+        // Find the sector matching this NAICS code. State sectors are BEA summary codes (e.g. 327, not 327320),
+        // matched through sectorcrosswalk.csv, and the state's own rows rather than Rest of US (RoUS).
+        let sector;
+        if (ioModel.state) {
+            const summaryCodes = await naicsToBeaSummary(naicsCode, ioModel.endpoint);
+            sector = sectors.find(s => s.location === 'US-' + ioModel.state && summaryCodes.includes(s.code));
+        } else {
+            sector = sectors.find(s => s.code === naicsCode || s.code.startsWith(naicsCode) || naicsCode.startsWith(s.code));
+        }
 
         if (!sector) {
             container.innerHTML = '<p style="color:#666;">No USEEIO sector found matching NAICS ' + naicsCode + '.</p>';
@@ -696,7 +704,8 @@ async function loadImpactData(naicsCode) {
         });
 
         html += '</div>';
-        html += '<p style="font-size:12px; color:#999; margin-top:15px;">Impact values from USEEIO v2 model. Hover values for per-dollar coefficients. Data: U.S. EPA</p>';
+        const modelText = ioModel.state ? ioModel.state + ' state model (' + modelName + ')' : 'USEEIO v2 national model';
+        html += '<p style="font-size:12px; color:#999; margin-top:15px;">Impact values from the ' + escapeHtml(modelText) + '. Hover values for per-dollar coefficients. Data: U.S. EPA</p>';
 
         container.innerHTML = html;
 
@@ -704,6 +713,32 @@ async function loadImpactData(naicsCode) {
         console.error('[IndustryDetail] Error loading impact data:', error);
         container.innerHTML = '<p style="color:#666;">Could not load environmental impact data. <a href="' + webrootPath('/io/charts/inflow-outflow/') + '#naics=' + naicsCode + '" style="color:#007bff;">View in Inflow-Outflow Chart</a></p>';
     }
+}
+
+/**
+ * BEA summary codes for a NAICS code, the sector codes in the state models.
+ * Uses exact NAICS rows in sectorcrosswalk.csv, else the longest NAICS prefix of the code, else codes it contains.
+ * @param {string} naicsCode - The NAICS code
+ * @param {string} endpoint - Folder holding sectorcrosswalk.csv
+ */
+async function naicsToBeaSummary(naicsCode, endpoint) {
+    const response = await fetch(endpoint + '/sectorcrosswalk.csv');
+    if (!response.ok) return [];
+    const rows = (await response.text()).trim().split(/\r?\n/).map(line => line.split(',').map(v => v.replace(/^"|"$/g, '')));
+    const header = rows.shift() || [];
+    const naicsCol = header.indexOf('NAICS');
+    const summaryCol = header.indexOf('BEA_Summary');
+    if (naicsCol < 0 || summaryCol < 0) return [];
+    const code = String(naicsCode);
+    const codesFor = match => [...new Set(rows.filter(match).map(r => r[summaryCol]).filter(Boolean))];
+    let codes = codesFor(r => r[naicsCol] === code);
+    for (let len = code.length - 1; !codes.length && len >= 2; len--) {
+        codes = codesFor(r => r[naicsCol] === code.substring(0, len));
+    }
+    if (!codes.length) {
+        codes = codesFor(r => r[naicsCol].startsWith(code));
+    }
+    return codes;
 }
 
 /**

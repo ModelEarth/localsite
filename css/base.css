@@ -793,6 +793,32 @@ h6 {
 .dark .MuiIconButton-root {
   color: #fff;
 }
+/* Rows per page and page count, below the inflow-outflow grid */
+.dark .MuiTablePagination-root,
+.dark .MuiTablePagination-root .MuiTypography-root,
+.dark .MuiTablePagination-root .MuiSelect-icon {
+  color: #ccc;
+}
+.dark .MuiTablePagination-root .MuiIconButton-root.Mui-disabled {
+  color: rgba(255, 255, 255, 0.3);
+}
+/* Search field in the inflow-outflow grid */
+.dark #outlined-basic {
+  color: #fff;
+}
+.dark #outlined-basic::placeholder {
+  color: #aaa;
+}
+.dark .MuiFormLabel-root[for="outlined-basic"],
+.dark .MuiFormLabel-root[for="outlined-basic"].Mui-focused {
+  color: #bbb;
+}
+.dark .MuiOutlinedInput-root:has(#outlined-basic) .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+.dark .MuiOutlinedInput-root:has(#outlined-basic):hover .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.6);
+}
 .dark .sector-list a, .dark .sector-list a:visited {
   color: #fff;
 }
@@ -811,8 +837,16 @@ h6 {
   background-color: #000;
   color: #fff;
 }
-.dark .tabulator .tabulator-header .tabulator-col:hover {
+.dark .tabulator .tabulator-header .tabulator-col:hover,
+.dark .tabulator .tabulator-header .tabulator-col.tabulator-sortable.tabulator-col-sorter-element:hover { /* Beats the #cdcdcd hover in tabulator.min.css */
   background-color: #555;
+}
+.dark .tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort=none] .tabulator-col-content .tabulator-col-sorter.tabulator-col-sorter-element .tabulator-arrow:hover,
+.dark .tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort=ascending] .tabulator-col-content .tabulator-col-sorter.tabulator-col-sorter-element .tabulator-arrow:hover {
+  border-bottom-color: #ccc; /* The #555 sort arrow otherwise vanishes on the #555 hover */
+}
+.dark .tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort=descending] .tabulator-col-content .tabulator-col-sorter.tabulator-col-sorter-element .tabulator-arrow:hover {
+  border-top-color: #ccc;
 }
 sup {
   line-height: 0.8em;
@@ -1216,8 +1250,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 }
 #hero-rect {
   float: left;
-  background-color: rgba(255, 255, 255, 0.90);
-  background-color: rgba(0, 0, 0, 0.95);
+  background-color: rgba(33, 33, 33, 0.85); /* Matches #hero-mini */
   border-radius: 40px;
   max-width: 600px;
   padding: 30px 50px 25px 50px;

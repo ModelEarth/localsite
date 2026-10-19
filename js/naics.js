@@ -39,6 +39,11 @@ initialWidgetLoad();
 if (typeof hiddenhash == 'undefined') {
     var hiddenhash = {}; // Use var only. Declaired in localsite.js
 }
+// The indicators for an impact set, or the default indicators without a set. A function, since initialWidgetLoad() runs before top-level assignments.
+function setIndicators(set) {
+    return (typeof impactSetIndicators === 'function' && impactSetIndicators(set))
+        || "ACID,ETOX,EUTR,GHG,HTOX,LAND,OZON,PEST,SMOG,WATR";
+}
 function initialWidgetLoad() {
     let hash = getHash();
     if (hash.catyear) {
@@ -53,16 +58,10 @@ function initialWidgetLoad() {
     }
     if (!hash.indicators) {
         // A set without indicators (set=land) gets its indicators from the shared list in impact-sets.js
-        hiddenhash.indicators = (typeof impactSetIndicators === 'function' && impactSetIndicators(hash.set))
-            || "ACID,ETOX,EUTR,GHG,HTOX,LAND,OZON,PEST,SMOG,WATR";
+        hiddenhash.indicators = setIndicators(hash.set);
     }
     refreshNaicsWidget(true);
-    onElmReady('#sectorListTitles', function() {
-        onElmReady('#sector-list .sector-list-table', function() {
-            $("#sectorListTitles").prependTo($("#sector-list > div"));
-            $("<style>#sector-list > div { margin-top:50px !important}</style>").prependTo($("#sector-list > div"));
-        });
-    });
+    // applyIO() places the #sectorListTitles in each new mosaic view
 }
 
 // remove refresh 1 and refresh 3
@@ -130,13 +129,34 @@ function refreshNaicsWidget(initialLoad) {
             });
             $(".impactIcons div:contains(" + capitalizeSetName + ")").addClass("active");
         }
+        // The indicators follow the set when it changes or is removed: the URL's indicators when they're the prior set's
+        // (from the set menus), or the hiddenhash indicators for a set without indicators in the URL (#set=energy).
+        if (!initialLoad) {
+            const hashOnly = getHashOnly();
+            if (priorHash_naicspage.set && hashOnly.indicators && hashOnly.indicators == setIndicators(priorHash_naicspage.set)) {
+                goHashQuiet({}, ['indicators']);
+            }
+            const urlIndicators = getHashOnly().indicators;
+            const nextIndicators = urlIndicators || setIndicators(hash.set);
+            if (nextIndicators != hiddenhash.indicators) {
+                hiddenhash.indicators = nextIndicators;
+                onElmReady('#indicators', function() {
+                    $("#indicators").val(nextIndicators);
+                });
+                // The widgets follow indicators in the URL themselves, but not hiddenhash indicators
+                if (!urlIndicators) {
+                    applyIO(hiddenhash.naics || ""); // Redraw the inflow-outflow grid and mosaic
+                }
+            }
+        }
     }
 
     // Exit if no change to: county (geo) or state.
     if (!initialLoad) {
         if (!(hash.geo != priorHash_naicspage.geo || hash.state != priorHash_naicspage.state)) {
             // Check if display settings changed (catyear, catsort, catsize)
-            let displayChanged = hash.catyear != priorHash_naicspage.catyear || hash.catsort != priorHash_naicspage.catsort || hash.catsize != priorHash_naicspage.catsize;
+            let displayChanged = hash.catyear != priorHash_naicspage.catyear || hash.catsort != priorHash_naicspage.catsort || hash.catsize != priorHash_naicspage.catsize
+                || hash.catmethod != priorHash_naicspage.catmethod; // The estimate method for unpublished values
             if (!displayChanged) {
                 priorHash_naicspage = $.extend(true, {}, getHash());
                 initialNaicsLoad = false;
@@ -234,6 +254,8 @@ function refreshNaicsWidget(initialLoad) {
         displaySettingsOnly = true;
     } else if (hash.catsort != priorHash_naicspage.catsort) {
         displaySettingsOnly = true;
+    } else if (hash.catmethod != priorHash_naicspage.catmethod) {
+        loadNAICS = true; // Rebuild the industry list with the estimate method for unpublished values
     } else if (hash.x != priorHash_naicspage.x || hash.y != priorHash_naicspage.y || hash.z != priorHash_naicspage.z) {
         loadNAICS = true; // Bubblechart axis change.
         //alert("xyz changed")
@@ -385,7 +407,7 @@ function refreshNaicsWidget(initialLoad) {
         }
 
         // v2
-        if ((location.host.indexOf('localhost') >= 0 || hash.beta == "true") || location.href.indexOf('/info/naics/') >= 0 || location.host.indexOf('github.io') >= 0) {
+        if (location.host.indexOf('localhost') >= 0 || location.href.indexOf('/info/naics/') >= 0 || location.host.indexOf('github.io') >= 0) {
             $("#industryTableHolder").show();
             $("#sectorTableHolder").show();
             if (hash.catsize == "6") {
@@ -1407,10 +1429,6 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                 if (hash.state) {
                             hash.state = hash.state.split(",").filter(s => s.length === 2).join(","); // Remove if not 2-char, including state=all
         stateAbbr = hash.state.split(",")[0].toUpperCase();
-                } else {
-                    if (hash.beta != "true") {
-                        //stateAbbr = "GA"; // Temp HACK to show US
-                    }
                 }
                 if (hash.catsort=="payann"){
                     totalLabel = "Total Payroll ($)";
@@ -1713,11 +1731,28 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                         }
                         consoleLog("NAICS count: top " + naicsRowCount + " displayed out of " + top_data_ids.length);
                         if (naicsRowCount > 0) {
-                            lowerMessage += "Purple&nbsp;text&nbsp;indicates approximated values. List does not yet include data for industries without state-level payroll reporting by BLS or BEA. - <a href='" + localsitePath('info/data/') + "'>More&nbsp;Details</a>";
-                            
+                            lowerMessage += "List does not yet include data for industries without state-level payroll reporting by BLS or BEA. - <a href='" + localsitePath('info/data/') + "'>More&nbsp;Details</a>";
+
+                            // Legend for the purple (#9933aa) values, which are estimates for figures the Census doesn't publish.
+                            // Its method dropdown matches #catmethod, which the settings panel only shows for counties.
+                            // The legend stays when unpublished values are left blank, so the method can be changed back.
+                            let legend = "";
+                            const hasEstimates = text.indexOf("9933aa") >= 0;
+                            if (hasEstimates || hash.catmethod == 0) {
+                                const catmethod = hash.catmethod == 0 || hash.catmethod == 2 ? String(hash.catmethod) : "1";
+                                const methods = [["1", "Average of payrolls not assigned to counties"], ["2", "Average of all state payrolls (less accurate)"], ["0", "Leave unpublished values blank"]];
+                                const methodSelect = "<select class='picklist sectorListMethod' aria-label='Estimate method' onchange=\"goHash({'catmethod':this.value});\">"
+                                    + methods.map(m => "<option value='" + m[0] + "'" + (m[0] === catmethod ? " selected" : "") + ">" + m[1] + "</option>").join("") + "</select>";
+                                legend = "<div class='sectorListLegend'>"
+                                    + (hasEstimates ? "<span class='sectorListLegendSwatch'>Purple</span> values are estimates. " : "")
+                                    + "The Census withholds some county and state figures to protect individual businesses."
+                                    + (hasEstimates ? "" : " These are left blank.")
+                                    + " <span style='white-space:nowrap'>Estimate method:</span> " + methodSelect + "</div>";
+                            }
+
                             onElmReady('#econ_list', function() {
                                 $("#top-content-columns").show();
-                                $("#econ_list").html("<div id='sector_list'>" + text + "</div><br><p style='font-size:13px'>" + lowerMessage + "</p>");
+                                $("#econ_list").html(legend + "<div id='sector_list'>" + text + "</div><br><p style='font-size:13px'>" + lowerMessage + "</p>");
                             });
                         }
                         $("#econ_list").show(); 
@@ -2135,174 +2170,247 @@ function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value)
 }
 
+// The model for the hash: the first state's model (16 indicators), or the national model (23 indicators) in io/build/api,
+// also used for DC, PR and territories. The constants are inside the function because initialWidgetLoad() calls
+// applyIO() near the top of this file, before top-level assignments here have run.
+function ioModelSettings(hash) {
+    // All 50 states have models. Same source as profile/footprint/js/config.js
+    const stateEndpoint = 'https://raw.githubusercontent.com/ModelEarth/useeio-json/main/models/2020';
+    const stateModels = "AK,AL,AR,AZ,CA,CO,CT,DE,FL,GA,HI,IA,ID,IL,IN,KS,KY,LA,MA,MD,ME,MI,MN,MO,MS,MT,NC,ND,NE,NH,NJ,NM,NV,NY,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VA,VT,WA,WI,WV,WY".split(",");
+    const state = String(hash.state || "").split(",")[0].trim().toUpperCase();
+    if (stateModels.includes(state)) {
+        return {state: state, endpoint: stateEndpoint, modelID: state + "EEIOv1.0-s-20"};
+    }
+    return {state: "", endpoint: webrootPath("/io/build/api"), modelID: "USEEIOv2.0.1-411"};
+}
+
+// A useeio_widgets model with two fixes for state models, made on this instance so the built bundle stays unchanged:
+// 1. The bundle sets a Content-Type header on every request. GitHub raw refuses the CORS preflight that causes,
+//    so GET requests are sent without it.
+// 2. State models list sectorschema BEA_2012_Summary_Code, which matches no sectorcrosswalk.csv column, so the
+//    NAICS filter found no sectors. BEA_Summary is the crosswalk column holding the same codes (111CA, 211, ...).
+function ioWidgetModel(settings, modelID) {
+    const model = useeio.model({
+        endpoint: settings.endpoint,
+        model: modelID,
+        asJsonFiles: true
+    });
+    if (model.api && typeof model.api._request === 'function') {
+        model.api._request = function(method, url) {
+            const req = new XMLHttpRequest();
+            req.open(method, url);
+            if (method !== "GET") {
+                req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            }
+            return req;
+        };
+    }
+    if (settings.state && typeof model.info === 'function') {
+        const modelInfo = model.info.bind(model);
+        model.info = function() {
+            return modelInfo().then(info => Object.assign({}, info, {sectorschema: "BEA_Summary"}));
+        };
+    }
+    return model;
+}
+
+// The inflow-outflow grid's multi-regional branch (state models: US-ST and RoUS sectors) adds the direct impacts (D)
+// into its A matrix rather than directImpacts. directImpacts stays zero, so each impact bar's share is 0/0 and the
+// bars draw full width. This rebuilds both on the grid instance after it initializes, leaving the bundle unchanged:
+// columns (buyers) from the state's own sectors, and rows (suppliers) from both the state and the rest of the US.
+function fixIoGridForStateModel(ioGrid, model, state) {
+    if (!state || typeof ioGrid.initialize !== 'function') return;
+    const initialize = ioGrid.initialize.bind(ioGrid);
+    ioGrid.initialize = function() {
+        return initialize().then(function() {
+            return Promise.all([model.isMultiRegional(), model.sectors(), model.matrix("A"), model.matrix("D"), model.singleRegionSectors()]);
+        }).then(function(loaded) {
+            const [isMultiRegional, rawSectors, rawA, rawD, aggregation] = loaded;
+            if (!isMultiRegional) return;
+            const index = aggregation.index;
+            const n = aggregation.sectors.length;
+            const A = ioGrid.techMatrix;
+            const D = ioGrid.directImpacts;
+            for (let row = 0; row < n; row++) {
+                for (let col = 0; col < n; col++) A.set(row, col, 0);
+            }
+            for (let i = 0; i < rawD.rows; i++) {
+                for (let col = 0; col < n; col++) D.set(i, col, 0);
+            }
+            const location = "US-" + state;
+            rawSectors.forEach(function(buyer, rawCol) {
+                if (buyer.location !== location) return;
+                const col = index[buyer.code];
+                if (col === undefined) return;
+                rawSectors.forEach(function(supplier, rawRow) {
+                    const val = rawA.get(rawRow, rawCol);
+                    const row = index[supplier.code];
+                    if (val && row !== undefined) A.set(row, col, A.get(row, col) + val);
+                });
+                for (let i = 0; i < rawD.rows; i++) {
+                    D.set(i, col, rawD.get(i, rawCol));
+                }
+            });
+        });
+    };
+}
+
+// Narrow the "Specific impact areas" dropdown to the model's indicators. Groups keep only the codes the model has.
+function syncIndicatorSelect(codes) {
+    onElmReady('#indicators', function() {
+        $("#indicators option").each(function() {
+            if (this.dataset.codes === undefined) {
+                this.dataset.codes = this.value; // The full list, before narrowing
+            }
+            if (!this.dataset.codes) return; // "Specific impact areas..."
+            const available = this.dataset.codes.split(",").filter(code => codes.includes(code));
+            this.value = available.join(",");
+            this.hidden = !available.length;
+            this.disabled = !available.length;
+        });
+    });
+}
+
+// Replace the widget view inside a container (#iogrid or #sector-list) with an empty one and return its selector.
+// Widgets from a prior applyIO() call that are still rendering no longer find their view.
+function newWidgetView(containerSelector, viewId) {
+    const container = document.querySelector(containerSelector);
+    if (!container) return containerSelector;
+    // Keep the Impact Levels title, which resides inside the mosaic view, by moving it before the container
+    const titles = document.getElementById('sectorListTitles');
+    if (titles && container.contains(titles)) {
+        container.parentNode.insertBefore(titles, container);
+    }
+    container.innerHTML = '';
+    const view = document.createElement('div');
+    view.id = viewId;
+    container.appendChild(view);
+    return '#' + viewId;
+}
+
 function applyIO(naics) {
     // Built from useeio-widgets/src/widgets/config.ts
     // Minified file resides at io/build/lib/useeio_widgets.js
-    //naics = {}; // Kill it
     let hash = getHash(); // Includes hiddenhash
     var config = useeio.urlConfig();
-    let endpoint = webrootPath("/io/build/api");
-    // Change && to || in these two lines to test locally.
-    if (hash.beta == "true") {
-        endpoint = webrootPath("/profile/impacts/2020");
+    // The state's model whenever a state is in the hash: 73 BEA summary sectors (state and Rest of US) and 16 indicators.
+    // The national model has 411 sectors and 23 indicators.
+    const ioModel = ioModelSettings(hash);
+    var modelID = config.get().model || ioModel.modelID;
+    if (param.iomodel) {
+        modelID = param.iomodel;
     }
-    let theModel = 'USEEIOv2.0.1-411';
-    if (hash.beta == "true") {
-        if (hash.state) { // Prior to 2024 states were GA, ME, MN, OR, WA
-        
-            let thestate = hash.state.split(",")[0].toUpperCase();
-            theModel = thestate + "EEIOv1.0-s-20"
-
-            //naics = ""; // TEMP. 
-
-            // With transition to 73 Sectors the Naics are not in the models.
-            console.log("BETA BUG " + theModel + " with transition to 73 Sectors. Model:\r" + endpoint + "/" + theModel + "\rApplyIO heatmap with naics: " + naics);
-        }
-    }
-    //alert(theModel)
-    var modelID = config.get().model || theModel;
 
     consoleLog("modelID " + modelID + " - ApplyIO heatmap with naics: " + naics);
-    //alert("modelID " + modelID + " - ApplyIO heatmap with naics: " + naics);
-    
-    var naicsCodes;
+
     if (naics) {
-        naicsCodes = naics.split(',');
-        
         // Major delay - occur after prior hash is set
         hiddenhash.naics = naics;
 
-        //alert("hiddenhash.naics 2: " + hiddenhash.naics)
-
-        ////hiddenhash.naics = naicsCodes; // Causes split error in bubble chart.
-
         // HACK - we might use localStorage instead
         priorHash_naicspage = $.extend(true, {}, getHash()); // Clone/copy object without entanglement
-
-
-    }
-    //hiddenhash.naics = {}; // Kill it
-
-    if (!hash.state && !param.state) {
-        //console.log("Show national by clearing hiddenhash.naics.")
-        // Clear to show national heatmap mosaic and input-output chart.
-        //delete hiddenhash.naics;
     }
 
     var indicators = "";
-    //let hash = getHash();
     if (hash.indicators) {
         indicators = hash.indicators;
         hiddenhash.indicators = hash.indicators;
     }
-
     var indicatorCodes = indicators.split(',');
 
+    var model = ioWidgetModel(ioModel, modelID);
 
-    if (param.iomodel) {
-        modelID = param.iomodel;
+    // Each call creates a new urlConfig. Widgets joined by an earlier call stop following hash changes,
+    // otherwise they redraw the prior model (national or another state) over this one.
+    if (window.ioWidgetConfig && Array.isArray(window.ioWidgetConfig.widgets)) {
+        window.ioWidgetConfig.widgets.length = 0;
     }
-    var model = useeio.model({
-        endpoint: endpoint,
-        model: modelID,
-        asJsonFiles: true
+    window.ioWidgetConfig = config;
+
+    // The heatmap mosaic shows every indicator in the model: 23 national or 16 for a state.
+    // Its built-in default list omits HCAN, HNCN, NNRG, RNRG and CCDD.
+    Promise.all([model.indicators(), new Promise(resolve => onElmReady('#sector-list', resolve))]).then(function(loaded) {
+        if (config !== window.ioWidgetConfig) return; // A newer applyIO call replaced this one
+        const modelIndicators = loaded[0];
+        const modelCodes = (modelIndicators || []).map(i => i.code);
+        syncIndicatorSelect(modelCodes);
+        const modelLabel = (ioModel.state ? ioModel.state + " state model " : "US national model ") + modelID + " with " + modelCodes.length + " indicators";
+        onElmReady('.ioModelName', function() {
+            $(".ioModelName").text(modelLabel);
+        });
+
+        // New containers for each call, so React mounts these widgets rather than reconciling them with the
+        // prior call's widgets. Going from the national model to a state threw React error #300 in the mosaic.
+        const viewCount = window.ioWidgetViewCount = (window.ioWidgetViewCount || 0) + 1;
+        const iogridSelector = newWidgetView('#iogrid', 'iogrid-view-' + viewCount);
+        const sectorListSelector = newWidgetView('#sector-list', 'sector-list-view-' + viewCount);
+
+        var ioGrid = useeio.ioGrid({
+            model: model,
+            selector: iogridSelector,
+            indicators: indicatorCodes,
+        });
+        fixIoGridForStateModel(ioGrid, model, ioModel.state);
+        config.withDefaults({
+            count: 20,
+            view_indicators: modelCodes,
+        })
+        config.join(ioGrid);
+
+        var sectorList = useeio.sectorList({
+            model: model,
+            selector: sectorListSelector,
+        });
+        console.log("sectorList - applyIO() " + modelID + " with " + modelCodes.length + " indicators");
+
+        config.withDefaults({
+            view: ["mosaic"],
+            count: 50,
+            view_indicators: modelCodes,
+        })
+        // Displays mosaic. BUG: may drop hash values when entering via a URL (only works when hash changes in a page already loaded).
+        config.join(sectorList);
+
+        // The Impact Levels title goes inside the mosaic, above its search field
+        onElmReady(sectorListSelector + ' .sector-list-table', function() {
+            $("#sectorListTitles").prependTo($(sectorListSelector + " > div").first());
+        });
+    }).catch(function(error) {
+        console.warn("applyIO: unable to load indicators for " + modelID, error);
     });
-    var ioGrid = useeio.ioGrid({
-        model: model,
-        selector: '#iogrid',
-        indicators: indicatorCodes,
-    });
-    config.withDefaults({
-        count: 20,
-    })
-    config.join(ioGrid);
-
-    var sectorList = useeio.sectorList({
-        model: model,
-        selector: '#sector-list',
-    });
-    
-    //alert("hiddenhash.naics " + hiddenhash.naics);
-    //hiddenhash.naics = {}; // Kill it
-
-    if (typeof sectorList.config != "undefined") {
-        //sectorList.config.naics = {}; // Kill it
-    }
-    console.log("sectorList - applyIO() impact indicators and sectors for Supply Chain inflow-outflow chart:");
-    console.log(sectorList);
-
-
-    config.withDefaults({
-        view: ["mosaic"],
-        count: 50,
-        //naics: naicsCodes,
-        //sectors: useeio.toBEA(naicsCodes),
-        //naics: naics,
-        //sectors: useeio.toBEA(naics),
-    })
-    // Neither of the above naics attempts works for second state loaded.
-    
-    console.log("sectorList");
-    console.log(sectorList);
-
-    if (hash.beta == "true") {
-        if (hash.state && location.host.indexOf('localhost') >= 0) {
-            alert("BUG (message on localhost): sectorList React drops state " + JSON.stringify(sectorList, null, 2));
-        } else if (location.host.indexOf('localhost') >= 0) {
-
-            alert("localhost: sectorList " + JSON.stringify(sectorList, null, 2));
-        }
-        alert("HASH GETS CLEARED by call applyIO with naics " + naicshash)
-        config.join(sectorList); // BUG BUG - Dumps hash state and geoview - Comment out to preserve state, but you'll lose the mosaic heatmap.
-    } else {
-
-        // Displays mosaic - but dumps hash from URL (when hitting reload, or entering via a URL)
-        config.join(sectorList); // BUG BUG - Only works when hash changes in page already loaded.
-
-        // Alternative that preserves state
-        //config.join(); // Doesn't work for passing sectorList
-    }
 }
 
-// New 73 Sectors
+// Sector table: the state model's 73 sectors (without Rest of US), or the national model's 411 sectors
+let epaSectorsModelID = "";
 getEpaSectors();
-function getEpaSectors() {
-    let hash = getHash();
-    // sectorsJsonFile is not used
-    let sectorsJsonFile = webrootPath("/io/build/api/USEEIOv2.0.1-411/sectors.json"); // 411 sectors
-    if (hash.beta == "true") {
-        if (hash.state) {
-            let thestate = hash.state.split(",")[0].toUpperCase();
-            theModel = thestate + "EEIOv1.0-s-20"
-            // if (hash.state == "GA" || hash.state == "ME") {
-            sectorsJsonFile = webrootPath("/profile/impacts/2020/" + theModel + "/sectors.json"); // 146/2 = 73
-            //alert(thestate + " sectorsJsonFile " + sectorsJsonFile);
-        }
+document.addEventListener('hashChangeEvent', function() {
+    if (ioModelSettings(getHash()).modelID !== epaSectorsModelID) {
+        getEpaSectors();
     }
+}, false);
+function getEpaSectors() {
+    const ioModel = ioModelSettings(getHash());
+    epaSectorsModelID = ioModel.modelID;
+    let sectorsJsonFile = ioModel.endpoint + "/" + ioModel.modelID + "/sectors.json";
     onElmReady('#tabulator-sectortable-intro', function() {
         $("#tabulator-sectortable-intro").text("#tabulator-sectortable - " + sectorsJsonFile)
     });
-    let promises = [
-        d3.json(sectorsJsonFile, function(d) {
-            // Not reached, so commenting out. But the above line is needed.
-            //epaSectors.set(d.id, d.index, d.name, d.code, d.location, d.description);
-            //alert("epaSectors");
-            //return d;
-        })
-    ]
-    Promise.all(promises).then(sectorsPromisesReady);
-    function sectorsPromisesReady(values) { // Wait for sectors json
-        // Returns Residential building repair and maintanence
-        //alert(epaSectors.get("230302/US"));
-        localObject.epaSectors = values[0]; // 73 EPA sectors
+    d3.json(sectorsJsonFile).then(function(sectors) {
+        if (ioModel.modelID !== epaSectorsModelID) return; // The state changed while loading
 
-        // Remove duplicates using filter() method to remove objects with a "location" equal to "RoUS" (Rest of US)
-        localObject.epaSectors = localObject.epaSectors.filter(obj => obj.location !== "RoUS");
+        // Remove the Rest of US (RoUS) duplicates in state models
+        localObject.epaSectors = sectors.filter(obj => obj.location !== "RoUS");
 
         console.log("localObject.epaSectors");
         console.log(localObject.epaSectors);
-        showSectorTabulatorList(0);
-    }
+        if (sectortable && typeof sectortable.setData === 'function') {
+            sectortable.setData(localObject.epaSectors);
+        } else {
+            showSectorTabulatorList(0);
+        }
+    }).catch(function(error) {
+        console.warn("getEpaSectors: unable to load " + sectorsJsonFile, error);
+    });
 }
 
 var sectortable = {};

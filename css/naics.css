@@ -6,6 +6,25 @@
 	overflow-x: scroll;
 	overflow: auto;
 }
+/* Above #sector_list when it has purple estimated values (naics.js) */
+.sectorListLegend {
+	font-size: 13px;
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+.sectorListLegend .sectorListMethod {
+	font-size: 13px;
+	min-height: 26px;
+	max-width: 100%;
+	margin-top: 4px;
+}
+.sectorListLegendSwatch {
+	color: #9933aa;
+	font-weight: 600;
+}
+.dark .sectorListLegendSwatch {
+	color: #d9a3f0; /* Matches the dark purple values below */
+}
 #sector_list {
 	display: table;
 	width: 100%;

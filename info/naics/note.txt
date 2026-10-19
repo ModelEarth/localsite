@@ -1,3 +1,3 @@
 # NAICS
 
-[New NAICS Data for location Industry Comparisons](../#state=ny&beta=true) - Appears at bottom. (Note: middle column in Supply Chain is blank in new state models.)
+[New NAICS Data for location Industry Comparisons](../#state=NY) - Appears at bottom. (Note: middle column in Supply Chain is blank in new state models.)

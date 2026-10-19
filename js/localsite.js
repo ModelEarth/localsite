@@ -2190,6 +2190,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
               loadScript(theroot + 'js/impact-sets.js', function() { // Impact set titles and indicators for naics.js
                 loadScript(theroot + 'js/naics.js', function(results) {
                   console.log("everything");
+                  loadScript(theroot + '../profile/js/state-energy.js'); // eGRID energy view for set=energy
                 });
               });
             });

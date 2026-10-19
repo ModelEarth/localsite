@@ -16,8 +16,9 @@ var impactSets = [
   { id: 'air', title: 'Air', heading: 'Air and Climate', indicators: ['GHG', 'GCC', 'MGHG', 'OGHG', 'HRSP', 'OZON', 'SMOG', 'HAPS'] },
   { id: 'water', title: 'Water', heading: 'Water Use and Quality', indicators: ['WATR', 'ACID', 'EUTR', 'ETOX'] },
   { id: 'land', title: 'Land', heading: 'Land Use', indicators: ['LAND', 'MNRL', 'PEST', 'METL', 'CRHW', 'CMSW', 'FMSW', 'CCDD'] },
-  // Energy indicators are only in the national model (USEEIO), not the state models
-  { id: 'energy', title: 'Energy (US)', heading: 'Energy Use', indicators: ['ENRG', 'NNRG', 'RNRG'] },
+  // Energy indicators are only in the national model (USEEIO), not the state models. With a state, localsite/info
+  // shows eGRID electricity data (profile/js/state-energy.js) and profile/footprint switches to the national model.
+  { id: 'energy', title: 'Energy', heading: 'Energy Use', indicators: ['ENRG', 'NNRG', 'RNRG'] },
   { id: 'health', title: 'Health', heading: 'Health Impact', indicators: ['HTOX', 'HCAN', 'HNCN', 'HRSP'] },
   { id: 'prosperity', title: 'Prosperity', heading: 'Jobs and Value Added', indicators: ['VADD', 'JOBS'] }
 ];
