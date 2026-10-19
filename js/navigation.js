@@ -3582,6 +3582,9 @@ if (typeof $ !== 'undefined') {
             goHash({"geoview":""});
             return;
         }
+        if (value == "earth") {
+            window.scrollTo({top: 0, behavior: "instant"}); // Jump up to the Earth display rather than animating the scroll
+        }
         if (value == "countries" || value == "earth") {
             hiddenhash.state = "";
             goHash({"geoview":value,"state":"",});
@@ -3942,6 +3945,7 @@ if (typeof $ !== 'undefined') {
                 style.textContent = [
                     '#state_select_holder #state_select { display: none; }',
                     '#state_quick_list {',
+                    '  clear: both;', // Below the floated #state_select_holder (#usregion_holder and #state_select)
                     '  margin-top: 4px;',
                     '  max-height: 350px;',
                     '  overflow-y: scroll;',
@@ -10464,9 +10468,11 @@ function openMapLocationFilter() {
 
     waitForElm('#filterLocations').then((elm) => {
         $("#filterLocations").prependTo($("#locationFilterHolder")); // Move back from rightSideTabs
-        $('html,body').animate({
-            scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
-        });
+        if (!$("#draggableSearch").is(":visible")) { // The page stays put while choosing in the .popAdvanced popup
+            $('html,body').animate({
+                scrollTop: $("#filterLocations").offset().top - $("#headerbar").height() - $("#filterFieldsHolder").height()
+            });
+        }
     });
     if (location.host == 'georgia.org' || location.host == 'georgia.org') { 
         $("#header.nav-up").show();
@@ -10526,6 +10532,13 @@ $('.sidecolumnLeft a').click(function(event) {
 
 if (1==1) {
 $(window).scroll(function() {
+  if ($("#draggableSearch").is(":visible")) {
+    // The header stays as is while the .popAdvanced popup is open. Choosing a state there reloads content,
+    // and the resulting scroll position change otherwise toggled .filterFieldsHolderFixed, moving the page.
+    previousScrollTop = $(window).scrollTop();
+    lockSidemap(mapFixed);
+    return;
+  }
   if (revealHeader == false) {
     $("#headerLarge").addClass("headerLargeHide"); $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
     $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
