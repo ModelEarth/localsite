@@ -758,6 +758,7 @@ function loadIndustryData(hash, skipUIReset) {
 
         //alert("no state") // applyIO will update to US industry charts
         applyIO(""); // Loads "Supply Chain Inflow-Outflow" for entire US.
+        setNationalTopNaics(hash); // Red bubbles in the bubble chart
 
         //console.log("ALERT - Hid bubble chart until we send it 73 sectors")
         //$("#bubble-graph-id").hide();
@@ -784,6 +785,40 @@ function loadIndustryData(hash, skipUIReset) {
         ]
         Promise.all(promises).then(promisesReady);
     }
+}
+// With no state, the bubble chart's red bubbles show the top national industries: the US-census-naics rows
+// (localObject.industryCounties, also in the Area Industries table) summed across the states, sorted by
+// hash.catsort and limited to nationalTopNaicsCount. The state's top list has 21 (naicshash in topRatesInFips),
+// but the national model's 411 sectors are finer, and several top naics can share a sector, so more are highlighted.
+// A topic (hash.show) keeps its own naics list, and a naics in the URL is a single industry.
+const nationalTopNaicsCount = 50;
+function setNationalTopNaics(hash) {
+    if (hash.state || hash.show || getHashOnly().naics) return;
+    const dataFile = getIndustryLocFileString(hash.catsize || 6);
+    const rowsReady = (localObject.industryCounties && localObject.industryCountiesFile === dataFile)
+        ? Promise.resolve(localObject.industryCounties)
+        : d3.csv(dataFile);
+    rowsReady.then(function(rows) {
+        const current = getHash();
+        if (current.state || current.show || getHashOnly().naics) return; // Changed while loading
+        const field = {"payann":"Payroll", "emp":"Employees", "estab":"Establishments"}[current.catsort || "payann"] || "Payroll";
+        const totals = {};
+        rows.forEach(function(row) {
+            if (!row.Naics) return;
+            totals[row.Naics] = (totals[row.Naics] || 0) + (Number(row[field]) || 0);
+        });
+        const topNaics = Object.keys(totals).sort((a, b) => totals[b] - totals[a]).slice(0, nationalTopNaicsCount);
+        if (!topNaics.length) return;
+        console.log("National top naics for the bubble chart, by " + field + ": " + topNaics.join(","));
+        updateHiddenhash({"naics": topNaics.join(",")});
+        onElmReady('#bubble-graph-id', function() {
+            if (typeof toggleBubbleHighlights === 'function') {
+                toggleBubbleHighlights(getHash()); // Includes hiddenhash.naics
+            }
+        });
+    }).catch(function(error) {
+        console.warn("setNationalTopNaics could not load " + dataFile, error);
+    });
 }
 function promisesReady(values) {
     //let hash = getHash();
@@ -2829,6 +2864,7 @@ function callPromises(industryLocDataFile) { // From naics2.js
 
         // TO DO: Append here for multiple states
         localObject.industryCounties = values[1]; // Exceeds 40,000
+        localObject.industryCountiesFile = industryLocDataFile; // So setNationalTopNaics can reuse the rows
 
         // CGet industry titles using naics 'id' in localObject.industries
         const industryMap = new Map(localObject.industries.map(ind => [ind.id, ind.title]));
