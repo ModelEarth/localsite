@@ -469,6 +469,19 @@ body.dark {
     float: none;
   }
 }
+/* Select sizes. Large: #state_select. Medium: #usregion_select. The right padding leaves room for the arrow. */
+.select-lg {
+  font-size: 24px;
+  max-width: 300px;
+  padding: 10px;
+  border-radius: 20px;
+}
+.select-med {
+  font-size: 16px;
+  max-width: 300px;
+  padding: 6px 32px 6px 14px;
+  border-radius: 20px;
+}
 /* Shared select dropdown — shielded arrow prevents long text overlapping the chevron */
 .ls-select {
   -webkit-appearance: none;

@@ -56,8 +56,11 @@ function initialWidgetLoad() {
             $("#catsize").val(hash.catsize);
         });
     }
-    if (!hash.indicators) {
-        // A set without indicators (set=land) gets its indicators from the shared list in impact-sets.js
+    // With a set, the indicators come from the set (impact-sets.js) rather than the URL, so indicators=... is removed
+    if (hash.set && getHashOnly().indicators) {
+        goHashQuiet({}, ['indicators']);
+    }
+    if (hash.set || !getHashOnly().indicators) {
         hiddenhash.indicators = setIndicators(hash.set);
     }
     refreshNaicsWidget(true);
@@ -109,6 +112,11 @@ function refreshNaicsWidget(initialLoad) {
     //hiddenhash.naics is populated after changing state in hash, not on initial load (unless set in param.naics within page).
     //alert("refreshNaicsWidget() hiddenhash.naics: " + hiddenhash.naics);
 
+    // With a set, the indicators come from the set rather than the URL (older links can include both)
+    if (getHashOnly().set && getHashOnly().indicators) {
+        goHashQuiet({}, ['indicators']);
+        if (!initialLoad) hiddenhash.indicators = setIndicators(getHashOnly().set);
+    }
     let hash = getHash(); // Includes hiddenhash
 
     if (hash.set != priorHash_naicspage.set) {
@@ -129,13 +137,9 @@ function refreshNaicsWidget(initialLoad) {
             });
             $(".impactIcons div:contains(" + capitalizeSetName + ")").addClass("active");
         }
-        // The indicators follow the set when it changes or is removed: the URL's indicators when they're the prior set's
-        // (from the set menus), or the hiddenhash indicators for a set without indicators in the URL (#set=energy).
+        // The indicators follow the set when it changes or is removed: the set's indicators (hiddenhash, not the URL),
+        // the URL's own indicators without a set, or the default indicators.
         if (!initialLoad) {
-            const hashOnly = getHashOnly();
-            if (priorHash_naicspage.set && hashOnly.indicators && hashOnly.indicators == setIndicators(priorHash_naicspage.set)) {
-                goHashQuiet({}, ['indicators']);
-            }
             const urlIndicators = getHashOnly().indicators;
             const nextIndicators = urlIndicators || setIndicators(hash.set);
             if (nextIndicators != hiddenhash.indicators) {
@@ -2351,10 +2355,12 @@ function applyIO(naics) {
             indicators: indicatorCodes,
         });
         fixIoGridForStateModel(ioGrid, model, ioModel.state);
-        config.withDefaults({
+        // Indicators in hiddenhash (from hash.set) aren't in the URL the widgets read, so they go in the defaults
+        const defaultIndicators = !getHashOnly().indicators && indicators ? {indicators: indicatorCodes} : {};
+        config.withDefaults(Object.assign({
             count: 20,
             view_indicators: modelCodes,
-        })
+        }, defaultIndicators))
         config.join(ioGrid);
 
         var sectorList = useeio.sectorList({
@@ -2363,11 +2369,11 @@ function applyIO(naics) {
         });
         console.log("sectorList - applyIO() " + modelID + " with " + modelCodes.length + " indicators");
 
-        config.withDefaults({
+        config.withDefaults(Object.assign({
             view: ["mosaic"],
             count: 50,
             view_indicators: modelCodes,
-        })
+        }, defaultIndicators))
         // Displays mosaic. BUG: may drop hash values when entering via a URL (only works when hash changes in a page already loaded).
         config.join(sectorList);
 
@@ -2379,6 +2385,41 @@ function applyIO(naics) {
         console.warn("applyIO: unable to load indicators for " + modelID, error);
     });
 }
+
+// #chooseLocation: a button per state when hash.state has several. Clicking one moves that state to the front of
+// hash.state, which makes it the primary state (the first state's model and industry data). The first state is highlighted.
+function showChooseLocation() {
+    onElmReady('#chooseLocation', function(holder) {
+        const states = String(getHash().state || "").toUpperCase().split(",").map(st => st.trim()).filter(Boolean);
+        if (states.length < 2) {
+            holder.style.display = "none";
+            holder.innerHTML = "";
+            holder.dataset.order = "";
+            return;
+        }
+        // Keep the button order while the same states are in the hash, so moving one to the front doesn't reorder them
+        const prior = (holder.dataset.order || "").split(",").filter(Boolean);
+        const sameStates = prior.length === states.length && prior.slice().sort().join(",") === states.slice().sort().join(",");
+        const order = sameStates ? prior : states;
+        holder.dataset.order = order.join(",");
+        holder.innerHTML = order.map(function(st) {
+            const active = st === states[0];
+            const option = document.querySelector("#state_select option[value='" + st + "']");
+            const name = option && option.text ? option.text : st;
+            return "<button type='button' class='choose-location-btn" + (active ? " active" : "") + "' data-state='" + st + "'"
+                + " aria-pressed='" + active + "'>" + name + "</button>";
+        }).join("");
+        holder.style.display = "";
+    });
+}
+$(document).on("click", "#chooseLocation .choose-location-btn", function() {
+    const st = this.dataset.state;
+    const states = String(getHash().state || "").toUpperCase().split(",").map(s => s.trim()).filter(Boolean);
+    if (!st || states[0] === st) return;
+    goHash({'state': [st].concat(states.filter(s => s !== st)).join(",")});
+});
+document.addEventListener('hashChangeEvent', showChooseLocation);
+showChooseLocation();
 
 // Sector table: the state model's 73 sectors (without Rest of US), or the national model's 411 sectors
 let epaSectorsModelID = "";

@@ -1103,7 +1103,12 @@ document.addEventListener('mousedown', function(e) {
         <div id="geoPicker" class="content-color" style="display:none;">
           <div id="geomapHolder">
             <div class="hideAdvanced close-X hideinpop">&#10005;</div>
-            <label class="multipleStatesToggle local" style="display:none"><input type="checkbox" id="multipleStates"> Multiple States</label>
+            <!-- One shows at a time, for the map's view (navigation.js). Unchecked: map and row clicks select one location; table checkboxes add more. -->
+            <div class="multipleToggles local" style="display:none">
+              <label class="multipleToggle" data-kind="states"><input type="checkbox" id="multipleStates"> Multiple States</label>
+              <label class="multipleToggle" data-kind="counties" style="display:none"><input type="checkbox" id="multipleCounties"> Multiple Counties</label>
+              <label class="multipleToggle" data-kind="countries" style="display:none"><input type="checkbox" id="multipleCountries"> Multiple Countries</label>
+            </div>
             <!-- Must be displayed initiallly so tiles are visible -->
               <div id="geomap"></div>
           </div>

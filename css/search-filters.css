@@ -17,17 +17,58 @@
     margin-right: 6px;
     min-height: 34px;
 }
-.hero-bucket #state_select, #hero-rect #state_select {
-  font-size: 24px;
-  max-width: 300px;
-  padding: 10px;
-  border-radius: 20px;
-}
 .dark .hero-bucket #state_select, .dark #hero-rect #state_select {
   color: #fff;
 }
 #hero-rect #state_select  {
   background-color: #000;
+}
+/* US regions menu and Map button above #state_select (navigation.js keeps #usregion_holder there) */
+#usregion_holder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+/* Sizes from .select-med (base.css) */
+#usregion_holder:has(+ #state_select[style*="display: none"]) {
+  display: none; /* Hidden with the state menu, e.g. in the earth and countries views */
+}
+.hero-bucket #usregion_holder, #hero-rect #usregion_holder {
+  margin-bottom: 10px;
+}
+.usregion-map {
+  flex-shrink: 0;
+  font-size: 16px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid #444;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+}
+.usregion-map:hover, .usregion-map:focus-visible {
+  background-color: #eee;
+}
+#geoview_statelist .usregion-map { /* The map is already showing there */
+  display: none;
+}
+#geoview_statelist #state_select { /* The state list below it chooses states there */
+  display: none;
+}
+.dark .usregion-map, #hero-rect .usregion-map {
+  background-color: transparent;
+  border-color: #555;
+  color: #fff;
+}
+.dark .usregion-map:hover, .dark .usregion-map:focus-visible, #hero-rect .usregion-map:hover, #hero-rect .usregion-map:focus-visible {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+#hero-rect #usregion_select {
+  background-color: #000;
+}
+.dark .hero-bucket #usregion_select, .dark #hero-rect #usregion_select {
+  color: #fff;
 }
 .select-menu-arrow-holder {
     position:absolute; right:4px; top:4px;
@@ -674,29 +715,31 @@ input.filterClick[type="text"] {
 }
 #geomapHolder .hideAdvanced.close-X {
   position: absolute;
-  top: 4px;
-  right: 6px;
+  top: 8px;
+  left: 8px;
   padding: 0;
   margin: 0;
-  font-size: 14px;
-  color: #555;
-  width: 26px;
-  height: 26px;
+  font-size: 17px;
+  font-weight: 700;
+  -webkit-text-stroke: 0.7px currentColor; /* The ✕ glyph has one weight, so the stroke thickens it */
+  color: #fff;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
+  background-color: rgb(85, 85, 85);
   z-index: 1000;
 }
-.dark #geomapHolder .hideAdvanced.close-X {
-  background: rgba(34, 34, 34, 0.5);
-  color: #fff;
-}
-#geomapHolder .multipleStatesToggle {
+#geomapHolder .multipleToggles {
   position: absolute;
   top: 4px;
-  right: 40px;
+  right: 6px; /* The close X moved to the left */
+  z-index: 1000;
+}
+#geomapHolder .multipleToggle {
+  display: inline-block;
   margin: 0;
   padding: 3px 10px;
   font-size: 13px;
@@ -706,14 +749,13 @@ input.filterClick[type="text"] {
   border-radius: 13px;
   background-color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
-  z-index: 1000;
 }
-#geomapHolder .multipleStatesToggle input {
+#geomapHolder .multipleToggle input {
   margin: 0 4px 0 0;
   vertical-align: middle;
   cursor: pointer;
 }
-.dark #geomapHolder .multipleStatesToggle {
+.dark #geomapHolder .multipleToggle {
   background-color: rgba(34, 34, 34, 0.3);
   color: #fff;
 }

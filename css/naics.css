@@ -93,3 +93,41 @@
 .region_service {
 	font-weight:1000;
 }
+/* #chooseLocation: a button per state when the hash has several (naics.js). The primary (first) state is highlighted. */
+#chooseLocation {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 12px 0;
+}
+.choose-location-btn {
+	font-size: 14px;
+	padding: 5px 14px;
+	border-radius: 18px;
+	border: 1px solid #bbb;
+	background-color: #fff;
+	color: #333;
+	cursor: pointer;
+}
+.choose-location-btn:hover, .choose-location-btn:focus-visible {
+	background-color: #f0f0f0;
+}
+.choose-location-btn.active {
+	background-color: #235d39; /* --accent */
+	border-color: #235d39;
+	color: #fff;
+	font-weight: 600;
+}
+.dark .choose-location-btn {
+	background-color: transparent;
+	border-color: #555;
+	color: #eee;
+}
+.dark .choose-location-btn:hover, .dark .choose-location-btn:focus-visible {
+	background-color: rgba(255, 255, 255, 0.12);
+}
+.dark .choose-location-btn.active {
+	background-color: #66CF79;
+	border-color: #66CF79;
+	color: #111;
+}

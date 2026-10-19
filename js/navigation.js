@@ -105,8 +105,12 @@ function updateCountiesTabText() {
     }
     let geoIds = hash.geo.split(",").filter(Boolean);
     if (geoIds.length === 1) {
+        // One county shows its name, e.g. "Fulton County". localObject.geo names include the state ("Fulton County, GA").
+        // Until the county data loads, the tab shows "1 County", then the name once the data arrives (below).
         let match = localObject.geo && localObject.geo.find(function(row) { return row.id === geoIds[0]; });
-        $(".countiesTabText").text(match && match.name ? match.name : "1 County");
+        let countyName = match && match.name ? match.name.split(",")[0].trim() : "";
+        if (countyName && !/ County$/i.test(countyName)) countyName += " County";
+        $(".countiesTabText").text(countyName || "1 County");
     } else if (geoIds.length > 1) {
         $(".countiesTabText").text(geoIds.length + " Counties");
     } else {
@@ -121,28 +125,47 @@ function hashStateList(hash) {
 function hashHasSpecificState(hash) {
     return hashStateList(hash).length > 0;
 }
-// "Multiple States" checkbox in #geomapHolder (local only for now).
-// Unchecked: a map click selects only that state. Checked: map clicks add and remove states.
-function multipleStatesChecked() {
-    const checkbox = document.getElementById("multipleStates");
+// "Multiple States", "Multiple Counties" and "Multiple Countries" checkboxes in #geomapHolder (local only for now).
+// Unchecked: a map click or table row click selects only that location. Checked: map clicks add and remove locations.
+// The table checkboxes always add locations, and check the box once there are two.
+const multipleToggleIds = {states: "multipleStates", counties: "multipleCounties", countries: "multipleCountries"};
+function multipleChecked(kind) {
+    const checkbox = document.getElementById(multipleToggleIds[kind]);
     return !!(checkbox && checkbox.checked);
 }
-function setMultipleStates(checked) {
-    const checkbox = document.getElementById("multipleStates");
+function setMultiple(kind, checked) {
+    const checkbox = document.getElementById(multipleToggleIds[kind]);
     if (checkbox) checkbox.checked = checked;
 }
-// Multiple states in the hash (from a link, the table checkboxes or Back) check the box
+function multipleStatesChecked() { return multipleChecked("states"); }
+function setMultipleStates(checked) { setMultiple("states", checked); }
+// The hash's locations of each kind: state=, geo= (counties) and country=
+function hashLocationList(hash, kind) {
+    if (kind === "states") return hashStateList(hash);
+    const value = kind === "counties" ? hash.geo : hash.country;
+    return String(value || "").split(",").filter(Boolean);
+}
+// Several locations in the hash (from a link, the table checkboxes or Back) check the box.
+// Only the toggle for the map's view shows: countries, a state's counties, or states.
 function syncMultipleStates() {
-    if (hashStateList(getHash()).length > 1) {
-        setMultipleStates(true);
-    }
+    const hash = getHash();
+    Object.keys(multipleToggleIds).forEach(function(kind) {
+        if (hashLocationList(hash, kind).length > 1) setMultiple(kind, true);
+    });
+    const view = hash.geoview == "countries" ? "countries"
+        : (hashHasSpecificState(hash) && hash.geoview != "country") ? "counties" : "states";
+    document.querySelectorAll("#geomapHolder .multipleToggle").forEach(function(label) {
+        label.style.display = label.dataset.kind === view ? "" : "none";
+    });
 }
 document.addEventListener("change", function(e) {
-    if (e.target && e.target.id === "multipleStates" && !e.target.checked) {
-        // Unchecking keeps only the first state in the hash
-        const stateList = hashStateList(getHash());
-        if (stateList.length > 1) {
-            goHash({'state':stateList[0]});
+    const kind = e.target && Object.keys(multipleToggleIds).find(k => multipleToggleIds[k] === e.target.id);
+    if (kind && !e.target.checked) {
+        // Unchecking keeps only the first location of that kind in the hash
+        const list = hashLocationList(getHash(), kind);
+        if (list.length > 1) {
+            const key = kind === "states" ? "state" : kind === "counties" ? "geo" : "country";
+            goHash({[key]: list[0]});
         }
     }
 });
@@ -192,6 +215,44 @@ function updateGeoviewSelectText() {
         $("#geoview_select_open").hide();
     }
 }
+// The map hover box (.info) shows the selected location while the mouse isn't over a shape.
+// Countries on the countries map, otherwise the counties in hash.geo, otherwise the states.
+var mapInfoControl = null;
+var mapInfoListenerBound = false;
+var mapInfoHovering = false; // A shape's details are showing
+function selectedLocationText(hash) {
+    let names = [];
+    const listOf = value => String(value || "").split(",").filter(v => v && v.toLowerCase() !== "all");
+    if (hash.geoview == "countries") {
+        const countries = localObject["countries"];
+        names = listOf(hash.country).map(function(code) {
+            let match = null;
+            if (Array.isArray(countries)) {
+                match = countries.find(row => row.Country === code);
+            } else if (countries) {
+                match = countries[code];
+            }
+            return match && match.CountryName ? match.CountryName : code;
+        });
+    } else if (listOf(hash.geo).length) {
+        const geoIds = listOf(hash.geo);
+        names = geoIds.map(function(id) {
+            const match = localObject.geo && localObject.geo.find(row => row.id === id);
+            let name = match && match.name ? match.name.split(",")[0].trim() : "";
+            if (name && !/ County$/i.test(name)) name += " County";
+            return name;
+        }).filter(Boolean);
+        if (!names.length) { // County names load with the state's county data
+            return geoIds.length === 1 ? "1 County" : geoIds.length + " Counties";
+        }
+    } else {
+        names = hashStateList(hash).map(st => (typeof getState === 'function' && getState(st)) || st);
+    }
+    if (names.length > 3) {
+        return names.slice(0, 3).join(", ") + " and " + (names.length - 3) + " more";
+    }
+    return names.join(", ");
+}
 function hashChanged() {
 
     let loadGeomap = false;
@@ -231,7 +292,7 @@ function hashChanged() {
         }
     }
     if (hash.geoview == "state" && !hash.state) { // When deleting state in URL
-        $(".region_service").text("");
+        setRegionServiceText("");
         // TO DO - Send states to tabulator somewhere. Might be intermitant.
         goHash({"geoview":"country"});
 
@@ -840,13 +901,13 @@ function hashChanged() {
 
             if (hash.show && local_app.loctitle) {
                 waitForElm('.region_service').then((elm) => {
-                    $(".region_service").text(local_app.loctitle + " - " + hash.show.toTitleCaseFormat());
+                    setRegionServiceText(local_app.loctitle + " - " + hash.show.toTitleCaseFormat());
                 });
 
             } else if (hash.state) {
 
                 onElmReady('.region_service', function() {
-                    $(".region_service").text(hash.state); // While waiting for full state name
+                    setRegionServiceText(hash.state); // While waiting for full state name
                 });
                 onElmReady('#state_select', function() {
                     //$("#state_select").val(stateAbbrev);
@@ -857,9 +918,9 @@ function hashChanged() {
                         theStateName = $("#state_select").find(":selected").text();
                         console.log("fetched " + theStateName);
                         onElmReady('.region_service', function() {
-                            $(".region_service").text(theStateName + " Industries");
+                            setRegionServiceText(theStateName + " Industries");
                             if (showTitle) {
-                                $(".region_service").text(theStateName + " - " + hash.show.toTitleCaseFormat());
+                                setRegionServiceText(theStateName + " - " + hash.show.toTitleCaseFormat());
                             }
                         });
                     }
@@ -884,15 +945,15 @@ function hashChanged() {
 
                 /*
                 if (theStateName) {
-                    $(".region_service").text(theStateName);
+                    setRegionServiceText(theStateName);
                 } else {
-                    $(".region_service").text(hash.state);
+                    setRegionServiceText(hash.state);
                 }
                 */
             } else {
                 ////$(".region_service").text("Top " + $(".locationTabText").text() + " Industries");
                 waitForElm('.region_service').then((elm) => {
-                    $(".region_service").text(""); // Clear prior state
+                    setRegionServiceText(""); // Clear prior state
                     consoleLog("Clear prior state")
                 });
             }
@@ -914,9 +975,9 @@ function hashChanged() {
             $(".regiontitle").text(hash.regiontitle.replace(/\+/g," "));
             waitForElm('.region_service').then((elm) => {
                 if (hash.show) {
-                    $(".region_service").text(hash.regiontitle.replace(/\+/g," ") + " - " + hash.show.toTitleCaseFormat());
+                    setRegionServiceText(hash.regiontitle.replace(/\+/g," ") + " - " + hash.show.toTitleCaseFormat());
                 } else {
-                    $(".region_service").text(hash.regiontitle.replace(/\+/g," "));
+                    setRegionServiceText(hash.regiontitle.replace(/\+/g," "));
                 }
             });
             $(".locationTabText").text(hash.regiontitle.replace(/\+/g," "));
@@ -3854,7 +3915,7 @@ if (typeof $ !== 'undefined') {
                 const style = document.createElement('style');
                 style.id = 'state-quick-list-css';
                 style.textContent = [
-                    '#state_select_holder select { display: none; }',
+                    '#state_select_holder #state_select { display: none; }',
                     '#state_quick_list {',
                     '  margin-top: 4px;',
                     '  max-height: 350px;',
@@ -3869,6 +3930,7 @@ if (typeof $ !== 'undefined') {
                     '  transition: background 0.12s;',
                     '  font-size: 14px;',
                     '  line-height: 1.4;',
+                    '  margin-right: 10px;',
                     '}',
                     '#state_quick_list .state-list-item:first-child {',
                     '  border-top: 1px solid var(--border-light, #E5E7EB);',
@@ -3891,6 +3953,31 @@ if (typeof $ !== 'undefined') {
                     '}',
                     '.dark #state_quick_list .state-list-item:hover {',
                     '  background: rgba(255,255,255,0.1);',
+                    '}',
+                    // About twice the usual scroll bar thickness (Chrome, Safari, Edge)
+                    '#state_quick_list::-webkit-scrollbar {',
+                    '  width: 20px;',
+                    '}',
+                    '#state_quick_list::-webkit-scrollbar-track {',
+                    '  background: #f1f1f1;',
+                    '}',
+                    '#state_quick_list::-webkit-scrollbar-thumb {',
+                    '  background: #bbb;',
+                    '  border-radius: 7px; /* 3px on the visible handle, inside the 4px border */',
+                    '  border: 4px solid #f1f1f1;',
+                    '}',
+                    '#state_quick_list::-webkit-scrollbar-thumb:hover {',
+                    '  background: #999;',
+                    '}',
+                    '.dark #state_quick_list::-webkit-scrollbar-track {',
+                    '  background: #2a2a2a;',
+                    '}',
+                    '.dark #state_quick_list::-webkit-scrollbar-thumb {',
+                    '  background: #666;',
+                    '  border-color: #2a2a2a;',
+                    '}',
+                    '.dark #state_quick_list::-webkit-scrollbar-thumb:hover {',
+                    '  background: #888;',
                     '}'
                 ].join('\n');
                 document.head.appendChild(style);
@@ -3905,13 +3992,16 @@ if (typeof $ !== 'undefined') {
                 const item = document.createElement('div');
                 item.className = 'state-list-item';
                 item.dataset.value = opt.value;
+                item.dataset.usregion = (opt.getAttribute('usregion') || '').replace(/\s/g, ''); // For filterStateQuickList
                 item.textContent = opt.text;
                 item.setAttribute('role', 'option');
                 item.setAttribute('tabindex', '0');
                 item.addEventListener('click', function() {
                     const sel = document.getElementById('state_select');
                     sel.value = this.dataset.value;
+                    stateQuickListClick = true; // #state_select may reside in the hero
                     $(sel).trigger('change');
+                    stateQuickListClick = false;
                 });
                 item.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
@@ -3920,6 +4010,7 @@ if (typeof $ !== 'undefined') {
             });
 
             elm.appendChild(list);
+            filterStateQuickList();
 
             function syncActiveState() {
                 const val = (document.getElementById('state_select') || {}).value || '';
@@ -3930,6 +4021,7 @@ if (typeof $ !== 'undefined') {
 
             $(document).on('change', '#state_select', syncActiveState);
             document.addEventListener('hashChangeEvent', syncActiveState);
+            document.addEventListener('hashChangeEvent', function() { filterStateQuickList(); });
         });
     });
 
@@ -3937,6 +4029,7 @@ if (typeof $ !== 'undefined') {
     if ($("#relocatedStateMenu").length) {
         waitForElm('#state_select').then((elm) => {
             $("#state_select").appendTo("#relocatedStateMenu").show();
+            placeUsRegionSelect();
             $("#relocatedStateMenu").parent().show();
         });
     }
@@ -3950,12 +4043,14 @@ if (typeof $ !== 'undefined') {
             if (holderVisible && stateSelectParent !== 'state_select_holder') {
                 // Move to holder and hide relocatedStateMenu parent
                 $("#state_select").appendTo("#state_select_holder");
+                placeUsRegionSelect();
                 if ($("#relocatedStateMenu").length) {
                     $("#relocatedStateMenu").parent().hide();
                 }
             } else if (!holderVisible && $("#relocatedStateMenu").length && stateSelectParent !== 'relocatedStateMenu') {
                 // Move to relocatedStateMenu and show its parent
                 $("#state_select").appendTo("#relocatedStateMenu").show();
+                placeUsRegionSelect();
                 $("#relocatedStateMenu").parent().show();
             }
         }
@@ -5043,7 +5138,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                 
                 //alert("mapFeatureClick fips: " + fips)
                 //var fipsString = fips;
-                if (param.geo && param.geo.split(",").includes(fips)) {
+                if (!multipleChecked("counties")) {
+                  param.geo = fips; // Only the latest county clicked
+                } else if (param.geo && param.geo.split(",").includes(fips)) {
                   // Remove clicked fips from array, then convert back to string
                   param.geo = jQuery.grep(param.geo.split(","), function(value) {return value != fips;}).toString();
                   //fipsString = param.geo;
@@ -5064,7 +5161,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                   let latestHash = getHash();
                   let countryCode = layer.feature.properties["Alpha-2"];
                   let countryList = latestHash.country ? latestHash.country.split(",").filter(Boolean) : [];
-                  if (countryList.includes(countryCode)) {
+                  if (!multipleChecked("countries")) {
+                      countryList = [countryCode]; // Only the latest country clicked
+                  } else if (countryList.includes(countryCode)) {
                       countryList = countryList.filter(function(code){ return code !== countryCode; });
                   } else {
                       countryList.push(countryCode);
@@ -5128,7 +5227,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
               })
             }
 
-            var info = L.control();
+            var info = L.control({position: 'bottomright'}); // Hover details for a county, state or country
 
             info.onAdd = function(map) {
               //alert("attempt")
@@ -5142,16 +5241,24 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
             info.update = function(props){
 
-                if (props) {
-                  $(".info.leaflet-control").show();
-                } else {
-                  $(".info.leaflet-control").hide();
+                mapInfoHovering = !!props;
+                if (!props) {
+                  // Not hovering: show the selected location, otherwise hide
+                  const selected = selectedLocationText(getHash());
+                  if (selected) {
+                    this._div.innerHTML = "<b>" + selected + "</b>";
+                    $(this._div).show();
+                  } else {
+                    $(this._div).hide();
+                  }
+                  return;
                 }
+                $(this._div).show();
                 // National
                 // Hover over map
                 //this._div.innerHTML = "<h4>Zip code</h4>" + (props ? props.zip + '<br>' + props.name + ' ' + props.state + '<br>' : "Select Locations")
                 
-                // CSS resides in map.css at .leaflet-top > .info
+                // CSS resides in map.css at .leaflet-control.info
 
                 // Occurs when rolling over, otherwise "props" is not available.
                 if (props && props.COUNTYFP) {
@@ -5198,6 +5305,15 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                 // To fix if using state - id is not defined
                 // Also, other state files may need to have primary node renamed to "data"
                 //this._div.innerHTML = "<h4>Zip code</h4>" + (1==1 ? id + '<br>' : "Hover over map")
+            }
+            mapInfoControl = info;
+            if (!mapInfoListenerBound) { // The map can be rebuilt, so bind once
+              mapInfoListenerBound = true;
+              document.addEventListener('hashChangeEvent', function() {
+                if (mapInfoControl && mapInfoControl._div && !mapInfoHovering) {
+                  mapInfoControl.update(); // A newly selected location
+                }
+              });
             }
             if (map) {
               info.addTo(map);
@@ -5599,6 +5715,10 @@ function loadStateCounties(attempts) { // To avoid broken tiles, this won't be e
                                     localObject.stateCountiesLoaded.push(stateGeo);
                                 }
                             });
+                            updateCountiesTabText(); // A single county's name is available now
+                            if (mapInfoControl && mapInfoControl._div && !mapInfoHovering) {
+                                mapInfoControl.update(); // County names for the map hover box
+                            }
                             //console.log("geoCountyTable");
                             //console.log(geoCountyTable);
                         }
@@ -5946,6 +6066,9 @@ function showTabulatorList(element) {
                                     if (!countryList.includes(countryCode)) {
                                         countryList.push(countryCode);
                                     }
+                                    if (countryList.length > 1) {
+                                        setMultiple("countries", true); // Second checkbox checked
+                                    }
                                     goHash({'country':countryList.join(",")});
                                 }
                             }
@@ -6074,8 +6197,24 @@ function showTabulatorList(element) {
                                 e.stopPropagation();
                                 return;
                             }
-                            row.toggleSelect();
-                            checkStateTableCheckbox(row, row.isSelected());
+                            const countryCell = e.target.closest ? e.target.closest('.tabulator-cell') : null;
+                            if (countryCell && countryCell.querySelector("input[type='checkbox']")) {
+                                row.toggleSelect(); // Beside the checkbox: adds or removes, like the checkbox
+                                checkStateTableCheckbox(row, row.isSelected());
+                                return;
+                            }
+                            // Clicking the row selects only that country, as for states. The checkboxes add more.
+                            const countryCode = row.getData()["Country"];
+                            if (countryCode) {
+                                setMultiple("countries", false);
+                                const priorRows = statetable.getSelectedRows();
+                                programmaticSelection = true;
+                                statetable.deselectRow();
+                                row.select();
+                                programmaticSelection = false;
+                                priorRows.concat([row]).forEach(r => checkStateTableCheckbox(r, r.isSelected())); // Only rows that changed
+                                goHash({'country':countryCode});
+                            }
                             return;
                         }
                         // The checkbox column adds states (rowSelected above), so clicks there are not row clicks.
@@ -6334,11 +6473,25 @@ function showTabulatorList(element) {
                         e.stopPropagation();
                         //toggleCheckbox(row);
                     } else {
-                        //alert("row click")
-                        // Gets called for both row and checkbox click.
-                        row.toggleSelect();
-                        checkFirstColumnCheckbox(row, row.isSelected());
-                        //toggleCheckbox(row);
+                        const countyCell = e.target.closest ? e.target.closest('.tabulator-cell') : null;
+                        const countyId = row.getData().id;
+                        if ((countyCell && countyCell.querySelector("input[type='checkbox']")) || !countyId) {
+                            // Beside the checkbox: adds or removes, like the checkbox
+                            row.toggleSelect();
+                            checkFirstColumnCheckbox(row, row.isSelected());
+                        } else {
+                            // Clicking the row selects only that county, as for states. The checkboxes add more.
+                            setMultiple("counties", false);
+                            const priorRows = geotableInstance.getSelectedRows();
+                            programmaticSelection = true;
+                            geotableInstance.deselectRow();
+                            row.select();
+                            programmaticSelection = false;
+                            priorRows.concat([row]).forEach(r => checkFirstColumnCheckbox(r, r.isSelected())); // Only rows that changed
+                            currentRowIDs = [countyId];
+                            hash.geo = countyId;
+                            goHash({'geo':countyId});
+                        }
                     }
 
                     // rowClick is called at end of sequence, so triggering updateMapColors
@@ -6368,6 +6521,9 @@ function showTabulatorList(element) {
                         currentRowIDs.push(row._row.data.id);
                     }
                     
+                    if (!programmaticSelection && currentRowIDs.length > 1) {
+                        setMultiple("counties", true); // Second checkbox checked
+                    }
                     // Only trigger goHash if this is a user-initiated selection, not programmatic
                     if (!programmaticSelection && hash.geo != currentRowIDs.toString()) {
                         hash.geo = currentRowIDs.toString();
@@ -7207,9 +7363,9 @@ function updateRegionService(section) {
         }
     }
     if (theLocation) {
-        $(".region_service").text(theLocation + " - " + section);
+        setRegionServiceText(theLocation + " - " + section);
     } else {
-        $(".region_service").text(section);
+        setRegionServiceText(section);
     }
 }
 
@@ -7634,15 +7790,15 @@ function toggleDiv(theClass) {
 function iNav(set) {
     let hash = getHashOnly();
     hash.set = set;
-    // Indicators for the set come from the shared list in impact-sets.js
-    hash.indicators = typeof impactSetIndicators === 'function' ? impactSetIndicators(set) : '';
+    // The set's indicators load in the page from hash.set (impact-sets.js), so they stay out of the hash
+    delete hash.indicators;
     delete hash.geoview;
     let hashString = decodeURIComponent($.param(hash)); // decode to display commas in URL
     if (location.href.indexOf('/info') == -1) {
         //updateHash({"geoview":""}); // Close location filter before redirect.
         location.href = localsitePath("info/#") + hashString;
     } else {
-        goHash({"set":set,"indicators":hash.indicators});
+        goHash({"set":set}, ['indicators']);
     }
 }
 
@@ -9597,6 +9753,7 @@ function getPageFolder(pagePath) {
     console.log("ALERT: navigation.js is being loaded twice.")
 } // End typeof page_scripts which checks if file is loaded twice.
 
+var stateQuickListClick = false; // A click in #state_quick_list (#geoview_statelist) is changing #state_select
 $(document).on("change", "#state_select", function(event) {
     console.log("state_select change");
     $("#geoview_container").hide();
@@ -9611,13 +9768,25 @@ $(document).on("change", "#state_select", function(event) {
 
     if (this.value) {
         $("#region_select").val("");
+        // Keep hash.usregion when the chosen state is in that region (#usregion_select)
+        const stateRegion = String($(this).find(":selected").attr("usregion") || "").replace(/\s/g, "");
+        const usregion = hash.usregion && hash.usregion === stateRegion ? hash.usregion : "";
+        let stateValue = this.value;
+        if (usregion && (stateQuickListClick || $(this).closest('#geoview_statelist').length)) {
+            // In the location panel with a region selected, keep all the region's states, with the chosen state first
+            const regionOption = $("#usregion_select option").filter(function() { return this.value.replace(/\s/g, "") === usregion; }).first();
+            const regionStates = regionOption.length ? usRegionStates(regionOption.val()) : [];
+            if (regionStates.includes(this.value)) {
+                stateValue = [this.value].concat(regionStates.filter(st => st !== this.value)).join(",");
+            }
+        }
         // Later a checkbox could be added to retain geo values across multiple states
         // Omitting for BC apps page  ,'geoview':'state'
         if (hash.geoview) {
             var nextGeoview = geoviewAfterStateChoice((hash.geoview == "country") ? "country" : "state");
-            goHash({'state':this.value,'geo':'','name':'','regiontitle':'','geoview':nextGeoview}); // triggers renderGeomapShapes("geomap", hash); // County select map
+            goHash({'state':stateValue,'usregion':usregion,'geo':'','name':'','regiontitle':'','geoview':nextGeoview}); // triggers renderGeomapShapes("geomap", hash); // County select map
         } else {
-            goHash({'state':this.value,'geo':'','name':'','regiontitle':''}); // triggers renderGeomapShapes("geomap", hash); // County select map
+            goHash({'state':stateValue,'usregion':usregion,'geo':'','name':'','regiontitle':''}); // triggers renderGeomapShapes("geomap", hash); // County select map
         }
 
         setTimeout(() => {
@@ -9626,11 +9795,118 @@ $(document).on("change", "#state_select", function(event) {
         }, delay);
     } else { // US selected
         hiddenhash.state = ""; // BugFix - Without this prior state stays in dropdown when choosing no state using top option.
-        goHash({'geoview':'country','state':'','geo':''});
+        goHash({'geoview':'country','state':'','usregion':'','geo':''});
     }
 });
 $(document).on("change", "#selectScope", function(event) {
     goHash({'scope':this.value});
+});
+
+// .region_service titles. The first one, #regionService (#industryHeader in info/template-charts.html), shows the
+// US region title while hash.usregion is present. The others keep the location text, e.g. the primary state's name.
+function usRegionTitle(hash) {
+    return String(hash.usregion || "").replace(/([a-z])([A-Z])/g, "$1 $2"); // NewEngland to New England
+}
+// #regionService title for a region, e.g. "New England States"
+function usRegionServiceTitle(hash) {
+    const title = usRegionTitle(hash);
+    return title ? title + " States" : "";
+}
+function setRegionServiceText(text) {
+    $(".region_service").not("#regionService").text(text);
+    $("#regionService").data("locationText", text).text(usRegionServiceTitle(getHash()) || text);
+}
+document.addEventListener('hashChangeEvent', function() {
+    const regionService = $("#regionService");
+    if (regionService.length) regionService.text(usRegionServiceTitle(getHash()) || regionService.data("locationText") || "");
+});
+
+// US regions (#usregion_select): each #state_select option has a usregion attribute (BEA regions).
+// Choosing a region puts its states in the hash. Hidden options (DC and territories) are left out.
+function usRegionStates(region) {
+    return Array.from(document.querySelectorAll('#state_select option[usregion]'))
+        .filter(opt => opt.getAttribute('usregion') === region && opt.style.display !== 'none')
+        .map(opt => opt.value);
+}
+// The menu and Map button (#usregion_holder) sit directly above #state_select,
+// which moves between #state_select_holder and #relocatedStateMenu
+function placeUsRegionSelect() {
+    const regionHolder = document.getElementById('usregion_holder');
+    const stateSelect = document.getElementById('state_select');
+    if (regionHolder && stateSelect && regionHolder.nextElementSibling !== stateSelect) {
+        stateSelect.parentNode.insertBefore(regionHolder, stateSelect);
+    }
+}
+$(document).on("click", "#usregion_map", function() {
+    goHash({'geoview':'us'});
+});
+// Show hash.usregion (the region without spaces, e.g. NewEngland), or the region whose states are exactly hash.state
+function syncUsRegionSelect() {
+    const regionSelect = document.getElementById('usregion_select');
+    if (!regionSelect) return;
+    const hash = getHash();
+    const usregion = String(hash.usregion || "");
+    const states = String(hash.state || "").toUpperCase().split(",").filter(Boolean).sort().join(",");
+    let match = "";
+    Array.from(regionSelect.options).forEach(function(opt) {
+        if (!opt.value) return;
+        if (usregion ? opt.value.replace(/\s/g, "") === usregion : usRegionStates(opt.value).sort().join(",") === states) match = opt.value;
+    });
+    regionSelect.value = match;
+}
+// #state_quick_list (in #geoview_statelist) shows only the states in the selected US region, or all states without one
+function filterStateQuickList(region) {
+    const usregion = String(region !== undefined ? region : (getHash().usregion || "")).replace(/\s/g, "");
+    document.querySelectorAll('#state_quick_list .state-list-item').forEach(function(item) {
+        item.style.display = !usregion || item.dataset.usregion === usregion ? "" : "none";
+    });
+}
+$(document).on("change", "#usregion_select", function(event) {
+    filterStateQuickList(this.value);
+    if (!this.value) { // "US Regions" clears the region and its states
+        hiddenhash.state = ""; // As for "All States" in #state_select, so the prior state doesn't return
+        goHash({'usregion':'','state':'','geo':''});
+        return;
+    }
+    const states = usRegionStates(this.value);
+    if (!states.length) return;
+    if (!$(this).closest('#geoview_statelist').length) { // In the location panel, the panel stays open to show the region's states
+        $("#geoview_container").hide();
+    }
+    goHash({'usregion':this.value.replace(/\s/g, ""),'state':states.join(","),'geo':'','name':'','regiontitle':''});
+});
+// When hash.state changes, hash.usregion follows it: kept while every state is in the region,
+// removed once a state is outside it, and set when the states are exactly one region's states.
+let usRegionCheckedState; // hash.state when last checked
+function reconcileUsRegion() {
+    const regionSelect = document.getElementById('usregion_select');
+    if (!regionSelect || !document.querySelector('#state_select option[usregion]')) return false;
+    const hash = getHash();
+    const stateValue = String(hash.state || "");
+    if (stateValue === usRegionCheckedState) return false;
+    usRegionCheckedState = stateValue;
+    const states = stateValue.toUpperCase().split(",").map(st => st.trim()).filter(Boolean);
+    const regions = Array.from(regionSelect.options).filter(opt => opt.value).map(opt => opt.value);
+    const usregion = String(hash.usregion || "");
+    let next = "";
+    const current = regions.find(region => region.replace(/\s/g, "") === usregion);
+    if (current && states.length && states.every(st => usRegionStates(current).includes(st))) {
+        next = usregion;
+    } else {
+        const key = states.slice().sort().join(",");
+        const match = regions.find(region => usRegionStates(region).sort().join(",") === key);
+        if (match) next = match.replace(/\s/g, "");
+    }
+    if (next === usregion) return false;
+    goHash({'usregion':next}); // Fires hashChangeEvent again, which updates the menu and the region titles
+    return true;
+}
+document.addEventListener('hashChangeEvent', function() {
+    if (!reconcileUsRegion()) syncUsRegionSelect();
+});
+onElmReady('#usregion_select', function() {
+    placeUsRegionSelect();
+    if (!reconcileUsRegion()) syncUsRegionSelect();
 });
 
 // Close inline dropdown when clicking elsewhere

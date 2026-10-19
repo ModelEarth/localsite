@@ -127,14 +127,15 @@
   border:#bbb 2px solid !important;
   line-height: 26px !important;
 }
-.leaflet-top > .info {
+/* Map hover details (navigation.js), at the lower right */
+.leaflet-control.info {
   background-color: rgba(33, 33, 33, 0.5);
   color: #fff;
   padding: 10px;
   text-align: center;
   min-width: 130px;
 }
-.leaflet-top > .info. b {
+.leaflet-control.info b {
   color: #fff !important;
 }
 #legendHolder {
@@ -172,6 +173,25 @@
 }
 */
 .leaflet-control-container > div:nth-child(4) {
+  display: none;
+}
+/* The location map's lower right corner holds its hover details (.info, navigation.js), so only the attribution is hidden there.
+   The corner spans the map's width so the hover details are centered along the bottom.
+   right:0 is needed because leaflet.css comments out the .leaflet-right right:0.
+   The side padding keeps the details clear of the zoom and layer controls at the lower left. */
+#geomap .leaflet-control-container > div:nth-child(4) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  left: 0;
+  right: 0;
+  padding: 0 70px;
+}
+#geomap .leaflet-control-container > div:nth-child(4) .leaflet-control.info {
+  float: none;
+  margin: 0 0 10px 0;
+}
+#geomap .leaflet-control-container > div:nth-child(4) .leaflet-control-attribution {
   display: none;
 }
 
