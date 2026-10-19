@@ -2111,35 +2111,38 @@ function topRatesInFipsNew(dataSet, fips) {
     console.log("dataSet.industries v2")
     console.log(dataSet.industries);
 
-    // Update industry stats if we're viewing a specific NAICS
-    let currentHash = getHash();
-    if (currentHash.naics && typeof updateIndustryStats === 'function') {
-        // Aggregate county-level data for this NAICS code
+    // Update industry stats if we're viewing a specific NAICS.
+    // Uses the URL hash only, since hiddenhash.naics holds the list of top NAICS for the bubble chart.
+    let urlNaics = String(getHashOnly().naics || "");
+    if (urlNaics && !urlNaics.includes(",") && typeof updateIndustryStats === 'function') {
+        // The rows are by state Fips. Totals use the selected states, or the whole country when no state.
         if (localObject.industryCounties && localObject.industryCounties.length > 0) {
+            let stateFipsList = String(getHash().state || "").split(",").filter(Boolean)
+                .map(st => String(stateID[st.toUpperCase()] || "").padStart(2, "0")).filter(f => f !== "00");
             let totalEmployees = 0;
             let totalEstablishments = 0;
             let totalPayroll = 0;
-            let countyCount = 0;
+            let rowCount = 0;
 
             for (let i = 0; i < localObject.industryCounties.length; i++) {
-                // Property is "Naics" not "NAICS"
-                if (localObject.industryCounties[i].Naics === currentHash.naics || localObject.industryCounties[i].Naics === String(currentHash.naics)) {
-                    totalEmployees += Number(localObject.industryCounties[i]['Employees']) || 0;
-                    totalEstablishments += Number(localObject.industryCounties[i]['Establishments']) || 0;
-                    totalPayroll += Number(localObject.industryCounties[i]['Payroll']) || 0;
-                    countyCount++;
-                }
+                let row = localObject.industryCounties[i];
+                if (String(row.Naics) !== urlNaics) continue; // Property is "Naics" not "NAICS"
+                if (stateFipsList.length && !stateFipsList.includes(String(row.Fips).padStart(2, "0"))) continue;
+                totalEmployees += Number(row['Employees']) || 0;
+                totalEstablishments += Number(row['Establishments']) || 0;
+                totalPayroll += Number(row['Payroll']) || 0;
+                rowCount++;
             }
 
-            if (countyCount > 0) {
-                console.log('[IndustryStats] Aggregated data from', countyCount, 'counties for NAICS', currentHash.naics);
+            if (rowCount > 0) {
+                console.log('[IndustryStats] Aggregated', rowCount, (stateFipsList.length ? 'state' : 'country'), 'rows for NAICS', urlNaics);
                 updateIndustryStats({
                     employment: totalEmployees,
                     establishments: totalEstablishments,
                     payroll: totalPayroll
                 });
             } else {
-                console.warn('[IndustryStats] No county data found for NAICS', currentHash.naics);
+                console.warn('[IndustryStats] No data found for NAICS', urlNaics);
             }
         } else {
             console.warn('[IndustryStats] localObject.industryCounties not available');

@@ -99,12 +99,15 @@
 	font-weight: 600;
 	margin-bottom: 2px;
 }
-#industryHeader:not(.hasSet):has(#regionService:empty) #showTopic {
+#industryHeader:not(.hasSet):has(#regionService:empty) #showTopic,
+#industryHeader.hasTopicPlace #showTopic {
 	font-size: 32px;
 	font-weight: 400;
 }
 /* With a set and a topic, #showTopic reads "Parts Manufacturing in Georgia", so #regionService would repeat it */
-#industryHeader.hasSetTopic #regionService {
+/* Without a set, #showTopic reads "Bioeconomy in Alaska" in place of #regionService ("Alaska - Bioeconomy") */
+#industryHeader.hasSetTopic #regionService,
+#industryHeader.hasTopicPlace #regionService {
 	display: none;
 }
 /* Opens the Topics menu (appview=topics) */

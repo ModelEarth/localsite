@@ -9993,18 +9993,21 @@ function updateModelTopicsLink() {
     link.setAttribute('href', href);
     // With a set, the topic is linked like #modelTopicsLink, which it replaces, and includes the location:
     // "Parts Manufacturing in Georgia" above the set's #pageTitle, in place of #regionService ("Georgia - Parts Manufacturing").
-    // Without a set, the topic is plain text above #regionService.
+    // Without a set, the topic is plain text below #modelTopicsLink, also with the location ("Bioeconomy in Alaska")
+    // in place of #regionService ("Alaska - Bioeconomy").
     const showTopic = $("#showTopic");
     const topic = showTopic.data("topic") || "";
+    const place = topic ? (usRegionServiceTitle(getHash()) || showTopic.data("place") || "") : "";
+    const topicTitle = place ? topic + " in " + place : topic;
     showTopic.empty().toggle(!!topic);
     if (topic && hasSet) {
-        const place = usRegionServiceTitle(getHash()) || showTopic.data("place") || "";
-        showTopic.append($("<a class='showTopicLink'></a>").attr('href', href).text(place ? topic + " in " + place : topic));
+        showTopic.append($("<a class='showTopicLink'></a>").attr('href', href).text(topicTitle));
     } else if (topic) {
-        showTopic.text(topic);
+        showTopic.text(topicTitle);
     }
     $("#industryHeader").toggleClass("hasSet", hasSet); // Keeps the topic small (naics.css)
     $("#industryHeader").toggleClass("hasSetTopic", !!(hasSet && topic)); // Hides #regionService (naics.css)
+    $("#industryHeader").toggleClass("hasTopicPlace", !hasSet && !!place); // Hides #regionService and enlarges the topic (naics.css)
     $(link).toggle(!(hasSet && topic));
 }
 onElmReady('#modelTopicsLink', updateModelTopicsLink);
@@ -10122,6 +10125,8 @@ $(document).on("click", function(event) {
 });
 // Click handler for Counties Tab - Opens location filter panel
 $(document).on("click", "#filterClickLocation", function(event) {
+
+    window.scrollTo({top: 0, behavior: "instant"}); // Jump to the top rather than animating the scroll
 
     if ($("#draggableSearch").is(':visible')) {
         $("#draggableSearch").hide();
