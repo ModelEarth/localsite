@@ -3180,7 +3180,7 @@ function showSideTabs() {
 function populateFieldsFromHash() {
     let hash = getHash();
     waitForElm('#keywordsTB').then((elm) => {
-        $("#keywordsTB").val(hash.q);
+        $("#keywordsTB").val(String(hash.q || "").replace(/\+/g, " ")); // updateHash (URLSearchParams) writes spaces as +
     });
     if (hash.cat) {
         var catString = hash.cat.replace(/_/g, ' ');
@@ -9990,10 +9990,13 @@ $(document).on("change", "#selectScope", function(event) {
 function usRegionTitle(hash) {
     return usRegionForHash(hash);
 }
-// #regionService title for a region, e.g. "New England States"
+// The region's title, e.g. "Plains States": its #usregion_select option's data-title ("New England", "Rocky Mountain States"),
+// or the name with " States" appended
 function usRegionServiceTitle(hash) {
     const title = usRegionTitle(hash);
-    return title ? title + " States" : "";
+    if (!title) return "";
+    const option = Array.from(document.querySelectorAll('#usregion_select option')).find(opt => opt.value === title);
+    return (option && option.dataset.title) || title + " States";
 }
 // topic: the show topic in the text ("Georgia - Bioeconomy"), which also goes alone to #showTopic above #regionService
 function setRegionServiceText(text, topic) {

@@ -138,17 +138,18 @@
                           <div class="stateFilters input-output" style="float:left;display:none" class="mock-up earth">
                             <b><!--States--></b>
                             <div id="state_select_holder" class="earth" style="float:left">
-                                <!-- US regions (BEA). Chooses the states whose option has that usregion. navigation.js moves #usregion_holder with #state_select. -->
+                                <!-- US regions (BEA). Chooses the states whose option has that usregion. navigation.js moves #usregion_holder with #state_select.
+                                     data-title: the region's title (usRegionServiceTitle in navigation.js). Without it, " States" is appended to the name. -->
                                 <div id="usregion_holder">
                                 <select id="usregion_select" class="select-med" aria-label="US region" style="max-width:285px;">
                                  <option value="">US Regions</option>
-                                 <option value="New England">New England</option>
+                                 <option value="New England" data-title="New England">New England</option>
                                  <option value="Mid-Atlantic">Mid-Atlantic</option>
-                                 <option value="Great Lakes">Great Lakes</option>
+                                 <option value="Great Lakes" data-title="Great Lakes Region">Great Lakes</option>
                                  <option value="Plains">Plains</option>
-                                 <option value="Southeast">Southeast</option>
-                                 <option value="Southwest">Southwest</option>
-                                 <option value="Rockies">Rockies</option>
+                                 <option value="Southeast" data-title="Southeast">Southeast</option>
+                                 <option value="Southwest" data-title="Southwest">Southwest</option>
+                                 <option value="Rockies" data-title="Rocky Mountain States">Rockies</option>
                                  <option value="Pacific">Pacific</option>
                                 </select>
                                 <button type="button" id="usregion_map" class="usregion-map" title="View the US map">US Map</button><!-- geoview=us -->

@@ -121,7 +121,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px;
-	margin: 12px 0;
+	margin: 12px 0 22px 0;
 }
 .choose-location-btn {
 	font-size: 14px;

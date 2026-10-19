@@ -211,7 +211,8 @@
     const regionName = document.getElementById('regionName');
     // usRegionTitle (navigation.js) also gets the region from the states when hash.usregion is absent
     const region = typeof usRegionTitle === 'function' ? usRegionTitle(hash) : String(hash.usregion || "").replace(/([a-z])([A-Z])/g, "$1 $2");
-    regionName.textContent = region ? region + " States" : ""; // As in usRegionServiceTitle() (navigation.js) for .showTopicLink
+    // usRegionServiceTitle (navigation.js) uses the region's data-title in #usregion_select, e.g. "Rocky Mountain States"
+    regionName.textContent = !region ? "" : (typeof usRegionServiceTitle === 'function' ? usRegionServiceTitle(hash) : region + " States");
     regionName.style.display = region ? "" : "none";
     stateName.style.display = region ? "none" : "";
     if (!states.length) {
