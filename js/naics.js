@@ -2698,9 +2698,7 @@ function showIndustryTabulatorList(attempts) {
         industrytable = new Tabulator("#tabulator-industrytable", {
             data:tabulatorData,
             rowFormatter:markChosenIndustryRow, // Highlights rows whose naics is in the URL hash
-            pagination:true,
-            paginationSize:5,         // Top 5. industryPageSizes in the footer shows more.
-            paginationButtonCount:0,
+            ...tabulatorPagingOptions(5), // Top 5. addTabulatorPaging() adds row count links to the footer for more.
             layout:"fitColumns",      //fit columns to width of table
             responsiveLayout:"hide",  //hide columns that dont fit on the table
             addRowPos:"top",          //when adding a new row, add it to the top of the table
@@ -2736,141 +2734,7 @@ function showIndustryTabulatorList(attempts) {
             goHash({"naics": naicsList.join(",")});
         });
 
-        var pageBox, pageMenu, pageSizesWrap;
-        industrytable.on("tableBuilt", function() {
-            var footer = document.querySelector("#tabulator-industrytable .tabulator-footer");
-            if (footer) {
-                // "Page 1" between the prev and next buttons. Clicking it opens toggleIndustryPageMenu().
-                // Uses the buttons' tabulator-page class for the same border, colors, margin and hover, plus their font,
-                // which browsers set smaller for buttons than for a span.
-                var paginator = footer.querySelector(".tabulator-paginator");
-                if (paginator) {
-                    var nextBtn = paginator.querySelector(".tabulator-page[data-page='next']");
-                    pageBox = document.createElement("span");
-                    pageBox.className = "tabulator-page industryPageBox";
-                    pageBox.setAttribute("role", "button");
-                    pageBox.setAttribute("aria-haspopup", "listbox");
-                    pageBox.tabIndex = 0;
-                    if (nextBtn) {
-                        var buttonStyle = getComputedStyle(nextBtn);
-                        ["fontFamily", "fontSize", "fontWeight", "lineHeight"].forEach(function(prop) {
-                            pageBox.style[prop] = buttonStyle[prop];
-                        });
-                    }
-                    pageBox.addEventListener("click", toggleIndustryPageMenu);
-                    pageBox.addEventListener("keydown", function(e) {
-                        if (e.key === "Enter" || e.key === " ") toggleIndustryPageMenu(e);
-                    });
-                    paginator.insertBefore(pageBox, nextBtn || null);
-                    updateIndustryPagination(industrytable.getPage() || 1);
-                }
-
-                // Row count choices to the right of the paginator (moved left in base-tabulator.css)
-                pageSizesWrap = document.createElement("div");
-                pageSizesWrap.className = "industryPageSizes";
-                pageSizesWrap.addEventListener("click", function(e) {
-                    const link = e.target.closest("a[data-size]");
-                    if (!link) return;
-                    e.preventDefault();
-                    industrytable.setPageSize(Number(link.dataset.size));
-                    updateIndustryPageSizes();
-                });
-                (footer.querySelector(".tabulator-footer-contents") || footer).appendChild(pageSizesWrap);
-                updateIndustryPageSizes();
-            }
-        });
-
-        function updateIndustryPagination(pageno) {
-            var hasLeftButton = false;
-            ["first", "prev", "next", "last"].forEach(function(name) {
-                var btn = document.querySelector("#tabulator-industrytable .tabulator-page[data-page='" + name + "']");
-                if (btn) btn.style.display = btn.disabled ? "none" : "";
-                if (btn && !btn.disabled && (name == "first" || name == "prev")) hasLeftButton = true;
-            });
-            if (pageBox) pageBox.style.marginLeft = hasLeftButton ? "" : "0"; // No gap when first and prev are hidden
-            if (pageBox) pageBox.textContent = "Page " + (Number(pageno) || 1);
-        }
-        // Every page up to 10 pages. With more, every 5th page plus the first, last and current pages.
-        function industryPageChoices(current) {
-            var max = industrytable.getPageMax() || 1;
-            var pages = [];
-            if (max <= 10) {
-                for (var n = 1; n <= max; n++) pages.push(n);
-            } else {
-                pages.push(1);
-                for (var m = 5; m < max; m += 5) pages.push(m);
-                pages.push(max);
-                if (!pages.includes(current)) pages.push(current);
-                pages.sort((x, y) => x - y);
-            }
-            return pages;
-        }
-        // Page list under (or above, when there is more room) the "Page 1" box. Added to the body, since .tabulator crops overflow.
-        function toggleIndustryPageMenu(e) {
-            e.preventDefault();
-            e.stopPropagation(); // Keeps closeIndustryPageMenu() on the document from closing it right away
-            if (pageMenu) {
-                closeIndustryPageMenu();
-                return;
-            }
-            var current = industrytable.getPage() || 1;
-            pageMenu = document.createElement("div");
-            pageMenu.className = "industryPageMenu";
-            pageMenu.setAttribute("role", "listbox");
-            pageMenu.innerHTML = industryPageChoices(current).map(function(page) {
-                return "<div role='option' data-page='" + page + "'" + (page === current ? " class='active' aria-selected='true'" : "") + ">Page " + page + "</div>";
-            }).join("");
-            pageMenu.addEventListener("click", function(ev) {
-                var item = ev.target.closest("[data-page]");
-                if (!item) return;
-                industrytable.setPage(Number(item.dataset.page));
-                closeIndustryPageMenu();
-            });
-            document.body.appendChild(pageMenu);
-            var box = pageBox.getBoundingClientRect();
-            var menuHeight = pageMenu.offsetHeight;
-            var below = window.innerHeight - box.bottom;
-            var top = (below >= menuHeight + 4 || below >= box.top) ? box.bottom + 2 : box.top - menuHeight - 2;
-            pageMenu.style.left = (box.left + window.scrollX) + "px";
-            pageMenu.style.top = (top + window.scrollY) + "px";
-            pageMenu.style.minWidth = box.width + "px";
-            var active = pageMenu.querySelector(".active");
-            if (active) pageMenu.scrollTop = active.offsetTop - (pageMenu.clientHeight - active.offsetHeight) / 2; // Without scrolling the page
-            document.addEventListener("click", closeIndustryPageMenu);
-            document.addEventListener("keydown", closeIndustryPageMenuOnEscape);
-        }
-        function closeIndustryPageMenu() {
-            if (pageMenu) pageMenu.remove();
-            pageMenu = null;
-            document.removeEventListener("click", closeIndustryPageMenu);
-            document.removeEventListener("keydown", closeIndustryPageMenuOnEscape);
-        }
-        function closeIndustryPageMenuOnEscape(e) {
-            if (e.key === "Escape") closeIndustryPageMenu();
-        }
-        // Hides the paginator when one page holds all the rows. Its space is kept, so the row counts stay on the right.
-        function toggleIndustryPaginator() {
-            var paginator = document.querySelector("#tabulator-industrytable .tabulator-paginator");
-            if (paginator) paginator.style.visibility = industrytable.getPageMax() > 1 ? "" : "hidden";
-        }
-        // After page size, page and data changes
-        industrytable.on("renderComplete", function() {
-            toggleIndustryPaginator();
-        });
-        // 5, 10, 20, 50, 200 and the total, with the current page size unlinked
-        function updateIndustryPageSizes() {
-            if (!pageSizesWrap) return;
-            const total = industrytable.getDataCount();
-            const current = industrytable.getPageSize();
-            const sizes = [5, 10, 20, 50, 200].filter(n => n < total).concat([total]);
-            pageSizesWrap.innerHTML = sizes.map(function(n) {
-                const label = n.toLocaleString();
-                return n === current ? "<span class='active'>" + label + "</span>" : "<a href='#' data-size='" + n + "'>" + label + "</a>";
-            }).join(", ");
-        }
-        industrytable.on("pageLoaded", updateIndustryPagination);
-        // Keeps the total current when replaceData() swaps in rows for a #catyear, #catsize or state change
-        industrytable.on("dataProcessed", updateIndustryPageSizes);
+        addTabulatorPaging(industrytable); // localsite.js: Page box, page list and row count links in the footer
         // The title follows the sort. Sorting a number column high to low sets catsort in the URL hash,
         // which re-sorts the table to match and re-ranks the bubble chart's top national naics.
         const catsortByField = {Payroll:"payann", Employees:"emp", Establishments:"estab"};
@@ -2883,7 +2747,6 @@ function showIndustryTabulatorList(attempts) {
             }
         });
         industrytable.on("tableBuilt", function() {
-            updateIndustryPagination(1);
             updateIndustryTableTitle(industrytable.getSorters());
             naicsTimingLog("Built the Area Industries table with " + tabulatorData.length + (hash.state ? " " + hash.state.split(",")[0].toUpperCase() + " rows" : " national rows"), tableStart);
         });

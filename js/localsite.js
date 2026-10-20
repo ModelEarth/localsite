@@ -2783,6 +2783,165 @@ function loadTabulator() {
   return _tabulatorReadyPromise;
 }
 
+// Tabulator paging shared by tables (Top US Industries in naics.js, Electricity by State in profile/js/state-energy.js).
+// Spread tabulatorPagingOptions(5) into the Tabulator options, then call addTabulatorPaging(table) right after new Tabulator().
+// Footer: the prev and next buttons with a "Page 1" box between them that opens a page list,
+// and row count links (5, 10, 20, 50, 200 and the total) on the right. Styles: .tabulatorPaging in css/base-tabulator.css
+function tabulatorPagingOptions(pageSize) {
+  return {pagination:true, paginationSize:pageSize || 5, paginationButtonCount:0};
+}
+function addTabulatorPaging(table) {
+  var pageBox, pageMenu, pageSizesWrap;
+  var scrollToTopPending = false; // Set by the row count links, then done by renderComplete
+  table.on("tableBuilt", function() {
+    table.element.classList.add("tabulatorPaging");
+    var footer = table.element.querySelector(".tabulator-footer");
+    if (!footer) return;
+    // "Page 1" between the prev and next buttons. Clicking it opens togglePageMenu().
+    // Uses the buttons' tabulator-page class for the same border, colors, margin and hover, plus their font,
+    // which browsers set smaller for buttons than for a span.
+    var paginator = footer.querySelector(".tabulator-paginator");
+    if (paginator) {
+      var nextBtn = paginator.querySelector(".tabulator-page[data-page='next']");
+      pageBox = document.createElement("span");
+      pageBox.className = "tabulator-page tabulatorPageBox";
+      pageBox.setAttribute("role", "button");
+      pageBox.setAttribute("aria-haspopup", "listbox");
+      pageBox.tabIndex = 0;
+      if (nextBtn) {
+        var buttonStyle = getComputedStyle(nextBtn);
+        ["fontFamily", "fontSize", "fontWeight", "lineHeight"].forEach(function(prop) {
+          pageBox.style[prop] = buttonStyle[prop];
+        });
+      }
+      pageBox.addEventListener("click", togglePageMenu);
+      pageBox.addEventListener("keydown", function(e) {
+        if (e.key === "Enter" || e.key === " ") togglePageMenu(e);
+      });
+      paginator.insertBefore(pageBox, nextBtn || null);
+    }
+    // Row count choices to the right of the paginator (moved left in base-tabulator.css)
+    pageSizesWrap = document.createElement("div");
+    pageSizesWrap.className = "tabulatorPageSizes";
+    pageSizesWrap.addEventListener("click", function(e) {
+      var link = e.target.closest("a[data-size]");
+      if (!link) return;
+      e.preventDefault();
+      scrollToTopPending = true;
+      table.setPageSize(Number(link.dataset.size));
+      updatePageSizes();
+    });
+    (footer.querySelector(".tabulator-footer-contents") || footer).appendChild(pageSizesWrap);
+    updatePageSizes();
+    updatePagination(table.getPage() || 1);
+  });
+
+  function updatePagination(pageno) {
+    var hasLeftButton = false;
+    ["first", "prev", "next", "last"].forEach(function(name) {
+      var btn = table.element.querySelector(".tabulator-page[data-page='" + name + "']");
+      if (btn) btn.style.display = btn.disabled ? "none" : "";
+      if (btn && !btn.disabled && (name == "first" || name == "prev")) hasLeftButton = true;
+    });
+    if (pageBox) pageBox.style.marginLeft = hasLeftButton ? "" : "0"; // No gap when first and prev are hidden
+    if (pageBox) pageBox.textContent = "Page " + (Number(pageno) || 1);
+  }
+  // Every page up to 10 pages. With more, every 5th page plus the first, last and current pages.
+  function pageChoices(current) {
+    var max = table.getPageMax() || 1;
+    var pages = [];
+    if (max <= 10) {
+      for (var n = 1; n <= max; n++) pages.push(n);
+    } else {
+      pages.push(1);
+      for (var m = 5; m < max; m += 5) pages.push(m);
+      pages.push(max);
+      if (!pages.includes(current)) pages.push(current);
+      pages.sort((x, y) => x - y);
+    }
+    return pages;
+  }
+  // Page list under (or above, when there is more room) the "Page 1" box. Added to the body, since .tabulator crops overflow.
+  function togglePageMenu(e) {
+    e.preventDefault();
+    e.stopPropagation(); // Keeps closePageMenu() on the document from closing it right away
+    if (pageMenu) {
+      closePageMenu();
+      return;
+    }
+    var current = table.getPage() || 1;
+    pageMenu = document.createElement("div");
+    pageMenu.className = "tabulatorPageMenu";
+    pageMenu.setAttribute("role", "listbox");
+    pageMenu.innerHTML = pageChoices(current).map(function(page) {
+      return "<div role='option' data-page='" + page + "'" + (page === current ? " class='active' aria-selected='true'" : "") + ">Page " + page + "</div>";
+    }).join("");
+    pageMenu.addEventListener("click", function(ev) {
+      var item = ev.target.closest("[data-page]");
+      if (!item) return;
+      table.setPage(Number(item.dataset.page));
+      closePageMenu();
+    });
+    document.body.appendChild(pageMenu);
+    var box = pageBox.getBoundingClientRect();
+    var menuHeight = pageMenu.offsetHeight;
+    var below = window.innerHeight - box.bottom;
+    var top = (below >= menuHeight + 4 || below >= box.top) ? box.bottom + 2 : box.top - menuHeight - 2;
+    pageMenu.style.left = (box.left + window.scrollX) + "px";
+    pageMenu.style.top = (top + window.scrollY) + "px";
+    pageMenu.style.minWidth = box.width + "px";
+    var active = pageMenu.querySelector(".active");
+    if (active) pageMenu.scrollTop = active.offsetTop - (pageMenu.clientHeight - active.offsetHeight) / 2; // Without scrolling the page
+    document.addEventListener("click", closePageMenu);
+    document.addEventListener("keydown", closePageMenuOnEscape);
+  }
+  function closePageMenu() {
+    if (pageMenu) pageMenu.remove();
+    pageMenu = null;
+    document.removeEventListener("click", closePageMenu);
+    document.removeEventListener("keydown", closePageMenuOnEscape);
+  }
+  function closePageMenuOnEscape(e) {
+    if (e.key === "Escape") closePageMenu();
+  }
+  // 5, 10, 20, 50, 200 and the total, with the current page size unlinked
+  function updatePageSizes() {
+    if (!pageSizesWrap) return;
+    var total = table.getDataCount();
+    var current = table.getPageSize();
+    var sizes = [5, 10, 20, 50, 200].filter(n => n < total).concat([total]);
+    pageSizesWrap.innerHTML = sizes.map(function(n) {
+      var label = n.toLocaleString();
+      return n === current ? "<span class='active'>" + label + "</span>" : "<a href='#' data-size='" + n + "'>" + label + "</a>";
+    }).join(", ");
+  }
+  // Hides the paginator when one page holds all the rows. Its space is kept, so the row counts stay on the right.
+  // After page size, page and data changes.
+  table.on("renderComplete", function() {
+    var paginatorEl = table.element.querySelector(".tabulator-paginator");
+    if (paginatorEl) paginatorEl.style.visibility = table.getPageMax() > 1 ? "" : "hidden";
+    if (scrollToTopPending) {
+      scrollToTopPending = false;
+      scrollToTableTop();
+    }
+  });
+  // After a row count link: the first row, and the top of the table when it is above the window (or under the sticky header)
+  function scrollToTableTop() {
+    var holder = table.element.querySelector(".tabulator-tableholder");
+    if (holder) holder.scrollTop = 0; // Tables with a maxHeight scroll inside
+    var header = document.getElementById("main-header");
+    var headerHeight = header && getComputedStyle(header).position === "sticky" ? header.offsetHeight : 0;
+    var tableTop = table.element.getBoundingClientRect().top;
+    if (tableTop < headerHeight) {
+      window.scrollTo({top: tableTop + window.scrollY - headerHeight - 70, behavior: "smooth"}); // 70px above, for the table's title
+    }
+  }
+  table.on("pageLoaded", updatePagination);
+  // Keeps the total current when replaceData() swaps in rows
+  table.on("dataProcessed", updatePageSizes);
+  table.on("tableDestroyed", closePageMenu);
+}
+
 // Serialize a key/value object.
 //var params = { width:1680, height:1050 };
 //var str = jQuery.param( params );

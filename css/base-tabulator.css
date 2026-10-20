@@ -121,31 +121,32 @@
 .dark #tabulator-industrytable .tabulator-row.industryRowChosen:hover .tabulator-cell {
     background-color: #5c5129;
 }
-/* Area Industries footer: paginator on the left, row count choices (industryPageSizes in naics.js) on the right */
-#tabulator-industrytable .tabulator-footer .tabulator-paginator {
+/* Tabulator paging from addTabulatorPaging() in localsite.js (Top US Industries, Electricity by State):
+paginator on the left, row count choices (.tabulatorPageSizes) on the right */
+.tabulatorPaging .tabulator-footer .tabulator-paginator {
     text-align: left;
 }
-#tabulator-industrytable .industryPageSizes {
+.tabulatorPaging .tabulatorPageSizes {
     padding-left: 12px;
     font-weight: normal;
 }
-#tabulator-industrytable .industryPageSizes .active {
+.tabulatorPaging .tabulatorPageSizes .active {
     font-weight: bold;
 }
-.dark #tabulator-industrytable .industryPageSizes a {
+.dark .tabulatorPaging .tabulatorPageSizes a {
     color: #9cf;
 }
 /* paginationButtonCount:0 leaves .tabulator-pages empty, but its 7px margins still add space beside the page popup */
-#tabulator-industrytable .tabulator-footer .tabulator-pages {
+.tabulatorPaging .tabulator-footer .tabulator-pages {
     display: none;
 }
-/* "Page 1" box (naics.js). Its tabulator-page class gives it the look of the adjacent buttons. */
-#tabulator-industrytable .industryPageBox {
+/* "Page 1" box. Its tabulator-page class gives it the look of the adjacent buttons. */
+.tabulatorPaging .tabulatorPageBox {
     cursor: pointer;
     white-space: nowrap;
 }
 /* Page list opened by the "Page 1" box. Added to the body, so not scoped to the table. */
-.industryPageMenu {
+.tabulatorPageMenu {
     position: absolute;
     z-index: 1000;
     max-height: 240px;
@@ -158,23 +159,23 @@
     box-shadow: 0 4px 12px rgba(0,0,0,.15);
     font-size: 14px;
 }
-.industryPageMenu div {
+.tabulatorPageMenu div {
     padding: 4px 12px;
     cursor: pointer;
     white-space: nowrap;
 }
-.industryPageMenu div:hover {
+.tabulatorPageMenu div:hover {
     background: #eee;
 }
-.industryPageMenu div.active {
+.tabulatorPageMenu div.active {
     font-weight: bold;
 }
-.dark .industryPageMenu {
+.dark .tabulatorPageMenu {
     background: #333;
     color: #ddd;
     border-color: #666;
     box-shadow: 0 4px 12px rgba(0,0,0,.5);
 }
-.dark .industryPageMenu div:hover {
+.dark .tabulatorPageMenu div:hover {
     background: #444;
 }
