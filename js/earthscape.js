@@ -127,7 +127,6 @@ function earthscape_TableDisplay(my, data) {
         paginationSize: 7,         //allow 7 rows per page of data
         movableColumns: true,      //allow column order to be changed
         resizableRows: true,       //allow row order to be changed
-        scrollHorizontal: true,
     };
     if (my.maxHeight !== false) options.maxHeight = my.maxHeight || "300px"; // For frozenRows
     if (my.columns) {
@@ -177,7 +176,6 @@ function earthscape_TableDisplay2(my, data) {
         paginationSize: 7,
         movableColumns: true,
         resizableRows: true,
-        scrollHorizontal: true,
         layout: "fitColumns",
         columns: [
             { title: "Fips", field: "Fips" },

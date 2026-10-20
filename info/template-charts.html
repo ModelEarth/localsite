@@ -158,14 +158,14 @@ function showIndustryList() {
 <div id="industryHeader" class="contentpadding" style="clear:both;padding-bottom:0px;display:flow-root">
 	<div id="detail_selection" style="float:right;margin-left:10px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;line-height:normal">
 		<div class="georgia local" style="display:none"><select id="catyear" class="picklist" onchange="goHash({'catyear':this.value});">
-		  <option value="2016">2016</option>
-		  <option value="2017">2017</option>
-		  <option value="2018">2018</option>
-		  <option value="2019">2019</option>
-		  <option value="2020">2020</option>
-		  <option value="2021">2021</option>
-		  <option value="2022">2022</option>
 		  <option value="2023" selected>2023</option>
+		  <option value="2022">2022</option>
+		  <option value="2021">2021</option>
+		  <option value="2020">2020</option>
+		  <option value="2019">2019</option>
+		  <option value="2018">2018</option>
+		  <option value="2017">2017</option>
+		  <option value="2016">2016</option>
 		</select></div>
 		<select id="catsize" class="picklist" onchange="goHash({'catsize':this.value});">
 		  <option value="2">Sectors - 2 digits</option>
@@ -237,15 +237,15 @@ function showIndustryList() {
 	<div id="stateEnergySource" class="energy-note" style="margin-top:12px"></div>
 </section>
 
-<!-- One button per state when the hash has several (naics.js). Outside #industryTableHolder, which shows only on localhost and github.io. -->
+<!-- One button per state when the hash has several (naics.js). Outside #industryTableHolder. -->
 <div class="contentpadding" style="padding-top:0;padding-bottom:0">
 	<div id="chooseLocation" role="group" aria-label="Primary state" style="display:none"></div>
 </div>
 
 <!-- v2 -->
 <section id="industryTableHolder" style="display:none;">
-<div class="contentpadding" style="padding-top:0px">
-	<div id="tabulator-industrytable-intro"><b>Area Industries</b> (Visible on localhost) <!-- FIPS and NAICS case sensitive--></div>
+<div id="AreaIndustries" class="contentpadding" style="padding-top:0px">
+	<div id="tabulator-industrytable-intro" style="padding-bottom:5px; display:flex; align-items:baseline; gap:12px"><b>Top US Industries by Payroll</b> <!-- Set by updateIndustryTableTitle() in naics.js. callPromises() adds #industries_details on the right. FIPS and NAICS case sensitive--></div>
 	<div id="tabulator-industrytable-datalink"></div>
 	<div style="clear:both"></div>
 	<div id="tabulator-industrytable"></div><br>
@@ -268,16 +268,6 @@ function showIndustryList() {
 			</div>
 
 			<div id="industryFilters" class="mainColumn mainColumn2 input-output">
-
-				<div style="float:right; font-size: 11px">
-					Data source: U.S. Bureau of Economic Analysis
-				</div>
-
-				<select id="catsort" class="picklist" onchange="goHash({'catsort':this.value});">
-				  <option value="payann" selected>By Annual Payroll</option>
-				  <option value="emp">By Employee Count</option>
-				  <option value="estab">By Establishments</option>
-				</select>
 
 				<div id="topMessage" style="clear:both"></div>
 
@@ -305,7 +295,24 @@ function showIndustryList() {
 				Previously contained:
 				<img src='/localsite/img/icon/loading.gif' style='margin:40px; width:120px'>
 			-->
-			<div id="econ_list"></div><br>
+			<!-- Older state industry list, shown on localhost (localonly in localsite.js). -->
+			<div class="localonly" style="display:none">
+				<!-- href set to the state's folder in loadIndustryData() in naics.js -->
+				<div style="text-align:right; font-size: 11px">
+					Data source: <a id="industryDataSource" href="https://github.com/ModelEarth/community-data/tree/master/us/state" target="_blank">U.S. Bureau of Economic Analysis</a>
+				</div>
+				<div id="econ_list"></div>
+				<div class="econListInfo" style="font-size:13px; margin-top:16px">
+					<b>About this list</b><br>
+					This data is still used by the live site. With a state chosen, loadIndustryData() fetches nine files: the state's industries_state&hellip; files at three code sizes (2, 4 and 6 digit NAICS) and two kinds (_all with a row per county, and _state_all with statewide totals), a county list, the industry ID list and the state's county file.<br><br>topRatesInFips() builds the state's top industries list above (#econ_list, the NAICS rows with payroll, employee and firm counts) from them.<br>The same function also takes the state's top 21 NAICS codes and:
+					<ul style="margin:6px 0">
+						<li>puts them in the hidden hash as the bubble chart's red highlights for that state,</li>
+						<li>passes them to applyIO(), which draws the Supply Chain inflow-outflow chart.</li>
+					</ul>
+					Skipping those files off localhost would remove the state's red bubbles and the state-specific supply chain.<br><br>
+					Alternative: the state's top codes could come from the same national CSV the Area Industries table already loads. The function would filter it to the state, sort by catsort and take the top 21, the way the no-state case already works. The nine files would then only load on localhost, for this list. The rankings might differ slightly from today's, since the old files use their own county-based estimates.
+				</div>
+			</div><br>
 
 </section><!-- /industries -->
 

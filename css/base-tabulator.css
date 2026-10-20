@@ -105,3 +105,76 @@
 .tabulator .tabulator-header .tabulator-col {
     background-color: #eee;
 }
+/* Area Industries rows add or remove their naics in the URL hash when clicked (naics.js). Rows whose naics is in the hash get .industryRowChosen. */
+#tabulator-industrytable .tabulator-row {
+    cursor: pointer;
+}
+#tabulator-industrytable .tabulator-row.industryRowChosen {
+    background-color: #fff1bf;
+}
+#tabulator-industrytable .tabulator-row.industryRowChosen:hover {
+    background-color: #f7e39a !important;
+}
+.dark #tabulator-industrytable .tabulator-row.industryRowChosen .tabulator-cell {
+    background-color: #4d4422;
+}
+.dark #tabulator-industrytable .tabulator-row.industryRowChosen:hover .tabulator-cell {
+    background-color: #5c5129;
+}
+/* Area Industries footer: paginator on the left, row count choices (industryPageSizes in naics.js) on the right */
+#tabulator-industrytable .tabulator-footer .tabulator-paginator {
+    text-align: left;
+}
+#tabulator-industrytable .industryPageSizes {
+    padding-left: 12px;
+    font-weight: normal;
+}
+#tabulator-industrytable .industryPageSizes .active {
+    font-weight: bold;
+}
+.dark #tabulator-industrytable .industryPageSizes a {
+    color: #9cf;
+}
+/* paginationButtonCount:0 leaves .tabulator-pages empty, but its 7px margins still add space beside the page popup */
+#tabulator-industrytable .tabulator-footer .tabulator-pages {
+    display: none;
+}
+/* "Page 1" box (naics.js). Its tabulator-page class gives it the look of the adjacent buttons. */
+#tabulator-industrytable .industryPageBox {
+    cursor: pointer;
+    white-space: nowrap;
+}
+/* Page list opened by the "Page 1" box. Added to the body, so not scoped to the table. */
+.industryPageMenu {
+    position: absolute;
+    z-index: 1000;
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 4px 0;
+    background: #fff;
+    color: #333;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    font-size: 14px;
+}
+.industryPageMenu div {
+    padding: 4px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.industryPageMenu div:hover {
+    background: #eee;
+}
+.industryPageMenu div.active {
+    font-weight: bold;
+}
+.dark .industryPageMenu {
+    background: #333;
+    color: #ddd;
+    border-color: #666;
+    box-shadow: 0 4px 12px rgba(0,0,0,.5);
+}
+.dark .industryPageMenu div:hover {
+    background: #444;
+}

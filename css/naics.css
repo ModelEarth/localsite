@@ -25,6 +25,34 @@
 .dark .sectorListLegendSwatch {
 	color: #d9a3f0; /* Matches the dark purple values below */
 }
+#tabulator-sectortable {
+	width: 100%;
+}
+/* GitHub | Log links at the far right of the Area Industries title (naics.js), in the text color */
+#industries_details {
+	margin-left: auto;
+	font-size: 13px;
+	font-weight: normal;
+	white-space: nowrap;
+}
+#industries_details a, #industries_details a:visited {
+	color: inherit;
+}
+/* Opened by the Log link above the Area Industries table - the naicsTimingLog lines also sent to the inspector (naics.js) */
+.industryLoadTime {
+	font-size: 13px;
+	line-height: 1.6;
+	margin-bottom: 10px;
+	padding: 8px 12px;
+	background: #f4f4f4;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+}
+.dark .industryLoadTime {
+	background: #2a2a2a;
+	border-color: #555;
+	color: #ddd;
+}
 #sector_list {
 	display: table;
 	width: 100%;

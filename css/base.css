@@ -903,6 +903,11 @@ h6 {
   background-color: #333;
   border-bottom: 1px solid transparent;
 }
+/* tabulator.min.css sets #555 on the paginator, which only shows on hover against the dark footer */
+.dark .tabulator .tabulator-footer .tabulator-paginator,
+.dark .tabulator .tabulator-footer .tabulator-page {
+  color: #ddd;
+}
 .dark .tabulator .tabulator-tableholder .tabulator-table {
   background-color: #333;
   color: #fff;

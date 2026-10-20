@@ -1089,9 +1089,6 @@ function hashChanged() {
     if (hash.cat != priorHash.cat) {
         changeCat(hash.cat)
     }
-    if (hash.catsort) {
-        $("#catsort").val(hash.catsort);
-    }
     if (hash.catyear) {
         $("#catyear").val(hash.catyear);
     }
@@ -6013,7 +6010,6 @@ function showTabulatorList(element) {
                         data:dataForTabulator,    //load row data from array of objects
                         layout:"fitColumns",      //fit columns to width of table
                         responsiveLayout:"hide",  //hide columns that dont fit on the table
-                        tooltips:true,            //show tool tips on cells
                         addRowPos:"top",          //when adding a new row, add it to the top of the table
                         history:true,             //allow undo and redo actions on the table
                         movableColumns:true,      //allow column order to be changed
@@ -6022,7 +6018,6 @@ function showTabulatorList(element) {
                         paginationSize:10000,
                         index:statetableIndex,
                         columns:element.columns,
-                        selectable:true,
                         autoResize:false,         //disable auto resize to prevent infinite loop
                     });
 
@@ -6406,7 +6401,6 @@ function showTabulatorList(element) {
                     maxHeight:"500px", // For frozenRows
                     paginationSize:10000,
                     columns:columnArray,
-                    selectable:true,
                     movableRows:true,
                     autoResize:false,         //disable auto resize to prevent infinite loop
                 });
