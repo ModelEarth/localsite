@@ -222,7 +222,11 @@ function showIndustryList() {
 	<div id="stateEnergyIntro" class="energy-note"></div>
 	<div id="stateEnergyCards" class="energy-cards"></div>
 
-	<h3 id="stateEnergyMixTitle">Resource Mix</h3>
+	<div class="energy-heading-row">
+		<h3 id="stateEnergyMixTitle">Resource Mix</h3>
+		<!-- All states: switches the bars between the states and the eGRID subregions -->
+		<button type="button" id="stateEnergyMixToggle" class="btn btn-med" aria-pressed="false" style="display:none">eGRID Subregions</button>
+	</div>
 	<div id="stateEnergyMix"></div>
 
 	<h3 id="stateEnergyRatesTitle">CO<sub>2</sub>e Emission Rate</h3>
@@ -519,6 +523,17 @@ body.stateEnergyView, which hides the inflow-outflow grid (Impact Levels stays).
 	margin: 26px 0 10px 0;
 	font-size: 18px;
 }
+/* A heading with a button after it */
+.energy-heading-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 14px;
+	margin: 26px 0 10px 0;
+}
+#stateEnergy .energy-heading-row h3 {
+	margin: 0;
+}
 .energy-note {
 	font-size: 14px;
 	color: #555;
@@ -576,6 +591,23 @@ body.stateEnergyView, which hides the inflow-outflow grid (Impact Levels stays).
 .energy-mix-states .energy-mix-bar {
 	height: 16px;
 	border-radius: 3px;
+}
+/* State and eGRID subregion names: the rows share one label column (subgrid), as wide as the longest name up to half the width */
+div.energy-mix-names {
+	display: grid;
+	grid-template-columns: fit-content(50%) 1fr;
+}
+div.energy-mix-names > * {
+	grid-column: 1 / -1;
+}
+div.energy-mix-names .energy-mix-row {
+	grid-template-columns: 170px 1fr; /* Without subgrid support */
+	grid-template-columns: subgrid;
+}
+.energy-mix-names .energy-mix-label {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 /* Space between the state bars and the US bar */
 .energy-mix-gap {
@@ -692,6 +724,13 @@ body.stateEnergyView, which hides the inflow-outflow grid (Impact Levels stays).
 	.energy-mix-row.energy-mix-compact, .energy-mix-states .energy-mix-row {
 		grid-template-columns: 36px 1fr;
 		gap: 6px;
+	}
+	div.energy-mix-names {
+		grid-template-columns: fit-content(40%) 1fr;
+	}
+	div.energy-mix-names .energy-mix-row {
+		grid-template-columns: 120px 1fr;
+		grid-template-columns: subgrid;
 	}
 	.energy-rate-row {
 		grid-template-columns: 1fr 64px;
