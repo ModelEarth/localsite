@@ -14,6 +14,15 @@ Define a new object if localsite library does not exist yet.
 //if (window.localsiteLoaded) { // Would need to make sure access to variables is not restricted.
 window.localsiteLoaded = true; // Used by embed.js to avoid double loading localsite.js
 
+// Hides the material-icons names (auto_awesome, bolt...) until markMaterialIconsLoaded() adds .material-icons-loaded.
+// Added inline right away, since base.css (which has the same rule) is added later by includeCSS3 and doesn't hold page rendering.
+if (!document.getElementById('materialIconsHideStyle')) {
+  let iconHideStyle = document.createElement('style');
+  iconHideStyle.id = 'materialIconsHideStyle';
+  iconHideStyle.textContent = "html:not(.material-icons-loaded) .material-icons {display:inline-block; visibility:hidden; overflow:hidden; width:1em; height:1em; line-height:1}";
+  document.head.appendChild(iconHideStyle);
+}
+
 let localsiteTitle = "Localsite";
 var localStart = Date.now(); // A var so waitForVariableNav detects in navigation.js.
 
@@ -2297,9 +2306,14 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       if (canTrackFontLoad) {
         document.fonts.load(font).then(function() {
           markMaterialIconsLoaded();
-        }).catch(function() {});
+        }).catch(function() {
+          markMaterialIconsLoaded(); // Shows the icon names rather than leaving the base.css rule hiding them
+        });
       }
     }();
+  } else {
+    // localsite.js isn't loading the font, so stop hiding the icons
+    document.documentElement.classList.add('material-icons-loaded');
   }
 
 

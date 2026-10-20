@@ -337,6 +337,15 @@ header, footer {
 }
 .localonly {padding:20px; }
 svg{max-width:none;} /* Fix for embedding material icon map points in Drupal */
+/* Hides the icon names (auto_awesome, bolt...) until localsite.js adds .material-icons-loaded once the font loads */
+html:not(.material-icons-loaded) .material-icons {
+  display: inline-block;
+  visibility: hidden;
+  overflow: hidden;
+  width: 1em; /* The icon's loaded width, so the layout doesn't shift */
+  height: 1em;
+  line-height: 1;
+}
 
 @media (max-width: 800px) {
   .hideMobile {display:none;}
@@ -495,6 +504,10 @@ body.dark {
 }
 .dark .impactIcons div.active {
   border-color: #999;
+}
+.dark #navImpactIcons .impactIcons div:not(.active) {
+  border-width: 2px; /* Thicker in dark mode. 1px less padding keeps the button size. */
+  padding: 9px 19px;
 }
 /* A wave across the Topics menu's impact buttons after a thumbnail's radio button is clicked (navigation.js) */
 #navImpactIcons.impactAttention .impactIcons div {

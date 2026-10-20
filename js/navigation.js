@@ -8913,6 +8913,7 @@ function showTopics() {
     //closeExpandedMenus(event.currentTarget);
     if (!$.trim($("#mapList1").html())) { // If the location list is not empty, load the list of types.
         $("#bigThumbMenuInner").appendTo("#listingsPanelScroll");
+        placeThumbLayoutToggle();
         if (!document.getElementById("#bigThumbMenuInner")) {
             let hash = getHash();
             showThumbMenu(hash.show, "#listingsPanelScroll");
@@ -9616,6 +9617,7 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
                     "</div>";
                 $(insertInto).append("<div id='bigThumbMenuInner' class='bigThumbMenuInner" + thumbLayoutClass + "'>" + thumbToggleHtml + sectionMenu + "</div>");
                 $("#bigThumbMenuInner .bigThumbLayoutToggle").append($(".hideApps.close-X").first());
+                placeThumbLayoutToggle();
                 $(document).off('click.bigThumbLayout').on('click.bigThumbLayout', '.bigThumbLayoutBtn', function() {
                     var layout = $(this).attr('data-layout');
                     $('#bigThumbMenuInner').toggleClass('layoutStack', layout === 'stack');
@@ -9667,6 +9669,20 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
     });
 }
 
+// In the Topics menu (#bigThumbMenu), the layout buttons and close X (.bigThumbLayoutToggle) are the right column of
+// #topicsPanel's flex row, after #topicsLeftColumn with the thumbnails and impact set buttons (search-filters.css).
+// Elsewhere, as in the side panel, they lead #bigThumbMenuInner's grid.
+// Called after #bigThumbMenuInner is built or moved.
+function placeThumbLayoutToggle() {
+    const inner = $("#bigThumbMenuInner");
+    const toggle = $(".bigThumbLayoutToggle").first();
+    if (!inner.length || !toggle.length) return;
+    if (inner.parent().is("#bigThumbMenu")) {
+        toggle.insertAfter($("#topicsLeftColumn").length ? $("#topicsLeftColumn") : inner);
+    } else {
+        toggle.prependTo(inner);
+    }
+}
 // Stack layout (#bigThumbMenuInner.layoutStack): fewer columns when the last row would leave blank space,
 // e.g. 5 topics in 3 columns rather than 4. Columns are at least 220px, as in search-filters.css, and stay
 // under 400px, so the rectangles don't get too big (10 topics stay in 3 columns rather than 2).
@@ -10397,6 +10413,7 @@ function showApps(menuDiv) {
                 $("#appSelectHolder .showApps").addClass("filterClickActive"); // Adds to local topics
             });
             $("#bigThumbMenuInner").appendTo(menuDiv);
+            placeThumbLayoutToggle();
             showThumbMenu(hash.show, menuDiv);
             //$('.showApps').addClass("filterClickActive");
             waitForElm('#bigThumbPanelHolder').then((elm) => {

@@ -796,6 +796,8 @@
 
   <!-- Thumbnails and impact set buttons share this background and padding (#topicsPanel in search-filters.css) -->
   <div id="topicsPanel" class="lite">
+  <!-- Left column: thumbnails and impact set buttons. navigation.js placeThumbLayoutToggle() adds the layout buttons and close X as the right column. -->
+  <div id="topicsLeftColumn">
   <div id="honeycombPanelHolder" style="display:flow-root;position:relative"><!-- flow-root contains the floated thumbnails without overflow:auto scrolling -->
   <a name="sections"></a>
   <div id="honeycombPanel" class="filterFields" style="display: block;">
@@ -833,6 +835,7 @@
     </div>
     <div style="clear:both"></div>
   </div>
+  </div><!-- /#topicsLeftColumn -->
   </div><!-- /#topicsPanel -->
 </div>
 </div>

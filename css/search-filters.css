@@ -650,9 +650,6 @@ input.filterClick[type="text"] {
         min-width: 100px;
         max-width: 100px;
     }
-    #geoview_select {
-      displayX: none;
-    }
 }
 @container (max-width: 400px) {
     #catSearchHolder {
@@ -734,6 +731,7 @@ input.filterClick[type="text"] {
 #geomapHolder {
   float:left;
   position: relative;
+  isolation: isolate; /* Keeps the z-index 1000 corner controls (close X, toggles, Leaflet) within the map, below the sticky #main-header */
 }
 #geomapHolder .hideAdvanced.close-X {
   position: absolute;
@@ -864,6 +862,12 @@ input.filterClick[type="text"] {
    which replaces the padding and bottom margin of .bigThumbMenuInner and .contentpadding .bigThumbMenu there */
 #topicsPanel {
     padding: 15px 20px 0 20px; /* The buttons' 15px bottom margin is the bottom space */
+    display: flex; /* #topicsLeftColumn, then the layout buttons and close X (.bigThumbLayoutToggle) as the right column */
+    align-items: stretch;
+}
+#topicsLeftColumn {
+    flex: 1;
+    min-width: 0;
 }
 #bigThumbPanelHolder .bigThumbMenuInner.layoutStack {
     margin-bottom: 10px; /* Below the rectangles */
@@ -875,19 +879,25 @@ input.filterClick[type="text"] {
        on the grid. Its @container rules are for the narrow right-side panel, so they aren't needed in the Topics menu. */
     container-type: normal;
 }
-/* In the Topics menu, the close X and the grid and list buttons form a column at the far right, X first.
-   It's positioned from #honeycombPanelHolder (position:relative, full width), not the centered thumbnail grid,
-   so it stays at the far right whatever the grid's width. */
+/* In the Topics menu, the close X and the list and circles buttons (X first) are the right column of #topicsPanel's
+   flex row, after #topicsLeftColumn (navigation.js placeThumbLayoutToggle). The line between the columns runs from
+   the panel's top to its bottom, beside the thumbnails and the impact set buttons. */
+#bigThumbPanelHolder .bigThumbMenu > .bigThumbMenuInner {
+    flex: 1;
+    min-width: 0;
+}
 #bigThumbPanelHolder .bigThumbLayoutToggle {
-    position: absolute;
-    top: 0;
-    right: -11px; /* Into #topicsPanel's 20px right padding */
-    width: auto;
+    flex: none;
+    align-self: stretch; /* Full height of #topicsPanel's row */
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    margin: 0;
-    padding: 0;
+    margin: -15px -11px 0 6px; /* Up through #topicsPanel's 15px top padding, and into its 20px right padding */
+    padding: 15px 0 0 6px;
+    border-left: 1px solid #ccc;
+}
+.dark #bigThumbPanelHolder .bigThumbLayoutToggle {
+    border-left-color: #888; /* #555 barely showed against the dark panel */
 }
 #bigThumbPanelHolder .bigThumbLayoutToggle .hideApps.close-X {
     order: -1; /* navigation.js appends the X after the layout buttons */
@@ -896,7 +906,6 @@ input.filterClick[type="text"] {
 }
 #bigThumbPanelHolder .bigThumbMenu {
     padding-top: 0;
-    padding-right: 40px; /* Keeps the thumbnails clear of the right column */
 }
 @media (max-width: 600px) {
     #topicsPanel {
@@ -1148,6 +1157,19 @@ input.filterClick[type="text"] {
   align-items: center;
   margin-left: 4px;
 }
+/* Larger touch targets on a narrow screen */
+@media (max-width: 600px) {
+  .bigThumbLayoutToggle .bigThumbLayoutBtn {
+    font-size: 32px;
+    padding: 6px;
+  }
+  .bigThumbLayoutToggle .hideApps.close-X {
+    font-size: 28px;
+  }
+  #bigThumbPanelHolder .bigThumbLayoutToggle {
+    margin-right: 0px; /* Rather than -11px into the panel's right padding */
+  }
+}
 /* When #bigThumbMenuInner itself is narrow (e.g., in the right-side panel),
    force .bigThumbMenuContent to two columns regardless of viewport width. */
 @container bigThumbMenuInner (max-width: 400px) {
@@ -1266,6 +1288,39 @@ input.filterClick[type="text"] {
 @media (max-width: 600px) {
   .bigThumbMenuInner {
     padding: 40px 0 0 0;
+  }
+  /* One column of rectangles. !important beats the inline columns from balanceStackColumns() (navigation.js). The circles keep 2 columns. */
+  .bigThumbMenuInner.layoutStack {
+    grid-template-columns: 1fr !important;
+  }
+  /* Rectangles at 1/3 the height: 15 / 2 rather than 5 / 2 */
+  .bigThumbMenuInner.layoutStack .bigThumbHolder > a {
+    aspect-ratio: 15 / 2;
+    min-height: 30px;
+    max-height: 60px;
+  }
+  .bigThumbMenuInner.layoutStack .bigThumbHolder > a {
+    align-items: stretch; /* The title band covers the rectangle's full height */
+  }
+  .bigThumbMenuInner.layoutStack .bigThumbText {
+    display: flex;
+    align-items: center; /* Title centered vertically in the band */
+    padding-left: 36px; /* Clear of the radio button at the left */
+  }
+  .bigThumbMenuInner.layoutStack .bigThumbStatus {
+    top: 50%;
+    transform: translateY(-50%); /* Centered vertically */
+  }
+  /* The radio buttons keep their light look in dark mode here, over the dark band */
+  .dark #bigThumbMenu .bigThumbMenuInner.layoutStack .bigThumbStatus {
+    background-color: #fff;
+    border-color: #888;
+  }
+  .dark #bigThumbMenu .bigThumbMenuInner.layoutStack .bigThumbSelected {
+    background-color: #ddd;
+  }
+  .dark #bigThumbMenu .bigThumbMenuInner.layoutStack .bigThumbActive .bigThumbSelected {
+    background-color: blue;
   }
 }
 .contentpadding .bigThumbMenuInner {
@@ -1499,8 +1554,4 @@ input.filterClick[type="text"] {
     }
 }
 
-@media (max-width: 600px) {
-    #geoview_select {
-        display: none !important;
-    }
-}
+/* #geoview_select stays visible on a narrow screen */
