@@ -2911,7 +2911,7 @@ function addTabulatorPaging(table) {
   // 5, 10, 20, 50, 200 and the total, with the current page size unlinked
   function updatePageSizes() {
     if (!pageSizesWrap) return;
-    var total = table.getDataCount();
+    var total = table.getDataCount("active"); // Rows remaining after a filter, such as q in naics.js
     var current = table.getPageSize();
     var sizes = [5, 10, 20, 50, 200].filter(n => n < total).concat([total]);
     pageSizesWrap.innerHTML = sizes.map(function(n) {
@@ -2943,6 +2943,7 @@ function addTabulatorPaging(table) {
   table.on("pageLoaded", updatePagination);
   // Keeps the total current when replaceData() swaps in rows
   table.on("dataProcessed", updatePageSizes);
+  table.on("dataFiltered", function() { setTimeout(updatePageSizes, 0); }); // After the filter is applied, for the new active count
   table.on("tableDestroyed", closePageMenu);
 }
 

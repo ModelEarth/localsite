@@ -45,6 +45,16 @@ const stateAbbrByFips = {};
 Object.keys(stateID).forEach(function(abbr) { stateAbbrByFips[String(stateID[abbr]).padStart(2, "0")] = abbr; });
 let nationalRowsCache = {};
 const nationalTopNaicsCount = 50;
+const industryStateLoads = {}; // A state's industry files from loadIndustryData(), by state abbreviation
+const naicsCsvLoads = {};
+// Lookup files (state fips, county ids, a state's counties) load once and are shared, since each hash change reads them again.
+function cachedCsv(url) {
+    if (!naicsCsvLoads[url]) {
+        naicsCsvLoads[url] = d3.csv(url);
+        naicsCsvLoads[url].catch(function() { delete naicsCsvLoads[url]; }); // Allows a retry
+    }
+    return naicsCsvLoads[url];
+}
 
 // INIT
 let priorHash_naicspage = {};
@@ -169,10 +179,11 @@ function refreshNaicsWidget(initialLoad) {
         }
     }
 
-    // Exit if no change to: county (geo), state or topic (show).
+    // Exit if no change to: county (geo), state, topic (show) or search (q).
     // A new topic (Parts, etc.) gets its naics from getNaics_setHiddenHash2() below, for the iogrid and #econ_list.
+    const searchChanged = (hash.q || "") != (priorHash_naicspage.q || "");
     if (!initialLoad) {
-        if (!(hash.geo != priorHash_naicspage.geo || hash.state != priorHash_naicspage.state || hash.show != priorHash_naicspage.show)) {
+        if (!(hash.geo != priorHash_naicspage.geo || hash.state != priorHash_naicspage.state || hash.show != priorHash_naicspage.show || searchChanged)) {
             // Check if display settings changed (catyear, catsort, catsize)
             let displayChanged = hash.catyear != priorHash_naicspage.catyear || hash.catsort != priorHash_naicspage.catsort || hash.catsize != priorHash_naicspage.catsize
                 || hash.catmethod != priorHash_naicspage.catmethod; // The estimate method for unpublished values
@@ -233,6 +244,7 @@ function refreshNaicsWidget(initialLoad) {
     let loadNAICS = false;
     let displaySettingsOnly = false;
     let geoStateOnly = false;
+    let searchOnly = false;
     // The following will narrow the naics to the current location
     
     if (hash.regiontitle != priorHash_naicspage.regiontitle) {
@@ -281,6 +293,8 @@ function refreshNaicsWidget(initialLoad) {
     } else if (hash.x != priorHash_naicspage.x || hash.y != priorHash_naicspage.y || hash.z != priorHash_naicspage.z) {
         loadNAICS = true; // Bubblechart axis change.
         //alert("xyz changed")
+    } else if (searchChanged && !initialNaicsLoad) {
+        searchOnly = true; // Re-filter the loaded rows
     } else {
         if (hash.name && hash.name != priorHash_naicspage.name) {
             console.log("Exit refreshNaicsWidget - not for name change");
@@ -335,6 +349,23 @@ function refreshNaicsWidget(initialLoad) {
             industrytable.replaceData(industryTableRows(hash));
         }
         hash.naics = hiddenhash.naics;
+        priorHash_naicspage = $.extend(true, {}, getHash());
+        initialNaicsLoad = false;
+        return;
+    }
+    if (searchOnly) {
+        // q changed - re-filter #sector_list and the naics it sends to other charts, from the rows already loaded.
+        // filterIndustryTable() re-filters the Area Industries table.
+        if (!hash.catsort) hash.catsort = "payann";
+        if (!hash.catsize) hash.catsize = 6;
+        if (!hash.census_scope) hash.census_scope = 'state';
+        if (hash.state) {
+            loadIndustryData(hash, true); // Reuses the state's loaded files, then topRatesInFips() calls applyIO() with the matching naics
+        } else {
+            if (!industrySearchText()) applyIO(""); // q removed: the supply chain charts return to the entire US
+            setNationalTopNaics(hash); // With q, also sends the matching naics to applyIO()
+            showNationalEconList(hash);
+        }
         priorHash_naicspage = $.extend(true, {}, getHash());
         initialNaicsLoad = false;
         return;
@@ -731,7 +762,7 @@ function loadIndustryData(hash, skipUIReset) {
         hash.state = hash.state.split(",").filter(s => s.length === 2).join(","); // Remove if not 2-char, including state=all
         stateAbbr = hash.state.split(",")[0].toUpperCase();
     }
-    if (!skipUIReset) {
+    if (!skipUIReset && !(stateAbbr && industryStateLoads[stateAbbr.toUpperCase()])) { // A loaded state redraws without the loading icon
         $("#top-content-columns").hide();
         if (stateAbbr) { // Display loading icon
             $("#econ_list").html("<img src='" + local_app.localsite_root() + "img/icon/loading.gif' style='margin:40px; width:120px'><br>");
@@ -764,6 +795,12 @@ function loadIndustryData(hash, skipUIReset) {
         console.log("Load naics promises using " + stateAbbr);
         // "U.S. Bureau of Economic Analysis" links to the folder with the state's industries_state files loaded below
         $("#industryDataSource").attr("href", "https://github.com/ModelEarth/community-data/tree/master/us/state/" + stateAbbr.toUpperCase());
+        // The state's files load once. Changes to show and q re-filter the loaded rows in topRatesInFips().
+        stateAbbr = stateAbbr.toUpperCase();
+        if (industryStateLoads[stateAbbr]) {
+            industryStateLoads[stateAbbr].then(values => promisesReady(values.concat([hash])));
+            return;
+        }
         //alert(local_app.community_data_root() + "us/id_lists/industry_id_list.csv");
         var promises = [
             // OLD VERSION - Removing soon now that new naics county data is ready.
@@ -777,10 +814,11 @@ function loadIndustryData(hash, skipUIReset) {
             d3.tsv(local_app.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics2_state_all.tsv"),
             d3.tsv(local_app.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics4_state_all.tsv"),
             d3.tsv(local_app.community_data_root() + "us/state/" + stateAbbr + "/industries_state"+dataObject.stateshown+"_naics6_state_all.tsv"),
-            d3.tsv(local_app.community_data_root() + "us/state/" + stateAbbr + "/" + stateAbbr + "counties.csv"),
-            hash
+            d3.tsv(local_app.community_data_root() + "us/state/" + stateAbbr + "/" + stateAbbr + "counties.csv")
         ]
-        Promise.all(promises).then(promisesReady);
+        industryStateLoads[stateAbbr] = Promise.all(promises);
+        industryStateLoads[stateAbbr].catch(function() { delete industryStateLoads[stateAbbr]; }); // Allows a retry
+        industryStateLoads[stateAbbr].then(values => promisesReady(values.concat([hash]))); // values[9] is the hash
     }
 }
 // Load timing for the industry rows, sent to the inspector and shown by the Load time link under the Area Industries table.
@@ -899,16 +937,23 @@ function industryTableRows(hash) {
 // The state's top list has 21 (naicshash in topRatesInFips), but the national model's 411 sectors are finer,
 // and several top naics can share a sector, so more are highlighted.
 // A topic (hash.show) keeps its own naics list, and a naics in the URL is a single industry.
+// With q, the naics are the filtered national list (#sector_list): the topic's industries that match q, or the top matches
+// without a topic. They also go to applyIO(), so the supply chain charts follow the filtered list.
 function setNationalTopNaics(hash) {
-    if (hash.state || hash.show || getHashOnly().naics) return;
+    const search = industrySearchText();
+    if (hash.state || getHashOnly().naics || (hash.show && !search)) return;
+    const show = hash.show || "";
+    const topicNaics = nationalTopicNaics(hash);
     const dataFile = getIndustryLocFileString(hash.catsize || 6);
     loadIndustryRows(dataFile).then(function(rows) {
         const current = getHash();
-        if (current.state || current.show || getHashOnly().naics) return; // Changed while loading
-        const topNaics = nationalIndustryRows(rows, current.catsort).slice(0, nationalTopNaicsCount).map(row => row.Naics);
-        if (!topNaics.length) return;
+        if (current.state || getHashOnly().naics || (current.show || "") != show || industrySearchText() != search) return; // Changed while loading
+        const topCount = search ? (current.catcount || 40) : nationalTopNaicsCount; // With q, the same rows as #sector_list
+        const topNaics = nationalListRows(rows, topicNaics, current.catsort, search).slice(0, topCount).map(row => row.Naics);
+        if (!topNaics.length && !search) return; // With q and no match, the highlights are cleared
         console.log("National top naics for the bubble chart, by " + catsortField(current.catsort) + ": " + topNaics.join(","));
         updateHiddenhash({"naics": topNaics.join(",")});
+        if (search) applyIO(topNaics.join(","));
         onElmReady('#bubble-graph-id', function() {
             if (typeof toggleBubbleHighlights === 'function') {
                 const highlightStart = performance.now();
@@ -924,21 +969,29 @@ function setNationalTopNaics(hash) {
 // With no state, #econ_list (the localhost list topRatesInFips() builds for a state) shows the top national industries:
 // the US-census-naics rows summed across the states, limited to the topic's naics (hash.show) when there is one.
 // Topic codes can be shorter or longer than the rows' catsize digits, so a row matches a code that either one starts with.
+function nationalTopicNaics(hash) {
+    return hash.show && hash.naics ? String(hash.naics).split(",").map(code => code.trim()).filter(Boolean) : [];
+}
+// The national rows for the list and the charts: limited to the topic's naics when there is one, then to industries matching q.
+function nationalListRows(rows, topicNaics, catsort, search) {
+    let listRows = nationalIndustryRows(rows, catsort);
+    if (topicNaics.length) {
+        listRows = listRows.filter(row => topicNaics.some(code => code.startsWith(row.Naics) || row.Naics.startsWith(code)));
+    }
+    return listRows.filter(row => industryMatchesSearch(row.Industry, row.Naics, search));
+}
 function showNationalEconList(hash) {
     if (location.host.indexOf('localhost') < 0) return;
     const show = hash.show || "";
-    const topicNaics = show && hash.naics ? String(hash.naics).split(",").map(code => code.trim()).filter(Boolean) : [];
+    const topicNaics = nationalTopicNaics(hash);
     const catcount = hash.catcount || 40;
     const dataFile = getIndustryLocFileString(hash.catsize || 6);
     loadIndustryRows(dataFile).then(function(rows) {
         const current = getHash();
         if (current.state || (current.show || "") != show) return; // Changed while loading
         const field = catsortField(current.catsort);
-        let listRows = nationalIndustryRows(rows, current.catsort);
-        if (topicNaics.length) {
-            listRows = listRows.filter(row => topicNaics.some(code => code.startsWith(row.Naics) || row.Naics.startsWith(code)));
-        }
-        listRows = listRows.slice(0, catcount);
+        const search = industrySearchText();
+        const listRows = nationalListRows(rows, topicNaics, current.catsort, search).slice(0, catcount);
         let text = "<div class='row'><div class='cell'><!-- col 1 -->NAICS</div><div class='cell' style='min-width:300px'><!-- col 2 -->Industry</div>"
             + "<div class='cell-right'>Total Payroll</div><div class='cell' style='text-align:right'>Employees</div><div class='cell' style='text-align:right'>Firms</div></div>";
         listRows.forEach(function(row) {
@@ -951,7 +1004,7 @@ function showNationalEconList(hash) {
         });
         const lowerMessage = listRows.length
             ? "United States totals summed across the states, sorted by " + field + ". Click NAICS number above to view industry's supply chain."
-            : "No national rows found for this topic's industries.";
+            : search ? industryNoMatchText(search) : "No national rows found for this topic's industries.";
         onElmReady('#econ_list', function() {
             $("#top-content-columns").show();
             $("#econ_list").html("<div id='sector_list'>" + text + "</div><br><p style='font-size:13px'>" + lowerMessage + "</p>").show();
@@ -969,7 +1022,7 @@ function promisesReady(values) {
     //alert("temp uncomented: #industryListHolder")
     //$("#industryListHolder").show();
 
-    d3.csv(local_app.community_data_root() + "us/id_lists/state_fips.csv").then( function(consdata) {
+    cachedCsv(local_app.community_data_root() + "us/id_lists/state_fips.csv").then( function(consdata) {
         var filteredData = consdata.filter(function(d) {
             if (d["FIPS"]==String(dataObject.stateshown)) {
                 //let hash = loadParams(location.search,location.hash);
@@ -1314,7 +1367,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
 
     // Redirect occurs somewhere below....
     //alert("dataObject.stateshown " + dataObject.stateshown)
-    d3.csv(local_app.community_data_root() + "us/id_lists/state_fips.csv").then( function(consdata) {
+    cachedCsv(local_app.community_data_root() + "us/id_lists/state_fips.csv").then( function(consdata) {
         console.log("naics.js reports state_fips.csv loaded");
         var filteredData = consdata.filter(function(d) { // Loop through
             if (d["FIPS"]==String(dataObject.stateshown)) {
@@ -1596,6 +1649,13 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                     }
                 }
 
+                // q in the URL hash limits the list, and the naics it sends to the bubble chart and applyIO(), to matching industries
+                const industrySearch = industrySearchText();
+                if (industrySearch) {
+                    top_data_list = top_data_list.filter(row => industryMatchesSearch(row.data_id, row.NAICScode, industrySearch));
+                    top_data_ids = top_data_ids.filter(id => industryMatchesSearch(dataNames[id], id, industrySearch));
+                }
+
                 consoleLog("naics.js top_data_list: ");
                 console.log(top_data_list);
 
@@ -1621,8 +1681,8 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                 
                 //BUGBUG - Contains all the counties in the US
                 // Do we need to load counties if entire state is being displayed?
-                d3.csv(local_app.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {
-                    d3.csv(local_app.community_data_root() + "us/state/" + stateAbbr + "/" + stateAbbr + "counties.csv").then( function(latdata) {
+                cachedCsv(local_app.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {
+                    cachedCsv(local_app.community_data_root() + "us/state/" + stateAbbr + "/" + stateAbbr + "counties.csv").then( function(latdata) {
                          // TABLE HEADER ROW
                          //alert("countiesCount " + countiesCount + " fips.length: " + fips.length);
                          // && countiesCount != fips.length
@@ -1659,7 +1719,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                             //consoleLog("Industry matches found (max of " + catcount + "): " + naicsRowCount);
 
                             // TO DO - change to let naics narrow results
-                            if (naicsRowCount == 0 && hash.naics) { // NAICS from parameters or URL hash
+                            if (naicsRowCount == 0 && hash.naics && !industrySearch) { // NAICS from parameters or URL hash. Not when q matches none.
                                 naicshash = hash.naics;
                             }
 
@@ -1935,8 +1995,13 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                                 $("#top-content-columns").show();
                                 $("#econ_list").html(legend + "<div id='sector_list'>" + text + "</div><br><p style='font-size:13px'>" + lowerMessage + "</p>");
                             });
+                        } else if (industrySearch) { // Replaces the prior list
+                            onElmReady('#econ_list', function() {
+                                $("#top-content-columns").show();
+                                $("#econ_list").html("<div id='sector_list'></div><p style='font-size:13px'>" + industryNoMatchText(industrySearch) + "</p>");
+                            });
                         }
-                        $("#econ_list").show(); 
+                        $("#econ_list").show();
                         $("#econ_list div").show(); // Do we need?
 
                         consoleLog('send naics to #industry-list data-naics attribute: ' + naicshash)
@@ -1993,7 +2058,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
 
                     })
                 })
-                d3.csv(local_app.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {
+                cachedCsv(local_app.community_data_root() + "us/id_lists/county_id_list.csv").then( function(consdata) {
                     //document.getElementById("industryheader").text = ""; // Clear initial.
                     $(".location_titles").text(""); //Clear
 
@@ -2704,6 +2769,7 @@ function showSectorTabulatorList(attempts) {
 // From naics2.js for v2
 
 var industrytable = {};
+let industryTableBuilt = false; // setFilter() needs the built table
 function showIndustryTabulatorList(attempts) {
     let hash = getHash();
     if (typeof Tabulator !== 'undefined') {
@@ -2731,6 +2797,13 @@ function showIndustryTabulatorList(attempts) {
         
         // Area Industries - the selected state's rows, or the national totals that start with the bubble chart's red bubbles
         let tabulatorData = industryTableRows(hash);
+        // A built table takes the new rows rather than being rebuilt, as when show changes. Its q filter, sort and page size stay.
+        const tableHolder = document.getElementById("tabulator-industrytable");
+        if (industryTableBuilt && tableHolder && tableHolder.contains(industrytable.element)) {
+            industrytable.replaceData(tabulatorData);
+            return;
+        }
+        industryTableBuilt = false;
         const tableStart = performance.now();
         industrytable = new Tabulator("#tabulator-industrytable", {
             data:tabulatorData,
@@ -2784,6 +2857,8 @@ function showIndustryTabulatorList(attempts) {
             }
         });
         industrytable.on("tableBuilt", function() {
+            industryTableBuilt = true;
+            filterIndustryTable();
             updateIndustryTableTitle(industrytable.getSorters());
             naicsTimingLog("Built the Area Industries table with " + tabulatorData.length + (hash.state ? " " + hash.state.split(",")[0].toUpperCase() + " rows" : " national rows"), tableStart);
         });
@@ -2835,6 +2910,34 @@ function markChosenIndustryRows() {
 }
 document.addEventListener("hashChangeEvent", markChosenIndustryRows);
 
+// q in the URL hash (the search box) limits Area Industries to industry names containing it, or naics codes starting with it.
+// The filter stays in place when replaceData() swaps in another state's rows.
+// The same q also filters #sector_list in topRatesInFips() and showNationalEconList(), and the naics they send to other charts.
+function industrySearchText() {
+    return String(getHash().q || "").replace(/\+/g, " ").trim(); // updateHash (URLSearchParams) writes spaces as +
+}
+function industryMatchesSearch(title, naics, search) {
+    search = String(search || "").toLowerCase();
+    return !search || String(title || "").toLowerCase().includes(search) || String(naics || "").startsWith(search);
+}
+function industryNoMatchText(search) {
+    return "No industries match \"" + $("<div>").text(search).html() + "\".";
+}
+let priorIndustrySearch = "";
+function filterIndustryTable() {
+    if (!industryTableBuilt || typeof industrytable.setFilter !== "function") return;
+    const q = industrySearchText().toLowerCase();
+    priorIndustrySearch = q;
+    if (q) {
+        industrytable.setFilter(row => industryMatchesSearch(row.Industry, row.Naics, q));
+    } else {
+        industrytable.clearFilter();
+    }
+}
+document.addEventListener("hashChangeEvent", function() {
+    if (industrySearchText().toLowerCase() !== priorIndustrySearch) filterIndustryTable();
+});
+
 // Area Industries title, such as "Top US Industries by Payroll" or "Top Georgia Industries by Employees".
 // "Top" only when sorted high to low on a number column. With several states or counties: "Top Industries by Payroll".
 // The table shows a state's rows for a county, so one county uses the state name.
@@ -2856,7 +2959,8 @@ function updateIndustryTableTitle(sorters) {
         place = ((typeof getState === "function" && getState(stateAbbr)) || stateAbbr) + " ";
     }
     const isNumber = ["Payroll", "Employees", "Establishments"].includes(field);
-    const title = (isNumber && dir === "desc" ? "Top " : "") + place + "Industries by " + (industrySortLabels[field] || field);
+    const search = industrySearchText();
+    const title = (isNumber && dir === "desc" ? "Top " : "") + place + "Industries by " + (industrySortLabels[field] || field) + (search ? " for " + search : "");
     $("#tabulator-industrytable-intro b").first().text(title);
 }
 document.addEventListener("hashChangeEvent", function() { updateIndustryTableTitle(); });

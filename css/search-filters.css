@@ -1058,8 +1058,7 @@ input.filterClick[type="text"] {
   width: 18px;
 
   background-color: #fff;
-  border-radius: 50%;
-  border: 1px solid #888;
+  border-radius: 50%; /* No border in light mode, which would narrow the white ring around .bigThumbSelected */
   display: flex; /* Centers .bigThumbSelected, which was off center where the text is left aligned (stack layout) */
   align-items: center;
   justify-content: center;
@@ -1074,7 +1073,7 @@ input.filterClick[type="text"] {
   display: inline-block;
 }
 .bigThumbActive .bigThumbSelected {
-  background-color: blue;
+  background-color: var(--accent-orange, #F59E0B);
 }
 .bigThumbSecondary {
     color: #fff;
@@ -1097,15 +1096,11 @@ input.filterClick[type="text"] {
 .dark #bigThumbMenu .bigThumbHolder a:visited:hover {
   color: #fff;
 }
-.dark #bigThumbMenu .bigThumbStatus {
-  background-color: #444;
-  border-color: #999;
-}
 .dark #bigThumbMenu .bigThumbSelected {
   background-color: #777;
 }
 .dark #bigThumbMenu .bigThumbActive .bigThumbSelected {
-  background-color: #4a9eff;
+  background-color: orange;
 }
 .bigThumbMenuInner {
   display: grid;
@@ -1314,13 +1309,12 @@ input.filterClick[type="text"] {
   /* The radio buttons keep their light look in dark mode here, over the dark band */
   .dark #bigThumbMenu .bigThumbMenuInner.layoutStack .bigThumbStatus {
     background-color: #fff;
-    border-color: #888;
   }
   .dark #bigThumbMenu .bigThumbMenuInner.layoutStack .bigThumbSelected {
     background-color: #ddd;
   }
   .dark #bigThumbMenu .bigThumbMenuInner.layoutStack .bigThumbActive .bigThumbSelected {
-    background-color: blue;
+    background-color: var(--accent-orange, #F59E0B);
   }
 }
 .contentpadding .bigThumbMenuInner {

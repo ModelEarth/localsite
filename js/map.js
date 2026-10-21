@@ -1126,6 +1126,60 @@ let subcatObject = {};
 let subcatArray = [];
 let subcatList = "";
 
+// The first of the candidate column names in the dataset, as the data spells it (matched ignoring case), or "".
+// Only columns with a value in the first 100 rows.
+function findDataColumn(dp, candidates) {
+  const rows = (dp.data || []).slice(0, 100);
+  if (!rows.length) return "";
+  const columns = Object.keys(rows[0]);
+  for (const candidate of candidates) {
+    const column = candidate && columns.find(col => col.toLowerCase() == String(candidate).toLowerCase());
+    if (column && rows.some(row => String(row[column] || "").trim())) return column;
+  }
+  return "";
+}
+
+// The dataset's title and description columns, as showList() displays them, for a keyword search with no columns checked.
+function defaultSearchColumns(dp) {
+  const titleColumn = findDataColumn(dp, [dp.titleColumn, dp.nameColumn, "name", "title"]);
+  const descriptionColumn = findDataColumn(dp, [dp.description, "description", "business description"]);
+  return [titleColumn, descriptionColumn].filter(Boolean);
+}
+
+// Search checkbox choices: {label: column}. The description column first, then the dataset's dp.search columns,
+// followed by the title and other useful columns in the data that dp.search leaves out.
+function searchColumnChoices(dp) {
+  let choices = {};
+  const descriptionColumn = findDataColumn(dp, [dp.description, "description", "business description"]);
+  if (descriptionColumn) {
+    // Keeps dp.search's label when it has the description column
+    const searchLabel = Object.keys(dp.search || {}).find(label => String(dp.search[label]).toLowerCase() == descriptionColumn.toLowerCase());
+    choices[searchLabel || "In Description"] = descriptionColumn;
+  }
+  Object.assign(choices, dp.search);
+  const listed = Object.values(choices).map(col => String(col).toLowerCase());
+  function addChoice(column) {
+    if (!column || listed.includes(column.toLowerCase())) return;
+    listed.push(column.toLowerCase());
+    choices["In " + capitalizeFirstLetter(column)] = column;
+  }
+  defaultSearchColumns(dp).forEach(addChoice);
+  [
+    [dp.catColumn, "category"],
+    [dp.subcatColumn, "subcategory"],
+    [dp.valueColumn],
+    [dp.itemsColumn, "products", "items"],
+    [dp.keywords, "keywords", "tags"],
+    ["type"],
+    [dp.addressColumn, "address", "street"],
+    ["city"],
+    [dp.countyColumn, "county"],
+    ["zip", "zip code", "postal code"],
+    ["website", "website url", "url"]
+  ].forEach(candidates => addChoice(findDataColumn(dp, candidates)));
+  return choices;
+}
+
 function showList(dp,map) {
   console.log("showList");
   console.log("Call showList for " + dp.dataTitle + " list");
@@ -1175,7 +1229,8 @@ function showList(dp,map) {
   console.log("Clear prior list results");
   $("#detaillist").text(""); // Clear prior results
   $("#detaillist").remove(); // Used to trigger waitfor
-  if (dp.search && $("#activeLayer").text() != dp.dataTitle) { // Only set when active layer changes, otherwise selection overwritten on change.
+  const searchChoices = searchColumnChoices(dp); // dp.search plus the data's title, description and other useful columns
+  if (Object.keys(searchChoices).length && $("#activeLayer").text() != dp.dataTitle) { // Only set when active layer changes, otherwise selection overwritten on change.
     let search = [];
     if (param["search"]) {
       search = param["search"].replace(/\+/g," ").toLowerCase().split(",");
@@ -1185,7 +1240,7 @@ function showList(dp,map) {
       //alert("Render checkboxes " + hash.show + " priorHash.show " + priorHash.show);
       let checkCols = "";
       let checked = "";
-      $.each(dp.search, function( key, value ) {
+      $.each(searchChoices, function( key, value ) {
         checked = "";
         if (search.length == 0) {
           checked = "checked"; // No hash value limiting to specific columns.
@@ -1270,13 +1325,25 @@ function showList(dp,map) {
   }
 
   let selected_col = [];
-  selected_col = $('.selected_col:checked').map(function() {return this.id;});
+  selected_col = $('.selected_col:checked').map(function() {return this.id;}).get();
   //let selected_columns_object = {}; // For count of each
 
   if (selected_col.length == 0 && keyword && keyword != allItemsPhrase && products_array.length == 0) {
-    $("#keywordFields").show();
-    if (location.host.indexOf('localhost') >= 0) {
-      alert("LOCAL: Please check at least one column to search.");
+    // Default to searching the dataset's title and description columns, and check their boxes
+    selected_col = defaultSearchColumns(dp);
+    selected_col.forEach(function(col) {
+      let checkbox = $('.selected_col').filter(function() {return this.id == col;});
+      if (!checkbox.length) { // The checkboxes were not rendered
+        $("#selected_col_checkboxes").append('<div><input type="checkbox" class="selected_col" name="in" id="' + col + '"><label for="' + col + '" class="filterCheckboxTitle"> In ' + col + '</label></div>');
+        checkbox = $('.selected_col').filter(function() {return this.id == col;});
+      }
+      checkbox.prop("checked", true);
+    });
+    if (selected_col.length == 0) {
+      $("#keywordFields").show();
+      if (location.host.indexOf('localhost') >= 0) {
+        alert("LOCAL: Please check at least one column to search.");
+      }
     }
   }
   var data_sorted = []; // An array of objects
@@ -1543,12 +1610,13 @@ function showList(dp,map) {
 
         //console.log('Search for "' + keyword.toLowerCase().replace(/\_/g," ") + '" - Fields to search: ' + JSON.stringify(dp.search));
         
-        if (typeof dp.search != "undefined") { // An object containing interface labels and names of columns to search.
+        if (selected_col.length > 0 || Object.keys(searchChoices).length) { // searchChoices is an object containing interface labels and names of columns to search.
 
           //console.log("Search in selected_col ")
           //console.log(selected_col)
 
-          $.each(dp.search, function( key, value ) { // Works for arrays and objects. key is the index value for arrays.
+          // The checked columns, otherwise all the search choices
+          $.each(selected_col.length > 0 ? selected_col : searchChoices, function( key, value ) { // Works for arrays and objects. key is the index value for arrays.
             //console.log(value + " " + elementRaw[value]);
             //selected_columns_object[key] = 0;
             if (elementRaw[value]) {

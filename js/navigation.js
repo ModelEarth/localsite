@@ -4220,7 +4220,7 @@ if (typeof $ !== 'undefined') {
         let search = $('.selected_col:checked').map(function() {return this.id;}).get().join(',');
         // TODO: set search to empty array if all search boxes are checked.
         if(!hash.show && location.href.indexOf('/localsite/info/') < 0) {
-            updateHash({"geoview":""});
+            updateHash({"q":searchQuery,"geoview":""}); // Keeps the search term for the info page
             window.location = localsitePath("info/") + location.hash;
             return;
         }
@@ -7085,14 +7085,11 @@ function SearchFormTextCheck(t, dirn) {
 }
 
 function SearchEnter(event1) {
-    var kCode = String.fromCharCode(event1.keyCode);
-    ////if (kCode == "\n" || kCode == "\r") {
-
-        // Reactivate on pages where auto-update appropriate.
-        //$("#goSearch").click();
-
-    ////    return false;
-    ////}
+    // Enter in #keywordsTB (map/filter.html) runs the search, as the GO button does
+    if (event1.key === "Enter" && event1.target && event1.target.id === "keywordsTB") {
+        $('.autocomplete-results[data-autocomplete-owner="keywordsTB"]').empty(); // Close the suggestions
+        $("#goSearch").trigger("click");
+    }
 }
 function isInt(value) {
   var x;
@@ -7607,13 +7604,36 @@ function displayHexagonMenu(layerName, localObject) {
 var pendingThumb = null; // {show, path} or {href} of the selected thumbnail
 document.addEventListener('click', function(e) {
     const radio = e.target.closest ? e.target.closest('#bigThumbMenu .bigThumbStatus') : null;
-    if (!radio || !document.getElementById('navImpactIcons')) return;
+    if (!radio) return;
+    const content = radio.closest('.bigThumbMenuContent');
+    const show = content ? content.getAttribute('show') : "";
+    if (content && content.classList.contains('bigThumbActive')) { // Clicked again: unselect
+        // Capture phase: runs before the link's thumbClick onclick and the .bigThumbHolder handler that closes the menu
+        e.preventDefault();
+        e.stopPropagation();
+        pendingThumb = null;
+        $(content).removeClass("bigThumbActive");
+        const impactButtons = document.getElementById('navImpactIcons');
+        if (impactButtons) impactButtons.classList.remove('impactAttention');
+        if (getHashOnly().show == show) {
+            // As in submitThumb when show changes
+            delete hiddenhash.show;
+            delete hiddenhash.naics;
+            delete param.show;
+            if (typeof params != 'undefined') {
+                delete params.show;
+            }
+            goHash({show: ""}); // "" removes show from the hash
+        } else { // Only selected, not yet submitted: the hash's show is selected again
+            $(".bigThumbMenuContent[show='" + getHashOnly().show + "']").addClass("bigThumbActive");
+        }
+        return;
+    }
+    if (!document.getElementById('navImpactIcons')) return;
     // Capture phase: runs before the link's thumbClick onclick and the .bigThumbHolder handler that closes the menu
     e.preventDefault();
     e.stopPropagation();
-    const content = radio.closest('.bigThumbMenuContent');
     const link = radio.closest('a');
-    const show = content ? content.getAttribute('show') : "";
     const onclickMatch = link && String(link.getAttribute('onclick') || "").match(/thumbClick\('([^']*)','([^']*)'\)/);
     if (onclickMatch) {
         pendingThumb = {show: onclickMatch[1], path: onclickMatch[2]};
