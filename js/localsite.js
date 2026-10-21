@@ -1624,6 +1624,10 @@ function loadLocalTemplate() {
   waitForElm(datascapeFileDiv).then((elm) => {
 
     $.get(datascapeFile, function(theTemplate) { // Get and append template-main.html to #datascape
+      if (document.getElementById("templateLoaded")) { // Already appended by an earlier call. A second copy duplicates ids like #mainframe.
+        consoleLog("loadLocalTemplate skipped, template-main.html is already on the page");
+        return;
+      }
       $(theTemplate).appendTo(datascapeFileDiv);
 
       // On pages with a hero (localsite/info), #hero_holder moves into #heroHolderPlaceholder (template-main.html),
@@ -3187,16 +3191,37 @@ function showGlobalMap(globalMap) { // Used by community/index.html, green-sah
   // Chem Currents NO2 - Since Wind makes NO2 clouds hard to see
   //loadIframe("mainframe","https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
 }
-function loadIframe(iframeName, url) {  
-  var $iframe = $('#' + iframeName);
-  if ($iframe.length) {
-      //alert("loadIframe" + url)
-      $iframe.attr('src',url);
-      $("#mainEarthDisplay #mainbucket").show();
-      $(".earth-zoom-controls").show();
-      return false;
+// true: a nullschool time or place change only swaps the iframe's #hash (no reload). false: the iframe reloads for each change.
+var earthIframeHashOnly = false;
+function loadIframe(iframeName, url) {
+  // If the id is on the page twice, update the visible iframe. $('#id') would only return the first.
+  var $iframes = $('[id="' + iframeName + '"]');
+  var $iframe = $iframes.filter(':visible').first();
+  if (!$iframe.length) $iframe = $iframes.first();
+  if (!$iframe.length) return true;
+  var priorSrc = $iframe.attr('src') || '';
+  var isEarthChange = url.indexOf('earth.nullschool.net') >= 0 && priorSrc.indexOf('earth.nullschool.net') >= 0;
+  if (isEarthChange && (priorSrc.split('#')[1] || '') === (url.split('#')[1] || '')) return false; // Already showing this time and place
+  var swappedHash = false;
+  if (isEarthChange && earthIframeHashOnly && $iframe[0].contentWindow) {
+    try {
+      // The parent page may navigate a cross-origin iframe. Keeping the iframe's own address before the # makes this a #hash change,
+      // and replace() keeps each step out of the Back history.
+      url = priorSrc.split('#')[0] + '#' + (url.split('#')[1] || '');
+      $iframe[0].contentWindow.location.replace(url);
+      swappedHash = true;
+    } catch (e) {
+      consoleLog("loadIframe #hash swap failed, reloading the map instead: " + e.message);
+    }
   }
-  return true;
+  if (isEarthChange && !swappedHash) {
+    // Reload fallback: a new query value before the # makes the iframe load the url
+    url = url.replace(/^(https?:\/\/earth\.nullschool\.net\/)[^#]*/, '$1?reload=' + Date.now());
+  }
+  $iframe.attr('src', url); // After a #hash swap this matches the iframe's address, so it doesn't navigate again
+  $("#mainEarthDisplay #mainbucket").show();
+  $(".earth-zoom-controls").show();
+  return false;
 }
 
 

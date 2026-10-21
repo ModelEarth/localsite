@@ -21,12 +21,13 @@
   pointer-events: auto;
   z-index: 3;
 }
-#earth-date-picker {
+#earth-date-picker { /* Two-column grid, so the slider and speed selects match the widths of the date and time above them */
   position: absolute;
   right: 10px;
   top: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
   gap: 6px;
   background: rgba(10,16,22,.88);
   border: 1px solid rgba(255,255,255,.2);
@@ -37,9 +38,7 @@
   white-space: nowrap;
 }
 #earth-date-picker .earth-picker-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  display: contents; /* Each row's two fields become cells of the popup's grid */
 }
 #earth-date-picker input[type="date"],
 #earth-date-picker select {
@@ -55,14 +54,16 @@
   vertical-align: middle;
   margin: 0;
   padding: 0 6px;
+  width: 100%; /* Fill the grid column */
 }
 #earth-speed-select {
   min-width: 53px !important;
-  width: 53px;
   height: 17px !important;
   font-size: 13px !important;
   line-height: 17px;
   padding: 0 3px !important;
+  text-align: right;
+  text-align-last: right; /* Right-aligns the selected value shown in the select */
 }
 #earth-date-picker input[type="date"] { height: 32px; }
 #earth-date-picker input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
@@ -246,13 +247,22 @@ body.dark:has(#slider-on-map) #upIconTray #headerIcons .playPauseButton:focus {
 #slider-toggle-wrap {
   position: absolute;
   z-index: 100;
-  right: 10px;
-  bottom: 10px;
+  right: 6px;
+  bottom: 6px;
   display: flex;
   align-items: center;
   gap: 6px;
+  padding: 4px 8px 4px 8px;
+  margin-right: 3px;
+  border-radius: 6px;
+  cursor: pointer;
   pointer-events: auto;
+  transition: background-color .15s;
 }
+#slider-toggle-wrap:hover,
+#slider-toggle-wrap:focus-visible { background-color: rgba(85,85,85,.6); outline: none; } /* Transparent #555 */
+#slider-toggle-wrap:hover #slider-toggle-btn,
+#slider-toggle-wrap:focus-visible #slider-toggle-btn { color: #fff; opacity: 1; } /* Clock icon turns white anywhere over the wrap */
 #slider-toggle-date {
   color: #fff;
   font-size: 12px;
@@ -261,7 +271,6 @@ body.dark:has(#slider-on-map) #upIconTray #headerIcons .playPauseButton:focus {
   text-shadow: 0 1px 3px rgba(0,0,0,.7);
   line-height: 1;
 }
-#slider-toggle-date:hover { text-decoration: underline; }
 .earth-zoom-controls .earth-control-zoom { margin-top: 16px; margin-right: -9px; }
 .earthCircleIcons {
   cursor: pointer;
