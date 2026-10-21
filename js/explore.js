@@ -384,7 +384,7 @@ function displayCharts(param) {
 
             // Display other files as downloadable links
             let hasOtherFiles = false;
-            let filesHTML = '<div class="file-list"><h3>📁 Additional Files</h3><ul>';
+            let filesHTML = '<div class="file-list"><h3>📁 Generated Files</h3><ul>';
 
             // Add markdown/text files
             if (mdFiles.length > 0) {

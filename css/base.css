@@ -4179,13 +4179,11 @@ body.sidebar-hidden #openNav {
   border-color: #007bff;
   background: #f8f9fa;
 }
-.dark .menuToggleHolderInline {
-  background: #333;
-  border-color: #555;
-}
+/* No box in dark mode: the toggle's icon already sits in a circle */
+.dark .menuToggleHolderInline,
 .dark .menuToggleHolderInline:hover {
-  border-color: #007bff;
-  background: #444;
+  background: transparent;
+  border-color: transparent;
 }
 .menuToggleHolderMap {
   position: relative;
