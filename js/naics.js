@@ -169,9 +169,10 @@ function refreshNaicsWidget(initialLoad) {
         }
     }
 
-    // Exit if no change to: county (geo) or state.
+    // Exit if no change to: county (geo), state or topic (show).
+    // A new topic (Parts, etc.) gets its naics from getNaics_setHiddenHash2() below, for the iogrid and #econ_list.
     if (!initialLoad) {
-        if (!(hash.geo != priorHash_naicspage.geo || hash.state != priorHash_naicspage.state)) {
+        if (!(hash.geo != priorHash_naicspage.geo || hash.state != priorHash_naicspage.state || hash.show != priorHash_naicspage.show)) {
             // Check if display settings changed (catyear, catsort, catsize)
             let displayChanged = hash.catyear != priorHash_naicspage.catyear || hash.catsort != priorHash_naicspage.catsort || hash.catsize != priorHash_naicspage.catsize
                 || hash.catmethod != priorHash_naicspage.catmethod; // The estimate method for unpublished values
@@ -363,6 +364,7 @@ function refreshNaicsWidget(initialLoad) {
             industrytable.setSort(catsortField(hash.catsort), "desc");
         }
         setNationalTopNaics(hash); // Red bubbles follow the new sort, year or naics size
+        if (!hash.state) showNationalEconList(hash);
 
         priorHash_naicspage = $.extend(true, {}, getHash());
         initialNaicsLoad = false;
@@ -390,14 +392,8 @@ function refreshNaicsWidget(initialLoad) {
             }
         } else if (!hash.state) {
             $("#industryListHolder").show();
-            //$("#industries").html("<div class='contentpadding' style='padding-top:10px; padding-bottom:10px'>Select a location above for industry and impact details.</div>");
-
-            $("#econ_list").hide(); // Hides loading icon when no state
-
-            // Replaces loading icon
-            //waitForElm('#econ_list').then((elm) => {
-            //    $("#econ_list").html("<div class='contentpadding' style='padding-top:10px; padding-bottom:10px'>Select a location above for industry and impact details.</div>");
-            //});
+            $("#industryDetail").hide();
+            // #econ_list shows the national industries on localhost, from showNationalEconList() in loadIndustryData()
         } else {
             $("#industryListHolder").show();
             $("#industryDetail").hide();
@@ -757,6 +753,7 @@ function loadIndustryData(hash, skipUIReset) {
         //alert("no state") // applyIO will update to US industry charts
         applyIO(""); // Loads "Supply Chain Inflow-Outflow" for entire US.
         setNationalTopNaics(hash); // Red bubbles in the bubble chart
+        showNationalEconList(hash); // Top national industries in #econ_list, on localhost
 
         //console.log("ALERT - Hid bubble chart until we send it 73 sectors")
         //$("#bubble-graph-id").hide();
@@ -921,6 +918,46 @@ function setNationalTopNaics(hash) {
         });
     }).catch(function(error) {
         console.warn("setNationalTopNaics could not load " + dataFile, error);
+    });
+}
+
+// With no state, #econ_list (the localhost list topRatesInFips() builds for a state) shows the top national industries:
+// the US-census-naics rows summed across the states, limited to the topic's naics (hash.show) when there is one.
+// Topic codes can be shorter or longer than the rows' catsize digits, so a row matches a code that either one starts with.
+function showNationalEconList(hash) {
+    if (location.host.indexOf('localhost') < 0) return;
+    const show = hash.show || "";
+    const topicNaics = show && hash.naics ? String(hash.naics).split(",").map(code => code.trim()).filter(Boolean) : [];
+    const catcount = hash.catcount || 40;
+    const dataFile = getIndustryLocFileString(hash.catsize || 6);
+    loadIndustryRows(dataFile).then(function(rows) {
+        const current = getHash();
+        if (current.state || (current.show || "") != show) return; // Changed while loading
+        const field = catsortField(current.catsort);
+        let listRows = nationalIndustryRows(rows, current.catsort);
+        if (topicNaics.length) {
+            listRows = listRows.filter(row => topicNaics.some(code => code.startsWith(row.Naics) || row.Naics.startsWith(code)));
+        }
+        listRows = listRows.slice(0, catcount);
+        let text = "<div class='row'><div class='cell'><!-- col 1 -->NAICS</div><div class='cell' style='min-width:300px'><!-- col 2 -->Industry</div>"
+            + "<div class='cell-right'>Total Payroll</div><div class='cell' style='text-align:right'>Employees</div><div class='cell' style='text-align:right'>Firms</div></div>";
+        listRows.forEach(function(row) {
+            const payroll = row.Payroll >= 1000000 ? (row.Payroll/1000000).toFixed(2) + " billion" : (row.Payroll/1000).toFixed(2) + " million"; // Payroll is in $1,000s
+            text += "<div class='row'><div class='cell'><a href='#naics=" + row.Naics + "' onClick='goHash({\"naics\":" + row.Naics + "}); return false;' style='color:#aaa;white-space:nowrap'>" + row.Naics + "</a></div>"
+                + "<div class='cell'>" + String(row.Industry || "").replace("Other ","") + "</div>"
+                + "<div class='cell-right'>" + payroll + "</div>"
+                + "<div class='cell-right'>" + Math.round(row.Employees).toLocaleString() + "</div>"
+                + "<div class='cell-right'>" + Math.round(row.Establishments).toLocaleString() + "</div></div>";
+        });
+        const lowerMessage = listRows.length
+            ? "United States totals summed across the states, sorted by " + field + ". Click NAICS number above to view industry's supply chain."
+            : "No national rows found for this topic's industries.";
+        onElmReady('#econ_list', function() {
+            $("#top-content-columns").show();
+            $("#econ_list").html("<div id='sector_list'>" + text + "</div><br><p style='font-size:13px'>" + lowerMessage + "</p>").show();
+        });
+    }).catch(function(error) {
+        console.warn("showNationalEconList could not load " + dataFile, error);
     });
 }
 function promisesReady(values) {
