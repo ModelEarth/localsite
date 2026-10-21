@@ -28,16 +28,23 @@ loadMarkdown("README.md", "readmeDiv", "_parent");
 </head>
 
 <body>
+<!-- The report's tables and images stay within the width of their container -->
+<style>
+#exploreOutput .tabulator { max-width:100%; }
+#exploreOutput img { max-width:100%; height:auto; }
+#readmeDiv img, #exploreOutput img { border-radius:10px; margin-bottom:12px; }
+</style>
 <div class="content contentpadding large-list">
   <div id="readmeDiv"></div>
-  <div id="exploreOutput"></div>
+  <div id="exploreOutput" style="width:100%; max-width:100%"></div>
 </div>
 
 <script>
     $(document).ready(function() {
       if(typeof param=='undefined'){ var param={}; }
       param.showother = true;
-      exploreFiles(param); // Resides in localsite/js/explore.js
+      // This report folder's files (from its files.json, else the GitHub folder matching this page's path)
+      displayCharts(param); // Resides in localsite/js/explore.js
     });
 </script>
 
