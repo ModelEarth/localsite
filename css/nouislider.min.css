@@ -61,9 +61,14 @@
   height: 17px !important;
   font-size: 13px !important;
   line-height: 17px;
-  padding: 0 3px !important;
+  padding: 0 8px 0 3px !important;
   text-align: right;
   text-align-last: right; /* Right-aligns the selected value shown in the select */
+}
+#earth-date-picker #earth-time-select { /* Right-aligned like #earth-speed-select below it */
+  padding-right: 8px;
+  text-align: right;
+  text-align-last: right;
 }
 #earth-date-picker input[type="date"] { height: 32px; }
 #earth-date-picker input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
@@ -261,6 +266,7 @@ body.dark:has(#slider-on-map) #upIconTray #headerIcons .playPauseButton:focus {
 }
 #slider-toggle-wrap:hover,
 #slider-toggle-wrap:focus-visible { background-color: rgba(85,85,85,.6); outline: none; } /* Transparent #555 */
+#slider-toggle-btn { color: #c4c4c4; opacity: 1; } /* A little whiter than the other .earthCircleIcons (#aaa) before hover */
 #slider-toggle-wrap:hover #slider-toggle-btn,
 #slider-toggle-wrap:focus-visible #slider-toggle-btn { color: #fff; opacity: 1; } /* Clock icon turns white anywhere over the wrap */
 #slider-toggle-date {
