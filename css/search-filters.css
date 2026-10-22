@@ -752,11 +752,43 @@ input.filterClick[type="text"] {
   background-color: rgb(85, 85, 85);
   z-index: 1000;
 }
-#geomapHolder .multipleToggles {
+#geomapHolder .geomapTopRight {
   position: absolute;
   top: 4px;
   right: 6px; /* The close X moved to the left */
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#geomapHolder .multipleToggles {
+  display: flex; /* No line box below the inline-block toggle, so #geomapPer can match its height */
+}
+#geomapHolder #geomapPer {
+  -webkit-appearance: none;
+  appearance: none; /* The native arrow covered the end of the text */
+  box-sizing: border-box;
+  height: 26px; /* Matches .multipleToggle: 20px line-height plus 3px padding top and bottom */
+  min-height: 0; /* base.css gives every select a 32px min-height */
+  margin: 0;
+  padding: 3px 24px 3px 10px; /* Right padding keeps the text clear of the arrow */
+  font-size: 13px;
+  line-height: 20px;
+  color: #333;
+  border: 0;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.9) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23333'/%3E%3C/svg%3E") no-repeat right 9px center;
+  cursor: pointer;
+}
+#geomapHolder #geomapPer:focus,
+#geomapHolder #geomapPer:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.dark #geomapHolder #geomapPer {
+  background-color: rgba(34, 34, 34, 0.8);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23fff'/%3E%3C/svg%3E");
+  color: #fff;
 }
 #geomapHolder .multipleToggle {
   display: inline-block;

@@ -1,6 +1,25 @@
 #detail_selection {
 	margin-bottom: 12px;
 }
+/* Right of the Area Industries title. The size of #geomapPer (search-filters.css), keeping the border, colors and arrow from the select rule in base.css */
+#industryTableControls {
+	margin-left: auto;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	font-weight: normal;
+}
+#industryTableControls #catyear,
+#industryTableControls #catsize {
+	box-sizing: border-box;
+	height: 26px;
+	min-height: 0; /* base.css gives every select a 32px min-height */
+	padding: 2px 28px 2px 10px; /* 2px since the 1px border is inside the 26px */
+	font-size: 13px;
+	line-height: 20px;
+	border-radius: 13px;
+}
 #econ_list {
 	max-width: 100%;
 	overflow-x: scroll;
@@ -12,11 +31,12 @@
 	margin-top: 20px;
 	margin-bottom: 10px;
 }
-.sectorListLegend .sectorListMethod {
-	font-size: 13px;
-	min-height: 26px;
-	max-width: 100%;
-	margin-top: 4px;
+/* #catmethod while #sector_list has estimates, also for a state. navigation.js otherwise shows it only for counties. */
+.industry_filter_settings.hasEstimates .county-view {
+	display: block !important;
+}
+.industry_filter_settings.hasEstimates .state-view {
+	display: none !important;
 }
 .sectorListLegendSwatch {
 	color: #9933aa;
@@ -28,9 +48,11 @@
 #tabulator-sectortable {
 	width: 100%;
 }
-/* GitHub | Log links at the far right of the Area Industries title (naics.js), in the text color */
+/* GitHub | Log links after the row count choices in the Area Industries table footer (naics.js), in the text color.
+The auto margin keeps the paginator and row count choices together on the left. */
 #industries_details {
 	margin-left: auto;
+	padding-left: 12px;
 	font-size: 13px;
 	font-weight: normal;
 	white-space: nowrap;
@@ -38,8 +60,9 @@
 #industries_details a, #industries_details a:visited {
 	color: inherit;
 }
-/* Opened by the Log link above the Area Industries table - the naicsTimingLog lines also sent to the inspector (naics.js) */
+/* Opened by the Log link in the Area Industries table footer, below the table - the naicsTimingLog lines also sent to the inspector (naics.js) */
 .industryLoadTime {
+	margin-top: 10px;
 	font-size: 13px;
 	line-height: 1.6;
 	margin-bottom: 10px;

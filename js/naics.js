@@ -148,10 +148,17 @@ function refreshNaicsWidget(initialLoad) {
             // Headings come from the shared list in impact-sets.js
             const impactSet = typeof impactSetById === 'function' ? impactSetById(hash.set) : null;
             if (impactSet) {
-                $('#pageTitle').text(impactSet.heading);
+                $('#pageTitle').text(impactSetHeading(impactSet, hash));
             }
             $('#pageTitle').show();
         }
+    } else if (hash.set && hash.state != priorHash_naicspage.state) { // Energy: "Alaska Energy Mix"
+        const impactSet = typeof impactSetById === 'function' ? impactSetById(hash.set) : null;
+        if (impactSet && impactSet.stateHeading) {
+            $('#pageTitle').text(impactSetHeading(impactSet, hash));
+        }
+    }
+    if (hash.set != priorHash_naicspage.set) {
         $(".impactIcons div").removeClass("active");
         if (!hash.set) {
             $(".impactIcons .impactIcon_All").addClass("active"); // All impacts
@@ -387,8 +394,7 @@ function refreshNaicsWidget(initialLoad) {
                 if (typeof industrytable !== 'undefined' && industrytable && typeof industrytable.replaceData === 'function') {
                     industrytable.replaceData(industryTableRows(hash));
                 }
-                // Update data links
-                $("#industries_details").html(industryDataLinks(industryLocDataFile));
+                placeIndustryDataLinks(industryLocDataFile); // Update data links
             });
         } else if (typeof industrytable !== 'undefined' && industrytable && typeof industrytable.setSort === 'function') {
             // catsort only - just re-sort the existing tabulator
@@ -845,6 +851,20 @@ document.addEventListener("click", function(e) {
     e.preventDefault();
     $("#industryLoadTime").html(naicsTimingHtml()).toggle();
 });
+// GitHub and Log links after the row count choices (.tabulatorPageSizes) in the Area Industries table footer.
+// Log opens the naicsTimingLog lines also sent to the inspector (#industryLoadTime), below the table.
+// Called with the data file when it loads, and without when the table is built, since the footer comes with the table.
+let industryLinksFile = "";
+function placeIndustryDataLinks(dataFile) {
+    if (dataFile) industryLinksFile = dataFile;
+    const pageSizes = $("#tabulator-industrytable .tabulatorPageSizes");
+    if (!industryLinksFile || !pageSizes.length) return;
+    if (!$("#industries_details").length) pageSizes.after("<div id='industries_details'></div>");
+    $("#industries_details").html(industryDataLinks(industryLinksFile));
+    if (!$("#industryLoadTime").length) { // Kept, with its open or closed state, when the table is rebuilt
+        $("#tabulator-industrytable").after("<div id='industryLoadTime' class='industryLoadTime' style='display:none'>" + naicsTimingHtml() + "</div>");
+    }
+}
 function industryDataLinks(dataFile) {
     let githubPath = dataFile.replace("https://model.earth/community-data/", "https://github.com/ModelEarth/community-data/blob/master/");
     return "<a href='" + githubPath + "' target='_blank'>GitHub</a>"
@@ -1975,20 +1995,17 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                             lowerMessage += "List does not yet include data for industries without state-level payroll reporting by BLS or BEA. - <a href='" + localsitePath('info/data/') + "'>More&nbsp;Details</a>";
 
                             // Legend for the purple (#9933aa) values, which are estimates for figures the Census doesn't publish.
-                            // Its method dropdown matches #catmethod, which the settings panel only shows for counties.
-                            // The legend stays when unpublished values are left blank, so the method can be changed back.
+                            // The estimate method is #catmethod, opened by the gear right of "Data source" (template-charts.html).
+                            // The legend and #catmethod stay when unpublished values are left blank, so the method can be changed back.
                             let legend = "";
                             const hasEstimates = text.indexOf("9933aa") >= 0;
+                            // Shows #catmethod for a state too, not only for counties (naics.css)
+                            $(".industry_filter_settings").toggleClass("hasEstimates", hasEstimates || hash.catmethod == 0);
                             if (hasEstimates || hash.catmethod == 0) {
-                                const catmethod = hash.catmethod == 0 || hash.catmethod == 2 ? String(hash.catmethod) : "1";
-                                const methods = [["1", "Average of payrolls not assigned to counties"], ["2", "Average of all state payrolls (less accurate)"], ["0", "Leave unpublished values blank"]];
-                                const methodSelect = "<select class='picklist sectorListMethod' aria-label='Estimate method' onchange=\"goHash({'catmethod':this.value});\">"
-                                    + methods.map(m => "<option value='" + m[0] + "'" + (m[0] === catmethod ? " selected" : "") + ">" + m[1] + "</option>").join("") + "</select>";
                                 legend = "<div class='sectorListLegend'>"
                                     + (hasEstimates ? "<span class='sectorListLegendSwatch'>Purple</span> values are estimates. " : "")
                                     + "The Census withholds some county and state figures to protect individual businesses."
-                                    + (hasEstimates ? "" : " These are left blank.")
-                                    + " <span style='white-space:nowrap'>Estimate method:</span> " + methodSelect + "</div>";
+                                    + (hasEstimates ? "" : " These are left blank.") + "</div>";
                             }
 
                             onElmReady('#econ_list', function() {
@@ -1996,6 +2013,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                                 $("#econ_list").html(legend + "<div id='sector_list'>" + text + "</div><br><p style='font-size:13px'>" + lowerMessage + "</p>");
                             });
                         } else if (industrySearch) { // Replaces the prior list
+                            $(".industry_filter_settings").removeClass("hasEstimates");
                             onElmReady('#econ_list', function() {
                                 $("#top-content-columns").show();
                                 $("#econ_list").html("<div id='sector_list'></div><p style='font-size:13px'>" + industryNoMatchText(industrySearch) + "</p>");
@@ -2858,6 +2876,7 @@ function showIndustryTabulatorList(attempts) {
         });
         industrytable.on("tableBuilt", function() {
             industryTableBuilt = true;
+            placeIndustryDataLinks(); // After the row count choices addTabulatorPaging() just added
             filterIndustryTable();
             updateIndustryTableTitle(industrytable.getSorters());
             naicsTimingLog("Built the Area Industries table with " + tabulatorData.length + (hash.state ? " " + hash.state.split(",")[0].toUpperCase() + " rows" : " national rows"), tableStart);
@@ -2995,12 +3014,7 @@ function callPromises(industryLocDataFile) { // From naics2.js
         // Only had 2 in naics2.js.  Other one has dataSet, dataNames, fips, hash // Renders header and processes county values
         topRatesInFipsNew(localObject, fips); // Renders header and processes county values
 
-        // GitHub and Log links at the right of the table title. Log opens the naicsTimingLog lines also sent to the inspector, above the table.
-        $("#industries_details, #industryLoadTime").remove(); // Prevent dups when reloaded
-        let industries_details= Object.assign(document.createElement('div'),{id:"industries_details"})
-        $("#tabulator-industrytable-intro").append(industries_details);
-        industries_details.innerHTML = industryDataLinks(industryLocDataFile);
-        $("#tabulator-industrytable-intro").after("<div id='industryLoadTime' class='industryLoadTime' style='display:none'>" + naicsTimingHtml() + "</div>");
+        placeIndustryDataLinks(industryLocDataFile); // Placed in the table footer once the table is built
 
         // Returns Logging
         //alert(industries.get("113310"));

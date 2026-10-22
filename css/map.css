@@ -129,7 +129,7 @@
 }
 /* Map hover details (navigation.js), at the lower right */
 .leaflet-control.info {
-  background-color: rgba(33, 33, 33, 0.5);
+  background-color: rgba(33, 33, 33, 0.8);
   color: #fff;
   padding: 10px;
   text-align: center;
@@ -137,6 +137,13 @@
 }
 .leaflet-control.info b {
   color: #fff !important;
+}
+/* The meaning of the choropleth column, from setGeomapChoropleth() */
+.leaflet-control.info .info-description {
+  display: inline-block;
+  max-width: 300px; /* Two lines for CO2e Mt and its meaning */
+  font-size: 12px;
+  opacity: 0.85;
 }
 #legendHolder {
   position: absolute;
@@ -213,6 +220,9 @@
     top: 80px;
     left: 12px;
     z-index: 400;
+    cursor: move; /* Draggable, see makeLegendDraggable() in navigation.js */
+    touch-action: none;
+    user-select: none;
 }
 
 .info.legend h4 {

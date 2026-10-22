@@ -1331,6 +1331,12 @@ if(typeof priorHash == 'undefined') {
 }
 //let nextPriorHash = {};
 let nextPriorHash = structuredClone(param); // Param values set in pages and the include URL are passed forward as a hiddenhash.
+// param includes the URL hash, so the first hashChangeEvent saw no change in a geoview from the URL and skipped
+// opening the location filter (#locationFilterHolder) in navigation.js. geoview=us opened it only because getHash()
+// reads it as country. geoview=earth is excluded since navigation.js hashChanged() shows the earth map every time.
+if (nextPriorHash.geoview && nextPriorHash.geoview != "earth" && getHashOnly().geoview) {
+  delete nextPriorHash.geoview;
+}
 var isPopstateNavigation = false; // Flag to track if we're in a back/forward navigation. Temp for testing
 // Triggers custom hashChangeEvent in multiple widgets.
 // Exception, React widgets use a different process.

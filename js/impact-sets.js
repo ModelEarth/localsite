@@ -18,7 +18,8 @@ var impactSets = [
   { id: 'land', title: 'Land', heading: 'Land Use', indicators: ['LAND', 'MNRL', 'PEST', 'METL', 'CRHW', 'CMSW', 'FMSW', 'CCDD'] },
   // Energy indicators are only in the national model (USEEIO), not the state models. With a state, localsite/info
   // shows eGRID electricity data (profile/js/state-energy.js) and profile/footprint switches to the national model.
-  { id: 'energy', title: 'Energy', heading: 'Energy Use', indicators: ['ENRG', 'NNRG', 'RNRG'] },
+  // localsite/info titles it by the states in the hash: "Alaska Energy Mix", or "US States Energy Mix" without a state.
+  { id: 'energy', title: 'Energy', heading: 'Energy Use', stateHeading: 'Energy Mix', usHeading: 'US States Energy Mix', indicators: ['ENRG', 'NNRG', 'RNRG'] },
   { id: 'health', title: 'Health', heading: 'Health Impact', indicators: ['HTOX', 'HCAN', 'HNCN', 'HRSP'] },
   { id: 'prosperity', title: 'Prosperity', heading: 'Jobs and Value Added', indicators: ['VADD', 'JOBS'] }
 ];
@@ -30,6 +31,17 @@ function impactSetById(setId) {
   const id = String(setId || '').toLowerCase();
   if (id === impactSetAdverse.id) return impactSetAdverse;
   return impactSets.find(set => set.id === id) || null;
+}
+
+// The set's title for the hash's states, when the set has a stateHeading: "Alaska Energy Mix", "Alaska, Hawaii Energy Mix",
+// "5 States Energy Mix" or the usHeading without a state. Otherwise the set's heading.
+function impactSetHeading(set, hash) {
+  if (!set || !set.stateHeading) return set ? set.heading : '';
+  const states = String((hash && hash.state) || '').split(',').filter(st => st && st.toLowerCase() !== 'all');
+  if (!states.length) return set.usHeading || set.heading;
+  const place = states.length > 3 ? states.length + ' States'
+    : states.map(st => (typeof getState === 'function' && getState(st.toUpperCase())) || st).join(', ');
+  return place + ' ' + set.stateHeading;
 }
 
 // Indicator codes for a set, e.g. "GHG,GCC,..." for links and widgets that read hash.indicators.

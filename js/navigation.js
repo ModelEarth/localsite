@@ -3582,7 +3582,10 @@ if (typeof $ !== 'undefined') {
         if (value == "earth" || value == "country" || value == "state") {
             window.scrollTo({top: 0, behavior: "instant"}); // Jump up to the map rather than animating the scroll
         }
-        if (value == "country") { // "United States". getHash() reads geoview=us as country.
+        if (value == "country" && getHash().geoview == "country") { // "United States" already selected, so unselect its states
+            hiddenhash.state = "";
+            goHash({"geoview":"us","state":""});
+        } else if (value == "country") { // "United States". getHash() reads geoview=us as country.
             goHash({"geoview":"us"});
         } else if (value == "countries" || value == "earth") {
             hiddenhash.state = "";
@@ -4932,7 +4935,10 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
                 map.setView(mapCenter,zoom);
             }
-            
+            if (geomapChoropleth && layerName == "States") {
+                showGeomapChoroplethLegend(whichmap); // Data sent before the state shapes loaded
+            }
+
             console.log("zoom: " + zoom + " mapCenter: ");
             console.log(mapCenter);
 
@@ -5085,7 +5091,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
               // Avoiding toggling fillOpacity. Using just border so choropleth opacity is not modified.
               layer.setStyle({
                 weight: 3,
-                color: '#665',
+                color: document.body.classList.contains('dark') ? '#fff' : '#665',
                 dashArray: '',
                 fillOpacityX: .7}
               )
@@ -5095,7 +5101,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
               }
               
               // Send text to side box
-              info.update(layer.feature.properties);
+              info.update(layer.feature.properties, layer.feature.id);
 
             }
             // Rollout map shape (county)
@@ -5267,14 +5273,18 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
               return this._div;
             }
 
-            info.update = function(props){
+            info.update = function(props, featureID){
 
                 mapInfoHovering = !!props;
                 if (!props) {
-                  // Not hovering: show the selected location, otherwise hide
+                  // Not hovering: show the selected location and the meaning of the choropleth colors, otherwise hide
                   const selected = selectedLocationText(getHash());
-                  if (selected) {
-                    this._div.innerHTML = "<b>" + selected + "</b>";
+                  const colorsShown = getHash().geoview == "country" && geomapChoropleth;
+                  if (selected || colorsShown) {
+                    this._div.innerHTML = (selected ? "<b>" + selected + "</b>" : "")
+                      + (selected && colorsShown ? "<br>" : "")
+                      + (colorsShown ? "<span class='info-description'>" + geomapChoropleth.legendTitle
+                        + (geomapChoropleth.description ? ": " + geomapChoropleth.description : "") + "</span>" : "");
                     $(this._div).show();
                   } else {
                     $(this._div).hide();
@@ -5306,8 +5316,12 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
                     this._div.innerHTML = this._div.innerHTML + "CO<sub>2</sub> " + formatCell(value);
 
+                } else if (getHash().geoview == "country" && geomapChoropleth) { // State colored by setGeomapChoropleth()
+                  const value = geomapChoropleth.values[Number(featureID)];
+                  this._div.innerHTML = "<b>" + props.name + "</b><br>"
+                    + geomapChoropleth.legendTitle + " " + (value === undefined ? "No data" : formatCell(value));
                 } else { // US
-                  this._div.innerHTML = "" 
+                  this._div.innerHTML = ""
                   + (props ? "<b>" + props.name + "</b><br>" : "Select Locations")
 
                   if (props) {
@@ -5818,6 +5832,9 @@ function loadObjectData(element, attempts) {
                         });
                     } else {
                         localObject[element.scope] = makeRowValuesNumeric(data, element.numColumns, element.valueColumn);
+                    }
+                    if (element.scope == "country-us" && geomapChoropleth) {
+                        refreshGeomapChoropleth(geomapChoropleth.whichmap); // Per capita and per 1000 sq mi use Population and SqMiles
                     }
                     //alert("showTabulatorList from initial load off loadObjectData element.scope: " + element.scope)
                     console.log("initial loadObjectData for element.scope: " + element.scope)
@@ -6900,13 +6917,7 @@ function refreshSelectedGeoStyles(whichmap) {
     if (geoOverlays[layerName]) {
         geoOverlays[layerName].setStyle(styleShape);
     }
-    const mapContainer = document.querySelector(`#${whichmap}`);
-    if (mapContainer) {
-        const existingLegend = mapContainer.querySelector('.info.legend');
-        if (existingLegend) {
-            existingLegend.remove();
-        }
-    }
+    showGeomapChoroplethLegend(whichmap); // Removes the legend unless a choropleth was sent
 }
 function addLegendToMap(minCO2, maxCO2, whichmap, legendTitle) {
     // Get the map container
@@ -6921,6 +6932,7 @@ function addLegendToMap(minCO2, maxCO2, whichmap, legendTitle) {
 
     // Create a new legend
     const legend = document.createElement('div');
+    legend.id = whichmap + 'Legend'; // e.g. geomapLegend
     legend.className = 'info legend';
 
     const grades = 8; // Number of legend segments
@@ -6944,6 +6956,140 @@ function addLegendToMap(minCO2, maxCO2, whichmap, legendTitle) {
 
     // Append the legend to the map container
     mapContainer.appendChild(legend);
+    makeLegendDraggable(legend, whichmap);
+}
+
+// Dragged legend positions reside in localStorage by map (localsiteLegend_geomap), so the legend returns
+// to where it was moved after redraws and page loads. It can be dragged partly below the map's bottom edge,
+// with legendVisibleHeight left in sight to drag it back.
+const legendVisibleHeight = 30;
+function legendPosition(whichmap) {
+    try {
+        return JSON.parse(localStorage.getItem('localsiteLegend_' + whichmap));
+    } catch (e) {
+        return null;
+    }
+}
+function makeLegendDraggable(legend, whichmap) {
+    const mapContainer = legend.parentNode;
+    // Kept within the map, apart from the bottom
+    function placeLegend(left, top) {
+        left = Math.max(0, Math.min(left, mapContainer.clientWidth - legend.offsetWidth));
+        top = Math.max(0, Math.min(top, mapContainer.clientHeight - legendVisibleHeight));
+        legend.style.left = left + "px";
+        legend.style.top = top + "px";
+        return {left: left, top: top};
+    }
+    const saved = legendPosition(whichmap);
+    if (saved && typeof saved.left === "number" && typeof saved.top === "number") {
+        placeLegend(saved.left, saved.top);
+    }
+    if (typeof L !== "undefined") {
+        L.DomEvent.disableClickPropagation(legend); // Dragging the legend doesn't pan the map
+        L.DomEvent.disableScrollPropagation(legend);
+    }
+    legend.addEventListener("pointerdown", function(event) {
+        if (event.button !== 0) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const offsetX = event.clientX - legend.offsetLeft;
+        const offsetY = event.clientY - legend.offsetTop;
+        legend.setPointerCapture(event.pointerId);
+        let position = null;
+        function onMove(event) {
+            position = placeLegend(event.clientX - offsetX, event.clientY - offsetY);
+        }
+        function onUp(event) {
+            legend.releasePointerCapture(event.pointerId);
+            if (position) {
+                try {
+                    localStorage.setItem('localsiteLegend_' + whichmap, JSON.stringify(position));
+                } catch (e) {}
+            }
+            legend.removeEventListener("pointermove", onMove);
+            legend.removeEventListener("pointerup", onUp);
+            legend.removeEventListener("pointercancel", onUp);
+        }
+        legend.addEventListener("pointermove", onMove);
+        legend.addEventListener("pointerup", onUp);
+        legend.addEventListener("pointercancel", onUp);
+    });
+}
+
+// Choropleth on the US states map (geoview=country) sent from another script, e.g. CO2e Mt from the
+// #tabulator-energytable in profile/js/state-energy.js. styleShape() reads it, so the colors also apply
+// when the state shapes load after the data. valuesByState: {GA: 42.0, ...}, or null to remove.
+// The info box shows the description (the meaning of legendTitle) when not hovering, and a state's value when hovering over it.
+// The #geomapPer dropdown shows the Total, Per capita or Per 1000 sq mi, from the Population and SqMiles columns of
+// #tabulator-statetable (localObject["country-us"]). measures (optional) sets the title, description and scale of each:
+// {percapita: {title: "CO2e tons per person", description: "...", scale: 1e6}, perarea: {...}}
+var geomapChoropleth = null;
+function setGeomapChoropleth(whichmap, valuesByState, legendTitle, description, measures) {
+    geomapChoropleth = null;
+    if (valuesByState) {
+        const totals = {}; // By state FIPS number, the id of each shape in map/topo/states-10m.json
+        Object.keys(valuesByState).forEach(function(state) {
+            const value = Number(valuesByState[state]);
+            const stateID = localObject.us_stateIDs[state.toUpperCase()];
+            if (stateID && valuesByState[state] !== null && !isNaN(value)) totals[stateID] = value;
+        });
+        if (Object.keys(totals).length) {
+            measures = measures || {};
+            geomapChoropleth = {whichmap: whichmap, totals: totals, measures: {
+                total: {title: legendTitle, description: description, scale: 1},
+                percapita: Object.assign({title: legendTitle + " per person", description: description, scale: 1}, measures.percapita),
+                perarea: Object.assign({title: legendTitle + " per 1000 sq mi", description: description, scale: 1000}, measures.perarea)
+            }};
+        }
+    }
+    refreshGeomapChoropleth(whichmap);
+}
+// Sets the values shown (values, min, max, legendTitle and description) for the #geomapPer choice, then restyles the map
+function refreshGeomapChoropleth(whichmap) {
+    const choropleth = geomapChoropleth;
+    if (choropleth) {
+        const per = $("#geomapPer").val() || "total";
+        const measure = choropleth.measures[per] || choropleth.measures.total;
+        let values = choropleth.totals;
+        if (per != "total") {
+            values = {};
+            (Array.isArray(localObject["country-us"]) ? localObject["country-us"] : []).forEach(function(row) {
+                const stateID = localObject.us_stateIDs[row.State];
+                const divisor = Number(per == "percapita" ? row.Population : row.SqMiles);
+                if (choropleth.totals[stateID] !== undefined && divisor > 0) {
+                    values[stateID] = choropleth.totals[stateID] * measure.scale / divisor;
+                }
+            });
+        }
+        const list = Object.values(values);
+        Object.assign(choropleth, {values: values, legendTitle: measure.title, description: measure.description,
+            min: list.length ? Math.min(...list) : 0, max: list.length ? Math.max(...list) : 0});
+    }
+    if (geoOverlays["States"]) {
+        geoOverlays["States"].setStyle(styleShape);
+    }
+    showGeomapChoroplethLegend(whichmap);
+    if (mapInfoControl && mapInfoControl._div && !mapInfoHovering) {
+        mapInfoControl.update(); // The meaning of the colors, shown when not hovering
+    }
+}
+$(document).on("change", "#geomapPer", function() {
+    if (geomapChoropleth) refreshGeomapChoropleth(geomapChoropleth.whichmap);
+});
+function showGeomapChoroplethLegend(whichmap) {
+    const mapContainer = document.querySelector(`#${whichmap}`);
+    const shown = geomapChoropleth && geomapChoropleth.whichmap == whichmap && getHash().geoview == "country" && geoOverlays["States"];
+    $("#geomapPer").toggle(!!shown);
+    if (shown) {
+        addLegendToMap(geomapChoropleth.min, geomapChoropleth.max, whichmap, geomapChoropleth.legendTitle);
+    } else if (mapContainer && mapContainer.querySelector('.info.legend')) {
+        mapContainer.querySelector('.info.legend').remove();
+    }
+}
+// Blue from light (min) to dark (max), as in addLegendToMap()
+function choroplethColor(value, min, max) {
+    const intensity = max > min ? (value - min) / (max - min) : 1;
+    return `hsl(210, 100%, ${95 - (intensity * 75)}%)`;
 }
 
 // To remove, or use as fallback
@@ -7433,6 +7579,15 @@ function styleShape(feature) { // Called FOR EACH topojson row
       fillColor = '#3a74d6';
       fillOpacity = 0.6;
 
+    } else if (hash.geoview == "country" && geomapChoropleth) { // Sent by setGeomapChoropleth()
+      const value = geomapChoropleth.values[Number(feature.id)];
+      return {
+        weight: 1,
+        opacity: .4,
+        color: '#77a',
+        fillOpacity: value === undefined ? 0.5 : 0.7,
+        fillColor: value === undefined ? '#ccc' : choroplethColor(value, geomapChoropleth.min, geomapChoropleth.max)
+      };
     } else if (hash.geoview == "countries") {
       const selectedCountries = hash.country ? hash.country.split(",") : [];
       const countryAlpha2 = feature.properties["Alpha-2"];

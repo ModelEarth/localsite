@@ -157,26 +157,6 @@ function showIndustryList() {
 <!-- #detail_selection floats right, so the titles wrap beside it and extend full width below it, rather than staying in a column -->
 <div id="industryHeader" class="contentpadding" style="clear:both;padding-bottom:0px;display:flow-root">
 	<div id="detail_selection" style="float:right;margin-left:10px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;line-height:normal">
-		<div class="georgia local" style="display:none"><select id="catyear" class="picklist" onchange="goHash({'catyear':this.value});">
-		  <option value="2023" selected>2023</option>
-		  <option value="2022">2022</option>
-		  <option value="2021">2021</option>
-		  <option value="2020">2020</option>
-		  <option value="2019">2019</option>
-		  <option value="2018">2018</option>
-		  <option value="2017">2017</option>
-		  <option value="2016">2016</option>
-		</select></div>
-		<select id="catsize" class="picklist" onchange="goHash({'catsize':this.value});">
-		  <option value="2">Sectors - 2 digits</option>
-		  <!--option value="2">Subsectors - 3 digits</option-->
-		  <option value="4">Industry Groups - 4 digits</option>
-		  <!--option value="4">NAICS Industry - 5 digits</option-->
-		  <option value="6" selected>Industries - 6 digits</option>
-		</select>
-		<div id="show_industry_settings" style="cursor:pointer;flex-shrink:0;line-height:normal" onclick="$('.industry_filter_settings').toggle();">
-			<span class="material-icons" style="font-size:24px;color:#777">settings</span>
-		</div>
 		<div id="widgetToggleContainer" style="position:relative; min-height:24px; line-height:normal; flex-shrink:0;">
 		  <div id="widgetToggleHolder" class="menuToggleHolder" title="Widget list" style="position:relative;right:auto;top:auto;">
 		    <i id="widgetToggleIcon" class="material-icons" style="-webkit-text-stroke: 1.5px currentColor; border-radius: 50%; border: 2px solid currentColor; padding: 2px;">more_vert</i>
@@ -200,19 +180,6 @@ function showIndustryList() {
 	<h1 id="pageTitle" class="h1-home" style="margin-bottom:0px;"></h1><!-- For 6 impact sets -->
 	<h1 id="regionService" class="region_service" style="margin-top:0;padding-top:0;"></h1><!-- The US region title while hash.usregion is present (navigation.js) -->
 	<h2 class="location_titles" style="font-size:24px;padding-top:0px;display:none"></h2>
-	<div class="industry_filter_settings" style="display:none;clear:both;width:100%;margin-top:6px">
-		<div class="state-view" style="margin:20px 0 20px 30px">
-			To view filter settings, choose a location (county or region) above.
-			<a href="/localsite/info/naics/" class="local" style="display:none">View upcoming industry list</a>
-		</div>
-		<div class="county-view" style="display:none">
-			<select id="catmethod" class="picklist" onchange="goHash({'catmethod':this.value});">
-			  <option value="1" selected>Use average of payrolls not assigned to counties</option>
-			  <option value="2">Use average of all state payrolls (less accurate)</option>
-			  <option value="0">Leave unpublished values blank</option>
-			</select>
-		</div>
-	</div>
 </div>
 
 <!-- Energy output for set=energy. Styles: STATE ENERGY below. On info/index.html, state-energy.js moves
@@ -249,7 +216,28 @@ function showIndustryList() {
 <!-- v2 -->
 <section id="industryTableHolder" style="display:none;">
 <div id="AreaIndustries" class="contentpadding" style="padding-top:0px">
-	<div id="tabulator-industrytable-intro" style="padding-bottom:5px; display:flex; align-items:baseline; gap:12px"><b>Top US Industries by Payroll</b> <!-- Set by updateIndustryTableTitle() in naics.js. callPromises() adds #industries_details on the right. FIPS and NAICS case sensitive--></div>
+	<div id="tabulator-industrytable-intro" style="padding-bottom:5px; display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px"><b>Top US Industries by Payroll</b> <!-- Set by updateIndustryTableTitle() in naics.js. FIPS and NAICS case sensitive-->
+		<!-- Year and NAICS digits -->
+		<div id="industryTableControls">
+			<div class="georgia local" style="display:none"><select id="catyear" class="picklist" onchange="goHash({'catyear':this.value});">
+			  <option value="2023" selected>2023</option>
+			  <option value="2022">2022</option>
+			  <option value="2021">2021</option>
+			  <option value="2020">2020</option>
+			  <option value="2019">2019</option>
+			  <option value="2018">2018</option>
+			  <option value="2017">2017</option>
+			  <option value="2016">2016</option>
+			</select></div>
+			<select id="catsize" class="picklist" onchange="goHash({'catsize':this.value});">
+			  <option value="2">Sectors - 2 digits</option>
+			  <!--option value="2">Subsectors - 3 digits</option-->
+			  <option value="4">Industry Groups - 4 digits</option>
+			  <!--option value="4">NAICS Industry - 5 digits</option-->
+			  <option value="6" selected>Industries - 6 digits</option>
+			</select>
+		</div>
+	</div>
 	<div id="tabulator-industrytable-datalink"></div>
 	<div style="clear:both"></div>
 	<div id="tabulator-industrytable"></div><br>
@@ -304,6 +292,21 @@ function showIndustryList() {
 				<!-- href set to the state's folder in loadIndustryData() in naics.js -->
 				<div style="text-align:right; font-size: 11px">
 					Data source: <a id="industryDataSource" href="https://github.com/ModelEarth/community-data/tree/master/us/state" target="_blank">U.S. Bureau of Economic Analysis</a>
+					<!-- Opens .industry_filter_settings below -->
+					<span id="show_industry_settings" class="material-icons" title="Settings" style="font-size:18px;color:#777;cursor:pointer;vertical-align:middle;margin-left:4px" onclick="$('.industry_filter_settings').toggle();">settings</span>
+				</div>
+				<div class="industry_filter_settings" style="display:none;clear:both;width:100%;margin-bottom:10px;font-size:13px">
+					<div class="state-view" style="margin:20px 0 20px 30px">
+						To view filter settings, choose a location (county or region) above.
+						<a href="/localsite/info/naics/" class="local" style="display:none">View upcoming industry list</a>
+					</div>
+					<div class="county-view" style="display:none">
+						<select id="catmethod" class="picklist" onchange="goHash({'catmethod':this.value});">
+						  <option value="1" selected>Use average of payrolls not assigned to counties</option>
+						  <option value="2">Use average of all state payrolls (less accurate)</option>
+						  <option value="0">Leave unpublished values blank</option>
+						</select>
+					</div>
 				</div>
 				<div id="econ_list"></div>
 				<div class="econListInfo" style="font-size:13px; margin-top:16px">
@@ -507,6 +510,9 @@ body.stateEnergyView, which hides the inflow-outflow grid (Impact Levels stays).
 }
 .energyView #stateEnergy {
 	display: block !important;
+}
+.energyView #regionService {
+	display: none; /* #pageTitle names the states: "Alaska Energy Mix" */
 }
 #stateEnergy {
 	container-type: inline-size;
