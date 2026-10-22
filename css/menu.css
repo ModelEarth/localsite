@@ -778,7 +778,9 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
 .dark #main-container  b a:link, .dark #main-container  b a:visited {
   color: #ccc;
 }
-.dark #main-container h1, .dark #main-container h2, .dark #main-container h3, .dark #main-container h4, .dark #main-container h5, .dark #main-container h6 {
+/* Skips .resume-container, a light resume page whose templates set their own heading colors (cv/extract).
+   :where() keeps the rule's original specificity. */
+.dark #main-container :is(h1, h2, h3, h4, h5, h6):where(:not(.resume-container *)) {
   color: #ccc;
 }
 .dark #side-nav a:not(.btn):link, .dark #side-nav a:not(.btn):visited {
