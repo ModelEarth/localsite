@@ -1000,66 +1000,28 @@ function initializeTypographyDemo() {
   });
 }
 
-// Dark mode toggle injected into .typography-dark-toggle swatch
+// Dark mode toggle injected into .typography-dark-toggle swatch (darkModeToggle in localsite.js)
 (function() {
-  function isDarkToggleActive() {
-    if (document.body.classList.contains('dark')) {
-      return true;
-    }
-    if (typeof Cookies === 'undefined') {
-      return false;
-    }
-    const sitelook = Cookies.get('sitelook') || 'default';
-    if (sitelook === 'dark') {
-      return true;
-    }
-    if (sitelook === 'computer') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    if (sitelook === 'default') {
-      return Cookies.get('modelsite') === 'dreamstudio'
-        || location.host.indexOf('dreamstudio') >= 0
-        || location.host.indexOf('planet.live') >= 0;
-    }
-    return false;
-  }
-
-  function syncDataTheme(isDark) {
-    document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
-  }
-
-  function updateToggleIcon(btn) {
-    const icon = btn.querySelector('.material-icons');
-    const isDark = isDarkToggleActive();
-    btn.classList.toggle('dark', isDark);
-    if (icon) icon.textContent = isDark ? 'dark_mode' : 'light_mode';
-    syncDataTheme(isDark);
+  function syncDataTheme() {
+    document.documentElement.dataset.theme = document.body.classList.contains('dark') ? 'dark' : 'light';
   }
 
   // Sync on load from body class changes localsite may apply after its scripts run.
-  new MutationObserver(function() {
-    syncDataTheme(document.body.classList.contains('dark'));
-  }).observe(document.body, { attributeFilter: ['class'] });
+  new MutationObserver(syncDataTheme).observe(document.body, { attributeFilter: ['class'] });
+  syncDataTheme();
 
   document.querySelectorAll('.typography-toggle').forEach(function(bar) {
     const btn = document.createElement('button');
-    btn.className = 'typography-dark-toggle';
+    btn.className = 'typography-dark-toggle darkModeToggle';
+    btn.type = 'button';
     btn.title = 'Toggle dark mode';
     const icon = document.createElement('i');
     icon.className = 'material-icons';
+    icon.textContent = 'light_mode';
     btn.appendChild(icon);
     bar.appendChild(btn);
-    updateToggleIcon(btn);
-    waitForElm('#bodyloaded').then(function() {
-      updateToggleIcon(btn);
-    });
-    btn.addEventListener('click', function() {
-      const newLook = document.body.classList.contains('dark') ? 'default' : 'dark';
-      if (typeof Cookies !== 'undefined') Cookies.set('sitelook', newLook);
-      if (typeof setSitelook === 'function') setSitelook(newLook);
-      updateToggleIcon(btn);
-    });
   });
+  if (typeof updateDarkModeToggles === 'function') updateDarkModeToggles();
 })();
 
 // Fix typography-toggle below nav header on scroll; revert to static at top

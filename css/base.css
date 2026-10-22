@@ -1694,12 +1694,12 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
 .typography-dark-toggle:hover {
   filter: brightness(0.92);
 }
-.typography-dark-toggle.dark,
+.typography-dark-toggle[aria-pressed="true"],
 .dark .typography-dark-toggle {
   background: var(--accent);
   border-color: var(--accent);
 }
-.typography-dark-toggle.dark .material-icons,
+.typography-dark-toggle[aria-pressed="true"] .material-icons,
 .dark .typography-dark-toggle .material-icons {
   color: var(--text-main);
 }
@@ -4370,6 +4370,20 @@ body.sidebar-hidden #openNav {
 }
 .filter-field-toggle-icon .filter-toggle-dot:nth-child(3) {
   left: 10px;
+}
+/* Dark: an outlined circle and dots matching #widgetToggleIcon (.dark .menuToggleHolder in search-filters.css) */
+.dark #filterFieldToggleHolder .filter-toggle-circle,
+.dark #filterFieldToggleInHeader .filter-toggle-circle {
+  box-sizing: border-box;
+  width: 26px;
+  height: 26px;
+  overflow: hidden;
+  color: transparent;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+}
+.dark .filter-field-toggle-icon .filter-toggle-dot {
+  background: #ddd;
 }
 @media (max-width: 400px) {
   #filterFieldToggleHolder i,

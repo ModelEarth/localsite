@@ -4620,6 +4620,41 @@ function setSitelook(siteLook) {
     // Lets maps follow light/dark changes, e.g. map.js swaps Grayscale and Dark Mode
     document.dispatchEvent(new CustomEvent('sitelookchange', {detail: {dark: document.body.classList.contains("dark")}}));
 }
+
+// DARK MODE TOGGLE - any element with class darkModeToggle holding a material-icons icon, used by
+// #goatIcons (info/template-main.html), /cv #cvDarkToggleBtn, the css/themes .typography-dark-toggle,
+// team/js/print-download.js and team/projects/edit.html. A click switches the sitelook cookie between
+// dark and light. Every toggle's icon follows each sitelook change, including from the #sitelook select
+// and the computer's color scheme. Pages that add a toggle after load call updateDarkModeToggles().
+function updateDarkModeToggles() {
+    if (!document.body) return;
+    const isDark = document.body.classList.contains("dark");
+    document.querySelectorAll('.darkModeToggle').forEach(btn => {
+        btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+        const icon = btn.querySelector('.material-icons');
+        if (icon) icon.textContent = isDark ? 'dark_mode' : 'light_mode';
+    });
+}
+function toggleDarkMode() {
+    // "light" rather than "default", since default is dark on some sites
+    const newLook = document.body.classList.contains("dark") ? "light" : "dark";
+    if (typeof Cookies != 'undefined') {
+        Cookies.set('sitelook', newLook);
+    }
+    setSitelook(newLook);
+}
+document.addEventListener('sitelookchange', updateDarkModeToggles);
+// Capture phase, so toggles inside widgets that stop a click's propagation still respond
+document.addEventListener('click', function(event) {
+    const btn = event.target.closest && event.target.closest('.darkModeToggle');
+    if (!btn) return;
+    toggleDarkMode();
+    // The #goatIcons toggle also closes the Sections side tab
+    if (btn.closest('#goatIcons') && typeof getHash === 'function' && getHash().sidetab === 'sections') {
+        goHash({'sidetab':''});
+    }
+}, true);
+waitForElm('#goatIcons .darkModeToggle').then(updateDarkModeToggles); // once the template's icons are in the page
 function setDevmode(devmode) {
   const devCssUrl = theroot + 'css/dev.css';
   if (devmode == "dev") {
