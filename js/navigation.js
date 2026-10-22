@@ -9506,8 +9506,17 @@ $(document).click(function(event) { // Hide open menus
     //$("#filterLocations").hide();
 });
 
+// One load of the layers .json, shared by the Topics menu and the show topic's full title (refreshShowTopicTitles)
+let localObjectLayersLoad;
 function loadLocalObjectLayers(layerName, callback) { // layerName is not currently used
     //alert("loadLocalObjectLayers " + layerName);
+    callback = callback || function() {};
+    if (localObjectLayersLoad) {
+        localObjectLayersLoad.then(callback);
+        return;
+    }
+    let layersLoaded;
+    localObjectLayersLoad = new Promise(resolve => { layersLoaded = resolve; });
     // Do we need to load this function on init, for state hash for layers requiring a state.
 
     let hash = getHash();
@@ -9525,6 +9534,7 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
         console.log("Set layerJson: " + layerJson);
     }
     if (localObject.layers.length >= 0) {
+        layersLoaded();
         callback();
         return;
     }
@@ -9569,10 +9579,14 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
                     //showThumbMenu(hash.show, "#bigThumbMenu");
                 }
             }
+            layersLoaded();
             callback();
             return;
             //return layerObject;
-            
+
+        }).fail(function(jqxhr, textStatus) {
+            localObjectLayersLoad = null; // The next call, such as opening the Topics menu, fetches again
+            console.warn("loadLocalObjectLayers: " + layerJson + " did not load (" + textStatus + ")");
         });
     })(); // end layerObject
     
@@ -10225,6 +10239,9 @@ function refreshShowTopicTitles() {
 function setShowTopic(topic) {
     $("#showTopic").data("topic", topic || "");
     updateModelTopicsLink(); // Writes the topic
+    if (topic && topic === showValueTitle(getHash().show)) {
+        loadLocalObjectLayers(); // The full title ("Parts Manufacturing" for show=parts) then replaces it in refreshShowTopicTitles()
+    }
 }
 // "Model Topics" link above #showTopic. Its href is the current hash plus appview=topics, for opening in a new tab.
 // A plain click adds appview=topics with goHash, which opens the Topics menu (hashChanged).
@@ -10243,7 +10260,9 @@ function updateModelTopicsLink() {
     // in place of #regionService ("Alaska - Bioeconomy").
     const showTopic = $("#showTopic");
     const topic = showTopic.data("topic") || "";
-    const place = topic ? (usRegionServiceTitle(getHash()) || showTopic.data("place") || "") : "";
+    // Several states: "Parts Manufacturing in 3 States" rather than the first state's name from setRegionServiceText()
+    const stateCount = hashStateList(getHash()).length;
+    const place = topic ? (usRegionServiceTitle(getHash()) || (stateCount > 1 ? stateCount + " States" : "") || showTopic.data("place") || "") : "";
     const topicTitle = place ? topic + " in " + place : topic;
     showTopic.empty().toggle(!!topic);
     if (topic && hasSet) {

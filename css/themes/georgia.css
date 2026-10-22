@@ -136,6 +136,9 @@
   --text-main: #e5e7eb;
   --text-muted: #9ca3af;
   --border-subtle: rgba(255, 255, 255, 0.15);
+  /* Chips: the light #f2f6f9 and dark blue text were unchanged in dark mode, so a white chip */
+  --chip-bg: rgba(8, 73, 117, 0.3);
+  --chip-text: #a9cbe6;
   --color-primary: #084975;
   --color-primary-hover: #063a5d;
   --color-tertiary: #666666;

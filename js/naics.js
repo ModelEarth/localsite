@@ -106,6 +106,42 @@ document.addEventListener('hashChangeEvent', function (elem) {
     }            
  }, false);
 
+// .location_titles: each county with a "-" button (shown on hover or after clicking the county) that removes it from
+// hash.geo, then a "+" button that opens the state's county map (geoview=state) for adding counties.
+// fip is the number from getStateFips(), without the US prefix or a leading zero.
+// suffix: " County" or " Counties" after the last county, inside its hover so its "-" sits over the end of that word.
+function locationTitleCounty(name, fip, suffix) {
+    const geo = "US" + String(fip).padStart(5, "0");
+    return "<span class='locationTitleCounty' tabindex='0' data-geo='" + geo + "'>" + name + (suffix || "")
+        + "<button type='button' class='locationTitleRemove' title='Remove " + name + " County' aria-label='Remove " + name + " County'></button></span>"; // The minus is drawn in naics.css
+}
+// counties: [{name, fip}]
+function locationTitlesHtml(counties) {
+    if (!counties.length) return "";
+    const suffix = counties.length == 1 ? " County" : " Counties";
+    const spans = counties.map((c, i) => locationTitleCounty(c.name, c.fip, i == counties.length - 1 ? suffix : ""));
+    const list = spans.length > 1 ? spans.slice(0, -1).join(", ") + " and " + spans[spans.length - 1] : spans[0];
+    return list
+        + "<button type='button' class='locationTitleAdd' title='Add counties' aria-label='Add counties'></button>"; // The plus is drawn in naics.css
+}
+document.addEventListener("click", function(e) {
+    if (!e.target.closest || !e.target.closest(".location_titles")) return;
+    const remove = e.target.closest(".locationTitleRemove");
+    const county = e.target.closest(".locationTitleCounty");
+    if (remove) {
+        const geo = county.dataset.geo;
+        const remaining = String(getHash().geo || "").split(",").filter(id => id && id !== geo);
+        goHash({"geo": remaining.join(",")});
+    } else if (e.target.closest(".locationTitleAdd")) {
+        // Map clicks then add counties rather than replace them. The checkbox loads with the location filter.
+        waitForElm('#multipleCounties').then(() => setMultiple("counties", true));
+        goHash({"geoview": "state"});
+    } else if (county) {
+        $(".location_titles .locationTitleCounty").not(county).removeClass("active");
+        $(county).toggleClass("active"); // Shows its "-" button, for touch screens without hover
+    }
+});
+
 // For v2
 // BUGBUG - Use a small file with just two columns
 // Used in old version, but it contains 2,4,6 naics
@@ -152,12 +188,14 @@ function refreshNaicsWidget(initialLoad) {
             }
             $('#pageTitle').show();
         }
-    } else if (hash.set && hash.state != priorHash_naicspage.state) { // Energy: "Alaska Energy Mix"
+    } else if (hash.set && (hash.state != priorHash_naicspage.state || hash.usregion != priorHash_naicspage.usregion)) { // "Georgia Land Use"
         const impactSet = typeof impactSetById === 'function' ? impactSetById(hash.set) : null;
-        if (impactSet && impactSet.stateHeading) {
+        if (impactSet) {
             $('#pageTitle').text(impactSetHeading(impactSet, hash));
         }
     }
+    // #pageTitle includes the place, so #regionService ("Georgia Industries") is hidden (naics.css). For counties, it repeats the topic link above #pageTitle.
+    $("#industryHeader").toggleClass("hasSetPlace", !!(hash.set && typeof impactSetPlace === 'function' && impactSetPlace(hash)));
     if (hash.set != priorHash_naicspage.set) {
         $(".impactIcons div").removeClass("active");
         if (!hash.set) {
@@ -2135,6 +2173,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                         */
 
                         var countytitle = "";
+                        let countyNames = []; // For .location_titles, with a "-" button per county
                         for(var i=0; i < fips.length; i++){
                             var filteredData = consdata.filter(function(d) {
                                 if (d["id"]==fips[i]){
@@ -2148,6 +2187,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                                     document.getElementById("industryheader").innerHTML=document.getElementById("industryheader").innerHTML+'<font size="3">'+d["county"]+', '+'</font>'
                                     }
                                     */
+                                    countyNames.push({name: d["county"].split(" County")[0], fip: fips[i]});
                                     if (fips.length > 1 && i==fips.length-1) {
                                         countytitle += " and " + d["county"].split(" County")[0];
                                     } else if (i>0) {
@@ -2176,7 +2216,7 @@ function topRatesInFips(dataSet, dataNames, fips, hash) {
                             }
                         }
 
-                        $(".location_titles").text(countytitle);
+                        $(".location_titles").html(locationTitlesHtml(countyNames));
                         $(".location_titles").show();
 
                     } else if (fips==dataObject.stateshown) {

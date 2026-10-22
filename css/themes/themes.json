@@ -1,0 +1,10 @@
+[
+  { "value": "claude", "label": "Claude" },
+  { "value": "notion", "label": "Notion" },
+  { "value": "openai", "label": "OpenAI" },
+  { "value": "codex", "label": "Codex" },
+  { "value": "grok", "label": "Grok" },
+  { "value": "xai", "label": "xAI" },
+  { "value": "georgia", "label": "Georgia" },
+  { "value": "maestro", "label": "Maestro" }
+]

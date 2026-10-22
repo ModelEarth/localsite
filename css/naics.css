@@ -20,6 +20,81 @@
 	line-height: 20px;
 	border-radius: 13px;
 }
+/* .location_titles counties (naics.js). Each county's "-" shows over the end of its name on hover or after clicking the county. "+" opens the county map. */
+.location_titles .locationTitleCounty {
+	position: relative;
+	cursor: pointer;
+}
+.location_titles .locationTitleRemove,
+.location_titles .locationTitleAdd {
+	box-sizing: border-box;
+	position: relative; /* For the bars drawn below */
+	width: 22px;
+	height: 22px;
+	padding: 0;
+	margin: 0 2px 0 4px;
+	color: #555;
+	vertical-align: middle;
+	border: 2px solid #aaa;
+	border-radius: 50%;
+	background-color: #fff;
+	cursor: pointer;
+}
+.location_titles .locationTitleRemove {
+	display: none;
+	position: absolute; /* Floats, so the title doesn't shift when it appears */
+	top: 50%;
+	right: 0; /* Over the right end of the county name, vertically centered on the text */
+	transform: translateY(calc(-50% + 2px)); /* 2px lower lines up with the letters, since the line box includes space for descenders */
+	margin: 0;
+	z-index: 1;
+}
+/* The minus and plus are drawn as bars, since the font's "+" and "-" sit above the center of the circle */
+.location_titles .locationTitleRemove::before,
+.location_titles .locationTitleAdd::before,
+.location_titles .locationTitleAdd::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 10px;
+	height: 2px;
+	background-color: currentColor;
+	transform: translate(-50%, -50%);
+}
+.location_titles .locationTitleAdd::after {
+	transform: translate(-50%, -50%) rotate(90deg);
+}
+.location_titles .locationTitleCounty:hover .locationTitleRemove,
+.location_titles .locationTitleCounty:focus-within .locationTitleRemove,
+.location_titles .locationTitleCounty.active .locationTitleRemove {
+	display: inline-block;
+}
+.location_titles .locationTitleAdd {
+	margin-left: 8px;
+}
+/* The hero's .location_titles (info/index.html) inherits font-size 0 from #datascape, so its county names are hidden.
+Without this, its 16px buttons would still show there on their own. */
+#hero-rect .location_titles .locationTitleRemove,
+#hero-rect .location_titles .locationTitleAdd {
+	display: none;
+}
+.location_titles .locationTitleRemove:hover,
+.location_titles .locationTitleAdd:hover {
+	color: #000;
+	border-color: #555;
+}
+.dark .location_titles .locationTitleRemove,
+.dark .location_titles .locationTitleAdd {
+	color: #ddd;
+	border-color: #777;
+	background-color: #333;
+}
+.dark .location_titles .locationTitleRemove:hover,
+.dark .location_titles .locationTitleAdd:hover {
+	color: #fff;
+	border-color: #ccc;
+}
 #econ_list {
 	max-width: 100%;
 	overflow-x: scroll;
@@ -157,8 +232,10 @@ The auto margin keeps the paginator and row count choices together on the left. 
 }
 /* With a set and a topic, #showTopic reads "Parts Manufacturing in Georgia", so #regionService would repeat it */
 /* Without a set, #showTopic reads "Bioeconomy in Alaska" in place of #regionService ("Alaska - Bioeconomy") */
+/* With a set, #pageTitle reads "Georgia Land Use" in place of "Land Use" above #regionService ("Georgia Industries") */
 #industryHeader.hasSetTopic #regionService,
-#industryHeader.hasTopicPlace #regionService {
+#industryHeader.hasTopicPlace #regionService,
+#industryHeader.hasSetPlace #regionService {
 	display: none;
 }
 /* Opens the Topics menu (appview=topics) */

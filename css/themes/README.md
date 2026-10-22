@@ -46,6 +46,8 @@ page; they do not need to be loaded for individual themes.
 
 Register the body class in each of these places:
 
+- `themes/themes.json`: `value` (the body class and file name) and `label`. The /cv person pages and cv/extract
+  load this file for their theme dropdowns, so a theme added here appears there automatically
 - `localsite/js/localsite.js`: `localStylelookThemes`, so the stylesheet loads on demand
 - `localsite/js/navigation.js`: `localsiteStylelookMenu`, for the style dropdown
 - `themes/index.html`: `localThemeClasses`, the `colorPalettes` entry,
