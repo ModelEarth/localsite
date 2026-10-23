@@ -5,7 +5,8 @@
     <meta name="robots" content="noindex" />
     <title>Edit via Sveltia CMS</title>
     <link type="text/css" rel="stylesheet" href="/localsite/css/base.css" id="/localsite/css/base.css" />
-    <script type="text/javascript" src="/localsite/js/localsite.js?showheader=true&showsearch=true"></script>
+    <!-- mdedit=live shows the .md-edit-menu edit button on the readme beyond localhost -->
+    <script type="text/javascript" src="/localsite/js/localsite.js?showheader=true&showsearch=true&mdedit=live"></script>
  <script>
 loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/heads/main/README.md", "readmeDiv", "_parent");
 </script>
@@ -120,9 +121,7 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
         Until then, sign-in goes through Netlify's service ("Authorize Netlify CMS"). For the editors' "Sign In with Token" option, <a href="https://github.com/settings/tokens/new?scopes=public_repo&description=Content%20Tools" target="_blank">create a personal access token</a>.
       </div>
 
-      <div id="readmeDiv"></div>
-
-      The icon to the right edits just the readme file.<br><br>
+      <div id="readmeDiv">The icon to the right edits just the readme file.</div>
 
       <h2>Example: edit one file on GitHub</h2>
 

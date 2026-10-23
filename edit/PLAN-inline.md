@@ -28,6 +28,11 @@ Accepts an optional `options` object:
 - `options.inline` — boolean; overrides the global default
 - `options.target` — element or CSS selector; `#nc-root` is inserted after this
   element when creating it (so the editor appears below the button)
+- `options.heightRatio` — scales the initial height (the window space below `#nc-root`);
+  `options.extraHeight` adds pixels to it. The Markdown "Edit Content" menu uses `0.5`
+  plus `220`. A bar along the bottom of `#nc-root` drags the height taller or shorter.
+  While an entry is open, `#nc-root` grows to fit its fields as text is added, and shrinks
+  back toward that starting or dragged height as text is removed.
 
 Falls back to `window.cmsInlineEditor` for the global default, which is set by
 reading `inline_editor` from the `cms:` block in `support/site/config.yaml`

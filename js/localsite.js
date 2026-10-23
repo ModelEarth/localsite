@@ -3807,6 +3807,19 @@ function loadIntoDiv(pageFolder,divID,html,callback) {
   const theDivID = (divID.startsWith('#') || divID.startsWith('.')) ? divID : '#' + divID;
   waitForElm(theDivID).then((elm) => {
     const thediv = document.getElementById(divID);
+    // Existing content with loose text (not inside a tag) is wrapped in a div,
+    // so the inline editor's .md-editing rule can hide it with the Markdown.
+    var hasLooseText = Array.prototype.some.call(thediv.childNodes, function(node) {
+        return node.nodeType === Node.TEXT_NODE && node.textContent.trim();
+    });
+    if (hasLooseText) {
+        var existing = document.createElement('div');
+        existing.className = 'readmeDivExisting';
+        while (thediv.firstChild) {
+            existing.appendChild(thediv.firstChild);
+        }
+        thediv.appendChild(existing);
+    }
     var newcontent = document.createElement('div');
     newcontent.innerHTML = html;
     while (newcontent.firstChild) {
@@ -6569,6 +6582,10 @@ function _injectMdEditorStyles() {
         + '.md-edit-choice{margin:0 0 12px;padding:10px 14px 10px 0;border-radius:12px;background:#f3f4f6;font:14px/1.5 system-ui,sans-serif;color:#374151}'
         + '.md-edit-choice button{margin:6px 8px 0 0;padding:5px 14px;border:1px solid #d1d5db;border-radius:16px;background:#fff;cursor:pointer;font-size:13px;color:#374151}'
         + '.md-edit-choice button:hover{background:#f9fafb}'
+        // While editing, only the edit menu and the "Editing <repo>" line remain in the content div.
+        + '.md-editing>:not(.md-edit-menu):not(.md-edit-choice){display:none}'
+        + '.md-editing{min-height:44px}'
+        + '.md-editing>.md-edit-choice{padding-right:44px}'
         + '.dark .md-edit-choice{background:#333;color:#eee}'
         + '.dark .md-edit-choice button{background:#444;border-color:#555;color:#eee}'
         + '.md-edit-dropdown{display:none;position:fixed;background:#fff;border:1px solid #e5e7eb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.12);min-width:140px;overflow:hidden;z-index:9999}'
@@ -6715,6 +6732,7 @@ function _attachMarkdownEditMenu(pagePath, divID) {
         }
         if (window.isCmsOpen && window.isCmsOpen(container)) {
             window.closeCMS();
+            container.classList.remove('md-editing');
             var openChoice = container.querySelector('.md-edit-choice');
             if (openChoice) openChoice.remove();
             return;
@@ -6730,6 +6748,8 @@ function _attachMarkdownEditMenu(pagePath, divID) {
         choice.textContent = 'Signing in to GitHub…';
 
         function launch(fork, branch) {
+            // The editor replaces the formatted content, which returns on Close Editor.
+            container.classList.add('md-editing');
             loadScript(cmsJsPath, function() {
                 // Offer only GitHub sign-in, and title the CMS with the current site's title.
                 _getCurrentSiteTitle().then(function(siteTitle) {
@@ -6738,7 +6758,7 @@ function _attachMarkdownEditMenu(pagePath, divID) {
                     config.backend.auth_methods = ['oauth'];
                     if (siteTitle) config.app_title = siteTitle + ' CMS';
                     // Open this file's editor directly rather than the collection list.
-                    launchCMS({inline:true, target:container, configUrl:window.SITE_CONFIG_PATH, config:config,
+                    launchCMS({inline:true, target:container, heightRatio:0.5, extraHeight:220, configUrl:window.SITE_CONFIG_PATH, config:config,
                         route: file ? '#/collections/page/entries/markdown' : undefined});
                 });
             });
@@ -6882,14 +6902,27 @@ function defineLaunchCMS() {
     }
 
     // Sveltia CMS opens its entry editor (.content-editor) and Asset Editor (.wrapper[role=group])
-    // as full-window fixed overlays at z-index 100, under the localsite #header (z-index 10001)
-    // and #side-nav-content (10150), which hid their toolbar and Save button. While one is open,
-    // lift #nc-root above both.
+    // as full-window fixed overlays at z-index 100. The entry editor is kept inline, filling the
+    // CMS page area below its toolbar (.page-root, its nearest positioned ancestor). The Asset Editor
+    // stays full-window, under the localsite #header (z-index 10001) and #side-nav-content (10150),
+    // which hid its toolbar and Save button, so while it's open, #nc-root is lifted above both.
     function injectInlineCmsStyles() {
         if (document.getElementById('inline-cms-styles')) return;
         var style = document.createElement('style');
         style.id = 'inline-cms-styles';
-        style.textContent = '#nc-root:has(.content-editor, .wrapper[role="group"]) { z-index: 10200; }'
+        style.textContent = '#nc-root .content-editor { position: absolute; }'
+            // Sveltia makes its global toolbar (Assets, Create, search) inert while an editor is open,
+            // expecting the full-window editor to cover it. With the editor inline, hide it instead.
+            + ' #nc-root .toolbar-wrapper[inert] > .sui.toolbar { display: none; }'
+            + ' #nc-root .nc-save-copy { margin: 12px 0 4px 14px; }'
+            // Once its copy is below the fields, the toolbar's own Save button is hidden.
+            + ' #nc-root .content-editor:has(.nc-save-copy) > .sui.toolbar button[aria-keyshortcuts$="+S"] { display: none; }'
+            // The app shell stops above the resize bar along the bottom of #nc-root.
+            + ' #nc-root > .sui.app-shell { height: auto; bottom: 12px; }'
+            + ' #nc-root > .nc-resize-handle { position: absolute; left: 0; right: 0; bottom: 0; height: 12px; cursor: ns-resize; touch-action: none; }'
+            + ' #nc-root > .nc-resize-handle::after { content: ""; position: absolute; left: 50%; top: 4px; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: currentColor; opacity: .3; }'
+            + ' #nc-root > .nc-resize-handle:hover::after, #nc-root > .nc-resize-handle:focus-visible::after { opacity: .6; }'
+            + ' #nc-root:has(.wrapper[role="group"]:not(.content-editor)) { z-index: 10200; }'
             // Entry fields fill their pane up to 1000px (Sveltia caps them at 768px).
             + ' #nc-root section.field[role="group"] > * { max-width: 1000px; }'
             // Sveltia reopens the last sidebar panel even when it's disabled for the entry, e.g. Slug
@@ -6912,7 +6945,130 @@ function defineLaunchCMS() {
         document.head.appendChild(style);
     }
 
-    function prepareInlineCmsRoot(target) {
+    // Drag bar along the bottom of #nc-root (below the app shell) that sets the editor's height.
+    // Arrow keys also resize it when the bar has focus.
+    function addCmsResizeHandle(ncRoot) {
+        if (ncRoot.querySelector(':scope > .nc-resize-handle')) return;
+        var handle = document.createElement('div');
+        handle.className = 'nc-resize-handle';
+        handle.title = 'Drag to resize the editor';
+        handle.tabIndex = 0;
+        handle.setAttribute('role', 'separator');
+        handle.setAttribute('aria-orientation', 'horizontal');
+        handle.setAttribute('aria-label', 'Resize the editor');
+        function setHeight(height) {
+            ncRoot.style.height = Math.max(200, Math.round(height)) + 'px';
+            ncRoot.dataset.resized = 'true'; // Kept when the editor is closed and opened again
+            ncRoot.dataset.baseHeight = ncRoot.offsetHeight; // The least height addCmsAutoHeight shrinks to
+        }
+        handle.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            var startY = e.clientY;
+            var startHeight = ncRoot.offsetHeight;
+            handle.setPointerCapture(e.pointerId);
+            function move(ev) { setHeight(startHeight + ev.clientY - startY); }
+            function stop() {
+                handle.removeEventListener('pointermove', move);
+                handle.removeEventListener('pointerup', stop);
+                handle.removeEventListener('pointercancel', stop);
+            }
+            handle.addEventListener('pointermove', move);
+            handle.addEventListener('pointerup', stop);
+            handle.addEventListener('pointercancel', stop);
+        });
+        handle.addEventListener('keydown', function(e) {
+            if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+            e.preventDefault();
+            setHeight(ncRoot.offsetHeight + (e.key === 'ArrowDown' ? 40 : -40));
+        });
+        ncRoot.appendChild(handle);
+    }
+
+    // Copies the entry editor's toolbar Save button below its last field (the text box of a README),
+    // with the same look, label and disabled state. Clicking the copy clicks the toolbar's Save.
+    function addCmsSaveCopy(ncRoot) {
+        if (ncRoot.dataset.saveCopy) return;
+        ncRoot.dataset.saveCopy = 'true';
+        var copy = document.createElement('button');
+        copy.type = 'button';
+        var original = null;
+        var mirror = new MutationObserver(syncCopy);
+        function syncCopy() {
+            if (!original) return;
+            copy.className = original.className;
+            copy.innerHTML = original.innerHTML;
+            copy.disabled = original.disabled;
+            copy.setAttribute('aria-disabled', original.getAttribute('aria-disabled') || 'false');
+        }
+        copy.addEventListener('click', function() {
+            if (original && original.isConnected && !original.disabled) original.click();
+        });
+        var wrap = document.createElement('div');
+        wrap.className = 'nc-save-copy';
+        wrap.appendChild(copy);
+
+        var queued = false;
+        function place() {
+            queued = false;
+            var save = ncRoot.querySelector('.content-editor > .sui.toolbar button[aria-keyshortcuts$="+S"]');
+            var pane = ncRoot.querySelector('.content-editor .pane[data-mode="edit"]');
+            var fields = pane ? Array.prototype.filter.call(pane.querySelectorAll('section.field[role="group"]'),
+                function(field) { return !field.parentElement.closest('section.field'); }) : [];
+            var lastField = fields[fields.length - 1];
+            if (!save || !lastField) { wrap.remove(); return; }
+            if (save !== original) {
+                original = save;
+                mirror.disconnect();
+                mirror.observe(save, { attributes: true, childList: true, subtree: true, characterData: true });
+                syncCopy();
+            }
+            if (lastField.nextElementSibling !== wrap) lastField.insertAdjacentElement('afterend', wrap);
+        }
+        new MutationObserver(function() {
+            if (!queued) { queued = true; window.requestAnimationFrame(place); }
+        }).observe(ncRoot, { childList: true, subtree: true });
+    }
+
+    // While the entry editor is open, #nc-root grows to fit its fields, so the edit pane doesn't scroll,
+    // and shrinks as text is removed, down to its starting or dragged height (data-base-height).
+    function addCmsAutoHeight(ncRoot) {
+        if (ncRoot.dataset.autoHeight) return;
+        ncRoot.dataset.autoHeight = 'true';
+        var queued = false;
+        function fit() {
+            queued = false;
+            if (ncRoot.style.display === 'none') return;
+            var height = ncRoot.offsetHeight;
+            var base = parseFloat(ncRoot.dataset.baseHeight) || height;
+            var target = base;
+            var scroller = ncRoot.querySelector('.content-editor .pane[data-mode="edit"] [id$="-pane-body"] > .content');
+            if (scroller) {
+                var overflow = scroller.scrollHeight - scroller.clientHeight;
+                if (overflow > 1) {
+                    target = height + overflow;
+                } else {
+                    // Unused space below the fields, including each child's bottom margin.
+                    var box = scroller.getBoundingClientRect();
+                    var contentBottom = box.top;
+                    Array.prototype.forEach.call(scroller.children, function(child) {
+                        var bottom = child.getBoundingClientRect().bottom + parseFloat(getComputedStyle(child).marginBottom);
+                        contentBottom = Math.max(contentBottom, bottom);
+                    });
+                    var slack = box.bottom - parseFloat(getComputedStyle(scroller).paddingBottom) - contentBottom;
+                    target = slack > 4 ? height - slack : height;
+                }
+            }
+            target = Math.max(base, Math.round(target));
+            if (Math.abs(target - height) > 1) ncRoot.style.height = target + 'px';
+        }
+        new MutationObserver(function() {
+            if (!queued) { queued = true; window.requestAnimationFrame(fit); }
+        }).observe(ncRoot, { childList: true, subtree: true, characterData: true });
+    }
+
+    // heightRatio scales the initial height, the window space below #nc-root (at least 400px),
+    // then extraHeight pixels are added.
+    function prepareInlineCmsRoot(target, heightRatio, extraHeight) {
         var anchor = resolveCmsTarget(target) || document.getElementById('editPageBtn') || document.body;
         var ncRoot = document.getElementById('nc-root');
         var appShell = getExistingCmsShell();
@@ -6926,8 +7082,7 @@ function defineLaunchCMS() {
         ncRoot.style.display = 'block';
         ncRoot.style.position = 'relative';
         ncRoot.style.width = '100%';
-        ncRoot.style.minHeight = ncRoot.style.minHeight || '600px';
-        ncRoot.style.height = '';
+        ncRoot.style.minHeight = '';
         ncRoot.style.inset = '';
 
         if (appShell && appShell.parentNode !== ncRoot) {
@@ -6939,11 +7094,16 @@ function defineLaunchCMS() {
         } else if (ncRoot.parentNode !== anchor.parentNode || ncRoot.previousElementSibling !== anchor) {
             anchor.insertAdjacentElement('afterend', ncRoot);
         }
+        addCmsResizeHandle(ncRoot);
+        addCmsSaveCopy(ncRoot);
+        addCmsAutoHeight(ncRoot);
 
-        window.requestAnimationFrame(function() {
+        // A height dragged by the user is kept when the editor is opened again.
+        if (!ncRoot.dataset.resized) {
             var top = ncRoot.getBoundingClientRect().top;
-            ncRoot.style.height = Math.max(400, window.innerHeight - top) + 'px';
-        });
+            ncRoot.style.height = Math.round(Math.max(400, window.innerHeight - top) * (heightRatio || 1) + (extraHeight || 0)) + 'px';
+            ncRoot.dataset.baseHeight = ncRoot.offsetHeight;
+        }
 
         return ncRoot;
     }
@@ -6984,7 +7144,7 @@ function defineLaunchCMS() {
         var appShell = getExistingCmsShell();
 
         if (inline) {
-            prepareInlineCmsRoot(options.target);
+            prepareInlineCmsRoot(options.target, options.heightRatio, options.extraHeight);
         } else {
             prepareFullPageCmsRoot();
         }
