@@ -1404,6 +1404,7 @@ content .js, pre code, .codetext { /* Prevents .js from impacting js class withi
   border-color: var(--accent);
   color: var(--chip-text);
   box-shadow: var(--button-shadow-hover);
+  text-decoration: none;
 }
 .cv-theme .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info):not(.btn-light):not(.btn-dark):not(.btn-black):not(.btn-magenta):not(.btn-periwinkle):not(.btn-indigo):not(.btn-white) {
   background: color-mix(in srgb, var(--bg-card) 82%, var(--text-main) 18%);
