@@ -72,11 +72,20 @@ window.TradeEmbedReady = (function () {
 
 window.TradeShared = (function () {
 
+  // sourceKeys are trade_impact.csv columns, in order: a metric reads the first column the
+  // row has. The 2019-2021 files have air_emissions, employment, land, material and water
+  // (factor.csv units: kg, 1000 persons, km2, kilotonnes, Mm3) instead of the 2022 *_total
+  // columns; 2023 and 2024 have material only. sourceScales converts a column to the
+  // metric's base unit (kg, m3, persons, km2, kt).
   var METRICS = {
     amount:           { label: "Amount Spent",        unit: "M EUR",       scale: 1,    sourceKeys: ["amount"],                                     scoreDirection: "higher" },
-    CO2_total:        { label: "CO\u2082 Emissions",  unit: "Gt CO\u2082", scale: 1e12, sourceKeys: ["CO2_total"],                                 scoreDirection: "lower"  },
-    Water_total:      { label: "Water Use",           unit: "Gm\u00B3",    scale: 1e9,  sourceKeys: ["Water_total"],                                scoreDirection: "lower"  },
-    Employment_total: { label: "Employment",          unit: "M jobs",      scale: 1e6,  sourceKeys: ["Employment_total", "Employment_people_total"], scoreDirection: "higher" }
+    CO2_total:        { label: "CO\u2082 Emissions",  unit: "Gt CO\u2082", scale: 1e12, sourceKeys: ["CO2_total", "air_emissions"],                scoreDirection: "lower"  },
+    Water_total:      { label: "Water Use",           unit: "Gm\u00B3",    scale: 1e9,  sourceKeys: ["Water_total", "water"],                       scoreDirection: "lower",
+                        sourceScales: { water: 1e6 } },
+    Employment_total: { label: "Employment",          unit: "M jobs",      scale: 1e6,  sourceKeys: ["Employment_total", "Employment_people_total", "employment"], scoreDirection: "higher",
+                        sourceScales: { employment: 1e3 } },
+    Land_total:       { label: "Land Use",            unit: "M km\u00B2",  scale: 1e6,  sourceKeys: ["land"],                                      scoreDirection: "lower"  },
+    Material_total:   { label: "Material Use",        unit: "Mt",          scale: 1e3,  sourceKeys: ["material"],                                  scoreDirection: "lower"  }
   };
 
   var CURRENCY_NAMES = {
@@ -400,6 +409,22 @@ window.TradeShared = (function () {
     if (changed) { _dispatch(); }
   }
 
+  // A row's value for a metric in the metric's base unit, from the first of its sourceKeys
+  // columns that the row has
+  function metricValue(row, metricKey) {
+    var metric = METRICS[metricKey] || {};
+    var keys = Array.isArray(metric.sourceKeys) && metric.sourceKeys.length
+      ? metric.sourceKeys : [metricKey];
+    for (var i = 0; i < keys.length; i++) {
+      var raw = row[keys[i]];
+      if (raw === undefined || raw === null || raw === "") { continue; }
+      var parsed = Number(raw);
+      var scale = (metric.sourceScales && metric.sourceScales[keys[i]]) || 1;
+      return isFinite(parsed) ? parsed * scale : 0;
+    }
+    return 0;
+  }
+
   function setYears(years) {
     var select = document.getElementById("trade-year-select");
     if (!select) { return; }
@@ -458,6 +483,7 @@ window.TradeShared = (function () {
     formatAmountExact: formatAmountExact,
     formatAmountCompact: formatAmountCompact,
     METRICS: METRICS,
+    metricValue: metricValue,
     CURRENCY_NAMES: CURRENCY_NAMES,
     CURRENCY_SYMBOLS: CURRENCY_SYMBOLS
   };
@@ -510,14 +536,7 @@ window.TradePartner = (function () {
   }
 
   function _getMetricValue(row, metricKey) {
-    var metric = TradeShared.METRICS[metricKey] || {};
-    var keys = Array.isArray(metric.sourceKeys) && metric.sourceKeys.length
-      ? metric.sourceKeys : [metricKey];
-    for (var i = 0; i < keys.length; i++) {
-      var val = _parseNumber(row[keys[i]]);
-      if (val) { return val; }
-    }
-    return 0;
+    return TradeShared.metricValue(row, metricKey);
   }
 
   function _partnerCountryCode(row, selection) {
