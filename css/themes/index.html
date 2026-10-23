@@ -22,7 +22,7 @@
 <script>
 // Themes with a matching .md file get an About button. display=about in the hash opens the text.
 // ("display" rather than "show", which the maps use for their active dataset.)
-const markdownStyles = ['grok', 'codex', 'xai', 'openai', 'maestro'];
+const markdownStyles = ['xai', 'openai', 'maestro'];
 
 function updateStyleAbout(typographyValue) {
   const aboutButton = document.getElementById('aboutStyleButton');
@@ -444,58 +444,6 @@ const openaiColorPalette = {
   ]
 };
 
-const codexColorPalette = {
-  primaryColor: [
-    { name: "Terminal Green", hex: "#10A37F" }
-  ],
-  mainColors: [
-    { name: "Ink", hex: "#0D0D0D" },
-    { name: "Terminal Green", hex: "#10A37F" },
-    { name: "Blue", hex: "#2563EB" },
-    { name: "Violet", hex: "#7C3AED" },
-    { name: "Slate", hex: "#6E6E80" },
-    { name: "Paper", hex: "#FFFFFF" },
-    { name: "Mist", hex: "#F0F0F0" },
-    { name: "Rose", hex: "#FDF0F5" }
-  ],
-  supportingColors: [
-    { name: "Graphite", hex: "#212121" },
-    { name: "Mint", hex: "#E8F7F3" },
-    { name: "Sky", hex: "#EEF4FF" },
-    { name: "Amber", hex: "#FEFCE8" },
-    { name: "Redline", hex: "#DC2626" },
-    { name: "Brown", hex: "#7C5C3E" },
-    { name: "Pink", hex: "#BE185D" },
-    { name: "Lilac", hex: "#F5F0FF" }
-  ]
-};
-
-const grokColorPalette = {
-  primaryColor: [
-    { name: "Violet", hex: "#7C3AED" }
-  ],
-  mainColors: [
-    { name: "Obsidian", hex: "#0A0A0A" },
-    { name: "Violet", hex: "#7C3AED" },
-    { name: "Blue", hex: "#1D4ED8" },
-    { name: "Pink", hex: "#BE185D" },
-    { name: "Silver", hex: "#6B7280" },
-    { name: "Paper", hex: "#FFFFFF" },
-    { name: "Mist", hex: "#F3F4F6" },
-    { name: "Lilac", hex: "#F5F3FF" }
-  ],
-  supportingColors: [
-    { name: "Carbon", hex: "#141414" },
-    { name: "Mint", hex: "#F0FDF4" },
-    { name: "Sky", hex: "#EFF6FF" },
-    { name: "Amber", hex: "#FEFCE8" },
-    { name: "Rose", hex: "#FFF1F2" },
-    { name: "Ember", hex: "#BE123C" },
-    { name: "Deep Violet", hex: "#4C1D95" },
-    { name: "Graphite", hex: "#9CA3AF" }
-  ]
-};
-
 const xaiColorPalette = {
   primaryColor: [
     { name: "Orbit", hex: "#4B6BFB" }
@@ -552,8 +500,6 @@ const colorPalettes = {
   notion: notionColorPalette,
   claude: claudeColorPalette,
   openai: openaiColorPalette,
-  codex: codexColorPalette,
-  grok: grokColorPalette,
   xai: xaiColorPalette,
   maestro: maestroColorPalette,
   georgia: georgiaColorPalette
@@ -636,7 +582,7 @@ const pushHash = typeof goHash === 'function' ? goHash : writeHash;
 const typographySelect = document.getElementById('typographySelect');
 const cornerRadiusSelect = document.getElementById('cornerRadius');
 const samplesSection = document.querySelector('.samples-section');
-const localThemeClasses = ['georgia', 'notion', 'claude', 'openai', 'codex', 'grok', 'xai', 'maestro'];
+const localThemeClasses = ['georgia', 'notion', 'claude', 'openai', 'xai', 'maestro'];
 const localTypographyThemes = localThemeClasses.concat(['base']);
 const cvTypographyThemes = [
   'creative-studio',
@@ -692,20 +638,6 @@ const softBackgroundPalettes = {
     { name: "Soft Rose", hex: "#FAF0F0", var: "--soft-bg-red" },
     { name: "Soft Lilac", hex: "#F6F3FB", var: "--soft-bg-purple" }
   ],
-  codex: [
-    { name: "Soft Mint", hex: "#EDFAF5", var: "--soft-bg-green" },
-    { name: "Soft Blue", hex: "#EEF4FF", var: "--soft-bg-blue" },
-    { name: "Soft Amber", hex: "#FEFCE8", var: "--soft-bg-yellow" },
-    { name: "Soft Red", hex: "#FFF1F0", var: "--soft-bg-red" },
-    { name: "Soft Violet", hex: "#F5F0FF", var: "--soft-bg-purple" }
-  ],
-  grok: [
-    { name: "Soft Mint", hex: "#F0FDF4", var: "--soft-bg-green" },
-    { name: "Soft Blue", hex: "#EFF6FF", var: "--soft-bg-blue" },
-    { name: "Soft Amber", hex: "#FEFCE8", var: "--soft-bg-yellow" },
-    { name: "Soft Rose", hex: "#FFF1F2", var: "--soft-bg-red" },
-    { name: "Soft Violet", hex: "#F5F3FF", var: "--soft-bg-purple" }
-  ],
   xai: [
     { name: "Soft Aurora", hex: "#EFF6FF", var: "--soft-bg-green" },
     { name: "Soft Orbit", hex: "#EEF3FF", var: "--soft-bg-blue" },
@@ -758,20 +690,6 @@ const softColorPalettes = {
     { name: "Sand", hex: "#F7F1DF", var: "--notion-yellow" },
     { name: "Rose", hex: "#F4DEDF", var: "--notion-red" },
     { name: "Lilac", hex: "#EEE9F8", var: "--notion-purple" }
-  ],
-  codex: [
-    { name: "Mint", hex: "#E8F7F3", var: "--notion-green" },
-    { name: "Blue", hex: "#EEF4FF", var: "--notion-blue" },
-    { name: "Amber", hex: "#FEFCE8", var: "--notion-yellow" },
-    { name: "Red", hex: "#FFF1F0", var: "--notion-red" },
-    { name: "Violet", hex: "#F5F0FF", var: "--notion-purple" }
-  ],
-  grok: [
-    { name: "Mint", hex: "#F0FDF4", var: "--notion-green" },
-    { name: "Blue", hex: "#EFF6FF", var: "--notion-blue" },
-    { name: "Amber", hex: "#FEFCE8", var: "--notion-yellow" },
-    { name: "Rose", hex: "#FFF1F2", var: "--notion-red" },
-    { name: "Violet", hex: "#F5F3FF", var: "--notion-purple" }
   ],
   xai: [
     { name: "Aurora", hex: "#EAF4FF", var: "--notion-green" },

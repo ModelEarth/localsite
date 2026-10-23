@@ -29,15 +29,12 @@ set the matching class on `<body>`:
 | `notion.css` | `notion` | Notion — soft sage neutrals |
 | `claude.css` | `claude` | Claude.ai — warm terracotta |
 | `openai.css` | `openai` | OpenAI — signal green |
-| `codex.css` | `codex` | Codex — dark terminal |
-| `grok.css` | `grok` | Grok — deep violet |
 | `xai.css` | `xai` | xAI — orbit blue |
 | `georgia.css` | `georgia` | Georgia.org — pine green |
 | `maestro.css` | `maestro` | Maestro (maestropro.io) — black pills, raspberry accent |
 
-Themes with design notes also have a matching `.md` file (`codex.md`, `grok.md`,
-`maestro.md`, `openai.md`, `xai.md`), shown on the preview page when that theme
-is selected.
+Themes with design notes also have a matching `.md` file (`maestro.md`,
+`openai.md`, `xai.md`), shown on the preview page when that theme is selected.
 
 `palette.css` and `heatmap.css` are shared utilities included by the preview
 page; they do not need to be loaded for individual themes.

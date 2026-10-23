@@ -54,7 +54,6 @@
 .heatmap-scale.dark-scale .heatmap-cell.level-4,
 .heatmap-scale.dark-scale .heatmap-cell.level-5 { color: #1f2937; }
 /* Step 2 is deeper in these themes, so white text reads better */
-.grok .heatmap-scale.dark-scale .heatmap-cell.level-2,
 .georgia .heatmap-scale.dark-scale .heatmap-cell.level-2,
 .maestro .heatmap-scale.dark-scale .heatmap-cell.level-2 { color: #fff; }
 

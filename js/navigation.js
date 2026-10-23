@@ -37,10 +37,6 @@ window.localsiteStylelookMenu = [
     { type: "option", settingsValue: "elegant", settingsLabel: "Elegant", typographyValue: "elegant", typographyLabel: "Surfer Style" },
     { type: "option", settingsValue: "macchiato", settingsLabel: "Macchiato", typographyValue: "macchiato", typographyLabel: "Macchiato Style" }
 ];
-window.localsiteStylelookMenuX = [
-    { type: "option", settingsValue: "grok", settingsLabel: "Grok", typographyValue: "grok", typographyLabel: "Grok Style" },
-    { type: "option", settingsValue: "codex", settingsLabel: "Codex", typographyValue: "codex", typographyLabel: "Codex Style" }
-];
 function normalizeSharedStylelookValue(value, fallbackValue) {
     return value || fallbackValue;
 }

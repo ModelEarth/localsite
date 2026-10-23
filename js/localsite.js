@@ -4457,7 +4457,7 @@ waitForBody(applyColorSchemeClass);
 function setSitemode(sitemode) {
   // Not copied over from settings.js
 }
-const localStylelookThemes = ['notion', 'claude', 'openai', 'codex', 'grok', 'xai', 'georgia', 'maestro'];
+const localStylelookThemes = ['notion', 'claude', 'openai', 'xai', 'georgia', 'maestro'];
 const cvStylelookThemes = [
   'creative-studio',
   'data-driven',
