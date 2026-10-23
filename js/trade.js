@@ -67,7 +67,7 @@ window.TradeEmbedReady = (function () {
     .then(function () { return loadScript("https://d3js.org/d3.v7.min.js"); })
     .then(function () { return loadScript("https://cdn.jsdelivr.net/npm/topojson-client@3"); })
     .then(function () { return loadScript("https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"); })
-    .then(function () { return loadScript("https://cdn.jsdelivr.net/gh/ModelEarth/profile@main/state-trade-data.js"); });
+    .then(function () { return loadScript("https://cdn.jsdelivr.net/gh/ModelEarth/profile@main/js/state-flows.js"); });
 })();
 
 window.TradeShared = (function () {
