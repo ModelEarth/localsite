@@ -47,7 +47,7 @@ function updateStyleAbout(typographyValue) {
   if (aboutDiv.dataset.style !== typographyValue) {
     aboutDiv.dataset.style = typographyValue;
     aboutDiv.innerHTML = '';
-    loadMarkdown(`${typographyValue}.md`, "aboutDiv", "_parent");
+    loadMarkdown(`${typographyValue}.md`, "aboutDiv", { buttonText: 'Edit' });
   }
 }
 

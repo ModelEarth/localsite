@@ -1,12 +1,14 @@
-// Lets site visitors keep content in their own GitHub fork of DesktopFolders/content.
-// Signs in with the same popup handshake Sveltia CMS uses, through the auth_base_url
+// Lets site visitors keep content in their own GitHub copy of DesktopFolders/content, created
+// private from that template repository (they can make it public later). Signs in with the same popup handshake Sveltia CMS uses, through the auth_base_url
 // relay in the cms: block of support/site/config.yaml (CloudRoot Worker's /api/cms/auth),
 // or Netlify's default service when that isn't set. Used by localsite/edit/.
 
 (function() {
     var UPSTREAM = 'DesktopFolders/content';
     var TOKEN_KEY = 'contentRepoToken';   // localStorage: shared by every page until sign-out
-    var FORK_KEY = 'contentRepoFork';     // localStorage: the visitor's fork, e.g. "octocat/content"
+    var FORK_KEY = 'contentRepoFork';     // localStorage: the visitor's copy, e.g. "octocat/content"
+    var SCOPE_KEY = 'contentRepoScope';   // localStorage: the token's scopes, e.g. "repo", when GitHub reports them
+    var COPY_NAMES = ['content', 'content-2', 'content-3']; // used in turn when the visitor has an unrelated repo by that name
     var API = 'https://api.github.com';
 
     function authUrl(scope) {
@@ -24,7 +26,8 @@
 
     // Must be called directly from a click handler so the popup isn't blocked.
     function signIn(scope) {
-        var url = authUrl(scope || 'public_repo');
+        scope = scope || 'repo';
+        var url = authUrl(scope);
         var origin = new URL(url).origin;
         var popup = window.open(url, 'contentRepoSignIn', 'width=600,height=720');
         if (!popup) return Promise.reject(new Error('The sign-in popup was blocked. Allow popups for this site and try again.'));
@@ -51,6 +54,7 @@
                 try { result = JSON.parse(match[2]); } catch (e) { result = { error: 'Malformed sign-in response.' }; }
                 if (match[1] === 'success' && result.token) {
                     localStorage.setItem(TOKEN_KEY, result.token);
+                    localStorage.setItem(SCOPE_KEY, scope);
                     resolve(result.token);
                 } else {
                     // code is e.g. MISCONFIGURED_CLIENT when the relay has no OAuth app yet.
@@ -74,6 +78,24 @@
         if (token && cached && cached.token === token) localStorage.removeItem(CMS_USER_KEY);
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(FORK_KEY);
+        localStorage.removeItem(SCOPE_KEY);
+    }
+
+    // Whether the token covers scope. "repo" (private repos too) includes "public_repo". Unknown
+    // scopes, e.g. a fine-grained token's, count as covered, and GitHub's reply says otherwise.
+    function hasScope(scope) {
+        var scopes = localStorage.getItem(SCOPE_KEY);
+        if (scopes === null) return true;
+        var list = scopes.split(/\s*,\s*/);
+        return list.indexOf(scope) >= 0 || (scope === 'public_repo' && list.indexOf('repo') >= 0);
+    }
+
+    // Signs in with a token from elsewhere, e.g. one pasted on the keys page, in place of the
+    // popup. A different token may be another account, so the previous sign-in is cleared first.
+    function setToken(token) {
+        if (!token || token === getToken()) return;
+        signOut();
+        localStorage.setItem(TOKEN_KEY, token);
     }
 
     function api(path, options) {
@@ -84,6 +106,9 @@
         if (options.body) headers['Content-Type'] = 'application/json';
         return fetch(API + path, { method: options.method || 'GET', headers: headers, body: options.body ? JSON.stringify(options.body) : undefined })
             .then(function(response) {
+                // GitHub lists an OAuth or classic token's scopes, so connect() knows when to sign in again.
+                var scopes = response.headers.get('X-OAuth-Scopes');
+                if (token && scopes !== null && token === getToken()) localStorage.setItem(SCOPE_KEY, scopes);
                 if (response.status === 404 && options.allow404) return null;
                 return response.json().catch(function() { return {}; }).then(function(data) {
                     if (!response.ok) throw new Error('GitHub: ' + (data.message || response.status));
@@ -96,32 +121,138 @@
 
     function wait(ms) { return new Promise(function(resolve) { setTimeout(resolve, ms); }); }
 
+    // Resolves with fullName once it can be read, since GitHub creates forks and template
+    // copies in the background.
+    function whenReadable(fullName, what) {
+        var attempts = 0;
+        function ready() {
+            return api('/repos/' + fullName + '/contents/', { allow404: true }).then(function(contents) {
+                if (contents) return fullName;
+                if (++attempts >= 20) throw new Error('Your ' + what + ' ' + fullName + ' is still being created. Try again in a minute.');
+                return wait(1500).then(ready);
+            });
+        }
+        return ready();
+    }
+
     // Creates the fork if needed (GitHub returns the existing fork otherwise) and waits
-    // until it can be read, since GitHub creates forks in the background. The upstream's
-    // own account can't fork it, so it uses the upstream directly. upstream defaults to
-    // DesktopFolders/content; any other repo, e.g. one holding a README, works too.
+    // until it can be read. The upstream's own account can't fork it, so it uses the
+    // upstream directly. For a repo such as one holding a README; DesktopFolders/content
+    // uses ensureCopy() instead.
     function ensureFork(upstream) {
-        upstream = upstream || UPSTREAM;
         return getUser().then(function(user) {
             if (user.login.toLowerCase() === upstream.split('/')[0].toLowerCase()) return { full_name: upstream };
             return api('/repos/' + upstream + '/forks', { method: 'POST', body: { default_branch_only: true } });
-        })
-            .then(function(fork) {
-                var fullName = fork.full_name;
-                var attempts = 0;
-                function ready() {
-                    return api('/repos/' + fullName + '/contents/', { allow404: true }).then(function(contents) {
-                        if (contents) return fullName;
-                        if (++attempts >= 20) throw new Error('Your fork ' + fullName + ' is still being created. Try again in a minute.');
-                        return wait(1500).then(ready);
-                    });
-                }
-                return ready();
-            })
-            .then(function(fullName) {
-                if (upstream === UPSTREAM) localStorage.setItem(FORK_KEY, fullName);
-                return fullName;
+        }).then(function(fork) { return whenReadable(fork.full_name, 'fork'); });
+    }
+
+    // Whether repo came from DesktopFolders/content: a copy of the template, or an earlier fork.
+    function isFromUpstream(repo) {
+        var source = repo.template_repository || repo.parent;
+        return !!source && source.full_name.toLowerCase() === UPSTREAM.toLowerCase();
+    }
+
+    // The visitor's own copy of DesktopFolders/content, e.g. "octocat/content". A new one is
+    // created private from the template (DesktopFolders/content is a template repository), with
+    // no fork link, so it can stay private. A copy or fork made earlier is used as is, and the
+    // upstream's own account uses the upstream.
+    function ensureCopy() {
+        return getUser().then(function(user) {
+            return findCopy(user, true);
+        }).then(function(fullName) {
+            return whenReadable(fullName, 'copy');
+        }).then(function(fullName) {
+            localStorage.setItem(FORK_KEY, fullName);
+            return fullName;
+        });
+    }
+
+    // The signed-in visitor's existing copy (or earlier fork) of DesktopFolders/content, or null
+    // when they're signed out or don't have one yet. Doesn't create one. Remembers what it finds.
+    function getCopy() {
+        if (!getToken()) return Promise.resolve(null);
+        return getUser().then(function(user) {
+            return findCopy(user, false);
+        }).then(function(fullName) {
+            if (fullName) localStorage.setItem(FORK_KEY, fullName);
+            return fullName;
+        });
+    }
+
+    // The saved copy, else the first of COPY_NAMES that came from DesktopFolders/content.
+    // With create, a missing copy is made from the template; otherwise it resolves with null.
+    function findCopy(user, create) {
+        if (user.login.toLowerCase() === UPSTREAM.split('/')[0].toLowerCase()) return Promise.resolve(UPSTREAM);
+        var saved = getFork();
+        var known = saved && saved.split('/')[0].toLowerCase() === user.login.toLowerCase()
+            ? api('/repos/' + saved, { allow404: true }) : Promise.resolve(null);
+        return known.then(function(repo) {
+            return repo ? repo.full_name : findCopyByName(user.login, 0, create);
+        });
+    }
+
+    function findCopyByName(login, index, create) {
+        if (index >= COPY_NAMES.length) {
+            if (!create) return Promise.resolve(null);
+            return Promise.reject(new Error('Your GitHub account already has repos named ' + COPY_NAMES.join(', ') + ', so a copy of ' + UPSTREAM + ' needs another name.'));
+        }
+        var name = COPY_NAMES[index];
+        return api('/repos/' + login + '/' + name, { allow404: true }).then(function(repo) {
+            if (repo && isFromUpstream(repo)) return repo.full_name;
+            if (repo) return findCopyByName(login, index + 1, create);
+            if (!create) return findCopyByName(login, index + 1, create);
+            return api('/repos/' + UPSTREAM + '/generate', { method: 'POST', body: {
+                owner: login, name: name, private: true, description: 'My content, copied from ' + UPSTREAM
+            } }).then(function(created) { return created.full_name; });
+        });
+    }
+
+    function getRepo(fullName) { return api('/repos/' + fullName); }
+
+    // branch when repo has it; for a missing "main", "master" (or the reverse); else the repo's
+    // default branch. Pages assume "main", which older repos call "master".
+    function resolveBranch(fullName, branch) {
+        var other = branch === 'main' ? 'master' : (branch === 'master' ? 'main' : null);
+        var has = function(name) {
+            return api('/repos/' + fullName + '/branches/' + encodeURIComponent(name), { allow404: true });
+        };
+        return has(branch).then(function(found) {
+            if (found) return branch;
+            return (other ? has(other) : Promise.resolve(null)).then(function(alt) {
+                if (alt) return other;
+                return getRepo(fullName).then(function(info) { return info.default_branch; });
             });
+        });
+    }
+
+    // Makes repo private or public. GitHub keeps a fork of a public repo public.
+    function setPrivate(fullName, isPrivate) {
+        return api('/repos/' + fullName, { method: 'PATCH', body: { private: isPrivate } });
+    }
+
+    // The files in a folder of repo ([] when it doesn't exist), each with path and name.
+    function listFiles(fullName, folder) {
+        return api('/repos/' + fullName + '/contents/' + folder, { allow404: true }).then(function(files) {
+            return Array.isArray(files) ? files.filter(function(f) { return f.type === 'file'; }) : [];
+        });
+    }
+
+    // A file's contents through the API with the visitor's token, so files in a private repo
+    // load too (raw.githubusercontent.com only serves public ones). Resolves with a Blob.
+    function readFile(fullName, path) {
+        var headers = { Accept: 'application/vnd.github.raw' };
+        var token = getToken();
+        if (token) headers.Authorization = 'Bearer ' + token;
+        return fetch(API + '/repos/' + fullName + '/contents/' + path, { headers: headers }).then(function(response) {
+            if (!response.ok) throw new Error('GitHub: ' + response.status + ' for ' + path);
+            return response.blob();
+        });
+    }
+
+    // A URL for an image from repo, private or public, for <img src>. Revoke it with
+    // URL.revokeObjectURL when the image is removed.
+    function fileUrl(fullName, path) {
+        return readFile(fullName, path).then(function(blob) { return URL.createObjectURL(blob); });
     }
 
     function getFork() { return localStorage.getItem(FORK_KEY); }
@@ -163,14 +294,20 @@
     }
 
     // Signs in if needed (call from a click so the popup isn't blocked), makes sure the
-    // visitor's fork of upstream (default DesktopFolders/content) exists, and hands the token to
-    // Sveltia CMS. Resolves with the fork, e.g. "octocat/content", for the CMS backend repo.
+    // visitor's copy of DesktopFolders/content (or fork of another upstream) exists, and hands
+    // the token to Sveltia CMS. Resolves with the repo, e.g. "octocat/content", for the CMS backend.
     function connect(scope, upstream) {
+        scope = scope || 'repo';
         var token = getToken();
-        var signedIn = token ? Promise.resolve(token) : signIn(scope || 'repo');
+        // A token from an earlier public_repo sign-in can't reach private repos, so sign in again.
+        if (token && !hasScope(scope)) {
+            signOut();
+            token = null;
+        }
+        var signedIn = token ? Promise.resolve(token) : signIn(scope);
         return signedIn.then(function(token) {
             useTokenInCms(token);
-            return ensureFork(upstream);
+            return (upstream && upstream.toLowerCase() !== UPSTREAM.toLowerCase()) ? ensureFork(upstream) : ensureCopy();
         });
     }
 
@@ -190,12 +327,22 @@
         upstream: UPSTREAM,
         signIn: signIn,
         signOut: signOut,
+        setToken: setToken,
         connect: connect,
         useTokenInCms: useTokenInCms,
         getToken: getToken,
         getUser: getUser,
         ensureFork: ensureFork,
+        ensureCopy: ensureCopy,
+        getCopy: getCopy,
         getFork: getFork,
+        getRepo: getRepo,
+        resolveBranch: resolveBranch,
+        setPrivate: setPrivate,
+        listFiles: listFiles,
+        readFile: readFile,
+        fileUrl: fileUrl,
+        hasScope: hasScope,
         saveFromUrl: saveFromUrl
     };
 })();

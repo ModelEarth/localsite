@@ -1,7 +1,14 @@
 // Fetches the cms: block from the site config (support/site/config.yaml) and exposes
 // window.CMS_SITE_CONFIG + window.launchCMS for use by Sveltia CMS and page buttons.
+// window.cmsSiteConfigReady resolves to CMS_SITE_CONFIG, or null without a site config.
 
 (function() {
+  var resolveSiteConfig;
+  window.cmsSiteConfigReady = window.cmsSiteConfigReady || new Promise(function(resolve) { resolveSiteConfig = resolve; });
+  function siteConfigDone() {
+    if (resolveSiteConfig) resolveSiteConfig(window.CMS_SITE_CONFIG || null);
+  }
+
   if (typeof window.defineLaunchCMS === 'function') {
     window.defineLaunchCMS();
   }
@@ -85,7 +92,7 @@
   if (typeof window.loadWebrootYaml === 'function') {
     window.loadWebrootYaml().then(function(result) {
       if (result.text) applyCmsConfig(result.path, result.text);
-    });
+    }).finally(siteConfigDone);
   } else {
     // standalone fallback when loaded without localsite.js
     // model.earth serves the webroot repo's files from model.earth/webroot/
@@ -101,7 +108,10 @@
           if (text !== null) { sessionStorage.setItem(SESSION_KEY, SITE_CONFIG_PATH); applyCmsConfig(SITE_CONFIG_PATH, text); }
           else { sessionStorage.setItem(SESSION_KEY, 'none'); }
         })
-        .catch(function() { sessionStorage.setItem(SESSION_KEY, 'none'); });
+        .catch(function() { sessionStorage.setItem(SESSION_KEY, 'none'); })
+        .finally(siteConfigDone);
+    } else {
+      siteConfigDone();
     }
   }
 })();

@@ -33,6 +33,9 @@ Accepts an optional `options` object:
   plus `220`. A bar along the bottom of `#nc-root` drags the height taller or shorter.
   While an entry is open, `#nc-root` grows to fit its fields as text is added, and shrinks
   back toward that starting or dragged height as text is removed.
+- `options.hideEditorToolbar` — hides the entry editor's top toolbar (back arrow, title, Save,
+  options menu) in a one-file editor. The Save copy below the fields stays. Used by the Markdown
+  "Edit Content" menu and the edit page's "Edit README" button.
 
 Falls back to `window.cmsInlineEditor` for the global default, which is set by
 reading `inline_editor` from the `cms:` block in `support/site/config.yaml`

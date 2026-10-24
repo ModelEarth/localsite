@@ -8,10 +8,14 @@
     <!-- mdedit=live shows the .md-edit-menu edit button on the readme beyond localhost -->
     <script type="text/javascript" src="/localsite/js/localsite.js?showheader=true&showsearch=true&mdedit=live"></script>
  <script>
-loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/heads/main/README.md", "readmeDiv", "_parent");
+// #readmeDiv loads in loadContentReadme() below, once content-repo.js knows whose content to show.
+// The file the "Edit README" button edits
+loadMarkdown("https://raw.githubusercontent.com/ModelEarth/localsite/refs/heads/main/edit/README.md", "editReadmeDiv", "_parent");
 </script>
     <script type="text/javascript" src="/localsite/js/content-repo.js"></script>
     <style>
+      /* The Edit README button edits this text, so it skips the Markdown edit icon. */
+      #editReadmeDiv .md-edit-menu { display: none; }
       .contentImageGrid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -80,9 +84,20 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
         margin: 8px 0 20px;
         font-size: 14px;
       }
+      .contentSetupIntro {
+        margin: 8px 0 16px;
+      }
+      .contentSetupRule {
+        margin-bottom: 24px;
+      }
       .contentSetup ol {
         margin: 8px 0;
         padding-left: 20px;
+      }
+      .myContentImages img {
+        height: 72px;
+        border-radius: 8px;
+        margin: 6px 8px 0 0;
       }
       .contentAccount {
         margin: 6px 0 4px;
@@ -96,15 +111,20 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
   <body>
     <div class="content contentpadding">
 
-      <h1>File Editor</h1>
       <!--
       launchCMS() in localsite.js loads /sveltia-cms/package/dist/sveltia-cms.js when a local build exists,
       otherwise the npm release from unpkg. Sveltia CMS mounts inside #nc-root, which launchCMS
       inserts after the button, so the editor appears inline.
       -->
+      <div id="readmeDiv"></div>
+      <hr class="contentSetupRule">
 
-      <div class="local contentSetup" id="contentSetup">
-        <b>Activate GitHub sign-in</b> (shown on localhost)<br>
+      <div class="contentSetupIntro">
+        <span id="contentSetupText">Site admins activate GitHub sign-in once, by registering a GitHub OAuth app.</span> <a href="#" id="contentSetupMore" onclick="showContentSetup(document.getElementById('contentSetup').style.display === 'none'); return false;">more</a>
+      </div>
+
+      <div class="contentSetup" id="contentSetup" style="display:none">
+        <b>Activate GitHub sign-in</b><br>
         The site admin registers one GitHub OAuth app, once. All site users sign in through that same app: GitHub asks each of them to authorize it, and the token it issues works only with their own account and forks. Users don't register an app of their own.
         <ol>
           <li><a href="https://github.com/settings/applications/new" target="_blank">Register a GitHub OAuth app</a> with Application name <b><span id="setupAppName">[site title]</span> CMS</b> (GitHub's popup shows "Authorize" plus this name), your site's address as Homepage URL, and Redirect URI <code>https://cloud.model.earth/api/cms/callback</code>.
@@ -118,37 +138,53 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
           <li><a href="https://github.com/ModelEarth/cloudroot/settings/secrets/actions" target="_blank">Check the CloudRoot secrets</a>, then <a href="https://github.com/ModelEarth/cloudroot/actions/workflows/deploy-worker.yml" target="_blank">run Deploy Worker</a></li>
           <li>Uncomment <code>auth_base_url</code> and <code>auth_endpoint</code> in the <code>cms:</code> block of <a href="/support/site/config.yaml" target="_blank">support/site/config.yaml</a></li>
         </ol>
-        Until then, sign-in goes through Netlify's service ("Authorize Netlify CMS"). For the editors' "Sign In with Token" option, <a href="https://github.com/settings/tokens/new?scopes=public_repo&description=Content%20Tools" target="_blank">create a personal access token</a>.
+        Until then, sign-in goes through Netlify's service ("Authorize Netlify CMS"). For the editors' "Sign In with Token" option, <a href="https://github.com/settings/tokens/new?scopes=repo&description=Content%20Tools" target="_blank">create a personal access token</a>.
       </div>
+      
 
-      <div id="readmeDiv">The icon to the right edits just the readme file.</div>
+      <div id="editReadmeDiv"></div>
 
-      <h2>Example: edit one file on GitHub</h2>
+      <div id="editReadmeBtn" class="btn btn-med" onclick="openEditor('readme')">Edit README</div>
+      <div class="local" style="display:none">
+        <div id="readmeConfigBtn" class="btn btn-med" onclick="toggleReadmeConfig()">Site Config</div>
+      </div>
+      <div class="contentImageStatus" id="readmeEditorStatus"></div><br>
 
-      Edit README opens Sveltia CMS with its own config, passed to <code>CMS.init()</code> through <code>launchCMS({config})</code>. It edits only <code>edit/README.md</code> in the ModelEarth/localsite repo and skips support/site/config.yaml (<code>load_config_file: false</code>). On localhost, choose "Sign In with Token" and paste a GitHub personal access token.<br><br>
+      <div id="readmeConfig" style="display:none">
+        The "Edit README" button uses settings in the current index.html page (below) rather than the site's support/site/config.yaml (<code>load_config_file: false</code>). They're passed to <code>CMS.init()</code> through <code>launchCMS({config})</code>, which adds the GitHub sign-in relay (<code>auth_base_url</code>) from the <code>cms:</code> block of support/site/config.yaml. The editor changes just one file, <code>edit/README.md</code> in <span id="readmeRepoText">your fork of ModelEarth's "localsite" repo</span>. <span id="readmeSaveText">The fork is created the first time you sign in, and its "Open a pull request" link sends your edits to ModelEarth.</span><br><br>
 
-      <div id="editReadmeBtn" class="btn btn-med" onclick="openEditor('readme')">Edit README</div><br><br>
+        <h3>Sign in with GitHub</h3>
+        Click "Edit README". A GitHub window asks you to authorize the site's CMS app, then the editor opens below the button.
 
-      <pre class="codetext" id="readmeConfigExample"></pre>
+        <h3>Sign in with a token</h3>
+        <ol>
+          <li><a href="https://github.com/settings/tokens/new?scopes=repo&description=Content%20Tools" target="_blank">Create a GitHub personal access token</a> with the <code>repo</code> scope (it covers private repos), and copy it. GitHub shows it only once.</li>
+          <li>Paste it in the GitHub box on the <a href="/keys/#need=GITHUB_PERSONAL_ACCESS_TOKEN" id="readmeKeysLink" target="_blank">keys page</a>. It's saved in this browser only.</li>
+          <li>Come back to this page and click "Edit README". The editor opens with that token, without the GitHub window.</li>
+        </ol>
+        <div class="contentImageStatus" id="readmeTokenStatus"></div>
+        <pre class="codetext" id="readmeConfigExample"></pre>
+      </div>
 
       <h2>Save images to your own content repo</h2>
 
       <div class="contentIntro">
-        <div class="contentIntroText">Sign in with GitHub to save a US state image to your own fork of <a href="https://github.com/DesktopFolders/content">DesktopFolders/content</a>.</div>
+        <div class="contentIntroText">Sign in with GitHub to save a US state image to your own copy of <a href="https://github.com/DesktopFolders/content">DesktopFolders/content</a>. Your copy starts out private, and you can make it public.</div>
         <div class="contentIntroActions">
           <div id="contentSignInBtn" class="btn btn-med" onclick="contentSignIn()">GitHub Signin</div>
           <div id="editContentBtn" class="btn btn-med" onclick="openEditor('content')" style="display:none">Edit My Content</div>
         </div>
       </div>
       <div class="contentAccount" id="contentAccount"></div>
+      <div class="myContentImages" id="myContentImages"></div>
 
       <div class="contentImageGrid" id="contentImageGrid"></div>
 
-      <h2>Edit site files</h2>
+      <h2>Edit My Content</h2>
 
-      Edit Files uses Sveltia CMS to edit the collections/files defined in support/site/config.yaml — it's a full Sveltia CMS interface, not a targeted editor for a particular div on the page. Settings are loaded from support/site/config.yaml via localsite/js/cms.js. Your edits are saved in your own fork of DesktopFolders/content, which is created the first time you sign in.<br><br>
+      View full editor. Your content is saved in your own copy of DesktopFolders/content, private until you make it public.<br><br>
 
-      <div id="editPageBtn" class="btn btn-med" onclick="openEditor('files')">Edit Files</div>
+      <div id="editPageBtn" class="btn btn-med" onclick="openEditor('files')">Edit My Content</div>
       <div class="contentImageStatus" id="filesEditorStatus"></div><br>
 
       <a href="../css/themes/">Theme Styles</a> | <a href="https://sveltiacms.app">About Sveltia CMS</a>
@@ -156,11 +192,13 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
     </div>
 
     <script>
+    var README_REPO = 'ModelEarth/localsite';
+    var README_BRANCH = 'main';
     var readmeEditorConfig = {
       load_config_file: false,
       app_title: 'Content Tools',
       logo: { src: '/localsite/img/icon/edit/content-tools.svg' },
-      backend: { name: 'github', repo: 'ModelEarth/localsite', branch: 'main' },
+      backend: { name: 'github', repo: README_REPO, branch: README_BRANCH },
       media_folder: 'edit/img',
       collections: [{
         name: 'edit',
@@ -174,7 +212,7 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
         }]
       }]
     };
-    // Edits the visitor's fork of DesktopFolders/content, with saved images in img/.
+    // Edits the visitor's copy of DesktopFolders/content, with saved images in img/.
     function contentEditorConfig(fork) {
       return {
         load_config_file: false,
@@ -197,7 +235,7 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
       };
     }
     var editorLaunchOptions = {
-      // The site config's collections, stored in the visitor's fork of DesktopFolders/content.
+      // The site config's collections, stored in the visitor's copy of DesktopFolders/content.
       files: function() {
         var status = document.getElementById('filesEditorStatus');
         status.textContent = ContentRepo.getToken() ? 'Opening your content repo…' : '';
@@ -209,7 +247,27 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
           return null;
         });
       },
-      readme: function() { return { inline: true, target: '#editReadmeBtn', config: readmeEditorConfig }; },
+      // ModelEarth edits ModelEarth/localsite itself (on main, or a content-edits branch);
+      // anyone else edits their fork of it.
+      readme: function() {
+        var status = document.getElementById('readmeEditorStatus');
+        useKeysToken();
+        status.textContent = ContentRepo.getToken() ? 'Opening the README…' : '';
+        return ContentRepo.connect('repo', README_REPO).then(function(repo) {
+          showContentAccount();
+          if (repo.toLowerCase() !== README_REPO.toLowerCase()) return { repo: repo, branch: README_BRANCH };
+          return chooseReadmeBranch(status);
+        }).then(function(where) {
+          showReadmeEditing(status, where);
+          var config = Object.assign({}, readmeEditorConfig, {
+            backend: Object.assign({}, readmeEditorConfig.backend, { repo: where.repo, branch: where.branch })
+          });
+          return { inline: true, target: '#editReadmeBtn', config: config, route: '#/collections/edit/entries/readme', hideEditorToolbar: true };
+        }).catch(function(err) {
+          showSignInError(status, err);
+          return null;
+        });
+      },
       content: function() {
         var fork = ContentRepo.getFork();
         return fork ? { inline: true, target: '#contentImageGrid', config: contentEditorConfig(fork) } : null;
@@ -220,20 +278,41 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
     // Each editor's button, and the element the editor opens below.
     var editorButtons = { readme: 'editReadmeBtn', files: 'editPageBtn', content: 'editContentBtn' };
     var editorTargets = { readme: '#editReadmeBtn', files: '#editPageBtn', content: '#contentImageGrid' };
+    // Formatted text that hides while its editor is open
+    var editorTexts = { readme: 'editReadmeDiv' };
 
-    // While its editor is open, a button reads "Close Editor".
+    // While its editor is open, the button (and its formatted text) hides and a "Close Editor" button follows the editor.
     function setEditorButton(name, open) {
       var button = document.getElementById(editorButtons[name]);
-      if (!button) return;
-      if (!button.dataset.label) button.dataset.label = button.textContent;
-      button.textContent = open ? 'Close Editor' : button.dataset.label;
+      if (button) button.style.display = open ? 'none' : '';
+      var text = document.getElementById(editorTexts[name]);
+      if (text) text.style.display = open ? 'none' : '';
+      var close = document.getElementById('closeEditorBtn');
+      if (!open) {
+        if (close) close.remove();
+        return;
+      }
+      var ncRoot = document.getElementById('nc-root');
+      if (!ncRoot) return;
+      if (!close) {
+        close = document.createElement('div');
+        close.id = 'closeEditorBtn';
+        close.className = 'btn btn-med';
+        close.textContent = 'Close Editor';
+      }
+      close.onclick = function() { openEditor(name); };
+      ncRoot.after(close);
     }
 
     function openEditor(name) {
       if (!editorLaunchOptions[name]) return;
       if (activeEditor === name && window.isCmsOpen && isCmsOpen(editorTargets[name])) {
-        closeCMS();
-        setEditorButton(name, false);
+        // With changes to save, asks "Save Change" / "Not Yet" first.
+        closeCMSAsking(document.getElementById('closeEditorBtn'), function() {
+          closeCMS();
+          updateHash({}, true, 'editor'); // closeCMS restores the page's hash; a reload then leaves the editor closed
+          setEditorButton(name, false);
+        });
         return;
       }
       // Sveltia CMS runs one config per page load, so switching editors reloads with #editor=name.
@@ -247,13 +326,96 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
         if (!options) return;
         activeEditor = name;
         updateHash({ editor: name });
-        loadScript('/localsite/js/cms.js', function() { launchCMS(options); });
-        setEditorButton(name, true);
+        loadScript('/localsite/js/cms.js', function() {
+          launchCMS(options);
+          setEditorButton(name, true);
+        });
       });
     }
 
-    document.getElementById('readmeConfigExample').textContent = 'launchCMS({ inline: true, target: \'#editReadmeBtn\', config: '
+    document.getElementById('readmeConfigExample').textContent = 'launchCMS({ inline: true, target: \'#editReadmeBtn\', route: \'#/collections/edit/entries/readme\', config: '
       + JSON.stringify(readmeEditorConfig, null, 2) + ' });';
+
+    // GitHub doesn't let an account fork its own repo, so the owner picks where to edit.
+    // Resolves with { repo, branch } once a button is clicked.
+    function chooseReadmeBranch(status) {
+      var branchName = 'content-edits';
+      return new Promise(function(resolve, reject) {
+        status.textContent = 'You own ' + README_REPO + ', so it can\'t be forked. Edit edit/README.md on:';
+        status.append(document.createElement('br'));
+        var onBase = document.createElement('button');
+        onBase.type = 'button'; onBase.textContent = README_BRANCH;
+        onBase.title = 'Commit edits directly to ' + README_BRANCH;
+        onBase.onclick = function() { resolve({ repo: README_REPO, branch: README_BRANCH }); };
+        var onBranch = document.createElement('button');
+        onBranch.type = 'button'; onBranch.textContent = branchName + ' branch';
+        onBranch.title = 'Commit edits to a ' + branchName + ' branch, then open a pull request';
+        onBranch.onclick = function() {
+          status.textContent = 'Preparing the ' + branchName + ' branch…';
+          ContentRepo.ensureBranch(README_REPO, README_BRANCH, branchName).then(function() {
+            resolve({ repo: README_REPO, branch: branchName });
+          }, reject);
+        };
+        status.append(onBase, ' ', onBranch);
+      });
+    }
+
+    // "<Branch> Branch: <repo>/edit/README.md · Open a pull request" (the link only for a fork or another branch)
+    function showReadmeEditing(status, where) {
+      var fileLink = document.createElement('a');
+      fileLink.href = 'https://github.com/' + where.repo + '/blob/' + where.branch + '/edit/README.md';
+      fileLink.target = '_blank';
+      fileLink.textContent = where.repo + '/edit/README.md';
+      status.textContent = where.branch.charAt(0).toUpperCase() + where.branch.slice(1) + ' Branch: ';
+      status.append(fileLink);
+      var compare = null;
+      if (where.repo.toLowerCase() !== README_REPO.toLowerCase()) {
+        compare = 'https://github.com/' + README_REPO + '/compare/' + README_BRANCH + '...' + where.repo.replace('/', ':') + ':' + where.branch + '?expand=1';
+      } else if (where.branch !== README_BRANCH) {
+        compare = 'https://github.com/' + README_REPO + '/compare/' + README_BRANCH + '...' + where.branch + '?expand=1';
+      }
+      if (!compare) return;
+      var link = document.createElement('a');
+      link.href = compare; link.target = '_blank'; link.textContent = 'Open a pull request';
+      status.append(' · ', link);
+    }
+
+    // The fork wording shows unless the visitor is signed in as the README repo's owner.
+    function showReadmeRepoText(login) {
+      var isOwner = !!login && login.toLowerCase() === README_REPO.split('/')[0].toLowerCase();
+      document.getElementById('readmeRepoText').textContent = isOwner ? 'ModelEarth\'s "localsite" repo' : 'your fork of ModelEarth\'s "localsite" repo';
+      document.getElementById('readmeSaveText').textContent = isOwner
+        ? 'As its owner, you choose to edit main, or a content-edits branch for a pull request, when the editor opens.'
+        : 'The fork is created the first time you sign in, and its "Open a pull request" link sends your edits to ModelEarth.';
+    }
+
+    // ── A GitHub token pasted on the keys page (keys/#need=GITHUB_PERSONAL_ACCESS_TOKEN) ──
+    // It's read when the page loads and when the visitor comes back to this tab. On a host whose
+    // keys page encrypts keys for its server (/api/public-key), this page can't read the token.
+    var keysGithubToken = '';
+    var keysGithubServerOnly = false;
+    function loadKeysToken() {
+      if (!window.KeyManager) return;
+      KeyManager.initCrypto().then(function() {
+        keysGithubToken = KeyManager.get('github') || '';
+        var stored = KeyManager.getAll().github;
+        keysGithubServerOnly = !keysGithubToken && typeof stored === 'string' && stored.indexOf('rsa:') === 0;
+        var status = document.getElementById('readmeTokenStatus');
+        status.textContent = keysGithubToken ? 'A GitHub token from the keys page is saved in this browser, so "Edit README" signs in with it.'
+          : keysGithubServerOnly ? 'The keys page on this host saved your GitHub token for its server only, so this page can\'t use it. Sign in with GitHub instead.'
+          : '';
+      }).catch(function() {});
+    }
+    // Called within the click, before ContentRepo.connect(), so the token replaces the popup.
+    function useKeysToken() {
+      if (keysGithubToken) ContentRepo.setToken(keysGithubToken);
+    }
+
+    // The "Site Config" button shows the launchCMS() call that Edit README makes.
+    function toggleReadmeConfig() {
+      var config = document.getElementById('readmeConfig');
+      config.style.display = config.style.display === 'none' ? '' : 'none';
+    }
 
     // ── Save us-states images to the visitor's content fork ──
     var US_STATES_IMAGES = { owner: 'ModelEarth', repo: 'us-states', branch: 'master', path: 'images/backgrounds/960x540/landscape' };
@@ -265,8 +427,13 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
       document.getElementById('contentSignInBtn').style.display = signedIn ? 'none' : '';
       document.getElementById('editContentBtn').style.display = fork ? '' : 'none';
       account.textContent = '';
-      if (!signedIn) return;
+      if (!fork) showMyContentImages(null);
+      if (!signedIn) {
+        showReadmeRepoText(null);
+        return;
+      }
       ContentRepo.getUser().then(function(user) {
+        showReadmeRepoText(user.login);
         account.append('Signed in as ');
         var userLink = document.createElement('a');
         userLink.href = user.html_url; userLink.textContent = '@' + user.login; userLink.target = '_blank';
@@ -275,7 +442,10 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
           account.append(' · Your content repo: ');
           var forkLink = document.createElement('a');
           forkLink.href = 'https://github.com/' + fork + '/tree/main/img'; forkLink.textContent = fork + '/img'; forkLink.target = '_blank';
-          account.append(forkLink);
+          var visibility = document.createElement('span');
+          account.append(forkLink, visibility);
+          showRepoVisibility(visibility, fork);
+          showMyContentImages(fork);
         }
         account.append(' · ');
         var signOut = document.createElement('a');
@@ -289,34 +459,126 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
       });
     }
 
-    // Shows a sign-in error in el. When the relay has no OAuth app yet, points to the
-    // setup steps at the top of the page (visible on localhost), or to the site admin.
+    // " (private) · Make public", or " (public) · Make private". Making it public asks first.
+    // GitHub keeps a fork of a public repo public, so an earlier fork shows no link, and
+    // DesktopFolders/content itself (its own account's "copy") is left to its settings on GitHub.
+    function showRepoVisibility(el, repo) {
+      el.textContent = '';
+      ContentRepo.getRepo(repo).then(function(info) {
+        el.textContent = info.private ? ' (private)' : ' (public)';
+        if ((info.fork && !info.private) || repo.toLowerCase() === ContentRepo.upstream.toLowerCase()) return;
+        var setPrivate = function(isPrivate) {
+          el.textContent = ' (updating…)';
+          ContentRepo.setPrivate(repo, isPrivate).then(function() {
+            showRepoVisibility(el, repo);
+          }, function(err) {
+            el.textContent = ' ' + err.message;
+          });
+        };
+        var toggle = actionLink(info.private ? 'Make public' : 'Make private', function() {
+          if (!info.private) return setPrivate(true);
+          el.textContent = ' (private) · Anyone will be able to see its files. ';
+          el.append(actionLink('Make it public', function() { setPrivate(false); }), ' · ',
+            actionLink('Cancel', function() { showRepoVisibility(el, repo); }));
+        });
+        el.append(' · ', toggle);
+      }).catch(function() {});
+    }
+
+    function actionLink(text, onclick) {
+      var link = document.createElement('a');
+      link.href = '#'; link.textContent = text;
+      link.onclick = function(e) { e.preventDefault(); onclick(); };
+      return link;
+    }
+
+    // Thumbnails of the images saved in the visitor's copy (img/). They load through the GitHub
+    // API with the visitor's token, so they show while the copy is private.
+    var myImageUrls = [];
+    function showMyContentImages(repo) {
+      var holder = document.getElementById('myContentImages');
+      myImageUrls.forEach(URL.revokeObjectURL);
+      myImageUrls = [];
+      holder.textContent = '';
+      if (!repo) return;
+      ContentRepo.listFiles(repo, 'img').then(function(files) {
+        files.filter(function(f) { return /\.(jpe?g|png|gif|webp|svg)$/i.test(f.name); }).slice(0, 12).forEach(function(file) {
+          var img = document.createElement('img');
+          img.alt = file.name; img.title = file.name;
+          holder.append(img);
+          ContentRepo.fileUrl(repo, file.path).then(function(url) {
+            myImageUrls.push(url);
+            img.src = url;
+          }).catch(function() { img.remove(); });
+        });
+      }).catch(function() {});
+    }
+
+    // The "more" link (an "Activate" button until sign-in is set up) reveals the sign-in
+    // setup steps at the top of the page, then reads "less".
+    var contentSetupActive = true;
+    function showContentSetup(show) {
+      document.getElementById('contentSetup').style.display = show ? '' : 'none';
+      var toggle = document.getElementById('contentSetupMore');
+      toggle.textContent = show ? 'less' : (contentSetupActive ? 'more' : 'Activate');
+      toggle.className = (show || contentSetupActive) ? '' : 'btn btn-med';
+    }
+
+    // Sign-in isn't set up when the cms: block in support/site/config.yaml has no auth_base_url,
+    // or when its relay's /api/cms/status reports no GitHub OAuth app. A relay without that
+    // status route, or one that can't be reached, leaves the "more" link.
+    function checkContentSetup(attempts) {
+      attempts = attempts || 0;
+      if (!window.cmsSiteConfigReady) {
+        // cms.js was added by another script and hasn't run yet
+        if (attempts < 50) setTimeout(function() { checkContentSetup(attempts + 1); }, 100);
+        return;
+      }
+      window.cmsSiteConfigReady.then(function(cfg) {
+        if (!cfg || !cfg.auth_base_url) return false;
+        var statusPath = (cfg.auth_endpoint || 'api/cms/auth').replace(/^\//, '').replace(/[^\/]*$/, 'status');
+        return fetch(cfg.auth_base_url.replace(/\/$/, '') + '/' + statusPath)
+          .then(function(r) { return r.ok ? r.json() : null; })
+          .then(function(status) { return !status || status.github !== false; })
+          .catch(function() { return true; });
+      }).then(function(active) {
+        contentSetupActive = active;
+        if (!active) document.getElementById('contentSetupText').textContent = 'GitHub sign-in isn\'t activated on this site yet. Site admins activate it once, by registering a GitHub OAuth app.';
+        showContentSetup(document.getElementById('contentSetup').style.display !== 'none');
+      });
+    }
+
+    // Shows a sign-in error in el. When the relay has no OAuth app yet, links to the
+    // setup steps at the top of the page.
     function showSignInError(el, err) {
       el.textContent = err.message;
       if (err.code !== 'MISCONFIGURED_CLIENT') return;
-      if (document.getElementById('contentSetup').offsetParent) {
-        var link = document.createElement('a');
-        link.href = '#contentSetup'; link.textContent = 'Setup steps';
-        el.append(' ', link);
-      } else {
-        el.append(' Ask the site admin to activate GitHub sign-in.');
-      }
+      var link = document.createElement('a');
+      link.href = '#contentSetup'; link.textContent = 'setup steps';
+      // Scrolls rather than setting #contentSetup, since Sveltia CMS reads the hash as its route.
+      link.onclick = function(e) {
+        e.preventDefault();
+        showContentSetup(true);
+        document.getElementById('contentSetup').scrollIntoView({ behavior: 'smooth' });
+      };
+      el.append(' Ask the site admin to activate GitHub sign-in (', link, ').');
     }
 
     function contentSignIn() {
-      ContentRepo.signIn('public_repo').then(showContentAccount).catch(function(err) {
+      ContentRepo.signIn('repo').then(showContentAccount).catch(function(err) {
         showSignInError(document.getElementById('contentAccount'), err);
       });
     }
 
     function saveContentImage(file, status) {
       // Sign in first if needed; signIn() opens its popup right away, within the click.
-      var ready = ContentRepo.getToken() ? Promise.resolve() : ContentRepo.signIn('public_repo');
+      // A token without the repo scope (from an earlier sign-in) can't create a private repo.
+      var ready = (ContentRepo.getToken() && ContentRepo.hasScope('repo')) ? Promise.resolve() : ContentRepo.signIn('repo');
       status.textContent = 'Saving…';
       ready
         .then(function() {
-          status.textContent = ContentRepo.getFork() ? 'Saving…' : 'Creating your fork of ' + ContentRepo.upstream + '…';
-          return ContentRepo.ensureFork();
+          status.textContent = ContentRepo.getFork() ? 'Saving…' : 'Creating your private copy of ' + ContentRepo.upstream + '…';
+          return ContentRepo.ensureCopy();
         })
         .then(function(fork) {
           status.textContent = 'Saving…';
@@ -364,9 +626,23 @@ loadMarkdown("https://raw.githubusercontent.com/DesktopFolders/content/refs/head
         });
     }
 
+    // #readmeDiv shows the README of the visitor's own copy of DesktopFolders/content when they're
+    // signed in with GitHub and have one (private copies load with their token), else this one:
+    // https://raw.githubusercontent.com/DesktopFolders/content/refs/heads/main/README.md
+    function loadContentReadme() {
+      ContentRepo.getCopy().catch(function() { return null; }).then(function(copy) {
+        loadMarkdown('https://raw.githubusercontent.com/' + (copy || ContentRepo.upstream) + '/refs/heads/main/README.md', 'readmeDiv', { buttonText: 'Edit' });
+      });
+    }
+
+    loadContentReadme();
     // Loads the cms: block (auth_base_url) before a sign-in click needs it.
-    loadScript('/localsite/js/cms.js');
+    loadScript('/localsite/js/cms.js', function() { checkContentSetup(); });
     loadContentImages(5);
+    var keysPage = webrootPath('/keys/');
+    document.getElementById('readmeKeysLink').href = keysPage + '#need=GITHUB_PERSONAL_ACCESS_TOKEN';
+    loadScript(keysPage + 'key-manager.js', loadKeysToken);
+    window.addEventListener('focus', loadKeysToken);
     showContentAccount();
     // OAuth app name for the localhost setup steps, from support/site/config.yaml sites.
     _getCurrentSiteTitle().then(function(title) {

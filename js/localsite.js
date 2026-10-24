@@ -1306,6 +1306,12 @@ function go(addToHash) {
   }
 }
 
+// While Sveltia CMS is on the page, a #/... hash is its route (e.g. #/collections/page/entries/markdown),
+// not the page's hash params, so hash change handlers leave the page as it is. closeCMS restores the page's hash.
+function isCmsRouteHash() {
+  return location.hash.indexOf('#/') === 0 && !!document.getElementById('nc-root');
+}
+
 // Used only when comparing if hash has changed.
 // Function to normalize the hash by sorting key-value pairs and converting keys to lowercase
 function normalizeHash(hashString) {
@@ -2051,6 +2057,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
 
       $(window).on('hashchange', function() { // Avoid window.onhashchange since overridden by map and widget embeds
         //alert("HASHCHANGE event fired!\nNew URL: " + window.location.href);
+        if (isCmsRouteHash()) return;
         consoleLog("window hashchange");
         consoleLog("delete hiddenhash.name");
         delete hiddenhash.name; // Not sure where this is set.
@@ -2063,6 +2070,7 @@ loadScript(theroot + 'js/jquery.min.js', function(results) {
       // Handle browser back/forward button navigation
       window.addEventListener('popstate', function(event) {
         console.log("popstate event, back/forward button navigation - URL:", window.location.href);
+        if (isCmsRouteHash()) return;
         isPopstateNavigation = true;
         // The hashchange event should handle the actual hash change,
         // but we trigger it explicitly to ensure it fires
@@ -3652,6 +3660,8 @@ function rememberMissingMarkdown(pagePath) {
   }
 }
 
+// target may instead be an options object, e.g. {buttonText: 'Edit'}, which shows an "Edit"
+// button (class "btn btn-med") in place of the edit menu's icon.
 function loadMarkdown(pagePath, divID, target, attempts, callback) {
   // Include markdown="1" on div tags to process <div> content as markdown.
   if (typeof attempts === 'undefined') {
@@ -3726,7 +3736,7 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
       //climbpath == "./";
     }
     */
-    d3.text(pagePath).then(function(data) {
+    markdownText(pagePath).then(function(data) {
 
       // Path is replaced further down page. Reactivate after adding menu.
       //let downloadReadme = "<div class='markdownEye' style='position:absolute;z-index:1px;cursor:pointer;font-size:28px;right:0px;top:0px;text-decoration:none;opacity:.7'><a href='" + pagePath + "' style='color:#555'>…</a></div>";
@@ -3783,7 +3793,7 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
 
       // Appends rather than overwrites
       loadIntoDiv(pageFolder,divID,html, function() {
-        _attachMarkdownEditMenu(pagePath, divID);
+        _attachMarkdownEditMenu(pagePath, divID, (target && typeof target === 'object') ? target : {});
         // Call the main callback after loadIntoDiv finishes
         if (typeof callback === 'function') {
           //alert("valid") // BUGBUG Not reaching
@@ -3802,6 +3812,17 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
   });
   });
   //});
+}
+// The text of a Markdown file. The signed-in visitor's own content repo (content-repo.js's copy of
+// DesktopFolders/content) may be private, which raw.githubusercontent.com won't serve, so a raw URL
+// in that repo is read through the GitHub API with their token. Only that repo gets the token.
+function markdownText(pagePath) {
+  var own = window.ContentRepo && ContentRepo.getToken() && ContentRepo.getFork();
+  var raw = /^https:\/\/raw\.githubusercontent\.com\/([^\/]+\/[^\/]+)\/(?:refs\/heads\/)?([^\/]+)\/([^?#]+)/.exec(pagePath);
+  if (own && raw && raw[1].toLowerCase() === own.toLowerCase()) {
+    return ContentRepo.readFile(own, raw[3] + '?ref=' + encodeURIComponent(raw[2])).then(function(blob) { return blob.text(); });
+  }
+  return d3.text(pagePath);
 }
 function loadIntoDiv(pageFolder,divID,html,callback) {
   const theDivID = (divID.startsWith('#') || divID.startsWith('.')) ? divID : '#' + divID;
@@ -6579,13 +6600,15 @@ function _injectMdEditorStyles() {
     s.textContent = '.md-edit-menu{position:absolute;top:8px;right:8px;z-index:10;font-family:system-ui,sans-serif}'
         + '.md-edit-trigger{background:rgba(255,255,255,.92);border:1px solid #d1d5db;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:18px;padding:0;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.1)}'
         + '.md-edit-trigger:hover{background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}'
-        + '.md-edit-choice{margin:0 0 12px;padding:10px 14px 10px 0;border-radius:12px;background:#f3f4f6;font:14px/1.5 system-ui,sans-serif;color:#374151}'
+        + '.md-edit-choice{margin:0 0 12px;padding:10px 14px 10px 12px;border-radius:12px;background:#f3f4f6;font:14px/1.5 system-ui,sans-serif;color:#374151}'
         + '.md-edit-choice button{margin:6px 8px 0 0;padding:5px 14px;border:1px solid #d1d5db;border-radius:16px;background:#fff;cursor:pointer;font-size:13px;color:#374151}'
         + '.md-edit-choice button:hover{background:#f9fafb}'
         // While editing, only the edit menu and the "Editing <repo>" line remain in the content div.
         + '.md-editing>:not(.md-edit-menu):not(.md-edit-choice){display:none}'
         + '.md-editing{min-height:44px}'
         + '.md-editing>.md-edit-choice{padding-right:44px}'
+        // Room for a labeled button (loadMarkdown's buttonText) in place of the icon
+        + '.md-editing:has(>.md-edit-menu>.btn)>.md-edit-choice{padding-right:100px}'
         + '.dark .md-edit-choice{background:#333;color:#eee}'
         + '.dark .md-edit-choice button{background:#444;border-color:#555;color:#eee}'
         + '.md-edit-dropdown{display:none;position:fixed;background:#fff;border:1px solid #e5e7eb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.12);min-width:140px;overflow:hidden;z-index:9999}'
@@ -6651,7 +6674,11 @@ function _markdownFileCmsConfig(file, fork) {
     };
 }
 
-function _attachMarkdownEditMenu(pagePath, divID) {
+// options.buttonText shows a button with that label (class "btn btn-med") in place of the icon.
+// options.branchChoice: the repo's owner picks main or a content-edits branch (for a pull request)
+// before editing. Without it, the owner edits main (or master) directly.
+function _attachMarkdownEditMenu(pagePath, divID, options) {
+    options = options || {};
     // A page can show the menu off localhost too by including localsite.js?mdedit=live
     var mdEditLive = paramIncludeFile.mdedit === 'live';
     if (!mdEditLive && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
@@ -6661,7 +6688,12 @@ function _attachMarkdownEditMenu(pagePath, divID) {
 
     var menu     = document.createElement('div');
     if (mdEditLive) { menu.className = 'md-edit-menu'; } else { menu.className = 'md-edit-menu local'; menu.style.display = 'none'; }
-    var trigger  = document.createElement('button'); trigger.className = 'md-edit-trigger'; trigger.title = 'Edit options'; trigger.innerHTML = '<span class="material-icons" style="font-size:16px;line-height:1">edit_note</span>';
+    var trigger;
+    if (options.buttonText) {
+        trigger = document.createElement('div'); trigger.className = 'btn btn-med'; trigger.title = 'Edit options'; trigger.textContent = options.buttonText;
+    } else {
+        trigger = document.createElement('button'); trigger.className = 'md-edit-trigger'; trigger.title = 'Edit options'; trigger.innerHTML = '<span class="material-icons" style="font-size:16px;line-height:1">edit_note</span>';
+    }
     var dropdown = document.createElement('div');   dropdown.className = 'md-edit-dropdown';
     var item     = document.createElement('div');   item.className = 'md-edit-item'; item.textContent = 'Edit Content';
 
@@ -6706,8 +6738,23 @@ function _attachMarkdownEditMenu(pagePath, divID) {
     menu.appendChild(dropdown);
     container.appendChild(menu);
 
+    // Closes the editor opened below this content, bringing the formatted content back.
+    function closeEditor() {
+        window.closeCMS();
+        container.classList.remove('md-editing');
+        var openChoice = container.querySelector('.md-edit-choice');
+        if (openChoice) openChoice.remove();
+        if (options.buttonText) trigger.textContent = options.buttonText;
+    }
+
     trigger.addEventListener('click', function(e) {
         e.stopPropagation();
+        // A labeled button reads "Close Editor" while the editor is open, and closes it directly.
+        if (options.buttonText && window.isCmsOpen && window.isCmsOpen(container)) {
+            dropdown.style.display = 'none';
+            window.closeCMSAsking(trigger, closeEditor);
+            return;
+        }
         if (dropdown.style.display === 'block') {
             dropdown.style.display = 'none';
         } else {
@@ -6724,17 +6771,14 @@ function _attachMarkdownEditMenu(pagePath, divID) {
         dropdown.style.display = 'none';
         // Open the GitHub sign-in popup right away (before any async step, so it isn't blocked),
         // then start Sveltia CMS signed in, editing this Markdown file in the visitor's fork of
-        // its repo. Without a known file, edit the site's collections in the visitor's fork of
-        // DesktopFolders/content (support/site/config.yaml backend).
+        // its repo (their private copy for DesktopFolders/content). Without a known file, edit the
+        // site's collections in that copy of DesktopFolders/content (support/site/config.yaml backend).
         if (!window.ContentRepo) {
             console.warn('Edit Content: content-repo.js has not loaded yet. Try again.');
             return;
         }
         if (window.isCmsOpen && window.isCmsOpen(container)) {
-            window.closeCMS();
-            container.classList.remove('md-editing');
-            var openChoice = container.querySelector('.md-edit-choice');
-            if (openChoice) openChoice.remove();
+            window.closeCMSAsking(trigger, closeEditor);
             return;
         }
         var file = (ghFile && ghFile.path) ? ghFile : null;
@@ -6750,6 +6794,7 @@ function _attachMarkdownEditMenu(pagePath, divID) {
         function launch(fork, branch) {
             // The editor replaces the formatted content, which returns on Close Editor.
             container.classList.add('md-editing');
+            if (options.buttonText) trigger.textContent = 'Close Editor';
             loadScript(cmsJsPath, function() {
                 // Offer only GitHub sign-in, and title the CMS with the current site's title.
                 _getCurrentSiteTitle().then(function(siteTitle) {
@@ -6759,16 +6804,24 @@ function _attachMarkdownEditMenu(pagePath, divID) {
                     if (siteTitle) config.app_title = siteTitle + ' CMS';
                     // Open this file's editor directly rather than the collection list.
                     launchCMS({inline:true, target:container, heightRatio:0.5, extraHeight:220, configUrl:window.SITE_CONFIG_PATH, config:config,
-                        route: file ? '#/collections/page/entries/markdown' : undefined});
+                        route: file ? '#/collections/page/entries/markdown' : undefined, hideEditorToolbar: !!file});
                 });
             });
         }
 
-        // "Editing <repo> on <branch> · Open a pull request" once the editor is chosen.
+        // "<Branch> Branch: <repo>/<path> · Open a pull request" once the editor is chosen.
         function showEditing(fork, branch) {
-            choice.textContent = 'Editing ' + fork + (file ? ' on ' + branch : '');
+            // e.g. "Main Branch: modelearth/localsite/css/themes/maestro.md", the path linking to it on GitHub
+            var fileLink = document.createElement('a');
+            fileLink.href = 'https://github.com/' + fork + (file ? '/blob/' + branch + '/' + file.path : '');
+            fileLink.target = '_blank';
+            fileLink.textContent = fork + (file ? '/' + file.path : '');
+            choice.textContent = file ? branch.charAt(0).toUpperCase() + branch.slice(1) + ' Branch: ' : '';
+            choice.append(fileLink);
             var compare = null;
-            if (file && fork.toLowerCase() !== file.repo.toLowerCase()) {
+            // A copy of DesktopFolders/content is made from its template, not forked, so it has no pull requests back.
+            var isCopy = file && file.repo.toLowerCase() === repo.upstream.toLowerCase();
+            if (file && !isCopy && fork.toLowerCase() !== file.repo.toLowerCase()) {
                 compare = 'https://github.com/' + file.repo + '/compare/' + file.branch + '...' + fork.split('/')[0] + ':' + fork.split('/')[1] + ':' + branch + '?expand=1';
             } else if (file && branch !== file.branch) {
                 compare = 'https://github.com/' + file.repo + '/compare/' + file.branch + '...' + branch + '?expand=1';
@@ -6782,13 +6835,30 @@ function _attachMarkdownEditMenu(pagePath, divID) {
         }
 
         repo.connect('repo', file ? file.repo : null).then(function(fork) {
-            var isOwner = file && fork.toLowerCase() === file.repo.toLowerCase();
-            if (!isOwner) {
-                showEditing(fork, file ? file.branch : 'main');
-                launch(fork, file ? file.branch : 'main');
+            if (!file) {
+                showEditing(fork, 'main');
+                launch(fork, 'main');
                 return;
             }
-            // GitHub doesn't let an account fork its own repo, so owners pick where to edit.
+            // The page's path assumes main; a repo on master (or another default branch) uses that.
+            // A fork copies its upstream's default branch, so the name holds for both.
+            return repo.resolveBranch(fork, file.branch).then(function(branch) {
+                file.branch = branch;
+                var isOwner = fork.toLowerCase() === file.repo.toLowerCase();
+                if (!isOwner || !options.branchChoice) {
+                    showEditing(fork, branch);
+                    launch(fork, branch);
+                    return;
+                }
+                chooseOwnerBranch(fork);
+            });
+        }).catch(function(err) {
+            choice.textContent = 'Edit Content: ' + err.message;
+        });
+
+        // GitHub doesn't let an account fork its own repo, so with options.branchChoice the owner
+        // picks where to edit.
+        function chooseOwnerBranch(fork) {
             var branchName = 'content-edits';
             choice.textContent = 'You own ' + file.repo + ', so it can\'t be forked. Edit ' + file.path + ' on:';
             choice.append(document.createElement('br'));
@@ -6807,9 +6877,7 @@ function _attachMarkdownEditMenu(pagePath, divID) {
                 }).catch(function(err) { choice.textContent = 'Edit Content: ' + err.message; });
             };
             choice.append(onBase, onBranch);
-        }).catch(function(err) {
-            choice.textContent = 'Edit Content: ' + err.message;
-        });
+        }
     });
     ghItem.addEventListener('click', function() {
         dropdown.style.display = 'none';
@@ -6917,6 +6985,22 @@ function defineLaunchCMS() {
             + ' #nc-root .nc-save-copy { margin: 12px 0 4px 14px; }'
             // Once its copy is below the fields, the toolbar's own Save button is hidden.
             + ' #nc-root .content-editor:has(.nc-save-copy) > .sui.toolbar button[aria-keyshortcuts$="+S"] { display: none; }'
+            // launchCMS({hideEditorToolbar:true}): a one-file editor drops the entry's top toolbar (back arrow,
+            // "Page › file" title, Save and options menu). The Save copy below the fields clicks its hidden Save.
+            + ' #nc-root.nc-hide-editor-toolbar .content-editor:has(.nc-save-copy) > .sui.toolbar.primary { display: none; }'
+            // It also hides the field's "Body*" header. Its options button stays in place, invisible, so the
+            // menu opens beside the field; a copy above the sidebar's History icon clicks it (addCmsFieldMenuCopy).
+            // The header leaves the layout (absolute, at the field's top right where the menu anchors), and
+            // the field's top padding goes too, so no space is left above the text box.
+            + ' #nc-root.nc-hide-editor-toolbar .content-editor:has(.nc-field-menu-copy) .pane[data-mode="edit"] section.field[role="group"]:has(> header) { padding-top: 0; }'
+            + ' #nc-root.nc-hide-editor-toolbar .content-editor:has(.nc-field-menu-copy) .pane[data-mode="edit"] section.field[role="group"] > header { visibility: hidden; position: absolute; top: 0; right: 0; margin: 0; }'
+            + ' #nc-root .nc-field-menu-copy { display: flex; justify-content: center; }'
+            + ' #nc-root .nc-field-menu-copy > button { width: 40px; height: 40px; }'
+            + ' #nc-root .nc-field-menu-copy .sui.icon { font-size: 30px; }'
+            // closeCMSAsking's "Save Change" / "Not Yet" menu uses the Edit menu's dropdown styles (_injectMdEditorStyles).
+            + ' .md-edit-dropdown.nc-close-menu { display: block; z-index: 10000; font-family: system-ui, sans-serif; }'
+            // and the sidebar icons that don't apply to the file (greyed out), e.g. Slug and Backlinks.
+            + ' #nc-root.nc-hide-editor-toolbar .sidebar .tabs > .inner > [role="radio"][aria-disabled="true"] { display: none; }'
             // The app shell stops above the resize bar along the bottom of #nc-root.
             + ' #nc-root > .sui.app-shell { height: auto; bottom: 12px; }'
             + ' #nc-root > .nc-resize-handle { position: absolute; left: 0; right: 0; bottom: 0; height: 12px; cursor: ns-resize; touch-action: none; }'
@@ -6982,6 +7066,77 @@ function defineLaunchCMS() {
             setHeight(ncRoot.offsetHeight + (e.key === 'ArrowDown' ? 40 : -40));
         });
         ncRoot.appendChild(handle);
+    }
+
+    // With launchCMS({hideEditorToolbar:true}), copies the first field's options button (the ⋮ beside
+    // "Body") to the top of the sidebar's icons, above History. The field's header is hidden, so the
+    // copy clicks the original, whose menu opens beside the field.
+    function addCmsFieldMenuCopy(ncRoot) {
+        if (ncRoot.dataset.fieldMenuCopy) return;
+        ncRoot.dataset.fieldMenuCopy = 'true';
+        var copy = document.createElement('button');
+        copy.type = 'button';
+        var original = null;
+        var mirror = new MutationObserver(syncCopy);
+        function syncCopy() {
+            if (!original) return;
+            copy.className = original.className;
+            copy.innerHTML = original.innerHTML;
+            copy.disabled = original.disabled;
+            copy.setAttribute('aria-label', original.getAttribute('aria-label') || '');
+            copy.setAttribute('aria-disabled', original.getAttribute('aria-disabled') || 'false');
+        }
+        copy.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (original && original.isConnected && !original.disabled) original.click();
+        });
+        var wrap = document.createElement('div');
+        wrap.className = 'nc-field-menu-copy';
+        wrap.appendChild(copy);
+
+        var queued = false;
+        function place() {
+            queued = false;
+            var menu = ncRoot.querySelector('.content-editor .pane[data-mode="edit"] section.field[role="group"] > header button[aria-haspopup="menu"]');
+            var icons = ncRoot.querySelector('.content-editor .sidebar .tabs > .inner');
+            if (!ncRoot.classList.contains('nc-hide-editor-toolbar') || !menu || !icons) { wrap.remove(); return; }
+            if (menu !== original) {
+                original = menu;
+                mirror.disconnect();
+                mirror.observe(menu, { attributes: true, childList: true, subtree: true, characterData: true });
+                syncCopy();
+            }
+            if (icons.firstChild !== wrap) icons.insertBefore(wrap, icons.firstChild);
+        }
+        new MutationObserver(function() {
+            if (!queued) { queued = true; window.requestAnimationFrame(place); }
+        }).observe(ncRoot, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Sveltia CMS doesn't support CMS.registerLocale, so its wording is changed in the page:
+    // keys are its English text, values the replacement.
+    var cmsTextOverrides = {
+        'This collection has no entries yet.': 'Start by creating a new entry.'
+    };
+    function addCmsTextOverrides(ncRoot) {
+        if (ncRoot.dataset.textOverrides) return;
+        ncRoot.dataset.textOverrides = 'true';
+        var replaceText = function(node) {
+            var walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+            for (var text = walker.nextNode(); text; text = walker.nextNode()) {
+                var replacement = cmsTextOverrides[text.nodeValue.trim()];
+                if (replacement) text.nodeValue = replacement;
+            }
+        };
+        replaceText(ncRoot);
+        new MutationObserver(function(mutations) {
+            mutations.forEach(function(m) {
+                if (m.type === 'characterData') replaceText(m.target.parentNode || m.target);
+                m.addedNodes.forEach(function(n) {
+                    if (n.nodeType === 1 || n.nodeType === 3) replaceText(n.nodeType === 3 ? n.parentNode || n : n);
+                });
+            });
+        }).observe(ncRoot, { childList: true, subtree: true, characterData: true });
     }
 
     // Copies the entry editor's toolbar Save button below its last field (the text box of a README),
@@ -7096,7 +7251,9 @@ function defineLaunchCMS() {
         }
         addCmsResizeHandle(ncRoot);
         addCmsSaveCopy(ncRoot);
+        addCmsFieldMenuCopy(ncRoot);
         addCmsAutoHeight(ncRoot);
+        addCmsTextOverrides(ncRoot);
 
         // A height dragged by the user is kept when the editor is opened again.
         if (!ncRoot.dataset.resized) {
@@ -7119,13 +7276,96 @@ function defineLaunchCMS() {
         }
     }
 
+    // The page's own hash, e.g. #style=maestro&display=about, which Sveltia's route replaces in the
+    // address bar while the CMS is open. closeCMS puts it back.
+    var cmsPageHash = '';
+
+    // The open entry's toolbar Save button when it has changes to save (Sveltia enables it only then), else null.
+    function cmsPendingSave() {
+        var save = document.querySelector('#nc-root .content-editor > .sui.toolbar button[aria-keyshortcuts$="+S"]');
+        return (save && !save.disabled && save.getAttribute('aria-disabled') !== 'true') ? save : null;
+    }
+
+    // Resolves true once a save started by clicking save finishes (the button turns disabled with
+    // no save in progress), or false if it fails (the button turns enabled again) or takes over a minute.
+    function whenCmsSaved(save) {
+        return new Promise(function(resolve) {
+            var started = Date.now(), wasDisabled = false;
+            (function check() {
+                var progress = document.querySelector('#nc-root .content-editor .save-progress');
+                var busy = !!progress && !!progress.textContent.trim();
+                if (!save.isConnected) return resolve(true);
+                if (save.disabled) wasDisabled = true;
+                if (save.disabled && !busy && Date.now() - started > 400) return resolve(true);
+                if ((wasDisabled && !save.disabled) || Date.now() - started > 60000) return resolve(false);
+                setTimeout(check, 250);
+            })();
+        });
+    }
+
+    // For a Close Editor button (anchor): with changes to save, shows a "Save Change" / "Not Yet" menu below
+    // it, styled like the Edit button's menu. Save Change saves, then calls close; Not Yet calls close
+    // without saving. Without changes, closes now.
+    window.closeCMSAsking = function(anchor, close) {
+        var save = cmsPendingSave();
+        var old = document.querySelector('.nc-close-menu');
+        if (old) old.remove();
+        if (!save || !anchor) { close(); return; }
+        if (typeof _injectMdEditorStyles === 'function') _injectMdEditorStyles();
+        var menu = document.createElement('div');
+        menu.className = 'md-edit-dropdown nc-close-menu';
+        menu.setAttribute('role', 'menu');
+        var saveButton = document.createElement('div');
+        saveButton.className = 'md-edit-item'; saveButton.setAttribute('role', 'menuitem'); saveButton.textContent = 'Save Change';
+        var notYet = document.createElement('div');
+        notYet.className = 'md-edit-item'; notYet.setAttribute('role', 'menuitem'); notYet.textContent = 'Not Yet';
+        menu.append(saveButton, notYet);
+        document.body.appendChild(menu);
+        // Placed like the Edit menu: just below the button, right edges lined up.
+        var rect = anchor.getBoundingClientRect();
+        menu.style.top = (rect.bottom + 2) + 'px';
+        menu.style.left = Math.max(8, Math.min(rect.right - menu.offsetWidth, window.innerWidth - menu.offsetWidth - 8)) + 'px';
+
+        function dismiss() {
+            menu.remove();
+            document.removeEventListener('click', onOutside, true);
+        }
+        function onOutside(e) {
+            if (!menu.contains(e.target)) dismiss();
+        }
+        // Added after this click finishes, so the click that opened the menu doesn't close it.
+        setTimeout(function() { document.addEventListener('click', onOutside, true); });
+        notYet.addEventListener('click', function() {
+            dismiss();
+            close();
+        });
+        saveButton.addEventListener('click', function() {
+            document.removeEventListener('click', onOutside, true);
+            menu.textContent = '';
+            var saving = document.createElement('div');
+            saving.className = 'md-edit-item'; saving.textContent = 'Saving…';
+            menu.append(saving);
+            save.click();
+            whenCmsSaved(save).then(function(saved) {
+                if (saved) {
+                    menu.remove();
+                    close();
+                } else {
+                    // Sveltia shows the error in the editor, which stays open.
+                    saving.textContent = 'Not saved. See the message in the editor.';
+                    setTimeout(menu.remove.bind(menu), 4000);
+                }
+            });
+        });
+    };
+
     // Sveltia CMS can't be unloaded once started, so closing hides #nc-root; launchCMS shows it
-    // again, still signed in. Also drops Sveltia's #/... route from the address bar.
+    // again, still signed in. Also swaps Sveltia's #/... route in the address bar for the page's hash.
     window.closeCMS = function() {
         var ncRoot = document.getElementById('nc-root');
         if (ncRoot) ncRoot.style.display = 'none';
         if (location.hash.indexOf('#/') === 0) {
-            history.replaceState(null, '', location.pathname + location.search);
+            history.replaceState(null, '', location.pathname + location.search + cmsPageHash);
         }
     };
 
@@ -7145,16 +7385,33 @@ function defineLaunchCMS() {
 
         if (inline) {
             prepareInlineCmsRoot(options.target, options.heightRatio, options.extraHeight);
+            document.getElementById('nc-root').classList.toggle('nc-hide-editor-toolbar', !!options.hideEditorToolbar);
         } else {
             prepareFullPageCmsRoot();
         }
 
         // options.route, e.g. '#/collections/page/entries/markdown', opens that view of the CMS.
+        // Sveltia CMS reads the whole hash as its route, so a page hash like #editor=readme
+        // would show "Page not found". Without a route, those open the CMS home (#/) instead.
+        // Page params after a Sveltia route, as in #/collections/posts&editor=files, are dropped
+        // so Sveltia doesn't look for a collection named "posts&editor=files".
+        var route = options.route;
+        var paramStart = location.hash.split('?')[0].indexOf('&');
+        if (location.hash.indexOf('#/') !== 0) {
+            cmsPageHash = location.hash;
+        } else if (paramStart > 0) {
+            cmsPageHash = '#' + location.hash.slice(paramStart + 1);
+        }
+        if (!route && location.hash.indexOf('#/') !== 0) {
+            route = '#/';
+        } else if (!route && paramStart > 0) {
+            route = location.hash.slice(0, paramStart);
+        }
         if (window.CMS && appShell) {
-            if (options.route) location.hash = options.route; // Sveltia follows hash changes
+            if (route) location.hash = route; // Sveltia follows hash changes
             return Promise.resolve();
         }
-        if (options.route) history.replaceState(null, '', options.route);
+        if (route) history.replaceState(null, '', location.pathname + location.search + route);
 
         window.CMS_MANUAL_INIT = true;
 
