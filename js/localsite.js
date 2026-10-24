@@ -6665,24 +6665,16 @@ function _getCurrentSiteTitle() {
     }).catch(function() { return ''; });
 }
 
-// Sveltia CMS takes its settings once per page load (it ignores CMS.init after the first), so the first
-// Edit Content launch lists every Markdown file on the page from the same repo, each as its own entry.
-// Each Edit menu then opens its own entry. _mdEditFiles holds the files whose Edit menu is attached,
-// _mdCmsStarted the repo, branch and entries Sveltia started with, and _mdEditOpen the open editor.
-var _mdEditFiles = [];
+// Sveltia CMS takes its settings once per page load (it ignores CMS.init after the first), and switching
+// its route to another file's entry shows a blank text box. So another file's Edit Content reloads the page
+// and opens that file's editor first. _mdCmsStarted holds the repo, branch and file Sveltia started with,
+// and _mdEditOpen the open editor.
 var _mdCmsStarted = null;
 var _mdEditOpen = null;
-function _mdEntryName(path) {
-    return path.replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
-}
 
-// Sveltia CMS config that edits Markdown files, e.g. READMEs, in the visitor's fork of their repo:
-// file, then the page's other files from the same repo (_mdEditFiles).
+// Sveltia CMS config that edits one Markdown file, e.g. a README, in the visitor's fork of its repo.
 function _markdownFileCmsConfig(file, fork) {
     var dir = file.path.indexOf('/') >= 0 ? file.path.replace(/\/[^\/]+$/, '') : '';
-    var files = [file].concat(_mdEditFiles.filter(function(f) {
-        return f.repo.toLowerCase() === file.repo.toLowerCase() && f.path !== file.path;
-    }));
     return {
         load_config_file: false,
         // Saving asks for an optional note, added after Sveltia's commit message.
@@ -6692,14 +6684,12 @@ function _markdownFileCmsConfig(file, fork) {
             name: 'page',
             label: 'Page',
             editor: { preview: false },
-            files: files.map(function(f) {
-                return {
-                    name: _mdEntryName(f.path),
-                    label: f.path.split('/').pop(),
-                    file: f.path,
-                    fields: [{ label: 'Body', name: 'body', widget: 'markdown' }]
-                };
-            })
+            files: [{
+                name: 'markdown',
+                label: file.path.split('/').pop(),
+                file: file.path,
+                fields: [{ label: 'Body', name: 'body', widget: 'markdown' }]
+            }]
         }]
     };
 }
@@ -6762,9 +6752,6 @@ function _attachMarkdownEditMenu(pagePath, divID, options) {
             }
         }
     }
-    if (ghFile && ghFile.path && !_mdEditFiles.some(function(f) { return f.repo === ghFile.repo && f.path === ghFile.path; })) {
-        _mdEditFiles.push(ghFile);
-    }
     var ghItem = document.createElement('div'); ghItem.className = 'md-edit-item'; ghItem.textContent = 'View on Github';
 
     dropdown.appendChild(item);
@@ -6783,8 +6770,12 @@ function _attachMarkdownEditMenu(pagePath, divID, options) {
         try { sessionStorage.removeItem('mdEditOpen'); } catch (e) {}
         var waits = 0;
         var openWhenReady = function() {
-            if (window.ContentRepo) item.click();
-            else if (waits++ < 50) setTimeout(openWhenReady, 100);
+            if (window.ContentRepo) {
+                item.click();
+                container.scrollIntoView({ block: 'start' });
+            } else if (waits++ < 50) {
+                setTimeout(openWhenReady, 100);
+            }
         };
         setTimeout(openWhenReady, 0); // After the item's click handler below is attached
     }
@@ -6853,12 +6844,10 @@ function _attachMarkdownEditMenu(pagePath, divID, options) {
         choice.textContent = 'Signing in to GitHub…';
 
         function launch(fork, branch) {
-            // Sveltia CMS can't restart with other settings, so a file it didn't start with (another repo or
-            // branch, or loaded later) reloads the page, which then opens this file's editor.
-            var entry = file ? _mdEntryName(file.path) : null;
+            // A file other than the one Sveltia CMS started with reloads the page, which then opens its editor.
             var running = !!(window.CMS && document.querySelector('.sui.app-shell'));
             if (running && (!_mdCmsStarted || !file || _mdCmsStarted.repo !== fork
-                    || _mdCmsStarted.branch !== branch || _mdCmsStarted.entries.indexOf(entry) < 0)) {
+                    || _mdCmsStarted.branch !== branch || _mdCmsStarted.path !== file.path)) {
                 try { sessionStorage.setItem('mdEditOpen', divID); } catch (e) {}
                 location.reload();
                 return;
@@ -6872,14 +6861,12 @@ function _attachMarkdownEditMenu(pagePath, divID, options) {
                 _getCurrentSiteTitle().then(function(siteTitle) {
                     var config = file ? _markdownFileCmsConfig(file, fork) : { backend: { repo: fork, branch: 'main' } };
                     if (file) config.backend.branch = branch;
-                    if (file && !running) {
-                        _mdCmsStarted = { repo: fork, branch: branch, entries: config.collections[0].files.map(function(f) { return f.name; }) };
-                    }
+                    if (file && !running) _mdCmsStarted = { repo: fork, branch: branch, path: file.path };
                     config.backend.auth_methods = ['oauth'];
                     if (siteTitle) config.app_title = siteTitle + ' CMS';
                     // Open this file's editor directly rather than the collection list.
                     launchCMS({inline:true, target:container, heightRatio:0.5, extraHeight:220, configUrl:window.SITE_CONFIG_PATH, config:config,
-                        route: file ? '#/collections/page/entries/' + entry : undefined, hideEditorToolbar: !!file,
+                        route: file ? '#/collections/page/entries/markdown' : undefined, hideEditorToolbar: !!file,
                         closeOnSave: !!file, fitContent: !!file, widthOf: container, onClose: closeEditor});
                 });
             });
