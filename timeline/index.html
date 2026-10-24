@@ -1013,7 +1013,6 @@ p.set('rs_dcid', list.join(','));
 
 
       <div id="template-container"></div>
-      <div id="templateLoaded"></div>
      
       <!-- We might not use the same state menu as the search filter. 
 
@@ -3144,6 +3143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const continentsBtn = document.getElementById('view-continents-btn');
     // Hide Continents tab for non-country scopes; reset to Locations view if needed
     if (continentsBtn) {
+        const currentScope = (typeof getHash === 'function') ? String(getHash().scope || 'country').toLowerCase() : 'country';
         const isCountryScope = currentScope === 'country';
         continentsBtn.style.display = isCountryScope ? '' : 'none';
         if (!isCountryScope && window._legendViewMode === 'continents') {
