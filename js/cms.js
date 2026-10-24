@@ -42,6 +42,7 @@
         if (!key) continue;
         if      (key === 'app_title')     cfg.app_title = val;
         else if (key === 'inline_editor') cfg.inline_editor = (val === 'true');
+        else if (key === 'local_build')   cfg.local_build = (val === 'true');
         else if (key === 'auth_base_url') cfg.auth_base_url = val;
         else if (key === 'auth_endpoint') cfg.auth_endpoint = val;
         else if (key === 'logo' && !val)  { scope = 'logo'; logoIndent = indent; cfg.logo = {}; }

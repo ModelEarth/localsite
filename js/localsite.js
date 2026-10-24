@@ -3791,9 +3791,20 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
         html = formatBuckets(html);
       //}
 
+      // loadMarkdown(path, divID, {title:'...'}): the page sets the bar title, not the file, so the editor
+      // doesn't change it. The div becomes the .bucket, with the title as its h2 bar above the file's content.
+      var mdOptions = (target && typeof target === 'object') ? target : {};
+      if (mdOptions.title) {
+        var bar = document.createElement('h2');
+        bar.className = 'md-keep'; // Stays in view while the file's editor is open below it
+        bar.textContent = mdOptions.title;
+        html = bar.outerHTML + '<div class="bucketcontent">' + html + '</div>';
+      }
+
       // Appends rather than overwrites
       loadIntoDiv(pageFolder,divID,html, function() {
-        _attachMarkdownEditMenu(pagePath, divID, (target && typeof target === 'object') ? target : {});
+        if (mdOptions.title) document.getElementById(divID).classList.add('bucket');
+        _attachMarkdownEditMenu(pagePath, divID, mdOptions);
         // Call the main callback after loadIntoDiv finishes
         if (typeof callback === 'function') {
           //alert("valid") // BUGBUG Not reaching
@@ -6598,13 +6609,14 @@ function _injectMdEditorStyles() {
     _mdEditorStyled = true;
     var s = document.createElement('style');
     s.textContent = '.md-edit-menu{position:absolute;top:8px;right:8px;z-index:10;font-family:system-ui,sans-serif}'
+        + ':has(>.md-keep)>.md-edit-menu{top:3px}' // Within the title bar from loadMarkdown's options.title
         + '.md-edit-trigger{background:rgba(255,255,255,.92);border:1px solid #d1d5db;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:18px;padding:0;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.1)}'
         + '.md-edit-trigger:hover{background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}'
         + '.md-edit-choice{margin:0 0 12px;padding:10px 14px 10px 12px;border-radius:12px;background:#f3f4f6;font:14px/1.5 system-ui,sans-serif;color:#374151}'
         + '.md-edit-choice button{margin:6px 8px 0 0;padding:5px 14px;border:1px solid #d1d5db;border-radius:16px;background:#fff;cursor:pointer;font-size:13px;color:#374151}'
         + '.md-edit-choice button:hover{background:#f9fafb}'
         // While editing, only the edit menu and the "Editing <repo>" line remain in the content div.
-        + '.md-editing>:not(.md-edit-menu):not(.md-edit-choice){display:none}'
+        + '.md-editing>:not(.md-edit-menu):not(.md-edit-choice):not(.md-keep){display:none}'
         + '.md-editing{min-height:44px}'
         + '.md-editing>.md-edit-choice{padding-right:44px}'
         // Room for a labeled button (loadMarkdown's buttonText) in place of the icon
@@ -6813,7 +6825,7 @@ function _attachMarkdownEditMenu(pagePath, divID, options) {
                     // Open this file's editor directly rather than the collection list.
                     launchCMS({inline:true, target:container, heightRatio:0.5, extraHeight:220, configUrl:window.SITE_CONFIG_PATH, config:config,
                         route: file ? '#/collections/page/entries/markdown' : undefined, hideEditorToolbar: !!file,
-                        closeOnSave: !!file, onClose: closeEditor});
+                        closeOnSave: !!file, fitContent: !!file, widthOf: container, onClose: closeEditor});
                 });
             });
         }
@@ -7001,9 +7013,17 @@ function defineLaunchCMS() {
             // sidebar's History icon to click; the menu opens below the copy (addCmsFieldMenuCopy).
             // The header leaves the layout (absolute, at the field's top right where the menu anchors), and
             // the field's top padding goes too, so no space is left above the text box.
-            + ' #nc-root.nc-hide-editor-toolbar .content-editor:has(.nc-field-menu-copy) .pane[data-mode="edit"] section.field[role="group"]:has(> header) { padding-top: 0; }'
-            + ' #nc-root.nc-hide-editor-toolbar .content-editor:has(.nc-field-menu-copy) .pane[data-mode="edit"] section.field[role="group"] > header { visibility: hidden; position: absolute; top: 0; right: 0; margin: 0; }'
+            // Also on a narrow screen, where Sveltia has no sidebar for the copy (it uses a sheet instead).
+            // The pane's own header toolbar goes too: its options menu (⋮), and below 1024px an Edit/Preview switch.
+            + ' #nc-root.nc-hide-editor-toolbar .content-editor .header:has(> [role="toolbar"].secondary) { display: none; }'
+            + ' #nc-root.nc-hide-editor-toolbar .content-editor .pane[data-mode="edit"] section.field[role="group"]:has(> header) { padding-top: 0; }'
+            + ' #nc-root.nc-hide-editor-toolbar .content-editor .pane[data-mode="edit"] section.field[role="group"] > header { visibility: hidden; position: absolute; top: 0; right: 0; margin: 0; }'
             + ' #nc-root .nc-field-menu-copy { display: flex; justify-content: center; }'
+            // The one-file editor's background (grey, around the text area and behind the sidebar's icons)
+            // matches the text area. Transparent would show Sveltia's grey app page under the editor.
+            + ' #nc-root.nc-hide-editor-toolbar .content-editor:has(.nc-save-copy) { background-color: var(--sui-primary-background-color); }'
+            // The formatted view's text uses the page's font, read from <body> by scopeCmsPageStyles.
+            + ' #nc-root .lexical-root { font-family: var(--nc-page-font-family, inherit); font-size: var(--nc-page-font-size, inherit); line-height: var(--nc-page-line-height, inherit); }'
             + ' #nc-root .nc-field-menu-copy > button { width: 40px; height: 40px; }'
             + ' #nc-root .nc-field-menu-copy .sui.icon { font-size: 30px; }'
             // closeCMSAsking's "Save Change" / "Not Yet" menu uses the Edit menu's dropdown styles (_injectMdEditorStyles).
@@ -7015,9 +7035,15 @@ function defineLaunchCMS() {
             + ' #nc-root > .nc-resize-handle { position: absolute; left: 0; right: 0; bottom: 0; height: 12px; cursor: ns-resize; touch-action: none; }'
             + ' #nc-root > .nc-resize-handle::after { content: ""; position: absolute; left: 50%; top: 4px; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: currentColor; opacity: .3; }'
             + ' #nc-root > .nc-resize-handle:hover::after, #nc-root > .nc-resize-handle:focus-visible::after { opacity: .6; }'
+            // A one-file editor's drag bar is on the text box's bottom edge instead (addCmsTextResizeHandle).
+            + ' #nc-root:has(.nc-text-resize-handle) > .nc-resize-handle { display: none; }'
+            + ' #nc-root .nc-text-resize-handle { position: relative; z-index: 1; height: 12px; margin-top: -12px; cursor: ns-resize; touch-action: none; }'
+            + ' #nc-root .nc-text-resize-handle::after { content: ""; position: absolute; left: 50%; top: 4px; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: currentColor; opacity: .3; }'
+            + ' #nc-root .nc-text-resize-handle:hover::after, #nc-root .nc-text-resize-handle:focus-visible::after { opacity: .6; }'
             + ' #nc-root:has(.wrapper[role="group"]:not(.content-editor)) { z-index: 10200; }'
-            // Entry fields fill their pane up to 1000px (Sveltia caps them at 768px).
-            + ' #nc-root section.field[role="group"] > * { max-width: 1000px; }'
+            // Entry fields fill their pane. Sveltia caps them at 768px and centers them, which left
+            // blank space on their left in a wide page.
+            + ' #nc-root section.field[role="group"] > * { max-width: none; }'
             // Sveltia reopens the last sidebar panel even when it's disabled for the entry, e.g. Slug
             // on a single file like a README ("This entry doesn't have a slug."). Hide it then.
             + ' #nc-root .sidebar:has(.tabs [role="radio"][aria-checked="true"][aria-disabled="true"]) > #entry-sidebar-content { display: none; }'
@@ -7075,6 +7101,71 @@ function defineLaunchCMS() {
             setHeight(ncRoot.offsetHeight + (e.key === 'ArrowDown' ? 40 : -40));
         });
         ncRoot.appendChild(handle);
+    }
+
+    // With launchCMS({fitContent:true}), a drag bar on the bottom edge of the text box (the formatted
+    // view, or the plain text box) sets its height, and #nc-root grows or shrinks to fit (addCmsAutoHeight).
+    // Arrow keys also resize it when the bar has focus. The height is kept while the page is open.
+    function addCmsTextResizeHandle(ncRoot) {
+        if (ncRoot.dataset.textResizeHandle) return;
+        ncRoot.dataset.textResizeHandle = 'true';
+        var handle = document.createElement('div');
+        handle.className = 'nc-text-resize-handle';
+        handle.title = 'Drag to resize the text box';
+        handle.tabIndex = 0;
+        handle.setAttribute('role', 'separator');
+        handle.setAttribute('aria-orientation', 'horizontal');
+        handle.setAttribute('aria-label', 'Resize the text box');
+        var box = null, queued = false;
+        function setHeight(height) {
+            if (!box) return;
+            height = Math.max(120, Math.round(height));
+            box.style.minHeight = height + 'px';
+            ncRoot.dataset.textHeight = height;
+            ncRoot.dispatchEvent(new Event('nc-fit')); // #nc-root grows or shrinks to fit (addCmsAutoHeight)
+        }
+        handle.addEventListener('pointerdown', function(e) {
+            if (!box) return;
+            e.preventDefault();
+            var startY = e.clientY;
+            var startHeight = box.offsetHeight;
+            handle.setPointerCapture(e.pointerId);
+            function move(ev) { setHeight(startHeight + ev.clientY - startY); }
+            function stop() {
+                handle.removeEventListener('pointermove', move);
+                handle.removeEventListener('pointerup', stop);
+                handle.removeEventListener('pointercancel', stop);
+            }
+            handle.addEventListener('pointermove', move);
+            handle.addEventListener('pointerup', stop);
+            handle.addEventListener('pointercancel', stop);
+        });
+        handle.addEventListener('keydown', function(e) {
+            if (!box || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
+            e.preventDefault();
+            setHeight(box.offsetHeight + (e.key === 'ArrowDown' ? 40 : -40));
+        });
+        function place() {
+            queued = false;
+            // The plain text box is a grid with the textarea and a hidden copy for sizing, so its wrapper is used.
+            // The one showing: Sveltia keeps the other mode's box, hidden, when switching.
+            var found = ncRoot.dataset.fitContent && Array.prototype.find.call(
+                ncRoot.querySelectorAll('.content-editor .pane[data-mode="edit"] section.field :is(.lexical-root, .text-area)'),
+                function(el) { return el.offsetHeight > 0; });
+            if (!found) {
+                if (handle.parentNode) handle.remove();
+                box = null;
+                return;
+            }
+            if (found !== box) {
+                box = found;
+                if (ncRoot.dataset.textHeight) box.style.minHeight = ncRoot.dataset.textHeight + 'px';
+            }
+            if (box.nextElementSibling !== handle) box.insertAdjacentElement('afterend', handle);
+        }
+        new MutationObserver(function() {
+            if (!queued) { queued = true; window.requestAnimationFrame(place); }
+        }).observe(ncRoot, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'class'] });
     }
 
     // With launchCMS({hideEditorToolbar:true}), copies the first field's options button (the ⋮ beside
@@ -7157,6 +7248,122 @@ function defineLaunchCMS() {
         }).observe(ncRoot, { childList: true, subtree: true, characterData: true });
     }
 
+    // Sveltia UI's app shell adds page-wide styles to <head>: link colors and underlines (its
+    // "underline links" preference marks <html>), heading sizes, paragraph margins, box-sizing, focus
+    // outlines and color-scheme. With the editor inline, they would restyle the rest of the page, so
+    // each rule is limited to #nc-root, inside :where() to keep its specificity. The --sui- variables
+    // stay page-wide, and rules scoped to Sveltia's components are left alone.
+    function scopeCmsPageStyles() {
+        var style = findCmsPageStyle();
+        if (!style) {
+            if (!scopeCmsPageStyles.observer) {
+                scopeCmsPageStyles.observer = new MutationObserver(function() {
+                    if (!findCmsPageStyle()) return;
+                    scopeCmsPageStyles.observer.disconnect();
+                    scopeCmsPageStyles.observer = null;
+                    scopeCmsPageStyles();
+                });
+                scopeCmsPageStyles.observer.observe(document.head, { childList: true });
+            }
+            return;
+        }
+        // The formatted view uses the page's font (set on <body>), not Sveltia's.
+        var ncRoot = document.getElementById('nc-root'), page = getComputedStyle(document.body);
+        if (ncRoot) {
+            ncRoot.style.setProperty('--nc-page-font-family', page.fontFamily);
+            ncRoot.style.setProperty('--nc-page-font-size', page.fontSize);
+            ncRoot.style.setProperty('--nc-page-line-height', page.lineHeight);
+        }
+        if (style.dataset.scoped || !style.sheet) return;
+        style.dataset.scoped = 'true';
+        scopeCmsRules(style.sheet.cssRules);
+    }
+
+    function findCmsPageStyle() {
+        var styles = document.head.querySelectorAll('style[id^="svelte-"]');
+        for (var i = 0; i < styles.length; i++) {
+            if (styles[i].textContent.indexOf('[data-underline-links="true"] a') >= 0) return styles[i];
+        }
+        return null;
+    }
+
+    function scopeCmsRules(rules) {
+        for (var i = 0; i < rules.length; i++) {
+            var rule = rules[i];
+            if (rule.selectorText === undefined) {
+                if (rule.cssRules && !rule.name) scopeCmsRules(rule.cssRules); // @media, @supports
+                continue;
+            }
+            if (rule.selectorText.indexOf('svelte-') >= 0) continue;
+            var variables = 0, others = [];
+            for (var p = 0; p < rule.style.length; p++) {
+                if (rule.style[p].indexOf('--') === 0) variables++;
+                else others.push(rule.style[p]);
+            }
+            if (!others.length) continue;
+            var scoped = splitCssSelectors(rule.selectorText).map(scopeCmsSelector).join(', ');
+            if (!variables) {
+                rule.selectorText = scoped;
+                continue;
+            }
+            // The light and dark theme rules set color-scheme beside the theme's colors. The colors stay
+            // page-wide, since variables defined on <html> refer to them; color-scheme moves to a new rule.
+            var declarations = others.map(function(name) {
+                var priority = rule.style.getPropertyPriority(name);
+                return name + ':' + rule.style.getPropertyValue(name) + (priority ? ' !' + priority : '');
+            }).join(';');
+            others.forEach(function(name) { rule.style.removeProperty(name); });
+            try {
+                (rule.parentRule || rule.parentStyleSheet).insertRule(scoped + '{' + declarations + '}', i + 1);
+                i++; // past the inserted rule
+            } catch (e) {}
+        }
+    }
+
+    // ":root[data-theme=dark]" becomes ":root[data-theme=dark] :where(#nc-root)",
+    // ":is(:root, :host)[data-underline-links="true"] a" puts :where(#nc-root) before the a,
+    // and "h1" becomes ":where(#nc-root) h1:where(:not(.lexical-root *))".
+    function scopeCmsSelector(selector) {
+        var root = selector.match(/^(?::root|:host|html|:is\(:root, ?:host\))(?:\[[^\]]*\]|:not\([^)]*\))*/);
+        if (root && /^(\s|$)/.test(selector.slice(root[0].length))) {
+            return root[0] + ' :where(#nc-root)' + excludeCmsFormattedText(selector.slice(root[0].length));
+        }
+        return ':where(#nc-root) ' + excludeCmsFormattedText(selector);
+    }
+
+    // Sveltia's typography (headings, paragraphs, lists, links, code, tables, quotes) is left off the
+    // text in the formatted view (.lexical-root), which shows the page's own formatting instead.
+    function excludeCmsFormattedText(selector) {
+        var depth = 0, start = 0; // the last compound, after the last space outside (...) and [...]
+        for (var i = 0; i < selector.length; i++) {
+            var c = selector.charAt(i);
+            if (c === '(' || c === '[') depth++;
+            else if (c === ')' || c === ']') depth--;
+            else if (c === ' ' && depth === 0) start = i + 1;
+        }
+        var subject = selector.slice(start);
+        if (!/^(?:h[1-6]|strong|a|pre|code|table|blockquote|:is\((?:p|ul|ol|dl|code|pre|th|td)\b)(?![\w-])/.test(subject)) {
+            return selector;
+        }
+        return selector + ':where(:not(.lexical-root *))';
+    }
+
+    // Splits a selector list at its top-level commas, not those inside :is(...) and the like.
+    function splitCssSelectors(list) {
+        var parts = [], depth = 0, start = 0;
+        for (var i = 0; i < list.length; i++) {
+            var c = list.charAt(i);
+            if (c === '(' || c === '[') depth++;
+            else if (c === ')' || c === ']') depth--;
+            else if (c === ',' && depth === 0) {
+                parts.push(list.slice(start, i).trim());
+                start = i + 1;
+            }
+        }
+        parts.push(list.slice(start).trim());
+        return parts;
+    }
+
     // Copies the entry editor's toolbar Save button below its last field (the text box of a README),
     // with the same look, label and disabled state. Clicking the copy clicks the toolbar's Save.
     function addCmsSaveCopy(ncRoot) {
@@ -7212,6 +7419,9 @@ function defineLaunchCMS() {
 
     // While the entry editor is open, #nc-root grows to fit its fields, so the edit pane doesn't scroll,
     // and shrinks as text is removed, down to its starting or dragged height (data-base-height).
+    // With launchCMS({fitContent:true}), a one-file editor starts short instead: it shrinks to fit its
+    // text, down to CMS_FIT_MIN_HEIGHT, unless a height was dragged.
+    var CMS_FIT_MIN_HEIGHT = 200;
     function addCmsAutoHeight(ncRoot) {
         if (ncRoot.dataset.autoHeight) return;
         ncRoot.dataset.autoHeight = 'true';
@@ -7223,6 +7433,7 @@ function defineLaunchCMS() {
             var base = parseFloat(ncRoot.dataset.baseHeight) || height;
             var target = base;
             var scroller = ncRoot.querySelector('.content-editor .pane[data-mode="edit"] [id$="-pane-body"] > .content');
+            if (scroller && ncRoot.dataset.fitContent && !ncRoot.dataset.resized) base = CMS_FIT_MIN_HEIGHT;
             if (scroller) {
                 var overflow = scroller.scrollHeight - scroller.clientHeight;
                 if (overflow > 1) {
@@ -7242,29 +7453,52 @@ function defineLaunchCMS() {
             target = Math.max(base, Math.round(target));
             if (Math.abs(target - height) > 1) ncRoot.style.height = target + 'px';
         }
-        new MutationObserver(function() {
+        function queueFit() {
             if (!queued) { queued = true; window.requestAnimationFrame(fit); }
-        }).observe(ncRoot, { childList: true, subtree: true, characterData: true });
+        }
+        new MutationObserver(queueFit).observe(ncRoot, { childList: true, subtree: true, characterData: true });
+        ncRoot.addEventListener('nc-fit', queueFit); // from the text box's drag bar, whose resize isn't a mutation seen here
     }
 
     // heightRatio scales the initial height, the window space below #nc-root (at least 400px),
     // then extraHeight pixels are added.
-    function prepareInlineCmsRoot(target, heightRatio, extraHeight) {
+    // Keeps #nc-root no wider than el, also as the window resizes. Without el, the limit is removed.
+    var cmsWidthOf = null;
+    function matchCmsWidth(ncRoot, el) {
+        cmsWidthOf = el || null;
+        function apply() {
+            ncRoot.style.maxWidth = (cmsWidthOf && cmsWidthOf.isConnected) ? cmsWidthOf.getBoundingClientRect().width + 'px' : '';
+        }
+        if (!ncRoot.dataset.matchWidth) {
+            ncRoot.dataset.matchWidth = 'true';
+            window.addEventListener('resize', apply);
+        }
+        apply();
+    }
+
+    // widthOf: an element whose width #nc-root keeps to, e.g. the Markdown div beside a floated column.
+    function prepareInlineCmsRoot(target, heightRatio, extraHeight, fitContent, widthOf) {
         var anchor = resolveCmsTarget(target) || document.getElementById('editPageBtn') || document.body;
         var ncRoot = document.getElementById('nc-root');
         var appShell = getExistingCmsShell();
         injectInlineCmsStyles();
+        scopeCmsPageStyles();
 
         if (!ncRoot) {
             ncRoot = document.createElement('div');
             ncRoot.id = 'nc-root';
         }
 
-        ncRoot.style.display = 'block';
+        // flow-root with auto width keeps it beside a floated column (e.g. the projects page's Issues
+        // widget), the width the Markdown above it gets from overflow:auto, rather than running under it.
+        ncRoot.style.display = 'flow-root';
         ncRoot.style.position = 'relative';
-        ncRoot.style.width = '100%';
+        ncRoot.style.width = '';
         ncRoot.style.minHeight = '';
         ncRoot.style.inset = '';
+        matchCmsWidth(ncRoot, resolveCmsTarget(widthOf));
+        if (fitContent) ncRoot.dataset.fitContent = 'true';
+        else delete ncRoot.dataset.fitContent;
 
         if (appShell && appShell.parentNode !== ncRoot) {
             ncRoot.appendChild(appShell);
@@ -7276,6 +7510,7 @@ function defineLaunchCMS() {
             anchor.insertAdjacentElement('afterend', ncRoot);
         }
         addCmsResizeHandle(ncRoot);
+        addCmsTextResizeHandle(ncRoot);
         addCmsSaveCopy(ncRoot);
         addCmsFieldMenuCopy(ncRoot);
         addCmsAutoHeight(ncRoot);
@@ -7284,7 +7519,10 @@ function defineLaunchCMS() {
         // A height dragged by the user is kept when the editor is opened again.
         if (!ncRoot.dataset.resized) {
             var top = ncRoot.getBoundingClientRect().top;
-            ncRoot.style.height = Math.round(Math.max(400, window.innerHeight - top) * (heightRatio || 1) + (extraHeight || 0)) + 'px';
+            var startHeight = Math.max(400, window.innerHeight - top) * (heightRatio || 1) + (extraHeight || 0);
+            // A one-file editor's loading panel starts at half that; it then fits its text (addCmsAutoHeight).
+            if (fitContent) startHeight /= 2;
+            ncRoot.style.height = Math.round(startHeight) + 'px';
             ncRoot.dataset.baseHeight = ncRoot.offsetHeight;
         }
 
@@ -7424,7 +7662,7 @@ function defineLaunchCMS() {
         var appShell = getExistingCmsShell();
 
         if (inline) {
-            prepareInlineCmsRoot(options.target, options.heightRatio, options.extraHeight);
+            prepareInlineCmsRoot(options.target, options.heightRatio, options.extraHeight, options.fitContent, options.widthOf);
             document.getElementById('nc-root').classList.toggle('nc-hide-editor-toolbar', !!options.hideEditorToolbar);
             cmsAfterSave = options.closeOnSave ? (options.onClose || window.closeCMS) : null;
         } else {
@@ -7478,11 +7716,16 @@ function defineLaunchCMS() {
             console.error('launchCMS: window.CMS.init is not available after loading Sveltia CMS.');
         };
 
-        // Use a local build of the git-ignored sveltia-cms reference clone when present, otherwise the npm release.
+        // The npm release, or a local build of the git-ignored sveltia-cms reference clone when the site
+        // config sets cms: local_build: true. Checked only then, since a missing build logs a 404.
         var localCmsScript = webrootPath('/sveltia-cms/package/dist/sveltia-cms.js');
         var cdnCmsScript = 'https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js';
-        var cmsScriptPath = fetch(localCmsScript, { method: 'HEAD' })
-            .then(function(r) { return r.ok ? localCmsScript : cdnCmsScript; })
+        var cmsScriptPath = Promise.resolve(window.cmsSiteConfigReady)
+            .then(function(cfg) {
+                if (!cfg || !cfg.local_build) return cdnCmsScript;
+                return fetch(localCmsScript, { method: 'HEAD' })
+                    .then(function(r) { return r.ok ? localCmsScript : cdnCmsScript; });
+            })
             .catch(function() { return cdnCmsScript; });
         var ready = (typeof window.loadWebrootYaml === 'function')
             ? window.loadWebrootYaml().catch(function() {

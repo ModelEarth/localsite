@@ -33,6 +33,10 @@ Accepts an optional `options` object:
   plus `220`. A bar along the bottom of `#nc-root` drags the height taller or shorter.
   While an entry is open, `#nc-root` grows to fit its fields as text is added, and shrinks
   back toward that starting or dragged height as text is removed.
+- `options.fitContent` — a one-file editor starts short: once the entry is open, `#nc-root`
+  shrinks to fit its text (at least 200px) and grows as text is added. A dragged height is
+  kept as the least height. Used by the Markdown "Edit Content" menu and "Edit README".
+  The drag bar moves to the text box's bottom edge and sets the text box's height.
 - `options.hideEditorToolbar` — hides the entry editor's top toolbar (back arrow, title, Save,
   options menu) in a one-file editor. The Save copy below the fields stays. Used by the Markdown
   "Edit Content" menu and the edit page's "Edit README" button.
@@ -77,6 +81,15 @@ zero-height and fall back to fixed positioning. Options:
 /* Or let it grow to fill remaining page */
 #nc-root { min-height: 600px; }
 ```
+
+Sveltia UI's app shell adds page-wide styles to `<head>` (link colors and underlines,
+heading sizes, paragraph margins, box-sizing, focus outlines, color-scheme). When inline,
+`scopeCmsPageStyles()` rewrites those rules once to apply only within `#nc-root`, using
+`:where(#nc-root)` so their specificity is unchanged. The `--sui-` variables stay page-wide,
+since variables on `<html>` refer to each other; a rule setting both (the light and dark
+theme rules, with `color-scheme`) is split in two.
+Sveltia's typography (headings, paragraphs, lists, links, code, tables, quotes) is also left
+off the formatted view (`.lexical-root`), which uses the page's own rules and `<body>` font.
 
 The CMS UI is designed for full-viewport use. In a smaller inline container
 the entrance (sign-in) page and collection list still render correctly; the

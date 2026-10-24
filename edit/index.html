@@ -263,7 +263,7 @@ loadMarkdown("https://raw.githubusercontent.com/ModelEarth/localsite/refs/heads/
           var config = Object.assign({}, readmeEditorConfig, {
             backend: Object.assign({}, readmeEditorConfig.backend, { repo: where.repo, branch: where.branch })
           });
-          return { inline: true, target: '#editReadmeBtn', config: config, route: '#/collections/edit/entries/readme', hideEditorToolbar: true,
+          return { inline: true, target: '#editReadmeBtn', config: config, route: '#/collections/edit/entries/readme', hideEditorToolbar: true, fitContent: true,
             closeOnSave: true, onClose: function() { closeEditor('readme'); } };
         }).catch(function(err) {
           showSignInError(status, err);
