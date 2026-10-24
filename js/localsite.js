@@ -3738,6 +3738,11 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
     */
     markdownText(pagePath).then(function(data) {
 
+      // An edit saved in this browser that this copy of the file doesn't have yet (_mdPendingText)
+      // is shown instead, with a note under it.
+      var pendingText = _mdPendingText(pagePath, data);
+      if (pendingText !== null) data = pendingText;
+
       // Path is replaced further down page. Reactivate after adding menu.
       //let downloadReadme = "<div class='markdownEye' style='position:absolute;z-index:1px;cursor:pointer;font-size:28px;right:0px;top:0px;text-decoration:none;opacity:.7'><a href='" + pagePath + "' style='color:#555'>…</a></div>";
       //alert(pagePath)
@@ -3790,6 +3795,9 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
       //if (location.host.indexOf('localhost') >= 0) { // Might limit to specific pages instead
         html = formatBuckets(html);
       //}
+      if (pendingText !== null) {
+        html += '<div class="md-pending-note" style="margin-top:12px;font-size:13px;opacity:.7">Waiting for GitHub to refresh</div><br>';
+      }
 
       // loadMarkdown(path, divID, {title:'...'}): the page sets the bar title, not the file, so the editor
       // doesn't change it. The div becomes the .bucket, with the title as its h2 bar above the file's content.
@@ -3803,6 +3811,8 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
 
       // Appends rather than overwrites
       loadIntoDiv(pageFolder,divID,html, function() {
+        // So the file can be shown again in place after an edit is saved (_mdRerender).
+        document.getElementById(divID)._mdLoad = { pagePath: pagePath, target: target, callback: callback };
         if (mdOptions.title) document.getElementById(divID).classList.add('bucket');
         _attachMarkdownEditMenu(pagePath, divID, mdOptions);
         // Call the main callback after loadIntoDiv finishes
@@ -3824,6 +3834,63 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
   });
   //});
 }
+// Edits saved from the Markdown editor, kept in this browser until the page's own copy of the file has
+// them: localhost reads files from disk (updated by git pull), GitHub Pages rebuilds minutes after a
+// commit, and raw.githubusercontent.com caches for a few minutes. Keyed by the file's URL, kept a week.
+var MD_PENDING_KEY = 'mdPendingEdits';
+var MD_PENDING_DAYS = 7;
+function _mdPendingEdits() {
+  try { return JSON.parse(localStorage.getItem(MD_PENDING_KEY)) || {}; } catch (e) { return {}; }
+}
+function _mdStorePendingEdits(edits) {
+  try { localStorage.setItem(MD_PENDING_KEY, JSON.stringify(edits)); } catch (e) {}
+}
+function _mdPendingKey(pagePath) {
+  return new URL(pagePath, location.href).href.split(/[?#]/)[0];
+}
+function _mdSameText(a, b) {
+  return String(a).replace(/\r\n/g, '\n').trim() === String(b).replace(/\r\n/g, '\n').trim();
+}
+// The saved edit to show for pagePath, or null once this copy of the file (data) has it, or after a week.
+function _mdPendingText(pagePath, data) {
+  var edits = _mdPendingEdits();
+  var key = _mdPendingKey(pagePath);
+  var edit = edits[key];
+  if (!edit) return null;
+  if (_mdSameText(edit.text, data) || Date.now() - edit.saved > MD_PENDING_DAYS * 864e5) {
+    delete edits[key];
+    _mdStorePendingEdits(edits);
+    return null;
+  }
+  return edit.text;
+}
+// After its editor closes: reads the file back from the GitHub API (current right away, unlike the page's
+// copy), keeps it for pagePath, and shows it again in each div displaying pagePath. _mdPendingText drops it
+// if the page's copy already matches, so closing without a change shows no note.
+function recordMarkdownSave(pagePath, fullName, branch, path) {
+  if (!window.ContentRepo) return Promise.resolve();
+  return window.ContentRepo.readFile(fullName, path + '?ref=' + encodeURIComponent(branch), { cache: 'no-store' })
+    .then(function(blob) { return blob.text(); })
+    .then(function(text) {
+      var edits = _mdPendingEdits();
+      edits[_mdPendingKey(pagePath)] = { text: text, saved: Date.now() };
+      _mdStorePendingEdits(edits);
+      document.querySelectorAll('[id]').forEach(function(el) {
+        if (el._mdLoad && _mdPendingKey(el._mdLoad.pagePath) === _mdPendingKey(pagePath)) _mdRerender(el);
+      });
+    })
+    .catch(function(error) { console.warn('recordMarkdownSave: ' + error.message); });
+}
+window.recordMarkdownSave = recordMarkdownSave;
+// Shows a loadMarkdown div's file again, keeping its Edit menu.
+function _mdRerender(el) {
+  var load = el._mdLoad;
+  Array.prototype.slice.call(el.childNodes).forEach(function(node) {
+    if (!(node.classList && (node.classList.contains('md-edit-menu') || node.classList.contains('md-edit-choice')))) node.remove();
+  });
+  loadMarkdown(load.pagePath, el.id, load.target, 1, load.callback);
+}
+
 // The text of a Markdown file. The signed-in visitor's own content repo (content-repo.js's copy of
 // DesktopFolders/content) may be private, which raw.githubusercontent.com won't serve, so a raw URL
 // in that repo is read through the GitHub API with their token. Only that repo gets the token.
@@ -6780,9 +6847,14 @@ function _attachMarkdownEditMenu(pagePath, divID, options) {
         setTimeout(openWhenReady, 0); // After the item's click handler below is attached
     }
 
-    // Closes the editor opened below this content, bringing the formatted content back.
+    // Closes the editor opened below this content, bringing the formatted content back. However it was
+    // saved (Save, Save Change, Ctrl+S), the file is read back from GitHub, and shown with a note
+    // until the page's copy of the file has it (recordMarkdownSave).
+    var savedCopy = null;
     function closeEditor() {
         if (_mdEditOpen && _mdEditOpen.container === container) _mdEditOpen = null;
+        if (savedCopy) recordMarkdownSave(pagePath, savedCopy.fork, savedCopy.branch, savedCopy.path);
+        savedCopy = null;
         window.closeCMS();
         container.classList.remove('md-editing');
         var openChoice = container.querySelector('.md-edit-choice');
@@ -6853,6 +6925,9 @@ function _attachMarkdownEditMenu(pagePath, divID, options) {
                 return;
             }
             _mdEditOpen = { container: container, close: closeEditor };
+            // Editing the copy this page shows (the file's own repo and branch): closing checks it for saves.
+            savedCopy = (file && fork.toLowerCase() === file.repo.toLowerCase() && branch === file.branch)
+                ? { fork: fork, branch: branch, path: file.path } : null;
             // The editor replaces the formatted content, which returns on Close Editor.
             container.classList.add('md-editing');
             if (options.buttonText) trigger.textContent = 'Close Editor';
@@ -7061,6 +7136,12 @@ function defineLaunchCMS() {
             + ' #nc-root.nc-hide-editor-toolbar .content-editor .pane[data-mode="edit"] section.field[role="group"]:has(> header) { padding-top: 0; }'
             + ' #nc-root.nc-hide-editor-toolbar .content-editor .pane[data-mode="edit"] section.field[role="group"] > header { visibility: hidden; position: absolute; top: 0; right: 0; margin: 0; }'
             + ' #nc-root .nc-field-menu-copy { display: flex; justify-content: center; }'
+            // The text editor's Markdown switch reads "View Markdown" or "View Formatted" in place of its icon,
+            // first in the toolbar, with the pressed (active) background in both modes (addCmsMarkdownLabel).
+            + ' #nc-root button.nc-markdown-mode { order: -1; width: auto; padding: 0 10px; background-color: var(--sui-selected-background-color); }'
+            + ' #nc-root button.nc-markdown-mode .sui.icon { display: none; }'
+            + ' #nc-root button.nc-markdown-mode::after { content: "View Markdown"; font-size: var(--sui-font-size-default); white-space: nowrap; }'
+            + ' #nc-root button.nc-markdown-mode[aria-pressed="true"]::after { content: "View Formatted"; }'
             // The one-file editor's background (grey, around the text area and behind the sidebar's icons)
             // matches the text area. Transparent would show Sveltia's grey app page under the editor.
             + ' #nc-root.nc-hide-editor-toolbar .content-editor:has(.nc-save-copy) { background-color: var(--sui-primary-background-color); }'
@@ -7288,6 +7369,30 @@ function defineLaunchCMS() {
                 });
             });
         }).observe(ncRoot, { childList: true, subtree: true, characterData: true });
+    }
+
+    // Sveltia's text editor switches to Markdown with an icon-only button ("Edit in Markdown"), which
+    // has no setting for a label. It's found by its markdown icon, which doesn't vary with the language,
+    // and marked so it reads "View Markdown", or "View Formatted" while the Markdown shows (aria-pressed),
+    // first in the toolbar (injectInlineCmsStyles). Its title matches.
+    function addCmsMarkdownLabel(ncRoot) {
+        if (ncRoot.dataset.markdownLabel) return;
+        ncRoot.dataset.markdownLabel = 'true';
+        var queued = false;
+        function mark() {
+            queued = false;
+            ncRoot.querySelectorAll('.sui.text-editor [role="toolbar"] button:not(.nc-markdown-mode) .sui.icon').forEach(function(icon) {
+                if (icon.textContent.trim() === 'markdown') icon.closest('button').classList.add('nc-markdown-mode');
+            });
+            ncRoot.querySelectorAll('button.nc-markdown-mode').forEach(function(button) {
+                var title = button.getAttribute('aria-pressed') === 'true' ? 'View Formatted' : 'View Markdown';
+                if (button.title !== title) button.title = title;
+            });
+        }
+        mark();
+        new MutationObserver(function() {
+            if (!queued) { queued = true; window.requestAnimationFrame(mark); }
+        }).observe(ncRoot, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-pressed'] });
     }
 
     // Sveltia UI's app shell adds page-wide styles to <head>: link colors and underlines (its
@@ -7557,6 +7662,7 @@ function defineLaunchCMS() {
         addCmsFieldMenuCopy(ncRoot);
         addCmsAutoHeight(ncRoot);
         addCmsTextOverrides(ncRoot);
+        addCmsMarkdownLabel(ncRoot);
 
         // A height dragged by the user is kept when the editor is opened again.
         if (!ncRoot.dataset.resized) {
@@ -7589,6 +7695,7 @@ function defineLaunchCMS() {
     // What the Save copy below the fields calls once a save finishes, from launchCMS({closeOnSave:true}):
     // options.onClose (the page's own close steps), else closeCMS. null when the editor stays open.
     var cmsAfterSave = null;
+
 
     // The open entry's toolbar Save button when it has changes to save (Sveltia enables it only then), else null.
     function cmsPendingSave() {

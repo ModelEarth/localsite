@@ -10,7 +10,8 @@
  <script>
 // #readmeDiv loads in loadContentReadme() below, once content-repo.js knows whose content to show.
 // The file the "Edit README" button edits
-loadMarkdown("https://raw.githubusercontent.com/ModelEarth/localsite/refs/heads/main/edit/README.md", "editReadmeDiv", "_parent");
+var EDIT_README_SRC = "https://raw.githubusercontent.com/ModelEarth/localsite/refs/heads/main/edit/README.md";
+loadMarkdown(EDIT_README_SRC, "editReadmeDiv", "_parent");
 </script>
     <script type="text/javascript" src="/localsite/js/content-repo.js"></script>
     <style>
@@ -260,6 +261,8 @@ loadMarkdown("https://raw.githubusercontent.com/ModelEarth/localsite/refs/heads/
           return chooseReadmeBranch(status);
         }).then(function(where) {
           showReadmeEditing(status, where);
+          // Editing the displayed copy (ModelEarth/localsite main): closing shows saves in #editReadmeDiv.
+          readmeSavedCopy = (where.repo.toLowerCase() === README_REPO.toLowerCase() && where.branch === README_BRANCH) ? where : null;
           var config = Object.assign({}, readmeEditorConfig, {
             backend: Object.assign({}, readmeEditorConfig.backend, { repo: where.repo, branch: where.branch })
           });
@@ -306,7 +309,12 @@ loadMarkdown("https://raw.githubusercontent.com/ModelEarth/localsite/refs/heads/
       ncRoot.after(close);
     }
 
+    // A README save shows in #editReadmeDiv right away, with a note until GitHub's copy has it.
+    var readmeSavedCopy = null;
     function closeEditor(name) {
+      if (name === 'readme' && readmeSavedCopy) {
+        recordMarkdownSave(EDIT_README_SRC, readmeSavedCopy.repo, readmeSavedCopy.branch, 'edit/README.md');
+      }
       closeCMS();
       updateHash({}, true, 'editor'); // closeCMS restores the page's hash; a reload then leaves the editor closed
       setEditorButton(name, false);

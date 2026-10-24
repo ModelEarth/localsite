@@ -239,11 +239,12 @@
 
     // A file's contents through the API with the visitor's token, so files in a private repo
     // load too (raw.githubusercontent.com only serves public ones). Resolves with a Blob.
-    function readFile(fullName, path) {
+    // fetchOptions, e.g. { cache: 'no-store' } to read a file just saved (GitHub's API caches for 60 seconds).
+    function readFile(fullName, path, fetchOptions) {
         var headers = { Accept: 'application/vnd.github.raw' };
         var token = getToken();
         if (token) headers.Authorization = 'Bearer ' + token;
-        return fetch(API + '/repos/' + fullName + '/contents/' + path, { headers: headers }).then(function(response) {
+        return fetch(API + '/repos/' + fullName + '/contents/' + path, Object.assign({ headers: headers }, fetchOptions)).then(function(response) {
             if (!response.ok) throw new Error('GitHub: ' + response.status + ' for ' + path);
             return response.blob();
         });
