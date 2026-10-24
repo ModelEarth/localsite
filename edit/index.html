@@ -262,7 +262,8 @@ loadMarkdown("https://raw.githubusercontent.com/ModelEarth/localsite/refs/heads/
           var config = Object.assign({}, readmeEditorConfig, {
             backend: Object.assign({}, readmeEditorConfig.backend, { repo: where.repo, branch: where.branch })
           });
-          return { inline: true, target: '#editReadmeBtn', config: config, route: '#/collections/edit/entries/readme', hideEditorToolbar: true };
+          return { inline: true, target: '#editReadmeBtn', config: config, route: '#/collections/edit/entries/readme', hideEditorToolbar: true,
+            closeOnSave: true, onClose: function() { closeEditor('readme'); } };
         }).catch(function(err) {
           showSignInError(status, err);
           return null;
@@ -304,15 +305,17 @@ loadMarkdown("https://raw.githubusercontent.com/ModelEarth/localsite/refs/heads/
       ncRoot.after(close);
     }
 
+    function closeEditor(name) {
+      closeCMS();
+      updateHash({}, true, 'editor'); // closeCMS restores the page's hash; a reload then leaves the editor closed
+      setEditorButton(name, false);
+    }
+
     function openEditor(name) {
       if (!editorLaunchOptions[name]) return;
       if (activeEditor === name && window.isCmsOpen && isCmsOpen(editorTargets[name])) {
         // With changes to save, asks "Save Change" / "Not Yet" first.
-        closeCMSAsking(document.getElementById('closeEditorBtn'), function() {
-          closeCMS();
-          updateHash({}, true, 'editor'); // closeCMS restores the page's hash; a reload then leaves the editor closed
-          setEditorButton(name, false);
-        });
+        closeCMSAsking(document.getElementById('closeEditorBtn'), function() { closeEditor(name); });
         return;
       }
       // Sveltia CMS runs one config per page load, so switching editors reloads with #editor=name.

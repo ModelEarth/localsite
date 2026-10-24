@@ -6719,10 +6719,12 @@ function _attachMarkdownEditMenu(pagePath, divID, options) {
                 ghFile = { repo: raw[0] + '/' + raw[1], branch: rawBranch, path: rawPath };
             }
         } else {
-            var repoName = location.pathname.replace(/^\//, '').split('/')[0];
-            var pageDir  = location.pathname.replace(/^\/[^\/]+\//, '').replace(/[^\/]+\.[^\/]+$/, '').replace(/\/$/, '');
-            var filename = p.split('/').pop();
-            var filePath = (pageDir ? pageDir + '/' : '') + filename;
+            // pagePath resolved against the page, keeping its folders (bios/bios.md) and any ../, e.g.
+            // /cv/bios/bios.md: the first folder is the repo, and the rest is the file's path in it.
+            var fileUrl  = new URL(p, location.href);
+            var parts    = decodeURIComponent(fileUrl.pathname).replace(/^\//, '').split('/');
+            var repoName = (fileUrl.origin === location.origin && parts.length > 1) ? parts[0] : '';
+            var filePath = parts.slice(1).join('/');
             if (repoName) {
                 ghUrl = 'https://github.com/' + ghAccount + '/' + repoName
                     + (filePath ? '/blob/main/' + filePath : '');
@@ -6804,7 +6806,8 @@ function _attachMarkdownEditMenu(pagePath, divID, options) {
                     if (siteTitle) config.app_title = siteTitle + ' CMS';
                     // Open this file's editor directly rather than the collection list.
                     launchCMS({inline:true, target:container, heightRatio:0.5, extraHeight:220, configUrl:window.SITE_CONFIG_PATH, config:config,
-                        route: file ? '#/collections/page/entries/markdown' : undefined, hideEditorToolbar: !!file});
+                        route: file ? '#/collections/page/entries/markdown' : undefined, hideEditorToolbar: !!file,
+                        closeOnSave: !!file, onClose: closeEditor});
                 });
             });
         }
@@ -7156,7 +7159,15 @@ function defineLaunchCMS() {
             copy.setAttribute('aria-disabled', original.getAttribute('aria-disabled') || 'false');
         }
         copy.addEventListener('click', function() {
-            if (original && original.isConnected && !original.disabled) original.click();
+            if (!original || !original.isConnected || original.disabled) return;
+            var save = original;
+            var afterSave = cmsAfterSave;
+            save.click();
+            // launchCMS({closeOnSave:true}): once saved, the editor closes, rather than showing Sveltia's
+            // view of the saved entry.
+            if (afterSave) {
+                whenCmsSaved(save).then(function(saved) { if (saved) afterSave(); });
+            }
         });
         var wrap = document.createElement('div');
         wrap.className = 'nc-save-copy';
@@ -7280,6 +7291,10 @@ function defineLaunchCMS() {
     // address bar while the CMS is open. closeCMS puts it back.
     var cmsPageHash = '';
 
+    // What the Save copy below the fields calls once a save finishes, from launchCMS({closeOnSave:true}):
+    // options.onClose (the page's own close steps), else closeCMS. null when the editor stays open.
+    var cmsAfterSave = null;
+
     // The open entry's toolbar Save button when it has changes to save (Sveltia enables it only then), else null.
     function cmsPendingSave() {
         var save = document.querySelector('#nc-root .content-editor > .sui.toolbar button[aria-keyshortcuts$="+S"]');
@@ -7386,6 +7401,7 @@ function defineLaunchCMS() {
         if (inline) {
             prepareInlineCmsRoot(options.target, options.heightRatio, options.extraHeight);
             document.getElementById('nc-root').classList.toggle('nc-hide-editor-toolbar', !!options.hideEditorToolbar);
+            cmsAfterSave = options.closeOnSave ? (options.onClose || window.closeCMS) : null;
         } else {
             prepareFullPageCmsRoot();
         }
