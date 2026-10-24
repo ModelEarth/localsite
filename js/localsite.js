@@ -7121,6 +7121,16 @@ function defineLaunchCMS() {
             // expecting the full-window editor to cover it. With the editor inline, hide it instead.
             + ' #nc-root .toolbar-wrapper[inert] > .sui.toolbar { display: none; }'
             + ' #nc-root .nc-save-copy { margin: 12px 0 4px 14px; }'
+            // Sveltia draws a divider under each field but the last; the Save copy follows the last field.
+            + ' #nc-root section:has(+ .nc-save-copy)::after { display: none; }'
+            // Comments in the formatted view, hidden until "Show Comments" (addCmsCommentToggle).
+            + ' #nc-root:not(.nc-show-comments) .lexical-root > .nc-md-comment { display: none; }'
+            + ' #nc-root .lexical-root > .nc-md-comment { opacity: .6; }'
+            + ' #nc-root:not(.nc-show-comments) .lexical-root .nc-md-comment-line { display: none; }'
+            + ' #nc-root .lexical-root .nc-md-comment-line { opacity: .6; }'
+            + ' ::highlight(nc-comment-hidden) { color: transparent; }'
+            + ' ::highlight(nc-comment-shown) { color: GrayText; }'
+            + ' #nc-root button.nc-comment-toggle { order: 1; margin-inline-start: auto; width: auto; padding: 0 10px; font-size: var(--sui-font-size-default); white-space: nowrap; }'
             // Once its copy is below the fields, the toolbar's own Save button is hidden.
             + ' #nc-root .content-editor:has(.nc-save-copy) > .sui.toolbar button[aria-keyshortcuts$="+S"] { display: none; }'
             // launchCMS({hideEditorToolbar:true}): a one-file editor drops the entry's top toolbar (back arrow,
@@ -7161,8 +7171,6 @@ function defineLaunchCMS() {
             // A one-file editor's drag bar is on the text box's bottom edge instead (addCmsTextResizeHandle).
             + ' #nc-root:has(.nc-text-resize-handle) > .nc-resize-handle { display: none; }'
             + ' #nc-root .nc-text-resize-handle { position: relative; z-index: 1; height: 12px; margin-top: -12px; cursor: ns-resize; touch-action: none; }'
-            + ' #nc-root .nc-text-resize-handle::after { content: ""; position: absolute; left: 50%; top: 4px; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: currentColor; opacity: .3; }'
-            + ' #nc-root .nc-text-resize-handle:hover::after, #nc-root .nc-text-resize-handle:focus-visible::after { opacity: .6; }'
             + ' #nc-root:has(.wrapper[role="group"]:not(.content-editor)) { z-index: 10200; }'
             // Entry fields fill their pane. Sveltia caps them at 768px and centers them, which left
             // blank space on their left in a wide page.
@@ -7393,6 +7401,246 @@ function defineLaunchCMS() {
         new MutationObserver(function() {
             if (!queued) { queued = true; window.requestAnimationFrame(mark); }
         }).observe(ncRoot, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-pressed'] });
+    }
+
+    // Sveltia keeps HTML comments (<!-- -->) in Markdown as text, so they're saved unchanged, but the
+    // formatted view shows them. A block that is only comment text (a paragraph, or a run of blocks from
+    // <!-- to -->) is marked nc-md-comment and hidden there. Within a paragraph that also has other text,
+    // a line that is only comment text (with the line break before it) is marked nc-md-comment-line and
+    // hidden, and a comment sharing a line with text is made invisible with a CSS highlight. A block just
+    // typed in is left as is (Sveltia places the cursor at the start when the editor opens, so only
+    // typing counts). When there are any, a "Show Comments" button at the far right of the text editor's
+    // toolbar shows them, as "Hide Comments" hides them again. It takes the classes of that toolbar's
+    // "View Markdown" (addCmsMarkdownLabel), for its look.
+    // Hidden comments are still in the text, so an edit that would remove or merge into one unseen
+    // (deleting, cutting, typing or pasting over a selection that spans one, or Backspace or Delete
+    // next to one) is stopped, and the comments are shown instead.
+    function addCmsCommentToggle(ncRoot) {
+        if (ncRoot.dataset.commentToggle) return;
+        ncRoot.dataset.commentToggle = 'true';
+        var toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'nc-comment-toggle';
+        toggle.addEventListener('click', function() {
+            ncRoot.classList.toggle('nc-show-comments');
+            label();
+            queue();
+        });
+        function label() {
+            toggle.textContent = ncRoot.classList.contains('nc-show-comments') ? 'Hide Comments' : 'Show Comments';
+        }
+        label();
+        var queued = false;
+        // The block typed in last, kept until the cursor moves to another block.
+        var typedBlock = null;
+        function cursorBlock() {
+            var selection = document.getSelection();
+            var node = selection && selection.anchorNode;
+            var el = node && (node.nodeType === 1 ? node : node.parentElement);
+            return el && ncRoot.contains(el) ? el.closest('.lexical-root > *') : null;
+        }
+        ncRoot.addEventListener('input', function() { typedBlock = cursorBlock(); }, true);
+        // The comment spans in text (as [start, end] offsets), continuing a comment if open, and whether
+        // the text is only comment text.
+        function scanComments(text, open) {
+            var spans = [], pos = 0, rest = '', openAtStart = open;
+            while (pos < text.length) {
+                if (open) {
+                    var end = text.indexOf('-->', pos);
+                    var stop = end < 0 ? text.length : end + 3;
+                    spans.push([pos, stop]);
+                    pos = stop;
+                    open = end < 0;
+                } else {
+                    var start = text.indexOf('<!--', pos);
+                    if (start < 0) { rest += text.slice(pos); break; }
+                    rest += text.slice(pos, start);
+                    pos = start;
+                    open = true;
+                }
+            }
+            return { spans: spans, open: open, whole: (spans.length > 0 || openAtStart) && !rest.trim() };
+        }
+        // DOM ranges for offsets in the text of nodes, read in order.
+        function textRanges(nodes, spans) {
+            var texts = [];
+            nodes.forEach(function(node) {
+                if (node.nodeType === 3) { texts.push(node); return; }
+                var walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+                while (walker.nextNode()) texts.push(walker.currentNode);
+            });
+            function point(offset, atEnd) {
+                for (var i = 0; i < texts.length; i++) {
+                    var length = texts[i].data.length;
+                    if (offset < length || (offset === length && (atEnd || i === texts.length - 1))) return [texts[i], offset];
+                    offset -= length;
+                }
+                return null;
+            }
+            return spans.map(function(span) {
+                var start = point(span[0], false), end = point(span[1], true);
+                if (!start || !end) return null;
+                var range = new Range();
+                range.setStart(start[0], start[1]);
+                range.setEnd(end[0], end[1]);
+                return range;
+            }).filter(Boolean);
+        }
+        function setClass(el, name, on) {
+            if (el.classList.contains(name) !== on) el.classList.toggle(name, on);
+        }
+        // Comments sharing a line with text, while hidden (reachesHiddenComment).
+        var hiddenRanges = [];
+        function mark() {
+            queued = false;
+            var current = cursorBlock();
+            if (typedBlock && current !== typedBlock) typedBlock = null;
+            var found = false;
+            var inline = [];
+            ncRoot.querySelectorAll('.lexical-root').forEach(function(root) {
+                var open = false;
+                Array.prototype.forEach.call(root.children, function(block) {
+                    var hideLines = [];
+                    var whole = false;
+                    // A paragraph's lines, split at its line breaks: [br before the line, nodes on it].
+                    var lines = [{ br: null, nodes: [] }];
+                    if (block.localName === 'p') {
+                        Array.prototype.forEach.call(block.childNodes, function(node) {
+                            if (node.nodeName === 'BR') lines.push({ br: node, nodes: [] });
+                            else lines[lines.length - 1].nodes.push(node);
+                        });
+                    } else {
+                        lines[0].nodes = [block];
+                    }
+                    var spansFound = false;
+                    var results = lines.map(function(line) {
+                        var result = scanComments(line.nodes.map(function(node) { return node.textContent; }).join(''), open);
+                        open = result.open;
+                        if (result.spans.length || result.whole) spansFound = true;
+                        return result;
+                    });
+                    if (block === typedBlock || !spansFound) {
+                        // Left as is
+                    } else if (results.every(function(result) { return result.whole; })) {
+                        whole = true;
+                    } else {
+                        var shownBefore = false;
+                        lines.forEach(function(line, i) {
+                            var result = results[i];
+                            var elementsOnly = line.nodes.length && line.nodes.every(function(node) { return node.nodeType === 1; });
+                            if (block.localName === 'p' && result.whole && elementsOnly) {
+                                hideLines.push.apply(hideLines, line.nodes);
+                                if (line.br) hideLines.push(line.br);
+                            } else {
+                                // The first line shown loses its line break when every line before it is hidden.
+                                if (!shownBefore && line.br) hideLines.push(line.br);
+                                shownBefore = true;
+                                inline.push.apply(inline, textRanges(line.nodes, result.spans));
+                            }
+                        });
+                    }
+                    if (whole || hideLines.length || inline.length) found = true;
+                    setClass(block, 'nc-md-comment', whole);
+                    block.querySelectorAll('.nc-md-comment-line').forEach(function(el) {
+                        if (hideLines.indexOf(el) < 0) setClass(el, 'nc-md-comment-line', false);
+                    });
+                    hideLines.forEach(function(el) { setClass(el, 'nc-md-comment-line', true); });
+                });
+            });
+            var shown = ncRoot.classList.contains('nc-show-comments');
+            hiddenRanges = shown ? [] : inline;
+            if (window.CSS && CSS.highlights && window.Highlight) {
+                var highlight = new Highlight();
+                inline.forEach(function(range) { highlight.add(range); });
+                CSS.highlights.set(shown ? 'nc-comment-shown' : 'nc-comment-hidden', highlight);
+                CSS.highlights.delete(shown ? 'nc-comment-hidden' : 'nc-comment-shown');
+            }
+            var markdown = ncRoot.querySelector('button.nc-markdown-mode');
+            var formatted = ncRoot.querySelector('.lexical-root');
+            if (found && markdown && formatted && formatted.offsetHeight > 0) {
+                var className = markdown.className.replace('nc-markdown-mode', 'nc-comment-toggle');
+                if (toggle.className !== className) toggle.className = className;
+                // Appended after Sveltia's buttons, at the far right.
+                if (toggle.parentElement !== markdown.parentElement) markdown.parentElement.appendChild(toggle);
+            } else {
+                toggle.remove();
+            }
+        }
+        function queue() {
+            if (!queued) { queued = true; window.requestAnimationFrame(mark); }
+        }
+        new MutationObserver(queue).observe(ncRoot, { childList: true, subtree: true, characterData: true });
+        document.addEventListener('selectionchange', queue);
+
+        function hiddenComment(block) {
+            return block && block.classList.contains('nc-md-comment') && !ncRoot.classList.contains('nc-show-comments');
+        }
+        function textBetween(startNode, startOffset, endNode, endOffset) {
+            var range = new Range();
+            range.setStart(startNode, startOffset);
+            range.setEnd(endNode, endOffset);
+            return range.toString();
+        }
+        // Whether ranges a and b share any text.
+        function overlaps(a, b) {
+            var later = a.compareBoundaryPoints(Range.START_TO_START, b) > 0 ? a : b;
+            var earlier = a.compareBoundaryPoints(Range.END_TO_END, b) < 0 ? a : b;
+            if (later.compareBoundaryPoints(Range.START_TO_END, earlier) >= 0) return false;
+            return textBetween(later.startContainer, later.startOffset, earlier.endContainer, earlier.endOffset).length > 0;
+        }
+        // Whether the edit (Backspace = 'back', Delete = 'forward', else typing or replacing the selection)
+        // would reach a hidden comment.
+        function reachesHiddenComment(direction) {
+            var selection = document.getSelection();
+            if (!selection || !selection.rangeCount) return false;
+            var range = selection.getRangeAt(0);
+            var root = range.startContainer.parentElement && range.startContainer.parentElement.closest('.lexical-root');
+            if (!root || !ncRoot.contains(root) || ncRoot.classList.contains('nc-show-comments')) return false;
+            if (!range.collapsed) {
+                return Array.prototype.some.call(root.querySelectorAll('.nc-md-comment, .nc-md-comment-line'), function(el) {
+                    return range.intersectsNode(el);
+                }) || hiddenRanges.some(function(hidden) { return overlaps(range, hidden); });
+            }
+            // A cursor in or beside an invisible comment on a line: Backspace with comment text before it,
+            // Delete with comment text after it, or typing inside it.
+            var node = range.startContainer, offset = range.startOffset;
+            var inComment = hiddenRanges.some(function(hidden) {
+                try { if (hidden.comparePoint(node, offset) !== 0) return false; } catch (e) { return false; }
+                var before = textBetween(hidden.startContainer, hidden.startOffset, node, offset).length;
+                var after = textBetween(node, offset, hidden.endContainer, hidden.endOffset).length;
+                return direction === 'back' ? before > 0 : direction === 'forward' ? after > 0 : before > 0 && after > 0;
+            });
+            if (inComment) return true;
+            if (!direction) return false;
+            var block = range.startContainer.nodeType === 1 && range.startContainer.parentElement === root
+                ? range.startContainer : range.startContainer.parentElement.closest('.lexical-root > *');
+            if (!block) return false;
+            // At the block's start (Backspace) or end (Delete), the edit merges with the block beside it.
+            var edge = document.createRange();
+            edge.selectNodeContents(block);
+            if (direction === 'back') edge.setEnd(range.startContainer, range.startOffset);
+            else edge.setStart(range.startContainer, range.startOffset);
+            if (edge.toString().length) return false;
+            return hiddenComment(direction === 'back' ? block.previousElementSibling : block.nextElementSibling);
+        }
+        function protect(e, direction) {
+            if (!reachesHiddenComment(direction)) return;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            ncRoot.classList.add('nc-show-comments');
+            label();
+        }
+        ncRoot.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace') protect(e, 'back');
+            else if (e.key === 'Delete') protect(e, 'forward');
+            else if (e.key === 'Enter' || (e.key.length === 1 && !e.metaKey && !e.ctrlKey)) protect(e);
+        }, true);
+        ['beforeinput', 'cut', 'paste', 'drop'].forEach(function(type) {
+            ncRoot.addEventListener(type, function(e) {
+                var input = type === 'beforeinput' ? e.inputType : '';
+                protect(e, /Backward/.test(input) ? 'back' : /Forward/.test(input) ? 'forward' : null);
+            }, true);
+        });
     }
 
     // Sveltia UI's app shell adds page-wide styles to <head>: link colors and underlines (its
@@ -7663,6 +7911,7 @@ function defineLaunchCMS() {
         addCmsAutoHeight(ncRoot);
         addCmsTextOverrides(ncRoot);
         addCmsMarkdownLabel(ncRoot);
+        addCmsCommentToggle(ncRoot);
 
         // A height dragged by the user is kept when the editor is opened again.
         if (!ncRoot.dataset.resized) {
