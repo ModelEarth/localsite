@@ -198,7 +198,8 @@ loadMarkdown("https://raw.githubusercontent.com/ModelEarth/localsite/refs/heads/
       load_config_file: false,
       app_title: 'Content Tools',
       logo: { src: '/localsite/img/icon/edit/content-tools.svg' },
-      backend: { name: 'github', repo: README_REPO, branch: README_BRANCH },
+      // Saving asks for an optional note, added after Sveltia's commit message.
+      backend: { name: 'github', repo: README_REPO, branch: README_BRANCH, prompt_commit_messages: 'suffix' },
       media_folder: 'edit/img',
       collections: [{
         name: 'edit',
@@ -218,7 +219,7 @@ loadMarkdown("https://raw.githubusercontent.com/ModelEarth/localsite/refs/heads/
         load_config_file: false,
         app_title: 'Content Tools',
         logo: { src: '/localsite/img/icon/edit/content-tools.svg' },
-        backend: { name: 'github', repo: fork, branch: 'main' },
+        backend: { name: 'github', repo: fork, branch: 'main', prompt_commit_messages: 'suffix' },
         media_folder: 'img',
         public_folder: '/img',
         collections: [{

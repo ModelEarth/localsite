@@ -6611,7 +6611,7 @@ function _injectMdEditorStyles() {
         + '.md-editing:has(>.md-edit-menu>.btn)>.md-edit-choice{padding-right:100px}'
         + '.dark .md-edit-choice{background:#333;color:#eee}'
         + '.dark .md-edit-choice button{background:#444;border-color:#555;color:#eee}'
-        + '.md-edit-dropdown{display:none;position:fixed;background:#fff;border:1px solid #e5e7eb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.12);min-width:140px;overflow:hidden;z-index:9999}'
+        + '.md-edit-dropdown{display:none;position:fixed;background:#fff;border:1px solid #e5e7eb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.12);min-width:140px;overflow:hidden;z-index:100000}'
         + '.md-edit-item{padding:9px 16px;cursor:pointer;font-size:13px;color:#374151}'
         + '.md-edit-item:hover{background:#f9fafb}'
         + '.dark .md-edit-trigger{background:rgba(60,60,60,.92);border-color:#555;color:#eee}'
@@ -6658,7 +6658,8 @@ function _markdownFileCmsConfig(file, fork) {
     var dir = file.path.indexOf('/') >= 0 ? file.path.replace(/\/[^\/]+$/, '') : '';
     return {
         load_config_file: false,
-        backend: { name: 'github', repo: fork, branch: file.branch },
+        // Saving asks for an optional note, added after Sveltia's commit message.
+        backend: { name: 'github', repo: fork, branch: file.branch, prompt_commit_messages: 'suffix' },
         media_folder: dir ? dir + '/img' : 'img',
         collections: [{
             name: 'page',
@@ -6737,8 +6738,10 @@ function _attachMarkdownEditMenu(pagePath, divID, options) {
     dropdown.appendChild(item);
     dropdown.appendChild(ghItem);
     menu.appendChild(trigger);
-    menu.appendChild(dropdown);
     container.appendChild(menu);
+    // In <body> rather than the menu, whose z-index (10) would let the open editor below cover it.
+    // Fixed position, placed from the trigger when opened.
+    document.body.appendChild(dropdown);
 
     // Closes the editor opened below this content, bringing the formatted content back.
     function closeEditor() {
@@ -6768,7 +6771,10 @@ function _attachMarkdownEditMenu(pagePath, divID, options) {
             dropdown.style.display = 'block';
         }
     });
-    document.addEventListener('click', function() { dropdown.style.display = 'none'; });
+    document.addEventListener('click', function() {
+        dropdown.style.display = 'none';
+        if (!menu.isConnected) dropdown.remove(); // its content was cleared, e.g. switching themes
+    });
     item.addEventListener('click', function() {
         dropdown.style.display = 'none';
         // Open the GitHub sign-in popup right away (before any async step, so it isn't blocked),
@@ -6991,8 +6997,8 @@ function defineLaunchCMS() {
             // launchCMS({hideEditorToolbar:true}): a one-file editor drops the entry's top toolbar (back arrow,
             // "Page › file" title, Save and options menu). The Save copy below the fields clicks its hidden Save.
             + ' #nc-root.nc-hide-editor-toolbar .content-editor:has(.nc-save-copy) > .sui.toolbar.primary { display: none; }'
-            // It also hides the field's "Body*" header. Its options button stays in place, invisible, so the
-            // menu opens beside the field; a copy above the sidebar's History icon clicks it (addCmsFieldMenuCopy).
+            // It also hides the field's "Body*" header. Its options button stays, invisible, for a copy above the
+            // sidebar's History icon to click; the menu opens below the copy (addCmsFieldMenuCopy).
             // The header leaves the layout (absolute, at the field's top right where the menu anchors), and
             // the field's top padding goes too, so no space is left above the text box.
             + ' #nc-root.nc-hide-editor-toolbar .content-editor:has(.nc-field-menu-copy) .pane[data-mode="edit"] section.field[role="group"]:has(> header) { padding-top: 0; }'
@@ -7001,7 +7007,7 @@ function defineLaunchCMS() {
             + ' #nc-root .nc-field-menu-copy > button { width: 40px; height: 40px; }'
             + ' #nc-root .nc-field-menu-copy .sui.icon { font-size: 30px; }'
             // closeCMSAsking's "Save Change" / "Not Yet" menu uses the Edit menu's dropdown styles (_injectMdEditorStyles).
-            + ' .md-edit-dropdown.nc-close-menu { display: block; z-index: 10000; font-family: system-ui, sans-serif; }'
+            + ' .md-edit-dropdown.nc-close-menu { display: block; font-family: system-ui, sans-serif; }'
             // and the sidebar icons that don't apply to the file (greyed out), e.g. Slug and Backlinks.
             + ' #nc-root.nc-hide-editor-toolbar .sidebar .tabs > .inner > [role="radio"][aria-disabled="true"] { display: none; }'
             // The app shell stops above the resize bar along the bottom of #nc-root.
@@ -7073,7 +7079,7 @@ function defineLaunchCMS() {
 
     // With launchCMS({hideEditorToolbar:true}), copies the first field's options button (the ⋮ beside
     // "Body") to the top of the sidebar's icons, above History. The field's header is hidden, so the
-    // copy clicks the original, whose menu opens beside the field.
+    // copy moves the original (still invisible) onto itself and clicks it, and the menu opens below the copy.
     function addCmsFieldMenuCopy(ncRoot) {
         if (ncRoot.dataset.fieldMenuCopy) return;
         ncRoot.dataset.fieldMenuCopy = 'true';
@@ -7091,7 +7097,16 @@ function defineLaunchCMS() {
         }
         copy.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (original && original.isConnected && !original.disabled) original.click();
+            if (!original || !original.isConnected || original.disabled) return;
+            // The menu opens beside the button it belongs to, so the hidden original is moved onto
+            // the copy first. Otherwise an open History panel would sit between the copy and the menu.
+            var rect = copy.getBoundingClientRect();
+            original.style.position = 'fixed';
+            original.style.top = rect.top + 'px';
+            original.style.left = rect.left + 'px';
+            original.style.width = rect.width + 'px';
+            original.style.height = rect.height + 'px';
+            original.click();
         });
         var wrap = document.createElement('div');
         wrap.className = 'nc-field-menu-copy';
@@ -7302,7 +7317,9 @@ function defineLaunchCMS() {
     }
 
     // Resolves true once a save started by clicking save finishes (the button turns disabled with
-    // no save in progress), or false if it fails (the button turns enabled again) or takes over a minute.
+    // no save in progress), or false if it fails (the button turns enabled again), is cancelled in
+    // the Commit Message dialog (prompt_commit_messages), or takes over a minute. Time spent in that
+    // dialog (a modal <dialog>) doesn't count.
     function whenCmsSaved(save) {
         return new Promise(function(resolve) {
             var started = Date.now(), wasDisabled = false;
@@ -7310,9 +7327,17 @@ function defineLaunchCMS() {
                 var progress = document.querySelector('#nc-root .content-editor .save-progress');
                 var busy = !!progress && !!progress.textContent.trim();
                 if (!save.isConnected) return resolve(true);
+                if (document.querySelector('dialog[open]')) {
+                    started = Date.now();
+                    setTimeout(check, 250);
+                    return;
+                }
                 if (save.disabled) wasDisabled = true;
                 if (save.disabled && !busy && Date.now() - started > 400) return resolve(true);
-                if ((wasDisabled && !save.disabled) || Date.now() - started > 60000) return resolve(false);
+                if (wasDisabled && !save.disabled) return resolve(false);
+                // Still enabled well after the click or the dialog closing: the dialog was cancelled.
+                if (!wasDisabled && Date.now() - started > 1500) return resolve(false);
+                if (Date.now() - started > 60000) return resolve(false);
                 setTimeout(check, 250);
             })();
         });
@@ -7366,8 +7391,8 @@ function defineLaunchCMS() {
                     menu.remove();
                     close();
                 } else {
-                    // Sveltia shows the error in the editor, which stays open.
-                    saving.textContent = 'Not saved. See the message in the editor.';
+                    // Cancelled in the Commit Message dialog, or failed (Sveltia shows the error); the editor stays open.
+                    saving.textContent = 'Not saved';
                     setTimeout(menu.remove.bind(menu), 4000);
                 }
             });
