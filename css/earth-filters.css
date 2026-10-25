@@ -1,6 +1,6 @@
 /* Earth Filters: the earth.nullschool.net menu styles, scoped to .earth-filters. Dark mode uses the nullschool colors. */
 .earth-filters {
-  --ef-bg: var(--bg-secondary, #ffffff);
+  --ef-bg: color-mix(in srgb, var(--bg-secondary, #ffffff) 92%, transparent); /* Semi-transparent, so the map shows through */
   --ef-text: var(--text-primary, #1a1a1a);
   --ef-button: #5f6b76;
   --ef-button-hover: #000000;
@@ -10,7 +10,9 @@
   --ef-sep: #bbbbbb;
   --ef-border: var(--border-light, #e5e7eb);
   --ef-shade: rgb(50 50 50 / 0.5);
-  --ef-tabs-bg: var(--bg-secondary, #ffffff);
+  --ef-tabs-bg: var(--bg-tertiary, #e5e7eb); /* Light gray top bar */
+  --ef-menu-bg: var(--bg-secondary, #ffffff);
+  --ef-tab-selected-bg: var(--border-medium, #d1d5db); /* Darker gray than the top bar */
   margin-top: 10px;
   font-size: 15px;
   line-height: 1.5;
@@ -27,6 +29,8 @@
   --ef-border: #42505d;
   --ef-shade: rgb(50 50 50 / 0.7);
   --ef-tabs-bg: rgb(5 10 30); /* Solid, so rows scrolling under the tabs don't show through */
+  --ef-menu-bg: rgb(5 10 30);
+  --ef-tab-selected-bg: #474747;
 }
 .earth-filters [hidden] {
   display: none !important;
@@ -90,7 +94,9 @@
   flex-wrap: wrap;
   column-gap: 0.5rem;
   row-gap: 0.25rem;
-  margin-top: 0.4rem;
+}
+.earth-filters .ef-panel > .ef-last-row {
+  margin-top: calc(0.2rem + 5px); /* 5px more space above the earth.nullschool.net link than between the other rows */
 }
 .earth-filters .ef-tab-panel {
   display: flex;
@@ -235,6 +241,10 @@
   background: var(--ef-tabs-bg);
   border-radius: var(--panel-radius, 16px) var(--panel-radius, 16px) 0 0;
 }
+.earth-filters .ef-tabs-bar [aria-selected="true"] {
+  background: var(--ef-tab-selected-bg);
+  box-shadow: 0 0 0 4px var(--ef-tab-selected-bg); /* Padding around the highlight that doesn't move the other tabs */
+}
 .earth-filters .ef-tabs-bar > .ef-bunch {
   column-gap: 0.25rem;
 }
@@ -266,7 +276,7 @@
   margin-top: 0.25rem;
   padding: 0.25rem;
   min-width: 10rem;
-  background: var(--ef-tabs-bg);
+  background: var(--ef-menu-bg);
   border: 1px solid var(--ef-border);
   border-radius: var(--control-radius, 8px);
   box-shadow: 0 4px 12px rgb(0 0 0 / 0.25);
@@ -327,6 +337,10 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  pointer-events: none; /* Only its filters, corners and modals take the pointer, so parts clipped off the map don't cover the page */
+}
+.earth-filters.ef-over > * {
+  pointer-events: auto;
 }
 .earth-filters.ef-over .ef-menu {
   flex: 1 1 auto;

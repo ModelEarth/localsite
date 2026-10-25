@@ -909,6 +909,7 @@ EarthFilters.prototype.updatePanelMenu = function() {
 var earthFiltersPanelGap = 10; // Default offset from the map's left and bottom edges
 var earthFiltersPanelMinWidth = 220;
 var earthFiltersPanelMinHeight = 120;
+var earthFiltersPanelGrip = 40; // The panel can be dragged off the map's sides and bottom, leaving this much on the map to pick it up again
 
 EarthFilters.prototype.setupMapPanel = function() {
   var self = this;
@@ -1019,10 +1020,22 @@ EarthFilters.prototype.applyMapPanelPlace = function() {
     ['left', 'bottom', 'width', 'height', 'maxHeight'].forEach(function(property) {
       container.style[property] = '';
     });
+    this.clipMapPanel(0, 0, 0);
   }
 };
 
-// Sets the panel's size and its offset from the map's lower left corner, kept inside the map
+// Hides the parts of the panel dragged off the map's right, bottom and left edges, and the corners there.
+// The panel ignores the pointer outside its filters (earth-filters.css), so the clipped parts don't cover the page.
+EarthFilters.prototype.clipMapPanel = function(right, bottom, left) {
+  var menu = this.container.querySelector('.ef-menu');
+  menu.style.clipPath = right || bottom || left ? 'inset(0 ' + right + 'px ' + bottom + 'px ' + left + 'px)' : '';
+  var offMap = {nw: left > 0, ne: right > 0, sw: left > 0 || bottom > 0, se: right > 0 || bottom > 0};
+  this.container.querySelectorAll('.ef-corner').forEach(function(corner) {
+    corner.style.visibility = offMap[corner.getAttribute('data-corner')] ? 'hidden' : '';
+  });
+};
+
+// Sets the panel's size and its offset from the map's lower left corner. Its top stays on the map, and at least earthFiltersPanelGrip of it.
 EarthFilters.prototype.applyMapPanelBox = function() {
   var container = this.container;
   var mapWidth = this.mapContainer.clientWidth;
@@ -1041,8 +1054,11 @@ EarthFilters.prototype.applyMapPanelBox = function() {
     container.style.maxHeight = Math.max(earthFiltersPanelMinHeight, (this.box ? mapHeight - box.bottom : mapHeight - 2 * earthFiltersPanelGap)) + 'px'; // Fits above its bottom edge
   }
   var height = container.offsetHeight;
-  container.style.left = Math.max(0, Math.min(box.left, mapWidth - width)) + 'px';
-  container.style.bottom = Math.max(0, Math.min(box.bottom, mapHeight - height)) + 'px';
+  var left = Math.max(earthFiltersPanelGrip - width, Math.min(box.left, mapWidth - earthFiltersPanelGrip));
+  var bottom = Math.max(earthFiltersPanelGrip - height, Math.min(box.bottom, mapHeight - height));
+  container.style.left = left + 'px';
+  container.style.bottom = bottom + 'px';
+  this.clipMapPanel(Math.max(0, left + width - mapWidth), Math.max(0, -bottom), Math.max(0, -left));
 };
 
 EarthFilters.prototype.startMapPanelDrag = function(event) {
@@ -1073,8 +1089,8 @@ EarthFilters.prototype.startMapPanelDrag = function(event) {
     iframe.style.pointerEvents = 'none';
   });
   container.classList.add('ef-dragging');
-  if (container.setPointerCapture) {
-    container.setPointerCapture(event.pointerId);
+  if (event.target.setPointerCapture) {
+    event.target.setPointerCapture(event.pointerId); // Not the container, which ignores the pointer. The moves bubble up to it.
   }
   event.preventDefault();
 
@@ -1086,17 +1102,19 @@ EarthFilters.prototype.startMapPanelDrag = function(event) {
     var width = start.width;
     var height = start.height;
     if (!cornerName) {
-      left = Math.max(0, Math.min(left + dx, mapWidth - width));
-      top = Math.max(0, Math.min(top + dy, mapHeight - height));
+      // Off the sides and bottom, keeping earthFiltersPanelGrip on the map. The top stays on the map.
+      left = Math.max(earthFiltersPanelGrip - width, Math.min(left + dx, mapWidth - earthFiltersPanelGrip));
+      top = Math.max(0, Math.min(top + dy, mapHeight - earthFiltersPanelGrip));
     } else {
+      // Corners off the map are hidden, so only the corners on the map resize, up to the map's edges
       if (cornerName.charAt(1) === 'e') {
-        width = Math.min(Math.max(earthFiltersPanelMinWidth, start.width + dx), mapWidth - left);
+        width = Math.min(Math.max(earthFiltersPanelMinWidth, start.width + dx), Math.max(start.width, mapWidth - left));
       } else {
-        left = Math.max(0, Math.min(start.left + dx, start.left + start.width - earthFiltersPanelMinWidth));
+        left = Math.max(Math.min(0, start.left), Math.min(start.left + dx, start.left + start.width - earthFiltersPanelMinWidth));
         width = start.left + start.width - left;
       }
       if (cornerName.charAt(0) === 's') {
-        height = Math.min(Math.max(earthFiltersPanelMinHeight, start.height + dy), mapHeight - top);
+        height = Math.min(Math.max(earthFiltersPanelMinHeight, start.height + dy), Math.max(start.height, mapHeight - top));
       } else {
         top = Math.max(0, Math.min(start.top + dy, start.top + start.height - earthFiltersPanelMinHeight));
         height = start.top + start.height - top;
