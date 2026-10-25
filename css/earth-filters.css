@@ -1,0 +1,454 @@
+/* Earth Filters: the earth.nullschool.net menu styles, scoped to .earth-filters. Dark mode uses the nullschool colors. */
+.earth-filters {
+  --ef-bg: var(--bg-secondary, #ffffff);
+  --ef-text: var(--text-primary, #1a1a1a);
+  --ef-button: #5f6b76;
+  --ef-button-hover: #000000;
+  --ef-selected-text: #1d4ed8;
+  --ef-selected-bg: #e3eaf3;
+  --ef-disabled: #c4c9ce;
+  --ef-sep: #bbbbbb;
+  --ef-border: var(--border-light, #e5e7eb);
+  --ef-shade: rgb(50 50 50 / 0.5);
+  --ef-tabs-bg: var(--bg-secondary, #ffffff);
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ef-text);
+}
+.dark .earth-filters, .earth-filters.ef-dark {
+  --ef-bg: rgb(5 10 30 / 0.92);
+  --ef-text: #eeeeee;
+  --ef-button: #979797;
+  --ef-button-hover: #ffffff;
+  --ef-selected-text: #e7ca7a;
+  --ef-selected-bg: #474747;
+  --ef-disabled: #444444;
+  --ef-border: #42505d;
+  --ef-shade: rgb(50 50 50 / 0.7);
+  --ef-tabs-bg: rgb(5 10 30); /* Solid, so rows scrolling under the tabs don't show through */
+}
+.earth-filters [hidden] {
+  display: none !important;
+}
+.earth-filters .ef-menu {
+  container-type: inline-size; /* On the menu only, since a container would also hold the fixed modals inside it */
+}
+.earth-filters .ef-card {
+  padding: 0.5rem 1rem;
+  background-color: var(--ef-bg);
+  border: 1px solid var(--ef-border);
+  border-radius: var(--panel-radius, 16px);
+}
+.earth-filters .ef-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.earth-filters .ef-panel > :not(:first-child) {
+  margin-top: 0.2rem;
+}
+.earth-filters .ef-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.earth-filters .ef-row-label {
+  word-break: keep-all;
+  min-width: 5.5rem;
+}
+.earth-filters .ef-tab-panel .ef-row-label {
+  margin-right: 0.75rem;
+}
+/* Rows of buttons start 0.5rem left, by the buttons' padding, so their text lines up with the date text */
+.earth-filters .ef-tab-panel > .ef-row:not([data-row="date"]) > .ef-row-label + * {
+  margin-left: -0.5rem;
+}
+.earth-filters .ef-sep { /* Date modal rows */
+  display: inline;
+  align-self: stretch;
+  margin: 0.1rem 0.5rem;
+  border-left: 2px solid var(--ef-sep);
+}
+.earth-filters .ef-bunch {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  row-gap: 0.125rem;
+  column-gap: 0.125rem;
+}
+.earth-filters .ef-multi-select {
+  column-gap: 0.25rem;
+}
+.earth-filters .ef-nav-arrows {
+  margin: 0 0.5rem;
+  flex-wrap: nowrap;
+}
+.earth-filters .ef-last-row {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  column-gap: 0.5rem;
+  row-gap: 0.25rem;
+  margin-top: 0.4rem;
+}
+.earth-filters .ef-tab-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.earth-filters .ef-tab-panel > :not(:first-child) {
+  margin-top: 0.2rem;
+}
+.earth-filters .ef-about p {
+  margin: 0 0 0.5rem;
+  font-size: 0.9em;
+}
+.earth-filters .ef-about a {
+  color: var(--ef-selected-text);
+}
+/* Under the map, the About tab is at most 350px tall and scrolls, with its first paragraph. Over the map, the whole panel scrolls. */
+.earth-filters:not(.ef-over) .ef-about {
+  max-height: 350px;
+  overflow-y: auto;
+}
+.earth-filters .ef-about-mode {
+  margin-top: 0.5rem;
+  color: var(--ef-button);
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.earth-filters .ef-overlay-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.earth-filters button.ef-overlay-item {
+  display: block;
+  width: 100%;
+  padding: 0.3rem 0.5rem;
+  text-align: left;
+  color: var(--ef-text);
+}
+.earth-filters button.ef-overlay-item:hover {
+  background: var(--ef-selected-bg);
+  color: var(--ef-text);
+}
+.earth-filters button.ef-overlay-item[aria-pressed="true"] .ef-overlay-name {
+  color: var(--ef-selected-text);
+}
+.earth-filters .ef-overlay-label {
+  color: var(--ef-button);
+  font-size: 0.85em;
+}
+.earth-filters .ef-overlay-source,
+.earth-filters .ef-overlay-details {
+  display: block;
+  font-size: 0.82em;
+  color: var(--ef-button);
+}
+.earth-filters .ef-action-row {
+  margin-top: 0.5rem;
+  column-gap: 0.25rem;
+}
+.earth-filters .ef-action-row > * {
+  flex-grow: 1;
+}
+.earth-filters .ef-unit {
+  margin-left: 0.25rem;
+  color: var(--ef-button);
+}
+.earth-filters button {
+  font: inherit;
+  border: none;
+  border-radius: 0.25rem;
+  min-width: 2rem;
+  padding: 0 0.5rem;
+  margin: 0;
+  background-color: transparent;
+  cursor: pointer;
+  color: var(--ef-button);
+  touch-action: manipulation;
+}
+.earth-filters button:hover,
+.earth-filters button:focus-visible,
+.earth-filters a:hover {
+  color: var(--ef-button-hover);
+}
+.earth-filters [aria-checked="true"],
+.earth-filters [aria-pressed="true"],
+.earth-filters [aria-selected="true"] {
+  color: var(--ef-selected-text);
+  background: var(--ef-selected-bg);
+}
+.earth-filters button:disabled {
+  color: var(--ef-disabled);
+  background: inherit;
+  cursor: default;
+}
+.earth-filters a.ef-link {
+  color: var(--ef-button);
+  text-decoration: none;
+  font-size: 0.85em;
+}
+.earth-filters sub {
+  vertical-align: baseline;
+  position: relative;
+  bottom: -0.3em;
+  font-size: 0.75em;
+}
+.earth-filters .ef-fa {
+  width: 1em;
+  height: 1em;
+  vertical-align: -5%;
+}
+.earth-filters .ef-fa-narrow {
+  width: 0.81em;
+}
+.earth-filters .ef-md {
+  width: 1.25em;
+  height: 1.25em;
+  vertical-align: sub;
+}
+.earth-filters .ef-flip {
+  transform: scaleX(-1);
+}
+.earth-filters .ef-tz {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 0.25rem;
+  margin-left: 0.25rem;
+}
+
+/* The tabs are at the top of the panel, with the place button and reset icon at the right. Over the map, they stay there while the filters scroll inside the panel. */
+.earth-filters .ef-tabs-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  column-gap: 0.5rem;
+  row-gap: 0.25rem;
+  border-bottom: 1px solid var(--ef-border);
+  margin: -0.5rem -1rem 0.2rem; /* Out to the card's edges, so scrolled rows don't show beside the tabs */
+  padding: 0.5rem 1rem 0.4rem;
+  background: var(--ef-tabs-bg);
+  border-radius: var(--panel-radius, 16px) var(--panel-radius, 16px) 0 0;
+}
+.earth-filters .ef-tabs-bar > .ef-bunch {
+  column-gap: 0.25rem;
+}
+.earth-filters .ef-panel-actions {
+  position: relative;
+  align-self: center;
+  margin-left: auto; /* Upper right, also when the bar wraps */
+  margin-right: calc(-0.75rem + 3px); /* Out toward the panel's right edge */
+}
+.earth-filters button.ef-more {
+  display: flex;
+  padding: 0 0.25rem;
+}
+.earth-filters .ef-more .ef-md {
+  width: 1.75em;
+  height: 1.75em;
+}
+.earth-filters .ef-more[aria-expanded="true"] {
+  color: var(--ef-selected-text);
+  background: var(--ef-selected-bg);
+}
+.earth-filters .ef-panel-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.25rem;
+  padding: 0.25rem;
+  min-width: 10rem;
+  background: var(--ef-tabs-bg);
+  border: 1px solid var(--ef-border);
+  border-radius: var(--control-radius, 8px);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.25);
+}
+.earth-filters .ef-panel-menu button,
+.earth-filters .ef-panel-menu a {
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem; /* Icon, then label */
+  padding: 0.3rem 0.75rem 0.3rem 0.5rem;
+  text-align: left;
+  white-space: nowrap;
+  color: var(--ef-text);
+}
+/* The three-dot menu above the clear button over nullschool's "earth" button, when the clear button opens it */
+.earth-filters.ef-map-menu {
+  position: absolute;
+  left: 16px;
+  bottom: 58px; /* 6px above the clear button */
+  z-index: 1004;
+  margin: 0;
+}
+.earth-filters.ef-map-menu .ef-panel-menu {
+  position: static;
+  margin-top: 0;
+}
+.earth-filters .ef-panel-menu [data-field="panel-icon"],
+.earth-filters .ef-panel-menu [data-field="place-icon"] {
+  display: flex;
+}
+.earth-filters .ef-panel-menu a {
+  border-radius: 0.25rem;
+  text-decoration: none;
+}
+.earth-filters .ef-panel-menu button:hover,
+.earth-filters .ef-panel-menu button:focus-visible,
+.earth-filters .ef-panel-menu a:hover,
+.earth-filters .ef-panel-menu a:focus-visible {
+  background: var(--ef-selected-bg);
+}
+.earth-filters.ef-over .ef-tabs-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Hidden with Close Panel in the three-dot menu, which the clear button over nullschool's "earth" button also opens */
+.earth-filters.ef-closed {
+  display: none !important;
+}
+
+/* Over the map's lower left corner, covering the clear button until hidden or moved. Dragged from the background and resized from the corners, which only change the cursor. */
+.earth-filters.ef-over {
+  position: absolute;
+  z-index: 1003;
+  margin: 0;
+  padding: 0 !important; /* The page may pad the filters for under the map */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+.earth-filters.ef-over .ef-menu {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  border-radius: var(--panel-radius, 16px);
+  cursor: move;
+}
+.earth-filters.ef-over .ef-panel {
+  min-height: 100%;
+  box-sizing: border-box;
+}
+.earth-filters.ef-dragging {
+  user-select: none;
+  -webkit-user-select: none;
+}
+.earth-filters .ef-corner {
+  display: none;
+}
+.earth-filters.ef-over .ef-corner {
+  display: block;
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  z-index: 1;
+}
+.earth-filters .ef-corner[data-corner="nw"] { top: 0; left: 0; cursor: nwse-resize; }
+.earth-filters .ef-corner[data-corner="ne"] { top: 0; right: 0; cursor: nesw-resize; }
+.earth-filters .ef-corner[data-corner="sw"] { bottom: 0; left: 0; cursor: nesw-resize; }
+.earth-filters .ef-corner[data-corner="se"] { bottom: 0; right: 0; cursor: nwse-resize; }
+
+/* Clear button over the "earth" button in the lower left of the nullschool map. It shows and hides the filters. */
+.ef-map-toggle {
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  width: 108px;
+  height: 38px;
+  padding: 0;
+  margin: 0;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  z-index: 1002;
+}
+.ef-map-toggle:hover,
+.ef-map-toggle:focus-visible {
+  background: rgb(59 130 246 / 0.15);
+}
+
+/* Modals */
+.earth-filters .ef-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  background-color: var(--ef-shade);
+  z-index: 10000;
+}
+.earth-filters .ef-modal-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+.earth-filters .ef-modal-scroller {
+  max-height: 100%;
+  max-width: min(100%, 35rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.earth-filters .ef-modal-scroller > .ef-card {
+  border-color: var(--ef-text);
+}
+.earth-filters .ef-modal-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.earth-filters .ef-modal-title button {
+  margin-right: -0.5rem;
+}
+.earth-filters .ef-modal-section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.5rem;
+}
+.earth-filters .ef-modal-section > :first-child {
+  margin-bottom: 0.5rem;
+}
+/* Two columns as wide as their names, filled down then across. The rows are set from the number of languages. */
+.earth-filters .ef-column-list-2 {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  justify-content: start;
+  column-gap: 1.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.earth-filters .ef-weeks {
+  border-collapse: collapse;
+}
+.earth-filters .ef-week > * {
+  width: 2.25rem;
+  padding: 0;
+  font-weight: normal;
+  text-align: center;
+}
+
+/* Narrow parent: labels above their buttons, as on the nullschool menu for phones */
+@container (max-width: 480px) {
+  .earth-filters .ef-tab-panel > .ef-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .earth-filters .ef-row-label {
+    min-width: 0;
+    margin-top: 0.25rem;
+  }
+}

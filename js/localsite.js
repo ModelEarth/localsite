@@ -3183,12 +3183,13 @@ function showGlobalMap(globalMap) { // Used by community/index.html, green-sah
 
   var _hashForMap = (typeof getHash === 'function') ? getHash() : {};
   if (_hashForMap.earth) {
-    loadIframe("mainframe", 'https://earth.nullschool.net/#' + _hashForMap.earth);
+    loadIframe("mainframe", getEarthIframeBaseUrl() + '#' + _hashForMap.earth);
   } else if (_hashForMap['']) {
-    loadIframe("mainframe", 'https://earth.nullschool.net/#' + _hashForMap['']);
+    loadIframe("mainframe", getEarthIframeBaseUrl() + '#' + _hashForMap['']);
   } else {
-    loadIframe("mainframe", globalMap);
+    loadIframe("mainframe", globalMap.replace(/^https?:\/\/earth\.nullschool\.net\/[^?#]*/, getEarthIframeBaseUrl()));
   }
+  showEarthFilters();
 
   includeCSS3(theroot + 'css/nouislider.min.css', '');
   if (typeof window.setupGlobalMapSlider === 'function') {
@@ -3203,6 +3204,68 @@ function showGlobalMap(globalMap) { // Used by community/index.html, green-sah
   // Chem Currents NO2 - Since Wind makes NO2 clouds hard to see
   //loadIframe("mainframe","https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
 }
+// The earth.nullschool.net menu filters under the map. Each change loads the map and updates the #earth= page hash.
+// #mainEarthFilters is after #mainEarthDisplay rather than inside it, since the controls in the map's lower right are placed from the bottom of #mainEarthDisplay.
+var mainEarthFilters = null;
+function showEarthFilters() {
+  includeCSS3(theroot + 'css/earth-filters.css', '');
+  loadScript(theroot + 'js/earth-filters.js', function() {
+    waitForVariable('EarthFilters', function() {
+      var earthDisplay = document.getElementById('mainEarthDisplay');
+      if (!earthDisplay) return;
+      var filtersDiv = document.getElementById('mainEarthFilters');
+      if (!filtersDiv) {
+        filtersDiv = document.createElement('div');
+        filtersDiv.id = 'mainEarthFilters';
+        filtersDiv.style.padding = '0 16px 16px'; // Same as in info/template-main.html
+        // After the 3-day #slider-full when it's already under the map
+        (document.getElementById('slider-full') || earthDisplay).insertAdjacentElement('afterend', filtersDiv);
+      }
+      if (mainEarthFilters) {
+        mainEarthFilters.setHash(getEarthFiltersHash());
+        return;
+      }
+      // Under the map, show and hide with it, since several places in navigation.js and nouislider.min.js hide the map
+      var syncFiltersDisplay = function() {
+        filtersDiv.style.display = earthDisplay.style.display === 'none' ? 'none' : '';
+      };
+      new MutationObserver(syncFiltersDisplay).observe(earthDisplay, {attributes: true, attributeFilter: ['style']});
+      syncFiltersDisplay();
+      mainEarthFilters = EarthFilters.create(filtersDiv, {
+        hash: getEarthFiltersHash(),
+        mapContainer: earthDisplay, // Adds the Under map / Over map setting and the clear button over nullschool's "earth" button
+        storagePrefix: 'mainEarthFilters',
+        onChange: function(earthHash, filters) {
+          if (typeof window.stopEarthSliderPlayback === 'function') window.stopEarthSliderPlayback();
+          loadIframe("mainframe", filters.getUrl()); // getUrl() has the language folder, such as https://earth.nullschool.net/es/
+          goHash({'earth': earthHash});
+        }
+      });
+      // The time slider and zoom buttons change the #earth= hash
+      document.addEventListener('hashChangeEvent', function() {
+        mainEarthFilters.setHash(getEarthFiltersHash());
+      }, false);
+    });
+  });
+}
+function getEarthFiltersHash() {
+  var hash = (typeof getHash === 'function') ? getHash() : {};
+  var iframeSrc = $('#mainEarthDisplay #mainframe').attr('src') || '';
+  return hash.earth || hash[''] || iframeSrc.split('#')[1] || '';
+}
+// The map's current address before the ? or #, so a language folder such as https://earth.nullschool.net/es/ is kept.
+// Before the map loads, the folder saved by the earth filters (localsite/js/earth-filters.js) is used.
+function getEarthIframeBaseUrl() {
+  var iframe = document.getElementById('mainframe');
+  var iframeSrc = (iframe && iframe.getAttribute('src')) || '';
+  var baseMatch = iframeSrc.match(/^https?:\/\/earth\.nullschool\.net\/[^?#]*/);
+  if (baseMatch) return baseMatch[0];
+  var savedFolder = '';
+  try {
+    savedFolder = localStorage.getItem('earthLanguageFolder') || '';
+  } catch (e) {}
+  return 'https://earth.nullschool.net/' + (/^[\w-]+\/$/.test(savedFolder) ? savedFolder : '');
+}
 // true: a nullschool time or place change only swaps the iframe's #hash (no reload). false: the iframe reloads for each change.
 var earthIframeHashOnly = false;
 function loadIframe(iframeName, url) {
@@ -3213,9 +3276,11 @@ function loadIframe(iframeName, url) {
   if (!$iframe.length) return true;
   var priorSrc = $iframe.attr('src') || '';
   var isEarthChange = url.indexOf('earth.nullschool.net') >= 0 && priorSrc.indexOf('earth.nullschool.net') >= 0;
-  if (isEarthChange && (priorSrc.split('#')[1] || '') === (url.split('#')[1] || '')) return false; // Already showing this time and place
+  // A different folder, such as the language folder in https://earth.nullschool.net/es/, needs a full load
+  var isSameEarthPath = isEarthChange && priorSrc.split(/[?#]/)[0] === url.split(/[?#]/)[0];
+  if (isSameEarthPath && (priorSrc.split('#')[1] || '') === (url.split('#')[1] || '')) return false; // Already showing this time and place
   var swappedHash = false;
-  if (isEarthChange && earthIframeHashOnly && $iframe[0].contentWindow) {
+  if (isSameEarthPath && earthIframeHashOnly && $iframe[0].contentWindow) {
     try {
       // The parent page may navigate a cross-origin iframe. Keeping the iframe's own address before the # makes this a #hash change,
       // and replace() keeps each step out of the Back history.
@@ -3227,8 +3292,8 @@ function loadIframe(iframeName, url) {
     }
   }
   if (isEarthChange && !swappedHash) {
-    // Reload fallback: a new query value before the # makes the iframe load the url
-    url = url.replace(/^(https?:\/\/earth\.nullschool\.net\/)[^#]*/, '$1?reload=' + Date.now());
+    // Reload fallback: a new query value before the # makes the iframe load the url. The language folder before the ? is kept.
+    url = url.replace(/^(https?:\/\/earth\.nullschool\.net\/[^?#]*)[^#]*/, '$1?reload=' + Date.now());
   }
   $iframe.attr('src', url); // After a #hash swap this matches the iframe's address, so it doesn't navigate again
   $("#mainEarthDisplay #mainbucket").show();
