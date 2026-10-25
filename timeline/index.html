@@ -216,6 +216,30 @@ body.timeline-loading .timeline-loading-overlay {
 @keyframes timelineSpin {
   to { transform: rotate(360deg); }
 }
+/* The showControl() gear twirls until both Data Commons and the Google Sheet list have loaded */
+body.timeline-loading .timeline-gear svg,
+body.timeline-sheet-loading .timeline-gear svg {
+  animation: timelineSpin 1.2s linear infinite;
+}
+/* Text after the gear naming each source still loading. Hidden spans take no gap, so the text disappears once both load. */
+/* Center the gear and the text on the same line: middle-align both, and make the svg a block so the button has no baseline gap below it */
+.timeline-gear { vertical-align: middle; position: relative; top: -3px; }
+.timeline-gear svg { display: block; }
+.timeline-load-status {
+  position: relative;
+  top: -3px;
+  display: inline-flex;
+  gap: 14px;
+  vertical-align: middle;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--text-secondary, #6B7280);
+}
+.timeline-load-status span { display: none; }
+body.timeline-sheet-loading .timeline-load-status .load-sheet,
+body.timeline-loading .timeline-load-status .load-datacommons {
+  display: inline;
+}
 /* Floating legend for timeline chart (fixed viewport position so it doesn't jump around)
     The legend will be fixed in the viewport (top-right by default) regardless of canvas updates.
     Individual legend items remain interactive while the container lets other clicks pass through. */
@@ -702,7 +726,7 @@ body.main-nav-hidden #floating-legend.chart-visible {
   <script>
     function updateScopeNav() {
       const scopes = [
-        { scope: "country", name: "Countries" },
+        { scope: "country", name: "International" }, // Label only, the hash keeps scope=country
         { scope: "state", name: "States" },
         { scope: "county", name: "Counties" }
       ];
@@ -856,7 +880,7 @@ body.main-nav-hidden #floating-legend.chart-visible {
 
   function getDateRangeCacheKey(scope, dcid) {
     const s = scope || (typeof getHash === 'function' ? (getHash().scope || 'country') : 'country');
-    const d = dcid  || (typeof getHash === 'function' ? (getHash()['features.dcid'] || '') : '');
+    const d = dcid  || (typeof getHash === 'function' ? (getHash().features?.dcid || '') : '');
     return d ? 'timelineDateRange_' + s + '_' + d : null;
   }
 
@@ -895,7 +919,7 @@ body.main-nav-hidden #floating-legend.chart-visible {
     if (typeof setTimelineMinYear === 'function') setTimelineMinYear(start);
     if (typeof setTimelineMaxYear === 'function') setTimelineMaxYear(end);
     const hash = typeof getHash === 'function' ? getHash() : {};
-    saveDateRange(start, end, hash.scope, hash['features.dcid']);
+    saveDateRange(start, end, hash.scope, hash.features?.dcid);
     updateDateRangeLabel();
     if (typeof refreshTimeline === 'function') refreshTimeline();
   }
@@ -1154,12 +1178,12 @@ p.set('rs_dcid', list.join(','));
         <br>
         
         <div class="whichLinesHolder" style="float:left; display: flex;">
-          <label> <input value="showAll" type="radio" name="whichLines" />All &nbsp;</label>
           <div class="scope-country">
               <label> <input value="showSelected" type="radio" name="whichLines"/>Top Economics &nbsp;</label>
           </div>
           <label> <input value="showTop5" type="radio" name="whichLines" checked />Top 5 &nbsp;</label>
           <label> <input value="showBottom5" type="radio" name="whichLines" />Bottom 5 &nbsp;</label>
+          <label> <input value="showAll" type="radio" name="whichLines" />All &nbsp;</label>
         </div>
 
         <div id="perCapitaOptions" style="float:right">
@@ -1171,9 +1195,13 @@ p.set('rs_dcid', list.join(','));
         </div>
 
         <!-- Chart Size Controls -->
-        <button onclick="showControl()" style="border: none; cursor: pointer; background:none;">
+        <button class="timeline-gear" onclick="showControl()" style="border: none; cursor: pointer; background:none;">
             <svg width="22" height="22" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--twemoji" preserveAspectRatio="xMidYMid meet"><path fill="#66757F" d="M34 15h-3.362a12.915 12.915 0 0 0-1.582-3.814l2.379-2.379a2 2 0 0 0 0-2.829l-1.414-1.414a2 2 0 0 0-2.828 0l-2.379 2.379A12.924 12.924 0 0 0 21 5.362V2a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v3.362a12.915 12.915 0 0 0-3.814 1.582L8.808 4.565a2 2 0 0 0-2.828 0L4.565 5.979a2.002 2.002 0 0 0-.001 2.829l2.379 2.379A12.918 12.918 0 0 0 5.362 15H2a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h3.362a12.92 12.92 0 0 0 1.582 3.813l-2.379 2.379c-.78.78-.78 2.048.001 2.829l1.414 1.414c.78.78 2.047.78 2.828 0l2.379-2.379a12.889 12.889 0 0 0 3.814 1.582V34a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-3.362a12.92 12.92 0 0 0 3.813-1.582l2.379 2.379a2 2 0 0 0 2.828 0l1.414-1.414a2 2 0 0 0 0-2.829l-2.379-2.379a12.889 12.889 0 0 0 1.582-3.814H34a2 2 0 0 0 2-2v-2A2 2 0 0 0 34 15zM18 26a8 8 0 1 1 0-16a8 8 0 0 1 0 16z"></path></svg>
         </button>
+        <span class="timeline-load-status">
+            <span class="load-sheet">Loading list from Google Sheet</span>
+            <span class="load-datacommons">Loading Google Data Commons</span>
+        </span>
         <div class="size-control-gear" style="display: none; clear: both; margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
             <h4 style="margin: 0 0 15px 0; color: #495057; font-size: 16px;">Chart Size Controls</h4>
             <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">

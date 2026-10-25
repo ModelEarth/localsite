@@ -276,6 +276,26 @@ window.setTimelineMinYear = setTimelineMinYear;
 window.setTimelineMaxYear = setTimelineMaxYear;
 window.updateTimelineMinYearFromSelect = updateTimelineMinYearFromSelect;
 
+// Data Commons responses, keyed by request. A redraw (such as the title and StartYear arriving from the Google Sheet)
+// reuses data already fetched, or still in flight, instead of requesting it again.
+const timelineFetchCache = {};
+function fetchJsonCached(url, options) {
+    const key = url + '|' + ((options && options.body) || '');
+    if (!timelineFetchCache[key]) {
+        timelineFetchCache[key] = fetch(url, options).then(response => {
+            if (!response.ok) {
+                delete timelineFetchCache[key]; // Retry on the next request
+            }
+            return response.json();
+        }).catch(error => {
+            delete timelineFetchCache[key];
+            throw error;
+        });
+    }
+    return timelineFetchCache[key];
+}
+let timelineChartRequestId = 0; // Only the latest getTimelineChart() call draws the charts
+
 /**
  * Fetches time-series data from Google Data Commons and renders
  * a multi-line timeline chart and stacked area chart using Chart.js.
@@ -318,6 +338,7 @@ window.updateTimelineMinYearFromSelect = updateTimelineMinYearFromSelect;
 async function getTimelineChart(scope, chartVariable, entityId, showAll, chartText) {
     //alert("getTimelineChart chartVariable: " + chartVariable + ", scope: " + scope)
     document.body.classList.add('timeline-loading');
+    const requestId = ++timelineChartRequestId;
     try {
         let hash = getHash(); // Add hash check at top of function
         geoValues = {}; // Clear prior
@@ -325,12 +346,12 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         const userSelected = hash.country ? hash.country.split(',').map(code => countryCodeMap[code.trim()] || code.trim()) : [];
         const selectedCountries3Char = [...new Set([...defaultCountries3Char, ...userSelected])];
         const selectedCountries = []; // top-level
-        let response, data, geoIds;
+        let data, geoIds;
         let whichPer = document.querySelector('input[name="whichPer"]:checked')?.value || 'totals';
 
         if (scope === "county") {
             // Fetch county data
-            response = await fetch(`https://api.datacommons.org/v2/observation?key=${api_key}&entity.expression=${entityId}%3C-containedInPlace%2B%7BtypeOf%3ACounty%7D&select=date&select=entity&select=value&select=variable&variable.dcids=${chartVariable}`, {
+            data = await fetchJsonCached(`https://api.datacommons.org/v2/observation?key=${api_key}&entity.expression=${entityId}%3C-containedInPlace%2B%7BtypeOf%3ACounty%7D&select=date&select=entity&select=value&select=variable&variable.dcids=${chartVariable}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -339,11 +360,10 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                     "dates": ""
                 })
             });
-            data = await response.json();
             geoIds = Object.keys(data.byVariable[chartVariable].byEntity);
 
             // Fetch county and state names
-            const response2 = await fetch(`https://api.datacommons.org/v2/node?key=${api_key}`, {
+            const data2 = await fetchJsonCached(`https://api.datacommons.org/v2/node?key=${api_key}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -353,7 +373,6 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                     "property": "->[containedInPlace, name]"
                 })
             });
-            const data2 = await response2.json();
 
             Object.keys(data2.data).forEach(geoId => {
                 const node = data2.data[geoId].arcs;
@@ -378,7 +397,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
             'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
           ];
-        response = await fetch(`https://api.datacommons.org/v2/resolve?key=${api_key}`, {
+        data = await fetchJsonCached(`https://api.datacommons.org/v2/resolve?key=${api_key}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -388,11 +407,10 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 "property": "<-description{typeOf:State}->dcid"
             })
         });
-        data = await response.json();
         geoIds = data.entities.map(entity => entity?.candidates?.[0]?.dcid).filter(Boolean);
 
         // Fetch state names
-        const response2 = await fetch(`https://api.datacommons.org/v2/node?key=${api_key}`, {
+        const data2 = await fetchJsonCached(`https://api.datacommons.org/v2/node?key=${api_key}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -402,7 +420,6 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 "property": "->name"
             })
         });
-        const data2 = await response2.json();
 
         Object.keys(data2.data).forEach(geoId => {
             const stateName = data2.data[geoId].arcs.name.nodes[0]['value'];
@@ -441,7 +458,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         console.log("Selected Countries:", selectedCountries); // Debug log
 
         // Fetch country dcids using ISO codes
-        response = await fetch(`https://api.datacommons.org/v2/resolve?key=${api_key}`, {
+        data = await fetchJsonCached(`https://api.datacommons.org/v2/resolve?key=${api_key}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -452,14 +469,12 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             })
         });
 
-        data = await response.json();
-
         geoIds = data.entities
             .map(entity => entity?.candidates?.[0]?.dcid)
             .filter(Boolean); // remove undefined/null
 
         // Fetch country names
-        const response2 = await fetch(`https://api.datacommons.org/v2/node?key=${api_key}`, {
+        const data2 = await fetchJsonCached(`https://api.datacommons.org/v2/node?key=${api_key}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -469,8 +484,6 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 "property": "->name"
             })
         });
-
-        const data2 = await response2.json();
 
         Object.keys(data2.data).forEach(geoId => {
             const countryName = data2.data[geoId]?.arcs?.name?.nodes?.[0]?.value;
@@ -487,7 +500,7 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
     // Fetch observational data using geoIds list
     const url = `https://api.datacommons.org/v2/observation?key=${api_key}&variable.dcids=${chartVariable}&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
     console.log("url data:",url)
-    const response3 = await fetch(url, {
+    const timelineData = await fetchJsonCached(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -497,13 +510,12 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
             "select": ["date", "entity", "value", "variable"]
         })
     });
-    const timelineData = await response3.json();
     console.log("timeline obsevational data for country:",timelineData)
     let populationData = {};
 if (whichPer === 'percapita') {
   const popUrl = `https://api.datacommons.org/v2/observation?key=${api_key}&variable.dcids=Count_Person&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
 
-  const popResponse = await fetch(popUrl, {
+  const popJson = await fetchJsonCached(popUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -512,9 +524,11 @@ if (whichPer === 'percapita') {
     })
   });
 
-  const popJson = await popResponse.json();
   populationData = popJson.byVariable["Count_Person"].byEntity;
 }
+    if (requestId !== timelineChartRequestId) {
+        return; // A newer call (such as the redraw after the Google Sheet loads) draws the charts
+    }
         // Format data
         const formattedData = [];
 //alert(JSON.stringify(geoValues)) // TO DO: Only send countries that exist in the dataset.
@@ -957,10 +971,12 @@ dataCopy.forEach(location => {
         window.addEventListener('resize', handleChartResize);
         }
     } finally {
-        document.querySelectorAll('.timeline-loading-overlay .loading-text').forEach(el => {
-            el.textContent = 'Timeline Display';
-        });
-        document.body.classList.remove('timeline-loading');
+        if (requestId === timelineChartRequestId) { // Keep the loading overlay while a newer call is still loading
+            document.querySelectorAll('.timeline-loading-overlay .loading-text').forEach(el => {
+                el.textContent = 'Timeline Display';
+            });
+            document.body.classList.remove('timeline-loading');
+        }
     }
 }
 
@@ -1157,6 +1173,7 @@ function updateScopeOptions(availableScopes) {
         });
     });
 }
+let sheetLoadsPending = 0; // Google Sheet list requests in flight
 async function updateDcidSelectFromSheet(scope) {
 
     let hash = getHash();
@@ -1190,8 +1207,15 @@ async function updateDcidSelectFromSheet(scope) {
         return;
     }
 
+    // On first load, chart the features.dcid from the URL hash while the Google Sheet list loads.
+    // Its placeholder option shows the DCID (underscores as spaces) until the sheet provides the Title and StartYear, then the chart redraws from cached data.
+    const earlyDcid = hash.features?.dcid; // getHash() nests dotted keys
+    if (earlyDcid && dcidSelect.options.length === 0 && hash.output !== "json") {
+        dcidSelect.add(new Option(earlyDcid.replace(/_/g, ' '), earlyDcid));
+        refreshTimeline();
+    }
+
     // When getting a Google link for a .csv pull, also uncheck "Restrict access..."
-    dcidSelect.innerHTML = ''; // Clear existing options
     // air tab
     let sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/export?format=csv&gid=0"; // air
     if (hash.goal == "water") {
@@ -1217,8 +1241,19 @@ async function updateDcidSelectFromSheet(scope) {
     //loadGoalsDropdown("zipcodeleveldata","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=492624247&single=true&output=csv");
     
 
-    const response = await fetch(sheetUrl);
-    const csvText = await response.text();
+    // body.timeline-sheet-loading twirls the showControl() gear while the sheet loads. Data Commons loading uses body.timeline-loading.
+    // It is removed in the same task that calls refreshTimeline() below, so the gear keeps twirling through the redraw.
+    sheetLoadsPending++;
+    document.body.classList.add('timeline-sheet-loading');
+    let csvText;
+    try {
+        const response = await fetch(sheetUrl);
+        csvText = await response.text();
+    } finally {
+        if (--sheetLoadsPending === 0) {
+            document.body.classList.remove('timeline-sheet-loading');
+        }
+    }
 
     console.log("CSV Data:", csvText); // Log the entire CSV data for debugging
 
@@ -1235,7 +1270,7 @@ async function updateDcidSelectFromSheet(scope) {
     const valueIndex = headers.indexOf('DCID'); // Assuming 'Value' is stored in the 'DCID' column
     const textIndex = headers.indexOf('Title'); // Assuming 'Text' is stored in the 'Title' column
     const startYearIndex = headers.indexOf('StartYear');
-    const endYearIndex = headers.indexOf('EndYear');
+    // The sheet's EndYear is ignored: Data Commons often has newer years than the sheet lists, so the chart runs to the latest data.
 
     if (scopeIndex === -1 || valueIndex === -1 || textIndex === -1) {
         console.error("Missing required columns in the CSV data.");
@@ -1275,6 +1310,7 @@ async function updateDcidSelectFromSheet(scope) {
     console.log("Filtered Options:", filteredOptions); // Log the filtered options to verify
 
     // Populate dropdown
+    dcidSelect.innerHTML = ''; // Clear existing options, including the placeholder above. Cleared after the sheet loads so the dropdown is never empty.
     filteredOptions.forEach(row => {
         const value = row[valueIndex]?.trim();
         const text = row[textIndex]?.trim();
@@ -1290,9 +1326,11 @@ async function updateDcidSelectFromSheet(scope) {
         }
     });
 
-    // Set default selection if options exist
+    // Set selection if options exist: keep the features.dcid from the URL hash when this scope offers it, else use the first option
     if (filteredOptions.length > 0) {
-        dcidSelect.value = filteredOptions[0][valueIndex].trim(); // Set to the first option's value
+        const hashDcid = getHash().features?.dcid; // getHash() nests dotted keys
+        const hasHashDcid = hashDcid && Array.from(dcidSelect.options).some(opt => opt.value === hashDcid);
+        dcidSelect.value = hasHashDcid ? hashDcid : filteredOptions[0][valueIndex].trim();
         if (typeof updateTimelineMinYearFromSelect === 'function') {
             updateTimelineMinYearFromSelect(dcidSelect);
         }
