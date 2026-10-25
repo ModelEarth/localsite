@@ -69,17 +69,21 @@ document.addEventListener('hashChangeEvent', function (elem) {
     if (!hash.scope) {
         hash.scope = "country"; // CUSTOM - also set in call to localsite.js above.
     }
-    if (hash.scope != priorHash.scope || hash.goal != priorHash.goal) {
+    const stateChanged = setStateMenuFromHash(); // A state=XX set elsewhere, such as the header's state menu
+    // Compare with the scope and goal last loaded, not priorHash, which starts with the include's scope=country
+    if (hash.scope + '|' + (hash.goal || '') !== window._timelineSheetView) {
         const selectScope = document.getElementById("selectScope");
         if (selectScope) {
           selectScope.value = hash.scope;
         }
         updateDcidSelectFromSheet(hash.scope); // In localsite/js/earthscape.js
+    } else if (stateChanged && String(hash.scope).toLowerCase() === 'county') {
+        refreshTimeline();
     }
     waitForElm('#perCapitaOptions').then(() => {
         applyPerCapitaGoalSettings();
     });
-    if (hash.scope != priorHash.scope && typeof updateScopeNav === 'function') {
+    if (typeof updateScopeNav === 'function' && String(hash.scope).toLowerCase() !== document.getElementById('scope-nav')?.dataset.scope) {
         updateScopeNav();
     }
     updateStateMenuVisibility();
@@ -90,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hash.scope = document.getElementById('selectScope').options[document.getElementById('selectScope').selectedIndex].text;
     }
     applyPerCapitaGoalSettings();
+    setStateMenuFromHash(); // state=XX in the URL, before the first chart. refreshTimeline() defaults to Georgia and writes state to the hash.
     //alert(hash.scope)
     updateDcidSelectFromSheet(hash.scope);
     updateStateMenuVisibility();
@@ -223,7 +228,7 @@ body.timeline-sheet-loading .timeline-gear svg {
 }
 /* Text after the gear naming each source still loading. Hidden spans take no gap, so the text disappears once both load. */
 /* Center the gear and the text on the same line: middle-align both, and make the svg a block so the button has no baseline gap below it */
-.timeline-gear { vertical-align: middle; position: relative; top: -3px; }
+.timeline-gear { vertical-align: middle; position: relative; top: -3px; padding-left: 14px; padding-right: 4px; } /* Browser default is 6px each side: 8px more on the left, 2px less on the right */
 .timeline-gear svg { display: block; }
 .timeline-load-status {
   position: relative;
@@ -735,6 +740,7 @@ body.main-nav-hidden #floating-legend.chart-visible {
       const container = document.getElementById('scope-nav');
       if (!container) return;
       container.innerHTML = '';
+      container.dataset.scope = currentScope; // The scope shown, compared on hashChangeEvent
       scopes.forEach((item, index) => {
         if (index > 0) container.appendChild(document.createTextNode(' | '));
         if (item.scope === currentScope) {
@@ -866,9 +872,9 @@ body.main-nav-hidden #floating-legend.chart-visible {
     document.addEventListener('DOMContentLoaded', updateTimelineNav);
     document.addEventListener('hashChangeEvent', function () {
       const hash = getHash();
-      const priorScope = ((window.priorHash && window.priorHash.scope) || "country").toLowerCase();
+      const shownScope = document.getElementById('scope-nav')?.dataset.scope; // Not priorHash, which starts with the include's scope=country
       const currentScope = (hash.scope || "country").toLowerCase();
-      if (currentScope !== priorScope) {
+      if (currentScope !== shownScope) {
         updateScopeNav();
       }
     });
@@ -1108,58 +1114,58 @@ p.set('rs_dcid', list.join(','));
 
         <select id="entityId" style="display:none;">
             <option>State...</option>
-            <option value="geoId/01">Alabama</option>
-            <option value="geoId/02">Alaska</option>
-            <option value="geoId/04">Arizona</option>
-            <option value="geoId/05">Arkansas</option>
-            <option value="geoId/06">California</option>
-            <option value="geoId/08">Colorado</option>
-            <option value="geoId/09">Connecticut</option>
-            <option value="geoId/10">Delaware</option>
-            <option value="geoId/11">District of Columbia</option>
-            <option value="geoId/12">Florida</option>
-            <option value="geoId/13">Georgia</option>
-            <option value="geoId/15">Hawaii</option>
-            <option value="geoId/16">Idaho</option>
-            <option value="geoId/17">Illinois</option>
-            <option value="geoId/18">Indiana</option>
-            <option value="geoId/19">Iowa</option>
-            <option value="geoId/20">Kansas</option>
-            <option value="geoId/21">Kentucky</option>
-            <option value="geoId/22">Louisiana</option>
-            <option value="geoId/23">Maine</option>
-            <option value="geoId/24">Maryland</option>
-            <option value="geoId/25">Massachusetts</option>
-            <option value="geoId/26">Michigan</option>
-            <option value="geoId/27">Minnesota</option>
-            <option value="geoId/28">Mississippi</option>
-            <option value="geoId/29">Missouri</option>
-            <option value="geoId/30">Montana</option>
-            <option value="geoId/31">Nebraska</option>
-            <option value="geoId/32">Nevada</option>
-            <option value="geoId/33">New Hampshire</option>
-            <option value="geoId/34">New Jersey</option>
-            <option value="geoId/35">New Mexico</option>
-            <option value="geoId/36">New York</option>
-            <option value="geoId/37">North Carolina</option>
-            <option value="geoId/38">North Dakota</option>
-            <option value="geoId/39">Ohio</option>
-            <option value="geoId/40">Oklahoma</option>
-            <option value="geoId/41">Oregon</option>
-            <option value="geoId/42">Pennsylvania</option>
-            <option value="geoId/44">Rhode Island</option>
-            <option value="geoId/45">South Carolina</option>
-            <option value="geoId/46">South Dakota</option>
-            <option value="geoId/47">Tennessee</option>
-            <option value="geoId/48">Texas</option>
-            <option value="geoId/49">Utah</option>
-            <option value="geoId/50">Vermont</option>
-            <option value="geoId/51">Virginia</option>
-            <option value="geoId/53">Washington</option>
-            <option value="geoId/54">West Virginia</option>
-            <option value="geoId/55">Wisconsin</option>
-            <option value="geoId/56">Wyoming</option>
-            <option value="geoId/72">Puerto Rico</option>
+            <option value="geoId/01" data-state="AL">Alabama</option>
+            <option value="geoId/02" data-state="AK">Alaska</option>
+            <option value="geoId/04" data-state="AZ">Arizona</option>
+            <option value="geoId/05" data-state="AR">Arkansas</option>
+            <option value="geoId/06" data-state="CA">California</option>
+            <option value="geoId/08" data-state="CO">Colorado</option>
+            <option value="geoId/09" data-state="CT">Connecticut</option>
+            <option value="geoId/10" data-state="DE">Delaware</option>
+            <option value="geoId/11" data-state="DC">District of Columbia</option>
+            <option value="geoId/12" data-state="FL">Florida</option>
+            <option value="geoId/13" data-state="GA">Georgia</option>
+            <option value="geoId/15" data-state="HI">Hawaii</option>
+            <option value="geoId/16" data-state="ID">Idaho</option>
+            <option value="geoId/17" data-state="IL">Illinois</option>
+            <option value="geoId/18" data-state="IN">Indiana</option>
+            <option value="geoId/19" data-state="IA">Iowa</option>
+            <option value="geoId/20" data-state="KS">Kansas</option>
+            <option value="geoId/21" data-state="KY">Kentucky</option>
+            <option value="geoId/22" data-state="LA">Louisiana</option>
+            <option value="geoId/23" data-state="ME">Maine</option>
+            <option value="geoId/24" data-state="MD">Maryland</option>
+            <option value="geoId/25" data-state="MA">Massachusetts</option>
+            <option value="geoId/26" data-state="MI">Michigan</option>
+            <option value="geoId/27" data-state="MN">Minnesota</option>
+            <option value="geoId/28" data-state="MS">Mississippi</option>
+            <option value="geoId/29" data-state="MO">Missouri</option>
+            <option value="geoId/30" data-state="MT">Montana</option>
+            <option value="geoId/31" data-state="NE">Nebraska</option>
+            <option value="geoId/32" data-state="NV">Nevada</option>
+            <option value="geoId/33" data-state="NH">New Hampshire</option>
+            <option value="geoId/34" data-state="NJ">New Jersey</option>
+            <option value="geoId/35" data-state="NM">New Mexico</option>
+            <option value="geoId/36" data-state="NY">New York</option>
+            <option value="geoId/37" data-state="NC">North Carolina</option>
+            <option value="geoId/38" data-state="ND">North Dakota</option>
+            <option value="geoId/39" data-state="OH">Ohio</option>
+            <option value="geoId/40" data-state="OK">Oklahoma</option>
+            <option value="geoId/41" data-state="OR">Oregon</option>
+            <option value="geoId/42" data-state="PA">Pennsylvania</option>
+            <option value="geoId/44" data-state="RI">Rhode Island</option>
+            <option value="geoId/45" data-state="SC">South Carolina</option>
+            <option value="geoId/46" data-state="SD">South Dakota</option>
+            <option value="geoId/47" data-state="TN">Tennessee</option>
+            <option value="geoId/48" data-state="TX">Texas</option>
+            <option value="geoId/49" data-state="UT">Utah</option>
+            <option value="geoId/50" data-state="VT">Vermont</option>
+            <option value="geoId/51" data-state="VA">Virginia</option>
+            <option value="geoId/53" data-state="WA">Washington</option>
+            <option value="geoId/54" data-state="WV">West Virginia</option>
+            <option value="geoId/55" data-state="WI">Wisconsin</option>
+            <option value="geoId/56" data-state="WY">Wyoming</option>
+            <option value="geoId/72" data-state="PR">Puerto Rico</option>
         </select>
      
       
@@ -1183,7 +1189,7 @@ p.set('rs_dcid', list.join(','));
           </div>
           <label> <input value="showTop5" type="radio" name="whichLines" checked />Top 5 &nbsp;</label>
           <label> <input value="showBottom5" type="radio" name="whichLines" />Bottom 5 &nbsp;</label>
-          <label> <input value="showAll" type="radio" name="whichLines" />All &nbsp;</label>
+          <label> <input value="showAll" type="radio" name="whichLines" />All </label><!-- No &nbsp;, matching resetAllCountryLabel(), so the gear after it doesn't shift when data loads -->
         </div>
 
         <div id="perCapitaOptions" style="float:right">

@@ -1129,6 +1129,16 @@ function resetChartSize() {
     }, 100);
 }
 
+// Select the #entityId state menu option for the first state in hash.state (such as state=GA). Returns true when the selection changed.
+function setStateMenuFromHash() {
+    const entityIdSelect = document.getElementById('entityId');
+    const stateAbbr = String(getHash().state || '').split(',')[0].trim().toUpperCase();
+    if (!entityIdSelect || !stateAbbr) return false;
+    const option = Array.from(entityIdSelect.options).find(opt => opt.dataset.state === stateAbbr);
+    if (!option || option.selected) return false;
+    entityIdSelect.value = option.value;
+    return true;
+}
 function refreshTimeline() {
     document.body.classList.add('timeline-loading');
     let hash = getHash();
@@ -1152,10 +1162,17 @@ function refreshTimeline() {
             // Only required for county scope.
             // Treat placeholder/non-geoId values (like "State...") as empty.
             if (scope === 'county' && (!entityId || !String(entityId).startsWith('geoId/'))) {
-            entityId = 'geoId/26';
+            entityId = 'geoId/13'; // Georgia
             if (entityIdSelect) {
                 entityIdSelect.value = entityId;
             }
+            }
+            // Keep the state menu's choice in the URL hash as state=GA. Only for county scope, where the menu shows.
+            if (scope === 'county' && entityIdSelect) {
+                const stateAbbr = entityIdSelect.options[entityIdSelect.selectedIndex]?.dataset.state;
+                if (stateAbbr && stateAbbr !== String(hash.state || '').toUpperCase()) {
+                    updateHash({"state": stateAbbr});
+                }
             }
             let chartText = document.getElementById('chartVariable').options[document.getElementById('chartVariable').selectedIndex].text;
 
@@ -1186,6 +1203,9 @@ async function updateDcidSelectFromSheet(scope) {
         updateHash({"scope":scope}); // Used by refreshTimeline()
 
     }
+    // The scope and goal this list is for. The timeline page's hashChangeEvent reloads the list when these differ from the hash.
+    // (priorHash can't be used: on the first change it holds scope=country from the localsite.js include, not the URL's scope.)
+    window._timelineSheetView = scope + '|' + (hash.goal || '');
 
     // Temp here, will be in it's own function for choosing current goal view
     const airTimelinesLink = document.getElementById("airTimelinesLink");
