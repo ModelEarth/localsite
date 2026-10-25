@@ -149,6 +149,13 @@ function updateStateMenuVisibility() {
   height: auto; /* Allow height to be determined by content */
   min-height: 120px; /* Minimum height to show the background image */
 }
+.dark .heroTransparent {
+  background: linear-gradient(rgba(34, 34, 34, 0.95), rgba(34, 34, 34, 0.95)), 
+              url(https://model.earth/apps/img/hero/state/GA/GA-hero.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 .contenttoogleChartType {
     display: none;
 }
@@ -349,14 +356,59 @@ body.timeline-loading .timeline-loading-overlay {
     overflow-y: auto;
     max-height: 400px;
 }
-/* Keep floating legend text dark in dark mode (left-nav legend remains unchanged). */
+/* Floating legend dark mode (left-nav legend remains unchanged). */
+.dark #floating-legend {
+    background: rgba(30,36,48,0.98);
+    border-color: rgba(255,255,255,0.16);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+}
 .dark #floating-legend,
 .dark #floating-legend #legend-content,
 .dark #floating-legend .legend-item,
-.dark #floating-legend .legend-label,
-.dark #floating-legend .legend-value,
+.dark #floating-legend .legend-label {
+    color: #e8edf5;
+}
+.dark #floating-legend .legend-value {
+    color: rgba(232,237,245,0.75);
+}
+.dark #floating-legend .legend-item:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+.dark #floating-legend-header {
+    background: rgba(255,255,255,0.06);
+    color: #e8edf5;
+}
+.dark #floating-legend-close {
+    color: #c3cedc;
+}
+.dark #floating-legend-close:hover {
+    background: rgba(255,255,255,0.16);
+    color: #ffffff;
+}
+.dark #legend-view-toggle {
+    background: rgba(255,255,255,0.08);
+}
+.dark #legend-view-toggle .view-toggle-btn {
+    color: #d8e2f0;
+}
+.dark #legend-view-toggle .view-toggle-btn:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.16);
+}
+.dark #legend-view-toggle .view-toggle-btn.active {
+    background: rgba(255,255,255,0.94);
+    color: #1d2e42;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+}
 .dark #floating-legend .region-toggle {
-    color: #223246;
+    background: rgba(255,255,255,0.06);
+    color: #e8edf5;
+}
+.dark #floating-legend .region-toggle:hover {
+    background: rgba(255,255,255,0.12);
+}
+.dark #floating-legend .region-toggle.active {
+    background: rgba(255,255,255,0.16);
 }
 /* Show floating legend when sidebar is hidden (nav closed) AND chart is visible */
 body.sidebar-hidden #floating-legend.chart-visible,
@@ -640,7 +692,7 @@ body.main-nav-hidden #floating-legend.chart-visible {
 <body class="timeline-loading">
 
 
-<div class="heroTransparent notdark">
+<div class="heroTransparent">
 
 <div class="content contentpadding large-list">
   <!-- Also update in home repo -->
@@ -2773,7 +2825,7 @@ function buildFloatingLegendFromChart() {
                                 ov.setAttribute('aria-hidden', 'false');
                                 // Position overlay near left within its parent (hero root)
                                 try {
-                                    const hero = ov.parentElement || document.querySelector('.heroTransparent.notdark') || document.querySelector('.heroTransparent') || document.body;
+                                    const hero = ov.parentElement || document.querySelector('.heroTransparent') || document.body;
                                     const heroRect = hero.getBoundingClientRect();
                                     const ovTop = Math.max(8, rect.top + window.scrollY - (heroRect.top + window.scrollY));
                                     ov.style.position = 'absolute';
@@ -2800,7 +2852,7 @@ function buildFloatingLegendFromChart() {
                                 ov.style.display = 'block';
                                 ov.setAttribute('aria-hidden', 'false');
                                 try {
-                                    const hero = ov.parentElement || document.querySelector('.heroTransparent.notdark') || document.querySelector('.heroTransparent') || document.body;
+                                    const hero = ov.parentElement || document.querySelector('.heroTransparent') || document.body;
                                     // Ensure hero is positioned
                                     hero.style.position = hero.style.position || 'relative';
                                     // place overlay at right inside hero

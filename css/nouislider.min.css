@@ -5,7 +5,7 @@
 #slider-on-map {
   position: absolute;
   right: 70px;
-  bottom: 48px;
+  bottom: 10px;
   width: min(370px, calc(100% - 80px));
   height: 12px;
   z-index: 2;
@@ -21,10 +21,7 @@
   pointer-events: auto;
   z-index: 3;
 }
-#earth-date-picker { /* Two-column grid, so the slider and speed selects match the widths of the date and time above them */
-  position: absolute;
-  right: 10px;
-  top: 0;
+#earth-date-picker { /* Two-column grid, so the slider and speed selects match the widths of the date and time above them. Sits inside #slider-toggle-wrap */
   display: grid;
   grid-template-columns: auto auto;
   align-items: center;
@@ -33,9 +30,9 @@
   border: 1px solid rgba(255,255,255,.2);
   border-radius: 6px;
   padding: 6px 10px;
-  z-index: 99999;
   pointer-events: auto;
   white-space: nowrap;
+  cursor: auto;
 }
 #earth-date-picker .earth-picker-row {
   display: contents; /* Each row's two fields become cells of the popup's grid */
@@ -124,9 +121,11 @@
 #slider-pips .noUi-handle {
   height: 17px;
   top: -3px;
+  border: 1px solid #D9D9D9; /* In place of the shadow that faded out at the bottom */
+  box-shadow: none;
 }
 #slider-pips .noUi-touch-area {
-  height: 17px;
+  height: 100%; /* Fits inside the handle's border. At 17px it covered the bottom border */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -266,10 +265,36 @@ body.dark:has(#slider-on-map) #upIconTray #headerIcons .playPauseButton:focus {
 }
 #slider-toggle-wrap:hover,
 #slider-toggle-wrap:focus-visible { background-color: rgba(85,85,85,.6); outline: none; } /* Transparent #555 */
+#mainEarthDisplay #slider-toggle-wrap { /* Matches the .earth-bar zoom + and - buttons */
+  box-sizing: border-box;
+  height: 32px;
+  min-width: 32px;
+  padding: 0 6px; /* 6px + 20px icon + 6px = 32px wide when the date is hidden */
+  justify-content: center;
+  margin-right: 5px; /* 2px left of the base 3px */
+  border-radius: 6px;
+  background-color: #555;
+}
+#mainEarthDisplay #slider-toggle-wrap:hover,
+#mainEarthDisplay #slider-toggle-wrap:focus-visible { background-color: #666; }
+/* With #earth-date-picker open, it's a full-width row before or after the date and clock */
+#slider-toggle-wrap.earth-picker-open,
+#mainEarthDisplay #slider-toggle-wrap.earth-picker-open {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  height: auto;
+  padding: 6px;
+  z-index: 1000; /* Above #earth-picker-backdrop */
+}
+#mainEarthDisplay #slider-toggle-wrap.earth-picker-open:hover { background-color: #555; }
+#slider-toggle-wrap.earth-picker-open #slider-toggle-date { grid-column: 1; justify-self: end; }
+#slider-toggle-wrap.earth-picker-open #slider-toggle-btn { grid-column: 2; }
+#slider-toggle-wrap.earth-picker-open #earth-date-picker { grid-column: 1 / -1; }
 #slider-toggle-btn { color: #c4c4c4; opacity: 1; } /* A little whiter than the other .earthCircleIcons (#aaa) before hover */
 #slider-toggle-wrap:hover #slider-toggle-btn,
 #slider-toggle-wrap:focus-visible #slider-toggle-btn { color: #fff; opacity: 1; } /* Clock icon turns white anywhere over the wrap */
 #slider-toggle-date {
+  margin-left: 3px;
   color: #fff;
   font-size: 12px;
   cursor: pointer;
@@ -278,6 +303,14 @@ body.dark:has(#slider-on-map) #upIconTray #headerIcons .playPauseButton:focus {
   line-height: 1;
 }
 .earth-zoom-controls .earth-control-zoom { margin-top: 16px; margin-right: -9px; }
+#mainEarthDisplay .earth-zoom-controls .earth-control-zoom { top: -1px; } /* Up 1px. The wrap is pinned by an inline bottom, so margin-top would not move it */
+/* Darker zoom + and - and slider toggle in dark mode */
+.dark #mainEarthDisplay .earth-bar a,
+.dark #mainEarthDisplay #slider-toggle-wrap,
+.dark #mainEarthDisplay #slider-toggle-wrap.earth-picker-open:hover { background-color: #333; }
+.dark #mainEarthDisplay .earth-bar a:hover,
+.dark #mainEarthDisplay #slider-toggle-wrap:hover,
+.dark #mainEarthDisplay #slider-toggle-wrap:focus-visible { background-color: #444; }
 .earthCircleIcons {
   cursor: pointer;
   color: #aaa;
@@ -307,7 +340,7 @@ body.dark:has(#slider-on-map) #upIconTray #headerIcons .playPauseButton:focus {
   position: relative;
   background: #f0f0f0;
   border-top: 1px solid #ccc;
-  padding: 10px 17px 56px;
+  padding: 6px 17px 36px;
   box-sizing: border-box;
 }
 .dark #slider-full { background: #1a2530; border-top-color: #333; }

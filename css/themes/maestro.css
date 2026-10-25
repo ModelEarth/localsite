@@ -261,18 +261,18 @@
   --badge-info-text: #74d4ff;
 }
 
-/* base.css forces white .btn-primary text and a blue .dark .btn-primary, so set the inverted pill explicitly */
+/* base.css forces a blue .dark .btn-primary, so set the black pill explicitly */
 .dark.maestro .btn-primary,
 .dark .maestro .btn-primary {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #262626 !important;
+  background: #000;
+  border-color: #000;
+  color: #fff !important;
 }
 
 .dark.maestro .btn-primary:hover,
 .dark .maestro .btn-primary:hover {
-  background: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
+  background: #262626;
+  border-color: #262626;
 }
 
 .dark.maestro .color-name,

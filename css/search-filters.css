@@ -115,7 +115,7 @@
     background-color: rgb(255 255 255/95%);
   }
   .dark #filterFieldsHolder, .dark .filterFieldsHolderFixed {
-    background-color: rgb(60 60 60/95%);
+    background-color: rgb(10 10 10 / 95%);
     border-bottom: 0px solid #686868;
   }
 }
