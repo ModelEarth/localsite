@@ -219,6 +219,23 @@ function displayCharts(param) {
     });
     }
 
+    // "Rerun Report" in the upper right: opens realitystream/models with this report's parameters.yaml,
+    // which holds its models and any split, search, importance and hyperparameters settings.
+    // The models page loads a YAML URL from #customYamlUrl, and #report= (this page) gives it a link back here
+    // and the name its new report starts with. Local and model.earth pages stay on their own site.
+    function addRerunButton(yamlUrl) {
+        if (document.getElementById('rerunReport')) return;
+        const host = window.location.hostname;
+        const local = host === 'localhost' || host === '127.0.0.1' || /(^|\.)model\.earth$/.test(host);
+        const modelsUrl = (local ? '/' : 'https://model.earth/') + 'realitystream/models/#customYamlUrl='
+            + encodeURIComponent(yamlUrl) + '&report=' + encodeURIComponent(window.location.href.split('#')[0]);
+        const button = $('<a id="rerunReport" class="btn btn-primary"></a>')
+            .attr({ href: modelsUrl, title: 'Open Run Models with this report\'s parameters.yaml' })
+            .text('Rerun Report')
+            .css({ float: 'right', margin: '0 0 12px 16px', color: '#fff', textDecoration: 'none' });
+        $('#exploreOutput').parent().prepend(button);
+    }
+
     // Charts, tables and links for the report's files. rawUrl(path) is a file's content, viewUrl(path) its page.
     function renderChartFiles(allFiles, rawUrl, viewUrl) {
             console.log('[displayCharts] Total files found:', allFiles.length);
@@ -236,6 +253,11 @@ function displayCharts(param) {
             const displayOtherFiles = otherFiles.filter(f => 
                 !/index\.html$/i.test(f.path)
             );
+
+            const yamlFile = allFiles.find(f => /(^|\/)parameters\.yaml$/i.test(f.path));
+            if (yamlFile) {
+                addRerunButton(new URL(rawUrl(yamlFile.path), window.location.href).href);
+            }
 
             if (allFiles.length === 0) {
                 console.warn('[displayCharts] No files found in folder:', currentFolder);
