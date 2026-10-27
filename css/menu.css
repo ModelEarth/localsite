@@ -645,6 +645,9 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
 #main-nav {
     z-index: 10001; /* Above ordinary page content but behind #mobileRailBar (z-index: 10100) */
 }
+:root:not(.dark) body:not(.dark) #main-nav {
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white over photos and maps, as on project/goals */
+}
 @media (max-width: 600px) {
 	.sidecolumnLeft {
 	    font-size: 18px;

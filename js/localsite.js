@@ -3167,12 +3167,20 @@ function revealFilters() {
   $(".hideWhenPop").show();
   $('html,body').scrollTop(0);
 }
+// The Earth map (#mainEarthDisplay) goes in the page's #fullscreen when it has one (as project/goals does),
+// over what's there, such as hero images. Otherwise it stays where info/template-main.html puts it.
+function placeEarthDisplay() {
+  var fullscreen = document.getElementById('fullscreen');
+  var earthDisplay = document.getElementById('mainEarthDisplay');
+  if (fullscreen && earthDisplay && earthDisplay.parentElement !== fullscreen) fullscreen.appendChild(earthDisplay);
+}
 function showGlobalMap(globalMap) { // Used by community/index.html, green-sah
   // If a page manages its own #mainframe outside #mainEarthDisplay, don't create a duplicate.
   var existingFrame = document.getElementById('mainframe');
   if (existingFrame && !$('#mainEarthDisplay').find('#mainframe').length) {
     return;
   }
+  placeEarthDisplay(); // Before the iframe loads, since moving an iframe reloads it
 
   $("#mainEarthDisplay").show();
 

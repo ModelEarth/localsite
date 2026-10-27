@@ -37,8 +37,8 @@
               <i class="material-icons show-on-load" style="font-size:40px;" data="apps">&#xE5E0;</i>
             </div>
             -->
-            <div class="showWideX" style="displayX:none; padding:10px">
-              <i class="material-icons show-on-load" style="font-size:32px;" data="apps">&#xE5CD;</i>
+            <div class="showWideX" style="displayX:none; padding:14px 8px 7px 12px">
+              <i class="material-icons show-on-load" style="font-size:30px;" data="apps">&#xE5CD;</i>
             </div>
         </div>
 
@@ -47,34 +47,30 @@
       <div style="float:right">
         <div style="float:left">
           <div class="earth" style="display:none">
-          <div class="showSearch" style="padding:10px;padding-right:5px">            
-            <i class="material-icons show-on-load" style="font-size:34px;opacity:0.7;" data="apps">&#xE8B6;</i>
+          <div class="showSearch" style="padding:13px 5px 10px 10px">
+            <i class="material-icons show-on-load" style="font-size:28px;" data="apps">&#xE8B6;</i>
           </div>
-          </div>
-        </div>
-        <div class="earth" style="display:none; float:left; padding:10px">
-          <div class="showEarth">
-            <i class="material-icons show-on-load" style="font-size:34px;opacity:0.7;" data="apps">&#xE894;</i>
           </div>
         </div>
         <!-- Dark/light mode (darkModeToggle in localsite.js). Always shown. -->
-        <div style="float:left; padding:10px; padding-left:2px">
+        <div style="float:left; padding:13px 5px 10px 2px">
           <div class="darkModeToggle" role="button" title="Toggle dark mode" aria-pressed="false" style="cursor:pointer">
-            <i class="material-icons show-on-load" style="font-size:34px;opacity:0.7;">light_mode</i>
+            <i class="material-icons show-on-load" style="font-size:28px;">light_mode</i>
           </div>
         </div>
-        <!-- Reload the page, staying in browser full screen (reloadPage in navigation.js). Always shown. -->
-        <div style="float:left; padding:10px; padding-left:0">
+        <!-- Reload the page, staying in browser full screen (reloadPage in navigation.js). Shown only when
+             Settings > Reload Icon is Top Setting (#reloadIconPosition in navigation.js). -->
+        <div class="reloadPageHolder" style="display:none; float:left; padding:13px 5px 10px 0">
           <div class="reloadPage" title="Reload page" style="cursor:pointer">
-            <i class="material-icons show-on-load" style="font-size:34px;opacity:0.7;">refresh</i>
+            <i class="material-icons show-on-load" style="font-size:28px;">refresh</i>
           </div>
         </div>
         <div class="hideNarrow" style="float:left">
             <div class="closeSideTabs expandToFullscreen" style="border:0px; padding:10px; padding-left:5px">
-                <i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D0;</i>
+                <i class="material-icons menuTopIcon" style="font-size:36px;margin-top:-1px">&#xE5D0;</i>
             </div>
             <div class="closeSideTabs reduceFromFullscreen" style="display:none; border:0px; padding:10px; padding-left:5px">
-                <i class="material-icons menuTopIcon" style="font-size:42px;opacity:0.7;margin-top:-4px">&#xE5D1;</i>
+                <i class="material-icons menuTopIcon" style="font-size:36px;margin-top:-1px">&#xE5D1;</i>
             </div>
         </div>
 
@@ -446,7 +442,22 @@
               
                 </div>
               </div>
+              <div class="setDiv"></div>
             </div>
+
+            <!-- Where the .reloadPage icon shows, saved in localStorage (navigation.js), with a reload button
+                 beside it that always shows (.menuTitleIcons for the round icon style) -->
+            <div class="setLeft">Reload Icon</div>
+            <div class="setOverflow"><div class="setRight" style="display:flex; align-items:center; gap:8px">
+                <select id="reloadIconPosition" style="flex:1; min-width:0; margin-right:0">
+                  <option value="hidden" selected>Hidden</option>
+                  <option value="top">Top Setting</option>
+                </select>
+                <div class="menuTitleIcons">
+                  <button type="button" class="reloadPage" title="Reload page" aria-label="Reload page"><i class="material-icons">refresh</i></button>
+                </div>
+            </div></div>
+            <div class="setDiv"></div>
             <br />
             <br><br>
 

@@ -1219,6 +1219,7 @@ function hashChanged() {
         //$("#filterLocations").show();$("#locationFilterHolder").show();$("#imagineBar").show();
         //$("#geomap").show(); // To trigger map filter display below.
         if (hash.geoview == "earth") {
+            if (typeof placeEarthDisplay === "function") placeEarthDisplay(); // In #fullscreen when the page has one (localsite.js)
             $("#mainEarthDisplay").show();
         } else if (!hash.geoview && priorHash.geoview == "earth") {
             $("#mainEarthDisplay").hide();
@@ -9458,6 +9459,24 @@ $(document).on("click", ".reloadPage", function(event) {
     document.addEventListener('pointerdown', onGesture, true);
     document.addEventListener('keydown', onGesture, true);
 })();
+
+// Settings > Reload Icon (#reloadIconPosition): Hidden or Top Setting, saved in localStorage.
+// The .reloadPage icon (its .reloadPageHolder) shows only for Top Setting.
+function getReloadIconPosition() {
+    try { return localStorage.getItem('reloadIconPosition') || 'hidden'; } catch (e) { return 'hidden'; }
+}
+function setReloadIconPosition(position) {
+    $(".reloadPageHolder").toggle(position === 'top');
+}
+onElmReady('#reloadIconPosition', function(select) {
+    const position = getReloadIconPosition();
+    select.value = position;
+    setReloadIconPosition(position);
+});
+$(document).on("change", "#reloadIconPosition", function(event) {
+    try { localStorage.setItem('reloadIconPosition', this.value); } catch (e) {}
+    setReloadIconPosition(this.value);
+});
 
 // Auto-close right navigation when dropdowns change in settings panel on narrow screens
 $(document).on("change", ".settingsPanel select", function(event) {
