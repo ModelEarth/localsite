@@ -492,7 +492,7 @@ EarthFilters.prototype.render = function() {
     '</div>' +
 
     '<div class="ef-tab-panel ef-about" data-tab-panel="about" role="tabpanel" hidden>' +
-      '<p>Wind, weather, ocean and pollution conditions from <a href="https://earth.nullschool.net/about" target="_blank" rel="noopener">earth.nullschool.net</a> by Cameron Beccario.<br>Forecast by supercomputers and updated every three hours.</p>' +
+      '<p>Wind, weather, ocean and pollution conditions from <a href="https://earth.nullschool.net/about" target="_blank" rel="noopener">earth.nullschool.net</a> by Cameron Beccario. Forecast by supercomputers and updated every three hours.</p>' +
       aboutOverlays +
     '</div>' +
 

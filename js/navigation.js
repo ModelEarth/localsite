@@ -8234,6 +8234,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
     // (matching the modelsite cookie, then domain_contains, then support/site/config.yaml's default),
     // corrects a stale/foreign modelsite cookie against it, and updates the favicon.
     // Returns the (possibly corrected) modelsite so the caller can use it for branding.
+    let resolvedSite = null; // The site's entry in support/site/config.yaml, for runBranding
     function resolveSiteFromWebroot() {
         if (typeof window.loadWebrootYaml !== 'function') return Promise.resolve(modelsite);
         return window.loadWebrootYaml().then(function(result) {
@@ -8266,6 +8267,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                 Cookies.set('modelsite', matchedId);
                 setModelsite(matchedId);
             }
+            resolvedSite = matchedSite;
             console.log('domain_contains filter from support/site/config.yaml  - ' + (matchedSite && matchedSite.domain_contains || 'none'));
             console.log('domain_contains - ' + location.host + (matchMethod === 'default'
                 ? ' no domain match, using default "' + matchedId + '"'
@@ -8434,6 +8436,13 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         showClassInline(".earth");
         console.log(".earth display");
         earthFooter = true;
+    }
+    // header_icon: earth in the site's support/site/config.yaml entry shows the earth icon (as on project/goals)
+    // in place of the site's logo, with #headerSiteTitle still to its right. Its size is inline, since the
+    // Material Icons stylesheet's 24px can load after base.css.
+    if (resolvedSite && resolvedSite.header_icon === "earth") {
+        param.headerLogo = "";
+        param.headerLogoSmall = "<i class='material-icons headerEarthIcon' style='font-size:34px' aria-hidden='true'>language</i>";
     }
     if (localStorage.state == "GA") {
         showClassInline(".garesource");

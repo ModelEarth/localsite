@@ -2402,6 +2402,16 @@ body.dark .config-field select {
   top: 50%;
   transform: translate(0%, -50%);
 }
+/* No text selection, tap highlight or click outline on the header logo and title (keyboard focus still shows) */
+#logoholder,
+#logoholder * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#logoholder :focus:not(:focus-visible) {
+  outline: none;
+}
 #logoholderbar {
   padding: 0px 14px 0 0;
 }
@@ -2411,6 +2421,20 @@ body.dark .config-field select {
 #headerLogo {
   margin-right: 4.5px;
   float: left;
+}
+/* The earth icon logo, for a site with header_icon: earth in support/site/config.yaml (navigation.js) */
+.headerEarthIcon {
+  display: block;
+  line-height: 1;
+}
+#headerLogo .headerEarthIcon { /* The id keeps it grey over pages that whiten header icons (project/goals) */
+  color: rgb(238, 238, 238);
+  opacity: 0.7;
+  margin-right: 6px;
+}
+#headerLogo a:hover .headerEarthIcon {
+  color: #fff;
+  opacity: 1;
 }
 #headerLogo img { /* Keep the logo on one line when a CSS reset (e.g. Tailwind preflight) sets img to block */
   display: inline;
