@@ -3369,6 +3369,70 @@ body.sidebar-hovered {
     height: 100%;
     min-height: 0;
 }
+/* Scrolling over the Earth iframe in #fullscreen moves the page until the globe is clicked (initEarthScrollCover()
+   in localsite.js adds .earthScrollActive); then the globe takes the pointer. */
+#globalMapHolder.earthScrollCover iframe {
+    pointer-events: none;
+}
+#globalMapHolder.earthScrollCover:not(.earthScrollActive) {
+    cursor: pointer;
+}
+#globalMapHolder.earthScrollCover.earthScrollActive iframe {
+    pointer-events: auto;
+}
+/* The circle left of the close-X (#earthClose: 32px, 20px from the right, 22px down) that gives scrolling back to the page */
+#earthScrollButton {
+    position: absolute;
+    z-index: 101;
+    right: 60px;
+    top: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: #555;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+#earthScrollButton:hover {
+    background-color: #333;
+}
+#earthScrollButton[hidden] {
+    display: none;
+}
+#earthScrollButton .material-icons {
+    display: block;
+    font-size: 22px;
+    line-height: 1;
+}
+/* Countdown ring on its edge: a grey arc grows clockwise from the top over --earth-scroll-ms (EARTH_SCROLL_MS in
+   localsite.js), closing the circle as scrolling returns. */
+.earthScrollRing {
+    position: absolute;
+    inset: -2px;
+    width: 36px;
+    height: 36px;
+    pointer-events: none;
+    overflow: visible;
+}
+.earthScrollRing circle {
+    fill: none;
+    stroke: #808080;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: 100 100;
+    stroke-dashoffset: 100;
+}
+.earthScrollRun .earthScrollRing circle {
+    animation: earthScrollRing var(--earth-scroll-ms, 8s) linear forwards;
+}
+@keyframes earthScrollRing {
+    from { stroke-dashoffset: 100; }
+    to { stroke-dashoffset: 0; }
+}
 #fullscreen > #earthPlayPauseButton {
     position: absolute;
     z-index: 102; /* Above the map's controls (100 and 101) */
@@ -3393,6 +3457,152 @@ body.sidebar-hovered {
     font-size: 28px;
     line-height: 1;
 }
+/* In #fullscreen, the map's zoom + and - buttons sit side by side to the left of the play/pause button, as
+   circles like it (8px apart). In the lower left, 10px in, a tune circle (#earthControlsToggle, initEarthControls()
+   in localsite.js) shows and hides the "Model Controls" and date and clock buttons below it, in #earthControlsGroup. */
+#fullscreen > #mainEarthDisplay .earth-zoom-controls {
+    right: 68px !important; /* The play/pause button's 20px, its 40px width and 8px. Over the inline right and bottom from nouislider.min.js */
+    bottom: 35px !important;
+}
+#fullscreen > #mainEarthDisplay .earth-zoom-controls .earth-control-zoom {
+    display: flex;
+    gap: 8px;
+    margin: 0;
+    top: 0;
+}
+#fullscreen > #mainEarthDisplay .earth-bar a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0 0 4px 4px; /* The + and - 2px up and 2px right of center */
+    border-radius: 50%;
+    font-size: 28px;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.75);
+    background-color: rgba(40, 40, 40, 0.6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+#fullscreen > #mainEarthDisplay .earth-bar a:hover,
+#fullscreen > #mainEarthDisplay .earth-bar a:focus-visible {
+    color: #fff;
+    background-color: rgba(20, 20, 20, 0.85);
+}
+#earthControls {
+    position: absolute;
+    z-index: 1002;
+    left: 10px;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+#earthControlsGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+#earthControlsGroup[hidden] {
+    display: none;
+}
+#earthControlsToggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.75);
+    background-color: rgba(40, 40, 40, 0.6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+#earthControlsToggle:hover,
+#earthControlsToggle:focus-visible,
+#earthControlsToggle[aria-expanded="true"] {
+    color: #fff;
+    background-color: rgba(20, 20, 20, 0.85);
+}
+#earthControlsToggle .material-icons {
+    font-size: 26px;
+    line-height: 1;
+}
+/* A black tab behind the circle, 110px wide with the circle's rounded ends. Clicks on it toggle too. */
+#earthControlsToggle::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 110px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: #000;
+    z-index: -1;
+}
+/* The clock first, then the date always showing to its right */
+#earthControlsGroup #slider-toggle-wrap {
+    position: static;
+    margin-right: 0;
+    flex-direction: row-reverse;
+}
+#earthControlsGroup #slider-toggle-date {
+    display: inline !important; /* nouislider.min.js hides it until the slider or clock is used */
+    margin-left: 0;
+}
+#earthControlsGroup #slider-toggle-wrap:not(.earth-picker-open) {
+    width: 150px;
+    justify-content: flex-end; /* The left end, since the row is reversed */
+}
+#earthControlsGroup #slider-toggle-wrap.earth-picker-open {
+    grid-template-columns: auto 1fr;
+}
+/* The earth filters' toggle (.ef-map-toggle, earth-filters.js) above it, as a "Model Controls" button of the
+   same width. Its menu shows 10px above the tune circle. */
+#earthControlsGroup .ef-map-toggle {
+    position: static;
+    width: 150px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 6px;
+    background-color: #555;
+    color: #fff;
+    font-size: 12px;
+    white-space: nowrap;
+}
+#earthControlsGroup .ef-map-toggle:hover,
+#earthControlsGroup .ef-map-toggle:focus-visible {
+    background-color: #666;
+}
+.dark #earthControlsGroup .ef-map-toggle {
+    background-color: #333;
+}
+.dark #earthControlsGroup .ef-map-toggle:hover,
+.dark #earthControlsGroup .ef-map-toggle:focus-visible {
+    background-color: #444;
+}
+#earthControlsGroup .ef-map-toggle .ef-map-toggle-icon {
+    display: block;
+    font-size: 20px;
+    line-height: 1;
+}
+#earthControlsGroup .ef-map-toggle .ef-map-toggle-label {
+    display: inline;
+}
+#fullscreen > #mainEarthDisplay .earth-filters.ef-map-menu {
+    left: 10px;
+    bottom: 144px;
+}
+#earthControlsGroup #slider-toggle-wrap.earth-picker-open #slider-toggle-btn { grid-column: 1; }
+#earthControlsGroup #slider-toggle-wrap.earth-picker-open #slider-toggle-date { grid-column: 2; justify-self: start; }
 
 /* Navigation Menu */
 #side-nav-fixed {

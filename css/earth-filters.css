@@ -391,6 +391,10 @@
 .ef-map-toggle:focus-visible {
   background: rgb(59 130 246 / 0.15);
 }
+.ef-map-toggle-icon,
+.ef-map-toggle-label {
+  display: none; /* Shown in #fullscreen (localsite/css/base.css) */
+}
 
 /* Modals */
 .earth-filters .ef-modal {

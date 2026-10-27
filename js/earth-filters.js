@@ -716,6 +716,7 @@ EarthFilters.prototype.choose = function(group, name) {
     case 'tab':
       this.tab = name;
       this.update();
+      this.liftMapPanel();
       return; // Not a map change
     case 'language':
       this.language = getEarthFiltersLanguage(name);
@@ -936,7 +937,10 @@ EarthFilters.prototype.setupMapPanel = function() {
   this.mapToggle = document.createElement('button');
   this.mapToggle.type = 'button';
   this.mapToggle.className = 'ef-map-toggle';
-  this.mapToggle.title = 'Map Filters Menu';
+  this.mapToggle.title = 'Model Controls';
+  // Its icon and label show where the toggle is a button of its own (in #fullscreen, localsite/css/base.css).
+  // Elsewhere it's a clear outline over nullschool's "earth" button.
+  this.mapToggle.innerHTML = '<i class="material-icons ef-map-toggle-icon" aria-hidden="true">tune</i><span class="ef-map-toggle-label">Model Controls</span>';
   this.mapToggle.setAttribute('aria-haspopup', 'menu');
   this.mapToggle.setAttribute('aria-expanded', 'false');
   this.mapToggle.addEventListener('click', function(event) {
@@ -1033,6 +1037,17 @@ EarthFilters.prototype.clipMapPanel = function(right, bottom, left) {
   this.container.querySelectorAll('.ef-corner').forEach(function(corner) {
     corner.style.visibility = offMap[corner.getAttribute('data-corner')] ? 'hidden' : '';
   });
+};
+
+// After a tab change over the map, a panel dragged partly below the map's bottom edge moves up, so the tab's
+// content isn't hidden by the map's bottom. The new place is saved, as after a drag.
+EarthFilters.prototype.liftMapPanel = function() {
+  if (this.place !== 'over' || !this.isOpen || !this.box || this.box.bottom >= 0) {
+    return;
+  }
+  this.box.bottom = Math.max(0, Math.min(earthFiltersPanelGap, this.mapContainer.clientHeight - this.container.offsetHeight));
+  writeEarthFiltersStorage(this.storageKeys.box, JSON.stringify(this.box));
+  this.applyMapPanelBox();
 };
 
 // Sets the panel's size and its offset from the map's lower left corner. Its top stays on the map, and at least earthFiltersPanelGrip of it.

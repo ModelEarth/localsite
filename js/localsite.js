@@ -3173,6 +3173,97 @@ function placeEarthDisplay() {
   var fullscreen = document.getElementById('fullscreen');
   var earthDisplay = document.getElementById('mainEarthDisplay');
   if (fullscreen && earthDisplay && earthDisplay.parentElement !== fullscreen) fullscreen.appendChild(earthDisplay);
+  if (fullscreen && earthDisplay && earthDisplay.parentElement === fullscreen) {
+    initEarthScrollCover(document.getElementById('globalMapHolder'));
+    initEarthControls(earthDisplay);
+  }
+}
+// In #fullscreen, the lower left of the map has a tune circle (#earthControlsToggle) that shows and hides the
+// "Model Controls" button (.ef-map-toggle, earth-filters.js) and the date and clock button (#slider-toggle-wrap,
+// nouislider.min.js) below it, in #earthControlsGroup (base.css). Each is moved in once it's created. While they
+// show, <html> has .earthControlsOpen, which a page can use to clear the map (project/goals hides #goalsMain),
+// and the #mainEarthFilters panel is open.
+function initEarthControls(earthDisplay) {
+  if (document.getElementById('earthControls')) return;
+  var controls = document.createElement('div');
+  controls.id = 'earthControls';
+  controls.innerHTML = '<div id="earthControlsToggle" role="button" tabindex="0" title="Map controls" aria-label="Map controls" aria-expanded="false" aria-controls="earthControlsGroup">' +
+    '<i class="material-icons" aria-hidden="true">tune</i></div>' +
+    '<div id="earthControlsGroup" hidden></div>';
+  earthDisplay.appendChild(controls);
+  var toggle = document.getElementById('earthControlsToggle');
+  var group = document.getElementById('earthControlsGroup');
+  toggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    group.hidden = !group.hidden;
+    toggle.setAttribute('aria-expanded', group.hidden ? 'false' : 'true');
+    document.documentElement.classList.toggle('earthControlsOpen', !group.hidden);
+    // The filters panel (#mainEarthFilters, showEarthFilters() below) shows and hides with the group
+    if (mainEarthFilters && typeof mainEarthFilters.setMapPanelOpen === 'function') {
+      mainEarthFilters.setMapPanelOpen(!group.hidden);
+    }
+  });
+  toggle.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
+  });
+  waitForElm('#mainEarthDisplay .ef-map-toggle').then(function(mapToggle) {
+    group.insertBefore(mapToggle, group.firstChild);
+  });
+  waitForElm('#slider-toggle-wrap').then(function(wrap) {
+    group.appendChild(wrap);
+  });
+}
+// In #fullscreen (project/goals, engine), the Earth iframe would take the mouse wheel for its globe, which stops the
+// page scrolling. So it ignores the pointer (base.css) until it's clicked, and scrolling over it moves the page.
+// A click (landing on #globalMapHolder beneath) hands it the pointer. Page scrolling comes back with the
+// #earthScrollButton circle left of the close-X, a click elsewhere on the page, or on its own EARTH_SCROLL_MS
+// after the click, as its ring closes. Clicks inside the globe go to nullschool's page, another site, so they
+// can't be seen here.
+var EARTH_SCROLL_MS = 8000;
+var earthScrollTimer = null;
+function setEarthScrollActive(holder, on) {
+  holder.classList.toggle('earthScrollActive', on);
+  var btn = document.getElementById('earthScrollButton');
+  if (btn) {
+    btn.hidden = !on;
+    // Restart the countdown ring (base.css), which closes at the top as the time runs out
+    btn.classList.remove('earthScrollRun');
+    if (on) { void btn.offsetWidth; btn.classList.add('earthScrollRun'); }
+  }
+  clearTimeout(earthScrollTimer);
+  if (on) earthScrollTimer = setTimeout(function() { setEarthScrollActive(holder, false); }, EARTH_SCROLL_MS);
+}
+function initEarthScrollCover(holder) {
+  if (!holder || holder.classList.contains('earthScrollCover')) return;
+  holder.classList.add('earthScrollCover');
+  holder.title = 'Click to use the globe. Until then, scrolling moves the page.';
+  holder.addEventListener('click', function() { setEarthScrollActive(holder, true); });
+  document.addEventListener('click', function(e) {
+    if (holder.classList.contains('earthScrollActive') && !holder.contains(e.target)) setEarthScrollActive(holder, false);
+  });
+  // createEarthZoomControls() in nouislider.min.js adds #earthClose when the map first opens
+  waitForElm('#earthClose').then(function(close) {
+    if (document.getElementById('earthScrollButton')) return;
+    var btn = document.createElement('div');
+    btn.id = 'earthScrollButton';
+    btn.className = 'earthCircleIcons';
+    btn.setAttribute('role', 'button');
+    btn.setAttribute('tabindex', '0');
+    btn.title = 'Scroll the page again';
+    btn.setAttribute('aria-label', 'Scroll the page again');
+    btn.style.setProperty('--earth-scroll-ms', EARTH_SCROLL_MS + 'ms');
+    // Countdown ring: one arc that starts at the top and runs clockwise, closing the circle when EARTH_SCROLL_MS has passed
+    btn.innerHTML = '<i class="material-icons" aria-hidden="true">swap_vert</i>' +
+      '<svg class="earthScrollRing" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" pathLength="100" transform="rotate(-90 20 20)"/></svg>';
+    var active = holder.classList.contains('earthScrollActive');
+    btn.hidden = !active;
+    if (active) btn.classList.add('earthScrollRun');
+    btn.addEventListener('click', function(e) { e.stopPropagation(); setEarthScrollActive(holder, false); });
+    btn.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
+    });
+    close.parentNode.insertBefore(btn, close.nextSibling);
+  });
 }
 function showGlobalMap(globalMap) { // Used by community/index.html, green-sah
   // If a page manages its own #mainframe outside #mainEarthDisplay, don't create a duplicate.
