@@ -3466,7 +3466,8 @@ body.sidebar-hovered {
 }
 /* In #fullscreen, the map's zoom + and - buttons sit side by side to the left of the play/pause button, as
    circles like it (8px apart). In the lower left, 10px in, a tune circle (#earthControlsToggle, initEarthControls()
-   in localsite.js) shows and hides the "Model Controls" and date and clock buttons below it, in #earthControlsGroup. */
+   in localsite.js), in a dark bar with the date to its right, opens and closes the filters panel (#mainEarthFilters).
+   A click on the date shows its picker in its place. While the filters panel is open, the clock replaces the tune circle. */
 #fullscreen > #mainEarthDisplay .earth-zoom-controls {
     right: 68px !important; /* The play/pause button's 20px, its 40px width and 8px. Over the inline right and bottom from nouislider.min.js */
     bottom: 35px !important;
@@ -3500,7 +3501,7 @@ body.sidebar-hovered {
 }
 #earthControls {
     position: absolute;
-    z-index: 1002;
+    z-index: 0;
     left: 10px;
     bottom: 10px;
     display: flex;
@@ -3508,16 +3509,117 @@ body.sidebar-hovered {
     align-items: flex-start;
     gap: 10px;
 }
-#earthControlsGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+/* While the bar is open for the date's picker (.earthDateOpen, localsite.js), it comes in front of everything else on
+   the map: the filters panel over the map (1003, earth-filters.css), its menu (1004) and the map's buttons. project/goals
+   raises #fullscreen above its page meanwhile (goals.css). */
+html.earthDateOpen #earthControls {
+    z-index: 1005;
 }
-#earthControlsGroup[hidden] {
+/* Under the map in #fullscreen, after it in the page (#earthUnderMap, placeEarthDisplay() in localsite.js), the
+   3-day time slider (#slider-full, in #earthSlidersUnder), large or small. The filters panel set to "Under Map"
+   (#mainEarthFilters) follows it. Positioned, so it paints over a fixed #fullscreen
+   (project/goals) like the page's other content. */
+#earthUnderMap {
+    position: relative;
+}
+/* "Small Slider" here is the 3-day slider (#slider-full, data-earth-slider="onmap" from applySliderPrefs() in
+   nouislider.min.js) drawn like the one-day slider on the map: a thin dark bar across the whole width, its hours
+   on the bar, and the active hour in a black box that drags, without the day names. The one-day #slider-on-map
+   stays hidden, still driving playback and the arrow keys, which keep the two in step through the hash. */
+#earthSlidersUnder > #slider-on-map {
+    display: none !important;
+}
+html[data-earth-slider="onmap"] #earthSlidersUnder > #slider-full {
+    display: block !important; /* Over the inline display: none for the small slider */
+    padding: 6px 17px; /* The sides leave room for the box at either end */
+    border-top: 0;
+    background: transparent;
+}
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-days,
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-marker {
     display: none;
 }
-#earthControlsToggle {
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track {
+    height: 12px;
+    border: 0;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: none;
+}
+html[data-earth-slider="onmap"] .dark #earthSlidersUnder #slider-full-track {
+    background-color: rgba(10, 16, 22, 0.7);
+}
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track::before,
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track::after {
+    z-index: 0; /* The lines between the days, under the active hour's box */
+    background: rgba(255, 255, 255, 0.35);
+}
+/* The hours on the bar */
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-pips-horizontal {
+    top: 0;
+    height: 12px;
+    padding: 0;
+}
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-value {
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.9);
+}
+/* The active hour, in a black box that drags */
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-handle {
+    height: 17px;
+    top: -3px;
+    border: 1px solid #D9D9D9;
+    border-radius: 3px;
+    box-shadow: none;
+}
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-handle::before,
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-handle::after {
+    display: none;
+}
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-touch-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border-radius: 2px;
+    background: #000;
+    color: #fff;
+    font-size: 11px;
+    line-height: 1;
+    cursor: grab;
+}
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-touch-area::after {
+    content: attr(data-hour); /* Set by createFullSlider() in nouislider.min.js */
+}
+/* The dark bar: the tune circle with the date to its right, 127px wide or more. Clicks on the date open its picker. */
+#earthControlsBar {
     position: relative;
+    top: -5px; /* 5px above and 1px left of its place in #earthControls */
+    left: -1px;
+    display: flex;
+    align-items: stretch;
+    gap: 0; /* #slider-toggle-wrap right against the circle */
+    box-sizing: border-box;
+    min-width: 127px;
+    padding-right: 14px;
+    border-radius: 20px;
+    background-color: #333;
+}
+/* The column on the left: the tune circle, or the clock (#slider-toggle-btn) in its place while the filters panel is
+   open. Above #earth-picker-backdrop, so the clock can close the picker. */
+#earthControlsIcons {
+    position: relative;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 6px;
+}
+#earthControlsToggle {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3535,81 +3637,107 @@ body.sidebar-hovered {
     color: #fff;
     background-color: rgba(20, 20, 20, 0.85);
 }
+/* The filters panel's three-dot button (earth-filters.js) at the right end of its tabs, in a 32px circle */
+#mainEarthFilters .ef-more {
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.75);
+    background-color: rgba(40, 40, 40, 0.6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+#mainEarthFilters .ef-more .ef-md {
+    width: 24px;
+    height: 24px;
+}
+#mainEarthFilters .ef-more .ef-md circle {
+    stroke: currentColor;
+    stroke-width: 44; /* Bolder dots: their 46 radius out to 68, in the icon's 960 viewBox */
+}
+#mainEarthFilters .ef-more:hover,
+#mainEarthFilters .ef-more:focus-visible,
+#mainEarthFilters .ef-more[aria-expanded="true"] {
+    color: #fff;
+    background-color: rgba(20, 20, 20, 0.85);
+}
 #earthControlsToggle .material-icons {
     font-size: 26px;
     line-height: 1;
 }
-/* A black tab behind the circle, 110px wide with the circle's rounded ends. Clicks on it toggle too. */
-#earthControlsToggle::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 110px;
-    height: 40px;
-    border-radius: 20px;
-    background-color: #000;
-    z-index: -1;
-}
-/* The clock first, then the date always showing to its right */
-#earthControlsGroup #slider-toggle-wrap {
-    position: static;
-    margin-right: 0;
-    flex-direction: row-reverse;
-}
-#earthControlsGroup #slider-toggle-date {
-    display: inline !important; /* nouislider.min.js hides it until the slider or clock is used */
-    margin-left: 0;
-}
-#earthControlsGroup #slider-toggle-wrap:not(.earth-picker-open) {
-    width: 150px;
-    justify-content: flex-end; /* The left end, since the row is reversed */
-}
-#earthControlsGroup #slider-toggle-wrap.earth-picker-open {
-    grid-template-columns: auto 1fr;
-}
-/* The earth filters' toggle (.ef-map-toggle, earth-filters.js) above it, as a "Model Controls" button of the
-   same width. Its menu shows 10px above the tune circle. */
-#earthControlsGroup .ef-map-toggle {
-    position: static;
-    width: 150px;
-    height: 32px;
-    display: flex;
+#earthControlsIcons #slider-toggle-btn {
+    display: none;
     align-items: center;
-    gap: 6px;
-    padding: 0 8px;
-    border: 0;
-    border-radius: 6px;
-    background-color: #555;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    opacity: 1; /* Over .earthCircleIcons */
+    color: rgba(255, 255, 255, 0.75);
+    background-color: rgba(40, 40, 40, 0.6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+#earthControlsBar.earthFiltersOpen #slider-toggle-btn {
+    display: flex;
+}
+#earthControlsBar.earthFiltersOpen #earthControlsToggle {
+    display: none;
+}
+#earthControlsIcons #slider-toggle-btn:hover {
     color: #fff;
-    font-size: 12px;
-    white-space: nowrap;
+    background-color: rgba(20, 20, 20, 0.85);
 }
-#earthControlsGroup .ef-map-toggle:hover,
-#earthControlsGroup .ef-map-toggle:focus-visible {
-    background-color: #666;
-}
-.dark #earthControlsGroup .ef-map-toggle {
-    background-color: #333;
-}
-.dark #earthControlsGroup .ef-map-toggle:hover,
-.dark #earthControlsGroup .ef-map-toggle:focus-visible {
-    background-color: #444;
-}
-#earthControlsGroup .ef-map-toggle .ef-map-toggle-icon {
-    display: block;
-    font-size: 20px;
+#earthControlsIcons #slider-toggle-btn .material-icons {
+    font-size: 26px;
     line-height: 1;
 }
-#earthControlsGroup .ef-map-toggle .ef-map-toggle-label {
-    display: inline;
+/* The date, level with the tune circle, showing until it's clicked */
+#mainEarthDisplay #earthControlsBar #slider-toggle-wrap {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 6px;
+    height: auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    background-color: transparent;
 }
-#fullscreen > #mainEarthDisplay .earth-filters.ef-map-menu {
-    left: 10px;
-    bottom: 144px;
+/* A click on the date hides it, and its picker (nouislider.min.js) takes its place as one row: the date and time,
+   then the slider position and speed */
+#mainEarthDisplay #earthControlsBar #slider-toggle-wrap.earth-picker-open #slider-toggle-date {
+    display: none !important;
 }
-#earthControlsGroup #slider-toggle-wrap.earth-picker-open #slider-toggle-btn { grid-column: 1; }
-#earthControlsGroup #slider-toggle-wrap.earth-picker-open #slider-toggle-date { grid-column: 2; justify-self: start; }
+#earthControlsBar #earth-date-picker {
+    grid-template-columns: repeat(4, auto);
+    box-sizing: border-box;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+#earthControlsBar #slider-toggle-date {
+    display: block !important; /* nouislider.min.js hides it until the slider or clock is used */
+    margin-left: 0;
+    line-height: 40px;
+    opacity: 0.85;
+}
+#earthControlsBar #slider-toggle-wrap:hover #slider-toggle-date,
+#earthControlsBar #slider-toggle-wrap:focus-visible #slider-toggle-date {
+    opacity: 1;
+}
+/* The tune circle opens the filters panel here, so its own toggle over nullschool's "earth" button
+   (.ef-map-toggle, earth-filters.js), which the bar would cover, is hidden. */
+#fullscreen > #mainEarthDisplay > .ef-map-toggle {
+    display: none;
+}
 
 /* Navigation Menu */
 #side-nav-fixed {

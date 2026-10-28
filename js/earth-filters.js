@@ -103,7 +103,7 @@ var earthFiltersSources = {
   ovation: 'OVATION / SWPC / NCEP / NWS / NOAA'
 };
 
-// Sources and details for the About tab. The heights and units are the ones the nullschool site script offers for each overlay.
+// Sources and details for the Overlays tab (about). The heights and units are the ones the nullschool site script offers for each overlay.
 var earthFiltersOverlayDetails = {
   wind: {source: earthFiltersSources.gfs, details: 'Speed of the wind at the surface or a chosen height (1000 to 10 hPa). Forecasts every 3 hours, up to 5 days ahead. km/h, m/s, kn, mph.'},
   temp: {source: earthFiltersSources.gfs, details: 'Air temperature at the surface or a chosen height (1000 to 10 hPa). °C, °F, K.'},
@@ -155,6 +155,8 @@ var earthFiltersProjections = [
 ];
 
 // The language sets the folder of the nullschool address, such as https://earth.nullschool.net/es/
+// The Language row shows the first earthFiltersLanguagesShown, then a More button that reveals the rest.
+var earthFiltersLanguagesShown = 6;
 var earthFiltersLanguages = [
   {name: 'en', path: '', label: 'English'},
   {name: 'cs', path: 'cs/', label: 'Čeština'},
@@ -370,6 +372,7 @@ function EarthFilters(container, options) {
   this.mapContainer = this.options.mapContainer || null;
   this.place = 'under';
   this.tab = 'controls';
+  this.allLanguages = false; // More pressed in the Language row
   this.render();
   if (this.mapContainer) {
     this.setupMapPanel();
@@ -418,7 +421,7 @@ EarthFilters.prototype.render = function() {
   var overlayRows = earthFiltersModes.map(function(mode) {
     return self.row('Overlay', self.buttonGroup('overlay', earthFiltersOverlays[mode.name], 'radiogroup'), ' data-mode-row="' + mode.name + '"');
   }).join('');
-  // Each overlay in the About tab is a button that shows it on the map
+  // Each overlay in the Overlays tab is a button that shows it on the map
   var aboutOverlays = earthFiltersModes.map(function(mode) {
     return '<div class="ef-about-mode">' + mode.label + '</div><ul class="ef-overlay-list">' +
       earthFiltersOverlays[mode.name].filter(function(overlay) {
@@ -437,8 +440,7 @@ EarthFilters.prototype.render = function() {
     '<div class="ef-tabs-bar">' +
       this.buttonGroup('tab', [
         {name: 'controls', label: 'Controls', title: 'Map controls'},
-        {name: 'language', label: 'Language', title: 'Language of the map'},
-        {name: 'about', label: 'About', title: 'About these filters'}
+        {name: 'about', label: 'Overlays', title: 'About the overlays'} // Named about in the code
       ], 'tablist') +
       // Three-dot menu. Its first item names the other place, which a click moves the filters to.
       (this.mapContainer ?
@@ -447,6 +449,7 @@ EarthFilters.prototype.render = function() {
           '<div class="ef-panel-menu" role="menu" hidden>' +
             '<button type="button" role="menuitem" data-action="toggle-panel" data-field="panel-toggle"><span data-field="panel-icon"></span><span data-field="panel-label"></span></button>' +
             '<button type="button" role="menuitem" data-action="toggle-place" data-field="place-toggle"><span data-field="place-icon"></span><span data-field="place-label"></span></button>' +
+            '<button type="button" role="menuitem" data-action="to-catch" data-field="catch-toggle" title="Move the filters back into the page" hidden>' + earthFiltersIcons.moveOver + '<span>In Page</span></button>' +
             '<button type="button" role="menuitem" data-action="reset-panel" title="Show the filters over the lower left corner of the map, at their default size">' + earthFiltersIcons.reset + '<span>Default Layout</span></button>' +
             '<a role="menuitem" data-field="new-window-link" target="_blank" rel="noopener" title="Open this view on earth.nullschool.net in a new window">' + earthFiltersIcons.openInNew + '<span>New Window</span></a>' +
           '</div>' +
@@ -456,7 +459,7 @@ EarthFilters.prototype.render = function() {
 
     '<div class="ef-tab-panel" data-tab-panel="controls" role="tabpanel">' +
     this.row('Date',
-      '<div class="ef-date-field" data-field="date"></div>' +
+      '<button type="button" class="ef-date-field" data-field="date" data-action="choose-date" title="Choose Date"></button>' + // Opens the date chooser, like the calendar button
       '<button type="button" class="ef-tz" data-action="change-tz" title="Change Timezone">' + earthFiltersIcons.swap + '<span data-field="tz"></span></button>', ' data-row="date"') +
     this.row('When',
       '<div class="ef-bunch" role="toolbar">' +
@@ -482,13 +485,14 @@ EarthFilters.prototype.render = function() {
     overlayRows +
     this.row('Annotation', this.buttonGroup('annotation', earthFiltersAnnotations, 'radiogroup'), ' data-mode-row="bio"') +
     this.row('Projection', this.buttonGroup('projection', earthFiltersProjections, 'radiogroup')) +
-    '</div>' +
-
     // From the nullschool settings modal. Its other settings (base map, info bar, font size) are kept in nullschool's own browser storage, so only the language can be sent.
-    '<div class="ef-tab-panel" data-tab-panel="language" role="tabpanel" hidden>' +
-      '<ul class="ef-column-list-2" data-group="language" role="radiogroup" aria-label="Language" style="grid-template-rows:repeat(' + Math.ceil(earthFiltersLanguages.length / 2) + ',auto)">' + earthFiltersLanguages.map(function(language) {
-        return '<li><button type="button" lang="' + language.name + '" data-name="' + language.name + '" role="radio">' + language.label + '</button></li>';
-      }).join('') + '</ul>' +
+    // The languages after the first few (data-more) show once More is pressed, or the selected one alone before More (update()).
+    this.row('Language',
+      '<div class="ef-bunch" data-group="language" role="radiogroup" aria-label="Language">' + earthFiltersLanguages.map(function(language, index) {
+        return '<button type="button" lang="' + language.name + '" data-name="' + language.name + '" role="radio"' + (index >= earthFiltersLanguagesShown ? ' data-more hidden' : '') + '>' + language.label + '</button>';
+      }).join('') +
+      '<button type="button" data-action="more-languages" title="Show all the languages">More</button>' +
+      '</div>') +
     '</div>' +
 
     '<div class="ef-tab-panel ef-about" data-tab-panel="about" role="tabpanel" hidden>' +
@@ -635,6 +639,10 @@ EarthFilters.prototype.handleAction = function(action, button) {
     case 'reset-panel':
       this.resetMapPanel();
       break;
+    case 'more-languages':
+      this.allLanguages = true;
+      this.update();
+      break;
     case 'toggle-panel-menu':
       this.setPanelMenuOpen(this.menuFrom !== 'dots', 'dots');
       break;
@@ -644,7 +652,13 @@ EarthFilters.prototype.handleAction = function(action, button) {
     case 'toggle-place':
       this.isOpen = true; // Shows the filters in their new place, also when the menu opened from the clear button
       writeEarthFiltersStorage(this.storageKeys.open, 'true');
-      this.setMapPanelPlace(this.place === 'over' ? 'under' : 'over');
+      this.setMapPanelPlace(this.inPageCatch() || this.place === 'over' ? 'under' : 'over'); // From the page's #earthFilterCatch, under the map
+      break;
+    case 'to-catch':
+      this.isOpen = true;
+      writeEarthFiltersStorage(this.storageKeys.open, 'true');
+      this.useCatch = true;
+      this.applyMapPanelPlace();
       break;
     case 'show-overlay':
       this.setMode(button.getAttribute('data-mode'));
@@ -714,8 +728,14 @@ EarthFilters.prototype.choose = function(group, name) {
       state.projection = name;
       break;
     case 'tab':
+      if (name === 'about' && this.tab !== 'about') {
+        this.aboutHeight = this.isOverMap() && this.isOpen ? this.container.offsetHeight : 0; // The height before Overlays, which it keeps
+      }
       this.tab = name;
       this.update();
+      if (this.isOverMap()) {
+        this.applyMapPanelBox();
+      }
       this.liftMapPanel();
       return; // Not a map change
     case 'language':
@@ -859,11 +879,21 @@ EarthFilters.prototype.update = function() {
 
   container.querySelectorAll('[data-group]').forEach(function(group) {
     var value = selected[group.getAttribute('data-group')];
-    group.querySelectorAll('button').forEach(function(button) {
+    group.querySelectorAll('button[data-name]').forEach(function(button) { // Not the Language row's More
       var isSelected = button.getAttribute('data-name') === value;
       button.setAttribute(group.getAttribute('role') === 'tablist' ? 'aria-selected' : 'aria-checked', isSelected ? 'true' : 'false');
     });
   });
+
+  // The Language row: the first few, the selected one, or all of them after More
+  var allLanguages = this.allLanguages;
+  container.querySelectorAll('[data-group="language"] [data-more]').forEach(function(button) {
+    button.hidden = !allLanguages && button.getAttribute('data-name') !== selected.language;
+  });
+  var moreLanguages = container.querySelector('[data-action="more-languages"]');
+  if (moreLanguages) {
+    moreLanguages.hidden = allLanguages;
+  }
 
   container.querySelectorAll('[data-action="show-overlay"]').forEach(function(button) {
     var isShown = button.getAttribute('data-mode') === state.mode && button.getAttribute('data-name') === state.overlay;
@@ -897,14 +927,17 @@ EarthFilters.prototype.updatePanelMenu = function() {
   menu.querySelector('[data-field="panel-label"]').textContent = this.isOpen ? 'Close Panel' : 'Show Panel';
   menu.querySelector('[data-field="panel-toggle"]').title = this.isOpen ? 'Hide the filters' : 'Show the filters';
   menu.querySelector('[data-field="panel-icon"]').innerHTML = this.isOpen ? earthFiltersIcons.close : earthFiltersIcons.show;
+  // Under the map from over it or from the page's #earthFilterCatch, otherwise over the map. In Page goes back to the catch.
+  var toUnder = this.place === 'over' || this.inPageCatch();
   var placeToggle = menu.querySelector('[data-field="place-toggle"]');
-  placeToggle.querySelector('[data-field="place-icon"]').innerHTML = this.place === 'over' ? earthFiltersIcons.moveUnder : earthFiltersIcons.moveOver;
-  placeToggle.querySelector('[data-field="place-label"]').textContent = this.place === 'over' ? 'Under Map' : 'Over Map';
-  placeToggle.title = this.place === 'over' ? 'Move the filters under the map' : 'Move the filters over the map, where they can be dragged and resized from the corners';
+  placeToggle.querySelector('[data-field="place-icon"]').innerHTML = toUnder ? earthFiltersIcons.moveUnder : earthFiltersIcons.moveOver;
+  placeToggle.querySelector('[data-field="place-label"]').textContent = toUnder ? 'Under Map' : 'Over Map';
+  placeToggle.title = toUnder ? 'Move the filters under the map' : 'Move the filters over the map, where they can be dragged and resized from the corners and edges';
+  menu.querySelector('[data-field="catch-toggle"]').hidden = !getEarthFiltersCatch() || this.inPageCatch();
 };
 
 // With options.mapContainer, the filters show over the map's lower left corner, or under the map, and a clear button over nullschool's
-// "earth" button opens the three-dot menu, which shows and hides them. Over the map, the panel is dragged from its background and resized from its corners.
+// "earth" button opens the three-dot menu, which shows and hides them. Over the map, the panel is dragged from its background and resized from its corners and edges.
 // The panel's default spot covers the clear button, so its close icon hides it.
 // Saved in the browser with options.storagePrefix: <prefix>Open, <prefix>Place (under or over) and <prefix>Box (position and size over the map).
 var earthFiltersPanelGap = 10; // Default offset from the map's left and bottom edges
@@ -938,7 +971,7 @@ EarthFilters.prototype.setupMapPanel = function() {
   this.mapToggle.type = 'button';
   this.mapToggle.className = 'ef-map-toggle';
   this.mapToggle.title = 'Model Controls';
-  // Its icon and label show where the toggle is a button of its own (in #fullscreen, localsite/css/base.css).
+  // A page can show its icon and label to make it a button of its own.
   // Elsewhere it's a clear outline over nullschool's "earth" button.
   this.mapToggle.innerHTML = '<i class="material-icons ef-map-toggle-icon" aria-hidden="true">tune</i><span class="ef-map-toggle-label">Model Controls</span>';
   this.mapToggle.setAttribute('aria-haspopup', 'menu');
@@ -964,7 +997,8 @@ EarthFilters.prototype.setupMapPanel = function() {
   });
   mapContainer.appendChild(this.mapMenuHolder);
 
-  ['nw', 'ne', 'sw', 'se'].forEach(function(corner) {
+  // The corners, then the edges, which resize the panel too (.ef-corner, earth-filters.css)
+  ['nw', 'ne', 'sw', 'se', 'n', 'e', 's', 'w'].forEach(function(corner) {
     var cornerDiv = document.createElement('div');
     cornerDiv.className = 'ef-corner';
     cornerDiv.setAttribute('data-corner', corner);
@@ -975,7 +1009,7 @@ EarthFilters.prototype.setupMapPanel = function() {
   });
   if (typeof ResizeObserver === 'function') {
     new ResizeObserver(function() {
-      if (self.place === 'over') {
+      if (self.isOverMap()) {
         self.applyMapPanelBox();
       }
     }).observe(mapContainer);
@@ -990,6 +1024,7 @@ EarthFilters.prototype.setMapPanelOpen = function(isOpen) {
 };
 
 EarthFilters.prototype.setMapPanelPlace = function(place) {
+  this.useCatch = false; // Out of the page's #earthFilterCatch until In Page
   this.place = place === 'over' ? 'over' : 'under';
   writeEarthFiltersStorage(this.storageKeys.place, this.place);
   this.applyMapPanelPlace();
@@ -998,6 +1033,7 @@ EarthFilters.prototype.setMapPanelPlace = function(place) {
 
 // Default Layout clears the saved place, position, size and visibility, and shows the filters over the map's lower left corner
 EarthFilters.prototype.resetMapPanel = function() {
+  this.useCatch = false;
   this.place = 'over';
   this.box = null;
   this.isOpen = true;
@@ -1007,15 +1043,38 @@ EarthFilters.prototype.resetMapPanel = function() {
   this.applyMapPanelPlace();
 };
 
+// A page can hold the panel in its own place, a #earthFilterCatch element (as project/goals does, after its tabs).
+// The panel starts there on each page load and shows as it does under the map. The three-dot menu's Under Map and
+// Over Map move it out (useCatch false), and In Page brings it back.
+function getEarthFiltersCatch() {
+  return document.getElementById('earthFilterCatch');
+}
+
+EarthFilters.prototype.inPageCatch = function() {
+  return !!getEarthFiltersCatch() && this.useCatch !== false;
+};
+
+// Over the map now, where it's dragged and resized (ef-over), not under it or in a page's #earthFilterCatch
+EarthFilters.prototype.isOverMap = function() {
+  return this.container.classList.contains('ef-over');
+};
+
 EarthFilters.prototype.applyMapPanelPlace = function() {
+  this.sendMapPanelBack();
   var container = this.container;
-  var isOver = this.place === 'over';
-  if (isOver && container.parentNode !== this.mapContainer) {
+  var pageCatch = this.inPageCatch() ? getEarthFiltersCatch() : null;
+  var isOver = this.place === 'over' && !pageCatch;
+  if (pageCatch) {
+    if (container.parentNode !== pageCatch) {
+      pageCatch.appendChild(container);
+    }
+  } else if (isOver && container.parentNode !== this.mapContainer) {
     this.mapContainer.appendChild(container);
   } else if (!isOver && this.underMarker.nextSibling !== container) {
     this.underMarker.parentNode.insertBefore(container, this.underMarker.nextSibling);
   }
   container.classList.toggle('ef-over', isOver);
+  container.classList.toggle('ef-under', !isOver && !pageCatch);
   container.classList.toggle('ef-closed', !this.isOpen);
   this.updatePanelMenu();
   if (isOver) {
@@ -1033,7 +1092,7 @@ EarthFilters.prototype.applyMapPanelPlace = function() {
 EarthFilters.prototype.clipMapPanel = function(right, bottom, left) {
   var menu = this.container.querySelector('.ef-menu');
   menu.style.clipPath = right || bottom || left ? 'inset(0 ' + right + 'px ' + bottom + 'px ' + left + 'px)' : '';
-  var offMap = {nw: left > 0, ne: right > 0, sw: left > 0 || bottom > 0, se: right > 0 || bottom > 0};
+  var offMap = {nw: left > 0, ne: right > 0, sw: left > 0 || bottom > 0, se: right > 0 || bottom > 0, n: false, e: right > 0, s: bottom > 0, w: left > 0};
   this.container.querySelectorAll('.ef-corner').forEach(function(corner) {
     corner.style.visibility = offMap[corner.getAttribute('data-corner')] ? 'hidden' : '';
   });
@@ -1042,7 +1101,7 @@ EarthFilters.prototype.clipMapPanel = function(right, bottom, left) {
 // After a tab change over the map, a panel dragged partly below the map's bottom edge moves up, so the tab's
 // content isn't hidden by the map's bottom. The new place is saved, as after a drag.
 EarthFilters.prototype.liftMapPanel = function() {
-  if (this.place !== 'over' || !this.isOpen || !this.box || this.box.bottom >= 0) {
+  if (!this.isOverMap() || !this.isOpen || !this.box || this.box.bottom >= 0) {
     return;
   }
   this.box.bottom = Math.max(0, Math.min(earthFiltersPanelGap, this.mapContainer.clientHeight - this.container.offsetHeight));
@@ -1064,6 +1123,10 @@ EarthFilters.prototype.applyMapPanelBox = function() {
   if (box.height) {
     container.style.height = Math.max(Math.min(earthFiltersPanelMinHeight, mapHeight), Math.min(box.height, mapHeight)) + 'px';
     container.style.maxHeight = '';
+  } else if (this.tab === 'about' && this.aboutHeight) {
+    // The Overlays tab (about) doesn't make the panel taller. Its text scrolls in the panel's height from the tab before it.
+    container.style.height = Math.max(Math.min(earthFiltersPanelMinHeight, mapHeight), Math.min(this.aboutHeight, this.box ? mapHeight - box.bottom : mapHeight - 2 * earthFiltersPanelGap)) + 'px';
+    container.style.maxHeight = '';
   } else {
     container.style.height = '';
     container.style.maxHeight = Math.max(earthFiltersPanelMinHeight, (this.box ? mapHeight - box.bottom : mapHeight - 2 * earthFiltersPanelGap)) + 'px'; // Fits above its bottom edge
@@ -1077,7 +1140,7 @@ EarthFilters.prototype.applyMapPanelBox = function() {
 };
 
 EarthFilters.prototype.startMapPanelDrag = function(event) {
-  if (this.place !== 'over' || event.button !== 0) {
+  if (!this.isOverMap() || event.button !== 0) {
     return;
   }
   var corner = event.target.closest('.ef-corner');
@@ -1086,6 +1149,7 @@ EarthFilters.prototype.startMapPanelDrag = function(event) {
     return; // Buttons and links keep working. The modals aren't part of the panel.
   }
 
+  this.bringMapPanelToFront(); // Before the pointer capture below, which moving the panel would end
   var self = this;
   var container = this.container;
   var mapWidth = this.mapContainer.clientWidth;
@@ -1121,16 +1185,17 @@ EarthFilters.prototype.startMapPanelDrag = function(event) {
       left = Math.max(earthFiltersPanelGrip - width, Math.min(left + dx, mapWidth - earthFiltersPanelGrip));
       top = Math.max(0, Math.min(top + dy, mapHeight - earthFiltersPanelGrip));
     } else {
-      // Corners off the map are hidden, so only the corners on the map resize, up to the map's edges
-      if (cornerName.charAt(1) === 'e') {
+      // Corners and edges off the map are hidden, so only the ones on the map resize, up to the map's edges.
+      // An edge resizes one way, a corner both.
+      if (cornerName.indexOf('e') >= 0) {
         width = Math.min(Math.max(earthFiltersPanelMinWidth, start.width + dx), Math.max(start.width, mapWidth - left));
-      } else {
+      } else if (cornerName.indexOf('w') >= 0) {
         left = Math.max(Math.min(0, start.left), Math.min(start.left + dx, start.left + start.width - earthFiltersPanelMinWidth));
         width = start.left + start.width - left;
       }
-      if (cornerName.charAt(0) === 's') {
+      if (cornerName.indexOf('s') >= 0) {
         height = Math.min(Math.max(earthFiltersPanelMinHeight, start.height + dy), Math.max(start.height, mapHeight - top));
-      } else {
+      } else if (cornerName.indexOf('n') >= 0) {
         top = Math.max(0, Math.min(start.top + dy, start.top + start.height - earthFiltersPanelMinHeight));
         height = start.top + start.height - top;
       }
@@ -1139,7 +1204,7 @@ EarthFilters.prototype.startMapPanelDrag = function(event) {
       left: left,
       bottom: mapHeight - top - height,
       width: width,
-      height: cornerName ? height : (self.box && self.box.height) || null // A move keeps the height fitting the filters until a corner is dragged
+      height: /[ns]/.test(cornerName) ? height : (self.box && self.box.height) || null // A move, or the east or west edge, keeps the height fitting the filters until a corner or the top or bottom edge is dragged
     };
     self.applyMapPanelBox();
   }
@@ -1160,6 +1225,59 @@ EarthFilters.prototype.startMapPanelDrag = function(event) {
   container.addEventListener('pointermove', move);
   container.addEventListener('pointerup', end);
   container.addEventListener('pointercancel', end);
+};
+
+// A dragged panel comes to the front of the page's other panels. A page laid over the map can sit above everything
+// in the map, as when the map is in a fixed #fullscreen under project/goals, so the panel moves out to a layer of its
+// own (.ef-front-layer, earth-filters.css) kept over the map, where it has the same place and size. It goes back into
+// the map when the pointer goes down elsewhere, or when it's placed again (shown, hidden, moved under the map).
+EarthFilters.prototype.bringMapPanelToFront = function() {
+  var self = this;
+  if (!this.frontLayer) {
+    this.frontLayer = document.createElement('div');
+    this.frontLayer.className = 'ef-front-layer';
+    this.syncFrontLayer = function() {
+      var layer = self.frontLayer;
+      var map = self.mapContainer;
+      if (!map.getClientRects().length) { // The map is hidden
+        layer.style.display = 'none';
+        return;
+      }
+      var rect = map.getBoundingClientRect();
+      layer.style.display = '';
+      layer.style.left = (rect.left + map.clientLeft) + 'px';
+      layer.style.top = (rect.top + map.clientTop) + 'px';
+      layer.style.width = map.clientWidth + 'px';
+      layer.style.height = map.clientHeight + 'px';
+    };
+    this.frontLayerPointerDown = function(event) {
+      if (!self.container.contains(event.target)) {
+        self.sendMapPanelBack();
+      }
+    };
+  }
+  if (this.container.parentNode === this.frontLayer) {
+    return;
+  }
+  document.body.appendChild(this.frontLayer);
+  this.syncFrontLayer();
+  this.frontLayer.appendChild(this.container);
+  window.addEventListener('scroll', this.syncFrontLayer, true); // Capture, for scrolling inside the page too
+  window.addEventListener('resize', this.syncFrontLayer);
+  document.addEventListener('pointerdown', this.frontLayerPointerDown, true);
+};
+
+EarthFilters.prototype.sendMapPanelBack = function() {
+  if (!this.frontLayer || !this.frontLayer.parentNode) {
+    return;
+  }
+  window.removeEventListener('scroll', this.syncFrontLayer, true);
+  window.removeEventListener('resize', this.syncFrontLayer);
+  document.removeEventListener('pointerdown', this.frontLayerPointerDown, true);
+  if (this.container.parentNode === this.frontLayer) {
+    this.mapContainer.appendChild(this.container);
+  }
+  this.frontLayer.parentNode.removeChild(this.frontLayer);
 };
 
 window.EarthFilters = {

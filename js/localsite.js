@@ -3195,42 +3195,109 @@ function placeEarthDisplay() {
       new MutationObserver(syncEarthShown).observe(earthDisplay, {attributes: true, attributeFilter: ['style']});
       new MutationObserver(syncEarthShown).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
       syncEarthShown();
+      // Under the map, #earthUnderMap holds the time sliders, "Small Slider" (#slider-on-map) and "Large Slider"
+      // (#slider-full), both from nouislider.min.js, in #earthSlidersUnder (base.css), and below them the filters
+      // panel when it's set to "Under Map" (showEarthFilters()). It goes after #fullscreen, which the map fills, so
+      // it scrolls with the page. A fixed #fullscreen (project/goals) takes no room in the page, so it goes after the
+      // content laid over it instead, before the footer (#main-footer), and moves up with it. It's placed again once
+      // the page has loaded, since the page's own stylesheet may be what fixes #fullscreen, and its content may not
+      // all be there yet. It shows only with the map.
+      var underMap = document.createElement('div');
+      underMap.id = 'earthUnderMap';
+      underMap.innerHTML = '<div id="earthSlidersUnder"></div>';
+      var slidersUnder = underMap.firstChild;
+      var placeUnderMap = function() {
+        var after = fullscreen;
+        if (getComputedStyle(fullscreen).position === 'fixed') {
+          for (var next = fullscreen.nextElementSibling; next && next.id !== 'main-footer'; next = next.nextElementSibling) {
+            if (next !== underMap) after = next;
+          }
+        }
+        if (after.nextElementSibling !== underMap) after.insertAdjacentElement('afterend', underMap);
+      };
+      placeUnderMap();
+      if (document.readyState !== 'complete') window.addEventListener('load', placeUnderMap);
+      var syncUnderMap = function() {
+        underMap.style.display = fullscreen.classList.contains('earthShown') ? '' : 'none';
+      };
+      new MutationObserver(syncUnderMap).observe(fullscreen, {attributes: true, attributeFilter: ['class']});
+      syncUnderMap();
+      waitForElm('#slider-on-map').then(function(slider) { slidersUnder.insertBefore(slider, slidersUnder.firstChild); });
+      waitForElm('#slider-full').then(function(slider) { slidersUnder.appendChild(slider); });
     }
   }
 }
-// In #fullscreen, the lower left of the map has a tune circle (#earthControlsToggle) that shows and hides the
-// "Model Controls" button (.ef-map-toggle, earth-filters.js) and the date and clock button (#slider-toggle-wrap,
-// nouislider.min.js) below it, in #earthControlsGroup (base.css). Each is moved in once it's created. While they
-// show, <html> has .earthControlsOpen, which a page can use to clear the map (project/goals hides #goalsMain),
-// and the #mainEarthFilters panel is open.
+// In #fullscreen, the lower left of the map has a dark bar (#earthControlsBar) holding a tune circle
+// (#earthControlsToggle) and the date (#slider-toggle-wrap, nouislider.min.js) to its right, moved in once it's
+// created. The tune circle opens and closes the #mainEarthFilters panel. While it's open, <html> has
+// .earthControlsOpen, which a page can style by. A page's #earthFilterCatch holds the panel (earth-filters.js). The panel's own
+// toggle over nullschool's "earth" button (.ef-map-toggle, earth-filters.js) is hidden here (base.css).
+// A click on the date shows its picker in its place, in the wrap (.earthDateOpen on the bar and on <html>, which a page
+// can use to raise #fullscreen above its content, as project/goals does).
+// While the #mainEarthFilters panel shows in the window (.earthFiltersOpen), the clock (#slider-toggle-btn, moved out
+// of the wrap to #earthControlsIcons) takes the tune circle's place. It opens and closes the date's picker. While the
+// panel doesn't show, closed, hidden or scrolled out of view (as under the map), the tune circle is back to open it.
 function initEarthControls(earthDisplay) {
   if (document.getElementById('earthControls')) return;
   var controls = document.createElement('div');
   controls.id = 'earthControls';
-  controls.innerHTML = '<div id="earthControlsToggle" role="button" tabindex="0" title="Map controls" aria-label="Map controls" aria-expanded="false" aria-controls="earthControlsGroup">' +
-    '<i class="material-icons" aria-hidden="true">tune</i></div>' +
-    '<div id="earthControlsGroup" hidden></div>';
+  controls.innerHTML = '<div id="earthControlsBar"><div id="earthControlsIcons">' +
+    '<div id="earthControlsToggle" role="button" tabindex="0" title="Map controls" aria-label="Map controls" aria-expanded="false" aria-controls="mainEarthFilters">' +
+    '<i class="material-icons" aria-hidden="true">tune</i></div></div></div>';
   earthDisplay.appendChild(controls);
+  var bar = document.getElementById('earthControlsBar');
+  var icons = document.getElementById('earthControlsIcons');
   var toggle = document.getElementById('earthControlsToggle');
-  var group = document.getElementById('earthControlsGroup');
+  var filtersInView = false; // #mainEarthFilters showing in the window (IntersectionObserver below)
+  // Closes the panel while it shows. Otherwise opens it, and scrolls to it when it's open out of view.
   toggle.addEventListener('click', function(e) {
     e.stopPropagation();
-    group.hidden = !group.hidden;
-    toggle.setAttribute('aria-expanded', group.hidden ? 'false' : 'true');
-    document.documentElement.classList.toggle('earthControlsOpen', !group.hidden);
-    // The filters panel (#mainEarthFilters, showEarthFilters() below) shows and hides with the group
+    var filtersDiv = document.getElementById('mainEarthFilters');
+    var open = !(filtersInView && filtersDiv && !filtersDiv.classList.contains('ef-closed'));
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.documentElement.classList.toggle('earthControlsOpen', open);
+    // The filters panel (#mainEarthFilters, showEarthFilters() below)
     if (mainEarthFilters && typeof mainEarthFilters.setMapPanelOpen === 'function') {
-      mainEarthFilters.setMapPanelOpen(!group.hidden);
+      mainEarthFilters.setMapPanelOpen(open);
+    }
+    if (open && filtersDiv && filtersDiv.getClientRects().length) {
+      filtersDiv.scrollIntoView({behavior: 'smooth', block: 'nearest'});
     }
   });
   toggle.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
   });
-  waitForElm('#mainEarthDisplay .ef-map-toggle').then(function(mapToggle) {
-    group.insertBefore(mapToggle, group.firstChild);
-  });
   waitForElm('#slider-toggle-wrap').then(function(wrap) {
-    group.appendChild(wrap);
+    bar.appendChild(wrap);
+    var clock = document.getElementById('slider-toggle-btn');
+    if (clock) {
+      icons.insertBefore(clock, toggle);
+      // Outside the wrap now, so its clicks are passed on to the wrap, which opens or closes the picker
+      clock.addEventListener('click', function(e) { e.stopPropagation(); wrap.click(); });
+    }
+    waitForElm('#mainEarthFilters').then(function(filtersDiv) {
+      var syncFiltersOpen = function() {
+        bar.classList.toggle('earthFiltersOpen', filtersInView && !filtersDiv.classList.contains('ef-closed')); // ef-closed: earth-filters.js
+      };
+      new MutationObserver(syncFiltersOpen).observe(filtersDiv, {attributes: true, attributeFilter: ['class']});
+      // In view of the window, which is also false while it's hidden (display: none)
+      if (typeof IntersectionObserver === 'function') {
+        new IntersectionObserver(function(entries) {
+          filtersInView = entries[entries.length - 1].isIntersecting;
+          syncFiltersOpen();
+        }).observe(filtersDiv);
+      } else {
+        filtersInView = true;
+      }
+      syncFiltersOpen();
+    });
+    var syncDateOpen = function() {
+      var open = wrap.classList.contains('earth-picker-open');
+      bar.classList.toggle('earthDateOpen', open);
+      document.documentElement.classList.toggle('earthDateOpen', open);
+    };
+    new MutationObserver(syncDateOpen).observe(wrap, {attributes: true, attributeFilter: ['class']});
+    syncDateOpen();
   });
 }
 // In #fullscreen (project/goals, engine), the Earth iframe would take the mouse wheel for its globe, which stops the
@@ -3344,6 +3411,10 @@ function showEarthFilters() {
         mainEarthFilters.setHash(getEarthFiltersHash());
         return;
       }
+      // With the map in #fullscreen, the panel's place under the map is below the time sliders, in #earthUnderMap
+      // (placeEarthDisplay()). Moved before EarthFilters.create(), which marks where "Under Map" puts it.
+      var underMap = document.getElementById('earthUnderMap');
+      if (underMap) underMap.appendChild(filtersDiv);
       // Under the map, show and hide with it, since several places in navigation.js and nouislider.min.js hide the map
       var syncFiltersDisplay = function() {
         filtersDiv.style.display = earthDisplay.style.display === 'none' ? 'none' : '';
@@ -6818,9 +6889,10 @@ function initTopNavOffset() {
     // #fullscreen fills the window below everything above it at the top of the page: the full header, and the
     // search filters (#mapFilters) when they show there. Measured only while the page is at the top and #fullscreen
     // shows, since the header shrinks and the filters become fixed as the page scrolls. --fullscreen-height in
-    // base.css uses --fullscreen-top, or --headerbar-offset until it's measured.
+    // base.css uses --fullscreen-top, or --headerbar-offset until it's measured. A page that fixes #fullscreen
+    // over the whole window (project/goals) sets its own --fullscreen-height, so it isn't measured then.
     var fullscreen = document.getElementById('fullscreen');
-    if (fullscreen && window.scrollY === 0 && fullscreen.getClientRects().length) {
+    if (fullscreen && window.scrollY === 0 && fullscreen.getClientRects().length && getComputedStyle(fullscreen).position !== 'fixed') {
       var fullscreenTop = Math.round(fullscreen.getBoundingClientRect().top);
       document.documentElement.style.setProperty('--fullscreen-top', fullscreenTop + 'px');
     }
@@ -7377,6 +7449,12 @@ function defineLaunchCMS() {
             // Entry fields fill their pane. Sveltia caps them at 768px and centers them, which left
             // blank space on their left in a wide page.
             + ' #nc-root section.field[role="group"] > * { max-width: none; }'
+            // No side padding on entry fields (Sveltia's var(--field-editor-padding)), so the editors span the
+            // pane. The line between fields and, on narrow screens, the text editor (whose negative side margins
+            // cancel that padding) line up with it.
+            + ' #nc-root section.field[role="group"] { padding-left: 0; padding-right: 0; }'
+            + ' #nc-root section.field[role="group"]:not(:last-child)::after { left: 0; right: 0; }'
+            + ' @media (width < 768px) { #nc-root section.field[role="group"] .sui.text-editor { margin-left: 0; margin-right: 0; width: auto; } }'
             // Sveltia reopens the last sidebar panel even when it's disabled for the entry, e.g. Slug
             // on a single file like a README ("This entry doesn't have a slug."). Hide it then.
             + ' #nc-root .sidebar:has(.tabs [role="radio"][aria-checked="true"][aria-disabled="true"]) > #entry-sidebar-content { display: none; }'

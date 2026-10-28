@@ -1,6 +1,6 @@
 /* Earth Filters: the earth.nullschool.net menu styles, scoped to .earth-filters. Dark mode uses the nullschool colors. */
 .earth-filters {
-  --ef-bg: color-mix(in srgb, var(--bg-secondary, #ffffff) 92%, transparent); /* Semi-transparent, so the map shows through */
+  --ef-bg: color-mix(in srgb, var(--bg-secondary, #ffffff) 82%, transparent); /* Semi-transparent, so the map shows through */
   --ef-text: var(--text-primary, #1a1a1a);
   --ef-button: #5f6b76;
   --ef-button-hover: #000000;
@@ -19,7 +19,7 @@
   color: var(--ef-text);
 }
 .dark .earth-filters, .earth-filters.ef-dark {
-  --ef-bg: rgb(5 10 30 / 0.92);
+  --ef-bg: rgb(5 10 30 / 0.82);
   --ef-text: #eeeeee;
   --ef-button: #979797;
   --ef-button-hover: #ffffff;
@@ -44,6 +44,27 @@
   border: 1px solid var(--ef-border);
   border-radius: var(--panel-radius, 16px);
 }
+/* The date in the Date row: a button that opens the date chooser, like the calendar button, shown as text */
+.earth-filters button.ef-date-field {
+  min-width: 0;
+  padding: 0;
+  color: var(--ef-text);
+  text-align: left;
+}
+.earth-filters button.ef-date-field:hover,
+.earth-filters button.ef-date-field:focus-visible {
+  color: var(--ef-button-hover);
+  text-decoration: underline;
+}
+/* Under the map (ef-under, applyMapPanelPlace()): across it with no space around the filters and square corners */
+.earth-filters.ef-under {
+  margin: 0;
+  padding: 0 !important; /* Over the page's inline padding */
+}
+.earth-filters.ef-under .ef-card,
+.earth-filters.ef-under .ef-tabs-bar {
+  border-radius: 0;
+}
 .earth-filters .ef-panel {
   display: flex;
   flex-direction: column;
@@ -60,6 +81,10 @@
 .earth-filters .ef-row-label {
   word-break: keep-all;
   min-width: 5.5rem;
+}
+/* In the Controls, each row's title lines up with the first line of its buttons, at the top of a row that wraps */
+.earth-filters .ef-tab-panel > .ef-row {
+  align-items: baseline;
 }
 .earth-filters .ef-tab-panel .ef-row-label {
   margin-right: 0.75rem;
@@ -113,7 +138,7 @@
 .earth-filters .ef-about a {
   color: var(--ef-selected-text);
 }
-/* Under the map, the About tab is at most 350px tall and scrolls, with its first paragraph. Over the map, the whole panel scrolls. */
+/* Under the map, the Overlays tab (.ef-about) is at most 350px tall and scrolls, with its first paragraph. Over the map, the whole panel scrolls. */
 .earth-filters:not(.ef-over) .ef-about {
   max-height: 350px;
   overflow-y: auto;
@@ -328,7 +353,7 @@
   display: none !important;
 }
 
-/* Over the map's lower left corner, covering the clear button until hidden or moved. Dragged from the background and resized from the corners, which only change the cursor. */
+/* Over the map's lower left corner, covering the clear button until hidden or moved. Dragged from the background and resized from the corners and edges, which only change the cursor. */
 .earth-filters.ef-over {
   position: absolute;
   z-index: 1003;
@@ -371,6 +396,15 @@
 .earth-filters .ef-corner[data-corner="ne"] { top: 0; right: 0; cursor: nesw-resize; }
 .earth-filters .ef-corner[data-corner="sw"] { bottom: 0; left: 0; cursor: nesw-resize; }
 .earth-filters .ef-corner[data-corner="se"] { bottom: 0; right: 0; cursor: nwse-resize; }
+/* The edges between the corners, 8px wide, half outside the panel, so they cover little of the filters and the scrollbar */
+.earth-filters.ef-over .ef-corner[data-corner="n"],
+.earth-filters.ef-over .ef-corner[data-corner="s"] { left: 14px; right: 14px; width: auto; height: 8px; cursor: ns-resize; }
+.earth-filters.ef-over .ef-corner[data-corner="e"],
+.earth-filters.ef-over .ef-corner[data-corner="w"] { top: 14px; bottom: 14px; width: 8px; height: auto; cursor: ew-resize; }
+.earth-filters .ef-corner[data-corner="n"] { top: -4px; }
+.earth-filters .ef-corner[data-corner="s"] { bottom: -4px; }
+.earth-filters .ef-corner[data-corner="e"] { right: -4px; }
+.earth-filters .ef-corner[data-corner="w"] { left: -4px; }
 
 /* Clear button over the "earth" button in the lower left of the nullschool map. It shows and hides the filters. */
 .ef-map-toggle {
@@ -393,7 +427,16 @@
 }
 .ef-map-toggle-icon,
 .ef-map-toggle-label {
-  display: none; /* Shown in #fullscreen (localsite/css/base.css) */
+  display: none; /* A page can show it, with the icon, to make the toggle a button of its own */
+}
+
+/* Over the map, holding a dragged panel in front of the page (bringMapPanelToFront() in earth-filters.js). Above a
+   page laid over the map without a z-index of its own, and below its raised bars, such as project/goals' search
+   filters (3), footer and header. Only the panel takes the pointer. */
+.ef-front-layer {
+  position: fixed;
+  z-index: 2;
+  pointer-events: none;
 }
 
 /* Modals */
@@ -437,17 +480,6 @@
 }
 .earth-filters .ef-modal-section > :first-child {
   margin-bottom: 0.5rem;
-}
-/* Two columns as wide as their names, filled down then across. The rows are set from the number of languages. */
-.earth-filters .ef-column-list-2 {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: max-content;
-  justify-content: start;
-  column-gap: 1.5rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
 }
 .earth-filters .ef-weeks {
   border-collapse: collapse;
