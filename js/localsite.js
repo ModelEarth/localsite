@@ -3176,6 +3176,26 @@ function placeEarthDisplay() {
   if (fullscreen && earthDisplay && earthDisplay.parentElement === fullscreen) {
     initEarthScrollCover(document.getElementById('globalMapHolder'));
     initEarthControls(earthDisplay);
+    // .earthShown on #fullscreen while the map shows. When the map closes (#earthClose), #fullscreen closes too
+    // (.fullscreenEmpty, base.css) unless something else in it still shows, like project/goals' hero photos.
+    // The play/pause button sits on the map, so it doesn't count. Each child's own computed style is checked, which
+    // still reads true while #fullscreen is closed, and <html> class changes (the goals hero view) recheck it.
+    if (!fullscreen.dataset.earthShownBound) {
+      fullscreen.dataset.earthShownBound = 'true';
+      var syncEarthShown = function() {
+        var shown = earthDisplay.parentElement === fullscreen && earthDisplay.style.display !== 'none';
+        fullscreen.classList.toggle('earthShown', shown);
+        var othersShow = Array.prototype.some.call(fullscreen.children, function(child) {
+          if (child === earthDisplay || child.id === 'earthPlayPauseButton') return false;
+          var style = getComputedStyle(child);
+          return style.display !== 'none' && style.visibility !== 'hidden';
+        });
+        fullscreen.classList.toggle('fullscreenEmpty', !shown && !othersShow);
+      };
+      new MutationObserver(syncEarthShown).observe(earthDisplay, {attributes: true, attributeFilter: ['style']});
+      new MutationObserver(syncEarthShown).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
+      syncEarthShown();
+    }
   }
 }
 // In #fullscreen, the lower left of the map has a tune circle (#earthControlsToggle) that shows and hides the
@@ -6795,6 +6815,15 @@ function initTopNavOffset() {
       headerbarOffset = filterHolder.offsetHeight;
     }
     document.documentElement.style.setProperty('--headerbar-offset', headerbarOffset + 'px');
+    // #fullscreen fills the window below everything above it at the top of the page: the full header, and the
+    // search filters (#mapFilters) when they show there. Measured only while the page is at the top and #fullscreen
+    // shows, since the header shrinks and the filters become fixed as the page scrolls. --fullscreen-height in
+    // base.css uses --fullscreen-top, or --headerbar-offset until it's measured.
+    var fullscreen = document.getElementById('fullscreen');
+    if (fullscreen && window.scrollY === 0 && fullscreen.getClientRects().length) {
+      var fullscreenTop = Math.round(fullscreen.getBoundingClientRect().top);
+      document.documentElement.style.setProperty('--fullscreen-top', fullscreenTop + 'px');
+    }
   }
 
   if (typeof waitForElm === 'function') {
@@ -6803,6 +6832,15 @@ function initTopNavOffset() {
       mainHeader = mh;
       computeTopNavOffset();
     });
+
+    // #fullscreen's top is measured again when the search filters above it load, show or hide, and when
+    // #fullscreen itself shows (on engine it's hidden until the Earth map opens).
+    if (typeof ResizeObserver === 'function') {
+      var fullscreenTopResize = new ResizeObserver(computeTopNavOffset);
+      waitForElm('#mapFilters').then(function(mf) { fullscreenTopResize.observe(mf); });
+      waitForElm('#mapFilters #filterFieldContent').then(function(content) { fullscreenTopResize.observe(content); });
+      waitForElm('#fullscreen').then(function(fs) { fullscreenTopResize.observe(fs); });
+    }
 
     // Watch #headerbar for class changes (headerbarhide added/removed) and inline style
     // changes (jQuery .hide()/.show()), both of which affect #main-header's rendered height.

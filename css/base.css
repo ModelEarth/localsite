@@ -5,9 +5,11 @@ Used in localsite, modelearth, io, neighborhood, trees
 :root {
     --header-height: 80px;  /* Define header height as CSS variable */
     --top-nav-offset: var(--header-height);  /* Combined height of fixed top elements; updated by initTopNavOffset() in localsite.js */
-    /* Window height minus the header (--headerbar-offset is measured by initTopNavOffset() in localsite.js).
+    /* Window height minus what's above #fullscreen at the top of the page: the full header, and the search
+       filters when they show there (--fullscreen-top, measured by initTopNavOffset() in localsite.js), or the
+       header's current height (--headerbar-offset) until #fullscreen is measured.
        Sizes #fullscreen and #halfscreen below, and the Project Goals hero (project/goals/css/goals.css). */
-    --fullscreen-height: calc(100vh - var(--headerbar-offset, var(--header-height)));
+    --fullscreen-height: calc(100vh - var(--fullscreen-top, var(--headerbar-offset, var(--header-height))));
     --side-nav-width: 67px;
     --bg-primary: #F9FAFB;
     --bg-secondary: #FFFFFF;
@@ -3365,6 +3367,11 @@ body.sidebar-hovered {
 #fullscreen > #mainEarthDisplay #globalMapHolder {
     height: 100%;
 }
+/* #fullscreen closes when the Earth map closes and nothing else in it shows (engine), set by placeEarthDisplay()
+   in localsite.js. One with more, like project/goals' hero photos, stays. */
+#fullscreen.fullscreenEmpty {
+    display: none;
+}
 #fullscreen > #mainEarthDisplay #mainframe {
     height: 100%;
     min-height: 0;
@@ -4747,32 +4754,6 @@ body.sidebar-hidden #openNav {
 }
 .earth-control-zoom-in {
   margin-bottom: 6px;
-}
-#earthPlayInFilters {
-  display: none;
-  min-width: 42px;
-  padding: 0 2px 0 0;
-  color: #888;
-  cursor: pointer;
-}
-#earthPlayInFilters .play-pause-icon {
-  font-size: 35px;
-}
-#earthPlayInFilters:hover,
-#earthPlayInFilters:focus {
-  color: #333;
-}
-#earthPlayInFilters .material-icons {
-  position: static;
-  transform: none;
-  line-height: 1;
-}
-body.dark #earthPlayInFilters {
-  color: #bbb;
-}
-body.dark #earthPlayInFilters:hover,
-body.dark #earthPlayInFilters:focus {
-  color: #fff;
 }
 
 /* Inline CMS editor mount point. min-height ensures app.svelte detects a non-zero
