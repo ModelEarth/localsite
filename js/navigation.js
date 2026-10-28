@@ -10652,6 +10652,10 @@ function filterClickLocation(loadGeoTable) {
     if (hash.sidetab == "locale" && hash.geoview) {
         // Closing the Locale tab: sidetab changes don't add browser history entries
         (typeof goHashNoHistory === 'function' ? goHashNoHistory : goHash)({'sidetab':'','locpop':''});
+    } else if (hash.geoview == "earth") {
+        // The earth hash sets geoview=earth in hiddenhash only, so clearing geoview would leave the URL unchanged.
+        // The tab reads "States" (updateCountiesTabText), so open the states map as the "United States" geoview option does.
+        goHash({'geoview': hashHasSpecificState(hash) ? 'state' : 'us', 'locpop':''});
     } else if (hash.geoview) {
         goHash({'geoview':'','locpop':''});
     } else if (hashHasSpecificState(hash)) { // state=all opens the state select, as with no state
