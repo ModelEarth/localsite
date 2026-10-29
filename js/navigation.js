@@ -9217,6 +9217,20 @@ $(document).on("change", "#globecenter", function(event) { // Map center
     } else {
         setGlobecenter($("#globecenter").val());
     }
+    showGlobeCenter();
+});
+// A Latitude and Longitude typed in Settings become My Location, and the open Earth map moves there.
+$(document).on("change", "#globeLatitude, #globeLongitude", function(event) {
+    var lat = parseFloat($("#globeLatitude").val());
+    var lon = parseFloat($("#globeLongitude").val());
+    if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) return;
+    localStorage.latitude = lat;
+    localStorage.longitude = lon;
+    $("#globecenter").val("me");
+    if (typeof Cookies != 'undefined') {
+        Cookies.set('globecenter', 'me');
+    }
+    showGlobeCenter();
 });
 $(document).on("change", "#modelsite", function(event) {
     setModelsite($("#modelsite").val());

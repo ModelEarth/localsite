@@ -3467,6 +3467,31 @@ function loadIframe(iframeName, url) {
   var $iframe = $iframes.filter(':visible').first();
   if (!$iframe.length) $iframe = $iframes.first();
   if (!$iframe.length) return true;
+  // nullschool measures its frame once as it starts, and later resizes keep the globe where that size put it. A map started
+  // in a frame with no width or height (hidden while the page loads) shows a quarter globe in the upper left, so the
+  // address waits until the frame has a size. The latest address waiting is the one loaded.
+  if (url.indexOf('earth.nullschool.net') >= 0 && typeof ResizeObserver === 'function') {
+    var frame = $iframe[0];
+    var frameRect = frame.getBoundingClientRect();
+    if (!frameRect.width || !frameRect.height) {
+      frame.dataset.pendingSrc = url;
+      if (!frame.earthSizeObserver) {
+        consoleLog("loadIframe: the Earth map waits for its frame to have a size");
+        frame.earthSizeObserver = new ResizeObserver(function() {
+          var rect = frame.getBoundingClientRect();
+          if (!rect.width || !rect.height) return;
+          frame.earthSizeObserver.disconnect();
+          frame.earthSizeObserver = null;
+          var pendingSrc = frame.dataset.pendingSrc;
+          delete frame.dataset.pendingSrc;
+          if (pendingSrc) loadIframe(iframeName, pendingSrc);
+        });
+        frame.earthSizeObserver.observe(frame);
+      }
+      return false;
+    }
+    delete frame.dataset.pendingSrc; // A frame with a size loads now, replacing any address still waiting
+  }
   var priorSrc = $iframe.attr('src') || '';
   var isEarthChange = url.indexOf('earth.nullschool.net') >= 0 && priorSrc.indexOf('earth.nullschool.net') >= 0;
   // A different folder, such as the language folder in https://earth.nullschool.net/es/, needs a full load
@@ -5063,21 +5088,42 @@ function setGlobecenter(globecenter, promptForCurrentPosition) {
     if ($("#globeLatitude").val() && $("#globeLongitude").val()) {
         var _hashCheck = (typeof getHash === 'function') ? getHash() : {};
         if (!_hashCheck.earth && !_hashCheck['']) {
-          // Add latlon validation
-          let globeZoom = "800"; // "1037";
-
-          // Move these into dropdown attributes
-          if ($("#globeLongitude").val() == "-160") {
-            globeZoom = "300"; // For Pacific
-          } else if ($("#globeLongitude").val() == "80") {
-            globeZoom = "600"; // For India
-          }
-
-          let latLonZoom = $("#globeLongitude").val() + "," + $("#globeLatitude").val() + "," + globeZoom;
-          showGlobalMap(`https://earth.nullschool.net/#current/wind/surface/level/orthographic=${latLonZoom}`);
+          showGlobalMap(`https://earth.nullschool.net/#current/wind/surface/level/orthographic=${getGlobeCenterLatLonZoom()}`);
         }
     }
   }
+}
+function getGlobeCenterLatLonZoom(currentZoom) {
+  let globeZoom = currentZoom || "800"; // "1037";
+  // Move these into dropdown attributes
+  if ($("#globecenter").val() == "pacific") {
+    globeZoom = "300";
+  } else if ($("#globecenter").val() == "indian") {
+    globeZoom = "600";
+  } else if ($("#globecenter").val() != "me") {
+    globeZoom = "800";
+  }
+  return $("#globeLongitude").val() + "," + $("#globeLatitude").val() + "," + globeZoom;
+}
+// When the Map Center, Latitude or Longitude setting changes, the open Earth map moves to the new center,
+// keeping its time and layers. An #earth= page hash is updated too, since setGlobecenter() leaves it as it is on page load.
+// My Location keeps the map's current zoom.
+function showGlobeCenter() {
+  if (!$('#mainEarthDisplay').is(':visible')) return;
+  if (!$("#globeLatitude").val() || !$("#globeLongitude").val()) return;
+  var earthHash = getEarthFiltersHash();
+  if (!earthHash || earthHash.indexOf('orthographic=') < 0) { // No map yet, or another projection was chosen in the earth filters
+    var _hashCheck = (typeof getHash === 'function') ? getHash() : {};
+    if (!_hashCheck.earth && !_hashCheck['']) {
+      showGlobalMap(`https://earth.nullschool.net/#current/wind/surface/level/orthographic=${getGlobeCenterLatLonZoom()}`);
+    }
+    return;
+  }
+  var currentZoom = (earthHash.match(/orthographic=[^,\/]*,[^,\/]*,([\d.]+)/) || [])[1];
+  earthHash = earthHash.replace(/orthographic=[^\/\s&#]+/, 'orthographic=' + getGlobeCenterLatLonZoom(currentZoom));
+  loadIframe("mainframe", getEarthIframeBaseUrl() + '#' + earthHash);
+  var hash = (typeof getHash === 'function') ? getHash() : {};
+  if (hash.earth && typeof goHash === 'function') goHash({'earth': earthHash});
 }
 function getGeolocation() {
     if (navigator.geolocation) {
@@ -5095,6 +5141,7 @@ function geoSuccess(pos) {
     localStorage.longitude = pos.coords.longitude.toFixed(3);
     $("#globeLatitude").val(localStorage.latitude);
     $("#globeLongitude").val(localStorage.longitude);
+    if ($("#globecenter").val() == "me") showGlobeCenter(); // The location arrives after the Map Center change
 }
 
 function setModelsite(modelsite) {
