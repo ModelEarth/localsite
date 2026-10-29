@@ -730,8 +730,10 @@ function localsitePath(path) {
 // Use instead of root-absolute paths like "/team/...", which assume the webroot is the site root.
 // When localsite.js comes from the page's own site, the path stays on that site (with any folders before localsite),
 // so local servers on any port use their own files. From a CDN or another site, it's under local_app.web_root().
+// Repos no longer in the webroot, e.g. "/apps/...", always come from https://model.earth.
 function webrootPath(path) {
   path = '/' + String(path).replace(/^\//, '');
+  if (['apps'].indexOf(path.split('/')[1]) >= 0) return 'https://model.earth' + path;
   const base = localsiteScriptBase();
   if (!base) return path;
   const sameSite = location.protocol === 'file:' ? base.indexOf('file:') === 0 : base.indexOf(location.origin + '/') === 0;
