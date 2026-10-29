@@ -135,13 +135,14 @@ function cartoOrEsri(cartoStyle, esriCanvas, options) {
   return group;
 }
 
-// Dark Mode brightens CARTO dark_all for near-white roads over black to charcoal greys. Darker Mode is CARTO dark_all as is.
-// With Esri tiles, Darker Mode's titles are World_Boundaries_and_Places (white with dark edges), which suit a dark map
-// but not a light one. Same as Dark Mode and Darker Mode in team/js/leaflet.js. Used by map.js (map1) and navigation.js (#geomap).
+// Dark Mode is CARTO dark_all as is. Darker Mode brightens CARTO dark_all for near-white roads over black to charcoal greys,
+// and with Esri tiles its higher contrast gives the blacker map. Dark Mode's Esri titles are World_Boundaries_and_Places
+// (white with dark edges), which suit a dark map but not a light one. Swapped relative to Dark Mode and Darker Mode in team/js/leaflet.js.
+// Used by map.js (map1) and navigation.js (#geomap).
 function darkBasemaps(attributionPrefix) {
   return {
-    'Dark Mode': cartoOrEsri('dark_all', ['World_Dark_Gray_Base', 'World_Dark_Gray_Reference'], {attributionPrefix: attributionPrefix, filter: 'brightness(4.2) contrast(1.25)', esriFilter: 'brightness(1.15) contrast(2.4)'}),
-    'Darker Mode': cartoOrEsri('dark_all', ['World_Dark_Gray_Base', 'Reference/World_Boundaries_and_Places'], {attributionPrefix: attributionPrefix})
+    'Dark Mode': cartoOrEsri('dark_all', ['World_Dark_Gray_Base', 'Reference/World_Boundaries_and_Places'], {attributionPrefix: attributionPrefix}),
+    'Darker Mode': cartoOrEsri('dark_all', ['World_Dark_Gray_Base', 'World_Dark_Gray_Reference'], {attributionPrefix: attributionPrefix, filter: 'brightness(5.3) contrast(1.25)', esriFilter: 'brightness(1.5) contrast(2.4)'})
   };
 }
 
