@@ -3307,9 +3307,59 @@ function initEarthControls(earthDisplay) {
 // page scrolling. So it ignores the pointer (base.css) until it's clicked, and scrolling over it moves the page.
 // A click (landing on #globalMapHolder beneath) hands it the pointer. Page scrolling comes back with the
 // #earthScrollButton circle left of the close-X, a click elsewhere on the page, or on its own EARTH_SCROLL_MS
-// after the click, as its ring closes. Clicks inside the globe go to nullschool's page, another site, so they
-// can't be seen here.
+// after the click, as its ring closes, or when the pointer leaves the globe. Clicks inside the globe go to nullschool's
+// page, another site, so they can't be seen here.
 var EARTH_SCROLL_MS = 8000;
+// Where the user drags the globe can't be seen here, but the first click, which lands on #globalMapHolder, shows the place
+// they went for. getEarthLatLonAtPoint() finds the place under that click, and later zooms and reloads center on it:
+// applyEarthClickCenter() swaps it in for the lon,lat the map last loaded with (from).
+var earthClickCenter = null; // {from: [lon, lat], to: [lon, lat]}
+// Inverts nullschool's orthographic projection: rotate [-lon, -lat], scale is the globe's radius in pixels,
+// centered in the frame. Returns [lon, lat], or null when the point is off the globe.
+function getEarthLatLonAtPoint(frame, clientX, clientY) {
+  var m = (frame.getAttribute('src') || '').match(/orthographic=(-?[\d.]+),(-?[\d.]+),([\d.]+)/);
+  if (!m) return null;
+  var rect = frame.getBoundingClientRect();
+  var radius = +m[3];
+  var x = (clientX - rect.left - rect.width / 2) / radius;
+  var y = (rect.top + rect.height / 2 - clientY) / radius;
+  var rho = Math.sqrt(x * x + y * y);
+  if (!radius || rho > 1) return null;
+  if (!rho) return [+m[1], +m[2]];
+  var rad = Math.PI / 180;
+  var lat0 = +m[2] * rad;
+  var c = Math.asin(rho), sinC = Math.sin(c), cosC = Math.cos(c);
+  var lat = Math.asin(cosC * Math.sin(lat0) + y * sinC * Math.cos(lat0) / rho) / rad;
+  var lon = +m[1] + Math.atan2(x * sinC, rho * cosC * Math.cos(lat0) - y * sinC * Math.sin(lat0)) / rad;
+  lon = ((lon + 540) % 360) - 180;
+  return [+lon.toFixed(3), +lat.toFixed(3)];
+}
+// A url or #earth= hash still holding the lon,lat the map last loaded with gets the clicked place. Another place is kept.
+function applyEarthClickCenter(earthUrl) {
+  if (!earthClickCenter) return earthUrl;
+  return earthUrl.replace(/orthographic=(-?[\d.]+),(-?[\d.]+)(?=,)/, function(all, lon, lat) {
+    var from = earthClickCenter.from;
+    if (Math.abs(lon - from[0]) > 0.01 || Math.abs(lat - from[1]) > 0.01) return all;
+    return 'orthographic=' + earthClickCenter.to[0] + ',' + earthClickCenter.to[1];
+  });
+}
+function setEarthClickCenter(frame, e) {
+  var m = (frame.getAttribute('src') || '').match(/orthographic=(-?[\d.]+),(-?[\d.]+),/);
+  var to = getEarthLatLonAtPoint(frame, e.clientX, e.clientY);
+  if (!m || !to) return; // A click off the globe keeps the prior estimate
+  earthClickCenter = {from: [+m[1], +m[2]], to: to};
+  consoleLog("Earth map click estimate: " + to.join(","));
+  fixEarthHashCenter();
+}
+// The #earth= page hash gets the clicked place too, so a page reload keeps it. Quiet, so the map doesn't reload now.
+function fixEarthHashCenter() {
+  var hash = (typeof getHash === 'function') ? getHash() : {};
+  if (!hash.earth) return;
+  var fixed = applyEarthClickCenter(hash.earth);
+  if (fixed !== hash.earth) goHashQuiet({'earth': fixed});
+}
+// The zoom buttons and time slider write the #earth= hash from the lon,lat the map last loaded with
+document.addEventListener('hashChangeEvent', fixEarthHashCenter, false);
 var earthScrollTimer = null;
 function setEarthScrollActive(holder, on) {
   holder.classList.toggle('earthScrollActive', on);
@@ -3323,11 +3373,43 @@ function setEarthScrollActive(holder, on) {
   clearTimeout(earthScrollTimer);
   if (on) earthScrollTimer = setTimeout(function() { setEarthScrollActive(holder, false); }, EARTH_SCROLL_MS);
 }
+// A note just under the first click, faded away after 2 seconds (#earthClickNote in base.css). It ignores the pointer,
+// so the next click reaches the globe.
+var earthClickNoteTimer = null;
+function showEarthClickNote(e) {
+  var note = document.getElementById('earthClickNote');
+  if (!note) {
+    note = document.createElement('div');
+    note.id = 'earthClickNote';
+    note.textContent = 'Click twice to interact';
+    document.body.appendChild(note);
+  }
+  note.style.left = e.clientX + 'px';
+  note.style.top = e.clientY + 'px';
+  note.classList.add('earthClickNoteShow');
+  clearTimeout(earthClickNoteTimer);
+  earthClickNoteTimer = setTimeout(function() { note.classList.remove('earthClickNoteShow'); }, 2000);
+}
 function initEarthScrollCover(holder) {
   if (!holder || holder.classList.contains('earthScrollCover')) return;
   holder.classList.add('earthScrollCover');
   holder.title = 'Click to use the globe. Until then, scrolling moves the page.';
-  holder.addEventListener('click', function() { setEarthScrollActive(holder, true); });
+  holder.addEventListener('click', function(e) {
+    var frame = holder.querySelector('iframe');
+    if (!holder.classList.contains('earthScrollActive')) {
+      if (frame) setEarthClickCenter(frame, e);
+      showEarthClickNote(e);
+    }
+    setEarthScrollActive(holder, true);
+  });
+  // The parent page sees the pointer leave the iframe (mouseout on the iframe element), which gives scrolling back.
+  // Moving onto the buttons over the map, such as #earthScrollButton, isn't leaving, so they stay.
+  var earthDisplay = holder.closest('#mainEarthDisplay') || holder.parentElement;
+  earthDisplay.addEventListener('mouseout', function(e) {
+    if (!holder.classList.contains('earthScrollActive')) return;
+    if (e.relatedTarget && earthDisplay.contains(e.relatedTarget)) return;
+    setEarthScrollActive(holder, false);
+  });
   document.addEventListener('click', function(e) {
     if (holder.classList.contains('earthScrollActive') && !holder.contains(e.target)) setEarthScrollActive(holder, false);
   });
@@ -3460,6 +3542,7 @@ function getEarthIframeBaseUrl() {
   return 'https://earth.nullschool.net/' + (/^[\w-]+\/$/.test(savedFolder) ? savedFolder : '');
 }
 // true: a nullschool time or place change only swaps the iframe's #hash (no reload). false: the iframe reloads for each change.
+// Stays false: hash changes are ignored by the iframe, so nullschool only shows a new time or place when it reloads.
 var earthIframeHashOnly = false;
 function loadIframe(iframeName, url) {
   // If the id is on the page twice, update the visible iframe. $('#id') would only return the first.
@@ -3492,6 +3575,7 @@ function loadIframe(iframeName, url) {
     }
     delete frame.dataset.pendingSrc; // A frame with a size loads now, replacing any address still waiting
   }
+  if (url.indexOf('earth.nullschool.net') >= 0) url = applyEarthClickCenter(url);
   var priorSrc = $iframe.attr('src') || '';
   var isEarthChange = url.indexOf('earth.nullschool.net') >= 0 && priorSrc.indexOf('earth.nullschool.net') >= 0;
   // A different folder, such as the language folder in https://earth.nullschool.net/es/, needs a full load
@@ -5109,6 +5193,7 @@ function getGlobeCenterLatLonZoom(currentZoom) {
 // keeping its time and layers. An #earth= page hash is updated too, since setGlobecenter() leaves it as it is on page load.
 // My Location keeps the map's current zoom.
 function showGlobeCenter() {
+  earthClickCenter = null; // The chosen center replaces the place estimated from a click on the globe
   if (!$('#mainEarthDisplay').is(':visible')) return;
   if (!$("#globeLatitude").val() || !$("#globeLongitude").val()) return;
   var earthHash = getEarthFiltersHash();

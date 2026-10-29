@@ -3384,8 +3384,32 @@ body.sidebar-hovered {
 #globalMapHolder.earthScrollCover:not(.earthScrollActive) {
     cursor: pointer;
 }
+/* A drag on the cover would select the iframe, greying the whole map */
+#globalMapHolder.earthScrollCover {
+    -webkit-user-select: none;
+    user-select: none;
+}
 #globalMapHolder.earthScrollCover.earthScrollActive iframe {
     pointer-events: auto;
+}
+/* Shown just under the first click on the globe by showEarthClickNote() in localsite.js, then faded away */
+#earthClickNote {
+    position: fixed;
+    z-index: 10000;
+    transform: translate(-50%, 18px);
+    padding: 6px 12px;
+    border-radius: 6px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 14px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+#earthClickNote.earthClickNoteShow {
+    opacity: 1;
+    transition: none;
 }
 /* The circle left of the close-X (#earthClose: 32px, 20px from the right, 22px down) that gives scrolling back to the page */
 #earthScrollButton {
@@ -3477,6 +3501,9 @@ body.sidebar-hovered {
     gap: 8px;
     margin: 0;
     top: 0;
+}
+#fullscreen > #mainEarthDisplay .earth-zoom-controls .earth-control-zoom-out {
+    order: -1; /* Zoom out to the left of zoom in */
 }
 #fullscreen > #mainEarthDisplay .earth-bar a {
     display: flex;
