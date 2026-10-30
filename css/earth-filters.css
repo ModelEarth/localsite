@@ -251,6 +251,19 @@
   column-gap: 0.25rem;
   margin-left: 0.25rem;
 }
+/* The time zone text gives the button its baseline, so it lines up with the date's text rather than the icon's bottom */
+.earth-filters .ef-tz [data-field="tz"] {
+  align-self: baseline;
+}
+/* 4px more space under the Date row than between the other rows */
+.earth-filters .ef-tab-panel > .ef-row[data-row="date"] {
+  margin-bottom: 4px;
+}
+/* The date, then Local or UTC beside it (or under it in a narrow panel) */
+.earth-filters .ef-date-group {
+  display: flex;
+  align-items: baseline;
+}
 
 /* The tabs are at the top of the panel, with the place button and reset icon at the right. Over the map, they stay there while the filters scroll inside the panel. */
 .earth-filters .ef-tabs-bar {
@@ -492,12 +505,18 @@
   text-align: center;
 }
 
-/* Condensed (Condense in the three-dot menu, or a voice conversation starting): the right side of each Controls row shows
+/* Condensed (Condense in the three-dot menu, a voice conversation starting, or a panel at most 480px wide): the right side of each Controls row shows
    only its highlighted choice. The Date row stays whole, and a row with nothing highlighted is hidden. */
 .earth-filters.ef-condensed .ef-tab-panel > .ef-row:not([data-row="date"]) button:not([aria-checked="true"]):not([aria-pressed="true"]):not([aria-selected="true"]),
 .earth-filters.ef-condensed .ef-tab-panel .ef-nav-arrows,
 .earth-filters.ef-condensed .ef-tab-panel > .ef-row:not([data-row="date"]):not(:has([aria-checked="true"], [aria-pressed="true"], [aria-selected="true"])) {
   display: none;
+}
+/* The condensed panel's card narrows to fit its choices. Over the map, applyMapPanelBox() narrows the panel to the card. */
+.earth-filters.ef-condensed .ef-menu > .ef-card {
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: 100%;
 }
 
 /* Narrow parent: labels above their buttons, as on the nullschool menu for phones. Condensed rows keep their one choice beside the label. */
@@ -517,5 +536,17 @@
   .earth-filters.ef-condensed .ef-row-label {
     min-width: 5.5rem;
     margin-top: 0;
+  }
+  /* The date sits close to its label, out of line with the choices in the rows below, to leave it room */
+  .earth-filters.ef-condensed .ef-tab-panel > .ef-row[data-row="date"] > .ef-row-label {
+    min-width: 0;
+  }
+  /* Local or UTC under the date, with its icon lined up with the date's text */
+  .earth-filters .ef-date-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .earth-filters .ef-date-group .ef-tz {
+    margin-left: -0.5rem;
   }
 }
