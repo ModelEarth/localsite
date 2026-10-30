@@ -3190,6 +3190,7 @@ function placeEarthDisplay() {
         fullscreen.classList.toggle('earthShown', shown);
         var othersShow = Array.prototype.some.call(fullscreen.children, function(child) {
           if (child === earthDisplay || child.id === 'earthPlayPauseButton') return false;
+          if (/\bclaude-voice-/.test(child.getAttribute('class') || '')) return false; // The voice widget's canvas and words (engine/claude-voice.js)
           var style = getComputedStyle(child);
           return style.display !== 'none' && style.visibility !== 'hidden';
         });
@@ -3220,8 +3221,43 @@ function placeEarthDisplay() {
       };
       placeUnderMap();
       if (document.readyState !== 'complete') window.addEventListener('load', placeUnderMap);
+      // The map's controls in its upper right stack top to bottom in tab order (base.css): the search filters' section
+      // toggle (#filterFieldToggleHolder) with its menu, zoom in and out, the close-X, then the scroll circle. The
+      // toggle and menu go back to the search filters while the map is closed, where they open it again.
+      var toggleHome = null;
+      var stackEarthControls = function() {
+        var stack = earthDisplay.querySelector('.earth-zoom-controls');
+        var close = document.getElementById('earthClose');
+        if (!stack || !close) return;
+        if (close.parentElement !== stack) stack.appendChild(close);
+        var scroll = document.getElementById('earthScrollButton');
+        if (scroll && scroll.parentElement !== stack) stack.appendChild(scroll);
+        var toggle = document.getElementById('filterFieldToggleHolder'), menu = document.getElementById('filterFieldMenu');
+        if (!toggle) return;
+        if (!toggle.hasAttribute('tabindex')) {
+          toggle.setAttribute('tabindex', '0');
+          toggle.setAttribute('role', 'button');
+          toggle.setAttribute('aria-label', toggle.title || 'Filter sections');
+          toggle.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
+          });
+        }
+        var shown = fullscreen.classList.contains('earthShown');
+        if (shown && toggle.parentElement !== stack) {
+          toggleHome = { parent: toggle.parentElement, next: toggle.nextSibling, menuParent: menu && menu.parentElement, menuNext: menu && menu.nextSibling };
+          stack.insertBefore(toggle, stack.firstChild);
+          if (menu) stack.appendChild(menu);
+        } else if (!shown && toggleHome && toggle.parentElement === stack) {
+          var back = function(el, parent, next) { parent.insertBefore(el, next && next.parentNode === parent ? next : null); };
+          back(toggle, toggleHome.parent, toggleHome.next);
+          if (menu && toggleHome.menuParent) back(menu, toggleHome.menuParent, toggleHome.menuNext);
+        }
+      };
+      waitForElm('#earthClose').then(stackEarthControls);
+      waitForElm('#filterFieldToggleHolder').then(stackEarthControls);
       var syncUnderMap = function() {
         underMap.style.display = fullscreen.classList.contains('earthShown') ? '' : 'none';
+        stackEarthControls();
       };
       new MutationObserver(syncUnderMap).observe(fullscreen, {attributes: true, attributeFilter: ['class']});
       syncUnderMap();
@@ -3306,7 +3342,7 @@ function initEarthControls(earthDisplay) {
 // In #fullscreen (project/goals, engine), the Earth iframe would take the mouse wheel for its globe, which stops the
 // page scrolling. So it ignores the pointer (base.css) until it's clicked, and scrolling over it moves the page.
 // A click (landing on #globalMapHolder beneath) hands it the pointer. Page scrolling comes back with the
-// #earthScrollButton circle left of the close-X, a click elsewhere on the page, or on its own EARTH_SCROLL_MS
+// #earthScrollButton circle left of the zoom buttons and close-X, a click elsewhere on the page, or on its own EARTH_SCROLL_MS
 // after the click, as its ring closes, or when the pointer leaves the globe. Clicks inside the globe go to nullschool's
 // page, another site, so they can't be seen here.
 var EARTH_SCROLL_MS = 8000;
@@ -5874,6 +5910,29 @@ function initAccountButton() {
     if (!script) { return; }
     var webRoot = (typeof local_app !== 'undefined' && local_app.web_root) ? local_app.web_root() : '';
     loadScript(webRoot + script);
+  });
+}
+
+// Adds the voice widget (engine/claude-voice.js) to pages with #fullscreen when support/site/config.yaml names its
+// script at the top level, e.g. fullscreenVoice: /engine/claude-voice.js. Its canvas and floating words fill
+// #fullscreen, and its controls sit in its lower right, 12px up, scrolling with it (project/goals moves its photo
+// credit up above them). The play button (#earthPlayPauseButton) moves into them, where it also pauses
+// Claude's voice and motion while Claude replies.
+function initFullscreenVoice() {
+  if (typeof window.loadWebrootYaml !== 'function') { return; }
+  window.loadWebrootYaml().then(function (result) {
+    var m = result && result.text && result.text.match(/^fullscreenVoice:\s*["']?([^"'#\r\n]*?)["']?\s*(?:#.*)?$/m);
+    var src = m && m[1].trim();
+    if (!src) { return; }
+    waitForElm('#fullscreen').then(function () {
+      if (window.ClaudeVoice || document.querySelector('script[src*="claude-voice"]')) { return; } // The page loads it itself
+      var script = document.createElement('script');
+      script.src = webrootPath(src);
+      script.dataset.target = '#fullscreen';
+      script.dataset.uiBottom = '12';
+      script.dataset.playButton = '#earthPlayPauseButton';
+      document.head.appendChild(script);
+    });
   });
 }
 
@@ -8652,4 +8711,5 @@ function siteConfigPath() {
     };
 })();
 
+initFullscreenVoice();
 consoleLog("end localsite");

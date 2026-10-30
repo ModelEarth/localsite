@@ -3411,11 +3411,12 @@ body.sidebar-hovered {
     opacity: 1;
     transition: none;
 }
-/* The circle left of the close-X (#earthClose: 32px, 20px from the right, 22px down) that gives scrolling back to the page */
+/* The circle that gives scrolling back to the page. Outside #fullscreen it's left of the close-X (#earthClose: 32px,
+   20px from the right, 22px down); in #fullscreen, after the close-X at the bottom of the map's control stack. */
 #earthScrollButton {
     position: absolute;
     z-index: 101;
-    right: 60px;
+    right: 140px;
     top: 22px;
     display: flex;
     align-items: center;
@@ -3464,6 +3465,8 @@ body.sidebar-hovered {
     from { stroke-dashoffset: 100; }
     to { stroke-dashoffset: 0; }
 }
+/* Where the voice widget loads (initFullscreenVoice() in localsite.js), it moves the button into its own controls,
+   which style it, so these rules no longer apply. */
 #fullscreen > #earthPlayPauseButton {
     position: absolute;
     z-index: 102; /* Above the map's controls (100 and 101) */
@@ -3488,34 +3491,82 @@ body.sidebar-hovered {
     font-size: 28px;
     line-height: 1;
 }
-/* In #fullscreen, the map's zoom + and - buttons sit side by side to the left of the play/pause button, as
-   circles like it (8px apart). In the lower left, 10px in, a tune circle (#earthControlsToggle, initEarthControls()
+/* In #fullscreen, the map's controls stack down its upper right, 20px in and 22px down, 8px apart, as 32px circles in
+   tab order (stackEarthControls() in localsite.js): the search filters' section toggle (#filterFieldToggleHolder,
+   whose menu opens to the stack's left), zoom in, zoom out, the close-X (#earthClose) and, while the globe has the
+   pointer, the scroll circle (#earthScrollButton). In the lower left, 10px in, a tune circle (#earthControlsToggle, initEarthControls()
    in localsite.js), in a dark bar with the date to its right, opens and closes the filters panel (#mainEarthFilters).
    A click on the date shows its picker in its place. While the filters panel is open, the clock replaces the tune circle. */
 #fullscreen > #mainEarthDisplay .earth-zoom-controls {
-    right: 68px !important; /* The play/pause button's 20px, its 40px width and 8px. Over the inline right and bottom from nouislider.min.js */
-    bottom: 35px !important;
+    right: 20px !important; /* Over the inline right, bottom and display from nouislider.min.js */
+    top: 22px !important;
+    bottom: auto !important;
+    display: flex !important; /* Shows with the map, since the close-X is in it */
+    flex-direction: column;
+    gap: 8px;
 }
 #fullscreen > #mainEarthDisplay .earth-zoom-controls .earth-control-zoom {
     display: flex;
+    flex-direction: column;
     gap: 8px;
     margin: 0;
     top: 0;
 }
-#fullscreen > #mainEarthDisplay .earth-zoom-controls .earth-control-zoom-out {
-    order: -1; /* Zoom out to the left of zoom in */
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #earthClose {
+    position: static !important; /* Over its inline place in the upper right */
+}
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #earthScrollButton {
+    position: relative; /* In the stack's flow, below the close-X. Relative keeps its countdown ring placed on it. */
+    top: auto;
+    right: auto;
+}
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder {
+    float: none;
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(40, 40, 40, 0.6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder:hover,
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder:focus-visible {
+    background-color: rgba(20, 20, 20, 0.85);
+}
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-toggle-circle {
+    display: none; /* The stack's circle replaces it */
+}
+/* The dots wider in all (15.5px) than in the search filters' 13px: 3.5px each, 6px apart */
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-field-toggle-icon {
+    width: 15.5px;
+    height: 3.5px;
+}
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-toggle-dot {
+    width: 3.5px;
+    height: 3.5px;
+    background: #fff;
+}
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-toggle-dot:nth-child(2) {
+    left: 6px;
+}
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-toggle-dot:nth-child(3) {
+    left: 12px;
+}
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldMenu {
+    top: 0;
+    right: calc(100% + 8px);
 }
 #fullscreen > #mainEarthDisplay .earth-bar a {
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     margin: 0;
-    padding: 0 0 4px 4px; /* The + and - 2px up and 2px right of center */
+    padding: 0 0 3px 3px; /* The + and - a little up and right of center */
     border-radius: 50%;
-    font-size: 28px;
+    font-size: 22px;
     line-height: 1;
     color: rgba(255, 255, 255, 0.75);
     background-color: rgba(40, 40, 40, 0.6);
@@ -3524,6 +3575,14 @@ body.sidebar-hovered {
 #fullscreen > #mainEarthDisplay .earth-bar a:hover,
 #fullscreen > #mainEarthDisplay .earth-bar a:focus-visible {
     color: #fff;
+    background-color: rgba(20, 20, 20, 0.85);
+}
+/* The close-X beside them takes their see-through background in place of its solid one (nouislider.min.css) */
+#fullscreen > #mainEarthDisplay #earthClose {
+    background-color: rgba(40, 40, 40, 0.6);
+}
+#fullscreen > #mainEarthDisplay #earthClose:hover,
+#fullscreen > #mainEarthDisplay #earthClose:focus-visible {
     background-color: rgba(20, 20, 20, 0.85);
 }
 #earthControls {
@@ -4762,6 +4821,33 @@ body.sidebar-hidden #openNav {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+/* On pages with #fullscreen, the search filters' buttons (Locations, Topics, GO, the menu) and the search box take
+   the voice widget's see-through dark background (its .wrap buttons, engine/claude-voice.js). !important is over
+   search-filters.css and inline styles in map/filter.html. */
+body:has(#fullscreen) #mapFilters .filterClick,
+body:has(#fullscreen) #mapFilters #goSearch,
+body:has(#fullscreen) #mapFilters #showSideFromBar i {
+  color: #f4f6fb !important;
+  background: rgba(10, 12, 20, 0.5) !important;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+}
+body:has(#fullscreen) #mapFilters .filterClick:hover,
+body:has(#fullscreen) #mapFilters #goSearch:hover,
+body:has(#fullscreen) #mapFilters #showSideFromBar i:hover {
+  background: rgba(10, 12, 20, 0.65) !important;
+}
+body:has(#fullscreen) #mapFilters .filterClick i,
+body:has(#fullscreen) #mapFilters #goSearch span {
+  color: inherit !important;
+}
+body:has(#fullscreen) #mapFilters .filterClick::placeholder {
+  color: rgba(244, 246, 251, 0.7);
+}
+body:has(#fullscreen) #mapFilters #showSideFromBar {
+  opacity: 1 !important; /* Its own 0.3 would wash out the dark background */
 }
 #filterFieldToggleHolder {
   width: 54px;
