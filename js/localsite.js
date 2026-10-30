@@ -776,7 +776,13 @@ window.local_app = window.local_app || {};
             }
             //alert("get localsite_repo");
 
-            // Get web_root and append "/localsite/" - no DOM checking needed here
+            let scriptFolder = localsite_folder_from_script();
+            if (scriptFolder) {
+              localsite_repo = scriptFolder;
+              return (scriptFolder);
+            }
+
+            // Otherwise get web_root and append "/localsite/"
             let web_root = this.web_root();
             let theroot = web_root + "/localsite/";
             
@@ -1508,6 +1514,20 @@ var theroot = get_localsite_root(); // Try using let instead of var to find othe
 // TO DO - eliminate theroot and use local_app.localsite_root instead.
 // TO DO - Then eliminate the following get_localsite_root
 
+// The folder holding localsite.js, taken from the script's own URL so supporting files load relative to it.
+// Keeps any path prepended to localsite, e.g. https://example.com/commons/localsite/js/localsite.js → https://example.com/commons/localsite/
+// Returns null when localsite.js is not found in a js/ folder.
+function localsite_folder_from_script() {
+  let scripts = document.getElementsByTagName('script');
+  for (let i = scripts.length - 1; i >= 0; --i) { // Last match, as before
+    let match = scripts[i].src && scripts[i].src.match(/^(.*\/)js\/localsite\.js([?#]|$)/); // .src is always an absolute URL
+    if (match) {
+      return match[1];
+    }
+  }
+  return null;
+}
+
 function get_localsite_root() { // Also in two other places
   if (localsite_repo3) { // Intensive, so limit to running once.
     //alert(localsite_repo);
@@ -1519,6 +1539,12 @@ function get_localsite_root() { // Also in two other places
   if (scriptBase) {
     localsite_repo3 = scriptBase;
     return scriptBase;
+  }
+
+  let scriptFolder = localsite_folder_from_script();
+  if (scriptFolder) {
+    localsite_repo3 = scriptFolder;
+    return (scriptFolder);
   }
 
   let scripts = document.getElementsByTagName('script'); 
