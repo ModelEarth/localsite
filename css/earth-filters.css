@@ -285,6 +285,8 @@
 }
 .earth-filters .ef-tabs-bar > .ef-bunch {
   column-gap: 0.25rem;
+  position: relative;
+  top: 3px; /* The tabs sit 3px lower in the bar, without moving the bar or the three dots */
 }
 .earth-filters .ef-panel-actions {
   position: relative;
@@ -537,16 +539,33 @@
     min-width: 5.5rem;
     margin-top: 0;
   }
-  /* The date sits close to its label, out of line with the choices in the rows below, to leave it room */
-  .earth-filters.ef-condensed .ef-tab-panel > .ef-row[data-row="date"] > .ef-row-label {
-    min-width: 0;
-  }
-  /* Local or UTC under the date, with its icon lined up with the date's text */
+  /* Local or UTC on its own line. With labels above their buttons, it's under the date. */
   .earth-filters .ef-date-group {
     flex-direction: column;
     align-items: flex-start;
   }
+  /* Its icon lines up with the text above it */
   .earth-filters .ef-date-group .ef-tz {
     margin-left: -0.5rem;
+  }
+  /* Condensed, the date sits close to its label, out of line with the choices in the rows below, to leave it room.
+     Local or UTC goes under them, flush left under the label. */
+  .earth-filters.ef-condensed .ef-tab-panel > .ef-row[data-row="date"] {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+  }
+  .earth-filters.ef-condensed .ef-tab-panel > .ef-row[data-row="date"] > .ef-row-label {
+    min-width: 0;
+  }
+  .earth-filters.ef-condensed .ef-tab-panel > .ef-row[data-row="date"] .ef-date-group {
+    display: contents; /* The date and Local or UTC are placed in the row's grid */
+  }
+  .earth-filters.ef-condensed .ef-tab-panel > .ef-row[data-row="date"] .ef-date-field {
+    justify-self: start;
+  }
+  .earth-filters.ef-condensed .ef-tab-panel > .ef-row[data-row="date"] .ef-tz {
+    grid-column: 1 / -1;
+    justify-self: start;
   }
 }
