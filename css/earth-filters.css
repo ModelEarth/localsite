@@ -251,6 +251,19 @@
   column-gap: 0.25rem;
   margin-left: 0.25rem;
 }
+/* The time zone text gives the button its baseline, so it lines up with the date's text rather than the icon's bottom */
+.earth-filters .ef-tz [data-field="tz"] {
+  align-self: baseline;
+}
+/* 4px more space under the Date row than between the other rows */
+.earth-filters .ef-tab-panel > .ef-row[data-row="date"] {
+  margin-bottom: 4px;
+}
+/* The date, then Local or UTC beside it (or under it in a narrow panel) */
+.earth-filters .ef-date-group {
+  display: flex;
+  align-items: baseline;
+}
 
 /* The tabs are at the top of the panel, with the place button and reset icon at the right. Over the map, they stay there while the filters scroll inside the panel. */
 .earth-filters .ef-tabs-bar {
@@ -272,6 +285,8 @@
 }
 .earth-filters .ef-tabs-bar > .ef-bunch {
   column-gap: 0.25rem;
+  position: relative;
+  top: 3px; /* The tabs sit 3px lower in the bar, without moving the bar or the three dots */
 }
 .earth-filters .ef-panel-actions {
   position: relative;
@@ -329,6 +344,7 @@
   margin-top: 0;
 }
 .earth-filters .ef-panel-menu [data-field="panel-icon"],
+.earth-filters .ef-panel-menu [data-field="condense-icon"],
 .earth-filters .ef-panel-menu [data-field="place-icon"] {
   display: flex;
 }
@@ -491,7 +507,21 @@
   text-align: center;
 }
 
-/* Narrow parent: labels above their buttons, as on the nullschool menu for phones */
+/* Condensed (Condense in the three-dot menu, a voice conversation starting, or a panel at most 480px wide): the right side of each Controls row shows
+   only its highlighted choice. The Date row stays whole, and a row with nothing highlighted is hidden. */
+.earth-filters.ef-condensed .ef-tab-panel > .ef-row:not([data-row="date"]) button:not([aria-checked="true"]):not([aria-pressed="true"]):not([aria-selected="true"]),
+.earth-filters.ef-condensed .ef-tab-panel .ef-nav-arrows,
+.earth-filters.ef-condensed .ef-tab-panel > .ef-row:not([data-row="date"]):not(:has([aria-checked="true"], [aria-pressed="true"], [aria-selected="true"])) {
+  display: none;
+}
+/* The condensed panel's card narrows to fit its choices. Over the map, applyMapPanelBox() narrows the panel to the card. */
+.earth-filters.ef-condensed .ef-menu > .ef-card {
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* Narrow parent: labels above their buttons, as on the nullschool menu for phones. Condensed rows keep their one choice beside the label. */
 @container (max-width: 480px) {
   .earth-filters .ef-tab-panel > .ef-row {
     flex-direction: column;
@@ -500,5 +530,42 @@
   .earth-filters .ef-row-label {
     min-width: 0;
     margin-top: 0.25rem;
+  }
+  .earth-filters.ef-condensed .ef-tab-panel > .ef-row {
+    flex-direction: row;
+    align-items: baseline;
+  }
+  .earth-filters.ef-condensed .ef-row-label {
+    min-width: 5.5rem;
+    margin-top: 0;
+  }
+  /* Local or UTC on its own line. With labels above their buttons, it's under the date. */
+  .earth-filters .ef-date-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  /* Its icon lines up with the text above it */
+  .earth-filters .ef-date-group .ef-tz {
+    margin-left: -0.5rem;
+  }
+  /* Condensed, the date sits close to its label, out of line with the choices in the rows below, to leave it room.
+     Local or UTC goes under them, flush left under the label. */
+  .earth-filters.ef-condensed .ef-tab-panel > .ef-row[data-row="date"] {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+  }
+  .earth-filters.ef-condensed .ef-tab-panel > .ef-row[data-row="date"] > .ef-row-label {
+    min-width: 0;
+  }
+  .earth-filters.ef-condensed .ef-tab-panel > .ef-row[data-row="date"] .ef-date-group {
+    display: contents; /* The date and Local or UTC are placed in the row's grid */
+  }
+  .earth-filters.ef-condensed .ef-tab-panel > .ef-row[data-row="date"] .ef-date-field {
+    justify-self: start;
+  }
+  .earth-filters.ef-condensed .ef-tab-panel > .ef-row[data-row="date"] .ef-tz {
+    grid-column: 1 / -1;
+    justify-self: start;
   }
 }

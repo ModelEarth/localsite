@@ -184,6 +184,10 @@ var earthFiltersIcons = {
   openInNew: '<svg class="ef-md" viewBox="0 -960 960 960"><path fill="currentColor" d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"/></svg>',
   close: '<svg class="ef-md" viewBox="0 -960 960 960"><path fill="currentColor" d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>',
   show: '<svg class="ef-md" viewBox="0 -960 960 960"><path fill="currentColor" d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Z"/></svg>',
+  // Material unfold_less and unfold_more, turned to point left and right. Their two arrows are closer together and larger than Material's, and stretched taller
+  // (1.43 across before the turn). In the 18.75px menu icon, a 1px shift is about 51 viewBox units.
+  condense: '<svg class="ef-md" viewBox="0 -960 960 960"><g fill="currentColor" transform="rotate(90 480 -480) translate(480 -480) scale(1.43 1.15) translate(-480 480)"><path transform="translate(0 -82)" d="M356-120 300-176l180-180 180 180-56 56-124-124-124 124Z"/><path transform="translate(0 82)" d="M480-604L300-784l56-56 124 124 124-124 56 56-180 180Z"/></g></svg>',
+  expand: '<svg class="ef-md" viewBox="0 -960 960 960"><g fill="currentColor" transform="rotate(90 480 -480) translate(480 -480) scale(1.43 1.15) translate(-480 480)"><path transform="translate(0 -82)" d="M480-120 300-300l58-58 122 122 122-122 58 58-180 180Z"/><path transform="translate(0 82)" d="M358-598l-58-58 180-180 180 180-58 58-122-122-122 122Z"/></g></svg>',
   swap: '<svg class="ef-md" viewBox="0 -960 960 960"><path fill="currentColor" d="M280-160 80-360l200-200 56 57-103 103h287v80H233l103 103-56 57Zm400-240-56-57 103-103H440v-80h287L624-743l56-57 200 200-200 200Z"/></svg>'
 };
 
@@ -363,6 +367,7 @@ function getEarthFiltersLanguage(nameOrFolder) {
 }
 
 function EarthFilters(container, options) {
+  var self = this;
   this.container = container;
   this.options = options || {};
   this.state = parseEarthFiltersHash(this.options.hash);
@@ -373,11 +378,19 @@ function EarthFilters(container, options) {
   this.place = 'under';
   this.tab = 'controls';
   this.allLanguages = false; // More pressed in the Language row
+  this.condensed = false; // Each Controls row shows only its highlighted choice (setCondensed())
+  this.narrow = false; // The panel is at most earthFiltersNarrowWidth wide, which also condenses it (isCondensed())
+  this.expandNarrow = false; // Expand pressed while narrow, until the panel widens
   this.render();
   if (this.mapContainer) {
     this.setupMapPanel();
   }
   this.update();
+  // A conversation starting in the page's voice controls (.claude-voice-ui, claude-voice.js) condenses the filters, without changing
+  // the saved choice. Heard in the capture phase, since the event doesn't bubble up from the element holding the voice controls.
+  document.addEventListener('claude-voice:start', function() {
+    self.setCondensed(true, false);
+  }, true);
 }
 
 EarthFilters.prototype.getHash = function() {
@@ -448,6 +461,7 @@ EarthFilters.prototype.render = function() {
           '<button type="button" class="ef-more" data-action="toggle-panel-menu" aria-haspopup="menu" aria-expanded="false" title="More">' + earthFiltersIcons.more + '</button>' +
           '<div class="ef-panel-menu" role="menu" hidden>' +
             '<button type="button" role="menuitem" data-action="toggle-panel" data-field="panel-toggle"><span data-field="panel-icon"></span><span data-field="panel-label"></span></button>' +
+            '<button type="button" role="menuitem" data-action="toggle-condensed" data-field="condense-toggle"><span data-field="condense-icon"></span><span data-field="condense-label"></span></button>' +
             '<button type="button" role="menuitem" data-action="toggle-place" data-field="place-toggle"><span data-field="place-icon"></span><span data-field="place-label"></span></button>' +
             '<button type="button" role="menuitem" data-action="to-catch" data-field="catch-toggle" title="Move the filters back into the page" hidden>' + earthFiltersIcons.moveOver + '<span>In Page</span></button>' +
             '<button type="button" role="menuitem" data-action="reset-panel" title="Show the filters over the lower left corner of the map, at their default size">' + earthFiltersIcons.reset + '<span>Default Layout</span></button>' +
@@ -459,8 +473,10 @@ EarthFilters.prototype.render = function() {
 
     '<div class="ef-tab-panel" data-tab-panel="controls" role="tabpanel">' +
     this.row('Date',
-      '<button type="button" class="ef-date-field" data-field="date" data-action="choose-date" title="Choose Date"></button>' + // Opens the date chooser, like the calendar button
-      '<button type="button" class="ef-tz" data-action="change-tz" title="Change Timezone">' + earthFiltersIcons.swap + '<span data-field="tz"></span></button>', ' data-row="date"') +
+      '<div class="ef-date-group">' + // The timezone goes under the date in a narrow panel
+        '<button type="button" class="ef-date-field" data-field="date" data-action="choose-date" title="Choose Date"></button>' + // Opens the date chooser, like the calendar button
+        '<button type="button" class="ef-tz" data-action="change-tz" title="Change Timezone">' + earthFiltersIcons.swap + '<span data-field="tz"></span></button>' +
+      '</div>', ' data-row="date"') +
     this.row('When',
       '<div class="ef-bunch" role="toolbar">' +
         '<div class="ef-bunch">' +
@@ -535,6 +551,20 @@ EarthFilters.prototype.render = function() {
     }
   });
   this.panelMenu = this.container.querySelector('.ef-panel-menu');
+  // A narrow panel condenses on its own (isCondensed()). Its width is 0 while hidden, which leaves it as it was.
+  if (typeof ResizeObserver === 'function') {
+    new ResizeObserver(function(entries) {
+      var width = entries[0].contentRect.width;
+      var isNarrow = width <= earthFiltersNarrowWidth;
+      if (width > 0 && isNarrow !== self.narrow) {
+        self.narrow = isNarrow;
+        if (!isNarrow && !self.resizingWidth) {
+          self.expandNarrow = false; // Narrowing again condenses the panel again. Not while an edge is dragged, which keeps an expanded panel expanded.
+        }
+        self.update();
+      }
+    }).observe(this.container.querySelector('.ef-menu'));
+  }
   if (this.mapContainer) {
     // A click anywhere outside the menu and the buttons that open it closes it
     document.addEventListener('click', function(event) {
@@ -648,6 +678,11 @@ EarthFilters.prototype.handleAction = function(action, button) {
       break;
     case 'toggle-panel':
       this.setMapPanelOpen(!this.isOpen);
+      break;
+    case 'toggle-condensed':
+      var condense = !this.isCondensed();
+      this.expandNarrow = !condense; // Expand also shows all the choices in a narrow panel
+      this.setCondensed(condense, true);
       break;
     case 'toggle-place':
       this.isOpen = true; // Shows the filters in their new place, also when the menu opened from the clear button
@@ -848,19 +883,33 @@ EarthFilters.prototype.renderDateChooser = function() {
   this.container.querySelector('[data-chooser="day"]').innerHTML = weeks;
 };
 
+// Current conditions (no time in the hash) show the date and time of the latest 3-hour step
 EarthFilters.prototype.formatDateField = function() {
-  var time = this.state.time;
-  if (!time) {
-    return 'Current';
-  }
+  var time = this.state.time || getEarthFiltersNowStep();
   var isLocal = this.timezone === 'local';
   var year = isLocal ? time.getFullYear() : time.getUTCFullYear();
   var month = (isLocal ? time.getMonth() : time.getUTCMonth()) + 1;
   var day = isLocal ? time.getDate() : time.getUTCDate();
   var hour = isLocal ? time.getHours() : time.getUTCHours();
   var minute = isLocal ? time.getMinutes() : time.getUTCMinutes();
+  // 12-hour time with am or pm right after it, as in 6:00pm
   return year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0') + ' ' +
-    String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0');
+    (hour % 12 || 12) + ':' + String(minute).padStart(2, '0') + (hour < 12 ? 'am' : 'pm');
+};
+
+// Named, so it's clear what the switch changes. Local adds the browser's zone at the date shown, such as EDT or GMT+2, when it can be found.
+EarthFilters.prototype.formatTimezoneField = function() {
+  if (this.timezone !== 'local') {
+    return 'UTC Time Zone';
+  }
+  var zone = '';
+  try {
+    var zonePart = new Intl.DateTimeFormat(undefined, {timeZoneName: 'short'}).formatToParts(this.state.time || getEarthFiltersNowStep()).find(function(part) {
+      return part.type === 'timeZoneName';
+    });
+    zone = zonePart ? zonePart.value : '';
+  } catch (e) {}
+  return 'Local Time Zone' + (zone ? ' (' + zone + ')' : '');
 };
 
 EarthFilters.prototype.update = function() {
@@ -913,10 +962,14 @@ EarthFilters.prototype.update = function() {
   container.querySelector('[data-action="current-position"]').setAttribute('aria-pressed', state.spotlight ? 'true' : 'false');
   container.querySelector('[data-action="now"]').setAttribute('aria-pressed', state.time ? 'false' : 'true');
   container.querySelector('[data-field="date"]').textContent = this.formatDateField();
-  container.querySelector('[data-field="tz"]').textContent = this.timezone === 'local' ? 'Local' : 'UTC';
+  container.querySelector('[data-field="tz"]').textContent = this.formatTimezoneField();
   container.querySelector('[data-field="open-link"]').href = this.getUrl();
+  container.classList.toggle('ef-condensed', this.isCondensed());
   if (this.panelMenu) {
     this.updatePanelMenu();
+  }
+  if (this.isCondensed() && this.isOverMap()) {
+    this.applyMapPanelBox(); // The condensed panel's width follows its choices
   }
 };
 
@@ -927,6 +980,10 @@ EarthFilters.prototype.updatePanelMenu = function() {
   menu.querySelector('[data-field="panel-label"]').textContent = this.isOpen ? 'Close Panel' : 'Show Panel';
   menu.querySelector('[data-field="panel-toggle"]').title = this.isOpen ? 'Hide the filters' : 'Show the filters';
   menu.querySelector('[data-field="panel-icon"]').innerHTML = this.isOpen ? earthFiltersIcons.close : earthFiltersIcons.show;
+  var isCondensed = this.isCondensed();
+  menu.querySelector('[data-field="condense-label"]').textContent = isCondensed ? 'Expand' : 'Condense';
+  menu.querySelector('[data-field="condense-toggle"]').title = isCondensed ? 'Show all the choices in each row' : 'Show only the highlighted choice in each row';
+  menu.querySelector('[data-field="condense-icon"]').innerHTML = isCondensed ? earthFiltersIcons.expand : earthFiltersIcons.condense;
   // Under the map from over it or from the page's #earthFilterCatch, otherwise over the map. In Page goes back to the catch.
   var toUnder = this.place === 'over' || this.inPageCatch();
   var placeToggle = menu.querySelector('[data-field="place-toggle"]');
@@ -939,8 +996,12 @@ EarthFilters.prototype.updatePanelMenu = function() {
 // With options.mapContainer, the filters show over the map's lower left corner, or under the map, and a clear button over nullschool's
 // "earth" button opens the three-dot menu, which shows and hides them. Over the map, the panel is dragged from its background and resized from its corners and edges.
 // The panel's default spot covers the clear button, so its close icon hides it.
-// Saved in the browser with options.storagePrefix: <prefix>Open, <prefix>Place (under or over) and <prefix>Box (position and size over the map).
+// Saved in the browser with options.storagePrefix: <prefix>Open, <prefix>Place (under or over), <prefix>Box (position and size over the map)
+// and <prefix>Condensed (Condense or Expand).
 var earthFiltersPanelGap = 10; // Default offset from the map's left and bottom edges
+var earthFiltersPanelWidth = 560; // Default width over the map
+var earthFiltersExpandDrag = 8; // Dragging a condensed panel's right side wider by more than this expands it
+var earthFiltersNarrowWidth = 480; // At most this wide, the panel condenses on its own. Same as the @container query in earth-filters.css.
 var earthFiltersPanelMinWidth = 220;
 var earthFiltersPanelMinHeight = 120;
 var earthFiltersPanelGrip = 40; // The panel can be dragged off the map's sides and bottom, leaving this much on the map to pick it up again
@@ -949,7 +1010,8 @@ EarthFilters.prototype.setupMapPanel = function() {
   var self = this;
   var mapContainer = this.mapContainer;
   var prefix = this.options.storagePrefix || 'earthFilters';
-  this.storageKeys = {open: prefix + 'Open', place: prefix + 'Place', box: prefix + 'Box'};
+  this.storageKeys = {open: prefix + 'Open', place: prefix + 'Place', box: prefix + 'Box', condensed: prefix + 'Condensed'};
+  this.condensed = readEarthFiltersStorage(this.storageKeys.condensed) === 'true';
   this.place = readEarthFiltersStorage(this.storageKeys.place) === 'under' ? 'under' : 'over'; // Over the map unless moved under it
   this.isOpen = readEarthFiltersStorage(this.storageKeys.open) !== 'false'; // Shown when the map first loads, until hidden
   this.box = null;
@@ -1021,6 +1083,23 @@ EarthFilters.prototype.setMapPanelOpen = function(isOpen) {
   this.isOpen = isOpen;
   writeEarthFiltersStorage(this.storageKeys.open, isOpen ? 'true' : 'false');
   this.applyMapPanelPlace();
+};
+
+// Condensed, each Controls row shows only its highlighted choice (earth-filters.css). With save, from Condense and Expand in the
+// three-dot menu, the choice is kept in the browser. A voice conversation condenses without saving.
+EarthFilters.prototype.isCondensed = function() {
+  return this.condensed || this.narrow && !this.expandNarrow;
+};
+
+EarthFilters.prototype.setCondensed = function(isCondensed, save) {
+  this.condensed = isCondensed;
+  if (save && this.storageKeys) {
+    writeEarthFiltersStorage(this.storageKeys.condensed, isCondensed ? 'true' : 'false');
+  }
+  this.update();
+  if (this.isOverMap()) {
+    this.applyMapPanelBox();
+  }
 };
 
 EarthFilters.prototype.setMapPanelPlace = function(place) {
@@ -1117,7 +1196,7 @@ EarthFilters.prototype.applyMapPanelBox = function() {
   if (!mapWidth || !mapHeight || !this.isOpen) {
     return; // Hidden. The ResizeObserver applies the box when the map shows.
   }
-  var box = this.box || {left: earthFiltersPanelGap, bottom: earthFiltersPanelGap, width: 560, height: null};
+  var box = this.box || {left: earthFiltersPanelGap, bottom: earthFiltersPanelGap, width: earthFiltersPanelWidth, height: null};
   var width = Math.max(Math.min(earthFiltersPanelMinWidth, mapWidth), Math.min(box.width, mapWidth - (this.box ? 0 : 2 * earthFiltersPanelGap)));
   container.style.width = width + 'px';
   if (box.height) {
@@ -1130,6 +1209,16 @@ EarthFilters.prototype.applyMapPanelBox = function() {
   } else {
     container.style.height = '';
     container.style.maxHeight = Math.max(earthFiltersPanelMinHeight, (this.box ? mapHeight - box.bottom : mapHeight - 2 * earthFiltersPanelGap)) + 'px'; // Fits above its bottom edge
+  }
+  if (this.isCondensed() && !this.resizingWidth) {
+    // Condensed, the panel narrows to its card, which fits its choices (earth-filters.css), with room for the menu's scrollbar.
+    // The box keeps its width for Expand. While an east or west edge is dragged, the panel follows it, so it can widen past the narrow width.
+    var menu = container.querySelector('.ef-menu');
+    var fitWidth = container.querySelector('.ef-menu > .ef-card').offsetWidth + menu.offsetWidth - menu.clientWidth;
+    if (fitWidth < width) {
+      width = fitWidth;
+      container.style.width = width + 'px';
+    }
   }
   var height = container.offsetHeight;
   var left = Math.max(earthFiltersPanelGrip - width, Math.min(box.left, mapWidth - earthFiltersPanelGrip));
@@ -1162,12 +1251,14 @@ EarthFilters.prototype.startMapPanelDrag = function(event) {
     width: container.offsetWidth,
     height: container.offsetHeight
   };
+  var expandedWidth = this.box ? this.box.width : earthFiltersPanelWidth; // The width a condensed panel kept for Expand
   // The map iframe would take the pointer as it moves over it
   var iframes = this.mapContainer.querySelectorAll('iframe');
   iframes.forEach(function(iframe) {
     iframe.style.pointerEvents = 'none';
   });
   container.classList.add('ef-dragging');
+  this.resizingWidth = /[ew]/.test(cornerName);
   if (event.target.setPointerCapture) {
     event.target.setPointerCapture(event.pointerId); // Not the container, which ignores the pointer. The moves bubble up to it.
   }
@@ -1200,10 +1291,18 @@ EarthFilters.prototype.startMapPanelDrag = function(event) {
         height = start.top + start.height - top;
       }
     }
+    if (cornerName.indexOf('e') >= 0 && width > start.width + earthFiltersExpandDrag && self.isCondensed()) {
+      // Widening a condensed panel from its right side expands it, as Expand in the three-dot menu does. It jumps to the width it kept
+      // for Expand, at least wide enough for the full choices beside their labels, then follows the pointer from there.
+      self.expandNarrow = true;
+      self.setCondensed(false, true);
+      width = Math.max(width, Math.min(Math.max(expandedWidth, earthFiltersNarrowWidth + earthFiltersExpandDrag), mapWidth - left));
+      start.width = width - dx;
+    }
     self.box = {
       left: left,
       bottom: mapHeight - top - height,
-      width: width,
+      width: self.isCondensed() && !self.resizingWidth ? (self.box ? self.box.width : earthFiltersPanelWidth) : width, // A condensed panel's move keeps the width for Expand
       height: /[ns]/.test(cornerName) ? height : (self.box && self.box.height) || null // A move, or the east or west edge, keeps the height fitting the filters until a corner or the top or bottom edge is dragged
     };
     self.applyMapPanelBox();
@@ -1219,6 +1318,13 @@ EarthFilters.prototype.startMapPanelDrag = function(event) {
     container.classList.remove('ef-dragging');
     if (self.box) {
       writeEarthFiltersStorage(self.storageKeys.box, JSON.stringify(self.box));
+    }
+    if (self.resizingWidth) {
+      self.resizingWidth = false;
+      if (!self.narrow) {
+        self.expandNarrow = false; // Narrowing again condenses the panel again
+      }
+      self.applyMapPanelBox(); // A panel still condensed fits its choices again
     }
   }
 
