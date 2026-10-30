@@ -184,6 +184,8 @@ var earthFiltersIcons = {
   openInNew: '<svg class="ef-md" viewBox="0 -960 960 960"><path fill="currentColor" d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"/></svg>',
   close: '<svg class="ef-md" viewBox="0 -960 960 960"><path fill="currentColor" d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>',
   show: '<svg class="ef-md" viewBox="0 -960 960 960"><path fill="currentColor" d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Z"/></svg>',
+  condense: '<svg class="ef-md" viewBox="0 -960 960 960"><path fill="currentColor" d="M356-120 300-176l180-180 180 180-56 56-124-124-124 124Zm124-484L300-784l56-56 124 124 124-124 56 56-180 180Z"/></svg>',
+  expand: '<svg class="ef-md" viewBox="0 -960 960 960"><path fill="currentColor" d="M480-120 300-300l58-58 122 122 122-122 58 58-180 180ZM358-598l-58-58 180-180 180 180-58 58-122-122-122 122Z"/></svg>',
   swap: '<svg class="ef-md" viewBox="0 -960 960 960"><path fill="currentColor" d="M280-160 80-360l200-200 56 57-103 103h287v80H233l103 103-56 57Zm400-240-56-57 103-103H440v-80h287L624-743l56-57 200 200-200 200Z"/></svg>'
 };
 
@@ -363,6 +365,7 @@ function getEarthFiltersLanguage(nameOrFolder) {
 }
 
 function EarthFilters(container, options) {
+  var self = this;
   this.container = container;
   this.options = options || {};
   this.state = parseEarthFiltersHash(this.options.hash);
@@ -373,11 +376,17 @@ function EarthFilters(container, options) {
   this.place = 'under';
   this.tab = 'controls';
   this.allLanguages = false; // More pressed in the Language row
+  this.condensed = false; // Each Controls row shows only its highlighted choice (setCondensed())
   this.render();
   if (this.mapContainer) {
     this.setupMapPanel();
   }
   this.update();
+  // A conversation starting in the page's voice controls (.claude-voice-ui, claude-voice.js) condenses the filters, without changing
+  // the saved choice. Heard in the capture phase, since the event doesn't bubble up from the element holding the voice controls.
+  document.addEventListener('claude-voice:start', function() {
+    self.setCondensed(true, false);
+  }, true);
 }
 
 EarthFilters.prototype.getHash = function() {
@@ -448,6 +457,7 @@ EarthFilters.prototype.render = function() {
           '<button type="button" class="ef-more" data-action="toggle-panel-menu" aria-haspopup="menu" aria-expanded="false" title="More">' + earthFiltersIcons.more + '</button>' +
           '<div class="ef-panel-menu" role="menu" hidden>' +
             '<button type="button" role="menuitem" data-action="toggle-panel" data-field="panel-toggle"><span data-field="panel-icon"></span><span data-field="panel-label"></span></button>' +
+            '<button type="button" role="menuitem" data-action="toggle-condensed" data-field="condense-toggle"><span data-field="condense-icon"></span><span data-field="condense-label"></span></button>' +
             '<button type="button" role="menuitem" data-action="toggle-place" data-field="place-toggle"><span data-field="place-icon"></span><span data-field="place-label"></span></button>' +
             '<button type="button" role="menuitem" data-action="to-catch" data-field="catch-toggle" title="Move the filters back into the page" hidden>' + earthFiltersIcons.moveOver + '<span>In Page</span></button>' +
             '<button type="button" role="menuitem" data-action="reset-panel" title="Show the filters over the lower left corner of the map, at their default size">' + earthFiltersIcons.reset + '<span>Default Layout</span></button>' +
@@ -648,6 +658,9 @@ EarthFilters.prototype.handleAction = function(action, button) {
       break;
     case 'toggle-panel':
       this.setMapPanelOpen(!this.isOpen);
+      break;
+    case 'toggle-condensed':
+      this.setCondensed(!this.condensed, true);
       break;
     case 'toggle-place':
       this.isOpen = true; // Shows the filters in their new place, also when the menu opened from the clear button
@@ -915,6 +928,7 @@ EarthFilters.prototype.update = function() {
   container.querySelector('[data-field="date"]').textContent = this.formatDateField();
   container.querySelector('[data-field="tz"]').textContent = this.timezone === 'local' ? 'Local' : 'UTC';
   container.querySelector('[data-field="open-link"]').href = this.getUrl();
+  container.classList.toggle('ef-condensed', this.condensed);
   if (this.panelMenu) {
     this.updatePanelMenu();
   }
@@ -927,6 +941,9 @@ EarthFilters.prototype.updatePanelMenu = function() {
   menu.querySelector('[data-field="panel-label"]').textContent = this.isOpen ? 'Close Panel' : 'Show Panel';
   menu.querySelector('[data-field="panel-toggle"]').title = this.isOpen ? 'Hide the filters' : 'Show the filters';
   menu.querySelector('[data-field="panel-icon"]').innerHTML = this.isOpen ? earthFiltersIcons.close : earthFiltersIcons.show;
+  menu.querySelector('[data-field="condense-label"]').textContent = this.condensed ? 'Expand' : 'Condense';
+  menu.querySelector('[data-field="condense-toggle"]').title = this.condensed ? 'Show all the choices in each row' : 'Show only the highlighted choice in each row';
+  menu.querySelector('[data-field="condense-icon"]').innerHTML = this.condensed ? earthFiltersIcons.expand : earthFiltersIcons.condense;
   // Under the map from over it or from the page's #earthFilterCatch, otherwise over the map. In Page goes back to the catch.
   var toUnder = this.place === 'over' || this.inPageCatch();
   var placeToggle = menu.querySelector('[data-field="place-toggle"]');
@@ -939,7 +956,8 @@ EarthFilters.prototype.updatePanelMenu = function() {
 // With options.mapContainer, the filters show over the map's lower left corner, or under the map, and a clear button over nullschool's
 // "earth" button opens the three-dot menu, which shows and hides them. Over the map, the panel is dragged from its background and resized from its corners and edges.
 // The panel's default spot covers the clear button, so its close icon hides it.
-// Saved in the browser with options.storagePrefix: <prefix>Open, <prefix>Place (under or over) and <prefix>Box (position and size over the map).
+// Saved in the browser with options.storagePrefix: <prefix>Open, <prefix>Place (under or over), <prefix>Box (position and size over the map)
+// and <prefix>Condensed (Condense or Expand).
 var earthFiltersPanelGap = 10; // Default offset from the map's left and bottom edges
 var earthFiltersPanelMinWidth = 220;
 var earthFiltersPanelMinHeight = 120;
@@ -949,7 +967,8 @@ EarthFilters.prototype.setupMapPanel = function() {
   var self = this;
   var mapContainer = this.mapContainer;
   var prefix = this.options.storagePrefix || 'earthFilters';
-  this.storageKeys = {open: prefix + 'Open', place: prefix + 'Place', box: prefix + 'Box'};
+  this.storageKeys = {open: prefix + 'Open', place: prefix + 'Place', box: prefix + 'Box', condensed: prefix + 'Condensed'};
+  this.condensed = readEarthFiltersStorage(this.storageKeys.condensed) === 'true';
   this.place = readEarthFiltersStorage(this.storageKeys.place) === 'under' ? 'under' : 'over'; // Over the map unless moved under it
   this.isOpen = readEarthFiltersStorage(this.storageKeys.open) !== 'false'; // Shown when the map first loads, until hidden
   this.box = null;
@@ -1021,6 +1040,19 @@ EarthFilters.prototype.setMapPanelOpen = function(isOpen) {
   this.isOpen = isOpen;
   writeEarthFiltersStorage(this.storageKeys.open, isOpen ? 'true' : 'false');
   this.applyMapPanelPlace();
+};
+
+// Condensed, each Controls row shows only its highlighted choice (earth-filters.css). With save, from Condense and Expand in the
+// three-dot menu, the choice is kept in the browser. A voice conversation condenses without saving.
+EarthFilters.prototype.setCondensed = function(isCondensed, save) {
+  this.condensed = isCondensed;
+  if (save && this.storageKeys) {
+    writeEarthFiltersStorage(this.storageKeys.condensed, isCondensed ? 'true' : 'false');
+  }
+  this.update();
+  if (this.isOverMap()) {
+    this.applyMapPanelBox();
+  }
 };
 
 EarthFilters.prototype.setMapPanelPlace = function(place) {

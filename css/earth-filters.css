@@ -329,6 +329,7 @@
   margin-top: 0;
 }
 .earth-filters .ef-panel-menu [data-field="panel-icon"],
+.earth-filters .ef-panel-menu [data-field="condense-icon"],
 .earth-filters .ef-panel-menu [data-field="place-icon"] {
   display: flex;
 }
@@ -491,7 +492,15 @@
   text-align: center;
 }
 
-/* Narrow parent: labels above their buttons, as on the nullschool menu for phones */
+/* Condensed (Condense in the three-dot menu, or a voice conversation starting): the right side of each Controls row shows
+   only its highlighted choice. The Date row stays whole, and a row with nothing highlighted is hidden. */
+.earth-filters.ef-condensed .ef-tab-panel > .ef-row:not([data-row="date"]) button:not([aria-checked="true"]):not([aria-pressed="true"]):not([aria-selected="true"]),
+.earth-filters.ef-condensed .ef-tab-panel .ef-nav-arrows,
+.earth-filters.ef-condensed .ef-tab-panel > .ef-row:not([data-row="date"]):not(:has([aria-checked="true"], [aria-pressed="true"], [aria-selected="true"])) {
+  display: none;
+}
+
+/* Narrow parent: labels above their buttons, as on the nullschool menu for phones. Condensed rows keep their one choice beside the label. */
 @container (max-width: 480px) {
   .earth-filters .ef-tab-panel > .ef-row {
     flex-direction: column;
@@ -500,5 +509,13 @@
   .earth-filters .ef-row-label {
     min-width: 0;
     margin-top: 0.25rem;
+  }
+  .earth-filters.ef-condensed .ef-tab-panel > .ef-row {
+    flex-direction: row;
+    align-items: baseline;
+  }
+  .earth-filters.ef-condensed .ef-row-label {
+    min-width: 5.5rem;
+    margin-top: 0;
   }
 }
