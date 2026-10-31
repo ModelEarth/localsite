@@ -20,6 +20,8 @@ Used in localsite, modelearth, io, neighborhood, trees
     --text-muted: #9CA3AF;
     --text-header: #777;
     --text-header-hover: #444;
+    --header-icon: #aaa; /* The earth icon logo (.headerEarthIcon), lighter than the header's text in light mode */
+    --header-icon-hover: #666;
     --accent-green: #10B981;
     --accent-blue: #3B82F6;
     --accent-orange: #F59E0B;
@@ -54,6 +56,8 @@ Used in localsite, modelearth, io, neighborhood, trees
     --text-primary: #eee;
     --text-header: #aaa;
     --text-header-hover: #fff;
+    --header-icon: #aaa;
+    --header-icon-hover: #fff;
     --border-light: #aaa;
     --border-medium: #666;
     --bg-footer: #222;
@@ -2429,14 +2433,21 @@ body.dark .config-field select {
   display: block;
   line-height: 1;
 }
-#headerLogo .headerEarthIcon { /* The id keeps it grey over pages that whiten header icons (project/goals) */
-  color: rgb(238, 238, 238);
-  opacity: 0.7;
+/* Grey in light and dark mode (--header-icon), in the header and in the filter bar's #logoholderbar, which shows
+   when the header bar is hidden (there, without a color the link's blue would show). Pages with a dark header in
+   light mode set their own (project/goals). */
+#headerLogo .headerEarthIcon, #logoholderbar .headerEarthIcon {
+  color: var(--header-icon);
+}
+#headerLogo .headerEarthIcon {
   margin-right: 6px;
 }
-#headerLogo a:hover .headerEarthIcon {
-  color: #fff;
-  opacity: 1;
+#headerLogo a:hover .headerEarthIcon, #logoholderbar a:hover .headerEarthIcon {
+  color: var(--header-icon-hover);
+}
+#logoholderbar .headerEarthIcon { /* Lines up with the filter bar's buttons. Shifted, so the bar's other icons don't move. */
+  position: relative;
+  top: 8px;
 }
 #headerLogo img { /* Keep the logo on one line when a CSS reset (e.g. Tailwind preflight) sets img to block */
   display: inline;
@@ -5029,4 +5040,13 @@ body:has(#fullscreen) #mapFilters #showSideFromBar {
 .md-editor-close:hover {
   background: #fee2e2;
   border-color: #fca5a5;
+}
+
+/* Play mode (localsite.js): while a voice conversation is under way, elements with .hideInPlayMode fade out of the way of
+   Claude's floating words, and come back when it ends. visibility (inherited) also covers display:contents wrappers. */
+html.playMode .hideInPlayMode {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .6s ease, visibility 0s linear .6s;
 }
