@@ -948,6 +948,8 @@ hr {
 {
   .noprint {display: none; }
   #showSideFromHeader {display: none; }
+  #main-header {display: none; }
+  .md-edit-menu, .md-edit-menu.local {display: none !important; }
   .pagebreak {
       clear: both;
       page-break-after: always;
