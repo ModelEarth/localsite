@@ -3209,7 +3209,8 @@ function placeEarthDisplay() {
     initEarthScrollCover(document.getElementById('globalMapHolder'));
     initEarthControls(earthDisplay);
     // .earthShown on #fullscreen while the map shows. When the map closes (#earthClose), #fullscreen closes too
-    // (.fullscreenEmpty, base.css) unless something else in it still shows, like project/goals' hero photos.
+    // (.fullscreenEmpty, base.css) unless something else in it still shows, like project/goals' hero photos or the
+    // voice widget (engine/claude-voice.js), whose words and controls stay so the conversation can go on.
     // The play/pause button sits on the map, so it doesn't count. Each child's own computed style is checked, which
     // still reads true while #fullscreen is closed, and <html> class changes (the goals hero view) recheck it.
     if (!fullscreen.dataset.earthShownBound) {
@@ -3219,7 +3220,6 @@ function placeEarthDisplay() {
         fullscreen.classList.toggle('earthShown', shown);
         var othersShow = Array.prototype.some.call(fullscreen.children, function(child) {
           if (child === earthDisplay || child.id === 'earthPlayPauseButton') return false;
-          if (/\bclaude-voice-/.test(child.getAttribute('class') || '')) return false; // The voice widget's canvas and words (engine/claude-voice.js)
           var style = getComputedStyle(child);
           return style.display !== 'none' && style.visibility !== 'hidden';
         });

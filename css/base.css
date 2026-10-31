@@ -3380,8 +3380,8 @@ body.sidebar-hovered {
 #fullscreen > #mainEarthDisplay #globalMapHolder {
     height: 100%;
 }
-/* #fullscreen closes when the Earth map closes and nothing else in it shows (engine), set by placeEarthDisplay()
-   in localsite.js. One with more, like project/goals' hero photos, stays. */
+/* #fullscreen closes when the Earth map closes and nothing else in it shows, set by placeEarthDisplay()
+   in localsite.js. One with more, like project/goals' hero photos or the voice widget (engine), stays. */
 #fullscreen.fullscreenEmpty {
     display: none;
 }
