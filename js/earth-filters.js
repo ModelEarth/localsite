@@ -687,7 +687,13 @@ EarthFilters.prototype.handleAction = function(action, button) {
     case 'toggle-place':
       this.isOpen = true; // Shows the filters in their new place, also when the menu opened from the clear button
       writeEarthFiltersStorage(this.storageKeys.open, 'true');
-      this.setMapPanelPlace(this.inPageCatch() || this.place === 'over' ? 'under' : 'over'); // From the page's #earthFilterCatch, under the map
+      var place = this.inPageCatch() || this.place === 'over' ? 'under' : 'over'; // From the page's #earthFilterCatch, under the map
+      if (place === 'under' && this.isCondensed()) {
+        this.expandNarrow = true; // Under the map, a condensed panel expands, as with Expand
+        this.condensed = false;
+        writeEarthFiltersStorage(this.storageKeys.condensed, 'false');
+      }
+      this.setMapPanelPlace(place);
       break;
     case 'to-catch':
       this.isOpen = true;
