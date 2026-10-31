@@ -3203,6 +3203,9 @@ function placeEarthDisplay() {
   var earthDisplay = document.getElementById('mainEarthDisplay');
   if (fullscreen && earthDisplay && earthDisplay.parentElement !== fullscreen) fullscreen.appendChild(earthDisplay);
   if (fullscreen && earthDisplay && earthDisplay.parentElement === fullscreen) {
+    // The voice widget's floating words (engine/claude-voice.js) show over the map, which stays in view beneath them
+    // rather than fading out with the rest of #fullscreen's content.
+    earthDisplay.setAttribute('data-words-stay', '');
     initEarthScrollCover(document.getElementById('globalMapHolder'));
     initEarthControls(earthDisplay);
     // .earthShown on #fullscreen while the map shows. When the map closes (#earthClose), #fullscreen closes too
@@ -5943,8 +5946,8 @@ function initAccountButton() {
 // script at the top level, e.g. fullscreenVoice: /engine/claude-voice.js. Its canvas and floating words fill
 // #fullscreen, and its controls sit in its lower right, 12px up, scrolling with it (project/goals moves its photo
 // credit up above them). The play button (#earthPlayPauseButton) moves into them, where it also pauses
-// Claude's voice and motion while Claude replies. While a display such as the Earth map shows in #fullscreen,
-// replies show no floating words over it.
+// Claude's voice and motion while Claude replies. Claude's floating words also show over the Earth map, which stays
+// in view beneath them (data-words-stay, placeEarthDisplay()).
 function initFullscreenVoice() {
   if (typeof window.loadWebrootYaml !== 'function') { return; }
   window.loadWebrootYaml().then(function (result) {
@@ -5958,7 +5961,6 @@ function initFullscreenVoice() {
       script.dataset.target = '#fullscreen';
       script.dataset.uiBottom = '12';
       script.dataset.playButton = '#earthPlayPauseButton';
-      script.dataset.wordsUnless = '#fullscreen > [id$="Display"]'; // e.g. the Earth map (#mainEarthDisplay): Claude's floating words don't cover it
       document.head.appendChild(script);
     });
   });
