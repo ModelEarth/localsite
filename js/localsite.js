@@ -7219,7 +7219,8 @@ function _injectMdEditorStyles() {
 }
 
 // Title of the current site in support/site/config.yaml sites, matched like navigation.js:
-// modelsite cookie, then domain_contains, then the default site.
+// modelsite cookie, then domain_contains (whole parts of the host name, so bcd.com matches
+// bcd.com and www.bcd.com but not abcd.com), then the default site.
 function _getCurrentSiteTitle() {
     if (typeof window.loadWebrootYaml !== 'function') return Promise.resolve('');
     return window.loadWebrootYaml().then(function(result) {
@@ -7230,7 +7231,7 @@ function _getCurrentSiteTitle() {
             for (var id in sites) {
                 if (!sites[id].domain_contains) continue;
                 var domains = sites[id].domain_contains.split(',').map(function(d) { return d.trim(); }).filter(Boolean);
-                if (domains.some(function(d) { return location.href.indexOf(d) >= 0; })) { site = sites[id]; break; }
+                if (domains.some(function(d) { return ('.' + location.hostname + '.').indexOf('.' + d.toLowerCase() + '.') >= 0; })) { site = sites[id]; break; }
             }
         }
         site = site || sites[result.default];

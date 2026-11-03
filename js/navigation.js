@@ -1971,7 +1971,7 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
                         const site = sites[id];
                         if (!site.domain_contains) continue;
                         const domains = site.domain_contains.split(',').map(d => d.trim()).filter(Boolean);
-                        if (domains.some(d => location.href.indexOf(d) >= 0)) {
+                        if (domains.some(d => ('.' + location.hostname + '.').indexOf('.' + d.toLowerCase() + '.') >= 0)) {
                             matchedSite = site; break;
                         }
                     }
@@ -8232,6 +8232,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
     
     // Site detection and attribute application from support/site/config.yaml. Resolves the site
     // (matching the modelsite cookie, then domain_contains, then support/site/config.yaml's default),
+    // domain_contains matching whole parts of the host name: bcd.com matches bcd.com and www.bcd.com, not abcd.com.
     // corrects a stale/foreign modelsite cookie against it, and updates the favicon.
     // Returns the (possibly corrected) modelsite so the caller can use it for branding.
     let resolvedSite = null; // The site's entry in support/site/config.yaml, for runBranding
@@ -8249,7 +8250,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                     const site = sites[id];
                     if (!site.domain_contains) continue;
                     const domains = site.domain_contains.split(',').map(d => d.trim()).filter(Boolean);
-                    const hit = domains.find(d => location.href.indexOf(d) >= 0);
+                    const hit = domains.find(d => ('.' + location.hostname + '.').indexOf('.' + d.toLowerCase() + '.') >= 0);
                     if (hit) {
                         matchedId = id; matchedSite = site; matchMethod = 'domain_contains "' + hit + '"'; break;
                     }
@@ -8262,6 +8263,9 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             // a leftover cookie from a different local project can point at a site this
             // support/site/config.yaml doesn't define. When that happens, reset it to this webroot's
             // resolved site so branding, later page loads, and the #modelsite dropdown are correct.
+            if (modelsite && !sites[modelsite]) {
+                console.warn('modelsite cookie "' + modelsite + '" is not a site in support/site/config.yaml | Using "' + (matchedId || 'none') + '" via ' + (matchMethod || 'no match') + (matchedId ? ' | Cookie reset to "' + matchedId + '"' : ''));
+            }
             if (modelsite && matchMethod !== 'modelsite cookie' && !sites[modelsite] && matchedId) {
                 modelsite = matchedId;
                 Cookies.set('modelsite', matchedId);
