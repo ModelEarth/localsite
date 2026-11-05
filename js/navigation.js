@@ -8224,9 +8224,11 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
 
     function resolveConfigAssetUrl(assetPath) {
         if (!assetPath) return assetPath;
-        if (/^(?:[a-z]+:)?\/\//i.test(assetPath) || assetPath.indexOf('data:') === 0 || assetPath.charAt(0) === '/') {
+        if (/^(?:[a-z]+:)?\/\//i.test(assetPath) || assetPath.indexOf('data:') === 0) {
             return assetPath;
         }
+        // Root-relative: on the site localsite.js came from
+        if (assetPath.charAt(0) === '/') return typeof localsiteSiteUrl === 'function' ? localsiteSiteUrl(assetPath) : assetPath;
         return local_app.web_root() + assetPath;
     }
     
