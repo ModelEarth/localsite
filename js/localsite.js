@@ -717,6 +717,15 @@ function localsiteScriptBase() {
   }
   return null;
 }
+// A root-relative path (e.g. "/auth/js/auth-plugin.js" from support/site/config.yaml) on the site localsite.js came from.
+// Unchanged when that's this page's own site; on a page from another site it gets that site's origin.
+function localsiteSiteUrl(path) {
+  if (typeof path !== 'string' || path.charAt(0) !== '/' || path.charAt(1) === '/') return path;
+  const base = localsiteScriptBase();
+  if (!base) return path;
+  const origin = new URL(base, location.href).origin;
+  return origin === location.origin ? path : origin + path;
+}
 // The webroot holding localsite (including any folders), when localsite.js is in a folder named localsite. Else null.
 function localsiteWebrootFromScript() {
   const base = localsiteScriptBase();
@@ -5848,9 +5857,11 @@ function parseAuthYaml(text, isLocal) {
   var env = isLocal ? 'development' : 'production';
   var out = {};
   if (kv.enabled === 'false') out.enabled = false;
-  if (kv['modal_url_' + env]) out.modal_url = kv['modal_url_' + env];
-  if (kv['plugin_url_' + env]) out.plugin_url = kv['plugin_url_' + env];
-  var api = kv['api_url_' + env];
+  // Root-relative ones are on the site localsite.js came from (localsiteSiteUrl), which is this page's site unless
+  // the page loads localsite from another site.
+  if (kv['modal_url_' + env]) out.modal_url = localsiteSiteUrl(kv['modal_url_' + env]);
+  if (kv['plugin_url_' + env]) out.plugin_url = localsiteSiteUrl(kv['plugin_url_' + env]);
+  var api = kv['api_url_' + env] && localsiteSiteUrl(kv['api_url_' + env]);
   if (api) out.api_url = (api.charAt(0) === '/') ? (location.origin + api) : api;
   return out;
 }
@@ -5922,8 +5933,19 @@ function initAuthPlugin() {
     if (cfg.enabled === false || !cfg.plugin_url) { return; }
     // Pre-set the API base so the plugin uses the configured value.
     if (cfg.api_url) { window.AUTH_API_URL = cfg.api_url; }
+    warnCrossSiteSession(cfg.api_url);
     loadScript(cfg.plugin_url);
   });
+}
+
+// Sign-in still uses the API's session cookie when the API is on another site (as for The Veil's Vercel sites, which
+// load localsite from neighborhood.org), but says in the console why sign-in may not stay signed in there.
+function warnCrossSiteSession(apiUrl) {
+  var apiHost;
+  try { apiHost = new URL(apiUrl, location.href).hostname; } catch (e) { return; }
+  var site = function (host) { return host.split('.').slice(-2).join('.'); }; // e.g. cloud.model.earth -> model.earth
+  if (site(apiHost) === site(location.hostname)) return;
+  console.warn('Sign-in: the session cookie is set by ' + apiHost + ', a different site from ' + location.hostname + ', and browsers often block cross-site (third-party) cookies, so sign-in may not stay signed in on this page.');
 }
 
 // Adds a site's own sign-in button to the account panel when support/site/config.yaml names one at the top level,

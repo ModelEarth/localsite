@@ -1977,7 +1977,7 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
                     }
                 }
                 const site = matchedSite || (defaultId && sites && sites[defaultId]);
-                if (site && site.favicon) siteFavicon = site.favicon;
+                if (site && site.favicon) siteFavicon = typeof localsiteSiteUrl === 'function' ? localsiteSiteUrl(site.favicon) : site.favicon;
             } catch (e) {}
         }
 
@@ -8884,8 +8884,11 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             } else {
                 footerClimbpath = climbpath;
             }
-            $("#main-footer").load(footerFile, function( response, status, xhr ) {
+            $.get(footerFile, function(footerHtml) {
                 console.log("footerFile: " + footerFile);
+                // Its root-relative localsite files ("/localsite/...") are on the site localsite.js came from (localsiteSiteUrl)
+                if (typeof localsiteSiteUrl === 'function') footerHtml = footerHtml.replace(/(src|href)="\/localsite\//g, (m, attr) => attr + '="' + localsiteSiteUrl('/localsite/'));
+                $("#main-footer").html(footerHtml);
                 let pageFolder = getPageFolder(footerFile);
                 // Append footerClimbpath to relative paths
                 makeLinksRelative("main-footer", footerClimbpath, pageFolder);
