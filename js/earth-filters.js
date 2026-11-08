@@ -1216,12 +1216,12 @@ EarthFilters.prototype.applyMapPanelBox = function() {
     container.style.height = '';
     container.style.maxHeight = Math.max(earthFiltersPanelMinHeight, (this.box ? mapHeight - box.bottom : mapHeight - 2 * earthFiltersPanelGap)) + 'px'; // Fits above its bottom edge
   }
+  var menu = container.querySelector('.ef-menu');
   if (this.isCondensed() && !this.resizingWidth) {
     // Condensed, the panel narrows to its card, which fits its choices (earth-filters.css), with room for the menu's scrollbar.
     // The box keeps its width for Expand. While an east or west edge is dragged, the panel follows it, so it can widen past the narrow width.
     // Measured until it settles, since narrowing to the @container width (earth-filters.css) moves Local or UTC under the date, which narrows the card again.
     // Rounded up, so a fraction of a pixel doesn't wrap the card's widest line.
-    var menu = container.querySelector('.ef-menu');
     var card = container.querySelector('.ef-menu > .ef-card');
     var getFitWidth = function() {
       return Math.ceil(card.getBoundingClientRect().width) + menu.offsetWidth - menu.clientWidth;
@@ -1231,6 +1231,7 @@ EarthFilters.prototype.applyMapPanelBox = function() {
       container.style.width = width + 'px';
     }
   }
+  menu.classList.toggle('ef-menu-scrolls', menu.scrollHeight > menu.clientHeight); // Touch swipes scroll it up and down (earth-filters.css)
   var height = container.offsetHeight;
   var left = Math.max(earthFiltersPanelGrip - width, Math.min(box.left, mapWidth - earthFiltersPanelGrip));
   var bottom = Math.max(earthFiltersPanelGrip - height, Math.min(box.bottom, mapHeight - height));

@@ -394,6 +394,15 @@
   overflow: auto;
   border-radius: var(--panel-radius, 16px);
   cursor: move;
+  touch-action: none; /* Otherwise a finger's drag becomes a page scroll, and the browser cancels the panel's drag */
+}
+/* A panel with more than fits scrolls with an up and down swipe. It moves sideways from anywhere, and any way from its tabs bar. */
+.earth-filters.ef-over .ef-menu.ef-menu-scrolls {
+  touch-action: pan-y;
+}
+.earth-filters.ef-over .ef-tabs-bar,
+.earth-filters.ef-over .ef-corner {
+  touch-action: none;
 }
 .earth-filters.ef-over .ef-panel {
   min-height: 100%;

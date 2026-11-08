@@ -398,4 +398,30 @@ body.dark:has(#slider-on-map) #upIconTray #headerIcons .playPauseButton:focus {
 }
 #slider-full-track::before { left: calc(100% / 3); }
 #slider-full-track::after { left: calc(200% / 3); }
+/* Narrow: no hour labels under the track. The Small Slider's track is one day, with no lines between days (createFullSlider() in nouislider.min.js). */
+#slider-full.slider-full-narrow { padding-bottom: 6px; }
+#slider-full.slider-full-narrow #slider-full-track .noUi-pips-horizontal { display: none; }
+/* The hour shows in the handle instead, in place of its grip lines */
+#slider-full.slider-full-narrow #slider-full-track .noUi-handle {
+  height: 20px;
+  top: -2px; /* Stays centered on the track */
+  border-color: #333;
+  background: #333;
+  box-shadow: none;
+}
+#slider-full.slider-full-narrow #slider-full-track .noUi-handle::before,
+#slider-full.slider-full-narrow #slider-full-track .noUi-handle::after { display: none; }
+#slider-full.slider-full-narrow #slider-full-track .noUi-touch-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1;
+  cursor: grab;
+}
+#slider-full.slider-full-narrow #slider-full-track .noUi-touch-area::after { content: attr(data-hour); } /* Set by createFullSlider() in nouislider.min.js */
+#slider-full.slider-full-one-day .slider-full-day { border-right: none; }
+#slider-full.slider-full-one-day #slider-full-track::before,
+#slider-full.slider-full-one-day #slider-full-track::after { display: none; }
 /* /Full 3-day slider */
