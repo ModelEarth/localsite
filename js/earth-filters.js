@@ -386,6 +386,9 @@ function EarthFilters(container, options) {
     this.setupMapPanel();
   }
   this.update();
+  if (this.mapContainer) {
+    this.fitSavedMapPanelHeight();
+  }
   // A conversation starting in the page's voice controls (.claude-voice-ui, claude-voice.js) condenses the filters, without changing
   // the saved choice. Heard in the capture phase, since the event doesn't bubble up from the element holding the voice controls.
   document.addEventListener('claude-voice:start', function() {
@@ -787,17 +790,15 @@ EarthFilters.prototype.handleAction = function(action, button) {
     case 'toggle-condensed':
       var condense = !this.isCondensed();
       this.expandNarrow = !condense; // Expand also shows all the choices in a narrow panel
+      if (!condense) {
+        this.widenMapPanelBox();
+      }
       this.setCondensed(condense, true);
       break;
     case 'toggle-place':
       this.isOpen = true; // Shows the filters in their new place, also when the menu opened from the clear button
       writeEarthFiltersStorage(this.storageKeys.open, 'true');
       var place = this.inPageCatch() || this.place === 'over' ? 'under' : 'over'; // From the page's #earthFilterCatch, under the map
-      if (place === 'under' && this.isCondensed()) {
-        this.expandNarrow = true; // Under the map, a condensed panel expands, as with Expand
-        this.condensed = false;
-        writeEarthFiltersStorage(this.storageKeys.condensed, 'false');
-      }
       this.setMapPanelPlace(place);
       break;
     case 'to-catch':
@@ -1092,6 +1093,7 @@ EarthFilters.prototype.updatePanelMenu = function() {
   menu.querySelector('[data-field="panel-toggle"]').title = this.isOpen ? 'Hide the filters' : 'Show the filters';
   menu.querySelector('[data-field="panel-icon"]').innerHTML = this.isOpen ? earthFiltersIcons.close : earthFiltersIcons.show;
   var isCondensed = this.isCondensed();
+  menu.querySelector('[data-field="condense-toggle"]').hidden = this.container.classList.contains('ef-under'); // Always expanded there
   menu.querySelector('[data-field="condense-label"]').textContent = isCondensed ? 'Expand' : 'Condense';
   menu.querySelector('[data-field="condense-toggle"]').title = isCondensed ? 'Show all the choices in each row' : 'Show only the highlighted choice in each row';
   menu.querySelector('[data-field="condense-icon"]').innerHTML = isCondensed ? earthFiltersIcons.expand : earthFiltersIcons.condense;
@@ -1199,6 +1201,9 @@ EarthFilters.prototype.setMapPanelOpen = function(isOpen) {
 // Condensed, each Controls row shows only its highlighted choice (earth-filters.css). With save, from Condense and Expand in the
 // three-dot menu, the choice is kept in the browser. A voice conversation condenses without saving.
 EarthFilters.prototype.isCondensed = function() {
+  if (this.container.classList.contains('ef-under')) {
+    return false; // Under the map the card fills the width, so a Condense saved over the map waits until the panel is back over it
+  }
   return this.condensed || this.narrow && !this.expandNarrow;
 };
 
@@ -1211,6 +1216,38 @@ EarthFilters.prototype.setCondensed = function(isCondensed, save) {
   if (this.isOverMap()) {
     this.applyMapPanelBox();
   }
+};
+
+// Asks applyMapPanelBox() to fit a saved height to the filters. After update(), which hides the other modes' rows, and once the stylesheet applies.
+EarthFilters.prototype.fitSavedMapPanelHeight = function() {
+  if (!this.box || !this.box.height) {
+    return;
+  }
+  var self = this;
+  var stylesheet = document.querySelector('link[href*="earth-filters.css"]');
+  var fit = function() {
+    self.fitSavedHeight = true;
+    if (self.isOverMap()) {
+      self.applyMapPanelBox();
+    }
+  };
+  if (stylesheet && !stylesheet.sheet) {
+    stylesheet.addEventListener('load', fit);
+  } else {
+    fit();
+  }
+};
+
+// Expand opens the panel over the map to at least its default width, since the saved width can be a narrow one from resizing it
+// while condensed. It moves left as needed to stay on the map.
+EarthFilters.prototype.widenMapPanelBox = function() {
+  if (!this.isOverMap() || !this.box) {
+    return; // Without a saved box, it's at the default width
+  }
+  var mapWidth = this.mapContainer.clientWidth;
+  this.box.width = Math.min(Math.max(this.box.width, earthFiltersPanelWidth), mapWidth);
+  this.box.left = Math.max(0, Math.min(this.box.left, mapWidth - this.box.width));
+  writeEarthFiltersStorage(this.storageKeys.box, JSON.stringify(this.box));
 };
 
 EarthFilters.prototype.setMapPanelPlace = function(place) {
@@ -1266,6 +1303,7 @@ EarthFilters.prototype.applyMapPanelPlace = function() {
   container.classList.toggle('ef-over', isOver);
   container.classList.toggle('ef-under', !isOver && !pageCatch);
   container.classList.toggle('ef-closed', !this.isOpen);
+  container.classList.toggle('ef-condensed', this.isCondensed()); // It depends on ef-under
   this.updatePanelMenu();
   if (isOver) {
     this.applyMapPanelBox();
@@ -1335,6 +1373,26 @@ EarthFilters.prototype.applyMapPanelBox = function() {
       width = fitWidth;
       container.style.width = width + 'px';
     }
+  }
+  if (this.fitSavedHeight) {
+    // After a page reload, a panel saved taller than its filters goes back to fitting them, with its top in the same place, so there's no blank space at the bottom
+    this.fitSavedHeight = false;
+    var isNarrow = menu.clientWidth <= earthFiltersNarrowWidth;
+    if (isNarrow !== this.narrow) { // Before the ResizeObserver reports it, since a narrow panel is condensed, which is shorter
+      this.narrow = isNarrow;
+      this.update();
+    }
+    container.style.height = '';
+    container.style.maxHeight = '';
+    var fitHeight = container.offsetHeight;
+    var savedHeight = Math.min(box.height, mapHeight);
+    if (fitHeight < savedHeight) {
+      box.bottom += savedHeight - fitHeight;
+      box.height = null;
+      writeEarthFiltersStorage(this.storageKeys.box, JSON.stringify(box));
+    }
+    this.applyMapPanelBox();
+    return;
   }
   menu.classList.toggle('ef-menu-scrolls', menu.scrollHeight > menu.clientHeight); // Touch swipes scroll it up and down (earth-filters.css)
   var height = container.offsetHeight;
