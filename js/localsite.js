@@ -3302,6 +3302,14 @@ function placeEarthDisplay() {
       syncUnderMap();
       waitForElm('#slider-on-map').then(function(slider) { slidersUnder.insertBefore(slider, slidersUnder.firstChild); });
       waitForElm('#slider-full').then(function(slider) { slidersUnder.appendChild(slider); });
+      // #fullscreen gives up the height of a slider under the map (base.css), so the slider shows without scrolling
+      if (typeof ResizeObserver === 'function') {
+        new ResizeObserver(function() {
+          var slidersHeight = slidersUnder.offsetHeight;
+          fullscreen.style.setProperty('--earth-sliders-height', slidersHeight + 'px');
+          fullscreen.classList.toggle('earthSlidersShown', slidersHeight > 0);
+        }).observe(slidersUnder);
+      }
     }
   }
 }

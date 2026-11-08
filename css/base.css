@@ -2426,6 +2426,9 @@ body.dark .config-field select {
 .logoTopPadding {
   padding-top:5.5px;
 }
+a:has(> .logoTopPadding) {
+  padding-left: 6px;
+}
 #headerLogo {
   margin-right: 4.5px;
   float: left;
@@ -3373,6 +3376,16 @@ body.sidebar-hovered {
     box-sizing: border-box;
     height: var(--fullscreen-height);
 }
+/* A time slider under the Earth map (#earthSlidersUnder, measured in placeEarthDisplay() in localsite.js) shows without
+   scrolling: #fullscreen gives up its height. On phones, 100vh also counts the browser's toolbar, so that's left out too. */
+#fullscreen {
+    height: calc(var(--fullscreen-height) - var(--earth-sliders-height, 0px) - var(--earth-browser-bars, 0px));
+}
+@supports (height: 100svh) {
+    #fullscreen.earthSlidersShown {
+        --earth-browser-bars: calc(100vh - 100svh);
+    }
+}
 /* The Earth map (#mainEarthDisplay) fills #fullscreen when the page has one (placeEarthDisplay() in localsite.js),
    and its play/pause button (nouislider.min.js) sits in the lower right, 35px up.
    #fullscreen needs a position (such as relative) for the button. */
@@ -3644,7 +3657,10 @@ html[data-earth-slider="onmap"] #earthSlidersUnder > #slider-full {
     display: block !important; /* Over the inline display: none for the small slider */
     padding: 6px 17px; /* The sides leave room for the box at either end */
     border-top: 0;
-    background: transparent;
+    background: rgba(0, 0, 0, 0.5); /* The dark bar, the full width and against the bottom of the map */
+}
+html[data-earth-slider="onmap"] .dark #earthSlidersUnder > #slider-full {
+    background: rgba(10, 16, 22, 0.7);
 }
 html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-days,
 html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-marker {
@@ -3653,16 +3669,15 @@ html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-mark
 html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track {
     height: 12px;
     border: 0;
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 0;
+    background: transparent;
     box-shadow: none;
-}
-html[data-earth-slider="onmap"] .dark #earthSlidersUnder #slider-full-track {
-    background-color: rgba(10, 16, 22, 0.7);
 }
 html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track::before,
 html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track::after {
-    z-index: 0; /* The lines between the days, under the active hour's box */
+    top: -6px; /* The lines between the days, the height of the dark bar */
+    bottom: -6px;
+    z-index: 0; /* Under the active hour's box */
     background: rgba(255, 255, 255, 0.35);
 }
 /* The hours on the bar */
