@@ -548,7 +548,22 @@ EarthFilters.prototype.render = function() {
     if (event.key === 'Escape') {
       self.closeModals();
       self.setPanelMenuOpen(false);
+      self.closeRowMenu(true);
     }
+  });
+  // The row menu closes with a press elsewhere, and when the page moves from under its fixed position. Its own button closes it on the click.
+  document.addEventListener('pointerdown', function(event) {
+    if (self.rowMenu && !self.rowMenu.contains(event.target) && !self.rowMenuButton.contains(event.target)) {
+      self.closeRowMenu();
+    }
+  }, true);
+  window.addEventListener('scroll', function(event) {
+    if (event.target !== self.rowMenu) {
+      self.closeRowMenu();
+    }
+  }, true);
+  window.addEventListener('resize', function() {
+    self.closeRowMenu();
   });
   this.panelMenu = this.container.querySelector('.ef-panel-menu');
   // A narrow panel condenses on its own (isCondensed()). Its width is 0 while hidden, which leaves it as it was.
@@ -605,11 +620,101 @@ EarthFilters.prototype.handleClick = function(event) {
     return;
   }
 
+  var rowMenuItem = event.target.closest('.ef-row-menu button');
+  if (rowMenuItem) {
+    this.closeRowMenu();
+    this.pressButton(rowMenuItem.rowButton);
+    return;
+  }
+
   var button = event.target.closest('button');
   if (!button || !(this.container.contains(button) || this.panelMenu && this.panelMenu.contains(button))) {
     return;
   }
+  if (this.openRowMenu(button)) {
+    return;
+  }
+  this.pressButton(button);
+};
 
+EarthFilters.prototype.isPressedButton = function(button) {
+  return ['aria-checked', 'aria-pressed', 'aria-selected'].some(function(attribute) {
+    return button.getAttribute(attribute) === 'true';
+  });
+};
+
+// Condensed, as in a narrow panel, a Controls row shows only its highlighted choice. Pressing it pops up a menu of the row's
+// other choices, each pressing the row's own hidden button. Grid, animation and position stay in the menu while on, to turn them off.
+// Returns false for a button that isn't a highlighted choice, which is pressed as usual.
+EarthFilters.prototype.openRowMenu = function(button) {
+  var row = button.closest('.ef-tab-panel > .ef-row');
+  if (!row || !this.container.classList.contains('ef-condensed') || !this.isPressedButton(button)) {
+    return false;
+  }
+  var self = this;
+  var choices = Array.prototype.filter.call(row.querySelectorAll('button'), function(choice) {
+    return choice.getAttribute('data-action') !== 'more-languages' && (!self.isPressedButton(choice) || choice.closest('.ef-multi-select'));
+  });
+  if (!choices.length) {
+    return false;
+  }
+  var wasOpen = this.rowMenu && this.rowMenuButton === button;
+  this.closeRowMenu();
+  if (wasOpen) {
+    return true; // Pressing it again closes the menu
+  }
+  var menu = document.createElement('div');
+  menu.className = 'ef-row-menu';
+  menu.setAttribute('role', 'menu');
+  choices.forEach(function(choice) {
+    var item = document.createElement('button');
+    item.type = 'button';
+    item.title = choice.title;
+    item.disabled = choice.disabled;
+    item.innerHTML = choice.innerHTML;
+    if (!choice.textContent.trim()) {
+      item.insertAdjacentHTML('beforeend', '<span>' + escapeEarthFiltersText(choice.title) + '</span>'); // An icon alone is explained by its title
+    }
+    item.setAttribute('role', choice.closest('.ef-multi-select') ? 'menuitemcheckbox' : 'menuitem');
+    if (choice.closest('.ef-multi-select')) {
+      item.setAttribute('aria-checked', self.isPressedButton(choice) ? 'true' : 'false');
+    }
+    item.rowButton = choice;
+    menu.appendChild(item);
+  });
+  this.container.appendChild(menu); // Not in .ef-menu, which would clip it and hold its fixed position
+  this.rowMenu = menu;
+  this.rowMenuButton = button;
+  button.setAttribute('aria-expanded', 'true');
+  var pageWidth = document.documentElement.clientWidth;
+  var pageHeight = document.documentElement.clientHeight;
+  var buttonBox = button.getBoundingClientRect();
+  var gap = 4;
+  var edge = 8;
+  var below = buttonBox.bottom + gap;
+  menu.style.left = Math.max(edge, Math.min(buttonBox.left, pageWidth - menu.offsetWidth - edge)) + 'px';
+  menu.style.top = (below + menu.offsetHeight <= pageHeight - edge ? below : Math.max(edge, buttonBox.top - gap - menu.offsetHeight)) + 'px';
+  var firstItem = menu.querySelector('button:not(:disabled)');
+  if (firstItem) {
+    firstItem.focus({preventScroll: true});
+  }
+  return true;
+};
+
+EarthFilters.prototype.closeRowMenu = function(returnFocus) {
+  if (!this.rowMenu) {
+    return;
+  }
+  this.rowMenu.parentNode.removeChild(this.rowMenu);
+  this.rowMenuButton.removeAttribute('aria-expanded');
+  if (returnFocus) {
+    this.rowMenuButton.focus({preventScroll: true});
+  }
+  this.rowMenu = null;
+  this.rowMenuButton = null;
+};
+
+EarthFilters.prototype.pressButton = function(button) {
   var action = button.getAttribute('data-action');
   if (action) {
     if (button.closest('.ef-panel-menu')) {
