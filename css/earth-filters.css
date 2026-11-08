@@ -336,7 +336,7 @@
   position: absolute;
   left: 16px;
   bottom: 58px; /* 6px above the clear button */
-  z-index: 1004;
+  z-index: 999;
   margin: 0;
 }
 .earth-filters.ef-map-menu .ef-panel-menu {
@@ -369,16 +369,21 @@
   display: none !important;
 }
 
-/* Over the map's lower left corner, covering the clear button until hidden or moved. Dragged from the background and resized from the corners and edges, which only change the cursor. */
+/* Over the map's lower left corner, covering the clear button until hidden or moved. Dragged from the background and resized from the corners and edges, which only change the cursor.
+   Below #main-header (1000), so the page's header stays in front as the map scrolls under it. */
 .earth-filters.ef-over {
   position: absolute;
-  z-index: 1003;
+  z-index: 998;
   margin: 0;
   padding: 0 !important; /* The page may pad the filters for under the map */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   pointer-events: none; /* Only its filters, corners and modals take the pointer, so parts clipped off the map don't cover the page */
+}
+/* The panel's z-index caps its modal's, so the panel rises while one is open for the shade to cover the header */
+.earth-filters.ef-over:has(.ef-modal:not([hidden])) {
+  z-index: 10000;
 }
 .earth-filters.ef-over > * {
   pointer-events: auto;
@@ -435,7 +440,7 @@
   border-radius: 8px;
   background: transparent;
   cursor: pointer;
-  z-index: 1002;
+  z-index: 997;
 }
 .ef-map-toggle:hover,
 .ef-map-toggle:focus-visible {

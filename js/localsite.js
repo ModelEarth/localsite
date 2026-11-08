@@ -3260,14 +3260,15 @@ function placeEarthDisplay() {
       placeUnderMap();
       if (document.readyState !== 'complete') window.addEventListener('load', placeUnderMap);
       // The map's controls in its upper right stack top to bottom in tab order (base.css): the search filters' section
-      // toggle (#filterFieldToggleHolder) with its menu, zoom in and out, the close-X, then the scroll circle. The
+      // toggle (#filterFieldToggleHolder) with its menu, the close-X, zoom in and out, then the scroll circle. The
       // toggle and menu go back to the search filters while the map is closed, where they open it again.
       var toggleHome = null;
       var stackEarthControls = function() {
         var stack = earthDisplay.querySelector('.earth-zoom-controls');
         var close = document.getElementById('earthClose');
         if (!stack || !close) return;
-        if (close.parentElement !== stack) stack.appendChild(close);
+        var zoom = stack.querySelector('.earth-control-zoom');
+        if (close.nextElementSibling !== zoom) stack.insertBefore(close, zoom);
         var scroll = document.getElementById('earthScrollButton');
         if (scroll && scroll.parentElement !== stack) stack.appendChild(scroll);
         var toggle = document.getElementById('filterFieldToggleHolder'), menu = document.getElementById('filterFieldMenu');
@@ -3508,7 +3509,9 @@ function initEarthScrollCover(holder) {
     btn.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
     });
-    close.parentNode.insertBefore(btn, close.nextSibling);
+    var stack = close.closest('.earth-zoom-controls'); // Already stacked by stackEarthControls(), where it goes after the zoom buttons
+    if (stack) stack.appendChild(btn);
+    else close.parentNode.insertBefore(btn, close.nextSibling);
   });
 }
 function showGlobalMap(globalMap) { // Used by community/index.html, green-sah

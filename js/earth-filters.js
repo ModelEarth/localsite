@@ -1219,9 +1219,14 @@ EarthFilters.prototype.applyMapPanelBox = function() {
   if (this.isCondensed() && !this.resizingWidth) {
     // Condensed, the panel narrows to its card, which fits its choices (earth-filters.css), with room for the menu's scrollbar.
     // The box keeps its width for Expand. While an east or west edge is dragged, the panel follows it, so it can widen past the narrow width.
+    // Measured until it settles, since narrowing to the @container width (earth-filters.css) moves Local or UTC under the date, which narrows the card again.
+    // Rounded up, so a fraction of a pixel doesn't wrap the card's widest line.
     var menu = container.querySelector('.ef-menu');
-    var fitWidth = container.querySelector('.ef-menu > .ef-card').offsetWidth + menu.offsetWidth - menu.clientWidth;
-    if (fitWidth < width) {
+    var card = container.querySelector('.ef-menu > .ef-card');
+    var getFitWidth = function() {
+      return Math.ceil(card.getBoundingClientRect().width) + menu.offsetWidth - menu.clientWidth;
+    };
+    for (var fitWidth = getFitWidth(); fitWidth < width; fitWidth = getFitWidth()) {
       width = fitWidth;
       container.style.width = width + 'px';
     }

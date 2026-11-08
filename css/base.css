@@ -3397,8 +3397,20 @@ body.sidebar-hovered {
 #globalMapHolder.earthScrollCover:not(.earthScrollActive) {
     cursor: pointer;
 }
+/* Phones can still hand a swipe to an iframe with pointer-events: none, which stops the page scrolling, so a clear
+   layer sits over the iframe until the globe is clicked. A pseudo-element, since showGlobalMap() replaces the holder's
+   HTML. No z-index, which keeps it under the map's controls. */
+#globalMapHolder.earthScrollCover:not(.earthScrollActive)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
 /* A drag on the cover would select the iframe, greying the whole map */
 #globalMapHolder.earthScrollCover {
+    position: relative;
     -webkit-user-select: none;
     user-select: none;
 }
@@ -3425,7 +3437,7 @@ body.sidebar-hovered {
     transition: none;
 }
 /* The circle that gives scrolling back to the page. Outside #fullscreen it's left of the close-X (#earthClose: 32px,
-   20px from the right, 22px down); in #fullscreen, after the close-X at the bottom of the map's control stack. */
+   20px from the right, 22px down); in #fullscreen, after the zoom buttons at the bottom of the map's control stack. */
 #earthScrollButton {
     position: absolute;
     z-index: 101;
@@ -3506,7 +3518,7 @@ body.sidebar-hovered {
 }
 /* In #fullscreen, the map's controls stack down its upper right, 20px in and 22px down, 8px apart, as 32px circles in
    tab order (stackEarthControls() in localsite.js): the search filters' section toggle (#filterFieldToggleHolder,
-   whose menu opens to the stack's left), zoom in, zoom out, the close-X (#earthClose) and, while the globe has the
+   whose menu opens to the stack's left), the close-X (#earthClose), zoom in, zoom out and, while the globe has the
    pointer, the scroll circle (#earthScrollButton). In the lower left, 10px in, a tune circle (#earthControlsToggle, initEarthControls()
    in localsite.js), in a dark bar with the date to its right, opens and closes the filters panel (#mainEarthFilters).
    A click on the date shows its picker in its place. While the filters panel is open, the clock replaces the tune circle. */
@@ -3529,7 +3541,7 @@ body.sidebar-hovered {
     position: static !important; /* Over its inline place in the upper right */
 }
 #fullscreen > #mainEarthDisplay .earth-zoom-controls > #earthScrollButton {
-    position: relative; /* In the stack's flow, below the close-X. Relative keeps its countdown ring placed on it. */
+    position: relative; /* In the stack's flow, below the zoom buttons. Relative keeps its countdown ring placed on it. */
     top: auto;
     right: auto;
 }
@@ -3577,9 +3589,9 @@ body.sidebar-hovered {
     width: 32px;
     height: 32px;
     margin: 0;
-    padding: 0 0 3px 3px; /* The + and - a little up and right of center */
+    padding: 0 0 5px 1px; /* The + and - a little up and right of center. Centered in what padding leaves, so each 2px moves them 1px. */
     border-radius: 50%;
-    font-size: 22px;
+    font-size: 28px;
     line-height: 1;
     color: rgba(255, 255, 255, 0.75);
     background-color: rgba(40, 40, 40, 0.6);
@@ -3609,7 +3621,7 @@ body.sidebar-hovered {
     gap: 10px;
 }
 /* While the bar is open for the date's picker (.earthDateOpen, localsite.js), it comes in front of everything else on
-   the map: the filters panel over the map (1003, earth-filters.css), its menu (1004) and the map's buttons. project/goals
+   the map: the filters panel over the map (998, earth-filters.css), its menu (999) and the map's buttons. project/goals
    raises #fullscreen above its page meanwhile (goals.css). */
 html.earthDateOpen #earthControls {
     z-index: 1005;
