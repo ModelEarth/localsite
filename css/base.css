@@ -3042,7 +3042,7 @@ input:checked + .slider:before {
 }
 /* Task-list boxes from loadMarkdown ("- [x]", "- [ ]"): Showdown's boxes are disabled, which
    browsers draw faint. These draw a grey outlined box, filled with a white check when
-   done; in dark mode the outline is white and done boxes are blue. */
+   done; in dark mode the outline is light grey and done boxes are blue. */
 .task-list-item input[type="checkbox"] {
   --task-box: #6B7280;
   --task-box-open: var(--task-box);
@@ -3060,7 +3060,7 @@ input:checked + .slider:before {
 }
 .dark .task-list-item input[type="checkbox"] {
   --task-box: #60A5FA;
-  --task-box-open: #FFFFFF;
+  --task-box-open: #bbb;
 }
 .task-list-item input[type="checkbox"]:checked {
   border-color: var(--task-box);
