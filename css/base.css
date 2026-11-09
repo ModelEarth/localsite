@@ -706,6 +706,12 @@ header, main, .flexfooter {
   top: 0;
   z-index: 1000;
 }
+/* Scrolling down the page, the header slides up off the window before it hides (slideHeaderOff in navigation.js).
+   The transition is on this class alone, so the header is back in place at once when it's removed. */
+#main-header.headerSlideOff {
+  transform: translateY(-100%);
+  transition: transform 0.25s ease-in;
+}
 /* Ensure proper footer positioning */
 #main-layout {
   display: flex;

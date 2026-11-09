@@ -10822,6 +10822,45 @@ $('.sidecolumnLeft a').click(function(event) {
 
 //$('#headerbar').addClass("headerbarhide");
 
+// The height that hiding the header takes out of the page: #main-header, and the search filters until they're fixed.
+// Hidden nearer the top than this, the page moves up to the top, where the header shows again, so a scroll there flickered.
+function headerHideSpace() {
+  let space = $("#main-header").outerHeight() || 0;
+  if ($("#filterFieldsHolder").is(':visible') && !$("#filterFieldsHolder").hasClass("filterFieldsHolderFixed")) {
+    space += $("#filterFieldsHolder").outerHeight() || 0;
+  }
+  return space;
+}
+
+// Scrolling on down the page, the header slides up off the window (.headerSlideOff in base.css), then done() hides it.
+// Scrolling back toward the top before it's off stops the slide (stopHeaderSlide), leaving the header in place.
+var headerSlideEnd = null;
+function slideHeaderOff(done) {
+  if (headerSlideEnd) return; // Already on its way
+  const header = document.getElementById('main-header');
+  if (!header || !header.offsetHeight || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    done();
+    return;
+  }
+  headerSlideEnd = function(event) {
+    if (event.target !== header) return; // A transition within the header
+    const finished = event.type === 'transitionend';
+    stopHeaderSlide();
+    if (finished) done();
+  };
+  header.addEventListener('transitionend', headerSlideEnd);
+  header.addEventListener('transitioncancel', headerSlideEnd);
+  header.classList.add('headerSlideOff');
+}
+function stopHeaderSlide() {
+  const header = document.getElementById('main-header');
+  if (!headerSlideEnd || !header) return;
+  header.removeEventListener('transitionend', headerSlideEnd);
+  header.removeEventListener('transitioncancel', headerSlideEnd);
+  header.classList.remove('headerSlideOff');
+  headerSlideEnd = null;
+}
+
 if (1==1) {
 $(window).scroll(function() {
   if ($("#draggableSearch").is(":visible")) {
@@ -10831,7 +10870,7 @@ $(window).scroll(function() {
     lockSidemap(mapFixed);
     return;
   }
-  if (revealHeader == false) {
+  if (revealHeader == false && $(window).scrollTop() > headerHideSpace()) {
     $("#headerLarge").addClass("headerLargeHide"); $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
     $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
     $("body").addClass("filterFieldsBodyTop");
@@ -10854,37 +10893,41 @@ $(window).scroll(function() {
     revealHeader = true; // For next manual scroll
   } else if ($(window).scrollTop() > previousScrollTop) { // Scrolling Up
     if ($('#headerbar').is(':visible')) {
-      if ($(window).scrollTop() > previousScrollTop + 20) { // Scrolling Up fast
-        // Switch to smaller header
-
-        $("#headerLarge").addClass("headerLargeHide");
-        $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower");
-        if (!$("#filterFieldsHolder").is(':visible')) { // Move to top if no small top bar
-          $(".pagecolumn").addClass("pagecolumnToTop");
-        }
-
-        $('.headerbar').hide();
-        $('.headerOffset').hide();
-        $('#logoholderbar').show();
-
-        if (!$("#filterFieldsHolder").hasClass("filterFieldsHidden")) {
-          $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
-          $("body").addClass("filterFieldsBodyTop");
-          if (param.showfilters == "true") {
-            $('.showMenuSmNav').show(); 
-          }
-          $('.headerOffset').hide();
+      if ($(window).scrollTop() > previousScrollTop + 20 && $(window).scrollTop() > headerHideSpace()) { // Scrolling Up fast
+        // Switch to smaller header, once the header has slid up off the window
+        slideHeaderOff(function() {
+          $("#headerLarge").addClass("headerLargeHide");
           $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower");
-          $('#headerbar').hide(); // Not working
-          $('#headerbar').addClass("headerbarhide");
-        }
-        if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
-          $('#headerLarge').hide();
-        }
+          if (!$("#filterFieldsHolder").is(':visible')) { // Move to top if no small top bar
+            $(".pagecolumn").addClass("pagecolumnToTop");
+          }
+
+          $('.headerbar').hide();
+          $('.headerOffset').hide();
+          $('#logoholderbar').show();
+
+          if (!$("#filterFieldsHolder").hasClass("filterFieldsHidden")) {
+            $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
+            $("body").addClass("filterFieldsBodyTop");
+            if (param.showfilters == "true") {
+              $('.showMenuSmNav').show(); 
+            }
+            $('.headerOffset').hide();
+            $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower");
+            $('#headerbar').hide(); // Not working
+            $('#headerbar').addClass("headerbarhide");
+          }
+          if (!$("#filterFieldsHolder").is(':visible')) { // Retain search filters space at top, unless they are already hidden
+            $('#headerLarge').hide();
+          }
+          // Hiding the header moves the page up by its height. Read as the start, so that move isn't taken for a scroll back up, which revealed the header again.
+          previousScrollTop = $(window).scrollTop();
+        });
       }
     }
   } else { // Scrolling Down
     if ($(window).scrollTop() < (previousScrollTop - 20)) { // Reveal #headerLarge if scrolling down fast
+      stopHeaderSlide();
       $("#headerLarge").removeClass("headerLargeHide"); $('.bothSideIcons').addClass('sideIconsLower');
       $(".pagecolumn").addClass("pagecolumnLower");$(".pagecolumn").removeClass("pagecolumnToTop");$('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
       //$('#filterFieldsHolder').show();
@@ -10912,6 +10955,7 @@ $(window).scroll(function() {
       }
       $('#headerLarge').show();
     } else if ($(window).scrollTop() == 0) { // At top
+      stopHeaderSlide();
       $("#headerLarge").removeClass("headerLargeHide"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
       // We avoid hiding #filterFieldsHolder here since we retain it if already open.
       $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
