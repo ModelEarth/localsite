@@ -3655,7 +3655,7 @@ html.earthDateOpen #earthControls {
 }
 html[data-earth-slider="onmap"] #earthSlidersUnder > #slider-full {
     display: block !important; /* Over the inline display: none for the small slider */
-    padding: 6px 17px; /* The sides leave room for the box at either end */
+    padding: 6px 22px; /* The sides leave room for the box at either end, and 5px beyond it */
     border-top: 0;
     background: rgba(0, 0, 0, 0.5); /* The dark bar, the full width and against the bottom of the map */
 }
@@ -3673,6 +3673,10 @@ html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track {
     background: transparent;
     box-shadow: none;
 }
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-base {
+    width: 100%; /* No bar past the hours here, unlike the Large Slider */
+    margin-left: 0;
+}
 html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track::before,
 html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track::after {
     top: -6px; /* The lines between the days, the height of the dark bar */
@@ -3680,9 +3684,18 @@ html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track::after {
     z-index: 0; /* Under the active hour's box */
     background: rgba(255, 255, 255, 0.35);
 }
+/* Where they were before the track's ends moved in 5px, with the middle day's hours (fullSliderRange() in nouislider.min.js) */
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track::before {
+    left: calc(100% / 3 - 5px / 3);
+}
+html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track::after {
+    left: calc(200% / 3 + 5px / 3);
+}
 /* The hours on the bar */
 html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-pips-horizontal {
     top: 0;
+    left: 0;
+    width: 100%;
     height: 12px;
     padding: 0;
 }

@@ -340,32 +340,47 @@ body.dark:has(#slider-on-map) #upIconTray #headerIcons .playPauseButton:focus {
   position: relative;
   background: #f0f0f0;
   border-top: 1px solid #ccc;
-  padding: 6px 17px 36px;
+  padding: 6px 8px 36px;
   box-sizing: border-box;
 }
 .dark #slider-full { background: #1a2530; border-top-color: #333; }
 #slider-full-days {
   display: flex;
   margin-bottom: 6px;
+  padding: 0 14px; /* Lines up with the hours on the track */
 }
 .slider-full-day {
+  position: relative;
   flex: 1;
   text-align: center;
   font-size: 12px;
   color: #555;
-  border-right: 1px solid #ccc;
   padding: 2px 0;
 }
-.slider-full-day:last-child { border-right: none; }
-.dark .slider-full-day { color: #aaa; border-right-color: #444; }
+/* The lines around the middle day, directly above the ones on the track, 9px outward from the thirds. The day names stay centered. */
+.slider-full-day:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #ccc;
+}
+.slider-full-day:first-child::after { right: 8px; }
+.slider-full-day:nth-child(2)::after { right: -10px; }
+.dark .slider-full-day { color: #aaa; }
+.dark .slider-full-day:not(:last-child)::after { background: #444; }
 #slider-full-track {
   background: rgba(0,0,0,.12);
   border: 1px solid #ccc;
 }
 .dark #slider-full-track { background: rgba(255,255,255,.08); border-color: #444; }
 #slider-full-track .noUi-connect { background: #3FB8AF; }
-#slider-full-track .noUi-base { cursor: pointer; }
+/* The hours sit 14px in from each end of the bar */
+#slider-full-track .noUi-base { cursor: pointer; width: calc(100% - 28px); margin-left: 14px; }
 #slider-full-track .noUi-pips-horizontal {
+  left: 14px;
+  width: calc(100% - 28px);
   padding-top: 6px;
   height: 50px;
 }
@@ -393,11 +408,11 @@ body.dark:has(#slider-on-map) #upIconTray #headerIcons .playPauseButton:focus {
   bottom: -1px;
   width: 1px;
   background: rgba(0,0,0,.2);
-  z-index: 2;
+  z-index: 0; /* Under the handle */
   pointer-events: none;
 }
-#slider-full-track::before { left: calc(100% / 3); }
-#slider-full-track::after { left: calc(200% / 3); }
+#slider-full-track::before { left: calc(14px + (100% - 28px) / 3 - 9px); }
+#slider-full-track::after { left: calc(14px + (100% - 28px) * 2 / 3 + 9px); }
 /* Narrow: no hour labels under the track. The Small Slider's track is one day, with no lines between days (createFullSlider() in nouislider.min.js). */
 #slider-full.slider-full-narrow { padding-bottom: 6px; }
 #slider-full.slider-full-narrow #slider-full-track .noUi-pips-horizontal { display: none; }
@@ -421,7 +436,7 @@ body.dark:has(#slider-on-map) #upIconTray #headerIcons .playPauseButton:focus {
   cursor: grab;
 }
 #slider-full.slider-full-narrow #slider-full-track .noUi-touch-area::after { content: attr(data-hour); } /* Set by createFullSlider() in nouislider.min.js */
-#slider-full.slider-full-one-day .slider-full-day { border-right: none; }
+#slider-full.slider-full-one-day .slider-full-day::after { display: none; }
 #slider-full.slider-full-one-day #slider-full-track::before,
 #slider-full.slider-full-one-day #slider-full-track::after { display: none; }
 /* /Full 3-day slider */
