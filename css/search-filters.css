@@ -101,7 +101,7 @@
   left: 0px;
   background-color: rgb(239 239 239);
   border-bottom: #aaa;
-  z-index: 9999;
+  z-index: 100002; /* Above slide arrows (#sample1 .swiper-button-next at 100001 in start/slides/css/slides.css) */
 }
 /* brave still sees this since it's darkmode ignores the use of prefers-color-scheme: dark */
 @media (not (prefers-color-scheme: dark)) {

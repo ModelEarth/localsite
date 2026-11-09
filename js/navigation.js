@@ -10851,6 +10851,7 @@ function slideHeaderOff(done) {
   header.addEventListener('transitionend', headerSlideEnd);
   header.addEventListener('transitioncancel', headerSlideEnd);
   header.classList.add('headerSlideOff');
+  $("body").addClass("headerSlidingOff"); // Fixed search filters under the header slide up with it
 }
 function stopHeaderSlide() {
   const header = document.getElementById('main-header');
@@ -10858,11 +10859,47 @@ function stopHeaderSlide() {
   header.removeEventListener('transitionend', headerSlideEnd);
   header.removeEventListener('transitioncancel', headerSlideEnd);
   header.classList.remove('headerSlideOff');
+  $("body").removeClass("headerSlidingOff");
   headerSlideEnd = null;
+}
+
+// Fixed search filters, once displayed, stay in view when the header comes back mid-page: they move down under it,
+// where the header's own 9-dot menu replaces theirs (.filterFieldsUnderHeader in base.css).
+// At the top of the page they return to their place in the page (unfixFilters).
+function filtersFixedInView() {
+  return $("#filterFieldsHolder").hasClass("filterFieldsHolderFixed") && $("#filterFieldsHolder").is(':visible');
+}
+function placeFiltersUnderHeader() {
+  $("#filterFieldsHolder").addClass("filterFieldsUnderHeader").css("top", ($("#main-header").outerHeight() || 0) + "px");
+}
+function filtersToWindowTop() {
+  $("#filterFieldsHolder").removeClass("filterFieldsUnderHeader").css("top", "");
+}
+function unfixFilters() {
+  filtersToWindowTop();
+  $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
+  $("body").removeClass("filterFieldsBodyTop");
+}
+
+// With the search filters fixed, the header comes back mid-page only on a quick scroll toward the top:
+// over 600px within 300ms. Each step of a slower scroll can pass the 20px per scroll event used otherwise.
+var recentScrolls = [];
+function recordScroll() {
+  const now = performance.now();
+  recentScrolls.push({time: now, scrollTop: $(window).scrollTop()});
+  // Keep the last position from before the 300ms: the page stayed there until the next scroll.
+  while (recentScrolls.length > 1 && now - recentScrolls[1].time > 300) {
+    recentScrolls.shift();
+  }
+}
+function scrolledFastTowardTop() {
+  const lowest = Math.max.apply(null, recentScrolls.map(function(s) { return s.scrollTop; }));
+  return lowest - $(window).scrollTop() > 600;
 }
 
 if (1==1) {
 $(window).scroll(function() {
+  recordScroll();
   if ($("#draggableSearch").is(":visible")) {
     // The header stays as is while the .popAdvanced popup is open. Choosing a state there reloads content,
     // and the resulting scroll position change otherwise toggled .filterFieldsHolderFixed, moving the page.
@@ -10873,6 +10910,7 @@ $(window).scroll(function() {
   if (revealHeader == false && $(window).scrollTop() > headerHideSpace()) {
     $("#headerLarge").addClass("headerLargeHide"); $('.bothSideIcons').removeClass('sideIconsLower');$(".pagecolumn").removeClass("pagecolumnLower"); $('.headerbar').hide(); $('.headerOffset').hide(); $('#logoholderbar').show(); $('#logoholderside').show();
     $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
+    filtersToWindowTop();
     $("body").addClass("filterFieldsBodyTop");
     if (param.showheader != "false") {
       $('.showMenuSmNav').show(); 
@@ -10905,6 +10943,7 @@ $(window).scroll(function() {
           $('.headerbar').hide();
           $('.headerOffset').hide();
           $('#logoholderbar').show();
+          filtersToWindowTop(); // From under the header
 
           if (!$("#filterFieldsHolder").hasClass("filterFieldsHidden")) {
             $("#filterFieldsHolder").addClass("filterFieldsHolderFixed");
@@ -10926,13 +10965,16 @@ $(window).scroll(function() {
       }
     }
   } else { // Scrolling Down
-    if ($(window).scrollTop() < (previousScrollTop - 20)) { // Reveal #headerLarge if scrolling down fast
+    const scrollingDownFast = filtersFixedInView() && $(window).scrollTop() > 0 ? scrolledFastTowardTop() : $(window).scrollTop() < (previousScrollTop - 20);
+    if (scrollingDownFast) { // Reveal #headerLarge if scrolling down fast
       stopHeaderSlide();
       $("#headerLarge").removeClass("headerLargeHide"); $('.bothSideIcons').addClass('sideIconsLower');
       $(".pagecolumn").addClass("pagecolumnLower");$(".pagecolumn").removeClass("pagecolumnToTop");$('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
       //$('#filterFieldsHolder').show();
-      $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
-      $("body").removeClass("filterFieldsBodyTop");
+      const keepFilters = filtersFixedInView() && $(window).scrollTop() > 0; // Unfixed mid-page, they'd return to their place higher up, out of view
+      if (!keepFilters) {
+        unfixFilters();
+      }
       if ($("#headerbar").length) {
         if (param.showheader != "false") {
           $('.headerOffset').show();
@@ -10954,12 +10996,14 @@ $(window).scroll(function() {
         }
       }
       $('#headerLarge').show();
+      if (keepFilters) {
+        placeFiltersUnderHeader();
+      }
     } else if ($(window).scrollTop() == 0) { // At top
       stopHeaderSlide();
       $("#headerLarge").removeClass("headerLargeHide"); $('.headerbar').show(); $('#logoholderbar').hide(); $('#logoholderside').hide();
       // We avoid hiding #filterFieldsHolder here since we retain it if already open.
-      $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed");
-      $("body").removeClass("filterFieldsBodyTop");
+      unfixFilters();
       if ($("#headerbar").length) {
         if (param.showheader != "false") {
           $('.headerOffset').show();

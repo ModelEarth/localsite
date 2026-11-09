@@ -712,6 +712,15 @@ header, main, .flexfooter {
   transform: translateY(-100%);
   transition: transform 0.25s ease-in;
 }
+/* Fixed search filters held under the header (placeFiltersUnderHeader) move up with it. */
+.headerSlidingOff .filterFieldsHolderFixed {
+  top: 0 !important;
+  transition: top 0.25s ease-in;
+}
+/* Under the header, the header's own 9-dot menu is shown, so the bar leaves out its copy. */
+.filterFieldsHolderFixed.filterFieldsUnderHeader #showSideTabsInBar {
+  display: none !important;
+}
 /* Ensure proper footer positioning */
 #main-layout {
   display: flex;
