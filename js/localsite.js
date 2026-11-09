@@ -4207,7 +4207,8 @@ function loadMarkdown(pagePath, divID, target, attempts, callback) {
       // Escape underscores outside of code blocks in the markdown data
       data = escapeUnderscoresOutsideCodeBlocks(data);
 
-      var converter = new showdown.Converter({tables:true, metadata:true, simpleLineBreaks: true}),
+      // tasklists: "- [x]" and "- [ ]" items (GitHub task lists) show as checked and unchecked boxes.
+      var converter = new showdown.Converter({tables:true, metadata:true, simpleLineBreaks: true, tasklists: true}),
       html = editReadme + converter.makeHtml(data);
       html = addBrInSpans(html);
 
