@@ -95,15 +95,7 @@ if(typeof hiddenhash == 'undefined') {
 }
 function updateCountiesTabText() {
     let hash = getHash();
-    if (hash.geoview == "countries" || hash.geoview == "earth") { // Not a state's counties, even when a state remains in hiddenhash
-        $(".countiesTabText").text("States");
-        return;
-    }
-    if (!hash.geo) {
-        $(".countiesTabText").text(hash.state ? "Counties" : "States");
-        return;
-    }
-    let geoIds = hash.geo.split(",").filter(Boolean);
+    let geoIds = (hash.geo || "").split(",").filter(Boolean);
     if (geoIds.length === 1) {
         // One county shows its name, e.g. "Fulton County". localObject.geo names include the state ("Fulton County, GA").
         // Until the county data loads, the tab shows "1 County", then the name once the data arrives (below).
@@ -126,6 +118,22 @@ function hashStateList(hash) {
 function hashHasSpecificState(hash) {
     return hashStateList(hash).length > 0;
 }
+// True when a state in hash.state has a list of counties. us-counties-full.csv has no rows for these territories,
+// and DC, a single county, isn't in us_stateIDs.
+function hashStateHasCounties(hash) {
+    const noCountyList = ["AS", "GU", "MP", "VI"];
+    return hashStateList(hash).some(function(state) {
+        const code = state.trim().toUpperCase();
+        return localObject.us_stateIDs[code] && !noCountyList.includes(code);
+    });
+}
+// #filterClickLocation only shows with counties to choose from, or chosen. The countries map isn't a state's counties.
+function syncCountiesTab() {
+    if (param.showstates == "false") return;
+    const hash = getHash();
+    $("#filterClickLocation").toggle(hash.geoview != "countries" && (!!hash.geo || hashStateHasCounties(hash)));
+}
+waitForElm('#filterClickLocation').then(syncCountiesTab); // filter.html can load after the first hashChanged()
 // "Multiple States", "Multiple Counties" and "Multiple Countries" checkboxes in #geomapHolder (local only for now).
 // Unchecked: a map click or table row click selects only that location. Checked: map clicks add and remove locations.
 // The table checkboxes always add locations, and check the box once there are two.
@@ -837,15 +845,7 @@ function hashChanged() {
         closeLocationFilter();
     }
 
-    // Hide Counties tab until sub-selections exist (state=all isn't one)
-    let hasState = hashHasSpecificState(hash);
-    let showCountiesTab = hash.geo || hasState || hash.geoview == "countries" || hash.geoview == "earth";
-    let hideForNoSelection = (hash.geoview == "country" && !hasState) || (hash.geoview == "state" && !hash.geo);
-    if (hideForNoSelection) {
-        $("#filterClickLocation").hide();
-    } else if (showCountiesTab) {
-        $("#filterClickLocation").show();
-    }
+    syncCountiesTab();
 
     //Resides before geo
     if (hash.regiontitle != priorHash.regiontitle || hash.state != priorHash.state || hash.show != priorHash.show) {
@@ -3573,7 +3573,9 @@ if (typeof $ !== 'undefined') {
             return;
         }
         if (value == "earth" && $("#mainEarthDisplay").is(":visible")) {
-            goHash({"geoview":""});
+            hiddenhash.state = "";
+            goHash({"geoview":"","state":""});
+            setGeoviewSelect(value); // Its first call, before the click's goHash, still saw the state
             return;
         }
         if (value == "earth" || value == "country" || value == "state") {
@@ -3582,6 +3584,7 @@ if (typeof $ !== 'undefined') {
         if (value == "country" && getHash().geoview == "country") { // "United States" already selected, so unselect its states
             hiddenhash.state = "";
             goHash({"geoview":"us","state":""});
+            setGeoviewSelect(value);
         } else if (value == "country") { // "United States". getHash() reads geoview=us as country.
             goHash({"geoview":"us"});
         } else if (value == "countries" || value == "earth") {
@@ -10458,18 +10461,7 @@ $(document).on("click", "#filterClickLocation", function(event) {
         $("#filterLocations").hide();
         returnGeoviewContainer();
     }
-    // With geoview=countries the tab reads "States" (updateCountiesTabText), so it opens the
-    // geoview menu with its state list rather than closing the map
     var clickHash = getHash();
-    if (clickHash.geoview == "countries" && $("#geoview_container").length) {
-        if ($("#geoview_container").is(":visible")) {
-            closeGeoviewList();
-        } else {
-            openGeoviewList();
-        }
-        event.stopPropagation();
-        return;
-    }
     closeGeoviewList();
     // When geoview=country and a state is selected, switch to geoview=state (state=all counts as none)
     if (clickHash.geoview == "country" && hashHasSpecificState(clickHash)) {
@@ -10677,7 +10669,7 @@ function filterClickLocation(loadGeoTable) {
         (typeof goHashNoHistory === 'function' ? goHashNoHistory : goHash)({'sidetab':'','locpop':''});
     } else if (hash.geoview == "earth") {
         // The earth hash sets geoview=earth in hiddenhash only, so clearing geoview would leave the URL unchanged.
-        // The tab reads "States" (updateCountiesTabText), so open the states map as the "United States" geoview option does.
+        // Open the state's counties, otherwise the states map as the "United States" geoview option does.
         goHash({'geoview': hashHasSpecificState(hash) ? 'state' : 'us', 'locpop':''});
     } else if (hash.geoview) {
         goHash({'geoview':'','locpop':''});

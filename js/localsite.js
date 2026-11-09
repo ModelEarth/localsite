@@ -1716,14 +1716,6 @@ function loadLocalTemplate() {
       onElmReady('#filterClickLocation', function() {
         if (param.showstates != "false") {
             $("#geoviewSelectHolder").show();
-            // Only show counties tab if sub-selections exist
-            let hash = getHash();
-            // state=all counts as no state
-            let hasState = String(hash.state || "").split(",").some(value => value && value.toLowerCase() !== "all");
-            let hideCountiesTab = (hash.geoview == "country" && !hasState) || (hash.geoview == "state" && !hash.geo);
-            if (!hideCountiesTab) {
-                $("#filterClickLocation").show(); // Show counties tab
-            }
         }
         $("#mapFilters").prependTo("#main-content");
         // Move back up to top. Used when header.html loads search-filters later (when clicking search icon)

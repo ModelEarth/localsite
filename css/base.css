@@ -3659,6 +3659,10 @@ html[data-earth-slider="onmap"] #earthSlidersUnder > #slider-full {
     border-top: 0;
     background: rgba(0, 0, 0, 0.5); /* The dark bar, the full width and against the bottom of the map */
 }
+html[data-earth-slider="onmap"] #earthSlidersUnder > #slider-full.slider-full-narrow {
+    padding-left: 35px;
+    padding-right: 35px;
+}
 html[data-earth-slider="onmap"] .dark #earthSlidersUnder > #slider-full {
     background: rgba(10, 16, 22, 0.7);
 }
@@ -3684,15 +3688,16 @@ html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track::after {
     z-index: 0; /* Under the active hour's box */
     background: rgba(255, 255, 255, 0.35);
 }
-/* Where they were before the track's ends moved in 5px, with the middle day's hours (fullSliderRange() in nouislider.min.js) */
+/* 9px outward from the thirds, the same as the Large Slider's lines (nouislider.min.css) */
 html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track::before {
-    left: calc(100% / 3 - 5px / 3);
+    left: calc(100% / 3 - 9px);
 }
 html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track::after {
-    left: calc(200% / 3 + 5px / 3);
+    left: calc(200% / 3 + 9px);
 }
 /* The hours on the bar */
 html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-pips-horizontal {
+    display: block; /* Also when narrow, unlike the Large Slider */
     top: 0;
     left: 0;
     width: 100%;
