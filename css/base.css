@@ -3040,6 +3040,33 @@ input:checked + .slider:before {
 .large-list {
   font-size: 16px;
 }
+/* Task-list boxes from loadMarkdown ("- [x]", "- [ ]"): Showdown's boxes are disabled, which
+   browsers draw faint. These draw a grey outlined box, filled with a white check when
+   done; in dark mode the outline is white and done boxes are blue. */
+.task-list-item input[type="checkbox"] {
+  --task-box: #6B7280;
+  --task-box-open: var(--task-box);
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  padding: 0;
+  width: 0.85em;
+  height: 0.85em;
+  border: 1.5px solid var(--task-box-open);
+  border-radius: 2px;
+  background: transparent center / 95% no-repeat;
+  opacity: 1;
+  cursor: default;
+}
+.dark .task-list-item input[type="checkbox"] {
+  --task-box: #60A5FA;
+  --task-box-open: #FFFFFF;
+}
+.task-list-item input[type="checkbox"]:checked {
+  border-color: var(--task-box);
+  background-color: var(--task-box);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.6 9.2l3.6 3.6L14.5 4.3' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
 .large-list strong, .content strong {
   font-weight: 510;
   letter-spacing: 0.02em;
