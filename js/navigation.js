@@ -10214,12 +10214,13 @@ $(document).on("change", "#state_select", function(event) {
         }
         // Later a checkbox could be added to retain geo values across multiple states
         // Omitting for BC apps page  ,'geoview':'state'
-        if (hash.geoview) {
-            var nextGeoview = geoviewAfterStateChoice((hash.geoview == "country") ? "country" : "state");
-            goHash({'state':stateValue,'usregion':usregion,'geo':'','name':'','regiontitle':'','geoview':nextGeoview}); // triggers renderGeomapShapes("geomap", hash); // County select map
-        } else {
-            goHash({'state':stateValue,'usregion':usregion,'geo':'','name':'','regiontitle':''}); // triggers renderGeomapShapes("geomap", hash); // County select map
+        const stateHash = {'state':stateValue,'usregion':usregion,'geo':'','name':'','regiontitle':''};
+        if (stateQuickListClick) {
+            stateHash.geoview = 'state'; // A choice in #state_quick_list always adds geoview=state
+        } else if (hash.geoview) {
+            stateHash.geoview = geoviewAfterStateChoice((hash.geoview == "country") ? "country" : "state");
         }
+        goHash(stateHash); // triggers renderGeomapShapes("geomap", hash); // County select map
 
         setTimeout(() => {
             setGeoviewTitleFromState();
