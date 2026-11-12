@@ -103,6 +103,20 @@
 #stateName {
     font-size: 48px;
 }
+#countryName {
+    font-size: 24px;
+    font-weight: 300;
+    margin-bottom: 4px;
+}
+#countryName a, #countryName a:hover { /* Keep the title's color, with no underline */
+    color: inherit;
+    text-decoration: none;
+}
+@media (max-width: 600px) {
+    #countryName ~ .hero-title { /* base.css pads each .hero-title on narrow screens */
+        padding-top: 0;
+    }
+}
 @container (max-width: 1000px) {
     #hero-mini {
         display: none;
@@ -120,6 +134,8 @@
 
   <div id="hero-content">
 
+    <!-- Clicking adds geoview=us to the hash, keeping the other hash values (script below) -->
+    <div id="countryName" class="hero-title"><a href="#geoview=us">United States</a></div>
     <!-- US region from hash.usregion (#usregion_select). Replaces #stateName while present. -->
     <div id="regionName" class="hero-title" style="font-size:48px; font-weight:300; display:none"></div>
     <div id="stateName" class="hero-title" style="font-weight:300">Location Modeling</div><!-- font-size in the style above -->
@@ -187,6 +203,12 @@
   menu.addEventListener('keydown', function(e) {
     const item = e.target.closest('[data-set]');
     if (item && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); item.click(); }
+  });
+
+  // #countryName link: goHash keeps the other hash values and fires hashChangeEvent
+  document.querySelector('#countryName a').addEventListener('click', function(e) {
+    e.preventDefault();
+    goHash({'geoview':'us'});
   });
 
   // States in hash.state, without "all"

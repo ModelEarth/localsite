@@ -8647,6 +8647,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                                     colCloneRight.id = "cloneRight";
 
                                     $("#sectionsMenu").prepend(colCloneRight);
+                                    if (typeof setDesktopPort === 'function') setDesktopPort();
 
                                     if (location.href.indexOf('desktop') >= 0 || modelsite=="dreamstudio" || location.host.indexOf('dreamstudio') >= 0 || location.href.indexOf('dreamstudio') >= 0 || location.href.indexOf('/swarm/') >= 0 || location.href.indexOf('/LinearA/') >= 0 || location.href.indexOf("planet.live") >= 0 || modelsite=="planet.live") {
                                         let prependFolder = "";
@@ -9185,6 +9186,24 @@ document.addEventListener('hashChangeEvent', function() {
         if (typeof setStylelook === 'function') {
             setStylelook(hash.style || '');
         }
+    }
+});
+// Desktop Port: digits only, saved once 4 digits are entered, cleared when emptied.
+$(document).on("input", "#desktopPort", function(event) {
+    const port = this.value.replace(/\D/g, "").slice(0, 4);
+    if (this.value !== port) this.value = port;
+    if (typeof Cookies == 'undefined') return;
+    if (isDesktopPort(port)) {
+        Cookies.set('desktopPort', port);
+        setDesktopPort(port);
+    } else if (port === "") {
+        Cookies.remove('desktopPort');
+        setDesktopPort("");
+    }
+});
+$(document).on("change", "#desktopPort", function(event) { // Leaving the field with 1-3 digits restores the saved port
+    if (this.value !== "" && !isDesktopPort(this.value)) {
+        this.value = (typeof Cookies != 'undefined' && Cookies.get('desktopPort')) || "";
     }
 });
 $(document).on("change", "#devmode", function(event) { // Public or Dev

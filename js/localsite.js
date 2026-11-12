@@ -4955,7 +4955,11 @@ function initSitelook() {
             $("#gitrepo").val(Cookies.get('gitrepo'));
             gitrepo = Cookies.get('gitrepo');
         }
+        if (Cookies.get('desktopPort')) {
+            $("#desktopPort").val(Cookies.get('desktopPort'));
+        }
     }
+    setDesktopPort();
     if (param["sitelook"]) { // From URL
         sitelook = param["sitelook"];
     }
@@ -5209,6 +5213,23 @@ document.addEventListener('click', function(event) {
     }
 }, true);
 waitForElm('#goatIcons .darkModeToggle').then(updateDarkModeToggles); // once the template's icons are in the page
+// Shows the DESKTOP link (above UN GOALS in header.html, cloned into #sectionsMenu) when a 4-digit
+// Desktop Port is saved in Settings. The .hasPort class shows it through css/dev.css, so only in Dev Mode.
+// With no argument, reads the saved desktopPort cookie.
+function isDesktopPort(port) {
+  return /^\d{4}$/.test(port || "");
+}
+function setDesktopPort(port) {
+  if (port === undefined && typeof Cookies != 'undefined') {
+    port = Cookies.get('desktopPort');
+  }
+  const links = document.querySelectorAll('.desktopPortLink');
+  links.forEach(function(link) {
+    const a = link.querySelector('a');
+    if (isDesktopPort(port) && a) a.href = 'http://localhost:' + port + '/';
+    link.classList.toggle('hasPort', isDesktopPort(port));
+  });
+}
 function setDevmode(devmode) {
   const devCssUrl = theroot + 'css/dev.css';
   if (devmode == "dev") {
