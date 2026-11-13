@@ -792,6 +792,133 @@ window.localsiteSlidesConfig = {
   })();
   </script>
 
+  <style>
+  #sessionStorageSection { container-type: inline-size; clear: both; margin-top: 28px; }
+  .session-note {
+    background: #f4f6fb; border-radius: 10px; padding: 12px 16px; margin-bottom: 14px;
+    font-size: 14px; line-height: 1.5;
+  }
+  .dark .session-note { background: #1e2230; }
+  .session-note p { margin: 0 0 8px 0; }
+  .session-note p:last-child { margin-bottom: 0; }
+  .session-note code { font-size: 13px; }
+  .session-remove-btn {
+    background: none; border: none; cursor: pointer; padding: 0; color: #999;
+    display: flex; align-items: center;
+  }
+  .session-remove-btn:hover { color: #c62828; }
+  .session-hint { font-size: 12px; color: #b26a00; margin-top: 4px; white-space: normal; font-family: inherit; }
+  .dark .session-hint { color: #ffb74d; }
+  .session-param-main { flex: 1; min-width: 0; }
+  .session-param-main .cache-param-value { white-space: normal; word-break: break-all; }
+  </style>
+
+  <div id="sessionStorageSection">
+    <div class="cache-header-row">
+      <h2 style="margin:0">Tab SessionStorage</h2>
+      <button class="btn" id="sessionClearAll" type="button">Clear tab storage</button>
+    </div>
+    <p style="margin-top:6px;margin-bottom:14px">These values reside in this tab's sessionStorage. Other tabs have their own.</p>
+
+    <div class="session-note">
+      <p><b>How this differs from localStorage:</b> localStorage is shared by every tab and window on this site (same protocol, host and port) and stays until it's deleted. sessionStorage belongs to a single tab. It survives reloads and links within the tab, and it's discarded when the tab closes. A new tab starts with none (duplicating a tab copies it), and changes in one tab never reach another tab's sessionStorage.</p>
+      <p><b>Why the #modelsite dropdown can miss a new config.yaml:</b> localsite.js requests the site config (<code id="sessionConfigPath">support/site/config.yaml</code>) once per tab. On a 404 it saves <code>webrootYamlPath</code> = <code>none</code> here, so later pages in this tab skip the request. If you add config.yaml afterward, this tab keeps skipping it, even after a reload, while a new tab starts with empty sessionStorage, requests the file, finds it and fills the dropdown. To pick up the file in this tab, remove <code>webrootYamlPath</code> below and reload.</p>
+      <p><code>loadMarkdownMissing</code> works the same way for README and other .md files that returned 404 earlier in this tab.</p>
+    </div>
+
+    <div class="cache-stats" id="sessionStats"></div>
+    <div class="cache-param-list" id="sessionParamList"></div>
+  </div>
+
+  <script>
+  (function () {
+    var HINTS = {
+      webrootYamlPath: function(v) {
+        return v === 'none' ? 'No config.yaml was found earlier in this tab, so it is not requested again. Remove this and reload to check again.' : '';
+      },
+      loadMarkdownMissing: function(v) {
+        return v && v !== '[]' ? 'These .md files returned 404 earlier in this tab and are skipped. Remove this and reload to request them again.' : '';
+      }
+    };
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function getType(val) {
+      if (!val) return 'empty';
+      if (val.indexOf('<svg') >= 0) return 'svg';
+      if (!isNaN(val) && val.trim() !== '') return 'number';
+      try { JSON.parse(val); return 'json'; } catch(e) {}
+      return 'string';
+    }
+
+    function renderSessionList() {
+      var listEl = document.getElementById('sessionParamList');
+      var statsEl = document.getElementById('sessionStats');
+      if (!listEl) return;
+      var items = [];
+      try {
+        for (var i = 0; i < sessionStorage.length; i++) {
+          var k = sessionStorage.key(i);
+          items.push({ key: k, value: sessionStorage.getItem(k) || '' });
+        }
+      } catch (e) {}
+      items.sort(function(a, b) { return a.key.localeCompare(b.key); });
+      if (statsEl) statsEl.textContent = items.length + ' item' + (items.length !== 1 ? 's' : '') + ' in this tab';
+      if (items.length === 0) {
+        listEl.innerHTML = '<div class="cache-empty-state"><span class="material-icons">tab</span>No sessionStorage in this tab</div>';
+        return;
+      }
+      listEl.innerHTML = '';
+      items.forEach(function(item) {
+        var type = getType(item.value);
+        var hint = HINTS[item.key] ? HINTS[item.key](item.value) : '';
+        var disp = type === 'svg' ? '[SVG image]' : item.value;
+        var el = document.createElement('div');
+        el.className = 'cache-param-item';
+        el.innerHTML =
+          '<div class="cache-param-key" title="' + esc(item.key) + '">' + esc(item.key) + '</div>' +
+          '<div class="session-param-main">' +
+            '<div class="cache-param-value">' + esc(disp) + '</div>' +
+            (hint ? '<div class="session-hint">' + esc(hint) + '</div>' : '') +
+          '</div>' +
+          '<div class="cache-param-right"><div class="cache-param-right-top">' +
+            '<span class="cache-param-type cpt-' + type + '">' + type + '</span>' +
+            '<button class="session-remove-btn" type="button" title="Remove from this tab"><span class="material-icons" style="font-size:18px">close</span></button>' +
+          '</div></div>';
+        el.querySelector('.session-remove-btn').addEventListener('click', function() {
+          try { sessionStorage.removeItem(item.key); } catch (e) {}
+          renderSessionList();
+        });
+        listEl.appendChild(el);
+      });
+    }
+
+    function init() {
+      var pathEl = document.getElementById('sessionConfigPath');
+      if (pathEl && window.SITE_CONFIG_PATH) pathEl.textContent = window.SITE_CONFIG_PATH;
+      var clearBtn = document.getElementById('sessionClearAll');
+      if (clearBtn) clearBtn.addEventListener('click', function() {
+        if (confirm('Clear all sessionStorage in this tab? localStorage is not affected.')) {
+          try { sessionStorage.clear(); } catch (e) {}
+          renderSessionList();
+        }
+      });
+      renderSessionList();
+      // Scripts on this page may add values after it loads, such as the site config check
+      if (typeof window.loadWebrootYaml === 'function') window.loadWebrootYaml().then(renderSessionList);
+      window.addEventListener('focus', renderSessionList);
+    }
+
+    if (typeof waitForElm === 'function') {
+      waitForElm('#sessionParamList').then(init);
+    } else {
+      document.addEventListener('DOMContentLoaded', init);
+    }
+  })();
+  </script>
+
   <div id="cookieList" style="overflow-y: scroll;"></div>
   <script>
   function listCookies() {
