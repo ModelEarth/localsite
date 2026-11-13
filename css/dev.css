@@ -1,6 +1,3 @@
 .dev {
     display: block !important;
 }
-.desktopPortLink.hasPort { /* Desktop link in header.html, once a Desktop Port is saved in Settings */
-    display: block !important;
-}

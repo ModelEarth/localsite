@@ -5215,21 +5215,52 @@ document.addEventListener('click', function(event) {
     }
 }, true);
 waitForElm('#goatIcons .darkModeToggle').then(updateDarkModeToggles); // once the template's icons are in the page
-// Shows the DESKTOP link (above UN GOALS in header.html, cloned into #sectionsMenu) when a 4-digit
-// Desktop Port is saved in Settings. The .hasPort class shows it through css/dev.css, so only in Dev Mode.
-// With no argument, reads the saved desktopPort cookie.
+// DESKTOP link at the top of the side navigation (#cloneLeft and #cloneRight), on localhost only.
+// navigation.js calls addDesktopLinks() after cloning the header's #sidecolumnContent, so the link also
+// appears when a page's own param.headerFile has no Desktop link.
+// It links to the Desktop Port saved in Settings. With no port saved, it links to localhost:8880
+// when that site responds. The check isn't remembered, so a Desktop site started later shows on the next page.
+var DEFAULT_DESKTOP_PORT = "8880";
+var _desktopDefaultCheck = null; // One check of the default port per page
 function isDesktopPort(port) {
   return /^\d{4}$/.test(port || "");
 }
+function isLocalhostPage() {
+  return location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+}
+function savedDesktopPort() {
+  return (typeof Cookies != 'undefined' && Cookies.get('desktopPort')) || "";
+}
+function addDesktopLinks() {
+  ['cloneLeft', 'cloneRight'].forEach(function(id) {
+    const nav = document.getElementById(id);
+    if (!nav || nav.querySelector('.desktopPortLink')) return;
+    nav.insertAdjacentHTML('afterbegin', '<div class="desktopPortLink toggle-container" style="display:none"><b><a href="#">DESKTOP</a></b></div>');
+  });
+  setDesktopPort();
+}
+// With no argument, uses the saved desktopPort cookie. An empty or partial port falls back to the default port.
 function setDesktopPort(port) {
-  if (port === undefined && typeof Cookies != 'undefined') {
-    port = Cookies.get('desktopPort');
+  if (port === undefined) port = savedDesktopPort();
+  function showLinks(showPort) {
+    document.querySelectorAll('.desktopPortLink').forEach(function(link) {
+      const a = link.querySelector('a');
+      if (showPort && a) a.href = 'http://localhost:' + showPort + '/';
+      link.style.display = showPort ? 'block' : 'none';
+    });
   }
-  const links = document.querySelectorAll('.desktopPortLink');
-  links.forEach(function(link) {
-    const a = link.querySelector('a');
-    if (isDesktopPort(port) && a) a.href = 'http://localhost:' + port + '/';
-    link.classList.toggle('hasPort', isDesktopPort(port));
+  if (!isLocalhostPage()) { showLinks(""); return; }
+  if (isDesktopPort(port)) { showLinks(port); return; } // A saved port is used without checking it
+  showLinks("");
+  if (location.port === DEFAULT_DESKTOP_PORT) { showLinks(DEFAULT_DESKTOP_PORT); return; } // This page is on it
+  if (!_desktopDefaultCheck) {
+    // no-cors: any response from the server counts. Fails only when nothing is listening on the port.
+    _desktopDefaultCheck = fetch('http://localhost:' + DEFAULT_DESKTOP_PORT + '/', { mode: 'no-cors', cache: 'no-store' })
+      .then(function() { return true; })
+      .catch(function() { return false; });
+  }
+  _desktopDefaultCheck.then(function(found) {
+    if (found && !isDesktopPort(savedDesktopPort())) showLinks(DEFAULT_DESKTOP_PORT);
   });
 }
 function setDevmode(devmode) {

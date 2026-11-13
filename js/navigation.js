@@ -8648,7 +8648,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                                     colCloneRight.id = "cloneRight";
 
                                     $("#sectionsMenu").prepend(colCloneRight);
-                                    if (typeof setDesktopPort === 'function') setDesktopPort();
+                                    if (typeof addDesktopLinks === 'function') addDesktopLinks(); // DESKTOP link at the top of #cloneLeft and #cloneRight
 
                                     if (location.href.indexOf('desktop') >= 0 || modelsite=="dreamstudio" || location.host.indexOf('dreamstudio') >= 0 || location.href.indexOf('dreamstudio') >= 0 || location.href.indexOf('/swarm/') >= 0 || location.href.indexOf('/LinearA/') >= 0 || location.href.indexOf("planet.live") >= 0 || modelsite=="planet.live") {
                                         let prependFolder = "";
