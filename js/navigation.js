@@ -8453,6 +8453,20 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
     if (resolvedSite && resolvedSite.header_icon === "earth") {
         param.headerLogo = "";
         param.headerLogoSmall = "<i class='material-icons headerEarthIcon' style='font-size:34px' aria-hidden='true'>language</i>";
+    } else if (resolvedSite && resolvedSite.logo) {
+        // logo in the site's support/site/config.yaml entry (e.g. maestro) replaces the branding above, as on
+        // css/themes/: logo_height sets its height (36px default), home_url its link and title the page title.
+        // The logo shows the site's name, so #headerSiteTitle stays empty (it's only filled when there's no headerLogo).
+        const siteName = (resolvedSite.title || "").replace(/'/g, "&#39;");
+        const logoSrc = resolveConfigAssetUrl(resolvedSite.logo);
+        const logoImg = "<img src='" + logoSrc + "' alt='" + siteName + "' style='height:" + (resolvedSite.logo_height || "36px") + "'>";
+        // Without home_url, the header links the logo to the site root as it does for other logos
+        param.headerLogo = resolvedSite.home_url ? "<a href='" + resolvedSite.home_url + "' style='text-decoration:none'>" + logoImg + "</a>" : logoImg;
+        param.headerLogoSmall = "<img src='" + logoSrc + "' alt='" + siteName + "' style='max-height:40px; max-width:160px'>"; // Side nav bar
+        if (resolvedSite.title) {
+            localsiteTitle = resolvedSite.title;
+            $(".siteTitleShort").text(resolvedSite.title);
+        }
     }
     if (localStorage.state == "GA") {
         showClassInline(".garesource");
