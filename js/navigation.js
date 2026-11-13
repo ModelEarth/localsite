@@ -1960,8 +1960,8 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
         if (typeof window.loadWebrootYaml === 'function') {
             try {
                 const { sites, default: defaultId } = await window.loadWebrootYaml();
-                // Match site by modelsite cookie first, then domain_contains, then default
-                const modelsite = (typeof Cookies !== 'undefined') ? Cookies.get('modelsite') : null;
+                // Match site by page-only site or modelsite cookie first, then domain_contains, then default
+                const modelsite = getModelsite();
                 let matchedSite = null;
                 if (modelsite && sites && sites[modelsite]) {
                     matchedSite = sites[modelsite];
@@ -3591,7 +3591,7 @@ if (typeof $ !== 'undefined') {
             hiddenhash.state = "";
             goHash({"geoview":value,"state":"",});
         } else if (value == "state" && !getHash().state) {
-            let modelsite = Cookies.get('modelsite');
+            let modelsite = getModelsite();
             if (modelsite == "model.georgia") {
                 goHash({"geoview":value,"state":"GA"});
             } else {
@@ -4495,7 +4495,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
     waitForVariable('L', function() { // Wait for Leaflet
 
     // Occurs twice in page
-    let modelsite = Cookies.get('modelsite');
+    let modelsite = getModelsite();
 
     // Allow URL parameter to override cookie for testing
     if (hash.site) {
@@ -8200,7 +8200,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
     // To do: fetch the existing background-image.
 
     let hash = getHash();
-    let modelsite = Cookies.get('modelsite');
+    let modelsite = getModelsite();
 
     // Allow URL parameter to override cookie for testing
     if (hash.site) {
@@ -8269,11 +8269,12 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             // support/site/config.yaml doesn't define. When that happens, reset it to this webroot's
             // resolved site so branding, later page loads, and the #modelsite dropdown are correct.
             if (modelsite && !sites[modelsite]) {
-                console.warn('modelsite cookie "' + modelsite + '" is not a site in support/site/config.yaml | Using "' + (matchedId || 'none') + '" via ' + (matchMethod || 'no match') + (matchedId ? ' | Cookie reset to "' + matchedId + '"' : ''));
+                console.warn((getPagesite() ? 'Page-only site "' : 'modelsite cookie "') + modelsite + '" is not a site in support/site/config.yaml | Using "' + (matchedId || 'none') + '" via ' + (matchMethod || 'no match') + (matchedId && !getPagesite() ? ' | Cookie reset to "' + matchedId + '"' : ''));
             }
+            // A page-only site (param.pagesite) that config.yaml doesn't define is replaced on this page only.
             if (modelsite && matchMethod !== 'modelsite cookie' && !sites[modelsite] && matchedId) {
                 modelsite = matchedId;
-                Cookies.set('modelsite', matchedId);
+                if (!getPagesite()) Cookies.set('modelsite', matchedId);
                 setModelsite(matchedId);
             }
             resolvedSite = matchedSite;
@@ -8360,7 +8361,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         }
 
         setModelsite(modelsite); // Sets universal
-        Cookies.set('modelsite', modelsite); // Sets cookie to match - for team div display
+        if (!getPagesite()) Cookies.set('modelsite', modelsite); // Sets cookie to match - for team div display. Not for a page-only site.
 
         // To show locally for Brave Browser only - insert before:  ) || false
         // && navigator && navigator.brave
@@ -8724,7 +8725,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
                                         //let titleValue = "<span style='float:left'><a href='" + climbpath + "' style='text-decoration:none'>";
                                         let titleValue = "<span style='float:left'><a href='/' style='text-decoration:none'>";
                                         
-                                        let modelsite = Cookies.get('modelsite');
+                                        let modelsite = getModelsite();
                                         if (!param.titleArray && modelsite && modelsite.length && modelsite != "model.earth") {
                                             param.titleArray = modelsite.split(".");
                                         }
@@ -9265,12 +9266,31 @@ $(document).on("change", "#globeLatitude, #globeLongitude", function(event) {
 });
 $(document).on("change", "#modelsite", function(event) {
     setModelsite($("#modelsite").val());
-    if (typeof Cookies != 'undefined') {
+    if ($("#pagesiteOnly").is(":checked")) { // This page only. The cookie other pages use is unchanged.
+        savePagesite($("#modelsite").val());
         updateHash({"show":""});
+        closeSideTabs();
+        location.reload();
+    } else if (typeof Cookies != 'undefined') {
+        updateHash({"show":""});
+        savePagesite(''); // Stop using a page-only site here, so this page follows the cookie
         Cookies.set('modelsite', $("#modelsite").val());
 
         closeSideTabs();
         // Apply the cookie
+        location.reload();
+    }
+});
+$(document).on("change", "#pagesiteOnly", function(event) {
+    const priorModelsite = getModelsite();
+    if ($(this).is(":checked")) {
+        savePagesite($("#modelsite").val()); // Keep the current site on this page, whatever other pages use
+    } else {
+        savePagesite('');
+    }
+    if (getModelsite() !== priorModelsite) { // Unchecked: this page returns to the cookie's site
+        updateHash({"show":""});
+        closeSideTabs();
         location.reload();
     }
 });
@@ -9360,7 +9380,7 @@ $(document).on("click", ".showSideTabs", function(event) {
     }
     
     let hash = getHash();
-    let modelsite = Cookies.get('modelsite');
+    let modelsite = getModelsite();
     if (hash.sidetab) {
         closeSideTabs();
     } else if (typeof goHashNoHistory === 'function') {
@@ -9741,7 +9761,7 @@ function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
             }
 
             // Occurs twice in page
-            let modelsite = Cookies.get('modelsite');
+            let modelsite = getModelsite();
             if (!stateAbbr && modelsite) {
                 if (modelsite == "model.georgia" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) { // Add loop if other states added to settings.
                     stateAbbr = "GA";
@@ -10596,9 +10616,8 @@ function setLocationTabArrow(isOpen) {
 function showApps(menuDiv) {
     loadScript(theroot + 'js/navigation.js', function(results) {
         let modelsite;
-        if (Cookies.get('modelsite')) {
-            //$("#modelsite").val(Cookies.get('modelsite'));
-            modelsite = Cookies.get('modelsite');
+        if (getModelsite()) {
+            modelsite = getModelsite();
         }
         let hash = getHash();
         console.log('showApps in ' + menuDiv);

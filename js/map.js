@@ -231,8 +231,8 @@ function loadMap1(calledBy, show, dp_incoming) {
     show = param["show"];
   }
   let modelsite;
-  if (Cookies.get('modelsite')) {
-    modelsite = Cookies.get('modelsite');
+  if (typeof getModelsite === 'function' ? getModelsite() : Cookies.get('modelsite')) {
+    modelsite = typeof getModelsite === 'function' ? getModelsite() : Cookies.get('modelsite');
   }
   console.log('loadMap1 start. CalledBy ' + calledBy + '. Show: ' + show + '. Cat: ' + hash.cat);
   dp = {}; // Clear prior

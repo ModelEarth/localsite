@@ -4788,10 +4788,8 @@ function setupModelsiteSelect() {
         const options = await loadModelsiteOptions();
         renderModelsiteOptions(selectElm, options);
 
-        let selectedValue = "";
-        if (typeof Cookies !== "undefined" && Cookies.get("modelsite")) {
-            selectedValue = Cookies.get("modelsite");
-        }
+        let selectedValue = getModelsite();
+        $("#pagesiteOnly").prop("checked", !!getPagesite());
         if (!selectedValue) {
             const selectedOption = options.find(function(option) {
                 return option && (option.selected === true || String(option.selected).toLowerCase() === "true");
@@ -4977,6 +4975,10 @@ function initSitelook() {
             Cookies.set('modelsite', modelsite);
         }
     }
+    if (getPagesite()) { // Page-only site, without changing the cookie other pages use
+        modelsite = getPagesite();
+        $("#modelsite").val(modelsite);
+    }
     syncAccesslocalControl();
     setSitelook(sitelook);
     setStylelook(stylelook);
@@ -5141,7 +5143,7 @@ function setSitelook(siteLook) {
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
         siteLook = "dark"
       }
-    } else if (siteLook == "default" && (Cookies.get('modelsite') == "dreamstudio" || location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0)) {
+    } else if (siteLook == "default" && (getModelsite() == "dreamstudio" || location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0)) {
       siteLook = "dark"
     }
     if (siteLook == "dark") {
@@ -5326,6 +5328,37 @@ function geoSuccess(pos) {
     $("#globeLatitude").val(localStorage.latitude);
     $("#globeLongitude").val(localStorage.longitude);
     if ($("#globecenter").val() == "me") showGlobeCenter(); // The location arrives after the Map Center change
+}
+
+// Page-only model site. A page can set param.pagesite, and Settings > Model Site saves a choice for
+// one page when "Apply to page only" is checked. Either applies to this page without changing the
+// modelsite cookie that other pages use. A saved value of "cookie" turns off the page's param.pagesite.
+function pagesiteKey() {
+  return 'pagesite:' + location.pathname;
+}
+function getSavedPagesite() {
+  try { return localStorage.getItem(pagesiteKey()) || ''; } catch (e) { return ''; }
+}
+function getPagesite() {
+  const saved = getSavedPagesite();
+  if (saved === 'cookie') return '';
+  if (saved) return saved;
+  return (typeof param !== 'undefined' && param.pagesite) ? String(param.pagesite) : '';
+}
+function savePagesite(value) { // value: a site id, or '' to stop applying a site to this page only
+  try {
+    if (value) {
+      localStorage.setItem(pagesiteKey(), value);
+    } else if (typeof param !== 'undefined' && param.pagesite) {
+      localStorage.setItem(pagesiteKey(), 'cookie');
+    } else {
+      localStorage.removeItem(pagesiteKey());
+    }
+  } catch (e) {}
+}
+// The model site in effect on this page: the page-only site, else the modelsite cookie.
+function getModelsite() {
+  return getPagesite() || ((typeof Cookies !== 'undefined' && Cookies.get('modelsite')) || '');
 }
 
 function setModelsite(modelsite) {
@@ -7266,13 +7299,13 @@ function _injectMdEditorStyles() {
 }
 
 // Title of the current site in support/site/config.yaml sites, matched like navigation.js:
-// modelsite cookie, then domain_contains (whole parts of the host name, so bcd.com matches
+// page-only site or modelsite cookie, then domain_contains (whole parts of the host name, so bcd.com matches
 // bcd.com and www.bcd.com but not abcd.com), then the default site.
 function _getCurrentSiteTitle() {
     if (typeof window.loadWebrootYaml !== 'function') return Promise.resolve('');
     return window.loadWebrootYaml().then(function(result) {
         var sites = result.sites || {};
-        var modelsite = (typeof Cookies !== 'undefined') ? Cookies.get('modelsite') : null;
+        var modelsite = getModelsite();
         var site = (modelsite && sites[modelsite]) || null;
         if (!site) {
             for (var id in sites) {

@@ -150,7 +150,7 @@ document.addEventListener("click", function(e) {
 function getIndustryLocFileString(catsize) {
     //return local_app.community_data_root() + "industries/naics/US/country/US-2021-Q1-naics-" + catsize + "-digits.csv"; // Removed
     let hash = getHash();
-    let naicsYear = hash.catyear || ((typeof Cookies !== 'undefined' && Cookies.get('modelsite') === 'model.georgia') ? "2023" : "2021");
+    let naicsYear = hash.catyear || (((typeof getModelsite === 'function' ? getModelsite() : (typeof Cookies !== 'undefined' && Cookies.get('modelsite'))) === 'model.georgia') ? "2023" : "2021");
     return local_app.community_data_root() + "industries/naics/US/country/US-census-naics" + catsize + "-" + naicsYear + ".csv";
     //return local_app.community_data_root() + "industries/naics/US/country/US-census-naics" + catsize + "-2021.csv";
 }
