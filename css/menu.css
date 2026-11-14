@@ -700,7 +700,7 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
     padding-bottom: 500px; /* Allows for footer */
-    padding-top: 38px;
+    padding-top: 24px;
 }
 .main-nav-scroll::-webkit-scrollbar {
   display: none;
