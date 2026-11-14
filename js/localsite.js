@@ -7235,10 +7235,18 @@ function initTopNavOffset() {
     // base.css uses --fullscreen-top, or --headerbar-offset until it's measured. A page that fixes #fullscreen
     // over the whole window (project/goals) sets its own --fullscreen-height, so it isn't measured then.
     var fullscreen = document.getElementById('fullscreen');
-    if (fullscreen && window.scrollY === 0 && fullscreen.getClientRects().length && getComputedStyle(fullscreen).position !== 'fixed') {
+    var fullscreenFixed = !!fullscreen && getComputedStyle(fullscreen).position === 'fixed';
+    if (fullscreen && window.scrollY === 0 && fullscreen.getClientRects().length && !fullscreenFixed) {
       var fullscreenTop = Math.round(fullscreen.getBoundingClientRect().top);
       document.documentElement.style.setProperty('--fullscreen-top', fullscreenTop + 'px');
     }
+    // .filtersOverFullscreen on <html> while the search filters are within #fullscreen: inside it, or over one fixed
+    // over the window while it shows (project/goals, whose filters sit over its photos and the Earth map). Their
+    // buttons then take a see-through dark background (base.css).
+    var mapFilters = document.getElementById('mapFilters');
+    var filtersOver = !!fullscreen && !!mapFilters && (fullscreen.contains(mapFilters)
+      || (fullscreenFixed && fullscreen.getClientRects().length > 0 && getComputedStyle(fullscreen).visibility !== 'hidden'));
+    document.documentElement.classList.toggle('filtersOverFullscreen', filtersOver);
   }
 
   if (typeof waitForElm === 'function') {

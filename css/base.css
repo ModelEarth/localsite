@@ -4922,31 +4922,32 @@ body.sidebar-hidden #openNav {
   top: 50%;
   transform: translate(-50%, -50%);
 }
-/* On pages with #fullscreen, the search filters' buttons (Locations, Topics, GO, the menu) and the search box take
-   the voice widget's see-through dark background (its .wrap buttons, engine/claude-voice.js). !important is over
-   search-filters.css and inline styles in map/filter.html. */
-body:has(#fullscreen) #mapFilters .filterClick,
-body:has(#fullscreen) #mapFilters #goSearch,
-body:has(#fullscreen) #mapFilters #showSideFromBar i {
+/* When the search filters are within #fullscreen (.filtersOverFullscreen, localsite.js computeTopNavOffset), their
+   buttons (Locations, Topics, GO, the menu) and the search box take the voice widget's see-through dark background
+   (its .wrap buttons, engine/claude-voice.js). !important is over search-filters.css and inline styles in
+   map/filter.html. */
+html.filtersOverFullscreen #mapFilters .filterClick,
+html.filtersOverFullscreen #mapFilters #goSearch,
+html.filtersOverFullscreen #mapFilters #showSideFromBar i {
   color: #f4f6fb !important;
   background: rgba(10, 12, 20, 0.5) !important;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.16) !important;
 }
-body:has(#fullscreen) #mapFilters .filterClick:hover,
-body:has(#fullscreen) #mapFilters #goSearch:hover,
-body:has(#fullscreen) #mapFilters #showSideFromBar i:hover {
+html.filtersOverFullscreen #mapFilters .filterClick:hover,
+html.filtersOverFullscreen #mapFilters #goSearch:hover,
+html.filtersOverFullscreen #mapFilters #showSideFromBar i:hover {
   background: rgba(10, 12, 20, 0.65) !important;
 }
-body:has(#fullscreen) #mapFilters .filterClick i,
-body:has(#fullscreen) #mapFilters #goSearch span {
+html.filtersOverFullscreen #mapFilters .filterClick i,
+html.filtersOverFullscreen #mapFilters #goSearch span {
   color: inherit !important;
 }
-body:has(#fullscreen) #mapFilters .filterClick::placeholder {
+html.filtersOverFullscreen #mapFilters .filterClick::placeholder {
   color: rgba(244, 246, 251, 0.7);
 }
-body:has(#fullscreen) #mapFilters #showSideFromBar {
+html.filtersOverFullscreen #mapFilters #showSideFromBar {
   opacity: 1 !important; /* Its own 0.3 would wash out the dark background */
 }
 #filterFieldToggleHolder {

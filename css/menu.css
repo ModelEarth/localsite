@@ -659,6 +659,10 @@ ul.nav li.dropdown:focus-within .dropdown-menu {
     line-height: 34px;
     font-size: 18px;
 }
+/* The DESKTOP link atop #cloneLeft and #cloneRight on localhost (localsite.js addDesktopLinks). */
+.desktopPortLink {
+    margin-bottom: 4.4px;
+}
 #main-nav .navcolumnIndent {
 	margin-left: 25px;
 }
