@@ -104,6 +104,19 @@
   border-bottom: #aaa;
   z-index: 100002; /* Above slide arrows (#sample1 .swiper-button-next at 100001 in start/slides/css/slides.css) */
 }
+/* With the right side panel open (#rightSideTabs, 500px wide, 100% at 1000px and under, menu.css), the fixed bar stays out of it.
+   !important over the inline width:100% set with the bar's padding. */
+@media (min-width: 1001px) {
+  .bodyRightMargin .filterFieldsHolderFixed {
+    box-sizing: border-box;
+    width: calc(100% - 500px) !important;
+  }
+}
+@media (max-width: 1000px) {
+  .bodyRightMargin .filterFieldsHolderFixed {
+    z-index: 19999; /* Under #rightSideTabs (20000), which covers the page */
+  }
+}
 /* brave still sees this since it's darkmode ignores the use of prefers-color-scheme: dark */
 @media (not (prefers-color-scheme: dark)) {
   #filterFieldsHolder {

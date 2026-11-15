@@ -32,6 +32,23 @@
   --ef-menu-bg: rgb(5 10 30);
   --ef-tab-selected-bg: #474747;
 }
+/* Light mode button (earth-filters.js), also when the site is dark. After the dark rules, which have the same specificity.
+   Fixed colors, since the site's variables (--bg-secondary...) are dark in the site's dark mode. */
+.earth-filters.ef-light {
+  --ef-bg: rgb(255 255 255 / 0.82);
+  --ef-text: #1a1a1a;
+  --ef-button: #5f6b76;
+  --ef-button-hover: #000000;
+  --ef-selected-text: #1d4ed8;
+  --ef-selected-bg: #e3eaf3;
+  --ef-disabled: #c4c9ce;
+  --ef-sep: #bbbbbb;
+  --ef-border: #e5e7eb;
+  --ef-shade: rgb(50 50 50 / 0.5);
+  --ef-tabs-bg: #e5e7eb;
+  --ef-menu-bg: #ffffff;
+  --ef-tab-selected-bg: #d1d5db;
+}
 .earth-filters [hidden] {
   display: none !important;
 }

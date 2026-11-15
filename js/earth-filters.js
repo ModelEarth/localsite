@@ -188,6 +188,7 @@ var earthFiltersIcons = {
   // (1.43 across before the turn). In the 18.75px menu icon, a 1px shift is about 51 viewBox units.
   condense: '<svg class="ef-md" viewBox="0 -960 960 960"><g fill="currentColor" transform="rotate(90 480 -480) translate(480 -480) scale(1.43 1.15) translate(-480 480)"><path transform="translate(0 -82)" d="M356-120 300-176l180-180 180 180-56 56-124-124-124 124Z"/><path transform="translate(0 82)" d="M480-604L300-784l56-56 124 124 124-124 56 56-180 180Z"/></g></svg>',
   expand: '<svg class="ef-md" viewBox="0 -960 960 960"><g fill="currentColor" transform="rotate(90 480 -480) translate(480 -480) scale(1.43 1.15) translate(-480 480)"><path transform="translate(0 -82)" d="M480-120 300-300l58-58 122 122 122-122 58 58-180 180Z"/><path transform="translate(0 82)" d="M358-598l-58-58 180-180 180 180-58 58-122-122-122 122Z"/></g></svg>',
+  lightMode: '<svg class="ef-fa" viewBox="0 -960 960 960"><path fill="currentColor" d="M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 80q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"/></svg>', // Material light_mode
   swap: '<svg class="ef-md" viewBox="0 -960 960 960"><path fill="currentColor" d="M280-160 80-360l200-200 56 57-103 103h287v80H233l103 103-56 57Zm400-240-56-57 103-103H440v-80h287L624-743l56-57 200 200-200 200Z"/></svg>'
 };
 
@@ -373,6 +374,8 @@ function EarthFilters(container, options) {
   this.state = parseEarthFiltersHash(this.options.hash);
   this.language = getEarthFiltersLanguage(this.options.language || readEarthFiltersStorage('earthLanguageFolder')); // localsite.js reads the same folder for maps loaded without the filters
   this.timezone = readEarthFiltersStorage('earthFiltersTimezone') === 'local' ? 'local' : 'utc';
+  // The panel is dark like nullschool's, even when the site is light, until its light mode button is pressed (saved in the browser)
+  this.lightMode = readEarthFiltersStorage('earthFiltersTheme') === 'light';
   this.chooserDate = null;
   this.mapContainer = this.options.mapContainer || null;
   this.place = 'under';
@@ -395,6 +398,17 @@ function EarthFilters(container, options) {
     self.setCondensed(true, false);
   }, true);
 }
+
+// ef-dark or ef-light (earth-filters.css) on the panel and on the three-dot menu held over the map, whatever the site's mode
+EarthFilters.prototype.applyTheme = function() {
+  var lightMode = this.lightMode;
+  [this.container, this.mapMenuHolder].forEach(function(element) {
+    if (element) {
+      element.classList.toggle('ef-dark', !lightMode);
+      element.classList.toggle('ef-light', lightMode);
+    }
+  });
+};
 
 EarthFilters.prototype.getHash = function() {
   return formatEarthFiltersHash(this.state);
@@ -496,6 +510,7 @@ EarthFilters.prototype.render = function() {
           '<button type="button" data-action="toggle-grid" title="Toggle Grid">Grid</button>' +
           '<button type="button" data-action="toggle-animation" title="Start/Stop Animation">' + earthFiltersIcons.play + '</button>' +
           '<button type="button" data-action="current-position" title="Current Position">' + earthFiltersIcons.location + '</button>' +
+          '<button type="button" data-action="toggle-light-mode" title="Light Mode" aria-label="Light Mode">' + earthFiltersIcons.lightMode + '</button>' +
         '</div>' +
       '</div>') +
     this.row('Mode', this.buttonGroup('mode', earthFiltersModes, 'tablist')) +
@@ -768,6 +783,11 @@ EarthFilters.prototype.handleAction = function(action, button) {
       break;
     case 'current-position':
       this.showCurrentPosition();
+      break;
+    case 'toggle-light-mode':
+      this.lightMode = !this.lightMode;
+      writeEarthFiltersStorage('earthFiltersTheme', this.lightMode ? 'light' : 'dark');
+      this.update();
       break;
     case 'change-tz':
       this.timezone = this.timezone === 'utc' ? 'local' : 'utc';
@@ -1072,6 +1092,8 @@ EarthFilters.prototype.update = function() {
   container.querySelector('[data-action="toggle-grid"]').setAttribute('aria-pressed', state.showGrid ? 'true' : 'false');
   container.querySelector('[data-action="toggle-animation"]').setAttribute('aria-pressed', state.animationEnabled ? 'true' : 'false');
   container.querySelector('[data-action="current-position"]').setAttribute('aria-pressed', state.spotlight ? 'true' : 'false');
+  container.querySelector('[data-action="toggle-light-mode"]').setAttribute('aria-pressed', this.lightMode ? 'true' : 'false');
+  this.applyTheme();
   container.querySelector('[data-action="now"]').setAttribute('aria-pressed', state.time ? 'false' : 'true');
   container.querySelector('[data-field="date"]').textContent = this.formatDateField();
   container.querySelector('[data-field="tz"]').textContent = this.formatTimezoneField();

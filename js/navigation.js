@@ -194,6 +194,15 @@ function locationFilterIsNarrow() {
 function geoviewAfterStateChoice(geoview) {
     return (geoview == "country" && locationFilterIsNarrow()) ? "" : geoview;
 }
+// A country's name from data already loaded: the countries table (localObject.countries, keyed by code)
+// or loadCountryNames() in localsite.js. Empty until one of them has loaded.
+var knownCountryNames = null;
+function countryNameNow(code) {
+    const upper = String(code || "").toUpperCase();
+    const row = localObject["countries"] && localObject["countries"][upper];
+    if (row && row.CountryName) return row.CountryName;
+    return (knownCountryNames && knownCountryNames.get(upper)) || "";
+}
 function updateGeoviewSelectText() {
     let hash = getHash();
     let updated = false;
@@ -210,10 +219,22 @@ function updateGeoviewSelectText() {
         }
     } else if (hash.geoview == "countries" && hash.country) {
         let countries = hash.country.split(",").filter(notAll);
-        if (countries.length === 1 && localObject["countries"]) {
-            let match = localObject["countries"][countries[0]];
-            $("#geoview_select_text").text(match ? match.CountryName : countries[0]);
+        if (countries.length === 1) {
+            const code = countries[0];
+            const name = countryNameNow(code);
+            $("#geoview_select_text").text(name || code);
             updated = true;
+            if (!name && typeof loadCountryNames === 'function') {
+                // The code shows until the names load, from loadCountryNames() in localsite.js or the countries table
+                loadCountryNames().then(names => {
+                    knownCountryNames = names;
+                    const latest = getHash();
+                    if (latest.geoview == "countries" && latest.country === hash.country
+                            && $("#geoview_select_text").text() === code && names.get(code.toUpperCase())) {
+                        $("#geoview_select_text").text(names.get(code.toUpperCase()));
+                    }
+                }).catch(error => console.warn("Country names for #geoview_select: " + error.message));
+            }
         } else if (countries.length > 1) {
             $("#geoview_select_text").text(countries.length + " Countries");
             updated = true;
@@ -1079,6 +1100,9 @@ function hashChanged() {
         }
         updateSelectedCountryRows(hash.country || "", countryDeselect);
         refreshSelectedGeoStyles("geomap");
+    }
+    if (hash.state != priorHash.state && hash.geoview != "countries") {
+        updateSelectedStateRows(hash);
     }
 
     $(".locationTabText").attr("title",$(".locationTabText").text());
@@ -5280,7 +5304,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
                   } else if (countryList.includes(countryCode)) {
                       countryList = countryList.filter(function(code){ return code !== countryCode; });
                   } else {
-                      countryList.push(countryCode);
+                      countryList.unshift(countryCode); // Newly clicked country goes first, as for states
                   }
                   goHash({'country':countryList.join(",")});
               } else if (layer.feature.properties.name) { // Full state name
@@ -6085,8 +6109,9 @@ function showTabulatorList(element) {
         // COUNTRIES - MAP OF WORLD
 
         
-        // Both states and country
-        if (hash.geoview == "country" || (!theState && onlineApp )) {
+        // Both states and country. The countries list always goes here, also when the hash has a state
+        // (#country=CA&geoview=countries&state=GA), which otherwise sent it to the county table (#tabulator-geotable).
+        if (hash.geoview == "country" || element.scope == "countries" || (!theState && onlineApp )) {
             consoleLog("LOAD TABULATOR (country)");
 
             waitForElm('#tabulator-statetable').then((elm) => {
@@ -6123,9 +6148,10 @@ function showTabulatorList(element) {
                         statetable.redraw(true); // Force full redraw
                     });
 
-                    // TO DO: 2-char state needs to be added
-                    if(hash.state) {
-                        let currentStateIDs = hash.state.split(',');
+                    // The hash's states are checked when the table is built. Later hash changes: updateSelectedStateRows().
+                    // Not on the countries list, where a state such as GA would check a country (Gabon)
+                    if(hashHasSpecificState(hash) && element.scope != "countries") {
+                        let currentStateIDs = hashStateList(hash); // Without "all"
                         statetable.on("tableBuilt", function() {
                             //alert("currentStateIDs " + currentStateIDs)
                             programmaticSelection = true;
@@ -6187,7 +6213,7 @@ function showTabulatorList(element) {
                                 if (countryCode) {
                                     let countryList = latestHash.country ? latestHash.country.split(",").filter(Boolean) : [];
                                     if (!countryList.includes(countryCode)) {
-                                        countryList.push(countryCode);
+                                        countryList.unshift(countryCode); // Newly checked country goes first, as for states
                                     }
                                     if (countryList.length > 1) {
                                         setMultiple("countries", true); // Second checkbox checked
@@ -6364,18 +6390,6 @@ function showTabulatorList(element) {
                             goHash(rowHash);
                         }
                     });
-                    if (hash.geoview != "countries") {
-                        // Not working yet
-                        if(hash.state) {
-                            let currentStates = hash.state.split(',');
-                            statetable.on("tableBuilt", function() {
-                                //alert("try it")
-                                programmaticSelection = true;
-                                statetable.selectRow(currentStates); // Uses "id" incoming rowData
-                                programmaticSelection = false;
-                            });
-                        }
-                    }
                 }); // End waitForLayout
             }); // End wait for element #tabulator-statetable
 
@@ -6794,6 +6808,20 @@ function updateSelectedTableRows(geo, geoDeselect, attempts) {
           }
         }
     }
+}
+
+// Checks the hash's states in the states list (#tabulator-statetable, indexed by State) and unchecks the others,
+// as updateSelectedCountryRows() does for countries. Not when the table holds the countries list.
+function updateSelectedStateRows(hash) {
+    const table = getStateTableInstance();
+    if (!table || typeof table.getRows !== "function" || table.options.index !== "State") return;
+    const states = hashStateList(hash).map(st => st.toUpperCase());
+    const deselect = table.getSelectedData().map(row => row.State).filter(st => !states.includes(st));
+    programmaticSelection = true;
+    if (deselect.length) table.deselectRow(deselect);
+    const select = states.filter(st => table.getRow(st)); // Rows in the list (not "all" or unknown codes)
+    if (select.length) table.selectRow(select);
+    programmaticSelection = false;
 }
 
 function updateSelectedCountryRows(countryList, countryDeselect) {
@@ -10317,6 +10345,13 @@ function getPageFolder(pagePath) {
 } // End typeof page_scripts which checks if file is loaded twice.
 
 var stateQuickListClick = false; // A click in #state_quick_list (#geoview_statelist) is changing #state_select
+// Choosing a US state in #geoview_statelist removes a country other than US from the hash (country=CN or country=CN,US).
+// Adds country:'' to the goHash values when needed.
+function clearNonUsCountry(hashValues, hash) {
+    const country = String(hash.country || "").trim();
+    if (country && country.toUpperCase() !== "US") hashValues.country = "";
+    return hashValues;
+}
 $(document).on("change", "#state_select", function(event) {
     console.log("state_select change");
     if (!$("#geoview_container").closest("#locationFilterPop").length) { // Stays open within the .popAdvanced popup
@@ -10348,6 +10383,9 @@ $(document).on("change", "#state_select", function(event) {
         // Later a checkbox could be added to retain geo values across multiple states
         // Omitting for BC apps page  ,'geoview':'state'
         const stateHash = {'state':stateValue,'usregion':usregion,'geo':'','name':'','regiontitle':''};
+        if (stateQuickListClick || $(this).closest('#geoview_statelist').length) {
+            clearNonUsCountry(stateHash, hash);
+        }
         if (stateQuickListClick) {
             stateHash.geoview = 'state'; // A choice in #state_quick_list always adds geoview=state
         } else if (hash.geoview) {
@@ -10527,7 +10565,9 @@ $(document).on("change", "#usregion_select", function(event) {
     if (!$(this).closest('#geoview_statelist').length) { // In the location panel, the panel stays open to show the region's states
         $("#geoview_container").hide();
     }
-    goHash({'usregion':this.value.replace(/\s/g, ""),'state':states.join(","),'geo':'','name':'','regiontitle':''});
+    const regionHash = {'usregion':this.value.replace(/\s/g, ""),'state':states.join(","),'geo':'','name':'','regiontitle':''};
+    if ($(this).closest('#geoview_statelist').length) clearNonUsCountry(regionHash, getHash());
+    goHash(regionHash);
 });
 // The US region for the hash ("New England"): hash.usregion while every state is in it, otherwise the region
 // whose states are exactly hash.state, so the region name comes from the states when hash.usregion is absent.
