@@ -23,15 +23,16 @@
 #hero-rect #state_select  {
   background-color: #000;
 }
-/* US regions menu and Map button above #state_select (navigation.js keeps #usregion_holder there) */
+/* US regions menu, #state_select and the Map button in one row (navigation.js moves #state_select into #usregion_holder) */
 #usregion_holder {
   display: flex;
+  flex-wrap: wrap; /* The state menu goes to the next line when narrow */
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
 }
 /* Sizes from .select-med (base.css) */
-#usregion_holder:has(+ #state_select[style*="display: none"]) {
+#usregion_holder:has(> #state_select[style*="display: none"]) {
   display: none; /* Hidden with the state menu, e.g. in the earth and countries views */
 }
 #geoview_container #geoview_statelist #usregion_holder { /* Beats the :has() rule above. Stays above the state list there, where #state_select is always hidden */
@@ -405,9 +406,13 @@ input.filterClick[type="text"] {
     min-width: 160px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
-#geoview_statelist {
+#geoview_statelist, #geoview_countrylist {
     padding: 2px 0 2px 6px;
     border-left: 1px solid #eee;
+}
+#country_quick_list { /* Countries a page lists beside "Countries" (navigation.js) */
+    margin-top: 4px;
+    min-width: 200px;
 }
 #geoview_statelist select {
     max-width: 220px;
@@ -453,7 +458,7 @@ input.filterClick[type="text"] {
     border-color: #555;
     box-shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
-.dark #geoview_statelist {
+.dark #geoview_statelist, .dark #geoview_countrylist {
     border-left-color: #555;
 }
 .dark .geoviewSelectOption {

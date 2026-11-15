@@ -3104,6 +3104,35 @@ function getState(stateCode) {
       case "WY": return "Wyoming";
   }
 }
+// Country names by two-letter code (US -> United States), from info/data/map-filters/countries-full.csv,
+// the list the Countries map uses. Resolves to a Map (in the file's order, not sorted), loaded once.
+var countryNamesPromise = null;
+function loadCountryNames() {
+  if (!countryNamesPromise) {
+    countryNamesPromise = fetch(localsitePath("info/data/map-filters/countries-full.csv"))
+      .then(response => {
+        if (!response.ok) throw new Error("countries-full.csv " + response.status);
+        return response.text();
+      })
+      .then(text => {
+        const lines = text.trim().split(/\r?\n/);
+        const header = lines.shift().split(",");
+        const codeCol = header.indexOf("Country");
+        const nameCol = header.indexOf("CountryName");
+        const names = new Map();
+        lines.forEach(line => {
+          const cells = line.split(","); // No quoted fields in this file
+          if (cells[codeCol]) names.set(cells[codeCol].trim().toUpperCase(), (cells[nameCol] || "").trim());
+        });
+        return names;
+      })
+      .catch(error => {
+        countryNamesPromise = null; // Try again next time
+        throw error;
+      });
+  }
+  return countryNamesPromise;
+}
 
 function showSearchFilter() {
   if ($("#filterFieldsHolder").is(':visible') ) {

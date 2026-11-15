@@ -539,7 +539,7 @@ body.dark {
     50% { box-shadow: 0 0 0 3px rgba(102, 207, 121, 0.7); border-color: #66CF79; }
   }
 }
-/* Select sizes. Large: #state_select. Medium: #usregion_select. The right padding leaves room for the arrow. */
+/* Select sizes. Large: .select-lg. Medium: #usregion_select and #state_select. The right padding leaves room for the arrow. */
 .select-lg {
   font-size: 24px;
   max-width: 300px;

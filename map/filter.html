@@ -134,7 +134,8 @@
                           <div class="stateFilters input-output" style="float:left;display:none" class="mock-up earth">
                             <b><!--States--></b>
                             <div id="state_select_holder" class="earth" style="float:left">
-                                <!-- US regions (BEA). Chooses the states whose option has that usregion. navigation.js moves #usregion_holder with #state_select.
+                                <!-- US regions (BEA). Chooses the states whose option has that usregion. navigation.js moves #usregion_holder with #state_select
+                                     and puts #state_select inside it, after #usregion_select.
                                      data-title: the region's title (usRegionServiceTitle in navigation.js). Without it, " States" is appended to the name. -->
                                 <div id="usregion_holder">
                                 <select id="usregion_select" class="select-med" aria-label="US region" style="max-width:285px;">
@@ -150,7 +151,7 @@
                                 </select>
                                 <button type="button" id="usregion_map" class="usregion-map" title="View the US map">US Map</button><!-- geoview=us -->
                                 </div>
-                                <select id="state_select" class="select-lg" name="state" style="max-width:285px;">
+                                <select id="state_select" class="select-med" name="state" style="max-width:285px;">
                                  <option value="">All States</option>
                                 <!-- Removed 0 from 01 to 09, not sure why stateID skips 3 and 7 -->
                                 <option value="AL" usregion="Southeast" stateid="1" lat="32.7396" lon="-86.8435" km="131174">Alabama</option>

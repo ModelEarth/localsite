@@ -3591,9 +3591,9 @@ if (typeof $ !== 'undefined') {
             hiddenhash.state = "";
             goHash({"geoview":value,"state":"",});
         } else if (value == "state" && !getHash().state) {
-            let modelsite = getModelsite();
-            if (modelsite == "model.georgia") {
-                goHash({"geoview":value,"state":"GA"});
+            const cachedState = getCachedState();
+            if (cachedState) {
+                goHash({"geoview":value,"state":cachedState});
             } else {
                 goHash({"geoview":value});
             }
@@ -3616,6 +3616,7 @@ if (typeof $ !== 'undefined') {
         options.removeClass("focused");
         focused.addClass("focused");
         $("#geoview_select_list").data("focusIndex", options.index(focused));
+        showGeoviewSideList(focused.data("value"));
         refreshFilterToggleIcon();
     }
     function closeGeoviewList() {
@@ -3643,6 +3644,7 @@ if (typeof $ !== 'undefined') {
         options.removeClass("focused");
         options.eq(index).addClass("focused");
         $("#geoview_select_list").data("focusIndex", index);
+        showGeoviewSideList(options.eq(index).data("value"));
     }
     function selectFocusedGeoview() {
         const options = getGeoviewOptions();
@@ -3953,7 +3955,7 @@ if (typeof $ !== 'undefined') {
                     '  overflow-y: scroll;',
                     '  min-width: 200px;',
                     '}',
-                    '#state_quick_list .state-list-item {',
+                    '#state_quick_list .state-list-item, #country_quick_list .state-list-item {',
                     '  padding: 7px 16px;',
                     '  cursor: pointer;',
                     '  color: #1A1A1A;',
@@ -3963,26 +3965,26 @@ if (typeof $ !== 'undefined') {
                     '  line-height: 1.4;',
                     '  margin-right: 10px;',
                     '}',
-                    '#state_quick_list .state-list-item:first-child {',
+                    '#state_quick_list .state-list-item:first-child, #country_quick_list .state-list-item:first-child {',
                     '  border-top: 1px solid var(--border-light, #E5E7EB);',
                     '}',
-                    '#state_quick_list .state-list-item:hover {',
+                    '#state_quick_list .state-list-item:hover, #country_quick_list .state-list-item:hover {',
                     '  background: rgba(0,0,0,0.07);',
                     '}',
-                    '#state_quick_list .state-list-item.active {',
+                    '#state_quick_list .state-list-item.active, #country_quick_list .state-list-item.active {',
                     '  font-weight: 600;',
                     '}',
                     '.dark #state_quick_list {',
                     '  background: var(--bg-primary, #222);',
                     '}',
-                    '.dark #state_quick_list .state-list-item {',
+                    '.dark #state_quick_list .state-list-item, .dark #country_quick_list .state-list-item {',
                     '  color: #eee;',
                     '  border-bottom-color: #444;',
                     '}',
-                    '.dark #state_quick_list .state-list-item:first-child {',
+                    '.dark #state_quick_list .state-list-item:first-child, .dark #country_quick_list .state-list-item:first-child {',
                     '  border-top-color: #444;',
                     '}',
-                    '.dark #state_quick_list .state-list-item:hover {',
+                    '.dark #state_quick_list .state-list-item:hover, .dark #country_quick_list .state-list-item:hover {',
                     '  background: rgba(255,255,255,0.1);',
                     '}',
                     // About twice the usual scroll bar thickness (Chrome, Safari, Edge)
@@ -4056,6 +4058,75 @@ if (typeof $ !== 'undefined') {
         });
     });
 
+    // Countries a page lists beside the "Countries" option, in place of the state list, as the state list sits
+    // beside "United States". The page sets window.geoviewCountries to two-letter codes before localsite loads its
+    // menus, or calls setGeoviewCountries(codes) after, e.g. the countries with Exiobase data on profile/footprint.
+    // Names from loadCountryNames() in localsite.js. Choosing one sets geoview=countries and country= in the hash.
+    // Uses #state_quick_list's item styles.
+    window.setGeoviewCountries = function(codes) {
+        window.geoviewCountries = codes;
+        if (document.getElementById('geoview_statelist')) buildGeoviewCountryList(document.getElementById('geoview_statelist'));
+    };
+    waitForElm('#geoview_statelist').then(buildGeoviewCountryList);
+    function buildGeoviewCountryList(stateList) {
+        const codes = Array.isArray(window.geoviewCountries) ? window.geoviewCountries : [];
+        if (!codes.length || document.getElementById('geoview_countrylist') || typeof loadCountryNames !== 'function') return;
+        loadCountryNames().then(names => {
+            if (document.getElementById('geoview_countrylist')) return;
+            const holder = document.createElement('div');
+            holder.id = 'geoview_countrylist';
+            holder.style.display = 'none';
+            holder.innerHTML = '<b style="line-height:normal;display:block">Countries</b>';
+            const list = document.createElement('div');
+            list.id = 'country_quick_list';
+            list.setAttribute('role', 'listbox');
+            list.setAttribute('aria-label', 'Countries');
+            codes.map(code => ({ code: String(code).toUpperCase(), name: names.get(String(code).toUpperCase()) || code }))
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .forEach(({ code, name }) => {
+                    const item = document.createElement('div');
+                    item.className = 'state-list-item';
+                    item.dataset.value = code;
+                    item.textContent = name;
+                    item.setAttribute('role', 'option');
+                    item.setAttribute('tabindex', '0');
+                    item.addEventListener('click', function(event) {
+                        hiddenhash.state = "";
+                        goHash({"geoview": "countries", "country": code, "state": ""});
+                        closeGeoviewList();
+                        event.stopPropagation();
+                    });
+                    item.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+                    });
+                    list.appendChild(item);
+                });
+            holder.appendChild(list);
+            stateList.after(holder);
+            syncGeoviewCountry();
+            showGeoviewSideList(getGeoviewOptions().filter(".focused, .selected").first().data("value"));
+            document.addEventListener('hashChangeEvent', syncGeoviewCountry);
+        }).catch(error => console.warn('Geoview countries: ' + error.message));
+    }
+    // Marks the hash's first country in the list beside "Countries"
+    function syncGeoviewCountry() {
+        const country = String(getHash().country || "").split(",")[0].toUpperCase();
+        document.querySelectorAll('#country_quick_list .state-list-item').forEach(function(el) {
+            el.classList.toggle('active', el.dataset.value === country);
+        });
+    }
+    // Beside the geoview options: the country list for "Countries" (when the page has one), else the state list
+    function showGeoviewSideList(value) {
+        const countries = document.getElementById('geoview_countrylist');
+        if (!countries) return;
+        const showCountries = value === "countries";
+        countries.style.display = showCountries ? "" : "none";
+        $("#geoview_statelist").toggle(!showCountries);
+    }
+    $(document).on("mouseenter", "#geoview_select_list .geoviewSelectOption", function() {
+        showGeoviewSideList($(this).data("value"));
+    });
+
     // Move state select to relocatedStateMenu if it exists
     if ($("#relocatedStateMenu").length) {
         waitForElm('#state_select').then((elm) => {
@@ -4069,7 +4140,7 @@ if (typeof $ !== 'undefined') {
     waitForElm('#state_select_holder').then((holderElm) => {
         function checkAndMove() {
             const holderVisible = $("#state_select_holder").is(':visible');
-            const stateSelectParent = $("#state_select").parent().attr('id');
+            const stateSelectParent = $("#state_select").closest('#state_select_holder, #relocatedStateMenu').attr('id'); // Its parent is #usregion_holder
 
             if (holderVisible && stateSelectParent !== 'state_select_holder') {
                 // Move to holder and hide relocatedStateMenu parent
@@ -4474,6 +4545,16 @@ function getStateAbbreviation(stateID) {
   return null; // Return null if no match is found
 }
 
+// A state saved in the browser (localStorage.state, two letters), used as the default state when the hash has none
+function getCachedState() {
+    try {
+        const state = String(localStorage.getItem("state") || "").trim().toUpperCase();
+        return /^[A-Z]{2}$/.test(state) ? state : "";
+    } catch (e) {
+        return "";
+    }
+}
+
 //var geojsonLayer; // Hold the prior letter. We can use an array or object instead.
 var geoOverlays = {};
 function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
@@ -4502,10 +4583,9 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
         modelsite = hash.site;
     }
 
-    if (!stateAbbr && modelsite) {
-        if (modelsite == "model.georgia" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) { // Add loop if other states added to settings.
-            stateAbbr = "GA";
-        }
+    // Without a state in the hash, only a state saved in the browser is the default (not the site, e.g. model.georgia)
+    if (!stateAbbr) {
+        stateAbbr = getCachedState();
     }
 
     // In addition, the state could also be derived from the county geo value(s).
@@ -10401,14 +10481,15 @@ function usRegionStates(region) {
         .filter(opt => opt.getAttribute('usregion') === region && opt.style.display !== 'none')
         .map(opt => opt.value);
 }
-// The menu and Map button (#usregion_holder) sit directly above #state_select,
-// which moves between #state_select_holder and #relocatedStateMenu
+// #state_select moves between #state_select_holder and #relocatedStateMenu. After each move, #usregion_holder
+// takes its place there and holds it after #usregion_select, so the row is: US Regions, state, US Map button.
 function placeUsRegionSelect() {
     const regionHolder = document.getElementById('usregion_holder');
+    const regionSelect = document.getElementById('usregion_select');
     const stateSelect = document.getElementById('state_select');
-    if (regionHolder && stateSelect && regionHolder.nextElementSibling !== stateSelect) {
-        stateSelect.parentNode.insertBefore(regionHolder, stateSelect);
-    }
+    if (!regionHolder || !regionSelect || !stateSelect || stateSelect.parentNode === regionHolder) return;
+    stateSelect.parentNode.insertBefore(regionHolder, stateSelect);
+    regionSelect.after(stateSelect);
 }
 $(document).on("click", "#usregion_map", function() {
     goHash({'geoview':'us'});
@@ -10848,6 +10929,7 @@ function closeLocationFilter() {
     // The #filterClickLocation click hides #state_select, so show it again.
     if ($("#relocatedStateMenu").length && !getHash().geoview && !$("#state_select_holder").is(':visible')) {
         $("#state_select").appendTo("#relocatedStateMenu").show();
+        placeUsRegionSelect();
     }
     if (typeof relocatedScopeMenu != "undefined") {
         // DROPDOWN #selectScope was REMOVED  relocatedScopeMenu.appendChild(selectScope); // For apps hero
