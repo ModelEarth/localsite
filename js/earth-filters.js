@@ -399,15 +399,23 @@ function EarthFilters(container, options) {
   }, true);
 }
 
-// ef-dark or ef-light (earth-filters.css) on the panel and on the three-dot menu held over the map, whatever the site's mode
+// Over the map, the panel is dark (ef-dark, earth-filters.css) whatever the site's mode, or light (ef-light) with its
+// light mode button. Under the map or in a page's #earthFilterCatch, it follows the site's mode and the button is hidden.
+// The three-dot menu held over the map (mapMenuHolder) is always over it.
 EarthFilters.prototype.applyTheme = function() {
   var lightMode = this.lightMode;
-  [this.container, this.mapMenuHolder].forEach(function(element) {
+  var overMap = this.isOverMap();
+  [[this.container, overMap], [this.mapMenuHolder, true]].forEach(function(pair) {
+    var element = pair[0], themed = pair[1];
     if (element) {
-      element.classList.toggle('ef-dark', !lightMode);
-      element.classList.toggle('ef-light', lightMode);
+      element.classList.toggle('ef-dark', themed && !lightMode);
+      element.classList.toggle('ef-light', themed && lightMode);
     }
   });
+  var button = this.container.querySelector('[data-action="toggle-light-mode"]');
+  if (button) {
+    button.hidden = !overMap;
+  }
 };
 
 EarthFilters.prototype.getHash = function() {
@@ -1326,6 +1334,7 @@ EarthFilters.prototype.applyMapPanelPlace = function() {
   container.classList.toggle('ef-under', !isOver && !pageCatch);
   container.classList.toggle('ef-closed', !this.isOpen);
   container.classList.toggle('ef-condensed', this.isCondensed()); // It depends on ef-under
+  this.applyTheme(); // Dark by default only over the map
   this.updatePanelMenu();
   if (isOver) {
     this.applyMapPanelBox();
