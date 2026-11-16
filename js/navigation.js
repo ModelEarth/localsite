@@ -1746,7 +1746,7 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
                                             <span>Democracy Lab</span>
                                         </a>
                                         <div style="display:none">
-                                        Before removing, investigate via: Reveal opportunities section on the team/index.html page
+                                        Before removing, investigate via: Reveal opportunities section on the codechat/index.html page (formerly team/index.html)
                                         <a href="${teamPath}#projects/opportunities" class="subnav-link">
                                             <i class="subnav-icon" data-feather="target"></i>
                                             <span>Opportunities</span>
@@ -2202,7 +2202,8 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
                             const isRootPage = window.location.pathname === '/' || 
                                              window.location.pathname.endsWith('/index.html') ||
                                              window.location.pathname.endsWith('/team/') ||
-                                             window.location.pathname.endsWith('/team/index.html');
+                                             window.location.pathname.endsWith('/team/index.html') ||
+                                             window.location.pathname.endsWith('/codechat/');
                             
                             // Check if href is for same page hash navigation (starts with # or has no path before #)
                             const isSamePageHash = href.startsWith('#') || !href.includes('/');
@@ -2304,7 +2305,8 @@ var StandaloneNavigation = window.StandaloneNavigation || class StandaloneNaviga
                         const isRootPage = window.location.pathname === '/' || 
                                          window.location.pathname.endsWith('/index.html') ||
                                          window.location.pathname.endsWith('/team/') ||
-                                         window.location.pathname.endsWith('/team/index.html');
+                                         window.location.pathname.endsWith('/team/index.html') ||
+                                         window.location.pathname.endsWith('/codechat/');
                         
                         if (isRootPage) {
                             // On root page, use hash navigation only
