@@ -5313,6 +5313,32 @@ function setOnlinemode(onlinemode) {
     }
   }
 }
+// Map Center choices in Settings (#globecenter), with the nullschool orthographic zoom for each.
+// North America is the default when nothing is chosen.
+var globeCenters = {
+  northamerica: {lat: 42, lon: -100, zoom: 700},
+  southamerica: {lat: -18, lon: -60, zoom: 700},
+  africa:       {lat: 3, lon: 20, zoom: 700},
+  asia:         {lat: 38, lon: 95, zoom: 600},
+  australia:    {lat: -26, lon: 134, zoom: 900},
+  europe:       {lat: 52, lon: 15, zoom: 1000},
+  atlantic:     {lat: 0, lon: -25, zoom: 800},
+  pacific:      {lat: 0, lon: -160, zoom: 300},
+  indian:       {lat: 0, lon: 80, zoom: 600},
+  arctic:       {lat: 90, lon: 0, zoom: 800},
+  antarctic:    {lat: -90, lon: 0, zoom: 800}
+};
+var globeCenterDefault = 'northamerica';
+// The starting lon,lat,zoom for the Earth map when the hash has none.
+// My Location uses the saved location at locationZoom. Otherwise the chosen Map Center is used, or North America.
+function getDefaultGlobeLatLonZoom(locationZoom) {
+  var chosen = (typeof Cookies != 'undefined' && Cookies.get('globecenter')) || '';
+  if (chosen == 'me' && localStorage.latitude && localStorage.longitude) {
+    return localStorage.longitude + ',' + localStorage.latitude + ',' + locationZoom;
+  }
+  var center = globeCenters[chosen] || globeCenters[globeCenterDefault];
+  return center.lon + ',' + center.lat + ',' + center.zoom;
+}
 function setGlobecenter(globecenter, promptForCurrentPosition) {
   // Invoked when page loads, and when user changes "Map Center" setting.
   if (globecenter == "me") {
@@ -5321,9 +5347,10 @@ function setGlobecenter(globecenter, promptForCurrentPosition) {
     }
     $("#globeLatitude").val(localStorage.latitude);
     $("#globeLongitude").val(localStorage.longitude);
-  } else { // Get lat and lon from dropdown menu attributes.
-    $("#globeLatitude").val($("#globecenter option:selected").attr("lat"));
-    $("#globeLongitude").val($("#globecenter option:selected").attr("lon"));
+  } else { // Get lat and lon from globeCenters
+    var center = globeCenters[$("#globecenter").val()] || globeCenters[globeCenterDefault];
+    $("#globeLatitude").val(center.lat);
+    $("#globeLongitude").val(center.lon);
     // We avoid setting localStorage.latitude to center of oceans since these are used by SeeClickFix
   }
   //alert("Lat: " + $("#globeLongitude").val());
@@ -5340,13 +5367,8 @@ function setGlobecenter(globecenter, promptForCurrentPosition) {
 }
 function getGlobeCenterLatLonZoom(currentZoom) {
   let globeZoom = currentZoom || "800"; // "1037";
-  // Move these into dropdown attributes
-  if ($("#globecenter").val() == "pacific") {
-    globeZoom = "300";
-  } else if ($("#globecenter").val() == "indian") {
-    globeZoom = "600";
-  } else if ($("#globecenter").val() != "me") {
-    globeZoom = "800";
+  if ($("#globecenter").val() != "me") {
+    globeZoom = (globeCenters[$("#globecenter").val()] || globeCenters[globeCenterDefault]).zoom;
   }
   return $("#globeLongitude").val() + "," + $("#globeLatitude").val() + "," + globeZoom;
 }

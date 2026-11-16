@@ -571,25 +571,9 @@
   max-width: 100%;
 }
 
-/* Narrow parent: labels above their buttons, as on the nullschool menu for phones. Condensed rows keep their one choice beside the label. */
+/* Narrow parent. Labels stay at the left of their buttons, condensed or expanded, and the buttons wrap beside them. */
 @container (max-width: 480px) {
-  .earth-filters .ef-tab-panel > .ef-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .earth-filters .ef-row-label {
-    min-width: 0;
-    margin-top: 0.25rem;
-  }
-  .earth-filters.ef-condensed .ef-tab-panel > .ef-row {
-    flex-direction: row;
-    align-items: baseline;
-  }
-  .earth-filters.ef-condensed .ef-row-label {
-    min-width: 5.5rem;
-    margin-top: 0;
-  }
-  /* Local or UTC on its own line. With labels above their buttons, it's under the date. */
+  /* Local or UTC on its own line, under the date */
   .earth-filters .ef-date-group {
     flex-direction: column;
     align-items: flex-start;

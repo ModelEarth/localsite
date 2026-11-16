@@ -373,7 +373,7 @@ function EarthFilters(container, options) {
   this.options = options || {};
   this.state = parseEarthFiltersHash(this.options.hash);
   this.language = getEarthFiltersLanguage(this.options.language || readEarthFiltersStorage('earthLanguageFolder')); // localsite.js reads the same folder for maps loaded without the filters
-  this.timezone = readEarthFiltersStorage('earthFiltersTimezone') === 'local' ? 'local' : 'utc';
+  this.timezone = readEarthFiltersStorage('earthFiltersTimezone') === 'utc' ? 'utc' : 'local'; // Local by default, as on nullschool
   // The panel is dark like nullschool's, even when the site is light, until its light mode button is pressed (saved in the browser)
   this.lightMode = readEarthFiltersStorage('earthFiltersTheme') === 'light';
   this.chooserDate = null;
@@ -1145,6 +1145,7 @@ var earthFiltersPanelGap = 10; // Default offset from the map's left and bottom 
 var earthFiltersPanelWidth = 560; // Default width over the map
 var earthFiltersExpandDrag = 8; // Dragging a condensed panel's right side wider by more than this expands it
 var earthFiltersNarrowWidth = 480; // At most this wide, the panel condenses on its own. Same as the @container query in earth-filters.css.
+var earthFiltersClosedWidth = 600; // A map at most this wide starts with the panel closed over it, until the panel is opened (setupMapPanel)
 var earthFiltersPanelMinWidth = 220;
 var earthFiltersPanelMinHeight = 120;
 var earthFiltersPanelGrip = 40; // The panel can be dragged off the map's sides and bottom, leaving this much on the map to pick it up again
@@ -1156,7 +1157,11 @@ EarthFilters.prototype.setupMapPanel = function() {
   this.storageKeys = {open: prefix + 'Open', place: prefix + 'Place', box: prefix + 'Box', condensed: prefix + 'Condensed'};
   this.condensed = readEarthFiltersStorage(this.storageKeys.condensed) === 'true';
   this.place = readEarthFiltersStorage(this.storageKeys.place) === 'under' ? 'under' : 'over'; // Over the map unless moved under it
-  this.isOpen = readEarthFiltersStorage(this.storageKeys.open) !== 'false'; // Shown when the map first loads, until hidden
+  // Shown when the map first loads, until hidden. Over a narrow map, closed until shown. The saved choice wins either way.
+  var savedOpen = readEarthFiltersStorage(this.storageKeys.open);
+  var mapWidth = mapContainer.clientWidth || window.innerWidth; // The window's width while the map isn't laid out yet
+  var narrowOverMap = this.place === 'over' && mapWidth <= earthFiltersClosedWidth;
+  this.isOpen = savedOpen ? savedOpen !== 'false' : !narrowOverMap;
   this.box = null;
   try {
     this.box = JSON.parse(readEarthFiltersStorage(this.storageKeys.box) || 'null');

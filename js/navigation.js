@@ -337,10 +337,7 @@ function hashChanged() {
     productList("01","99","All Harmonized System Categories"); // Sets title for new HS hash.
 
     if (hash.geoview == "earth") {
-        let latLonZoom = "-115.84,31.09,1037";
-        if (localStorage.latitude && localStorage.longitude) {
-            latLonZoom = localStorage.longitude + "," + localStorage.latitude + ",1037";
-        }
+        let latLonZoom = getDefaultGlobeLatLonZoom("1037"); // The Map Center setting (North America by default), or My Location
         testAlert("hashChanged earth: waiting for #globalMapHolder");
         waitForElm('#globalMapHolder').then((elm) => {
             testAlert("hashChanged earth: showGlobalMap");
@@ -1270,10 +1267,7 @@ function hashChanged() {
             }
         });
         if (hash.geoview == "earth") {
-            let latLonZoom = "-115.84,31.09,1037";
-            if (localStorage.latitude && localStorage.longitude) {
-                latLonZoom = localStorage.longitude + "," + localStorage.latitude + ",1037";
-            }
+            let latLonZoom = getDefaultGlobeLatLonZoom("1037"); // The Map Center setting (North America by default), or My Location
             showGlobalMap(getEarthMapUrlFromHash(latLonZoom));
         } else if (hash.geoview && isValidGeoview) {
             loadGeomap = true;
@@ -9538,10 +9532,7 @@ function autoCloseRightNavOnNarrow() {
 }
 
 $(document).on("click", ".showEarth", function(event) {
-    let latLonZoom = "-72.24,46.06,511";
-    if (localStorage.latitude && localStorage.longitude) {
-        latLonZoom = localStorage.longitude + "," + localStorage.latitude + ",511";
-    }
+    let latLonZoom = getDefaultGlobeLatLonZoom("511"); // The Map Center setting (North America by default), or My Location
     showEarth("show");
     autoCloseRightNavOnNarrow();
     updateHash({"sidetab":"","geoview":"earth","earth":getEarthHashValue((typeof getHash === 'function') ? getHash() : {}, latLonZoom)});
@@ -9700,10 +9691,7 @@ function showEarth(show) {
         $("#hero_holder").hide();
         // Add a setting to choose map: Temperatures or just wind
         // Big blue: https://earth.nullschool.net/#current/wind/surface/level/orthographic=-35.06,40.67,511
-        let latLonZoom = "-72.24,46.06,511";
-        if (localStorage.latitude && localStorage.longitude) {
-            latLonZoom = localStorage.longitude + "," + localStorage.latitude + ",511";
-        }
+        let latLonZoom = getDefaultGlobeLatLonZoom("511"); // The Map Center setting (North America by default), or My Location
         showGlobalMap(getEarthMapUrlFromHash(latLonZoom));
     }
 }
