@@ -951,7 +951,10 @@ dataCopy.forEach(location => {
         // (for example switching from state -> country).
         (function tryBuildLegend(attempt) {
             attempt = attempt || 0;
-            if (typeof window.buildFloatingLegendFromChart === 'function') {
+            if (!document.getElementById('floating-legend')) {
+                // Pages without the timeline page's floating legend, such as /home/
+                buildTimelineBottomLegend();
+            } else if (typeof window.buildFloatingLegendFromChart === 'function') {
                 try {
                     window.buildFloatingLegendFromChart();
                 } catch (e) {
@@ -978,6 +981,80 @@ dataCopy.forEach(location => {
             document.body.classList.remove('timeline-loading');
         }
     }
+}
+
+// Bottom legend for pages without the timeline page's floating legend, such as /home/.
+// Same #bottom-legend id and classes as /localsite/timeline/. Clicking a location hides or shows it in both charts.
+// The page can place an empty #bottom-legend div. Otherwise it's added between the charts, after #div1.
+function buildTimelineBottomLegend() {
+    const charts = [timelineChart, lineAreaChart].filter(c => typeof Chart !== 'undefined' && c instanceof Chart);
+    if (!charts.length) return;
+    let bottom = document.getElementById('bottom-legend');
+    if (!bottom) {
+        const insertAfter = document.getElementById('div1') || document.getElementById('div2');
+        if (!insertAfter || !insertAfter.parentElement) return;
+        bottom = document.createElement('div');
+        bottom.id = 'bottom-legend';
+        bottom.className = 'bottom-legend';
+        insertAfter.parentElement.insertBefore(bottom, insertAfter.nextSibling);
+    }
+    bottom.innerHTML = '';
+    const isShown = (label) => charts.some(chart => chart.data.datasets.some((ds, i) => ds.label === label && chart.isDatasetVisible(i)));
+    const maxVisible = 12; // More locations wait behind a "+ more" button, as on the timeline page
+    const datasets = charts[0].data.datasets;
+    datasets.forEach((ds, idx) => {
+        const label = ds.label || ('Series ' + (idx + 1));
+        const item = document.createElement('div');
+        item.className = 'bottom-legend-item';
+        if (idx >= maxVisible) item.classList.add('extra');
+        item.title = label;
+        item.setAttribute('data-legend-label', label);
+        item.setAttribute('role', 'button');
+        item.tabIndex = 0;
+        const swatch = document.createElement('span');
+        swatch.className = 'legend-swatch';
+        swatch.style.background = (Array.isArray(ds.borderColor) ? ds.borderColor[0] : ds.borderColor) || '#666';
+        const text = document.createElement('span');
+        text.className = 'legend-label';
+        text.textContent = label;
+        item.append(swatch, text);
+        item.classList.toggle('hidden', !isShown(label));
+        const toggleLocation = () => {
+            const show = !isShown(label);
+            charts.forEach(chart => {
+                chart.data.datasets.forEach((d, i) => {
+                    if (d.label === label) chart.setDatasetVisibility(i, show);
+                });
+                chart.update();
+            });
+            item.classList.toggle('hidden', !show);
+        };
+        item.addEventListener('click', toggleLocation);
+        item.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleLocation(); }
+        });
+        bottom.appendChild(item);
+    });
+    bottom.classList.remove('bottom-legend-collapsed');
+    if (datasets.length > maxVisible) {
+        const extraCount = datasets.length - maxVisible;
+        const more = document.createElement('div');
+        more.className = 'bottom-legend-more';
+        more.setAttribute('role', 'button');
+        more.tabIndex = 0;
+        const setMoreText = () => {
+            more.textContent = bottom.classList.contains('bottom-legend-collapsed') ? '+' + extraCount + ' more' : 'Less';
+        };
+        const toggleMore = () => { bottom.classList.toggle('bottom-legend-collapsed'); setMoreText(); };
+        more.addEventListener('click', toggleMore);
+        more.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMore(); }
+        });
+        bottom.classList.add('bottom-legend-collapsed');
+        setMoreText();
+        bottom.appendChild(more);
+    }
+    bottom.style.display = datasets.length ? 'flex' : 'none';
 }
 
 // Chart resize handler function
@@ -1227,14 +1304,6 @@ async function updateDcidSelectFromSheet(scope) {
         return;
     }
 
-    // On first load, chart the features.dcid from the URL hash while the Google Sheet list loads.
-    // Its placeholder option shows the DCID (underscores as spaces) until the sheet provides the Title and StartYear, then the chart redraws from cached data.
-    const earlyDcid = hash.features?.dcid; // getHash() nests dotted keys
-    if (earlyDcid && dcidSelect.options.length === 0 && hash.output !== "json") {
-        dcidSelect.add(new Option(earlyDcid.replace(/_/g, ' '), earlyDcid));
-        refreshTimeline();
-    }
-
     // When getting a Google link for a .csv pull, also uncheck "Restrict access..."
     // air tab
     let sheetUrl = "https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/export?format=csv&gid=0"; // air
@@ -1261,65 +1330,152 @@ async function updateDcidSelectFromSheet(scope) {
     //loadGoalsDropdown("zipcodeleveldata","https://docs.google.com/spreadsheets/d/1IGyvcMV5wkGaIWM5dyB-vQIXXZFJUMV3WRf_UmyLkRk/pub?gid=492624247&single=true&output=csv");
     
 
+    // Chart right away instead of waiting for the Google Sheet list (some sheet tabs take 10+ seconds).
+    // The list is saved in localStorage, so return visits fill the dropdown and chart from it while the sheet reloads.
+    // Without a saved list, chart the features.dcid from the URL hash on first load, else the goal's usual first DCID.
+    const sheetView = window._timelineSheetView;
+    const chartEarly = hash.output !== "json";
+    let chartedKey = null; // The dropdown choice already charted, so the sheet's arrival only redraws when it differs
+    if (chartEarly) {
+        const savedCsv = getSavedSheetCsv(sheetUrl);
+        if (savedCsv && fillDcidSelectFromCsv(dcidSelect, savedCsv, scope)) {
+            chartedKey = dcidSelectKey(dcidSelect);
+            refreshTimeline();
+        } else {
+            const goalDefault = (timelineDefaultDcids[hash.goal || 'air'] || {})[String(scope).toLowerCase()];
+            // The hash DCID belongs to the prior goal after a goal change, so it's only used before the dropdown has options.
+            const hashDcid = dcidSelect.options.length === 0 ? hash.features?.dcid : null; // getHash() nests dotted keys
+            const earlyDcid = hashDcid || (goalDefault && goalDefault[0]);
+            if (earlyDcid) {
+                const fromDefault = goalDefault && goalDefault[0] === earlyDcid;
+                // The placeholder shows the DCID (underscores as spaces) until the sheet provides the Title and StartYear
+                const opt = new Option(fromDefault ? goalDefault[1] : earlyDcid.replace(/_/g, ' '), earlyDcid);
+                if (fromDefault && goalDefault[2]) opt.dataset.startYear = goalDefault[2];
+                dcidSelect.innerHTML = '';
+                dcidSelect.add(opt);
+                updateTimelineMinYearFromSelect(dcidSelect);
+                chartedKey = dcidSelectKey(dcidSelect);
+                refreshTimeline();
+            }
+        }
+    }
+
     // body.timeline-sheet-loading twirls the showControl() gear while the sheet loads. Data Commons loading uses body.timeline-loading.
     // It is removed in the same task that calls refreshTimeline() below, so the gear keeps twirling through the redraw.
     sheetLoadsPending++;
     document.body.classList.add('timeline-sheet-loading');
     let csvText;
     try {
-        const response = await fetch(sheetUrl);
-        csvText = await response.text();
+        csvText = await fetchSheetCsv(sheetUrl);
+    } catch (error) {
+        console.warn("Google Sheet list did not load:", sheetUrl, error);
+        return;
     } finally {
         if (--sheetLoadsPending === 0) {
             document.body.classList.remove('timeline-sheet-loading');
         }
     }
+    if (csvText.indexOf('DCID') >= 0) { // Skip saving an error page
+        saveSheetCsv(sheetUrl, csvText);
+    }
 
-    console.log("CSV Data:", csvText); // Log the entire CSV data for debugging
+    // A newer scope or goal started loading its own list
+    if (window._timelineSheetView !== sheetView) return;
 
-    // Parse CSV data correctly, handling quoted commas
-    const rows = parseCSV(csvText);
+    if (!fillDcidSelectFromCsv(dcidSelect, csvText, scope)) {
+        alert("No datasets in the Google Sheet for scope \"" + String(scope).trim().toLowerCase() + "\" with the goal \"" + hash.goal + "\"");
+        return;
+    }
+    // Redraw when the sheet's choice, Title or StartYear differs from what was charted. Data Commons responses are reused from fetchJsonCached().
+    if (dcidSelectKey(dcidSelect) !== chartedKey) {
+        refreshTimeline();
+    }
+}
 
-    console.log("Parsed Rows:", rows); // Log parsed rows for debugging
+// The usual first DCID, Title and StartYear in each goal's Google Sheet tab, by scope.
+// Charted on a first visit while the sheet loads. If the sheet's first row changes, the chart redraws once the sheet arrives.
+const timelineDefaultDcids = {
+    air: {
+        country: ['Annual_Amount_Emissions_CarbonDioxide', 'Annual Carbon Emissions', '1970'],
+        state: ['Annual_Emissions_GreenhouseGas_NonBiogenic', 'NonBiogenic Emissions', ''],
+        county: ['Annual_Emissions_GreenhouseGas_NonBiogenic', 'NonBiogenic Emissions', '']
+    },
+    health: {
+        country: ['sdg/SH_STA_MORT.SEX--F', 'Maternal mortality ratio', '']
+    },
+    jobs: {
+        country: ['sdg/SI_POV_NAHC', 'Proportion of population living below the national poverty line', '1985'],
+        state: ['UnemploymentRate_Person', 'Unemployment Rate of a Population', '1976'],
+        county: ['UnemploymentRate_Person', 'Unemployment Rate of a Population', '1976']
+    },
+    economy: {
+        country: ['sdg/NY_GDP_MKTP_KD_ZG', 'Annual GDP growth', '2000'],
+        state: ['Median_Income_Household', 'Median Income for All Households', '2011'],
+        county: ['Median_Income_Household', 'Median Income for All Households', '2011']
+    },
+    biodiverse: {
+        country: ['sdg/ER_MRN_MPA', 'Average proportion of Marine Key Biodiversity Areas covered by protected areas', '2000'],
+        state: ['LandCoverFraction_Forest', 'Percent of Forest Covered Area', '2015']
+    },
+    population: {
+        country: ['Count_Person', 'Total Population', '1960'],
+        state: ['Count_Person', 'Total Population', '1900'],
+        county: ['Count_Person', 'Total Population', '1970']
+    }
+};
 
-    const headers = rows[0]; // Assuming the first row contains headers
-    console.log("Headers:", headers); // Log headers to ensure correct column names
+// Google Sheet list CSVs saved in localStorage by URL
+const SHEET_CSV_STORAGE_PREFIX = 'timelineSheetCsv_';
+function getSavedSheetCsv(url) {
+    try { return localStorage.getItem(SHEET_CSV_STORAGE_PREFIX + url); } catch (e) { return null; }
+}
+function saveSheetCsv(url, csvText) {
+    try { localStorage.setItem(SHEET_CSV_STORAGE_PREFIX + url, csvText); } catch (e) { /* storage full or blocked */ }
+}
+// One request per sheet URL, shared by calls made while it is in flight
+const sheetCsvRequests = {};
+function fetchSheetCsv(url) {
+    if (!sheetCsvRequests[url]) {
+        sheetCsvRequests[url] = fetch(url).then(response => {
+            if (!response.ok) throw new Error("HTTP " + response.status);
+            return response.text();
+        }).finally(() => {
+            delete sheetCsvRequests[url];
+        });
+    }
+    return sheetCsvRequests[url];
+}
+function dcidSelectKey(dcidSelect) {
+    const opt = dcidSelect.options[dcidSelect.selectedIndex];
+    return opt ? opt.value + '|' + opt.text + '|' + (opt.dataset.startYear || '') : null;
+}
 
-    // Find the indices for the Scope, Value, and Text columns
+// Fill the #chartVariable dropdown with the sheet rows for a scope. Returns false when the sheet has none.
+// Keeps the features.dcid from the URL hash when this scope offers it, else selects the first option.
+function fillDcidSelectFromCsv(dcidSelect, csvText, scope) {
+    const hash = getHash();
+    const rows = parseCSV(csvText); // Handles quoted commas
+    const headers = rows[0] || [];
     const scopeIndex = headers.indexOf('Scope');
-    const valueIndex = headers.indexOf('DCID'); // Assuming 'Value' is stored in the 'DCID' column
-    const textIndex = headers.indexOf('Title'); // Assuming 'Text' is stored in the 'Title' column
+    const valueIndex = headers.indexOf('DCID');
+    const textIndex = headers.indexOf('Title');
     const startYearIndex = headers.indexOf('StartYear');
     // The sheet's EndYear is ignored: Data Commons often has newer years than the sheet lists, so the chart runs to the latest data.
 
     if (scopeIndex === -1 || valueIndex === -1 || textIndex === -1) {
         console.error("Missing required columns in the CSV data.");
-        return;
+        return false;
     }
 
-    // Normalize the provided scope (trim and lowercase for comparison)
-    const normalizedScope = scope.trim().toLowerCase();
-
-    // Filter rows by the selected scope (case-insensitive)
+    // The Scope column can hold several comma-separated scopes. Compare case-insensitively.
+    const normalizedScope = String(scope).trim().toLowerCase();
     const filteredOptions = rows.slice(1).filter(row => {
-        const scopeColumn = row[scopeIndex]?.trim(); // Get the Scope column value
-        if (!scopeColumn) {
-            console.log("Skipping row with empty Scope column:", row); // Log empty rows for debugging
-            return false;
-        }
-
-        // Handle comma-separated values within quotes in the Scope column
+        const scopeColumn = row[scopeIndex]?.trim();
+        if (!scopeColumn) return false;
         const scopes = scopeColumn.replace(/"/g, '').split(',').map(s => s.trim().toLowerCase());
-
-        console.log("Row Scope Column:", scopeColumn); // Log the original Scope column value
-        console.log("Row Split Scopes:", scopes); // Log split scopes
-
-        // Compare each scope against the user-provided scope (case-insensitive)
-        const matchFound = scopes.some(s => s === normalizedScope); // Use 'some' for matching any of the scopes
-        console.log(`Match found for scope '${normalizedScope}':`, matchFound); // Log the result of the match check
-
-        return matchFound; // Return true if scope matches
-    });
+        return scopes.includes(normalizedScope);
+    }).filter(row => row[valueIndex]?.trim() && row[textIndex]?.trim());
+    console.log("Google Sheet options for scope " + normalizedScope + ":", filteredOptions.length);
 
     // TO DO: Apply based on incoming Google Sheet rows
     if (hash.goal == "health" || hash.goal == "water") {
@@ -1327,45 +1483,28 @@ async function updateDcidSelectFromSheet(scope) {
     } else {
         updateScopeOptions(["country","state","county"]); // TO DO: Zip not yet activated, add to function
     }
-    console.log("Filtered Options:", filteredOptions); // Log the filtered options to verify
-
-    // Populate dropdown
-    dcidSelect.innerHTML = ''; // Clear existing options, including the placeholder above. Cleared after the sheet loads so the dropdown is never empty.
-    filteredOptions.forEach(row => {
-        const value = row[valueIndex]?.trim();
-        const text = row[textIndex]?.trim();
-        const startYearValue = startYearIndex > -1 ? row[startYearIndex]?.trim() : '';
-        if (value && text) {
-            const opt = document.createElement('option');
-            opt.value = value;
-            opt.text = text;
-            if (startYearValue) {
-                opt.dataset.startYear = startYearValue;
-            }
-            dcidSelect.add(opt);
-        }
-    });
-
-    // Set selection if options exist: keep the features.dcid from the URL hash when this scope offers it, else use the first option
-    if (filteredOptions.length > 0) {
-        const hashDcid = getHash().features?.dcid; // getHash() nests dotted keys
-        const hasHashDcid = hashDcid && Array.from(dcidSelect.options).some(opt => opt.value === hashDcid);
-        dcidSelect.value = hasHashDcid ? hashDcid : filteredOptions[0][valueIndex].trim();
-        if (typeof updateTimelineMinYearFromSelect === 'function') {
-            updateTimelineMinYearFromSelect(dcidSelect);
-        }
-        refreshTimeline();
-    } else {
-        alert("No datasets in the Google Sheet for scope \"" + normalizedScope + "\" with the goal \"" + hash.goal + "\"");
+    if (filteredOptions.length === 0) {
         console.warn("No options matched the provided scope:", normalizedScope);
+        return false;
     }
 
-    // Commented out since we don't need to show the rows from the Google Sheet.
-    // Maybe the generateTable() function is not needed?
+    dcidSelect.innerHTML = ''; // Cleared once rows are ready, so the dropdown is never empty
+    filteredOptions.forEach(row => {
+        const opt = document.createElement('option');
+        opt.value = row[valueIndex].trim();
+        opt.text = row[textIndex].trim();
+        const startYearValue = startYearIndex > -1 ? row[startYearIndex]?.trim() : '';
+        if (startYearValue) {
+            opt.dataset.startYear = startYearValue;
+        }
+        dcidSelect.add(opt);
+    });
 
-    /* call table function */
-    //generateTable(rows);
-
+    const hashDcid = hash.features?.dcid; // getHash() nests dotted keys
+    const hasHashDcid = hashDcid && Array.from(dcidSelect.options).some(opt => opt.value === hashDcid);
+    dcidSelect.value = hasHashDcid ? hashDcid : dcidSelect.options[0].value;
+    updateTimelineMinYearFromSelect(dcidSelect);
+    return true;
 }
 
 /* Function to generate table, takes the data to be loaded on to the table as an argument, start */
