@@ -1,6 +1,6 @@
 // "Ask an SI" prompt on /home/, hidden until its "Ask an SI" button is clicked.
 // The prompt is built from the NASA picture of the day shown above it (window.nasaDayPrompt, set by home/index.html),
-// else from the selected location and filters. It can be edited before sending to Claude, ChatGPT or Grok.
+// else from the selected location and filters. It can be edited before sending to Claude, ChatGPT, Grok and other LLMs.
 (function () {
   // Icons are saved in localsite/img/icon/llm/, found from this script's own URL
   const ICON_ROOT = (document.currentScript && document.currentScript.src)
@@ -10,16 +10,28 @@
   // Each button opens the LLM in a new tab with the prompt filled in.
   // mono: a black icon, shown white in dark mode
   // copy: also copies the prompt, for sites that may not fill in the q= prompt
+  // more: hidden until the "More" button is clicked
+  // A url that doesn't end in "=" opens without the prompt, so copy: true pastes it in
   const LLMS = [
     { id: "askClaudeBtn", name: "Claude", color: "#D97757", icon: "claude.svg", url: "https://claude.ai/new?q=" },
     { id: "askGrokBtn", name: "Grok", color: "#3B82F6", icon: "grok.svg", mono: true, url: "https://grok.com/?q=" },
     { id: "askChatGPTBtn", name: "ChatGPT", color: "#10A37F", icon: "chatgpt.svg", mono: true, url: "https://chatgpt.com/?q=" },
     { id: "askGeminiBtn", name: "Gemini", color: "#8B5CF6", icon: "gemini.png", copy: true, url: "https://gemini.google.com/app?q=" },
-    { id: "askMetaBtn", name: "Meta", color: "#D946EF", icon: "meta.png", copy: true, url: "https://www.meta.ai/?prompt=" }
+    { id: "askMetaBtn", name: "Meta", color: "#D946EF", icon: "meta.png", copy: true, url: "https://www.meta.ai/?prompt=" },
+    // China (DeepSeek and Alibaba's Qwen)
+    { id: "askDeepSeekBtn", name: "Deep", color: "#4D6BFE", icon: "deepseek.svg", copy: true, more: true, url: "https://chat.deepseek.com/?q=" },
+    { id: "askQwenBtn", name: "Qwen", color: "#615CED", icon: "qwen.svg", copy: true, more: true, url: "https://chat.qwen.ai/?q=" },
+    // Europe (Mistral's Le Chat, France)
+    { id: "askMistralBtn", name: "Mistral", color: "#FA500F", icon: "mistral.svg", copy: true, more: true, url: "https://chat.mistral.ai/chat?q=" },
+    // Image and video generators: Kling (Kuaishou), Seedance (ByteDance, in Dreamina by CapCut) and Midjourney
+    { id: "askKlingBtn", name: "Kling", color: "#04A6F0", icon: "kling.svg", copy: true, more: true, url: "https://app.klingai.com/global/" },
+    { id: "askSeedanceBtn", name: "SeeDance", color: "#3C8CFF", icon: "seedance.svg", copy: true, more: true, url: "https://dreamina.capcut.com/" },
+    { id: "askMidjourneyBtn", name: "Midjourney", color: "#6B7280", icon: "midjourney.svg", mono: true, copy: true, more: true, url: "https://www.midjourney.com/imagine" }
   ];
 
   let lastGenerated = ""; // The prompt text last written to the box
   let edited = false; // True once the visitor types in the box, so their edits are kept
+  let shownImageUrl = ""; // The picture or video shown to the right of the box
 
   function getValue(selector) {
     const el = document.querySelector(selector);
@@ -175,6 +187,8 @@
       .dark .llm-prompt-text:focus { border-color: #D97757; box-shadow: 0 0 0 4px rgba(217, 119, 87, 0.22); }
       .llm-reveal-btn .llm-icon { color: var(--llm-color); }
       .llm-ask-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+      .llm-copy-note { min-height: 1.4em; margin-top: 6px; font-size: 14px; color: var(--text-secondary, #4B5563); }
+      .dark .llm-copy-note { color: #cbd5e1; }
       .llm-ask-btn {
         --llm-color: #6B7280;
         display: inline-flex; align-items: center; gap: 8px;
@@ -192,6 +206,8 @@
         box-shadow: 0 2px 8px color-mix(in srgb, var(--llm-color) 35%, transparent);
         transform: translateY(-1px);
       }
+      .llm-ask-btn[hidden] { display: none; }
+      .llm-more-btn { color: #4B5563; }
       .llm-ask-btn:active { transform: translateY(0); box-shadow: none; }
       .llm-ask-btn:focus-visible { outline: 2px solid var(--llm-color); outline-offset: 2px; }
       .llm-ask-btn .llm-icon { width: 20px; height: 20px; display: block; transition: transform 0.12s ease; }
@@ -238,9 +254,15 @@
 
     const buttons = LLMS.map(function (llm) {
       const title = llm.copy ? `Copy this prompt and open ${llm.name}` : `Open ${llm.name} with this prompt`;
-      return `<button type="button" id="${llm.id}" class="llm-ask-btn" style="--llm-color:${llm.color}" title="${title}" aria-label="${llm.name}">` +
+      return `<button type="button" id="${llm.id}" class="llm-ask-btn" style="--llm-color:${llm.color}" title="${title}" aria-label="${llm.name}"${llm.more ? " hidden" : ""}>` +
         `<img class="llm-icon${llm.mono ? " mono" : ""}" src="${ICON_ROOT + llm.icon}" alt="" aria-hidden="true"><span class="llm-name">${llm.name}</span></button>`;
-    }).join("");
+    }).join("") +
+      // Reveals the "more" LLMs, then hides itself
+      (LLMS.some(function (llm) { return llm.more; })
+        ? `<button type="button" id="askMoreBtn" class="llm-ask-btn llm-more-btn" style="--llm-color:#6B7280" title="More LLMs" aria-label="More LLMs">` +
+          `<svg class="llm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>` +
+          `<span class="llm-name">More</span></button>`
+        : "");
 
     wrap.innerHTML = `
       <div class="llm-prompt-row">
@@ -266,6 +288,7 @@
       </div>
 
       <div class="llm-ask-buttons">${buttons}</div>
+      <div class="llm-copy-note" role="status" aria-live="polite"></div>
     `;
 
     // plaintext-only keeps pasted text plain. Browsers without it use true, with plain-text pasting below.
@@ -291,6 +314,7 @@
     }
     reveal.addEventListener("click", function () {
       openPrompt();
+      showDayImage(); // The picture the prompt describes, to the right of the box
       field.focus();
     });
   }
@@ -308,7 +332,8 @@
 
   // Opens the prompt with a picture to the right of the box. Clicking the picture opens it in a new tab.
   // A video plays in an embedded player there instead. APOD video urls are already embed urls (YouTube, Vimeo and others).
-  // Called by home/index.html when a swiper slide is clicked: { url, title, mediaType }
+  // Called by home/index.html when a swiper slide is clicked: { url, title, mediaType, autoplay }
+  // autoplay: true starts a video playing, for a click on its slide
   window.showLlmPromptImage = function (image) {
     if (!image || !/^https?:\/\//i.test(image.url || "")) return;
     ensurePromptUI();
@@ -324,7 +349,7 @@
     if (isVideo) {
       // Starts playing from the click. Browsers that block autoplay show the player's play button.
       const url = new URL(image.url);
-      url.searchParams.set("autoplay", "1");
+      if (image.autoplay) url.searchParams.set("autoplay", "1");
       if (video.src !== url.href) video.src = url.href;
       video.title = image.title || "Video";
       img.removeAttribute("src");
@@ -337,8 +362,16 @@
       img.alt = image.title || "";
     }
     figure.hidden = false;
+    shownImageUrl = image.url;
     openPrompt();
   };
+
+  // Shows the picture of the NASA day the prompt describes (window.nasaDayPrompt from home/index.html)
+  function showDayImage() {
+    const day = window.nasaDayPrompt;
+    if (!day || !day.url || day.url === shownImageUrl) return;
+    window.showLlmPromptImage({ url: day.url, title: day.title, mediaType: day.mediaType });
+  }
 
   // A landscape picture widens its panel, narrowing the text box, so the picture is closer to the text box's height.
   // A narrower box is taller, so the width is found in a few rounds. Each round only widens the panel, so it settles.
@@ -452,17 +485,57 @@
       setTimeout(updatePrompt, 150);
     });
 
+    const moreBtn = document.getElementById("askMoreBtn");
+    if (moreBtn) {
+      moreBtn.addEventListener("click", function () {
+        LLMS.forEach(function (llm) {
+          const btn = llm.more && document.getElementById(llm.id);
+          if (btn) btn.hidden = false;
+        });
+        moreBtn.hidden = true;
+        const first = LLMS.find(function (llm) { return llm.more; });
+        if (first) document.getElementById(first.id).focus(); // Keyboard focus moves to the first revealed button
+      });
+    }
+
     LLMS.forEach(function (llm) {
       const btn = document.getElementById(llm.id);
       if (!btn) return;
       btn.addEventListener("click", function () {
         const prompt = getPromptText();
-        window.open(llm.url + encodeURIComponent(prompt), "_blank", "noopener");
-        if (llm.copy && navigator.clipboard) {
-          navigator.clipboard.writeText(prompt).catch(function (error) { console.warn("Prompt not copied:", error); });
+        // Copied before the new tab opens, since the clipboard can't be written once this page loses focus
+        if (llm.copy) {
+          const key = /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘V" : "Ctrl+V";
+          showCopyNote(copyText(prompt) ? `Prompt copied. Paste it into ${llm.name} with ${key}.` : "");
+        } else {
+          showCopyNote("");
         }
+        window.open(/=$/.test(llm.url) ? llm.url + encodeURIComponent(prompt) : llm.url, "_blank", "noopener");
       });
     });
+  }
+
+  // Copies right away, within the click. Returns false if the browser blocked it.
+  function copyText(text) {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.cssText = "position:fixed; top:0; left:0; opacity:0; pointer-events:none";
+    document.body.appendChild(area);
+    area.select();
+    let copied = false;
+    try { copied = document.execCommand("copy"); } catch (error) { copied = false; }
+    area.remove();
+    if (!copied && navigator.clipboard) {
+      navigator.clipboard.writeText(text).catch(function (error) { console.warn("Prompt not copied:", error); });
+      copied = true;
+    }
+    return copied;
+  }
+
+  function showCopyNote(message) {
+    const note = document.querySelector(".llm-copy-note");
+    if (note) note.textContent = message;
   }
 
   document.addEventListener("input", function (event) {
@@ -482,8 +555,11 @@
     if (field && field.offsetParent) autoGrow(field); // Skip while hidden
   });
   // home/index.html sets window.nasaDayPrompt and fires this when the swiper's centered picture changes
+  // While the prompt is open and unedited, the picture follows the prompt to the newly centered slide.
   document.addEventListener("nasaDayChange", function () {
     updatePrompt();
+    const wrap = document.querySelector("#llmPromptWrap");
+    if (wrap && wrap.style.display !== "none" && !edited) showDayImage();
   });
 
   document.addEventListener("DOMContentLoaded", function () {
