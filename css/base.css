@@ -2521,6 +2521,11 @@ a:has(> .logoTopPadding) {
       min-width: 250px; /* Prevents being too narrow in OpenWebUI */
   }
 }
+/* A site logo with a dark mode version (logo_dark in support/site/config.yaml, js/navigation.js): the light one
+   shows unless the body is .dark, and the dark one only then. Important, over the header's #headerLogo img. */
+body.dark .site-logo-light, body:not(.dark) .site-logo-dark {
+  display: none !important;
+}
 #headerLocTitle {
   float:left;
   padding-top:1px;

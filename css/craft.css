@@ -1,0 +1,603 @@
+/* Craft: shared styles for the Craft pages, such as StudioCraft (the DreamStudio Desktop portal and installer,
+   webroot/desktop) and CareCraft (project/care). From webroot/desktop/css/craft.css, moved here so pages
+   outside the desktop repo can use it. Palette and app colors follow the open-source ArtCraft Crafting Apps
+   (getartcraft.com/apps). */
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Instrument+Serif:ital@1&family=Inter:wght@400;500;600&display=swap');
+
+.craft {
+  --craft-bg: #f2f1ee;
+  --craft-raised: #faf9f7;
+  --craft-sunken: #e9e8e4;
+  --craft-ink: #101014;
+  --craft-muted: rgba(16, 16, 20, 0.62);
+  --craft-faint: rgba(16, 16, 20, 0.42);
+  --craft-line: rgba(16, 16, 20, 0.16);
+  --craft-line-strong: rgba(16, 16, 20, 0.4);
+  --craft-accent: #2d81ff;
+  --craft-accent-ink: #1659c4;
+  --craft-radius: 14px;
+  --craft-radius-sm: 10px;
+  --craft-display: "Archivo", system-ui, sans-serif;
+  --craft-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --craft-serif: "Instrument Serif", Georgia, serif;
+  --craft-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --app: var(--craft-accent);
+  --app-ink: var(--craft-accent-ink);
+  font-family: var(--craft-body);
+  color: var(--craft-ink);
+}
+.dark.craft, .dark .craft {
+  --craft-bg: #121316;
+  --craft-raised: #26272b;
+  --craft-sunken: #060607;
+  --craft-ink: #f2f1ee;
+  --craft-muted: rgba(242, 241, 238, 0.66);
+  --craft-faint: rgba(242, 241, 238, 0.4);
+  --craft-line: rgba(242, 241, 238, 0.15);
+  --craft-line-strong: rgba(242, 241, 238, 0.4);
+  --craft-accent-ink: #74aaff;
+}
+
+/* App colors */
+.craft-photocraft { --app: #2f7bf5; --app-ink: #1a5bc4; }
+.craft-vectorcraft { --app: #e8573f; --app-ink: #b83a24; }
+.craft-filmcraft { --app: #8b5cf6; --app-ink: #6a3fd6; }
+.craft-lightcraft { --app: #f2a516; --app-ink: #8a5800; }
+.craft-pdfcraft { --app: #e8204f; --app-ink: #b70228; }
+.craft-effectcraft { --app: #e0368f; --app-ink: #b0206c; }
+.craft-anicraft { --app: #dac604; --app-ink: #706500; }
+.craft-designcraft { --app: #7bb51c; --app-ink: #457008; }
+.craft-figcraft { --app: #02da96; --app-ink: #017a54; }
+.craft-texturecraft { --app: #c2672b; --app-ink: #9c4a15; }
+.craft-materialcraft { --app: #178a9c; --app-ink: #0e6674; }
+.craft-soundcraft { --app: #14a9c4; --app-ink: #0b6f82; }
+.craft-wordcraft { --app: #4c6ef5; --app-ink: #253e99; }
+.craft-deckcraft { --app: #f26b1d; --app-ink: #ad4306; }
+.craft-cadcraft { --app: #14a3c7; --app-ink: #09596d; }
+.craft-gridcraft { --app: #1f9d55; --app-ink: #136938; }
+.craft-craft-anything { --app: #4e7bfb; --app-ink: #1659c4; }
+.dark .craft-card { --app-ink: var(--app); }
+
+/* Eyebrow and headings */
+.craft-eyebrow {
+  font-family: var(--craft-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--craft-muted);
+}
+.craft-eyebrow b {
+  color: var(--craft-ink);
+  font-weight: 500;
+}
+.craft .craft-title {
+  font-family: var(--craft-display);
+  font-weight: 800;
+  font-size: clamp(36px, 7vw, 76px);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  margin: 14px 0 18px 0;
+  color: var(--craft-ink);
+}
+.craft .craft-title em {
+  font-family: var(--craft-serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 1.15em;
+  letter-spacing: -0.01em;
+  padding-right: 0.08em;
+  color: var(--craft-accent);
+}
+.craft .craft-title .craft-title-bright {
+  color: var(--craft-ink);
+}
+.dark .craft .craft-title .craft-title-bright {
+  color: #fff;
+}
+.dark .craft .craft-title em {
+  color: #9cc4ff;
+}
+/* .craft-title-shadow: a dark shadow close around the serif word, with a soft blue glow beyond it, so it stands out
+   over a busy background such as the voice widget's canvas or the Earth map (project/care). */
+.craft .craft-title-shadow em {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), 0 2px 10px rgba(0, 0, 0, 0.85), 0 0 28px rgba(0, 0, 0, 0.6), 0 0 40px rgba(45, 129, 255, 0.45);
+}
+.craft .craft-section-title {
+  font-family: var(--craft-display);
+  border: none;
+  padding: 0;
+  font-weight: 700;
+  font-size: clamp(24px, 4vw, 34px);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 6px 0 10px 0;
+  color: var(--craft-ink);
+}
+.craft-lede {
+  max-width: 680px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--craft-muted);
+}
+
+/* Layout */
+.craft-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 20px;
+}
+.craft-section + .craft-section {
+  border-top: 1px solid var(--craft-line);
+}
+.craft-hero {
+  text-align: center;
+  padding-top: 40px;
+}
+.craft-hero .craft-lede {
+  margin: 0 auto 26px auto;
+}
+
+/* Buttons */
+.craft-btn, .craft-btn:link, .craft-btn:visited {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--craft-radius-sm);
+  border: 1px solid var(--craft-line-strong);
+  background: transparent;
+  color: var(--craft-ink);
+  font-family: var(--craft-body);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+.craft-btn:hover {
+  border-color: var(--craft-ink);
+  background: var(--craft-raised);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+.craft-btn-primary, .craft-btn-primary:link, .craft-btn-primary:visited {
+  background: var(--craft-ink);
+  border-color: var(--craft-ink);
+  color: var(--craft-bg);
+}
+.craft-btn-primary:hover {
+  background: var(--craft-accent);
+  border-color: var(--craft-accent);
+  color: #fff;
+}
+.craft-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* Dock of app icons */
+.craft-dock {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 28px;
+  border: 1px solid var(--craft-line);
+  border-radius: 22px;
+  background: var(--craft-raised);
+}
+.craft-dock a {
+  display: block;
+  line-height: 0;
+  transition: transform 0.18s ease-out;
+}
+.craft-dock a:hover {
+  transform: translateY(-6px) scale(1.12);
+}
+.craft-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 22%;
+  object-fit: cover;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18), 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.craft-icon-sm {
+  width: 32px;
+  height: 32px;
+}
+.craft-icon-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--app);
+  color: #fff;
+  font-family: var(--craft-display);
+  font-weight: 700;
+  font-size: 22px;
+}
+
+/* Filter chips */
+.craft-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 24px 0;
+}
+.craft-chip {
+  padding: 6px 14px;
+  border-radius: var(--craft-radius-sm);
+  border: 1px solid var(--craft-line);
+  background: transparent;
+  color: var(--craft-muted);
+  font-family: var(--craft-body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.craft-chip:hover {
+  color: var(--craft-ink);
+  border-color: var(--craft-line-strong);
+}
+.craft-chip.active {
+  background: var(--craft-ink);
+  border-color: var(--craft-ink);
+  color: var(--craft-bg);
+}
+
+/* App cards */
+.craft-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.craft-card, .craft-card:link, .craft-card:visited {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border: 1px solid var(--craft-line);
+  border-radius: var(--craft-radius);
+  background: var(--craft-raised);
+  color: var(--craft-ink);
+  text-align: left;
+  text-decoration: none;
+  overflow: hidden;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.craft-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--app);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.craft-card:hover {
+  border-color: var(--app);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px -14px var(--app);
+  text-decoration: none;
+}
+.craft-card:hover::before {
+  opacity: 1;
+}
+.craft-card-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.craft-card-num {
+  margin-left: auto;
+  align-self: flex-start;
+  font-family: var(--craft-mono);
+  font-size: 12px;
+  color: var(--craft-faint);
+}
+.craft-card-cat {
+  font-family: var(--craft-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--app-ink);
+}
+.craft-card-name {
+  font-family: var(--craft-display);
+  font-weight: 700;
+  font-size: 21px;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.craft-card-desc {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--craft-muted);
+  flex: 1;
+}
+
+/* Compact list rows (Desktop Suite, installer) */
+.craft-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 10px;
+}
+.craft-row, .craft-row:link, .craft-row:visited {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--craft-line);
+  border-radius: var(--craft-radius-sm);
+  background: var(--craft-raised);
+  color: var(--craft-ink);
+  text-decoration: none;
+  transition: border-color 0.15s;
+}
+.craft-row:hover {
+  border-color: var(--craft-line-strong);
+  text-decoration: none;
+}
+.craft-row-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+.craft-row-desc {
+  font-size: 13px;
+  color: var(--craft-muted);
+}
+
+/* Principles */
+.craft-principles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 24px;
+  border-top: 1px solid var(--craft-line);
+}
+.craft-principle {
+  padding: 18px 18px 18px 0;
+  border-bottom: 1px solid var(--craft-line);
+}
+.craft-principle-num {
+  font-family: var(--craft-mono);
+  font-size: 12px;
+  color: var(--craft-accent-ink);
+}
+.craft-principle h4 {
+  font-family: var(--craft-display);
+  font-size: 17px;
+  font-weight: 700;
+  margin: 6px 0 4px 0;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--craft-ink);
+}
+.craft-principle p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--craft-muted);
+}
+
+/* Panel card */
+.craft-panel {
+  border: 1px solid var(--craft-line);
+  border-radius: var(--craft-radius);
+  background: var(--craft-raised);
+  padding: 22px 24px;
+}
+
+/* Stage: a desktop photo with app icons floating over it */
+.craft-stage {
+  position: relative;
+  height: clamp(380px, 52vw, 680px);
+  overflow: hidden;
+  margin-top: 24px;
+}
+.craft-stage-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 62%;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 22%);
+}
+.craft-stage-shade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 45% 40% at 50% 50%, rgba(4, 8, 18, 0.55), transparent 75%);
+}
+.craft-orbit-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.craft-orbit-lines path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: 1.2;
+}
+.craft-orbit-icons {
+  position: absolute;
+  inset: 0;
+}
+.craft-nucleus {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  font-family: var(--craft-display);
+  font-weight: 800;
+  font-size: clamp(24px, 4vw, 50px);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 0 24px rgba(45, 129, 255, 0.65), 0 2px 12px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+.craft-nucleus em {
+  font-family: var(--craft-serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 1.12em;
+  letter-spacing: 0.05em;
+  padding-right: 0.06em;
+  color: #9cc4ff;
+}
+.craft-nucleus-sub {
+  font-family: var(--craft-body);
+  font-weight: 500;
+  font-size: clamp(12px, 1.3vw, 15px);
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+.craft-nucleus-sub:first-of-type {
+  margin-top: 10px;
+}
+.craft-float-item {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  line-height: 0;
+  will-change: transform;
+}
+.craft-float-item .craft-icon {
+  width: 50px;
+  height: 50px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 22px -4px var(--app);
+  transition: transform 0.2s ease-out, box-shadow 0.2s;
+}
+.craft-float-item:hover .craft-icon {
+  transform: scale(1.18);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 30px 2px var(--app);
+}
+.craft-stage-credit, .craft-stage-credit:link, .craft-stage-credit:visited {
+  position: absolute;
+  z-index: 4;
+  right: 12px;
+  bottom: 8px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+}
+.craft-stage-credit:hover {
+  color: #fff;
+}
+@media (max-width: 600px) {
+  .craft-float-item .craft-icon {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Markdown content inside a panel */
+.craft-prose {
+  font-family: var(--craft-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--craft-muted);
+}
+.craft .craft-prose h1, .craft .craft-prose h2 {
+  font-family: var(--craft-display);
+  font-weight: 700;
+  font-size: clamp(24px, 4vw, 34px);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 6px 0 14px 0;
+  padding: 0;
+  border: none;
+  color: var(--craft-ink);
+}
+.craft .craft-prose h3, .craft .craft-prose h4 {
+  font-family: var(--craft-mono);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+  margin: 22px 0 8px 0;
+  color: var(--craft-muted);
+}
+.craft-prose p {
+  margin: 0 0 12px 0;
+}
+.craft-prose strong {
+  color: var(--craft-ink);
+  font-weight: 600;
+}
+.craft .craft-prose a, .craft .craft-prose a:visited {
+  color: var(--craft-accent-ink);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+.craft .craft-prose a:hover {
+  border-bottom-color: currentColor;
+}
+.craft-prose ol {
+  list-style: none;
+  counter-reset: craft-step;
+  margin: 0 0 16px 0;
+  padding: 0;
+  border-top: 1px solid var(--craft-line);
+}
+.craft-prose ol li {
+  counter-increment: craft-step;
+  display: flex;
+  gap: 14px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--craft-line);
+}
+.craft-prose ol li::before {
+  content: counter(craft-step, decimal-leading-zero);
+  flex-shrink: 0;
+  font-family: var(--craft-mono);
+  font-size: 12px;
+  line-height: 24px;
+  color: var(--craft-accent-ink);
+}
+.craft-prose ul {
+  margin: 0 0 16px 0;
+  padding-left: 20px;
+}
+.craft-prose code {
+  font-family: var(--craft-mono);
+  font-size: 13px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--craft-sunken);
+}
+
+@media (max-width: 800px) {
+  .craft-principles {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .craft-principles {
+    grid-template-columns: 1fr;
+  }
+  .craft-section {
+    padding: 32px 16px;
+  }
+  .craft-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .craft-dock {
+    gap: 6px;
+  }
+}

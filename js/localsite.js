@@ -6120,6 +6120,9 @@ function initFullscreenVoice() {
       if (window.ClaudeVoice || document.querySelector('script[src*="claude-voice"]')) { return; } // The page loads it itself
       var script = document.createElement('script');
       script.src = webrootPath(src);
+      var names = voiceAgentNames(result);
+      if (names) { script.dataset.agentName = names; }
+      voiceNamedBySite = true;
       script.dataset.target = '#fullscreen';
       script.dataset.uiBottom = '12';
       script.dataset.playButton = '#earthPlayPauseButton';
@@ -6127,6 +6130,23 @@ function initFullscreenVoice() {
     });
   });
 }
+
+// The voice widget's names for the current site: agent_name in its support/site/config.yaml entry, a comma-separated list
+// whose first is the name shown, such as "Little Bird, Sparrow" for maestro (engine/claude-voice.js, data-agent-name).
+// Empty for the widget's default, Claude.
+function voiceAgentNames(config) {
+  var sites = (config && config.sites) || {};
+  var id = typeof getModelsite === 'function' ? getModelsite() : '';
+  var site = sites[id] || sites[config && config.default] || {};
+  return site.agent_name ? String(site.agent_name).trim() : '';
+}
+// When the site changes (the #modelsite menu, or support/site/config.yaml settling it), the widget takes its names, if
+// initFullscreenVoice() added it. A page that loads the widget itself keeps the name it gives it.
+var voiceNamedBySite = false;
+document.addEventListener('modelsiteChanged', function () {
+  if (!voiceNamedBySite || !window.ClaudeVoice || typeof window.ClaudeVoice.setNames !== 'function' || typeof window.loadWebrootYaml !== 'function') { return; }
+  window.loadWebrootYaml().then(function (config) { window.ClaudeVoice.setNames(voiceAgentNames(config)); });
+});
 
 // Play mode: while a voice conversation is under way (from "Ok Claude" or a typed question until "Thanks", a quiet spell or
 // the voice being turned off), <html> carries .playMode, and elements with .hideInPlayMode step aside for Claude's

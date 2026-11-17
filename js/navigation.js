@@ -8561,16 +8561,36 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
     if (resolvedSite && resolvedSite.header_icon === "earth") {
         param.headerLogo = "";
         param.headerLogoSmall = "<i class='material-icons headerEarthIcon' style='font-size:34px' aria-hidden='true'>language</i>";
+    } else if (resolvedSite && resolvedSite.logo && resolvedSite.logo_title) {
+        // logo_title: true marks the site's logo as an icon without its name (model.earth's globe), so it shows
+        // in the header with #headerSiteTitle to its right, as the branding above sets (["model","earth"]),
+        // else the site's title.
+        const logoSrc = resolveConfigAssetUrl(resolvedSite.logo);
+        param.headerLogo = "";
+        param.headerLogoSmall = "<img src='" + logoSrc + "' alt='' style='width:34px; margin-right:2px' class='logoTopPadding'>";
+        if (!Array.isArray(param.titleArray) && resolvedSite.title) param.titleArray = [resolvedSite.title];
+        if (resolvedSite.title) {
+            localsiteTitle = resolvedSite.title;
+            $(".siteTitleShort").text(resolvedSite.title);
+        }
     } else if (resolvedSite && resolvedSite.logo) {
         // logo in the site's support/site/config.yaml entry (e.g. maestro) replaces the branding above, as on
         // css/themes/: logo_height sets its height (36px default), home_url its link and title the page title.
         // The logo shows the site's name, so #headerSiteTitle stays empty (it's only filled when there's no headerLogo).
+        // logo_dark, a version for dark mode (e.g. maestro's, with white lettering), goes beside it, and base.css shows
+        // one at a time by the body's dark class, so the logo follows the site's look when it changes.
         const siteName = (resolvedSite.title || "").replace(/'/g, "&#39;");
         const logoSrc = resolveConfigAssetUrl(resolvedSite.logo);
-        const logoImg = "<img src='" + logoSrc + "' alt='" + siteName + "' style='height:" + (resolvedSite.logo_height || "36px") + "'>";
+        const logoDarkSrc = resolvedSite.logo_dark ? resolveConfigAssetUrl(resolvedSite.logo_dark) : "";
+        const logoImgs = function(style) {
+            if (!logoDarkSrc) return "<img src='" + logoSrc + "' alt='" + siteName + "' style='" + style + "'>";
+            return "<img src='" + logoSrc + "' alt='" + siteName + "' class='site-logo-light' style='" + style + "'>"
+                + "<img src='" + logoDarkSrc + "' alt='" + siteName + "' class='site-logo-dark' style='" + style + "'>";
+        };
+        const logoImg = logoImgs("height:" + (resolvedSite.logo_height || "36px"));
         // Without home_url, the header links the logo to the site root as it does for other logos
         param.headerLogo = resolvedSite.home_url ? "<a href='" + resolvedSite.home_url + "' style='text-decoration:none'>" + logoImg + "</a>" : logoImg;
-        param.headerLogoSmall = "<img src='" + logoSrc + "' alt='" + siteName + "' style='max-height:40px; max-width:160px'>"; // Side nav bar
+        param.headerLogoSmall = logoImgs("max-height:40px; max-width:160px"); // Side nav bar
         if (resolvedSite.title) {
             localsiteTitle = resolvedSite.title;
             $(".siteTitleShort").text(resolvedSite.title);
