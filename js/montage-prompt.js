@@ -138,12 +138,12 @@
       /* Sizes below follow the width of the prompt section (container queries), not the window */
       #llmPromptWrap { container-type: inline-size; }
       /* The prompt box and, once a swiper picture is clicked, the picture to its right */
-      .llm-prompt-row { display: flex; flex-wrap: wrap; align-items: stretch; gap: 16px; }
+      .llm-prompt-row { display: flex; flex-wrap: wrap; align-items: stretch; gap: 15px; margin-top: 13px; } /* Prompt text and picture */
       .llm-prompt-box { position: relative; flex: 1 1 320px; min-width: 0; max-width: 100%; } /* The corner drag sets its width */
       /* The picture is as tall as the text box. It's absolutely placed so its own height doesn't stretch the row. */
       .llm-prompt-image { position: relative; flex: 0 1 300px; min-width: 200px; margin: 0; }
-      /* The whole picture shows, never cropped: it shrinks to fit the panel and sits at its top */
-      .llm-prompt-image-link { position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center; }
+      /* The whole picture shows, never cropped: it shrinks to fit the panel and sits at its top left, beside the text box */
+      .llm-prompt-image-link { position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: flex-start; }
       .llm-prompt-image img {
         display: block; width: auto; height: auto; max-width: 100%; max-height: 100%;
         border-radius: 14px;
