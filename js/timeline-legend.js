@@ -1330,22 +1330,12 @@ function buildFloatingLegendFromChart() {
             
             // Only show "More Locations" actions if there are countries to add
             if (getAddableCountriesForMenu('').length > 0) {
+                // Styles are in localsite/css/timeline-legend.css (.legend-more-btn)
                 const moreBtn = document.createElement('div');
-                moreBtn.className = 'legend-more-btn';
-                moreBtn.style.cssText = `
-                    margin-top: 8px;
-                    padding: 8px 12px;
-                    background: #0066ff;
-                    color: white;
-                    border-radius: 6px;
-                    text-align: center;
-                    cursor: pointer;
-                    font-weight: bold;
-                    font-size: 12px;
-                    pointer-events: auto;
-                `;
-                moreBtn.textContent = `More Locations`;
+                moreBtn.className = 'legend-more-btn legend-more-locations-btn';
+                moreBtn.textContent = 'More Locations'; // "Close" while its checkbox list is open
                 moreBtn.setAttribute('role', 'button');
+                moreBtn.setAttribute('aria-expanded', 'false');
                 moreBtn.tabIndex = 0;
 
                 const onLeftBtn = document.createElement('div');
@@ -1354,7 +1344,15 @@ function buildFloatingLegendFromChart() {
                 onLeftBtn.textContent = 'On Left';
                 onLeftBtn.setAttribute('role', 'button');
                 onLeftBtn.tabIndex = 0;
-                onLeftBtn.style.cssText = moreBtn.style.cssText + '; background: #5f6f84;';
+
+                // Shown while the checkbox list is open. Puts the legend under the chart.
+                const belowBtn = document.createElement('div');
+                belowBtn.className = 'legend-more-btn legend-below-btn';
+                belowBtn.textContent = 'Below';
+                belowBtn.title = 'Show the locations under the chart';
+                belowBtn.setAttribute('role', 'button');
+                belowBtn.tabIndex = 0;
+                belowBtn.style.display = 'none';
                 
                 const inlinePanel = document.createElement('div');
                 inlinePanel.id = 'floating-legend-more-inline';
@@ -1406,12 +1404,19 @@ function buildFloatingLegendFromChart() {
                     window.addEventListener('resize', () => window.fitFloatingLegendToMorePanel());
                     window._legendMorePanelResizeBound = true;
                 }
+                // While the checkbox list is open, More Locations reads "Close" and the Below button shows
+                const syncMoreButtons = (open) => {
+                    moreBtn.textContent = open ? 'Close' : 'More Locations';
+                    moreBtn.setAttribute('aria-expanded', String(open));
+                    belowBtn.style.display = open ? 'inline-flex' : 'none';
+                };
                 const toggleInlinePanel = () => {
                     const nextVisible = inlinePanel.style.display === 'none';
                     inlinePanel.style.display = nextVisible ? 'block' : 'none';
                     // Remembered so the panel stays open when a checked location rebuilds the legend
                     window._legendMorePanelOpen = nextVisible;
                     if (nextVisible) renderInlinePanel();
+                    syncMoreButtons(nextVisible);
                     window.fitFloatingLegendToMorePanel();
                 };
                 moreBtn.addEventListener('click', (e) => {
@@ -1426,26 +1431,6 @@ function buildFloatingLegendFromChart() {
                     }
                 });
                 
-                moreBtn.addEventListener('mouseenter', () => {
-                    moreBtn.style.background = '#0052cc';
-                    moreBtn.style.transform = 'translateY(-1px)';
-                });
-                
-                moreBtn.addEventListener('mouseleave', () => {
-                    moreBtn.style.background = '#0066ff';
-                    moreBtn.style.transform = 'none';
-                });
-
-                onLeftBtn.addEventListener('mouseenter', () => {
-                    onLeftBtn.style.background = '#516175';
-                    onLeftBtn.style.transform = 'translateY(-1px)';
-                });
-
-                onLeftBtn.addEventListener('mouseleave', () => {
-                    onLeftBtn.style.background = '#5f6f84';
-                    onLeftBtn.style.transform = 'none';
-                });
-
                 onLeftBtn.addEventListener('click', moveLegendToLeft);
                 onLeftBtn.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -1453,13 +1438,21 @@ function buildFloatingLegendFromChart() {
                     }
                 });
 
+                const belowFromPanel = (e) => {
+                    // Close the list first, so the legend doesn't reopen with it after On Right
+                    if (inlinePanel.style.display !== 'none') toggleInlinePanel();
+                    moveLegendUnderChart(e);
+                };
+                belowBtn.addEventListener('click', belowFromPanel);
+                belowBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') belowFromPanel(e);
+                });
+
                 const actionsRow = document.createElement('div');
                 actionsRow.className = 'legend-actions-row';
-                actionsRow.style.cssText = 'display:flex; gap:8px; margin-top:8px; align-items:center;';
-                moreBtn.style.marginTop = '0';
-                onLeftBtn.style.marginTop = '0';
                 actionsRow.appendChild(moreBtn);
                 actionsRow.appendChild(onLeftBtn);
+                actionsRow.appendChild(belowBtn);
                 legendContent.appendChild(actionsRow);
                 legendContent.appendChild(inlinePanel);
                 updateOnLeftButtonsVisibility();
@@ -1468,6 +1461,7 @@ function buildFloatingLegendFromChart() {
                     inlineInput.value = window._legendMorePanelQuery || '';
                     inlinePanel.style.display = 'block';
                     renderInlinePanel();
+                    syncMoreButtons(true);
                     requestAnimationFrame(() => window.fitFloatingLegendToMorePanel()); // After the rows below it are added
                 }
             }
