@@ -8085,6 +8085,8 @@ function hideNavColumn() {
     // Move legend content back to floating legend and show it when nav is closed
     if ($('#legend-content').length && $('#floating-legend').length) {
         $('#floating-legend').append($('#legend-content'));
+        $('#legend-content').css({ 'font-size': '', 'line-height': '' }); // Sizes set for the left nav
+        $('#locations-header').remove(); // The left nav's LOCATIONS heading and toggle. showNavColumn() adds it again.
     }
     const cloneLeftTarget = document.getElementById('cloneLeftTarget');
     if (cloneLeftTarget) {
@@ -8208,11 +8210,10 @@ function setupSidebarViewToggle() {
             document.querySelectorAll('#legend-content .region-section').forEach((section) => {
                 const key = section.getAttribute('data-continent') || '';
                 const panel = section.querySelector('.country-buttons-region');
-                const toggle = section.querySelector('.region-toggle');
                 const arrow = section.querySelector('.toggle-arrow');
                 if (panel) panel.style.display = open ? 'block' : 'none';
                 if (arrow) arrow.style.transform = open ? 'rotate(0deg)' : 'rotate(-90deg)';
-                if (toggle) toggle.style.background = open ? 'rgba(248,249,250,0.9)' : 'rgba(232,236,240,0.9)';
+                section.classList.toggle('collapsed', !open); // Toggle colors are in the timeline's .region-section CSS
                 if (key) state[key] = !!open;
             });
             window._legendContinentSectionState = state;
@@ -8275,6 +8276,9 @@ function setupSidebarViewToggle() {
         e.stopPropagation();
         if (window._legendViewMode !== 'continents') {
             window._legendViewMode = 'continents';
+            // Every continent starts open. Clicking Continents again closes them all.
+            window._legendContinentSectionState = {};
+            window._legendContinentAllOpen = true;
             updateToggleState();
             if (typeof buildFloatingLegendFromChart === 'function') {
                 buildFloatingLegendFromChart();
@@ -8663,6 +8667,11 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
             event.preventDefault();
         });
         $(document).on("click", ".hideSide", function(event) {
+            // While the timeline legend's locations list fills the left nav, its X also moves the list out
+            // (localsite/js/timeline-legend.js), so the regular nav shows the next time the side nav opens.
+            if (window._timelineLegendAllowSidebar && typeof window.moveLegendOffLeftNav === 'function') {
+                try { window.moveLegendOffLeftNav(); } catch (e) { console.warn('moveLegendOffLeftNav failed:', e); }
+            }
             hideSide("list");
             //////$('body').removeClass('bodyLeftMarginNone'); // For DS side over hero
             console.log(".hideSide click");

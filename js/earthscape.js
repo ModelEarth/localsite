@@ -937,6 +937,8 @@ dataCopy.forEach(location => {
             timelineChart.destroy();
         }
         
+        applyTimelineChartTheme(config.options);
+        applyTimelineChartTheme(config1.options);
         const ctx = document.getElementById('timelineChart').getContext('2d');
         timelineChart = new Chart(ctx, config);
 
@@ -946,24 +948,16 @@ dataCopy.forEach(location => {
         const ctx1 = document.getElementById('lineAreaChart');
         lineAreaChart = new Chart(ctx1, config1);
 
-        // Trigger floating legend build only after BOTH charts are rebuilt.
-        // This avoids mixing stale labels from the previous scope during transitions
-        // (for example switching from state -> country).
-        (function tryBuildLegend(attempt) {
-            attempt = attempt || 0;
-            if (!document.getElementById('floating-legend')) {
-                // Pages without the timeline page's floating legend, such as /home/
-                buildTimelineBottomLegend();
-            } else if (typeof window.buildFloatingLegendFromChart === 'function') {
-                try {
-                    window.buildFloatingLegendFromChart();
-                } catch (e) {
-                    console.warn('buildFloatingLegendFromChart failed:', e);
-                }
-            } else if (attempt < 10) {
-                setTimeout(() => tryBuildLegend(attempt + 1), 250);
+        // Build the legend only after BOTH charts are rebuilt, so it doesn't mix in stale labels from the previous scope
+        // (for example switching from state -> country). localsite/js/timeline-legend.js builds it. When that script
+        // loads after the charts are drawn, it builds the legend itself, so nothing waits here.
+        if (typeof window.buildFloatingLegendFromChart === 'function') {
+            try {
+                window.buildFloatingLegendFromChart();
+            } catch (e) {
+                console.warn('buildFloatingLegendFromChart failed:', e);
             }
-        })();
+        }
 
         // Handle window resize to ensure charts adjust correctly when the window size changes
         // Chart.js automatically handles shrinking, but to handle expansion properly, 
@@ -983,79 +977,32 @@ dataCopy.forEach(location => {
     }
 }
 
-// Bottom legend for pages without the timeline page's floating legend, such as /home/.
-// Same #bottom-legend id and classes as /localsite/timeline/. Clicking a location hides or shows it in both charts.
-// The page can place an empty #bottom-legend div. Otherwise it's added between the charts, after #div1.
-function buildTimelineBottomLegend() {
-    const charts = [timelineChart, lineAreaChart].filter(c => typeof Chart !== 'undefined' && c instanceof Chart);
-    if (!charts.length) return;
-    let bottom = document.getElementById('bottom-legend');
-    if (!bottom) {
-        const insertAfter = document.getElementById('div1') || document.getElementById('div2');
-        if (!insertAfter || !insertAfter.parentElement) return;
-        bottom = document.createElement('div');
-        bottom.id = 'bottom-legend';
-        bottom.className = 'bottom-legend';
-        insertAfter.parentElement.insertBefore(bottom, insertAfter.nextSibling);
-    }
-    bottom.innerHTML = '';
-    const isShown = (label) => charts.some(chart => chart.data.datasets.some((ds, i) => ds.label === label && chart.isDatasetVisible(i)));
-    const maxVisible = 12; // More locations wait behind a "+ more" button, as on the timeline page
-    const datasets = charts[0].data.datasets;
-    datasets.forEach((ds, idx) => {
-        const label = ds.label || ('Series ' + (idx + 1));
-        const item = document.createElement('div');
-        item.className = 'bottom-legend-item';
-        if (idx >= maxVisible) item.classList.add('extra');
-        item.title = label;
-        item.setAttribute('data-legend-label', label);
-        item.setAttribute('role', 'button');
-        item.tabIndex = 0;
-        const swatch = document.createElement('span');
-        swatch.className = 'legend-swatch';
-        swatch.style.background = (Array.isArray(ds.borderColor) ? ds.borderColor[0] : ds.borderColor) || '#666';
-        const text = document.createElement('span');
-        text.className = 'legend-label';
-        text.textContent = label;
-        item.append(swatch, text);
-        item.classList.toggle('hidden', !isShown(label));
-        const toggleLocation = () => {
-            const show = !isShown(label);
-            charts.forEach(chart => {
-                chart.data.datasets.forEach((d, i) => {
-                    if (d.label === label) chart.setDatasetVisibility(i, show);
-                });
-                chart.update();
-            });
-            item.classList.toggle('hidden', !show);
-        };
-        item.addEventListener('click', toggleLocation);
-        item.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleLocation(); }
-        });
-        bottom.appendChild(item);
+// Text and grid colors for the timeline charts, following the page's dark mode (body.dark)
+function applyTimelineChartTheme(options) {
+    const dark = document.body.classList.contains('dark');
+    const text = dark ? '#bbb' : '#666'; // Light values are Chart.js defaults
+    const grid = dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)';
+    options.color = text;
+    if (options.plugins && options.plugins.title) options.plugins.title.color = text;
+    ['x', 'y'].forEach((axis) => {
+        const scale = options.scales && options.scales[axis];
+        if (!scale) return;
+        scale.ticks = Object.assign(scale.ticks || {}, { color: text });
+        scale.grid = Object.assign(scale.grid || {}, { color: grid });
+        scale.border = Object.assign(scale.border || {}, { color: grid });
+        if (scale.title) scale.title.color = text;
     });
-    bottom.classList.remove('bottom-legend-collapsed');
-    if (datasets.length > maxVisible) {
-        const extraCount = datasets.length - maxVisible;
-        const more = document.createElement('div');
-        more.className = 'bottom-legend-more';
-        more.setAttribute('role', 'button');
-        more.tabIndex = 0;
-        const setMoreText = () => {
-            more.textContent = bottom.classList.contains('bottom-legend-collapsed') ? '+' + extraCount + ' more' : 'Less';
-        };
-        const toggleMore = () => { bottom.classList.toggle('bottom-legend-collapsed'); setMoreText(); };
-        more.addEventListener('click', toggleMore);
-        more.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMore(); }
-        });
-        bottom.classList.add('bottom-legend-collapsed');
-        setMoreText();
-        bottom.appendChild(more);
-    }
-    bottom.style.display = datasets.length ? 'flex' : 'none';
 }
+// Recolor drawn charts when dark mode is switched (localsite.js setSitelook)
+document.addEventListener('sitelookchange', () => {
+    if (typeof Chart === 'undefined' || !Chart.getChart) return;
+    ['timelineChart', 'lineAreaChart'].forEach((id) => {
+        const chart = Chart.getChart(id);
+        if (!chart) return;
+        applyTimelineChartTheme(chart.options);
+        chart.update('none');
+    });
+});
 
 // Chart resize handler function
 function handleChartResize() {

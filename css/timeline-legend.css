@@ -1,0 +1,485 @@
+/* Location legend for the Data Commons timeline charts, shared by localsite/timeline/ and home/.
+   Built by localsite/js/timeline-legend.js. Pages can override the list under the chart (#bottom-legend) in their own styles. */
+
+/* The floating legend is positioned inside the chart containers */
+#div1 { position: relative; }
+#div2 { position: relative; }
+
+#floating-legend {
+     position: absolute;
+     top: 126px;
+     right: 20px;
+     left: auto;
+     background: rgba(255,255,255,0.98);
+     border-radius: 8px;
+     padding: 0;
+     box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+     backdrop-filter: blur(6px);
+     border: 1px solid rgba(0,0,0,0.04);
+     z-index: 999;
+     min-width: 160px;
+     font-size: 13px;
+     pointer-events: auto;
+}
+#floating-legend #legend-content {
+    padding: 3px 10px 5px;
+}
+#floating-legend-drag-handle {
+    height: 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+    background-color: #4c5969;
+    background-image:
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.08)),
+        repeating-linear-gradient(135deg, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.08) 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 5px);
+    border-radius: 8px 8px 0 0;
+    cursor: grab;
+    user-select: none;
+}
+#floating-legend-drag-handle:active {
+    cursor: grabbing;
+}
+#floating-legend-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px 3px 12px;
+    min-height: 34px;
+    border-bottom: none;
+    background: rgba(76,89,105,0.12);
+    font-weight: 600;
+    font-size: 14px;
+    color: #223246;
+    cursor: default;
+    user-select: auto;
+}
+#floating-legend.dragging {
+    opacity: 0.9;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 999;
+}
+#floating-legend-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    color: #41556b;
+    padding: 0 4px;
+    margin: -4px -4px -4px 8px;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+}
+#floating-legend-close:hover {
+    background: rgba(76,89,105,0.16);
+    color: #223246;
+}
+#legend-view-toggle {
+    display: flex;
+    background: rgba(76,89,105,0.12);
+    border-radius: 6px;
+    padding: 2px;
+    gap: 2px;
+}
+.view-toggle-btn {
+    padding: 4px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #33485f;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.view-toggle-btn:hover {
+    color: #223246;
+    background: rgba(76,89,105,0.16);
+}
+.view-toggle-btn.active {
+    background: #ffffff;
+    color: #223246;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.24);
+}
+/* Sidebar toggle dark mode (left nav legend). */
+.dark #sidebar-view-toggle {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+}
+.dark #sidebar-view-toggle .view-toggle-btn {
+    color: #d8e2f0;
+}
+.dark #sidebar-view-toggle .view-toggle-btn:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.16);
+}
+.dark #sidebar-view-toggle .view-toggle-btn.active {
+    background: #000;
+    color: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+}
+#legend-content {
+    overflow-y: auto;
+    max-height: 400px;
+}
+/* Floating legend dark mode (left-nav legend remains unchanged). */
+.dark #floating-legend {
+    background: rgba(30,36,48,0.98);
+    border-color: rgba(255,255,255,0.16);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+}
+.dark #floating-legend,
+.dark #floating-legend #legend-content,
+.dark #floating-legend .legend-item,
+.dark #floating-legend .legend-label {
+    color: #e8edf5;
+}
+.dark #floating-legend .legend-value {
+    color: rgba(232,237,245,0.75);
+}
+.dark #floating-legend .legend-item:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+.dark #floating-legend-header {
+    background: rgba(255,255,255,0.06);
+    color: #e8edf5;
+}
+.dark #floating-legend-close {
+    color: #c3cedc;
+}
+.dark #floating-legend-close:hover {
+    background: rgba(255,255,255,0.16);
+    color: #ffffff;
+}
+.dark #legend-view-toggle {
+    background: rgba(255,255,255,0.08);
+}
+.dark #legend-view-toggle .view-toggle-btn {
+    color: #d8e2f0;
+}
+.dark #legend-view-toggle .view-toggle-btn:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.16);
+}
+.dark #legend-view-toggle .view-toggle-btn.active {
+    background: #000;
+    color: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+}
+/* Show floating legend when sidebar is hidden (nav closed) AND chart is visible */
+body.sidebar-hidden #floating-legend.chart-visible,
+body.main-nav-hidden #floating-legend.chart-visible {
+    display: block !important;
+    opacity: 1 !important;
+    pointer-events: auto;
+}
+/* Hide floating legend when chart is not visible (scrolled away) */
+#floating-legend:not(.chart-visible) {
+    display: none !important;
+}
+
+/* On small screens place legend inside the chart area to avoid overflow */
+@media (max-width: 700px) {
+    #floating-legend {
+        right: auto;
+        left: 12px;
+        top: 12px;
+    }
+}
+/* Bottom horizontal key legend under charts */
+.bottom-legend {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 6px;
+    margin-top: 8px;
+    background: transparent;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: 13px;
+    border-radius: 0;
+    pointer-events: auto;
+}
+.bottom-legend-item { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:6px; cursor:pointer; white-space:nowrap; transition:all 0.14s ease; text-align:center; justify-content:center; background: transparent; }
+.bottom-legend-item .legend-swatch { width:12px; height:12px; border-radius:3px; box-shadow:0 0 0 1px rgba(0,0,0,0.06) inset; flex:0 0 auto; }
+.bottom-legend-item.hidden { opacity:0.45; }
+.bottom-legend-more { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:6px; cursor:pointer; white-space:nowrap; color:rgba(0,0,0,0.65); background: transparent; border: 1px dashed rgba(0,0,0,0.06); }
+.bottom-legend-more:hover { background: rgba(0,0,0,0.02); }
+.bottom-legend-collapsed .bottom-legend-item.extra { display: none; }
+.bottom-legend-item .legend-label { max-width: 10em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display:inline-block; }
+.bottom-legend-item .legend-value { margin-left: 6px; font-weight:600; color: rgba(0,0,0,0.65); }
+.legend-item { display:flex; align-items:center; gap:8px; padding:6px 8px; margin:4px 0; border-radius:6px; cursor:pointer; transition:all 0.18s ease; min-width:0; width:100%; box-sizing:border-box;
+    /* Make individual items accept pointer events while the container lets other clicks through */
+    pointer-events: auto;
+}
+.legend-item .item-actions { display: none; }
+.legend-item.hidden { opacity:0.45; }
+
+/* Label part of legend item — truncate if too long */
+.legend-label { display:inline-block; flex: 1 1 auto; min-width:0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* More Locations button in floating/overlay legends */
+.legend-more-btn {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: #0066ff;
+    color: white;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    pointer-events: auto !important;
+    user-select: none;
+}
+
+.legend-more-btn:hover {
+    background: #0052cc;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,102,255,0.3);
+}
+
+.legend-more-btn:active {
+    transform: translateY(0);
+}
+.legend-cache-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    margin-bottom: 2px;
+    align-items: center;
+    pointer-events: auto;
+}
+.legend-cache-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: rgba(255,255,255,0.95);
+    color: #33485f;
+    font-size: 12px;
+    font-weight: 400;
+    cursor: pointer;
+    user-select: none;
+}
+.legend-cache-btn:hover {
+    background: rgba(76,89,105,0.1);
+}
+.dark .legend-cache-btn {
+    background: #2b3341;
+    color: #ffffff;
+    border-color: rgba(255,255,255,0.22);
+}
+.dark .legend-cache-btn:hover {
+    background: #384458;
+}
+
+/* Menu styling */
+.floating-legend-menu-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+#legend-content.legend-list-pending .locations-flat-list,
+#legend-content.legend-list-pending .region-section,
+#legend-content.legend-list-pending > .legend-item {
+    display: none !important;
+}
+.legend-more-inline-panel {
+    margin-top: 6px;
+    padding: 6px 4px;
+    border: 1px solid rgba(0,0,0,0.09);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.95);
+}
+.legend-more-inline-input {
+    width: calc(100% - 16px);
+    margin: 8px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+}
+/* Value small text shown aligned to the right edge of the legend item */
+.legend-value { margin-left: auto; flex: 0 0 auto; color: rgba(0,0,0,0.7); font-weight: 600; padding-left: 8px; }
+
+.legend-item:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+
+/* Region/Continent grouping styles */
+/* .collapsed is set on a continent's section while its list is closed */
+.region-section { margin-bottom: 4px; border-radius: 6px; overflow: hidden; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.08); }
+.region-toggle { width: 100%; display: flex; align-items: center; gap: 6px; padding: 8px 10px; background: rgba(248,249,250,0.9); border: none; cursor: pointer; font-size: 12px; font-weight: 600; color: #333; transition: background 0.2s; text-align: left; }
+.region-section.collapsed .region-toggle { background: rgba(232,236,240,0.9); }
+.region-section .region-toggle:hover { background: rgba(240,242,244,1); }
+.dark .region-section { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.12); }
+.dark .region-toggle { background: #111; color: #e8edf5; }
+.dark .region-section.collapsed .region-toggle { background: #111; }
+.dark .region-section .region-toggle:hover { background: #000; }
+.region-icon { font-size: 14px; flex-shrink: 0; }
+.toggle-arrow { font-size: 10px; transition: transform 0.2s; flex-shrink: 0; }
+.country-buttons-region { padding: 4px 6px; }
+.country-buttons-region .legend-item { margin: 2px 0; padding: 4px 8px; font-size: 13px; }
+
+/* Bottom legend visual styling (transparent, unobtrusive) */
+#bottom-legend {
+    display: flex;
+    flex-wrap: wrap; /* Wraps so "More" at the end of the list stays in view */
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    background: transparent; /* removed white background as requested */
+    border-radius: 6px;
+    margin-top: 12px;
+    overflow-x: auto;
+}
+.bottom-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    border-left: 4px solid transparent;
+}
+.bottom-legend-item.hidden { opacity: 0.55; }
+.bottom-legend-more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    margin-left: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    background: transparent; /* no filled color */
+    color: #0066ff; /* accent color applied to text and border */
+    font-weight: 700; /* bold text */
+    border: 1px solid rgba(0,102,255,0.9);
+    box-shadow: none; /* remove shadow */
+    user-select: none;
+}
+.bottom-legend-more:hover {
+    background: rgba(0,102,255,0.06); /* subtle hover tint */
+    transform: translateY(-1px);
+}
+.bottom-legend-more:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,102,255,0.12);
+}
+.bottom-legend-collapsed .bottom-legend-item.extra { display: none; }
+/* two-dot icon next to more control */
+.more-label { font-weight:700; }
+/* "More" placement menu button at the end of the list, a three-dot icon when every location shows */
+.bottom-legend-place-btn {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+    margin-left: 6px; padding: 6px 10px; border: none; border-radius: 6px; background: transparent;
+    font: inherit; font-size: 13px; font-weight: 600; color: #0066ff; cursor: pointer; white-space: nowrap;
+}
+.bottom-legend-place-btn.is-icon { padding: 6px; }
+.bottom-legend-place-btn:hover { background: rgba(0,102,255,0.08); }
+.bottom-legend-place-btn:focus-visible { outline: 2px solid #0066ff; outline-offset: 1px; }
+.dark .bottom-legend-place-btn { color: #69a5ff; }
+.dark .bottom-legend-place-btn:hover { background: rgba(105,165,255,0.16); }
+@media (max-width:700px) {
+    #bottom-legend { padding: 6px; }
+    .bottom-legend-more { font-size: 13px; padding: 6px 8px; }
+}
+/* dropdown menu for placement options */
+.bottom-legend-menu {
+    position: absolute;
+    z-index: 100000;
+    min-width: 160px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.09);
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    padding: 6px 4px;
+}
+.bottom-legend-menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+/* Locations popup opened from the placement menu */
+#bottom-legend-locations { width: 260px; max-height: none; overflow: visible; }
+.bottom-legend-locations-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 4px 0 12px; }
+.bottom-legend-locations-title { font-weight: 700; font-size: 13px; }
+.bottom-legend-locations-switch {
+    display: inline-flex; align-items: center; justify-content: center; padding: 4px;
+    border: none; border-radius: 6px; background: transparent; color: #4B5563; cursor: pointer;
+}
+.bottom-legend-locations-switch:hover { background: rgba(0,102,255,0.08); color: #0066ff; }
+.bottom-legend-locations-switch[aria-pressed="true"] { background: rgba(0,102,255,0.12); color: #0066ff; }
+.bottom-legend-locations-switch:focus-visible { outline: 2px solid #0066ff; outline-offset: 1px; }
+.dark .bottom-legend-locations-switch { color: #cbd5e1; }
+.dark .bottom-legend-locations-switch:hover,
+.dark .bottom-legend-locations-switch[aria-pressed="true"] { background: rgba(105,165,255,0.2); color: #69a5ff; }
+/* Placement menu rows are buttons */
+#bottom-legend-menu .bottom-legend-menu-item {
+    display: block; width: 100%; text-align: left;
+    border: none; background: transparent; font: inherit; font-size: 13px; color: inherit;
+}
+.bottom-legend-menu-item:hover, .bottom-legend-menu-item:focus {
+    background: rgba(0,102,255,0.06);
+    outline: none;
+}
+
+.bottom-legend-menu-item.selected {
+    background: rgba(0,102,255,0.12);
+    font-weight: 700;
+}
+.dark .bottom-legend-menu {
+    background: #1e2430;
+    border-color: rgba(255,255,255,0.16);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    color: #e8edf5;
+}
+.dark .bottom-legend-menu input {
+    background: #141a24;
+    color: #e8edf5;
+    border-color: rgba(255,255,255,0.22);
+}
+.dark .bottom-legend-menu input::placeholder {
+    color: rgba(232,237,245,0.68);
+}
+.dark .bottom-legend-menu .bottom-legend-menu-item {
+    color: #e8edf5;
+}
+.dark .bottom-legend-menu .bottom-legend-menu-item:hover,
+.dark .bottom-legend-menu .bottom-legend-menu-item:focus {
+    background: rgba(105,165,255,0.22);
+}
+.dark .bottom-legend-menu .bottom-legend-menu-item.selected {
+    background: rgba(105,165,255,0.3);
+}
+.dark #floating-legend-more-inline {
+    background: #1e2430 !important;
+    border-color: rgba(255,255,255,0.16) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45) !important;
+    color: #e8edf5;
+}
+.dark #floating-legend-more-inline input {
+    background: #141a24 !important;
+    color: #e8edf5 !important;
+    border-color: rgba(255,255,255,0.22) !important;
+}
+.dark #floating-legend-more-inline input::placeholder {
+    color: rgba(232,237,245,0.68);
+}
+.dark #floating-legend-more-inline .bottom-legend-menu-item {
+    color: #e8edf5;
+}
+.dark #floating-legend-more-inline .bottom-legend-menu-item:hover,
+.dark #floating-legend-more-inline .bottom-legend-menu-item:focus {
+    background: rgba(105,165,255,0.22);
+}
+.dark #floating-legend-more-inline .bottom-legend-menu-item.selected {
+    background: rgba(105,165,255,0.3);
+}
