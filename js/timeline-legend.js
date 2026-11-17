@@ -363,6 +363,26 @@ function updateOnLeftButtonsVisibility() {
     leftButtons.forEach((btn) => {
         btn.style.display = hideOnLeft ? 'none' : 'inline-flex';
     });
+    updateLegendActionButtons();
+}
+// Buttons under the legend list. The left nav is narrower, so it gets shorter labels:
+//   On Right:     More Locations, On Left (and Below Chart while the checkbox list is open, when More Locations reads Close)
+//   In left nav:  More, Below, Right (More reads Close while the list is open)
+function updateLegendActionButtons() {
+    const onLeft = !!window._timelineLegendAllowSidebar;
+    const panel = document.getElementById('floating-legend-more-inline');
+    const open = !!(panel && panel.style.display !== 'none');
+    document.querySelectorAll('.legend-more-locations-btn').forEach((btn) => {
+        btn.textContent = open ? 'Close' : (onLeft ? 'More' : 'More Locations');
+        btn.setAttribute('aria-expanded', String(open));
+    });
+    document.querySelectorAll('.legend-below-btn').forEach((btn) => {
+        btn.textContent = onLeft ? 'Below' : 'Below Chart';
+        btn.style.display = (onLeft || open) ? 'inline-flex' : 'none';
+    });
+    document.querySelectorAll('.legend-right-btn').forEach((btn) => {
+        btn.style.display = onLeft ? 'inline-flex' : 'none';
+    });
 }
 function updateOnRightButtonsVisibility() {
     let currentPosition = 'right';
@@ -598,11 +618,10 @@ function updateLegendCacheButtonsVisibility() {
     const showSave = !!window._legendListDirty && isLegendListChangedFromBaseline() && !window._legendListJustSaved;
     document.querySelectorAll('.legend-cache-clear-btn').forEach((btn) => {
         btn.style.display = showClear ? 'inline-flex' : 'none';
-        btn.textContent = (showClear && showSave) ? 'Defaults' : 'Restore Defaults';
     });
     document.querySelectorAll('.legend-cache-save-btn').forEach((btn) => {
         btn.style.display = showSave ? 'inline-flex' : 'none';
-        btn.textContent = (showSave && !showClear) ? 'Save Locations' : 'Save';
+        btn.textContent = 'Save as Defaults';
     });
 }
 function applySavedLegendListToCharts(charts) {
@@ -1328,6 +1347,9 @@ function buildFloatingLegendFromChart() {
                 Array.from(labelMap.keys())
             );
             
+            // Order under the list: the More Locations checkbox panel, the Save row, then the More Locations, On Left
+            // and Below Chart buttons
+            let actionsRowToAdd = null;
             // Only show "More Locations" actions if there are countries to add
             if (getAddableCountriesForMenu('').length > 0) {
                 // Styles are in localsite/css/timeline-legend.css (.legend-more-btn)
@@ -1345,14 +1367,24 @@ function buildFloatingLegendFromChart() {
                 onLeftBtn.setAttribute('role', 'button');
                 onLeftBtn.tabIndex = 0;
 
-                // Shown while the checkbox list is open. Puts the legend under the chart.
+                // Puts the legend under the chart. Shown in the left nav, and while the checkbox list is open on the right.
+                // Labels and visibility are set by updateLegendActionButtons().
                 const belowBtn = document.createElement('div');
                 belowBtn.className = 'legend-more-btn legend-below-btn';
-                belowBtn.textContent = 'Below';
+                belowBtn.textContent = 'Below Chart';
                 belowBtn.title = 'Show the locations under the chart';
                 belowBtn.setAttribute('role', 'button');
                 belowBtn.tabIndex = 0;
                 belowBtn.style.display = 'none';
+
+                // In the left nav, moves the legend back to the floating legend on the right
+                const rightBtn = document.createElement('div');
+                rightBtn.className = 'legend-more-btn legend-right-btn';
+                rightBtn.textContent = 'Right';
+                rightBtn.title = 'Show the locations to the right of the chart';
+                rightBtn.setAttribute('role', 'button');
+                rightBtn.tabIndex = 0;
+                rightBtn.style.display = 'none';
                 
                 const inlinePanel = document.createElement('div');
                 inlinePanel.id = 'floating-legend-more-inline';
@@ -1393,11 +1425,12 @@ function buildFloatingLegendFromChart() {
                     const belowContent = legend.getBoundingClientRect().bottom - contentRect.bottom; // Legend border and padding under the list
                     const room = Math.floor(window.innerHeight - 12 - belowContent - contentRect.top);
                     content.style.maxHeight = Math.max(200, room) + 'px';
-                    // Scroll the list so the panel shows, keeping its top in view
+                    // Scroll the list so the panel and the buttons after it show, keeping the panel's top in view
                     const panelRect = panel.getBoundingClientRect();
                     const fitRect = content.getBoundingClientRect();
-                    if (panelRect.bottom > fitRect.bottom) {
-                        content.scrollTop += Math.min(panelRect.bottom - fitRect.bottom, panelRect.top - fitRect.top);
+                    const endRect = (content.querySelector('.legend-actions-row') || panel).getBoundingClientRect();
+                    if (endRect.bottom > fitRect.bottom) {
+                        content.scrollTop += Math.min(endRect.bottom - fitRect.bottom, panelRect.top - fitRect.top);
                     }
                 };
                 if (!window._legendMorePanelResizeBound) {
@@ -1405,11 +1438,7 @@ function buildFloatingLegendFromChart() {
                     window._legendMorePanelResizeBound = true;
                 }
                 // While the checkbox list is open, More Locations reads "Close" and the Below button shows
-                const syncMoreButtons = (open) => {
-                    moreBtn.textContent = open ? 'Close' : 'More Locations';
-                    moreBtn.setAttribute('aria-expanded', String(open));
-                    belowBtn.style.display = open ? 'inline-flex' : 'none';
-                };
+                const syncMoreButtons = () => updateLegendActionButtons();
                 const toggleInlinePanel = () => {
                     const nextVisible = inlinePanel.style.display === 'none';
                     inlinePanel.style.display = nextVisible ? 'block' : 'none';
@@ -1444,6 +1473,10 @@ function buildFloatingLegendFromChart() {
                     moveLegendUnderChart(e);
                 };
                 belowBtn.addEventListener('click', belowFromPanel);
+                rightBtn.addEventListener('click', moveLegendToRight);
+                rightBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') moveLegendToRight(e);
+                });
                 belowBtn.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' || e.key === ' ') belowFromPanel(e);
                 });
@@ -1453,9 +1486,9 @@ function buildFloatingLegendFromChart() {
                 actionsRow.appendChild(moreBtn);
                 actionsRow.appendChild(onLeftBtn);
                 actionsRow.appendChild(belowBtn);
-                legendContent.appendChild(actionsRow);
+                actionsRow.appendChild(rightBtn);
                 legendContent.appendChild(inlinePanel);
-                updateOnLeftButtonsVisibility();
+                actionsRowToAdd = actionsRow; // Added after the Save row below
                 // Checking a location adds it to the charts, which rebuilds this legend. Reopen the panel it was in.
                 if (window._legendMorePanelOpen) {
                     inlineInput.value = window._legendMorePanelQuery || '';
@@ -1469,7 +1502,7 @@ function buildFloatingLegendFromChart() {
             cacheRow.className = 'legend-cache-row';
             const saveBtn = document.createElement('div');
             saveBtn.className = 'legend-cache-btn legend-cache-save-btn';
-            saveBtn.textContent = 'Save';
+            saveBtn.textContent = 'Save as Defaults';
             saveBtn.setAttribute('role', 'button');
             saveBtn.tabIndex = 0;
             saveBtn.addEventListener('click', saveLegendListToCache);
@@ -1486,6 +1519,10 @@ function buildFloatingLegendFromChart() {
             cacheRow.appendChild(clearBtn);
             legendContent.appendChild(cacheRow);
             updateLegendCacheButtonsVisibility();
+            if (actionsRowToAdd) {
+                legendContent.appendChild(actionsRowToAdd);
+                updateOnLeftButtonsVisibility();
+            }
         }
     } catch (e) {
         console.error('Error adding More Locations to floating legend:', e);

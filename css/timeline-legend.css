@@ -218,11 +218,12 @@ body.main-nav-hidden #floating-legend.chart-visible {
 
 /* Label part of legend item — truncate if too long */
 .legend-label { display:inline-block; flex: 1 1 auto; min-width:0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* Buttons under the legend list: More Locations ("Close" while its list is open), On Left, and Below while the list is open */
+/* Buttons under the legend list: More Locations ("Close" while its list is open), On Left, and Below Chart while the list is open.
+   They stay on one line. */
 .legend-actions-row {
     display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+    flex-wrap: nowrap;
+    gap: 5px;
     margin-top: 8px;
     align-items: center;
 }
@@ -230,7 +231,7 @@ body.main-nav-hidden #floating-legend.chart-visible {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 4px 10px;
+    padding: 4px 8px;
     background: #5f6f84;
     color: #fff;
     border-radius: 6px;
@@ -249,13 +250,19 @@ body.main-nav-hidden #floating-legend.chart-visible {
     outline: 2px solid #516175;
     outline-offset: 1px;
 }
+/* Save as Defaults and Restore Defaults each span the row, one above the other when both show */
 .legend-cache-row {
     display: flex;
-    gap: 8px;
-    margin-top: 6px;
-    margin-bottom: 2px;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
     align-items: center;
     pointer-events: auto;
+}
+.legend-cache-btn.legend-cache-save-btn,
+.legend-cache-btn.legend-cache-clear-btn {
+    flex: 1 1 100%;
+    box-sizing: border-box;
 }
 .legend-cache-btn {
     display: inline-flex;
