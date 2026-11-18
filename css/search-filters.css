@@ -1201,7 +1201,7 @@ input.filterClick[type="text"] {
     height: 34px; /* As the close X circle */
     padding: 0;
     cursor: pointer;
-    font-size: 18px; /* Smaller than the popup's icons (.sceneLayoutIcon) */
+    font-size: 22px; /* As the popup's icons (.sceneLayoutIcon) */
     border-radius: 6px;
     color: #999; /* As the close X */
     background-color: rgba(0, 0, 0, 0.06);
@@ -1296,7 +1296,7 @@ input.filterClick[type="text"] {
     .material-icons.sceneLayoutBtn {
         width: 46px;
         height: 46px; /* As the close X circle */
-        font-size: 24px;
+        font-size: 28px;
     }
     .sceneMenuBar .hideApps.close-X {
         width: 46px;

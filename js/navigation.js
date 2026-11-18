@@ -8155,13 +8155,19 @@ function toggleDiv(theClass) {
     });
     */
 }
-// The RealityStream button after the impact buttons (template-main.html): the models page with the page's hash,
-// without appview=topics, which only opens the Topics menu here.
-function goRealityStream() {
+// Goes to another page with this page's hash, without appview=topics, which only opens the Topics menu here.
+// base: the destination, as in the RealityStream button (template-main.html): goWithHash('/realitystream/models/')
+// A folder path gets a leading and trailing slash ("realitystream/models" goes to /realitystream/models/).
+// A file (page.html) keeps its name, and a full URL (https://...) is used as is.
+function goWithHash(base) {
+    if (!/^[a-z]+:\/\//i.test(base)) {
+        base = "/" + base.replace(/^\/+/, "");
+        if (!/\.[a-z0-9]+$/i.test(base) && !base.endsWith("/")) base += "/";
+    }
     let hash = getHashOnly(); // The URL's hash, not hiddenhash
     delete hash.appview;
     const hashString = decodeURIComponent($.param(hash));
-    location.href = '/realitystream/models/' + (hashString ? '#' + hashString : '');
+    location.href = base + (hashString ? '#' + hashString : '');
 }
 function iNav(set) {
     if (pendingScene) { // A scene is selected: go to it with this impact set
