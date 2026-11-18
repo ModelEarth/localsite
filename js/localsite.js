@@ -7919,7 +7919,12 @@ function defineLaunchCMS() {
             // fields. Saving still validates: errors show under each field and in a toast. The tab is
             // found by position, as its label is translated (sidebar.js: Slug, Validation, History, Backlinks).
             + ' #nc-root .sidebar .tabs > .inner > [role="radio"]:nth-child(2) { display: none; }'
-            + ' #nc-root .sidebar:has(.tabs > .inner > [role="radio"]:nth-child(2)[aria-checked="true"]) > #entry-sidebar-content { display: none; }';
+            + ' #nc-root .sidebar:has(.tabs > .inner > [role="radio"]:nth-child(2)[aria-checked="true"]) > #entry-sidebar-content { display: none; }'
+            // Sveltia's start screen (logo, title and spinner), shown briefly while the editor loads,
+            // centers vertically. It's taller than the inline editor, so the logo's top was clipped.
+            // Aligned to the top instead, 26px below the editor's top edge.
+            // While it shows, #nc-root's min-height fits it, through its 12px bottom padding (addCmsAutoHeight).
+            + ' #nc-root .container:has(> .inner > img.logo) { align-items: flex-start; padding-top: 26px; padding-bottom: 12px; }';
         document.head.appendChild(style);
     }
 
@@ -8552,6 +8557,7 @@ function defineLaunchCMS() {
         function fit() {
             queued = false;
             if (ncRoot.style.display === 'none') return;
+            fitStartScreen();
             var height = ncRoot.offsetHeight;
             var base = parseFloat(ncRoot.dataset.baseHeight) || height;
             var target = base;
@@ -8575,6 +8581,23 @@ function defineLaunchCMS() {
             }
             target = Math.max(base, Math.round(target));
             if (Math.abs(target - height) > 1) ncRoot.style.height = target + 'px';
+        }
+        // Sveltia's start screen (logo, title and spinner) shows while the editor opens. Until it's gone,
+        // #nc-root is at least tall enough for it and its bottom padding (injectInlineCmsStyles).
+        function fitStartScreen() {
+            var inner = ncRoot.querySelector('.container > .inner:has(> img.logo)');
+            if (!inner) {
+                if (ncRoot.style.minHeight) ncRoot.style.minHeight = '';
+                return;
+            }
+            var container = inner.parentElement;
+            var rootBox = ncRoot.getBoundingClientRect();
+            var containerBox = container.getBoundingClientRect();
+            var minHeight = inner.getBoundingClientRect().bottom - rootBox.top
+                + parseFloat(getComputedStyle(container).paddingBottom)
+                + (rootBox.bottom - containerBox.bottom); // The resize bar below the app shell
+            minHeight = Math.ceil(minHeight) + 'px';
+            if (ncRoot.style.minHeight !== minHeight) ncRoot.style.minHeight = minHeight;
         }
         function queueFit() {
             if (!queued) { queued = true; window.requestAnimationFrame(fit); }
@@ -8782,10 +8805,36 @@ function defineLaunchCMS() {
         return !!anchor && ncRoot.previousElementSibling === anchor;
     };
 
+    // Sveltia's Restore Default (in the field, language and editor "..." menus) sets fields to their default:
+    // in the CMS config, and empties those without one, as a README's Body. Here it acts as Revert Changes
+    // (Revert All Changes in the editor menu) instead, returning to the content from before editing,
+    // so it changes nothing before any edits. The labels are Sveltia's English ones.
+    var cmsRestoreDefaultKept = false;
+    function keepContentOnRestoreDefault() {
+        if (cmsRestoreDefaultKept) return;
+        cmsRestoreDefaultKept = true;
+        document.addEventListener('click', function(e) {
+            var item = e.target.closest && e.target.closest('.sui.menu [role="menuitem"]');
+            if (!item || item.textContent.trim() !== 'Restore Default') return;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            var revert = Array.prototype.find.call(item.closest('.sui.menu').querySelectorAll('[role="menuitem"]'), function(el) {
+                return /^Revert (All )?Changes$/.test(el.textContent.trim());
+            });
+            if (revert && !revert.disabled && revert.getAttribute('aria-disabled') !== 'true') {
+                revert.click(); // Closes the menu too
+            } else {
+                // No changes to revert. Escape closes the menu, which stops it reaching the editor.
+                item.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+            }
+        }, true);
+    }
+
     window.launchCMS = function(options) {
         options = options || {};
         var inline = (typeof options.inline === 'boolean') ? options.inline : !!window.cmsInlineEditor;
         var appShell = getExistingCmsShell();
+        keepContentOnRestoreDefault();
 
         if (inline) {
             prepareInlineCmsRoot(options.target, options.heightRatio, options.extraHeight, options.fitContent, options.widthOf);
