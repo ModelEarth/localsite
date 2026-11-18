@@ -12,12 +12,11 @@ The&nbsp;[localsite&nbsp;repo](https://github.com/modelearth/localsite/) provide
 
 ## Get Involved
 
+[Model.Earth](https://model.earth) - Environmental Impacts, International Trade Flow  
 [DreamStudio](https://dreamstudio.com) - Collaborative Data Science, ML and AI Insights  
-[CloudRoot Hosting](https://model.earth/cloudroot/) - For Cloudflare, Vercel, Netlify   
-[Webroot Setup](https://model.earth/webroot/) - Start commands for local Rust and Python pipelines   
-[PartnerTools](https://github.com/PartnerTools/webroot) - Base webroot with Rust endpoints and Vercel chat  
-[Model.Earth](https://model.earth) - Environmental Impacts, International Trade Flow
-
+[CloudRoot Hosting](https://github.com/ModelEarth/cloudroot) - For Cloudflare, Vercel, Netlify  
+[Webroot Setup](https://model.earth/webroot/) - Start commands for local Rust and Python pipelines  
+[Project Goals](https://neighborhood.org/project/goals/#tab=goals) - Neighborhood Kiosk Voice Interface  
 
 ## Embed Datascapes
 
