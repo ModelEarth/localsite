@@ -9826,7 +9826,8 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
 const sceneLayouts = {
     // In the layout popup's order. Circle View is the default (getSceneLayout).
     column: {title: 'Columns', icon: '&#xE8F0;', imageFormat: 'landscape', selectPosition: 'OnImage'}, // view_module
-    grid: {title: 'Grid', icon: '&#xE8EF;', imageFormat: 'square', selectPosition: 'ByTitle'}, // view_list, mirrored (search-filters.css)
+    // itemBackground: a grey background behind each scene (.sceneItemBackground), rather than only its border
+    grid: {title: 'Grid', icon: '&#xE8EF;', imageFormat: 'square', selectPosition: 'ByTitle', itemBackground: false}, // view_list, mirrored (search-filters.css)
     circles: {title: 'Circles', icon: '&#xE945;', imageFormat: 'circle', selectPosition: 'OnImage'} // drag_indicator, turned to 6 dots (search-filters.css)
 };
 function getSceneLayout() {
@@ -9898,6 +9899,7 @@ function displaySceneMenu(activeLayer, insertInto) {
             if ($("#sceneMenuInner").length) return; // Built by an earlier call
             $(insertInto).append("<div id='sceneMenuInner' class='sceneMenuInner'>" + sceneMenuBarHtml() + "</div>");
             $("#sceneMenuInner .sceneMenuControls").append($(".hideApps.close-X").first());
+            if (typeof updateDarkModeToggles === 'function') updateDarkModeToggles(); // light_mode or dark_mode icon
             placeSceneMenuBar();
             renderScenes(getSceneLayout());
             if (typeof ResizeObserver !== 'undefined') {
@@ -9943,7 +9945,7 @@ function renderScenes(layout) {
             html += sceneHtml(scene, options);
         }
     }
-    inner.attr("data-layout", layout).find(".sceneItem").remove();
+    inner.attr("data-layout", layout).toggleClass("sceneItemBackground", !!options.itemBackground).find(".sceneItem").remove();
     inner.css("grid-template-columns", ""); // balanceSceneColumns() sets them for the new layout
     inner.append(html);
     if (selected) inner.find(".sceneItem[show='" + selected + "']").addClass("sceneActive");
@@ -9980,7 +9982,8 @@ function sceneHtml(scene, options) {
         (scene.thumbTitleSecondary ? "<div class='sceneSecondary'>" + scene.thumbTitleSecondary + "</div>" : "") +
         "</a></div>";
 }
-// The menu bar: the title at the left, and at the right the layout selector, then the close X that displaySceneMenu() appends.
+// The menu bar: the title at the left, and at the right the layout selector, the dark/light mode toggle
+// (.darkModeToggle, as in Settings, handled by localsite.js), then the close X that displaySceneMenu() appends.
 function sceneMenuBarHtml() {
     let options = "";
     for (const layout in sceneLayouts) {
@@ -9988,7 +9991,9 @@ function sceneMenuBarHtml() {
     }
     return "<div class='sceneMenuBar'><div class='sceneMenuTitle'><b>Create a Scene</b> - Choose an industry and topic</div>" +
         "<div class='sceneMenuControls'><div class='sceneLayoutSelect'><i class='material-icons sceneLayoutIcon sceneLayoutBtn' aria-label='Layout'></i>" +
-        "<div class='sceneLayoutPopup'>" + options + "</div></div></div></div>";
+        "<div class='sceneLayoutPopup'>" + options + "</div></div>" +
+        "<div class='darkModeToggle' role='button' title='Toggle dark mode' aria-pressed='false'><i class='material-icons'>light_mode</i></div>" +
+        "</div></div>";
 }
 // Shows the current layout's icon on the selector, and marks it in the popup
 function setSceneLayoutBtn(layout) {

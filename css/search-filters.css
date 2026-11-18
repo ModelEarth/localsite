@@ -1118,17 +1118,32 @@ input.filterClick[type="text"] {
     width: 100%;
     box-sizing: border-box;
     padding: 6px 6px 6px 13px; /* The image 6px from the box's edges. The title adds its own top and bottom padding. */
+    border: 1px solid #ccc; /* As the topic (impact set) buttons below, .impactIcons div in base.css */
     border-radius: 10px;
     text-align: left;
-    background-color: rgba(0, 0, 0, 0.08);
+    background-color: #fff; /* As the topic buttons in the Topics menu (#navImpactIcons in base.css) */
 }
 .sceneMenuInner[data-layout="grid"] .sceneLink:hover {
-    background-color: rgba(0, 0, 0, 0.13);
+    border-color: #999;
 }
 .dark .sceneMenuInner[data-layout="grid"] .sceneLink {
-    background-color: rgba(255, 255, 255, 0.06);
+    border: 2px solid #666; /* As the topic buttons in dark mode */
+    background-color: transparent;
 }
 .dark .sceneMenuInner[data-layout="grid"] .sceneLink:hover {
+    border-color: #999;
+}
+/* Optional grey background (sceneLayouts itemBackground in navigation.js, off for now) */
+.sceneMenuInner.sceneItemBackground[data-layout="grid"] .sceneLink {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+.sceneMenuInner.sceneItemBackground[data-layout="grid"] .sceneLink:hover {
+    background-color: rgba(0, 0, 0, 0.13);
+}
+.dark .sceneMenuInner.sceneItemBackground[data-layout="grid"] .sceneLink {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+.dark .sceneMenuInner.sceneItemBackground[data-layout="grid"] .sceneLink:hover {
     background-color: rgba(255, 255, 255, 0.12);
 }
 .sceneMenuInner[data-layout="grid"] .sceneImage {
@@ -1226,6 +1241,36 @@ input.filterClick[type="text"] {
     color: #ccc;
     background-color: rgba(255, 255, 255, 0.18);
 }
+/* Dark/light mode toggle (.darkModeToggle in localsite.js), to the right of the layout selector, styled as it */
+.sceneMenuBar .darkModeToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #999;
+    background-color: rgba(0, 0, 0, 0.06);
+}
+.sceneMenuBar .darkModeToggle:hover {
+    color: #555;
+    background-color: rgba(0, 0, 0, 0.12);
+}
+.dark .sceneMenuBar .darkModeToggle {
+    color: #aaa;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.dark .sceneMenuBar .darkModeToggle:hover {
+    color: #ccc;
+    background-color: rgba(255, 255, 255, 0.18);
+}
+.sceneMenuBar .darkModeToggle .material-icons {
+    font-size: 20px; /* Over css/fonts/materialicons/icon.css. The dark_mode moon. */
+}
+.sceneMenuBar .darkModeToggle[aria-pressed="false"] .material-icons {
+    font-size: 24px; /* The light_mode sun, in light mode (updateDarkModeToggles in localsite.js) */
+}
 /* Popup below the selector: each layout's icon, with its name to the right */
 .sceneLayoutPopup {
     display: none;
@@ -1300,6 +1345,16 @@ input.filterClick[type="text"] {
         width: 46px;
         height: 46px; /* As the close X circle */
         font-size: 28px;
+    }
+    .sceneMenuBar .darkModeToggle {
+        width: 46px;
+        height: 46px;
+    }
+    .sceneMenuBar .darkModeToggle .material-icons {
+        font-size: 26px;
+    }
+    .sceneMenuBar .darkModeToggle[aria-pressed="false"] .material-icons {
+        font-size: 30px;
     }
     .sceneMenuBar .hideApps.close-X {
         width: 46px;
