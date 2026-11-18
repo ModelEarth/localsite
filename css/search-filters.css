@@ -898,7 +898,7 @@ input.filterClick[type="text"] {
 }
 
 /* SCENE MENU (the Topics menu, to be renamed Scenes), built by navigation.js displaySceneMenu().
-   #sceneMenuInner's data-layout arranges the scenes: circles, thumb or grid.
+   #sceneMenuInner's data-layout arranges the scenes: column, grid or circles.
    Each .sceneItem's classes set its image format (imageCircle, imageLandscape, imageSquare, imagePortrait)
    and where its select button sits (selectOnImage, selectByTitle). */
 
@@ -1083,26 +1083,26 @@ input.filterClick[type="text"] {
     }
 }
 
-/* Thumb view: the image fills the column, with its title below */
-.sceneMenuInner[data-layout="thumb"] {
-    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); /* navigation.js balanceThumbColumns() reduces columns to avoid blank space */
+/* Column View: the image fills the column, with its title below */
+.sceneMenuInner[data-layout="column"] {
+    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); /* navigation.js balanceSceneColumns() reduces columns to avoid blank space */
     gap: 12px 8px;
 }
-.sceneMenuInner[data-layout="thumb"] .sceneLink {
+.sceneMenuInner[data-layout="column"] .sceneLink {
     align-items: stretch;
     text-align: left;
 }
-.sceneMenuInner[data-layout="thumb"] .sceneImage {
+.sceneMenuInner[data-layout="column"] .sceneImage {
     max-height: 180px;
 }
-.sceneMenuInner[data-layout="thumb"] .sceneLink:hover .sceneImage {
+.sceneMenuInner[data-layout="column"] .sceneLink:hover .sceneImage {
     filter: brightness(0.85);
 }
-.sceneMenuInner[data-layout="thumb"] .sceneTitle {
+.sceneMenuInner[data-layout="column"] .sceneTitle {
     padding: 6px 2px 0 2px;
 }
 
-/* Grid View: each scene is a rounded box with its large title and the 48px image beside it, 6px in from
+/* Grid View: each scene is a rounded box with its large title and the 60px image beside it, 6px in from
    the box's edges. A title under 30 characters (.titleShort) stays on one line. navigation.js balanceSceneColumns()
    sets flexible columns, each as wide as its widest scene, as many as fit on a row, so the grid needn't span
    the menu. Each box fills its column, so the columns' edges align. */
@@ -1117,7 +1117,7 @@ input.filterClick[type="text"] {
     gap: 12px;
     width: 100%;
     box-sizing: border-box;
-    padding: 6px 6px 6px 16px; /* The image 6px from the box's edges. The title adds its own top and bottom padding. */
+    padding: 6px 6px 6px 13px; /* The image 6px from the box's edges. The title adds its own top and bottom padding. */
     border-radius: 10px;
     text-align: left;
     background-color: rgba(0, 0, 0, 0.08);
@@ -1133,7 +1133,7 @@ input.filterClick[type="text"] {
 }
 .sceneMenuInner[data-layout="grid"] .sceneImage {
     order: 1; /* After the title */
-    width: 48px;
+    width: 60px;
     border-radius: 5px; /* Follows the box's 10px corner, 6px in */
 }
 .sceneMenuInner[data-layout="grid"] .sceneTitle {
@@ -1189,6 +1189,9 @@ input.filterClick[type="text"] {
 .material-icons.sceneLayoutIcon {
     font-size: 22px;
 }
+.sceneLayoutIcon[data-layout="grid"] {
+    transform: scaleX(-1); /* view_list mirrored: the small boxes on the right, as the images in Grid View */
+}
 .sceneLayoutIcon[data-layout="circles"] {
     transform: rotate(90deg) scale(1.15); /* drag_indicator's 6 dots, 3 across. scale sizes the dots without changing the icon's space. */
 }
@@ -1230,7 +1233,7 @@ input.filterClick[type="text"] {
     top: 100%;
     right: 0; /* Opens leftward, since the selector is near the right edge */
     z-index: 10;
-    min-width: 160px;
+    width: max-content; /* As wide as the layout names */
     padding: 6px;
     background-color: var(--bg-secondary, #fff);
     border: 1px solid var(--border-light, #E5E7EB);

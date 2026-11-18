@@ -9825,15 +9825,16 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
 // Hovering it, or clicking it on a touch screen, opens a popup of the layouts by name.
 const sceneLayouts = {
     // In the layout popup's order. Circle View is the default (getSceneLayout).
-    thumb: {title: 'Thumb View', icon: '&#xE8F0;', imageFormat: 'landscape', selectPosition: 'OnImage'}, // view_module
-    grid: {title: 'Grid View', icon: '&#xE8EF;', imageFormat: 'square', selectPosition: 'ByTitle'}, // view_list
-    circles: {title: 'Circle View', icon: '&#xE945;', imageFormat: 'circle', selectPosition: 'OnImage'} // drag_indicator, turned to 6 dots (search-filters.css)
+    column: {title: 'Columns', icon: '&#xE8F0;', imageFormat: 'landscape', selectPosition: 'OnImage'}, // view_module
+    grid: {title: 'Grid', icon: '&#xE8EF;', imageFormat: 'square', selectPosition: 'ByTitle'}, // view_list, mirrored (search-filters.css)
+    circles: {title: 'Circles', icon: '&#xE945;', imageFormat: 'circle', selectPosition: 'OnImage'} // drag_indicator, turned to 6 dots (search-filters.css)
 };
 function getSceneLayout() {
     let layout = null;
     try {
         layout = localStorage.getItem('sceneLayout');
-        if (!layout && localStorage.getItem('bigThumbLayout') === 'stack') layout = 'thumb'; // Prior key, where Thumb view was "stack"
+        if (layout === 'thumb') layout = 'column'; // Column View was Thumb View
+        if (!layout && localStorage.getItem('bigThumbLayout') === 'stack') layout = 'column'; // Prior key, where Column View was "stack"
     } catch (e) {}
     return sceneLayouts[layout] ? layout : 'circles';
 }
@@ -10023,7 +10024,7 @@ function placeSceneMenuBar() {
     }
 }
 // Grid View: flexible columns, each as wide as its widest scene, as many as fit on a row.
-// Thumb View: fewer columns when the last row would leave blank space, e.g. 5 scenes in 3 columns rather
+// Column View: fewer columns when the last row would leave blank space, e.g. 5 scenes in 3 columns rather
 // than 4. Columns are at least 220px, as in search-filters.css, and stay under 400px, so the images don't
 // get too big (10 scenes stay in 3 columns rather than 2).
 function balanceSceneColumns() {
@@ -10051,7 +10052,7 @@ function balanceSceneColumns() {
         inner.style.gridTemplateColumns = columns;
         return;
     }
-    if (layout !== 'thumb') {
+    if (layout !== 'column') {
         inner.style.gridTemplateColumns = "";
         return;
     }
