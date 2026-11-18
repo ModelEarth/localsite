@@ -896,518 +896,420 @@ input.filterClick[type="text"] {
     text-align: center;
     margin:0 auto;
 }
-/* No bottom space below the app menu, so the impact set buttons (#navImpactIcons) follow it closely */
-#bigThumbPanelHolder,
-#bigThumbPanelHolder #honeycombPanelHolder,
-#bigThumbPanelHolder #honeycombPanel,
-#bigThumbPanelHolder #bigThumbMenu,
-#bigThumbPanelHolder #honeyMenuHolder {
+
+/* SCENE MENU (the Topics menu, to be renamed Scenes), built by navigation.js displaySceneMenu().
+   #sceneMenuInner's data-layout arranges the scenes: circles, thumb or grid.
+   Each .sceneItem's classes set its image format (imageCircle, imageLandscape, imageSquare, imagePortrait)
+   and where its select button sits (selectOnImage, selectByTitle). */
+
+/* No bottom space below the menu, so the impact set buttons (#navImpactIcons) follow it closely */
+#scenePanelHolder,
+#scenePanelHolder #honeycombPanelHolder,
+#scenePanelHolder #honeycombPanel,
+#scenePanelHolder #honeyMenuHolder {
     margin-bottom: 0;
     padding-bottom: 0;
 }
-#bigThumbPanelHolder #bigThumbMenu {
+#scenePanelHolder #sceneMenu {
     margin-bottom: 10px; /* Before the impact set buttons */
 }
-/* The thumbnails and the impact set buttons share #topicsPanel's background (.lite) and padding,
-   which replaces the padding and bottom margin of .bigThumbMenuInner and .contentpadding .bigThumbMenu there */
+/* The scenes and the impact set buttons share #topicsPanel's background (.lite) and padding */
 #topicsPanel {
-    padding: 15px 20px 0 20px; /* The buttons' 15px bottom margin is the bottom space */
-    display: flex; /* #topicsLeftColumn, then the layout buttons and close X (.bigThumbLayoutToggle) as the right column */
-    align-items: stretch;
-}
-#topicsLeftColumn {
-    flex: 1;
-    min-width: 0;
-}
-#bigThumbPanelHolder .bigThumbMenuInner.layoutStack {
-    margin-bottom: 10px; /* Below the rectangles */
-}
-#bigThumbPanelHolder .bigThumbMenuInner {
-    padding: 0;
-    margin-bottom: 0;
-    /* A container query container is the containing block for absolute children, which would keep the right column
-       on the grid. Its @container rules are for the narrow right-side panel, so they aren't needed in the Topics menu. */
-    container-type: normal;
-}
-/* In the Topics menu, the close X and the list and circles buttons (X first) are the right column of #topicsPanel's
-   flex row, after #topicsLeftColumn (navigation.js placeThumbLayoutToggle). The line between the columns runs from
-   the panel's top to its bottom, beside the thumbnails and the impact set buttons. */
-#bigThumbPanelHolder .bigThumbMenu > .bigThumbMenuInner {
-    flex: 1;
-    min-width: 0;
-}
-#bigThumbPanelHolder .bigThumbLayoutToggle {
-    flex: none;
-    align-self: stretch; /* Full height of #topicsPanel's row */
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    margin: -15px -11px 0 6px; /* Up through #topicsPanel's 15px top padding, and into its 20px right padding */
-    padding: 15px 0 0 6px;
-    border-left: 1px solid #ccc;
-}
-.dark #bigThumbPanelHolder .bigThumbLayoutToggle {
-    border-left-color: #888; /* #555 barely showed against the dark panel */
-}
-#bigThumbPanelHolder .bigThumbLayoutToggle .hideApps.close-X {
-    order: -1; /* navigation.js appends the X after the layout buttons */
-    margin: 0 0 6px 0;
-    padding: 4px;
-}
-#bigThumbPanelHolder .bigThumbMenu {
-    padding-top: 0;
+    padding: 8px 20px 0 20px; /* The menu bar (.sceneMenuBar) leads. The buttons' 15px bottom margin is the bottom space. */
 }
 @media (max-width: 600px) {
     #topicsPanel {
         padding-left: 12px;
         padding-right: 12px;
     }
-    #bigThumbPanelHolder .bigThumbMenuInner {
-        padding-top: 0; /* .bigThumbMenuInner's 40px held the buttons, now in the right column */
-    }
 }
-/* Grid layout in the Topics menu: the columns stretch to fill the width beside the right column of buttons,
-   rather than fixed 180px cells (floated, or a set number of columns) leaving space on the right.
-   Each circle stays centered in its cell. */
-#bigThumbPanelHolder .bigThumbMenuInner:not(.layoutStack) {
+
+.sceneMenu {
+    clear: both;
+}
+.sceneMenuInner {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    width: 100%;
-    margin-bottom: 15px; /* Extra space after the circle thumbnails */
+    /* Circle View: at least 2 columns when narrow, as in the side panel */
+    grid-template-columns: repeat(auto-fill, minmax(min(170px, calc(50% - 8px)), 1fr));
+    gap: 16px 8px;
+    padding: 15px 15px 10px 20px;
+    margin-bottom: 15px;
+    container-type: inline-size;
+    container-name: sceneMenuInner;
 }
-#bigThumbPanelHolder .bigThumbMenuInner:not(.layoutStack) .bigThumbMenuContent {
-    display: block;
-    float: none;
+#scenePanelHolder .sceneMenuInner {
+    padding: 0;
 }
-#bigThumbPanelHolder .bigThumbMenuInner:not(.layoutStack) .bigThumbWidth {
-    width: 100%;
+#scenePanelHolder .sceneMenuInner[data-layout="circles"] {
+    margin-bottom: 20px; /* Extra space after the circles */
 }
-/* Less space under the thumbnail titles (.bigThumbWidth is 170px tall).
-   .bigThumbHolder (absolute, 180px) matches, so the last row doesn't overflow its cell. */
-#bigThumbPanelHolder .bigThumbMenuInner:not(.layoutStack) .bigThumbWidth,
-#bigThumbPanelHolder .bigThumbMenuInner:not(.layoutStack) .bigThumbHolder {
-    height: 150px;
+#scenePanelHolder .sceneMenuInner:not([data-layout="circles"]) {
+    margin-bottom: 15px;
 }
-/* No scrolling in the Topics menu: the menu grows to fit the thumbnails.
-   #honeycombPanelHolder (display:flow-root in template-main.html) contains the floats. */
-#bigThumbPanelHolder .bigThumbMenu,
-#bigThumbPanelHolder .bigThumbMenuInner {
-    overflow: visible;
+
+/* SCENE */
+.sceneItem {
+    min-width: 0;
 }
-.bigThumbWidth { /* allows margin to reside within percent */
-    floatX:left;
-    position: relative;
-}
-.bigThumbWidthXXXX:after {
-  content: "";
-  display: block;
-  padding-bottomX: 100%;
-}
-.bigThumbUl {
-    margin: 0px;
-    list-style-type: none;
-    /*
-    padding-right: -30px;
-    border:1px solid #fff;
-    */
-}
-.bigThumbHolder {
-    width: 100%;
-    height: 180px;
-    position: absolute;
-    float: left;
+.sceneLink,
+.sceneLink:link,
+.sceneLink:visited {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
     color: #777;
+    text-decoration: none;
     cursor: pointer;
 }
-.bigThumbMenuContent,
-.bigThumbMenuContent *,
-.bigThumbHolder,
-.bigThumbHolder * {
-    cursor: pointer !important;
+.sceneLink:hover {
+    color: #333;
+    text-decoration: none;
 }
-.bigThumbHolder:hover {
-  color: #333;
-
+.dark .sceneLink,
+.dark .sceneLink:link,
+.dark .sceneLink:visited {
+    color: #bbb;
 }
-
-.bigThumbHolder a:link {
-  color: #777;
-  text-decoration: none;
+.dark .sceneLink:hover {
+    color: #fff;
 }
-.bigThumbHolder a:link:hover {
-  color: #333;
-  text-decoration: none;
+#listingsPanelScroll .sceneLink {
+    color: #fff;
 }
-/* visited link */
-.bigThumbHolder a:visited {
-  color: #777;
-}
-.bigThumbHolder a:visited:hover {
-  color: #333;
-  text-decoration: none;
-}
-
-.bigThumb {
+.sceneImage {
+    position: relative;
+    flex: none;
+    width: 100%;
     background-color: #fff;
     background-size: cover;
-    opacity: 0.7;
-    cursor: pointer;
-    width: 110px;
-    height: 110px;
+    background-position: center;
+}
+.sceneTitle {
+    padding-top: 5px;
+    font-size: 16px;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+.sceneSecondary {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* Image formats */
+.imageCircle .sceneImage {
+    aspect-ratio: 1;
     border-radius: 50%;
-    margin: 40px;
-    margin: 0 auto;
-    position: relative;
-    line-height: 1em;
 }
-.bigThumbMenuContent {
-  display:inline-block;
+.imageSquare .sceneImage {
+    aspect-ratio: 1;
+    border-radius: 6px;
 }
-.bigThumbWidth {
-  padding:0 20px 0 20px;
-  padding:0px !important;
-  margin:0px !important;
+.imageLandscape .sceneImage {
+    aspect-ratio: 5 / 2;
+    border-radius: 6px;
 }
-.bigThumb:hover {
-  opacity: 1;
-  filter: alpha(opacity=100);
+.imagePortrait .sceneImage {
+    aspect-ratio: 3 / 4;
+    border-radius: 6px;
 }
-.bigThumb a {
-  position: absolute; /* allows href to cover space */
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  text-align: center; /* no effect */
-  cursor: pointer;
-}
-.bigThumbText {
-  overflow: visible;
-  padding-top: 9px;
-  font-size: 16px;
-  font-family: 'Roboto Condensed', sans-serif;
-  text-decoration: none;
-}
-#listingsPanelScroll .bigThumbText {
-  color: #fff;
-}
-.bigThumb:hover .bigThumbText {
-  font-weight: 400;
-}
-.bigThumbStatus {
-  position: absolute;
-  top: 0;
-  right: -10px;
-  height: 30px;
-  background-color: #ccc;
-  height: 30px;
-  width: 30px;
 
-  height: 18px;
-  width: 18px;
-
-  background-color: #fff;
-  border-radius: 50%; /* No border in light mode, which would narrow the white ring around .bigThumbSelected */
-  display: flex; /* Centers .bigThumbSelected, which was off center where the text is left aligned (stack layout) */
-  align-items: center;
-  justify-content: center;
-}
-.bigThumbSelected {
-  margin: 0;
-  flex-shrink: 0;
-  height: 12px;
-  width: 12px;
-  background-color: #ddd;
-  border-radius: 50%;
-  display: inline-block;
-}
-.bigThumbActive .bigThumbSelected {
-  background-color: var(--accent-orange, #F59E0B);
-}
-.bigThumbSecondary {
-    color: #fff;
-    font-size: 15px;
-    font-weight: 400;
-}
-.bigThumbMenu {
-    clear: both; /* clear close X */
-    display: flex;
+/* Select button: a radio button, a white ring around a dot that's orange when selected */
+.sceneSelect {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    border-bottomX: 1px solid #eee;
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #fff;
 }
-.dark #bigThumbMenu .bigThumbHolder,
-.dark #bigThumbMenu .bigThumbHolder a:link,
-.dark #bigThumbMenu .bigThumbHolder a:visited {
-  color: #bbb;
+.sceneSelect::after {
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #ddd;
 }
-.dark #bigThumbMenu .bigThumbHolder:hover,
-.dark #bigThumbMenu .bigThumbHolder a:link:hover,
-.dark #bigThumbMenu .bigThumbHolder a:visited:hover {
-  color: #fff;
+.dark .sceneSelect::after {
+    background-color: #777;
 }
-.dark #bigThumbMenu .bigThumbSelected {
-  background-color: #777;
+.sceneActive .sceneSelect::after {
+    background-color: var(--accent-orange, #F59E0B);
 }
-.dark #bigThumbMenu .bigThumbActive .bigThumbSelected {
-  background-color: orange;
+/* OnImage: in the image's upper left, or the upper right of a circle */
+.selectOnImage .sceneSelect {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    z-index: 1;
 }
-.bigThumbMenuInner {
-  display: grid;
-  overflow: auto;
-  padding: 15px;
-  padding-left: 20px;
-  padding-bottom: 10px;
-  margin-bottom: 15px;
-  container-type: inline-size;
-  container-name: bigThumbMenuInner;
+.imageCircle.selectOnImage .sceneSelect {
+    top: 0;
+    left: auto;
+    right: -10px;
 }
-/* Layout toggle bar (grid vs. stack) injected at top of #bigThumbMenuInner.
-   Negative left margin lets it span over the parent's left padding. */
-.bigThumbLayoutToggle {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: flex-end;
-  gap: 2px;
-  padding: 0 4px 6px 4px;
-  margin-left: -20px;
+/* ByTitle: before the title, aligned to its top line, with an outline since it's on the panel rather than the image */
+.selectByTitle .sceneTitle {
+    display: flex;
+    align-items: flex-start;
 }
-.bigThumbLayoutToggle .bigThumbLayoutBtn {
-  cursor: pointer;
-  font-size: 22px;
-  opacity: 0.45;
-  padding: 4px;
-  border-radius: 4px;
-  color: inherit;
+.imageCircle.selectByTitle .sceneTitle {
+    justify-content: center; /* As the centered titles under circles */
 }
-.bigThumbLayoutToggle .bigThumbLayoutBtn:hover {
-  opacity: 0.8;
+.selectByTitle .sceneSelect {
+    margin: 0.15em 8px 0 0; /* Down to the top of the letters */
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1.5px #bbb;
 }
-.bigThumbLayoutToggle .bigThumbLayoutBtn.active {
-  opacity: 1;
+.sceneTitleText {
+    min-width: 0;
 }
-.bigThumbLayoutToggle .bigThumbLayoutBtn[data-layout="circles"] {
-  transform: rotate(90deg) scale(1.15); /* drag_indicator's 6 dots, 3 across. scale sizes the dots without changing the button's space. */
-  color: #888; /* Lighter grey */
+
+/* Circle View: the image centered above its title */
+.sceneMenuInner[data-layout="circles"] .sceneImage {
+    width: 110px;
+    opacity: 0.7;
 }
-.dark .bigThumbLayoutToggle .bigThumbLayoutBtn[data-layout="circles"] {
-  color: inherit;
+.sceneMenuInner[data-layout="circles"] .sceneLink:hover .sceneImage {
+    opacity: 1;
 }
-.bigThumbLayoutToggle .hideApps.close-X {
-  position: static;
-  padding: 0 4px;
-  font-size: 20px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  margin-left: 4px;
+@container sceneMenuInner (max-width: 400px) {
+    .sceneMenuInner[data-layout="circles"] .sceneImage {
+        width: 80px;
+    }
+    .sceneMenuInner[data-layout="circles"] .sceneTitle {
+        font-size: 13px;
+    }
+}
+
+/* Thumb view: the image fills the column, with its title below */
+.sceneMenuInner[data-layout="thumb"] {
+    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); /* navigation.js balanceThumbColumns() reduces columns to avoid blank space */
+    gap: 12px 8px;
+}
+.sceneMenuInner[data-layout="thumb"] .sceneLink {
+    align-items: stretch;
+    text-align: left;
+}
+.sceneMenuInner[data-layout="thumb"] .sceneImage {
+    max-height: 180px;
+}
+.sceneMenuInner[data-layout="thumb"] .sceneLink:hover .sceneImage {
+    filter: brightness(0.85);
+}
+.sceneMenuInner[data-layout="thumb"] .sceneTitle {
+    padding: 6px 2px 0 2px;
+}
+
+/* Grid View: each scene is a rounded box with its large title and the 48px image beside it, 6px in from
+   the box's edges. A title under 30 characters (.titleShort) stays on one line. navigation.js balanceSceneColumns()
+   sets flexible columns, each as wide as its widest scene, as many as fit on a row, so the grid needn't span
+   the menu. Each box fills its column, so the columns' edges align. */
+.sceneMenuInner[data-layout="grid"] {
+    grid-template-columns: repeat(auto-fill, min(400px, 100%));
+    justify-content: start;
+    gap: 10px 14px;
+}
+.sceneMenuInner[data-layout="grid"] .sceneLink {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 6px 6px 16px; /* The image 6px from the box's edges. The title adds its own top and bottom padding. */
+    border-radius: 10px;
+    text-align: left;
+    background-color: rgba(0, 0, 0, 0.08);
+}
+.sceneMenuInner[data-layout="grid"] .sceneLink:hover {
+    background-color: rgba(0, 0, 0, 0.13);
+}
+.dark .sceneMenuInner[data-layout="grid"] .sceneLink {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+.dark .sceneMenuInner[data-layout="grid"] .sceneLink:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+.sceneMenuInner[data-layout="grid"] .sceneImage {
+    order: 1; /* After the title */
+    width: 48px;
+    border-radius: 5px; /* Follows the box's 10px corner, 6px in */
+}
+.sceneMenuInner[data-layout="grid"] .sceneTitle {
+    flex: 0 1 auto; /* Beside the image, rather than pushing it to the column's right */
+    min-width: 0;
+    padding: 6px 0; /* 12px from the box's top and bottom, with the box's 6px */
+    font-size: 24px;
+    line-height: 1.2;
+}
+.sceneMenuInner[data-layout="grid"] .titleShort .sceneTitle {
+    white-space: nowrap;
+}
+.sceneMenuInner[data-layout="grid"] .titleShort .sceneTitleText {
+    overflow: hidden;
+    text-overflow: ellipsis; /* Only when the menu is narrower than the scene */
+}
+
+/* MENU BAR: the title at the upper left, and the layout selector and the close X (in a circle) at the upper right */
+.sceneMenuBar {
+    grid-column: 1 / -1; /* Spans #sceneMenuInner's grid, as in the side panel */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+#scenePanelHolder .sceneMenuBar {
+    margin: 0 -11px 8px 0; /* Into #topicsPanel's 20px right padding, so the X sits near its corner */
+}
+.sceneMenuTitle {
+    min-width: 0;
+    font-size: 18px;
+    font-weight: 400; /* "Create a Scene" is bold */
+    text-align: left;
+    color: var(--text-primary, #1A1A1A);
+}
+#listingsPanelScroll .sceneMenuTitle {
+    color: #fff; /* As the scene titles there */
+}
+/* The close X waits in template-main.html until displaySceneMenu() moves it into the menu bar */
+#scenePanelHolder > .hideApps.close-X {
+    display: none;
+}
+.sceneMenuControls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: none;
+}
+.sceneLayoutSelect {
+    position: relative;
+}
+/* .material-icons in the selectors: over css/fonts/materialicons/icon.css, which loads later with display:inline-block and font-size:30px */
+.material-icons.sceneLayoutIcon {
+    font-size: 22px;
+}
+.sceneLayoutIcon[data-layout="circles"] {
+    transform: rotate(90deg) scale(1.15); /* drag_indicator's 6 dots, 3 across. scale sizes the dots without changing the icon's space. */
+}
+.material-icons.sceneLayoutBtn { /* A translucent fill with slightly rounded corners, with the icon centered */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 34px;
+    height: 34px; /* As the close X circle */
+    padding: 0;
+    cursor: pointer;
+    font-size: 18px; /* Smaller than the popup's icons (.sceneLayoutIcon) */
+    border-radius: 6px;
+    color: #999; /* As the close X */
+    background-color: rgba(0, 0, 0, 0.06);
+}
+.sceneLayoutBtn[data-layout="circles"] {
+    transform: rotate(90deg); /* Without .sceneLayoutIcon's scale, which would enlarge the button's background */
+}
+.sceneLayoutSelect:hover .sceneLayoutBtn,
+.sceneLayoutSelect.open .sceneLayoutBtn {
+    color: #555;
+    background-color: rgba(0, 0, 0, 0.12);
+}
+.dark .sceneLayoutBtn {
+    color: #aaa;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.dark .sceneLayoutSelect:hover .sceneLayoutBtn,
+.dark .sceneLayoutSelect.open .sceneLayoutBtn {
+    color: #ccc;
+    background-color: rgba(255, 255, 255, 0.18);
+}
+/* Popup below the selector: each layout's icon, with its name to the right */
+.sceneLayoutPopup {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0; /* Opens leftward, since the selector is near the right edge */
+    z-index: 10;
+    min-width: 160px;
+    padding: 6px;
+    background-color: var(--bg-secondary, #fff);
+    border: 1px solid var(--border-light, #E5E7EB);
+    border-radius: var(--radius-md, 8px);
+    box-shadow: var(--shadow-lg);
+    text-align: left;
+}
+.sceneLayoutSelect:hover .sceneLayoutPopup,
+.sceneLayoutSelect.open .sceneLayoutPopup {
+    display: block;
+}
+.sceneLayoutOption {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px 6px 6px;
+    border-radius: var(--radius-sm, 6px);
+    font-size: 15px;
+    white-space: nowrap;
+    color: var(--text-primary, #1A1A1A);
+    cursor: pointer;
+}
+.sceneLayoutOption:hover {
+    background-color: var(--bg-tertiary, #E5E7EB);
+}
+.sceneLayoutOption .sceneLayoutIcon {
+    color: var(--text-secondary, #6B7280);
+}
+.sceneLayoutOption.active,
+.sceneLayoutOption.active .sceneLayoutIcon {
+    color: var(--accent-orange, #F59E0B);
+}
+.sceneMenuBar .hideApps.close-X { /* .icon-circle-btn (base.css) shapes the circle: a translucent fill rather than its border */
+    position: static;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    padding: 0;
+    font-size: 20px;
+    -webkit-text-stroke: 0.8px currentColor; /* Bolder ✕, since font-weight barely thickens the symbol */
+    border: none;
+    color: #999; /* As the layout button (.sceneLayoutBtn) */
+    background-color: rgba(0, 0, 0, 0.06);
+}
+.sceneMenuBar .hideApps.close-X:hover {
+    color: #555;
+    background-color: rgba(0, 0, 0, 0.12);
+}
+.dark .sceneMenuBar .hideApps.close-X {
+    color: #aaa;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.dark .sceneMenuBar .hideApps.close-X:hover {
+    color: #ccc;
+    background-color: rgba(255, 255, 255, 0.18);
+}
+/* The close X isn't needed when #sceneMenuInner has moved into the side panel */
+#listingsPanel .sceneMenuBar .hideApps {
+    display: none;
 }
 /* Larger touch targets on a narrow screen */
 @media (max-width: 600px) {
-  .bigThumbLayoutToggle .bigThumbLayoutBtn {
-    font-size: 32px;
-    padding: 6px;
-  }
-  .bigThumbLayoutToggle .hideApps.close-X {
-    font-size: 28px;
-  }
-  #bigThumbPanelHolder .bigThumbLayoutToggle {
-    margin-right: 0px; /* Rather than -11px into the panel's right padding */
-  }
-}
-/* When #bigThumbMenuInner itself is narrow (e.g., in the right-side panel),
-   force .bigThumbMenuContent to two columns regardless of viewport width. */
-@container bigThumbMenuInner (max-width: 400px) {
-  .bigThumbMenuContent {
-    float: left;
-    width: 50%;
-    box-sizing: border-box;
-    padding: 8px;
-  }
-  .bigThumbMenuContent .bigThumbWidth {
-    width: 100%;
-    height: auto;
-  }
-  .bigThumbMenuContent .bigThumbHolder {
-    position: relative;
-    float: none;
-    height: auto;
-  }
-  .bigThumbMenuContent .bigThumb {
-    width: 80px;
-    height: 80px;
-  }
-  .bigThumbMenuContent .bigThumbText {
-    font-size: 13px;
-    padding-top: 6px;
-  }
-  .bigThumbLayoutToggle {
-    float: none;
-    clear: both;
-    width: 100%;
-  }
-}
-/* Stack layout (data-layout="stack"): each row is a rectangle with the image behind the title,
-   a dark band behind the title, and the radio button in the upper left corner as in the grid layout.
-   Wraps into multiple columns when the container is wide. */
-.bigThumbMenuInner.layoutStack {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* navigation.js balanceStackColumns() reduces columns to avoid blank space */
-  column-gap: 8px;
-  row-gap: 8px; /* Space after each row of rectangles */
-}
-.bigThumbMenuInner.layoutStack .bigThumbMenuContent {
-  float: none;
-  width: auto;
-  display: block;
-  padding: 4px 8px;
-  box-sizing: border-box;
-}
-/* Hide the close-X when bigThumbMenuInner has been moved into the Settings panel */
-#listingsPanel .bigThumbLayoutToggle .hideApps {
-  display: none;
-}
-.bigThumbMenuInner.layoutStack .bigThumbWidth {
-  width: 100%;
-  height: auto;
-}
-.bigThumbMenuInner.layoutStack .bigThumbHolder {
-  position: relative;
-  height: auto;
-  float: none;
-  text-align: left;
-}
-.bigThumbMenuInner.layoutStack .bigThumbHolder > a {
-  position: relative;
-  display: flex;
-  align-items: flex-end; /* The title band sits along the bottom, clear of the radio button */
-  width: 100%;
-  aspect-ratio: 5 / 2; /* Height follows the column width */
-  min-height: 90px;
-  max-height: 180px;
-  top: auto; right: auto; left: auto; bottom: auto;
-  padding: 0;
-  border-radius: 6px;
-  overflow: hidden;
-}
-/* The image fills the rectangle behind the title */
-.bigThumbMenuInner.layoutStack .bigThumb {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  border-radius: 0;
-  opacity: 1; /* The former hover look is the default */
-}
-/* Hover darkens the image and the title band */
-.bigThumbMenuInner.layoutStack .bigThumbHolder > a:hover .bigThumb {
-  opacity: 1;
-  filter: brightness(0.75);
-}
-.bigThumbMenuInner.layoutStack .bigThumbHolder > a:hover .bigThumbText {
-  background-color: rgba(0, 0, 0, 0.75);
-}
-/* Dark band spanning the rectangle behind the title */
-.bigThumbMenuInner.layoutStack .bigThumbText {
-  position: relative;
-  z-index: 1;
-  flex: 1;
-  font-size: 18px;
-  font-weight: 400;
-  padding: 6px 12px;
-  text-align: left;
-  color: #fff !important; /* Over the link colors of .bigThumbHolder a */
-  background-color: rgba(0, 0, 0, 0.55);
-}
-.bigThumbMenuInner.layoutStack .bigThumbSecondary {
-  display: none;
-}
-/* Radio button in the upper left corner over the image */
-.bigThumbMenuInner.layoutStack .bigThumbStatus {
-  top: 6px;
-  left: 6px;
-  right: auto;
-  z-index: 2;
-}
-@media (max-width: 600px) {
-  .bigThumbMenuInner {
-    padding: 40px 0 0 0;
-  }
-  /* One column of rectangles. !important beats the inline columns from balanceStackColumns() (navigation.js). The circles keep 2 columns. */
-  .bigThumbMenuInner.layoutStack {
-    grid-template-columns: 1fr !important;
-  }
-  /* Rectangles at 1/3 the height: 15 / 2 rather than 5 / 2 */
-  .bigThumbMenuInner.layoutStack .bigThumbHolder > a {
-    aspect-ratio: 15 / 2;
-    min-height: 30px;
-    max-height: 60px;
-  }
-  .bigThumbMenuInner.layoutStack .bigThumbHolder > a {
-    align-items: stretch; /* The title band covers the rectangle's full height */
-  }
-  .bigThumbMenuInner.layoutStack .bigThumbText {
-    display: flex;
-    align-items: center; /* Title centered vertically in the band */
-    padding-left: 36px; /* Clear of the radio button at the left */
-  }
-  .bigThumbMenuInner.layoutStack .bigThumbStatus {
-    top: 50%;
-    transform: translateY(-50%); /* Centered vertically */
-  }
-  /* The radio buttons keep their light look in dark mode here, over the dark band */
-  .dark #bigThumbMenu .bigThumbMenuInner.layoutStack .bigThumbStatus {
-    background-color: #fff;
-  }
-  .dark #bigThumbMenu .bigThumbMenuInner.layoutStack .bigThumbSelected {
-    background-color: #ddd;
-  }
-  .dark #bigThumbMenu .bigThumbMenuInner.layoutStack .bigThumbActive .bigThumbSelected {
-    background-color: var(--accent-orange, #F59E0B);
-  }
-}
-.contentpadding .bigThumbMenuInner {
-  padding: 0px;
-}
-.contentpadding .bigThumbMenu {
-  padding: 0px;
-  padding-top: 20px;
-}
-
-@media (min-width: 350px) {
-  .bigThumbMenuInner{
-    grid-template-columns: 1fr 1fr
-  }
-  .showSearch {
-    /*
-    display: none !important;
-    */
-  }
-}
-@media (min-width: 600px) {
-  .bigThumbMenuInner{
-    grid-template-columns: 1fr 1fr 1fr
-  }
-}
-@media (min-width: 800px) {
-  .bigThumbMenuInner{
-    /* grid-template-columns: 1fr 1fr 1fr 1fr; */
-  }
-}
-@media (min-width: 1000px) {
-  .bigThumbMenuInner {
-    /* grid-template-columns: 1fr 1fr 1fr 1fr 1fr; */
-  }
-}
-@media (min-width: 1200px) {
-  .bigThumbMenuInner {
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-  }
-}
-.bigThumbWidth {
-    width: 180px;
-    height: 170px;
+    .material-icons.sceneLayoutBtn {
+        width: 46px;
+        height: 46px; /* As the close X circle */
+        font-size: 24px;
+    }
+    .sceneMenuBar .hideApps.close-X {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        font-size: 26px;
+    }
+    #scenePanelHolder .sceneMenuBar {
+        margin-right: -6px; /* #topicsPanel's side padding is 12px there */
+    }
+    .sceneMenuTitle {
+        font-size: 16px;
+    }
 }
 
 /* Full Screen */
@@ -1415,32 +1317,7 @@ input.filterClick[type="text"] {
     .primaryTitle {
         font-size: 58px;
     }
-    .bigThumbWidth {
-      widthX: 16.66%;
-    }
 }
-/* Narrow Div */
-
-  .bigThumbMenu {
-    display: block;
-    overflow: auto;
-    background-colorX: #fff; /* honeycombPanel line 78 also sets bg color above icons */
-    background-colorX: #fcfcfc;
-  }
-  .bigThumbMenuInner {
-    grid-template-columns: auto;
-    display: block;
-  }
-  .bigThumbMenuContent {
-    float: left;
-  }
-  .bigThumbWidth {
-    widthX: 100%;
-    display: block !important;
-  }
-  .bigThumbText {
-    padding-top: 5px;
-  }
 
 #county-table {
   padding-right:12px;

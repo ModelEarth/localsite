@@ -5248,9 +5248,25 @@ waitForElm('#goatIcons .darkModeToggle').then(updateDarkModeToggles); // once th
 // navigation.js calls addDesktopLinks() after cloning the header's #sidecolumnContent, so the link also
 // appears when a page's own param.headerFile has no Desktop link.
 // It links to the Desktop Port saved in Settings. With no port saved, it links to localhost:8880
-// when that site responds. The check isn't remembered, so a Desktop site started later shows on the next page.
+// when that site responds. The result is remembered for an hour (localStorage desktopPortCheck), so pages don't
+// re-check it each time. Choosing Dev in Settings clears it and checks again, for a Desktop site started since.
 var DEFAULT_DESKTOP_PORT = "8880";
-var _desktopDefaultCheck = null; // One check of the default port per page
+var DESKTOP_CHECK_STORAGE_KEY = 'desktopPortCheck';
+var DESKTOP_CHECK_MAX_AGE = 60 * 60 * 1000; // 1 hour
+var _desktopDefaultCheck = null; // The check of the default port for this page
+function getCachedDesktopCheck() {
+  try {
+    var cached = JSON.parse(localStorage.getItem(DESKTOP_CHECK_STORAGE_KEY) || 'null');
+    if (cached && typeof cached.found === 'boolean' && Date.now() - cached.time < DESKTOP_CHECK_MAX_AGE) return cached.found;
+  } catch (e) { /* ignore */ }
+  return null;
+}
+// Forgets the remembered result and checks the default port again, updating the Desktop links
+function recheckDesktopPort() {
+  try { localStorage.removeItem(DESKTOP_CHECK_STORAGE_KEY); } catch (e) { /* ignore */ }
+  _desktopDefaultCheck = null;
+  setDesktopPort();
+}
 function isDesktopPort(port) {
   return /^\d{4}$/.test(port || "");
 }
@@ -5283,10 +5299,19 @@ function setDesktopPort(port) {
   showLinks("");
   if (location.port === DEFAULT_DESKTOP_PORT) { showLinks(DEFAULT_DESKTOP_PORT); return; } // This page is on it
   if (!_desktopDefaultCheck) {
-    // no-cors: any response from the server counts. Fails only when nothing is listening on the port.
-    _desktopDefaultCheck = fetch('http://localhost:' + DEFAULT_DESKTOP_PORT + '/', { mode: 'no-cors', cache: 'no-store' })
-      .then(function() { return true; })
-      .catch(function() { return false; });
+    var cachedFound = getCachedDesktopCheck();
+    if (cachedFound !== null) {
+      _desktopDefaultCheck = Promise.resolve(cachedFound);
+    } else {
+      // no-cors: any response from the server counts. Fails only when nothing is listening on the port.
+      _desktopDefaultCheck = fetch('http://localhost:' + DEFAULT_DESKTOP_PORT + '/', { mode: 'no-cors', cache: 'no-store' })
+        .then(function() { return true; })
+        .catch(function() { return false; })
+        .then(function(found) {
+          try { localStorage.setItem(DESKTOP_CHECK_STORAGE_KEY, JSON.stringify({ found: found, time: Date.now() })); } catch (e) { /* ignore */ }
+          return found;
+        });
+    }
   }
   _desktopDefaultCheck.then(function(found) {
     if (found && !isDesktopPort(savedDesktopPort())) showLinks(DEFAULT_DESKTOP_PORT);

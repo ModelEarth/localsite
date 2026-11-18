@@ -819,17 +819,17 @@
 
 
 <!-- APP MENU -->
-<!-- From navigation.js displayBigThumbnails function -->
+<!-- SCENE MENU: built by navigation.js displaySceneMenu() -->
 <div class="search-filters-css lite" style="display:none">
-<div id="bigThumbPanelHolder" style="display:none;position: relative;">
+<div id="scenePanelHolder" style="display:none;position: relative;">
 
-  <div class="hideApps close-X">✕</div>
+  <div class="hideApps close-X icon-circle-btn" title="Close">✕</div>
 
-  <!-- Thumbnails and impact set buttons share this background and padding (#topicsPanel in search-filters.css) -->
+  <!-- Scenes and impact set buttons share this background and padding (#topicsPanel in search-filters.css) -->
   <div id="topicsPanel" class="lite">
-  <!-- Left column: thumbnails and impact set buttons. navigation.js placeThumbLayoutToggle() adds the layout buttons and close X as the right column. -->
+  <!-- Scenes and impact set buttons. navigation.js placeSceneMenuBar() adds the menu bar above: the title at the left, the layout selector and close X at the right. -->
   <div id="topicsLeftColumn">
-  <div id="honeycombPanelHolder" style="display:flow-root;position:relative"><!-- flow-root contains the floated thumbnails without overflow:auto scrolling -->
+  <div id="honeycombPanelHolder" style="display:flow-root;position:relative"><!-- flow-root contains the menu without overflow:auto scrolling -->
   <a name="sections"></a>
   <div id="honeycombPanel" class="filterFields" style="display: block;">
     
@@ -839,7 +839,7 @@
       </div>
     -->
 
-      <div id="bigThumbMenu" class="bigThumbMenu" style="margin:0 auto;"></div>
+      <div id="sceneMenu" class="sceneMenu" style="margin:0 auto;"></div>
 
       <div id="honeyMenuHolder" style="display:none">
         <div id="honeycombMenu"></div>
@@ -848,8 +848,8 @@
   </div>
   </div>
 
-  <!-- IMPACT SETS: shown with the app menu (appview=topics), since they reside in #bigThumbPanelHolder. Styles: .impactIcons in base.css.
-  iNav() (navigation.js) goes to localsite/info on other pages, with the app selected by a .bigThumbStatus radio button. -->
+  <!-- IMPACT SETS: shown with the app menu (appview=topics), since they reside in #scenePanelHolder. Styles: .impactIcons in base.css.
+  iNav() (navigation.js) goes to localsite/info on other pages, with the scene selected by its .sceneSelect radio button. -->
   <div id="navImpactIcons">
     <div class="impactIcons">
       <!-- closeAppsMenu() closes the Topics panel. iNav('') removes the set: all impacts. -->
@@ -860,7 +860,7 @@
       <div class="impactIcon_Health" onclick="closeAppsMenu();iNav('health');">Health</div>
       <div class="impactIcon_Prosperity" onclick="closeAppsMenu();iNav('prosperity');">Prosperity</div>
       <div class="impactIcon_All" onclick="closeAppsMenu();iNav('');">All</div>
-      <div class="local btn btn-primary" onclick="location.href='/realitystream/models/#' + window.location.hash.substr(1); return false;" style="display:none;min-width:133px;font-size:15px;border:none;">
+      <div class="local btn btn-primary realityStreamBtn" onclick="goRealityStream(); return false;" style="display:none;min-width:133px;font-size:15px;border:none;">
         RealityStream
       </div>
     </div>

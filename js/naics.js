@@ -704,8 +704,8 @@ function getNaics_setHiddenHash2(go) {
 
     if (!go) { // Check the "industries" topic.
         let checkWhat = "industries"; // Not essential, works without being checked
-        waitForElm(".bigThumbMenuContent[show='" + checkWhat + "']").then((elm) => {
-            $(".bigThumbMenuContent[show='" + checkWhat + "']").addClass("bigThumbActive");
+        waitForElm(".sceneItem[show='" + checkWhat + "']").then((elm) => {
+            $(".sceneItem[show='" + checkWhat + "']").addClass("sceneActive");
         });
     }
     // BUGBUG - Not sure where this sends the naics to the URL hash, which might be good until widget updates are tested.

@@ -406,7 +406,7 @@ function hashChanged() {
         if (!hash.appview) {
             waitForElm('.showApps').then((elm) => {
                 // Same as in closeAppsMenu(), but calling that function from here generates blank page
-                $("#bigThumbPanelHolder").hide();
+                $("#scenePanelHolder").hide();
                 $(".showApps").removeClass("filterClickActive");
             });
         }
@@ -487,7 +487,7 @@ function hashChanged() {
         console.log("Recenter map " + mapCenter)
         */
 
-        //showThumbMenu(hash.show, "#bigThumbMenu");
+        //showSceneMenu(hash.show, "#sceneMenu");
     }
     if (hash.state) {
         $(".showforstates").show();
@@ -1184,9 +1184,9 @@ function hashChanged() {
             //show = "industries";
         }
         //if (activeLayer) {
-            $(".bigThumbMenuContent").removeClass("bigThumbActive");
-            $(".bigThumbMenuContent[show='" + show +"']").addClass("bigThumbActive");
-            let activeTitle = $(".bigThumbMenuContent[show='" + show +"'] .bigThumbText").text();
+            $(".sceneItem").removeClass("sceneActive");
+            $(".sceneItem[show='" + show +"']").addClass("sceneActive");
+            let activeTitle = $(".sceneItem[show='" + show +"'] .sceneTitle").text();
             $("#showAppsText").attr("title",activeTitle);
         //}
     }
@@ -1202,7 +1202,7 @@ function hashChanged() {
             console.log("hash.appview exists: " + hash.appview);
             //navigationJsLoaded
             waitForVariable('navigationJsLoaded', function() {
-                showApps("#bigThumbMenu");
+                showApps("#sceneMenu");
             });
         } else {
             closeAppsMenu();
@@ -3785,7 +3785,7 @@ if (typeof $ !== 'undefined') {
             return;
         }
         if (action === "topics") {
-            showApps("#bigThumbMenu");
+            showApps("#sceneMenu");
             refreshFilterToggleIcon();
             event.stopPropagation();
             return;
@@ -7449,7 +7449,7 @@ $(document).ready(function() {
         catTitle = $(this).attr("title");
     }
     var catString = catTitle.replace(/ /g, '_').replace(/&/g, '%26');
-    $("#bigThumbPanelHolder").hide();
+    $("#scenePanelHolder").hide();
     $(".showApps").removeClass("filterClickActive");
     //updateHash({'appview':''});
     if (catString == "All_Categories") {
@@ -7853,56 +7853,33 @@ function displayHexagonMenu(layerName, localObject) {
         }
   }
   $("#honeycombMenu").append("<ul id='hexGrid'>" + sectionMenu + "</ul>"); // Resides in template-main.html
-  $("#bigThumbPanelHolder").show();
+  $("#scenePanelHolder").show();
   //$("#iconMenu").append(iconMenu);
     $("#honeyMenuHolder").show();
 }
-// The radio button beside each app menu thumbnail (.bigThumbStatus) only selects the app, keeping the menu open,
-// while the impact set buttons (#navImpactIcons, template-main.html) are on the page. Clicking an impact button
-// then submits both (iNav). Clicking the thumbnail image still goes to the app right away (thumbClick).
-var pendingThumb = null; // {show, path} or {href} of the selected thumbnail
+// While the impact set buttons (#navImpactIcons, template-main.html) are on the page, clicking a scene in any layout
+// only selects it, keeping the menu open, so a topic (impact set) is chosen too. Clicking an impact button then
+// submits both (iNav). Clicking the scene that's already selected (.sceneActive) goes to it (.sceneLink below).
+// Without the impact set buttons, as in the side panel, clicking a scene goes to it.
+var pendingScene = null; // {show, path} or {href} of the selected scene
 document.addEventListener('click', function(e) {
-    const radio = e.target.closest ? e.target.closest('#bigThumbMenu .bigThumbStatus') : null;
-    if (!radio) return;
-    const content = radio.closest('.bigThumbMenuContent');
-    const show = content ? content.getAttribute('show') : "";
-    if (content && content.classList.contains('bigThumbActive')) { // Clicked again: unselect
-        // Capture phase: runs before the link's thumbClick onclick and the .bigThumbHolder handler that closes the menu
-        e.preventDefault();
-        e.stopPropagation();
-        pendingThumb = null;
-        $(content).removeClass("bigThumbActive");
-        const impactButtons = document.getElementById('navImpactIcons');
-        if (impactButtons) impactButtons.classList.remove('impactAttention');
-        if (getHashOnly().show == show) {
-            // As in submitThumb when show changes
-            delete hiddenhash.show;
-            delete hiddenhash.naics;
-            delete param.show;
-            if (typeof params != 'undefined') {
-                delete params.show;
-            }
-            goHash({show: ""}); // "" removes show from the hash
-        } else { // Only selected, not yet submitted: the hash's show is selected again
-            $(".bigThumbMenuContent[show='" + getHashOnly().show + "']").addClass("bigThumbActive");
-        }
-        return;
-    }
-    if (!document.getElementById('navImpactIcons')) return;
-    // Capture phase: runs before the link's thumbClick onclick and the .bigThumbHolder handler that closes the menu
-    e.preventDefault();
-    e.stopPropagation();
-    const link = radio.closest('a');
-    const onclickMatch = link && String(link.getAttribute('onclick') || "").match(/thumbClick\('([^']*)','([^']*)'\)/);
-    if (onclickMatch) {
-        pendingThumb = {show: onclickMatch[1], path: onclickMatch[2]};
-    } else if (link && link.getAttribute('href')) {
-        pendingThumb = {href: link.getAttribute('href')}; // A direct link without thumbClick
+    const link = e.target.closest ? e.target.closest('#sceneMenu .sceneLink') : null;
+    if (!link || !document.getElementById('navImpactIcons')) return;
+    const item = link.closest('.sceneItem');
+    if (!item || item.classList.contains('sceneActive')) return; // Already selected: go to it
+    const show = item.getAttribute('show');
+    if (link.hasAttribute('data-path')) {
+        pendingScene = {show: show, path: link.getAttribute('data-path')};
+    } else if (link.getAttribute('href')) {
+        pendingScene = {href: link.getAttribute('href')}; // A direct link
     } else {
         return;
     }
-    $(".bigThumbMenuContent").removeClass("bigThumbActive");
-    $(content).addClass("bigThumbActive");
+    // Capture phase: runs before the .sceneLink handler, which goes to the scene and closes the menu
+    e.preventDefault();
+    e.stopPropagation();
+    $(".sceneItem").removeClass("sceneActive");
+    $(item).addClass("sceneActive");
     // A wave across the impact buttons (.impactAttention in base.css) draws attention to the next step
     const impactButtons = document.getElementById('navImpactIcons');
     impactButtons.classList.remove('impactAttention');
@@ -7915,19 +7892,19 @@ document.addEventListener('animationend', function(e) {
         document.getElementById('navImpactIcons').classList.remove('impactAttention');
     }
 });
-function thumbClick(show,path) {
-    pendingThumb = null;
-    submitThumb(show, path);
+function sceneClick(show,path) {
+    pendingScene = null;
+    submitScene(show, path);
 }
-// Thumbnail images that are plain links (no thumbClick) carry the page's hash (usregion and the rest),
-// as thumbClick does. Their href holds only the state from when the menu was built (getDirectLink).
+// Scenes that are plain links (no data-path) carry the page's hash (usregion and the rest), as sceneClick does.
+// Their href holds only the state from when the menu was built (getDirectLink).
 // Returns the link's URL with the page's hash, or null for another site's link (which keeps its own).
 // set: the impact set from iNav. "" ("All") removes the set.
 function directLinkWithHash(href, set) {
     const url = new URL(href, location.href);
     if (url.origin !== location.origin) return null;
     let hash = getHashOnly();
-    ['cat','naics','name','details','m','appview'].forEach(key => delete hash[key]); // As in submitThumb
+    ['cat','naics','name','details','m','appview'].forEach(key => delete hash[key]); // As in submitScene
     delete hash.show; // The prior topic. A link's own show (below) is kept. "All Industries" has none, so it clears show.
     const linkHash = Object.fromEntries(new URLSearchParams(url.hash.slice(1)));
     delete linkHash.state; // The current state wins over the one from when the menu was built
@@ -7941,15 +7918,23 @@ function directLinkWithHash(href, set) {
     url.hash = decodeURIComponent($.param(hash));
     return url.href;
 }
-$(document).on('click', '#bigThumbMenu .bigThumbHolder a[href]:not([onclick*="thumbClick"])', function(event) {
-    if (event.target.closest('.bigThumbStatus')) return; // The radio button only selects
-    const href = directLinkWithHash(this.getAttribute('href'));
-    if (!href) return;
+// Goes to a scene, and closes the menu: the selected scene clicked again, or any scene without the impact set buttons
+$(document).on('click', '.sceneLink', function(event) {
+    pendingScene = null;
+    $("#scenePanelHolder").hide(); // Could remain open when a small version above the map is added
+    $(".showApps").removeClass("filterClickActive");
+    if (this.hasAttribute('data-path')) {
+        event.preventDefault();
+        sceneClick($(this).closest('.sceneItem').attr('show'), this.getAttribute('data-path'));
+        return;
+    }
+    const href = this.getAttribute('href') ? directLinkWithHash(this.getAttribute('href')) : null;
+    if (!href) return; // Another site's link keeps its own hash
     event.preventDefault();
     location.href = href;
 });
-// set: the impact set from iNav, when an impact button submits the selected thumbnail. "" ("All") removes the set.
-function submitThumb(show, path, set) {
+// set: the impact set from iNav, when an impact button submits the selected scene. "" ("All") removes the set.
+function submitScene(show, path, set) {
     let hash = getHashOnly(); // Not hiddenhash
     let priorShow = hash.show;
     // "All Industries" (item industries) is the page without a topic, so it clears show. "" removes it (goHash).
@@ -7987,8 +7972,8 @@ function submitThumb(show, path, set) {
                 delete params.show;
             }
         }
-        $(".bigThumbMenuContent").removeClass("bigThumbActive");
-        $(".bigThumbMenuContent[show='" + show +"']").addClass("bigThumbActive");
+        $(".sceneItem").removeClass("sceneActive");
+        $(".sceneItem[show='" + show +"']").addClass("sceneActive");
         console.log(hash);
         goHash(hash,"name,loc"); // Remove name and loc (loc is not used yet)
     }
@@ -8170,16 +8155,24 @@ function toggleDiv(theClass) {
     });
     */
 }
+// The RealityStream button after the impact buttons (template-main.html): the models page with the page's hash,
+// without appview=topics, which only opens the Topics menu here.
+function goRealityStream() {
+    let hash = getHashOnly(); // The URL's hash, not hiddenhash
+    delete hash.appview;
+    const hashString = decodeURIComponent($.param(hash));
+    location.href = '/realitystream/models/' + (hashString ? '#' + hashString : '');
+}
 function iNav(set) {
-    if (pendingThumb) { // An app menu thumbnail is selected: go to it with this impact set
-        const thumb = pendingThumb;
-        pendingThumb = null;
-        $("#bigThumbPanelHolder").hide();
+    if (pendingScene) { // A scene is selected: go to it with this impact set
+        const scene = pendingScene;
+        pendingScene = null;
+        $("#scenePanelHolder").hide();
         $(".showApps").removeClass("filterClickActive");
-        if (thumb.href) { // Carries the page's hash (usregion and the rest), as a thumbnail image click does
-            location.href = directLinkWithHash(thumb.href, set) || thumb.href + (set ? (thumb.href.indexOf('#') >= 0 ? "&" : "#") + "set=" + set : "");
+        if (scene.href) { // Carries the page's hash (usregion and the rest), as a scene click does
+            location.href = directLinkWithHash(scene.href, set) || scene.href + (set ? (scene.href.indexOf('#') >= 0 ? "&" : "#") + "set=" + set : "");
         } else {
-            submitThumb(thumb.show, thumb.path, set);
+            submitScene(scene.show, scene.path, set);
         }
         return;
     }
@@ -8476,7 +8469,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         if (!param.state && !hash.state) {
             if (param.geoview != "earth") {
                 if (onlineApp && defaultState) {
-                    param.state = defaultState; // For longer displayBigThumbnails menu in navigation.js
+                    param.state = defaultState; // For longer displaySceneMenu menu in navigation.js
                 }
             }
         }
@@ -9192,10 +9185,6 @@ $(document).ready(function () {
             returnGeoviewContainer();
         }
     });
-    $(document).on("click", ".hideThumbMenu", function(event) {
-        $("#bigThumbPanelHolder").hide();
-        $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
-    });
 });
 
 // Since we may sometimes load before JQuery avoiding $(document).on("click", ".showSections", function(event) { etc.
@@ -9248,12 +9237,9 @@ document.addEventListener('click', function(event) {
 function showTopics() {
     //closeExpandedMenus(event.currentTarget);
     if (!$.trim($("#mapList1").html())) { // If the location list is not empty, load the list of types.
-        $("#bigThumbMenuInner").appendTo("#listingsPanelScroll");
-        placeThumbLayoutToggle();
-        if (!document.getElementById("#bigThumbMenuInner")) {
-            let hash = getHash();
-            showThumbMenu(hash.show, "#listingsPanelScroll");
-        }
+        $("#sceneMenuInner").appendTo("#listingsPanelScroll");
+        placeSceneMenuBar();
+        showSceneMenu(getHash().show, "#listingsPanelScroll"); // Builds the scenes when not yet built
     }
     $(".showTopics").addClass("active");
     $("#listingsPanel").show();
@@ -9360,6 +9346,9 @@ $(document).on("change", "#devmode", function(event) { // Public or Dev
     }
     const devmode = $("#devmode").val();
     setDevmode(devmode);
+    if (devmode == "dev" && typeof recheckDesktopPort === 'function') {
+        recheckDesktopPort(); // The DESKTOP link appears if a Desktop site has started since the last check
+    }
     if (devmode != "dev") {
         let hash = getHash();
         if (hash.sidetab == "settings") {
@@ -9801,12 +9790,12 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
             //alert(localObject.layers[layer].state)
 
             // These should be lazy loaded when clicking menu
-            //displayBigThumbnails(0, hash.show, "main");
+            //displaySceneMenu(0, hash.show, "main");
             //displayHexagonMenu("", layerObject);
             
             if (!hash.show && !param.show) { // INITial load
                 if ($("body").width() >= 800) {
-                    //showThumbMenu(hash.show, "#bigThumbMenu");
+                    //showSceneMenu(hash.show, "#sceneMenu");
                 }
             }
             layersLoaded();
@@ -9822,19 +9811,36 @@ function loadLocalObjectLayers(layerName, callback) { // layerName is not curren
     
 } // end loadLocalObjectLayers
 
-function showThumbMenu(activeLayer, insertInto) {
+// SCENE MENU
+// The Topics menu (to be renamed Scenes) shows a scene for each menulevel 1 layer in localObject.layers.
+// Each layout sets the scenes' image format (circle, landscape, square or portrait) and where each scene's
+// select button sits (OnImage or ByTitle). The select button is a radio button, and may later be a checkbox.
+// The layout selector (.sceneLayoutSelect) in the menu's upper right, beside the close X, shows the current layout's icon.
+// Hovering it, or clicking it on a touch screen, opens a popup of the layouts by name.
+const sceneLayouts = {
+    // In the layout popup's order. Circle View is the default (getSceneLayout).
+    thumb: {title: 'Thumb View', icon: '&#xE8F0;', imageFormat: 'landscape', selectPosition: 'OnImage'}, // view_module
+    grid: {title: 'Grid View', icon: '&#xE8EF;', imageFormat: 'square', selectPosition: 'ByTitle'}, // view_list
+    circles: {title: 'Circle View', icon: '&#xE945;', imageFormat: 'circle', selectPosition: 'OnImage'} // drag_indicator, turned to 6 dots (search-filters.css)
+};
+function getSceneLayout() {
+    let layout = null;
+    try {
+        layout = localStorage.getItem('sceneLayout');
+        if (!layout && localStorage.getItem('bigThumbLayout') === 'stack') layout = 'thumb'; // Prior key, where Thumb view was "stack"
+    } catch (e) {}
+    return sceneLayouts[layout] ? layout : 'circles';
+}
+function showSceneMenu(activeLayer, insertInto) {
     $("#menuHolder").css('margin-right','-250px');
-    if (insertInto == "#bigThumbMenu") {
-       $("#bigThumbPanelHolder").show();
-    }
-    if (!$(".bigThumbMenuContent").length) {
-        displayBigThumbnails(0, activeLayer, "main", insertInto);
-    }
-    if (insertInto != "#bigThumbMenu") {
-        $("#bigThumbPanelHolder").hide();
-        $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
+    if (insertInto == "#sceneMenu") {
+        $("#scenePanelHolder").show();
     } else {
-        //$('.showApps').addClass("filterClickActive");
+        $("#scenePanelHolder").hide();
+        $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
+    }
+    if (!$("#sceneMenuInner").length) {
+        displaySceneMenu(activeLayer, insertInto);
     }
 }
 
@@ -9854,7 +9860,7 @@ function getDirectLink(livedomain,directlink,rootfolder,hashStr) {
     } else {
         //directlink = removeFrontFolder("/explore/#" + hashStr);
     }
-    if (hash.state && directlink.indexOf('state=') < 0) {
+    if (hash.state && directlink && directlink.indexOf('state=') < 0) {
         if (directlink.indexOf('#') >= 0) {
             directlink = directlink + "&state=" + hash.state;
         } else {
@@ -9878,240 +9884,174 @@ function access(minlevel,alevel) {
         return false;
     }
 }
-function displayBigThumbnails(attempts, activeLayer, layerName, insertInto) {
-    if (!activeLayer) {
-        //activeLayer = "industries";
-    }
-    loadScript(theroot + 'js/navigation.js', function(results) {
-        loadLocalObjectLayers(activeLayer, function() {
-
-          waitForElm('#bigThumbPanelHolder').then((elm) => { //Not needed
-            // Setting param.state in navigation.js passes to hash here for menu to use stateAbbr:
-            let hash = getHash();
-
-            let stateAbbr = $("#state_select").find(":selected").val();
-            if (param.state) { // Bugbug - might need a way to clear param.state
-                stateAbbr = param.state.split(",")[0].toUpperCase();
+// Builds #sceneMenuInner in insertInto, with the menu bar (layout selector and close X) and the scenes in the saved layout.
+function displaySceneMenu(activeLayer, insertInto) {
+    loadLocalObjectLayers(activeLayer, function() {
+        waitForElm('#scenePanelHolder').then(() => {
+            if ($("#sceneMenuInner").length) return; // Built by an earlier call
+            $(insertInto).append("<div id='sceneMenuInner' class='sceneMenuInner'>" + sceneMenuBarHtml() + "</div>");
+            $("#sceneMenuInner .sceneMenuControls").append($(".hideApps.close-X").first());
+            placeSceneMenuBar();
+            renderScenes(getSceneLayout());
+            if (typeof ResizeObserver !== 'undefined') {
+                // Also runs when the menu opens, since its size changes from zero
+                new ResizeObserver(balanceSceneColumns).observe(document.getElementById('sceneMenuInner'));
             }
-            if (hash.state) {
-                        hash.state = hash.state.split(",").filter(s => s.length === 2).join(","); // Remove if not 2-char, including state=all
-        stateAbbr = hash.state.split(",")[0].toUpperCase();
-            }
-            if (stateAbbr && stateAbbr.length > 2) {
-                stateAbbr = stateAbbr.substring(0,2);
-            }
-
-            // Occurs twice in page
-            let modelsite = getModelsite();
-            if (!stateAbbr && modelsite) {
-                if (modelsite == "model.georgia" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0) { // Add loop if other states added to settings.
-                    stateAbbr = "GA";
-                }
-            }
-
-            if ($('#bigThumbMenu').length <= 1) {
-                console.log("Initial load of #bigThumbMenu");
-                var currentAccess = 0;
-                $(".bigThumbMenu").html("");
-
-                //$("#bigThumbPanelHolder").show();
-                var thelayers = localObject.layers;
-                var sectionMenu = "";
-                var categoryMenu = "";
-                var iconMenu = "";
-                var bigThumbSection = layerName;
-                var layer;
-                for(layer in thelayers) {
-                    var menuaccess = 10; // no one
-                    try { // For IE error. Might not be necessary.
-                        if (typeof(localObject.layers[layer].menuaccess) === "undefined") {
-                            menuaccess = 0;
-                        } else {
-                            menuaccess = localObject.layers[layer].menuaccess;
-                        }
-                    } catch(e) {
-                        consoleLog("displayLayerCheckboxes: no menuaccess");
-                    }
-                    var linkJavascript = "";
-                    var directlink = getDirectLink(thelayers[layer].livedomain, thelayers[layer].directlink, thelayers[layer].rootfolder, thelayers[layer].item);
-                    if (bigThumbSection == "main") {
-                        if (thelayers[layer].menulevel == "1") {
-                            if (access(currentAccess,menuaccess)) {
-                                //if (localObject.layers[layer].section == bigThumbSection && localObject.layers[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
-                                
-                                    var thumbTitle = ( thelayers[layer].thumbtitle ? thelayers[layer].thumbtitle : (thelayers[layer].section ? thelayers[layer].section : thelayers[layer].primarytitle));
-                                    var thumbTitleSecondary = (thelayers[layer].thumbTitleSecondary ? thelayers[layer].thumbTitleSecondary : '&nbsp;');
-
-                                    var icon = (thelayers[layer].icon ? thelayers[layer].icon : '<i class="material-icons">&#xE880;</i>');
-                                       if (thelayers[layer].item != "main" && thelayers[layer].section != "Admin" && thelayers[layer].title != "") {
-                                            //console.log("Thumb title: " + thelayers[layer].title);
-                                            var bkgdUrl = thelayers[layer].image;
-                                            if (thelayers[layer].bigthumb) {
-                                                bkgdUrl = thelayers[layer].bigthumb;
-                                            }
-                                            bkgdUrl = removeFrontFolder(bkgdUrl);
-
-                                            
-                                            if (thelayers[layer].directlink) { // Omit thumbClick javascript
-                                                //hrefLink = "href='" + removeFrontFolder(thelayers[layer].directlink) + "'";
-                                            } else if (thelayers[layer].rootfolder && thelayers[layer].rootfolder) {
-                                                // Change to pass entire hash
-
-                                                //linkJavascript = 'onclick="window.location = \'/localsite/' + thelayers[layer].rootfolder + '/#show=' + localObject.layers[layer].item + '\';return false;"';
-                                                linkJavascript = 'onclick="thumbClick(\'' + localObject.layers[layer].item + '\',\'' + thelayers[layer].rootfolder + '\');return false;"';
-                                            //} else if ((directlink.indexOf('/map/') >= 0 && location.pathname.indexOf('/map/') >= 0) || (directlink.indexOf('/info/') >= 0 && location.pathname.indexOf('/info/') >= 0)) {
-                                            } else if ((location.pathname.indexOf('/map/') >= 0) || (location.pathname.indexOf('/info/') >= 0)) {
-                                                // Stayon page when on map or info
-                                                //linkJavascript = "onclick='goHash({\"show\":\"" + localObject.layers[layer].item + "\",\"cat\":\"\",\"sectors\":\"\",\"naics\":\"\",\"go\":\"\",\"m\":\"\"}); return false;'"; // Remain in current page.
-                                                linkJavascript = 'onclick="thumbClick(\'' + localObject.layers[layer].item + '\',\'\');return false;"';
-                                            } else {
-                                                linkJavascript = "";
-                                            }
-
-                                            // !thelayers[layer].states || (thelayers[layer].states == "GA" && (!param.state || param.state=="GA")  )
-                                            if (menuaccess!=0 || (thelayers[layer].states == "GA")) {
-                                                // This one is hidden. If a related state, shown with geo-US13
-                                                let hideforAccessLevel = "";
-                                                if (menuaccess!=0) { // Also hiddden for access leven
-                                                    hideforAccessLevel = "style='display:none'";
-                                                }
-                                                // TODO: lazy load images only when visible by moving img tag into an attribute.
-                                                // TODO: Add geo-US13 for other states
-                                                sectionMenu += "<div class='bigThumbMenuContent geo-US13 geo-limited' style='display:none' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' " + hideforAccessLevel + "><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
-                                            
-                                            } else if (menuaccess==0) { // Quick hack until user-0 displays for currentAccess 1. In progress...
-                                                sectionMenu += "<div class='bigThumbMenuContent' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='displayX:none'><div class='bigThumbHolder'><a ";
-                                                if (directlink) { // This is a fallback and won't contain the hash values.
-                                                    sectionMenu += "href='" + directlink + "' ";
-                                                }
-                                                sectionMenu += linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
-                                            }
-                                        }
-                                //}
-                            }
-                        }
-                    } else {
-                        if (access(currentAccess,menuaccess)) {
-                            if (localObject.layers[layer].section == bigThumbSection && localObject.layers[layer].showthumb != '0' && bigThumbSection.replace(/ /g,"-").toLowerCase() != thelayers[layer].item) {
-                                var thumbTitle = (thelayers[layer].navtitle ? thelayers[layer].navtitle : thelayers[layer].title);
-                                var thumbTitleSecondary = (thelayers[layer].thumbTitleSecondary ? thelayers[layer].thumbTitleSecondary : '&nbsp;');
-
-                                var icon = (thelayers[layer].icon ? thelayers[layer].icon : '<i class="material-icons">&#xE880;</i>');
-                                if (!localObject.layers[layer].bigThumbSection) { // Omit the section parent
-                                   if (thelayers[layer].item != "main" && thelayers[layer].section != "Admin" && thelayers[layer].title != "") {
-                                        // <h1 class='honeyTitle'>" + thelayers[layer].provider + "</h1>
-                                        //var thumbTitle = thelayers[layer].title;
-                                        var bkgdUrl = thelayers[layer].image;
-                                        if (thelayers[layer].bigthumb) {
-                                            bkgdUrl = thelayers[layer].bigthumb;
-                                        }
-                                        bkgdUrl = removeFrontFolder(bkgdUrl);
-
-                                        //var hrefLink = "";
-                                        if (thelayers[layer].directlink) {
-                                            //hrefLink = "href='" + removeFrontFolder(thelayers[layer].directlink) + "'";
-                                        }
-                                        sectionMenu += "<div class='bigThumbMenuContent' show='" + localObject.layers[layer].item + "'><div class='bigThumbWidth user-" + menuaccess + "' style='display:none'><div class='bigThumbHolder'><a href='" + directlink + "' " + linkJavascript + "><div class='bigThumb' style='background-image:url(" + bkgdUrl + ");'><div class='bigThumbStatus'><div class='bigThumbSelected'></div></div></div><div class='bigThumbText'>" + thumbTitle + "</div><div class='bigThumbSecondary'>" + thumbTitleSecondary + "</div></a></div></div></div>";
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                // Hidden to reduce clutter
-                $("#honeycombPanel").prepend("<div class='hideThumbMenu close-X' style='display:none; position:absolute; right:0px; top:0px;'><i class='material-icons' style='font-size:32px'>&#xE5CD;</i></div>");
-                var savedThumbLayout = (typeof localStorage !== 'undefined' && localStorage.getItem('bigThumbLayout')) || 'circles';
-                if (savedThumbLayout === 'grid') savedThumbLayout = 'circles'; // Renamed from grid
-                var thumbLayoutClass = savedThumbLayout === 'stack' ? ' layoutStack' : '';
-                // List (stack) first, with the rectangles icon. Circles: drag_indicator turned to 6 dots, 3 across (search-filters.css).
-                var thumbToggleHtml = "<div class='bigThumbLayoutToggle'>" +
-                    "<i class='material-icons bigThumbLayoutBtn" + (savedThumbLayout === 'stack' ? ' active' : '') + "' data-layout='stack' title='List'>&#xE8F0;</i>" +
-                    "<i class='material-icons bigThumbLayoutBtn" + (savedThumbLayout === 'circles' ? ' active' : '') + "' data-layout='circles' title='Circles'>&#xE945;</i>" +
-                    "</div>";
-                $(insertInto).append("<div id='bigThumbMenuInner' class='bigThumbMenuInner" + thumbLayoutClass + "'>" + thumbToggleHtml + sectionMenu + "</div>");
-                $("#bigThumbMenuInner .bigThumbLayoutToggle").append($(".hideApps.close-X").first());
-                placeThumbLayoutToggle();
-                $(document).off('click.bigThumbLayout').on('click.bigThumbLayout', '.bigThumbLayoutBtn', function() {
-                    var layout = $(this).attr('data-layout');
-                    $('#bigThumbMenuInner').toggleClass('layoutStack', layout === 'stack');
-                    $('.bigThumbLayoutBtn').removeClass('active');
-                    $('.bigThumbLayoutBtn[data-layout="' + layout + '"]').addClass('active');
-                    if (typeof localStorage !== 'undefined') localStorage.setItem('bigThumbLayout', layout);
-                    balanceStackColumns();
-                });
-                if (typeof ResizeObserver !== 'undefined' && document.getElementById('bigThumbMenuInner')) {
-                    // Also runs when the menu opens, since its size changes from zero
-                    new ResizeObserver(balanceStackColumns).observe(document.getElementById('bigThumbMenuInner'));
-                }
-
-                if (stateAbbr == "GA") {
-                // if (hash.state && hash.state.split(",")[0].toUpperCase() == "GA") {
-                    $(".geo-US13").show();
-                }
-                //$("#honeycombMenu").append("<ul class='bigThumbUl'>" + sectionMenu + "</ul>");
-                $("#iconMenu").append(iconMenu);
-                if (insertInto == "#bigThumbMenu") {
-                   $("#bigThumbPanelHolder").show();
-                }
-                $("#honeyMenuHolder").show(); // Might be able to remove display:none on this
-
-                // 
-                //$(".thumbModule").append($("#bigThumbPanelHolder"));
-            } else if ($("#bigThumbPanelHolder").css("display") == "none") {
-                if (insertInto == "#bigThumbMenu") {
-                  $("#bigThumbPanelHolder").show();
-                }
-            } else {
-                $("#bigThumbPanelHolder").hide();
-                $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
-            }
-
-            $('.bigThumbHolder').click(function(event) {
-                $("#bigThumbPanelHolder").hide(); // Could remain open when small version above map added. 
-                $(".showApps").removeClass("filterClickActive"); ////updateHash({'appview':''});     
-            });
             if (activeLayer) {
-                $(".bigThumbMenuContent[show='" + activeLayer +"']").addClass("bigThumbActive");
-                let activeTitle = $(".bigThumbMenuContent[show='" + activeLayer +"'] .bigThumbText").text();
-                if (activeTitle) { // Keep prior if activeLayer is not among app list.
-                    $("#showAppsText").attr("title",activeTitle);
+                $(".sceneItem[show='" + activeLayer + "']").addClass("sceneActive");
+                const activeTitle = $(".sceneItem[show='" + activeLayer + "'] .sceneTitle").text();
+                if (activeTitle) { // Keep prior if activeLayer is not among the scenes
+                    $("#showAppsText").attr("title", activeTitle);
                 }
             }
-          });
         });
     });
 }
-
-// In the Topics menu (#bigThumbMenu), the layout buttons and close X (.bigThumbLayoutToggle) are the right column of
-// #topicsPanel's flex row, after #topicsLeftColumn with the thumbnails and impact set buttons (search-filters.css).
-// Elsewhere, as in the side panel, they lead #bigThumbMenuInner's grid.
-// Called after #bigThumbMenuInner is built or moved.
-function placeThumbLayoutToggle() {
-    const inner = $("#bigThumbMenuInner");
-    const toggle = $(".bigThumbLayoutToggle").first();
-    if (!inner.length || !toggle.length) return;
-    if (inner.parent().is("#bigThumbMenu")) {
-        toggle.insertAfter($("#topicsLeftColumn").length ? $("#topicsLeftColumn") : inner);
+// The state for scenes limited to a state (geo-limited): the hash's state, else param.state, the state select,
+// or the Georgia site.
+function sceneMenuStateAbbr() {
+    const hash = getHash();
+    let stateAbbr = $("#state_select").find(":selected").val();
+    if (param.state) {
+        stateAbbr = param.state.split(",")[0];
+    }
+    if (hash.state) {
+        stateAbbr = hash.state.split(",").filter(s => s.length === 2)[0] || stateAbbr; // Omits state=all
+    }
+    const modelsite = getModelsite();
+    if (!stateAbbr && (modelsite == "model.georgia" || location.host.indexOf("georgia") >= 0 || location.host.indexOf("locations.pages.dev") >= 0)) {
+        stateAbbr = "GA";
+    }
+    return stateAbbr ? stateAbbr.substring(0,2).toUpperCase() : "";
+}
+// Writes the scenes into #sceneMenuInner in a layout from sceneLayouts, keeping the selected scene.
+function renderScenes(layout) {
+    const inner = $("#sceneMenuInner");
+    const selected = inner.find(".sceneItem.sceneActive").attr("show"); // Including one selected but not yet submitted
+    const options = Object.assign({stateAbbr: sceneMenuStateAbbr()}, sceneLayouts[layout]);
+    let html = "";
+    for (const key in localObject.layers) {
+        const scene = localObject.layers[key];
+        if (scene.menulevel == "1" && access(0, scene.menuaccess) && scene.item != "main" && scene.section != "Admin" && scene.title != "") {
+            html += sceneHtml(scene, options);
+        }
+    }
+    inner.attr("data-layout", layout).find(".sceneItem").remove();
+    inner.css("grid-template-columns", ""); // balanceSceneColumns() sets them for the new layout
+    inner.append(html);
+    if (selected) inner.find(".sceneItem[show='" + selected + "']").addClass("sceneActive");
+    setSceneLayoutBtn(layout);
+    balanceSceneColumns();
+}
+// One scene. options.imageFormat: circle, landscape, square or portrait.
+// options.selectPosition: OnImage (over the image's corner) or ByTitle (before the title).
+// options.stateAbbr: the state, to show scenes limited to it.
+function sceneHtml(scene, options) {
+    const imageFormat = options.imageFormat || 'circle';
+    const selectPosition = options.selectPosition || 'OnImage';
+    const title = scene.thumbtitle || scene.section || scene.primarytitle;
+    const image = removeFrontFolder(scene.bigthumb || scene.image);
+    const href = getDirectLink(scene.livedomain, scene.directlink, scene.rootfolder, scene.item);
+    // Without a directlink, the scene opens with sceneClick(), which carries the page's hash.
+    // data-path is its rootfolder, or "" to stay on a map or info page.
+    let path = null;
+    if (!scene.directlink) {
+        if (scene.rootfolder) {
+            path = scene.rootfolder;
+        } else if (location.pathname.indexOf('/map/') >= 0 || location.pathname.indexOf('/info/') >= 0) {
+            path = "";
+        }
+    }
+    const geoLimited = scene.states == "GA"; // Shown for Georgia (geo-US13). TODO: Other states
+    const select = "<span class='sceneSelect'></span>";
+    const titleShort = $("<div>").html(title).text().length < 30; // Kept on one line in Grid view
+    const classes = "sceneItem image" + imageFormat.charAt(0).toUpperCase() + imageFormat.slice(1) + " select" + selectPosition + (titleShort ? " titleShort" : "") + (geoLimited ? " geo-US13 geo-limited" : "");
+    return "<div class='" + classes + "' show='" + scene.item + "'" + (geoLimited && options.stateAbbr != "GA" ? " style='display:none'" : "") + ">" +
+        "<a class='sceneLink'" + (href ? " href='" + href + "'" : "") + (path !== null ? " data-path='" + path + "'" : "") + ">" +
+        "<div class='sceneImage' style='background-image:url(" + image + ")'>" + (selectPosition == 'OnImage' ? select : "") + "</div>" +
+        "<div class='sceneTitle'>" + (selectPosition == 'ByTitle' ? select : "") + "<span class='sceneTitleText'>" + title + "</span></div>" +
+        (scene.thumbTitleSecondary ? "<div class='sceneSecondary'>" + scene.thumbTitleSecondary + "</div>" : "") +
+        "</a></div>";
+}
+// The menu bar: the title at the left, and at the right the layout selector, then the close X that displaySceneMenu() appends.
+function sceneMenuBarHtml() {
+    let options = "";
+    for (const layout in sceneLayouts) {
+        options += "<div class='sceneLayoutOption' data-layout='" + layout + "'><i class='material-icons sceneLayoutIcon' data-layout='" + layout + "'>" + sceneLayouts[layout].icon + "</i>" + sceneLayouts[layout].title + "</div>";
+    }
+    return "<div class='sceneMenuBar'><div class='sceneMenuTitle'><b>Create a Scene</b> - Choose an industry and topic</div>" +
+        "<div class='sceneMenuControls'><div class='sceneLayoutSelect'><i class='material-icons sceneLayoutIcon sceneLayoutBtn' aria-label='Layout'></i>" +
+        "<div class='sceneLayoutPopup'>" + options + "</div></div></div></div>";
+}
+// Shows the current layout's icon on the selector, and marks it in the popup
+function setSceneLayoutBtn(layout) {
+    $('.sceneLayoutBtn').attr('data-layout', layout).html(sceneLayouts[layout].icon);
+    $('.sceneLayoutOption').removeClass('active').filter("[data-layout='" + layout + "']").addClass('active');
+}
+// Hover opens the popup (search-filters.css). A click opens it too, for touch screens.
+$(document).on('click', '.sceneLayoutBtn', function() {
+    $(this).closest('.sceneLayoutSelect').toggleClass('open');
+});
+$(document).on('click', '.sceneLayoutOption', function() {
+    const layout = $(this).attr('data-layout');
+    try { localStorage.setItem('sceneLayout', layout); } catch (e) {}
+    $('.sceneLayoutSelect').removeClass('open');
+    renderScenes(layout);
+});
+document.addEventListener('click', function(e) { // A click elsewhere closes the popup
+    if (!e.target.closest || !e.target.closest('.sceneLayoutSelect')) {
+        $('.sceneLayoutSelect.open').removeClass('open');
+    }
+});
+// In the Topics menu (#sceneMenu), the menu bar spans the top of #topicsPanel, above the scenes and the
+// impact set buttons. Elsewhere, as in the side panel, it leads #sceneMenuInner's grid.
+// Called after #sceneMenuInner is built or moved.
+function placeSceneMenuBar() {
+    const inner = $("#sceneMenuInner");
+    const bar = $(".sceneMenuBar").first();
+    if (!inner.length || !bar.length) return;
+    if (inner.parent().is("#sceneMenu") && $("#topicsPanel").length) {
+        bar.prependTo("#topicsPanel");
     } else {
-        toggle.prependTo(inner);
+        bar.prependTo(inner);
     }
 }
-// Stack layout (#bigThumbMenuInner.layoutStack): fewer columns when the last row would leave blank space,
-// e.g. 5 topics in 3 columns rather than 4. Columns are at least 220px, as in search-filters.css, and stay
-// under 400px, so the rectangles don't get too big (10 topics stay in 3 columns rather than 2).
-function balanceStackColumns() {
-    const inner = document.getElementById('bigThumbMenuInner');
+// Grid View: flexible columns, each as wide as its widest scene, as many as fit on a row.
+// Thumb View: fewer columns when the last row would leave blank space, e.g. 5 scenes in 3 columns rather
+// than 4. Columns are at least 220px, as in search-filters.css, and stay under 400px, so the images don't
+// get too big (10 scenes stay in 3 columns rather than 2).
+function balanceSceneColumns() {
+    const inner = document.getElementById('sceneMenuInner');
     if (!inner) return;
-    if (!inner.classList.contains('layoutStack')) {
+    const layout = inner.getAttribute('data-layout');
+    if (layout === 'grid') {
+        // Flexible columns, each as wide as its widest scene (up to 400px), so there's little blank space beside
+        // the images. As many columns as fit on a row: all the scenes, until the menu narrows.
+        const count = Array.from(inner.querySelectorAll('.sceneItem')).filter(el => el.offsetHeight > 0).length;
+        if (!count || !inner.clientWidth) return; // Hidden
+        const style = getComputedStyle(inner);
+        const width = inner.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+        const gap = parseFloat(style.columnGap) || 0;
+        let columns = "minmax(0, 1fr)"; // One column, narrower than its widest scene
+        for (let cols = count; cols >= 1; cols--) {
+            inner.style.gridTemplateColumns = "repeat(" + cols + ", fit-content(400px))";
+            // The computed value lists each column's resolved width in px
+            const used = getComputedStyle(inner).gridTemplateColumns.split(" ").reduce((sum, w) => sum + parseFloat(w), 0) + gap * (cols - 1);
+            if (used <= width + 0.5) {
+                columns = inner.style.gridTemplateColumns;
+                break;
+            }
+        }
+        inner.style.gridTemplateColumns = columns;
+        return;
+    }
+    if (layout !== 'thumb') {
         inner.style.gridTemplateColumns = "";
         return;
     }
     const style = getComputedStyle(inner);
     const width = inner.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
-    const count = Array.from(inner.querySelectorAll('.bigThumbMenuContent')).filter(function(el) {
-        const item = el.querySelector('.bigThumbWidth');
-        return item && item.offsetHeight > 0;
-    }).length;
+    const count = Array.from(inner.querySelectorAll('.sceneItem')).filter(el => el.offsetHeight > 0).length;
     if (!width || !count) return; // Hidden
     const gap = parseFloat(style.columnGap) || 0;
     const maxCols = Math.max(1, Math.min(count, Math.floor((width + gap) / (220 + gap))));
@@ -10680,8 +10620,8 @@ $(document).on("click", "#filterClickLocation", function(event) {
         console.log($("#filterLocations").offset().top);
     }
     let hash = getHash();
-    if ($("#locationFilterHolder").is(':visible') && $("#bigThumbPanelHolder").is(':visible')) { // was #geoPicker
-        //$("#bigThumbPanelHolder").hide();
+    if ($("#locationFilterHolder").is(':visible') && $("#scenePanelHolder").is(':visible')) { // was #geoPicker
+        //$("#scenePanelHolder").hide();
         //$("#filterClickLocation").removeClass("filterClickActive");
         //$("#filterClickLocation").addClass("filterClickActive");
         //goHash({"appview":""});
@@ -10750,7 +10690,7 @@ $(document).on("click", "#filterClickLocation", function(event) {
 
 $(document).on("click", ".showApps, .hideApps", function(event) {
     closeGeoviewList();
-    showApps("#bigThumbMenu");
+    showApps("#sceneMenu");
     event.stopPropagation();
 });
 
@@ -10777,8 +10717,8 @@ function showApps(menuDiv) {
         console.log('showApps in ' + menuDiv);
         $("#filterClickLocation").removeClass("filterClickActive"); // But leave open
 
-        if ($("#bigThumbPanelHolder").is(':visible')) { // CLOSE APPS MENU
-        //if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) { // Prevented tab click from closing app menu
+        if ($("#scenePanelHolder").is(':visible')) { // CLOSE APPS MENU
+        //if($("#scenePanelHolder").is(':visible') && isElementInViewport($("#scenePanelHolder"))) { // Prevented tab click from closing app menu
             updateHash({"appview":""});
             $("#appSelectHolder .select-menu-arrow-holder .material-icons").hide();
             $("#appSelectHolder .select-menu-arrow-holder .material-icons:first-of-type").show();
@@ -10800,14 +10740,14 @@ function showApps(menuDiv) {
         } else { // Show Apps, Close Locations (if no geoview)
             updateHash({"appview":"topics"});
             // Silently remove sidetab from the hash so closeSideTabs() doesn't fire a
-            // hashchange (which would also close #bigThumbPanelHolder), then close the
+            // hashchange (which would also close #scenePanelHolder), then close the
             // entire side settings panel via the same function the .showWideX X uses.
             // replaceState (as in goHashNoHistory): sidetab changes don't add browser history entries
             isPopstateNavigation = true;
             updateHash({}, true, "sidetab");
             isPopstateNavigation = false;
             closeSideTabs();
-            console.log("call showThumbMenu from navidation.js");
+            console.log("call showSceneMenu from navidation.js");
             if (!hash.geoview) {
 
                 if (modelsite=="dreamstudio" || location.host.indexOf("dreamstudio") >= 0) {
@@ -10832,16 +10772,16 @@ function showApps(menuDiv) {
             waitForElm('#appSelectHolder').then((elm) => {
                 $("#appSelectHolder .showApps").addClass("filterClickActive"); // Adds to local topics
             });
-            $("#bigThumbMenuInner").appendTo(menuDiv);
-            placeThumbLayoutToggle();
-            showThumbMenu(hash.show, menuDiv);
+            $("#sceneMenuInner").appendTo(menuDiv);
+            placeSceneMenuBar();
+            showSceneMenu(hash.show, menuDiv);
             //$('.showApps').addClass("filterClickActive");
-            waitForElm('#bigThumbPanelHolder').then((elm) => {
-                // Scroll so the top of #bigThumbPanelHolder is visible (just below the header).
+            waitForElm('#scenePanelHolder').then((elm) => {
+                // Scroll so the top of #scenePanelHolder is visible (just below the header).
                 // Previously subtracted #filterFieldsHolder.height() too, which pushed
-                // #bigThumbLayoutToggle above the fold.
+                // the menu bar above the fold.
                 $('html,body').animate({
-                    scrollTop: $("#bigThumbPanelHolder").offset().top - $("#headerbar").height()
+                    scrollTop: $("#scenePanelHolder").offset().top - $("#headerbar").height()
                 });
             });
         }
@@ -10851,7 +10791,7 @@ function showApps(menuDiv) {
     });
 }
 function closeAppsMenu() {
-    $("#bigThumbPanelHolder").hide();
+    $("#scenePanelHolder").hide();
     $(".showApps").removeClass("filterClickActive"); updateHash({'appview':''});
 }
 function filterClickLocation(loadGeoTable) {
@@ -10874,7 +10814,7 @@ function filterClickLocation(loadGeoTable) {
     return;
 }
 function filterLocationChange() {
-    $("#bigThumbPanelHolder").hide();
+    $("#scenePanelHolder").hide();
     $('.showApps').removeClass("filterClickActive"); ////updateHash({'appview':''});
     let distanceFilterFromTop = 120;
     if ($("#locationFilterHolder #filterLocations").length) {

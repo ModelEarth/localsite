@@ -105,8 +105,8 @@ function initMenu(partnerMenu) {
 
 			console.log(partnerMenu.revealButton + ' click');
 
-			//if ($("#bigThumbPanelHolder").is(':visible')) {
-			//if($("#bigThumbPanelHolder").is(':visible') && isElementInViewport($("#bigThumbPanelHolder"))) {
+			//if ($("#scenePanelHolder").is(':visible')) {
+			//if($("#scenePanelHolder").is(':visible') && isElementInViewport($("#scenePanelHolder"))) {
 			if($(partnerMenu.menuDiv).is(':visible')) {
 
 				$(partnerMenu.menuDiv).hide();
@@ -123,7 +123,7 @@ function initMenu(partnerMenu) {
 			//	scrollTop: 0
 			//});
 
-				//$("#bigThumbPanelHolder").hide();
+				//$("#scenePanelHolder").hide();
 				//$('.showAdminNav').removeClass("active");
 			
 
@@ -685,7 +685,7 @@ function displaypartnerCheckboxes(partnerMenu,menuDataset) { // For Layer Icon o
             useRootPath($(this).prop('value'));
 
             $('.topButtons').show();
-            $('.layerContent').show(); // Since may be hidden on bigThumb page.
+            $('.layerContent').show(); // Since may be hidden on the scene menu page.
 
             clearID(".partnerCheckboxes :checkbox checked");
             //$('.cid').text(""); $('.cidTab').val("");
