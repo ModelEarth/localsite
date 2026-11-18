@@ -566,7 +566,7 @@ function hashChanged() {
         if(location.host.indexOf('model.georgia') >= 0) {
             if (hash.state != "" && hash.state.split(",")[0].toUpperCase() != "GA") { // If viewing other state, use model.earth
                 let goModelEarth = "https://model.earth" + window.location.pathname + window.location.search + window.location.hash;
-                window.location = goModelEarth;
+                window.location.replace(goModelEarth);
             }
         }
 
@@ -7744,7 +7744,7 @@ var showLeftIcon = false;
 if(typeof param=='undefined'){ var param={}; }
 
 if (window.location.protocol != 'https:' && location.host.indexOf('localhost') < 0) {
-    location.href = location.href.replace("http://", "https://"); // Leave http
+    location.replace(location.href.replace("http://", "https://")); // Leave http
 }
 // Get the levels below root
 var foldercount = (location.pathname.split('/').length - 1); // - (location.pathname[location.pathname.length - 1] == '/' ? 1 : 0) // Removed because ending with slash or filename does not effect levels. Increased -1 to -2.

@@ -1,9 +1,9 @@
 <script>
     if (location.host.indexOf('localhost') >= 0 || location.host.indexOf('model.earth') >= 0) {
         // To do: Add logic here to check if the repo resides locally.
-        window.location = "/data-pipeline";
+        window.location.replace("/data-pipeline");
     } else {
         // Since not all hosts (forks) will have the data-pipeline repo locally.
-        window.location = "https://model.earth/data-pipeline";
+        window.location.replace("https://model.earth/data-pipeline");
     }
 </script>

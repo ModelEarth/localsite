@@ -4510,7 +4510,7 @@ function useSet() {
             if (location.host.indexOf('localhost') >= 0) {
                 alert("Redirect to explore 4")
             }
-            window.location = "/explore";
+            window.location.replace("/explore");
           }
           return;
         }
