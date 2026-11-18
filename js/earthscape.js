@@ -238,8 +238,6 @@ const countryCodeMap = {
   };
   const defaultCountries = ['IN', 'CN', 'US', 'GB', 'DE', 'JP', 'BR', 'RU', 'ZA', 'SA', 'AE'];
 
-// Cache for all countries data to avoid re-fetching
-let allCountriesCache = null;
 
 //Timelinechart for scopes country, state, and county
 let geoValues = {};
@@ -295,6 +293,110 @@ function fetchJsonCached(url, options) {
     return timelineFetchCache[key];
 }
 let timelineChartRequestId = 0; // Only the latest getTimelineChart() call draws the charts
+
+// Locations and observations loaded so far. Each chart choice (Top 5, All, My Locations...) requests only what isn't here yet,
+// so switching choices doesn't repeat requests, which the Data Commons API could throttle.
+// Values are promises, so a request still in flight is shared too.
+const countryDcidByKey = {};    // ISO code or country name -> promise of dcid (null when Data Commons has none)
+const countryNameByDcid = {};   // dcid -> name, filled as names arrive
+const countryNamePromises = {}; // dcid -> promise of name
+const timelineObsStore = {};    // variable -> { dcid -> promise of its byEntity entry, null without data }
+
+// Country names -> dcids remembered across visits, so "My Locations" can request its countries without resolving names
+const COUNTRY_DCID_STORAGE_KEY = 'timelineCountryDcidByName';
+function rememberCountryDcids(namesToDcids) {
+    try {
+        const stored = JSON.parse(localStorage.getItem(COUNTRY_DCID_STORAGE_KEY) || '{}');
+        localStorage.setItem(COUNTRY_DCID_STORAGE_KEY, JSON.stringify(Object.assign(stored, namesToDcids)));
+    } catch (e) { /* ignore */ }
+}
+
+// Resolves ISO codes or names (typeOf Country) to dcids in one request for those not resolved yet
+async function resolveCountryKeys(keys) {
+    const missing = [...new Set(keys)].filter(key => !(key in countryDcidByKey));
+    if (missing.length) {
+        const request = fetchJsonCached(`https://api.datacommons.org/v2/resolve?key=${api_key}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "nodes": missing, "property": "<-description{typeOf:Country}->dcid" })
+        }).then(json => {
+            if (!json || !Array.isArray(json.entities)) throw new Error('Data Commons resolve failed');
+            const byNode = {};
+            json.entities.forEach(entity => { if (entity && entity.node) byNode[entity.node] = entity?.candidates?.[0]?.dcid || null; });
+            return byNode;
+        });
+        missing.forEach(key => { countryDcidByKey[key] = request.then(byNode => byNode[key] || null); });
+        request.catch(() => missing.forEach(key => { delete countryDcidByKey[key]; }));
+    }
+    return Promise.all(keys.map(key => countryDcidByKey[key]));
+}
+
+// Loads names for dcids that don't have one yet, in one request
+async function loadCountryNames(dcids) {
+    const missing = [...new Set(dcids)].filter(dcid => !(dcid in countryNamePromises));
+    if (missing.length) {
+        const request = fetchJsonCached(`https://api.datacommons.org/v2/node?key=${api_key}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "nodes": missing, "property": "->name" })
+        }).then(json => {
+            if (!json || !json.data) throw new Error('Data Commons names failed');
+            const namesToDcids = {};
+            missing.forEach(dcid => {
+                const name = json.data[dcid]?.arcs?.name?.nodes?.[0]?.value || null;
+                if (name) { countryNameByDcid[dcid] = name; namesToDcids[name] = dcid; }
+            });
+            rememberCountryDcids(namesToDcids);
+            return json.data;
+        });
+        missing.forEach(dcid => { countryNamePromises[dcid] = request.then(data => data[dcid]?.arcs?.name?.nodes?.[0]?.value || null); });
+        request.catch(() => missing.forEach(dcid => { delete countryNamePromises[dcid]; }));
+    }
+    await Promise.all(dcids.map(dcid => countryNamePromises[dcid]));
+}
+
+// ISO codes -> dcids with names loaded
+async function resolveCountries(codes) {
+    const dcids = [...new Set((await resolveCountryKeys(codes)).filter(Boolean))];
+    await loadCountryNames(dcids);
+    return dcids;
+}
+
+// Country names (a saved My Locations list) -> dcids with names loaded. Names seen before use their remembered dcid.
+async function resolveCountriesByName(names) {
+    let remembered = {};
+    try { remembered = JSON.parse(localStorage.getItem(COUNTRY_DCID_STORAGE_KEY) || '{}'); } catch (e) { /* ignore */ }
+    const known = Object.assign({}, remembered);
+    Object.keys(countryNameByDcid).forEach(dcid => { known[countryNameByDcid[dcid]] = dcid; });
+    const unknown = names.filter(name => !known[name]);
+    const resolved = unknown.length ? await resolveCountryKeys(unknown) : [];
+    const dcids = [...new Set([...names.map(name => known[name]), ...resolved].filter(Boolean))];
+    await loadCountryNames(dcids);
+    return dcids;
+}
+
+// Observations for a variable, requesting only the dcids not loaded yet. Returns the shape of a Data Commons observation response.
+async function fetchObservationsAppend(variable, dcids) {
+    const store = timelineObsStore[variable] || (timelineObsStore[variable] = {});
+    const missing = [...new Set(dcids)].filter(dcid => !(dcid in store));
+    if (missing.length) {
+        const url = `https://api.datacommons.org/v2/observation?key=${api_key}&variable.dcids=${variable}&${missing.map(id => `entity.dcids=${id}`).join('&')}`;
+        const request = fetchJsonCached(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "date": "", "select": ["date", "entity", "value", "variable"] })
+        }).then(json => {
+            if (!json || !json.byVariable) throw new Error('Data Commons observations failed');
+            return json.byVariable[variable]?.byEntity || {};
+        });
+        missing.forEach(dcid => { store[dcid] = request.then(byEntity => byEntity[dcid] || null); });
+        request.catch(() => missing.forEach(dcid => { delete store[dcid]; }));
+    }
+    const entries = await Promise.all(dcids.map(dcid => store[dcid]));
+    const byEntity = {};
+    dcids.forEach((dcid, i) => { if (entries[i]) byEntity[dcid] = entries[i]; });
+    return { byVariable: { [variable]: { byEntity } } };
+}
 
 /**
  * Fetches time-series data from Google Data Commons and renders
@@ -430,63 +532,24 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
         });
 
     } else if (scope === "country") {
-        // Only fetch ALL countries if showAll === 'showAll'
-        // Otherwise use default countries for better performance
-        let selectedCountries;
-
+        // Each choice requests only the countries not loaded yet. Countries loaded for an earlier choice are reused, so
+        // Top Economies after Top 5 (both use the same 11), or Top 5 after All, sends no new requests.
+        let countryDcids;
         if (showAll === 'showAll') {
-            // Lazy load: Fetch all countries only when "All" is selected
-            if (!allCountriesCache) {
-                console.log("Fetching all countries from RESTCountries API...");
-                const restResponse = await fetch("https://restcountries.com/v3.1/all?fields=cca2,name");
-                const countriesData = await restResponse.json();
-
-                // Cache the result
-                allCountriesCache = countriesData.map(country => country.cca2).filter(Boolean);
-                console.log(`Loaded ${allCountriesCache.length} countries from API`);
-                // Note: Label will be updated later with actual count of countries that have data
-            } else {
-                console.log("Using cached country data");
-            }
-            selectedCountries = allCountriesCache;
+            // Every ISO country code in countryCodeMap. (The RESTCountries API used before now redirects without CORS headers, so browsers block it.)
+            // The "All" label is updated later with the count of countries that have data.
+            countryDcids = await resolveCountries(Object.keys(countryCodeMap));
+        } else if (showAll === 'showMine' && typeof window.getSavedLegendList === 'function' && window.getSavedLegendList()) {
+            // My Locations: just the saved countries
+            countryDcids = await resolveCountriesByName(window.getSavedLegendList());
         } else {
-            // Use default countries for Top 5, Top Economics, Bottom 5
-            selectedCountries = defaultCountries;
-            console.log("Using default countries:", selectedCountries);
+            // Top 5 and Bottom 5 rank the 11 default countries, and Top Economies shows them, with any countries in the URL hash
+            const hashCountries = hash.country ? hash.country.split(',').map(code => code.trim().toUpperCase()).filter(code => countryCodeMap[code]) : [];
+            countryDcids = await resolveCountries([...new Set([...defaultCountries, ...hashCountries])]);
         }
-
-        console.log("Selected Countries:", selectedCountries); // Debug log
-
-        // Fetch country dcids using ISO codes
-        data = await fetchJsonCached(`https://api.datacommons.org/v2/resolve?key=${api_key}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "nodes": selectedCountries,
-                "property": "<-description{typeOf:Country}->dcid"
-            })
-        });
-
-        geoIds = data.entities
-            .map(entity => entity?.candidates?.[0]?.dcid)
-            .filter(Boolean); // remove undefined/null
-
-        // Fetch country names
-        const data2 = await fetchJsonCached(`https://api.datacommons.org/v2/node?key=${api_key}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "nodes": geoIds,
-                "property": "->name"
-            })
-        });
-
-        Object.keys(data2.data).forEach(geoId => {
-            const countryName = data2.data[geoId]?.arcs?.name?.nodes?.[0]?.value;
+        geoIds = countryDcids;
+        geoIds.forEach(geoId => {
+            const countryName = countryNameByDcid[geoId];
             if (countryName) {
                 geoValues[geoId] = {
                     name: countryName,
@@ -494,38 +557,17 @@ async function getTimelineChart(scope, chartVariable, entityId, showAll, chartTe
                 };
             }
         });
-
+        console.log("Countries:", geoIds.length, geoIds);
     }
 
-    // Fetch observational data using geoIds list
-    const url = `https://api.datacommons.org/v2/observation?key=${api_key}&variable.dcids=${chartVariable}&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
-    console.log("url data:",url)
-    const timelineData = await fetchJsonCached(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            "date": "",
-            "select": ["date", "entity", "value", "variable"]
-        })
-    });
-    console.log("timeline obsevational data for country:",timelineData)
+    // Observations for the locations, requesting only those not already loaded for this variable
+    const timelineData = await fetchObservationsAppend(chartVariable, geoIds);
+    console.log("timeline observational data:", timelineData)
     let populationData = {};
-if (whichPer === 'percapita') {
-  const popUrl = `https://api.datacommons.org/v2/observation?key=${api_key}&variable.dcids=Count_Person&${geoIds.map(id => `entity.dcids=${id}`).join('&')}`;
-
-  const popJson = await fetchJsonCached(popUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      "date": "",
-      "select": ["date", "entity", "value", "variable"]
-    })
-  });
-
-  populationData = popJson.byVariable["Count_Person"].byEntity;
-}
+    if (whichPer === 'percapita') {
+        const popJson = await fetchObservationsAppend('Count_Person', geoIds);
+        populationData = popJson.byVariable["Count_Person"].byEntity;
+    }
     if (requestId !== timelineChartRequestId) {
         return; // A newer call (such as the redraw after the Google Sheet loads) draws the charts
     }
@@ -628,11 +670,18 @@ dataCopy.forEach(location => {
         ? location.valueIn1960 !== null 
         : location.latestValue !== null);
     console.log("validData:",validData)
-    if (showAll === 'showSelected') {
+    // "My Locations": the list saved with "Save as My Locations" (localsite/js/timeline-legend.js).
+    // Saved countries outside the fetched ones are added by the legend. Without a saved list, it's Top 5.
+    const savedList = (showAll === 'showMine' && typeof window.getSavedLegendList === 'function') ? window.getSavedLegendList() : null;
+    const savedMatches = savedList ? validData.filter(location => savedList.includes(location.name)) : [];
+    if (showAll === 'showMine' && savedList) {
+        selectedData = savedMatches;
+    } else if (showAll === 'showSelected') {
         if (scope !== 'country') {
+            // States and counties: the top 10, so Top Economies shows more than Top 5
             selectedData = validData
                 .sort((a, b) => b.latestValue - a.latestValue)
-                .slice(0, Math.min(5, validData.length));
+                .slice(0, Math.min(10, validData.length));
         } else {
             selectedData = formattedData.filter(location => {
                 const geoId = Object.keys(geoValues).find(id => geoValues[id].name === location.name);
@@ -641,7 +690,7 @@ dataCopy.forEach(location => {
                 return selectedCountries3Char.includes(countryCode);
             });
         }
-    } else if (showAll === 'showTop5') {
+    } else if (showAll === 'showTop5' || showAll === 'showMine') {
        selectedData = validData
         .sort((a, b) => 
             getHash().goal === "population"
@@ -881,7 +930,7 @@ dataCopy.forEach(location => {
             if (timelineChart && !existsLine) {
                 try {
                     timelineChart.data.datasets.push({ label: name, data: dataArr, borderColor: border, backgroundColor: 'rgba(0, 0, 0, 0)' });
-                    timelineChart.update();
+                    if (!window._applyingSavedLegendList) timelineChart.update(); // A saved list redraws once after all its additions
                 } catch (e) {}
             } else if (timelineChart && existsLine) {
                 // Restore an existing hidden series when selected from More Locations.
@@ -899,7 +948,7 @@ dataCopy.forEach(location => {
                 try {
                     var bg = colorForLabel(name, 0.18);
                     lineAreaChart.data.datasets.push({ label: name, data: dataArr, backgroundColor: bg, borderColor: 'rgba(0,0,0,0)', fill: true });
-                    lineAreaChart.update();
+                    if (!window._applyingSavedLegendList) lineAreaChart.update();
                 } catch (e) {}
             } else if (lineAreaChart && existsArea) {
                 // Restore an existing hidden area series when selected from More Locations.
@@ -1548,7 +1597,7 @@ function updateAllCountryLabel(count) {
             // Find the text node and update it
             for (let i = 0; i < labelText.length; i++) {
                 if (labelText[i].nodeType === Node.TEXT_NODE && labelText[i].textContent.includes('All')) {
-                    labelText[i].textContent = `All (${count}) `;
+                    labelText[i].textContent = `All (${count})\u00a0`; // Non-breaking space before My Locations, as in the page's markup
                     console.log(`Updated "All" label to "All (${count})"`);
                     break;
                 }
@@ -1570,7 +1619,7 @@ function resetAllCountryLabel() {
             // Find the text node and reset it
             for (let i = 0; i < labelText.length; i++) {
                 if (labelText[i].nodeType === Node.TEXT_NODE && (labelText[i].textContent.includes('All'))) {
-                    labelText[i].textContent = 'All ';
+                    labelText[i].textContent = 'All\u00a0';
                     console.log('Reset "All" label to just "All"');
                     break;
                 }

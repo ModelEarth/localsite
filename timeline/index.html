@@ -32,13 +32,16 @@ function getStoredWhichPerOption() {
     } catch (e) { /* ignore */ }
     return null;
 }
+// Per Capita is the default. Reports that can't be divided by population (PER_CAPITA_UNAVAILABLE_GOALS) show Totals,
+// and the next report goes back to the visitor's choice, or Per Capita.
+// Population per person is a flat line, though Per Capita can still be clicked there. Health hides these options.
+const PER_CAPITA_UNAVAILABLE_GOALS = ['population', 'health'];
 function applyStoredWhichPerOption() {
     try {
         const hash = getHash();
-        if (hash.goal === 'population') return;
-        const stored = getStoredWhichPerOption();
-        if (!stored) return;
-        const radio = document.querySelector(`input[name="whichPer"][value="${stored}"]`);
+        if (PER_CAPITA_UNAVAILABLE_GOALS.includes(hash.goal)) return;
+        const choice = getStoredWhichPerOption() || 'percapita';
+        const radio = document.querySelector(`input[name="whichPer"][value="${choice}"]`);
         if (radio && !radio.checked) radio.checked = true;
     } catch (e) { /* ignore */ }
 }
@@ -53,7 +56,8 @@ function applyPerCapitaGoalSettings() {
             perCapitaOptions.style.display = 'block';
         }
     }
-    if (hash.goal === "population") {
+    if (PER_CAPITA_UNAVAILABLE_GOALS.includes(hash.goal)) {
+        // Not saved as the visitor's choice, so the next report returns to it
         const totalsRadio = document.querySelector('input[name="whichPer"][value="totals"]');
         if (totalsRadio && !totalsRadio.checked) {
             totalsRadio.checked = true;
@@ -70,6 +74,14 @@ document.addEventListener('hashChangeEvent', function (elem) {
     if (!hash.scope) {
         hash.scope = "country"; // CUSTOM - also set in call to localsite.js above.
     }
+    // Per Capita or Totals for the new report, before anything below redraws the chart
+    if (document.getElementById('perCapitaOptions')) {
+        applyPerCapitaGoalSettings();
+    } else {
+        waitForElm('#perCapitaOptions').then(() => {
+            applyPerCapitaGoalSettings();
+        });
+    }
     const stateChanged = setStateMenuFromHash(); // A state=XX set elsewhere, such as the header's state menu
     // Compare with the scope and goal last loaded, not priorHash, which starts with the include's scope=country
     if (hash.scope + '|' + (hash.goal || '') !== window._timelineSheetView) {
@@ -81,9 +93,6 @@ document.addEventListener('hashChangeEvent', function (elem) {
     } else if (stateChanged && String(hash.scope).toLowerCase() === 'county') {
         refreshTimeline();
     }
-    waitForElm('#perCapitaOptions').then(() => {
-        applyPerCapitaGoalSettings();
-    });
     if (typeof updateScopeNav === 'function' && String(hash.scope).toLowerCase() !== document.getElementById('scope-nav')?.dataset.scope) {
         updateScopeNav();
     }
@@ -121,7 +130,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
     document.querySelectorAll('input[name="whichPer"]').forEach((radio) => {
         radio.addEventListener('change', () => {
-            try { localStorage.setItem(WHICH_PER_STORAGE_KEY, radio.value); } catch (e) { /* ignore */ }
+            // A choice made on Population isn't saved, so other reports keep the visitor's usual choice
+            if (!PER_CAPITA_UNAVAILABLE_GOALS.includes(getHash().goal)) {
+                try { localStorage.setItem(WHICH_PER_STORAGE_KEY, radio.value); } catch (e) { /* ignore */ }
+            }
             refreshTimeline(); // This will re-fetch emissions and population and update the chart
         });
     });
@@ -193,6 +205,26 @@ function updateStateMenuVisibility() {
 .dark .timeline-loading-overlay .loading-content {
   background: #333;
 }
+
+/* Gear panel with the chart size and legend position controls, opened by showControl() */
+.size-control-gear {
+  clear: both;
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  color: var(--text-primary, #1A1A1A);
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+.size-control-gear .size-control-heading { color: #495057; }
+.size-control-gear .size-control-divider { border-top: 1px solid #dee2e6; }
+.dark .size-control-gear {
+  background-color: var(--bg-card, #2b2926);
+  border-color: #555;
+  color-scheme: dark;
+}
+.dark .size-control-gear .size-control-heading { color: #ddd; }
+.dark .size-control-gear .size-control-divider { border-top-color: #555; }
 
 .timeline-loading-overlay .loading-spinner {
   width: 52px;
@@ -861,16 +893,17 @@ p.set('rs_dcid', list.join(','));
         
         <div class="whichLinesHolder" style="float:left; display: flex;">
           <div class="scope-country">
-              <label> <input value="showSelected" type="radio" name="whichLines"/>Top Economics &nbsp;</label>
+              <label> <input value="showSelected" type="radio" name="whichLines"/>Top Economies &nbsp;</label>
           </div>
           <label> <input value="showTop5" type="radio" name="whichLines" checked />Top 5 &nbsp;</label>
           <label> <input value="showBottom5" type="radio" name="whichLines" />Bottom 5 &nbsp;</label>
-          <label> <input value="showAll" type="radio" name="whichLines" />All </label><!-- No &nbsp;, matching resetAllCountryLabel(), so the gear after it doesn't shift when data loads -->
+          <label> <input value="showAll" type="radio" name="whichLines" />All&nbsp;</label><!-- "All" and its non-breaking space match updateAllCountryLabel() and resetAllCountryLabel() in earthscape.js -->
+          <label class="whichLines-mine" title="The locations saved with Save as My Locations" style="display:none"> <input value="showMine" type="radio" name="whichLines"/>My Locations</label>
         </div>
 
         <div id="perCapitaOptions" style="float:right">
-            <label> <input value="totals" type="radio" name="whichPer" checked  />Totals </label>
-            <label> <input value="percapita" type="radio" name="whichPer" />Per Capita </label>
+            <label> <input value="percapita" type="radio" name="whichPer" checked />Per Capita </label>
+            <label> <input value="totals" type="radio" name="whichPer" />Totals </label>
             <!--
             <label> <input value="perarea" type="radio" name="whichPer" />Per Area </label>
             -->
@@ -884,8 +917,8 @@ p.set('rs_dcid', list.join(','));
             <span class="load-sheet">Loading list from Google Sheet</span>
             <span class="load-datacommons">Loading Google Data Commons</span>
         </span>
-        <div class="size-control-gear" style="display: none; clear: both; margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
-            <h4 style="margin: 0 0 15px 0; color: #495057; font-size: 16px;">Chart Size Controls</h4>
+        <div class="size-control-gear" style="display: none;">
+            <h4 class="size-control-heading" style="margin: 0 0 15px 0; font-size: 16px;">Chart Size Controls</h4>
             <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <label for="widthSlider" style="font-weight: 500; min-width: 50px;">Width:</label>
@@ -899,15 +932,15 @@ p.set('rs_dcid', list.join(','));
                            style="width: 150px;" oninput="updateChartSize()">
                     <span id="heightValue" style="min-width: 50px; font-family: monospace;">400px</span>
                 </div>
-                <button onclick="resetChartSize()" 
+                <button onclick="resetChartSize()" title="Clear the width and height above so the charts fill the page width"
                         style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                    Reset to Auto
+                    Full Width
                 </button>
             </div>
             
             <!-- Legend Position Settings -->
-            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #dee2e6;">
-                <h5 style="margin: 0 0 10px 0; color: #495057; font-size: 15px; font-weight: 600;">Legend Position</h5>
+            <div class="size-control-divider" style="margin-top: 20px; padding-top: 15px;">
+                <h5 class="size-control-heading" style="margin: 0 0 10px 0; font-size: 15px; font-weight: 600;">Legend Position</h5>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                     <label style="display: flex; align-items: center; cursor: pointer; padding: 4px 0;">
                         <input type="radio" name="legendPosition" value="left" style="margin-right: 8px; cursor: pointer;">

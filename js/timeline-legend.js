@@ -584,6 +584,9 @@ function saveLegendListToCache() {
         const key = getLegendCacheKey();
         const labels = getActiveLegendLabelsFromCharts();
         localStorage.setItem(key, JSON.stringify(labels));
+        // The chart already shows the saved list, so the radio changes without redrawing
+        const mineRadio = document.querySelector('input[name="whichLines"][value="showMine"]');
+        if (mineRadio) mineRadio.checked = true;
         window._legendSavedListAppliedKey = key;
         window._legendListJustSaved = true;
         window._legendListDirty = false;
@@ -599,9 +602,28 @@ function hasLegendListCache() {
         return Array.isArray(parsed) && parsed.length > 0;
     } catch (e) { return false; }
 }
+// The saved list ("Save as My Locations") shows with the "My Locations" radio (whichLines showMine) on localsite/timeline/.
+// Pages without that radio, such as /home/, apply it to every choice except "Top Economies" (showSelected), which keeps its own countries.
+function savedLegendListAppliesNow() {
+    try {
+        const mode = document.querySelector('input[name="whichLines"]:checked')?.value;
+        if (document.querySelector('input[name="whichLines"][value="showMine"]')) return mode === 'showMine';
+        return mode !== 'showSelected';
+    } catch (e) { return true; }
+}
+window.savedLegendListAppliesNow = savedLegendListAppliesNow;
+// The saved list for the current scope, or null. earthscape.js uses it to draw "My Locations".
+function getSavedLegendList() {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(getLegendCacheKey()) || 'null');
+        return Array.isArray(parsed) && parsed.length > 0 ? parsed : null;
+    } catch (e) { return null; }
+}
+window.getSavedLegendList = getSavedLegendList;
 function isLegendCachePendingApply() {
     try {
         if (window._legendListDirty) return false;
+        if (!savedLegendListAppliesNow()) return false;
         const key = getLegendCacheKey();
         const raw = localStorage.getItem(key);
         if (!raw) return false;
@@ -613,7 +635,20 @@ function isLegendCachePendingApply() {
         return !(sameKeyApplied && cycleApplied === cycle);
     } catch (e) { return false; }
 }
+// The "My Locations" radio shows once a list is saved for the current scope
+function updateMyLocationsRadio() {
+    const hasList = !!getSavedLegendList();
+    document.querySelectorAll('.whichLines-mine').forEach((label) => {
+        label.style.display = hasList ? '' : 'none';
+        // Without a list, "My Locations" draws Top 5 (earthscape.js), so that radio takes over without a redraw
+        const mineRadio = label.querySelector('input');
+        const top5Radio = document.querySelector('input[name="whichLines"][value="showTop5"]');
+        if (!hasList && mineRadio && mineRadio.checked && top5Radio) top5Radio.checked = true;
+    });
+}
+window.updateMyLocationsRadio = updateMyLocationsRadio;
 function updateLegendCacheButtonsVisibility() {
+    updateMyLocationsRadio();
     const showClear = hasLegendListCache();
     const showSave = !!window._legendListDirty && isLegendListChangedFromBaseline() && !window._legendListJustSaved;
     document.querySelectorAll('.legend-cache-clear-btn').forEach((btn) => {
@@ -621,13 +656,14 @@ function updateLegendCacheButtonsVisibility() {
     });
     document.querySelectorAll('.legend-cache-save-btn').forEach((btn) => {
         btn.style.display = showSave ? 'inline-flex' : 'none';
-        btn.textContent = 'Save as Defaults';
+        btn.textContent = 'Save as My Locations';
     });
 }
 function applySavedLegendListToCharts(charts) {
     try {
         // User made unsaved legend edits (toggle/add/remove): don't override with cached list.
         if (window._legendListDirty) return;
+        if (!savedLegendListAppliesNow()) return;
         const cacheKey = getLegendCacheKey();
         const raw = localStorage.getItem(cacheKey);
         const saved = raw ? JSON.parse(raw) : null;
@@ -643,19 +679,12 @@ function applySavedLegendListToCharts(charts) {
                 });
             } catch (e) { /* ignore */ }
         });
-        const missing = saved.filter((label) => !datasetLabels.has(String(label)));
+        // Only saved labels that have loaded data can be added. Others (not fetched for this view) are skipped,
+        // so the rebuild below doesn't try them again and again, which froze the page.
+        const dataByName = window._timelineCountryDataByName || {};
+        const missing = saved.filter((label) => !datasetLabels.has(String(label)) && dataByName[label]);
         if (missing.length > 0 && typeof window.addCountryToCharts === 'function' && !window._applyingSavedLegendList) {
-            const dataReady = window._timelineCountryDataByName && Object.keys(window._timelineCountryDataByName).length > 0;
-            if (!dataReady && typeof waitForElm === 'function') {
-                waitForElm('#legend-content').then(() => {
-                    try {
-                        if (typeof window.buildFloatingLegendFromChart === 'function') {
-                            window.buildFloatingLegendFromChart();
-                        }
-                    } catch (e) { /* ignore */ }
-                });
-                return;
-            }
+            // addCountryToCharts skips its chart redraws while _applyingSavedLegendList is set. The charts redraw once below.
             window._applyingSavedLegendList = true;
             try {
                 missing.forEach((label) => {
@@ -727,6 +756,10 @@ function clearLegendListCache() {
                 chartObj.update('none');
             } catch (e) { /* ignore */ }
         });
+        // With no saved list left, "My Locations" switches to Top 5 for the redraw below
+        const mineRadio = document.querySelector('input[name="whichLines"][value="showMine"]');
+        const top5Radio = document.querySelector('input[name="whichLines"][value="showTop5"]');
+        if (mineRadio && mineRadio.checked && top5Radio) top5Radio.checked = true;
         window._forceLegendRebuild = true;
         if (typeof buildFloatingLegendFromChart === 'function') {
             buildFloatingLegendFromChart();
@@ -1219,7 +1252,9 @@ function buildFloatingLegendFromChart() {
             info.charts.forEach(({chart, index}) => {
                 const meta = chart.getDatasetMeta(index);
                 meta.hidden = !meta.hidden;
-                try { chart.update(); } catch (e) {}
+                // Long lists (All, a large My Locations) redraw without animating every line, which kept the page busy
+                const longList = (chart.data?.datasets?.length || 0) > 30;
+                try { chart.update(longList ? 'none' : undefined); } catch (e) {}
             });
             const nowVisible = info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden);
             setItemSelectionStyle(item, info.color, nowVisible);
@@ -1502,7 +1537,7 @@ function buildFloatingLegendFromChart() {
             cacheRow.className = 'legend-cache-row';
             const saveBtn = document.createElement('div');
             saveBtn.className = 'legend-cache-btn legend-cache-save-btn';
-            saveBtn.textContent = 'Save as Defaults';
+            saveBtn.textContent = 'Save as My Locations';
             saveBtn.setAttribute('role', 'button');
             saveBtn.tabIndex = 0;
             saveBtn.addEventListener('click', saveLegendListToCache);
@@ -2352,6 +2387,9 @@ function _positionLegendHelper(legend, targetCanvas, selectedToggle) {
     // Initial position
     reposition();
 }
+
+// The page starts on Top 5. "My Locations" shows once a list is saved.
+try { updateMyLocationsRadio(); } catch (e) { /* ignore */ }
 
 // Charts that earthscape.js drew before this script loaded get their legend now
 try {

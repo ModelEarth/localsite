@@ -250,7 +250,7 @@ body.main-nav-hidden #floating-legend.chart-visible {
     outline: 2px solid #516175;
     outline-offset: 1px;
 }
-/* Save as Defaults and Restore Defaults each span the row, one above the other when both show */
+/* Save as My Locations and Restore Defaults each span the row, one above the other when both show */
 .legend-cache-row {
     display: flex;
     flex-wrap: wrap;
