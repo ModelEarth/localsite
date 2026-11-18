@@ -203,7 +203,14 @@ body.main-nav-hidden #floating-legend.chart-visible {
 }
 .bottom-legend-item { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:6px; cursor:pointer; white-space:nowrap; transition:all 0.14s ease; text-align:center; justify-content:center; background: transparent; }
 .bottom-legend-item .legend-swatch { width:12px; height:12px; border-radius:3px; box-shadow:0 0 0 1px rgba(0,0,0,0.06) inset; flex:0 0 auto; }
-.bottom-legend-item.hidden { opacity:0.45; }
+/* A location turned off: its name at 70% opacity */
+.bottom-legend-item.hidden { opacity:1; }
+.bottom-legend-item.hidden .legend-label { opacity:0.7; }
+/* A checkbox in the swatch's place, the same size so nothing moves (timeline-legend.js): on hover, and always
+   for a location turned off, which shows it empty, with just its border */
+.bottom-legend-item .bottom-legend-check { display:none; width:12px; height:12px; margin:0; flex:0 0 auto; pointer-events:none; cursor:pointer; }
+.bottom-legend-item:hover .legend-swatch, .bottom-legend-item.hidden .legend-swatch { display:none; }
+.bottom-legend-item:hover .bottom-legend-check, .bottom-legend-item.hidden .bottom-legend-check { display:inline-block; }
 .bottom-legend-more { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:6px; cursor:pointer; white-space:nowrap; color:rgba(0,0,0,0.65); background: transparent; border: 1px dashed rgba(0,0,0,0.06); }
 .bottom-legend-more:hover { background: rgba(0,0,0,0.02); }
 .bottom-legend-collapsed .bottom-legend-item.extra { display: none; }
@@ -214,7 +221,11 @@ body.main-nav-hidden #floating-legend.chart-visible {
     pointer-events: auto;
 }
 .legend-item .item-actions { display: none; }
-.legend-item.hidden { opacity:0.45; }
+/* A location turned off, in the legends on the left and right: a light gray background and charcoal left edge
+   (lighter gray in dark mode), so it doesn't leave a gap in the list. Its checkbox and name are dimmed, not the background. */
+.legend-item.hidden { background:#eceef1; border-left:4px solid #3c4148; }
+.legend-item.hidden > * { opacity:0.45; }
+.dark .legend-item.hidden { background:rgba(255,255,255,0.07); border-left-color:#7d8796; }
 
 /* Label part of legend item — truncate if too long */
 .legend-label { display:inline-block; flex: 1 1 auto; min-width:0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -359,7 +370,6 @@ body.main-nav-hidden #floating-legend.chart-visible {
     white-space: nowrap;
     border-left: 4px solid transparent;
 }
-.bottom-legend-item.hidden { opacity: 0.55; }
 .bottom-legend-more {
     display: inline-flex;
     align-items: center;
@@ -389,13 +399,13 @@ body.main-nav-hidden #floating-legend.chart-visible {
 /* "More" placement menu button at the end of the list, a three-dot icon when every location shows */
 .bottom-legend-place-btn {
     display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
-    margin-left: 6px; padding: 6px 10px; border: none; border-radius: 6px; background: transparent;
+    margin-left: 6px; padding: 6px 10px; border: none; border-radius: 6px; background: rgba(0,102,255,0.04); /* Half the hover's */
     font: inherit; font-size: 13px; font-weight: 600; color: #0066ff; cursor: pointer; white-space: nowrap;
 }
 .bottom-legend-place-btn.is-icon { padding: 6px; }
 .bottom-legend-place-btn:hover { background: rgba(0,102,255,0.08); }
 .bottom-legend-place-btn:focus-visible { outline: 2px solid #0066ff; outline-offset: 1px; }
-.dark .bottom-legend-place-btn { color: #69a5ff; }
+.dark .bottom-legend-place-btn { color: #69a5ff; background: rgba(105,165,255,0.08); }
 .dark .bottom-legend-place-btn:hover { background: rgba(105,165,255,0.16); }
 @media (max-width:700px) {
     #bottom-legend { padding: 6px; }

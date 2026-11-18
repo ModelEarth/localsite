@@ -635,15 +635,22 @@ function isLegendCachePendingApply() {
         return !(sameKeyApplied && cycleApplied === cycle);
     } catch (e) { return false; }
 }
+// The default which-lines radio on localsite/timeline/: Top Economies for countries, otherwise Top 5 (Top Economies is hidden)
+function getDefaultWhichLinesRadio() {
+    const topEconomies = document.querySelector('input[name="whichLines"][value="showSelected"]');
+    const scope = String((typeof getHash === 'function' && getHash().scope) || 'country').toLowerCase();
+    if (topEconomies && scope === 'country') return topEconomies;
+    return document.querySelector('input[name="whichLines"][value="showTop5"]');
+}
 // The "My Locations" radio shows once a list is saved for the current scope
 function updateMyLocationsRadio() {
     const hasList = !!getSavedLegendList();
     document.querySelectorAll('.whichLines-mine').forEach((label) => {
         label.style.display = hasList ? '' : 'none';
-        // Without a list, "My Locations" draws Top 5 (earthscape.js), so that radio takes over without a redraw
+        // Without a list, "My Locations" switches to the default choice
         const mineRadio = label.querySelector('input');
-        const top5Radio = document.querySelector('input[name="whichLines"][value="showTop5"]');
-        if (!hasList && mineRadio && mineRadio.checked && top5Radio) top5Radio.checked = true;
+        const defaultRadio = getDefaultWhichLinesRadio();
+        if (!hasList && mineRadio && mineRadio.checked && defaultRadio) defaultRadio.checked = true;
     });
 }
 window.updateMyLocationsRadio = updateMyLocationsRadio;
@@ -756,10 +763,10 @@ function clearLegendListCache() {
                 chartObj.update('none');
             } catch (e) { /* ignore */ }
         });
-        // With no saved list left, "My Locations" switches to Top 5 for the redraw below
+        // With no saved list left, "My Locations" switches to the default choice for the redraw below
         const mineRadio = document.querySelector('input[name="whichLines"][value="showMine"]');
-        const top5Radio = document.querySelector('input[name="whichLines"][value="showTop5"]');
-        if (mineRadio && mineRadio.checked && top5Radio) top5Radio.checked = true;
+        const defaultRadio = getDefaultWhichLinesRadio();
+        if (mineRadio && mineRadio.checked && defaultRadio) defaultRadio.checked = true;
         window._forceLegendRebuild = true;
         if (typeof buildFloatingLegendFromChart === 'function') {
             buildFloatingLegendFromChart();
@@ -1062,11 +1069,11 @@ function buildFloatingLegendFromChart() {
     }
 
     // Apply selection visuals to a legend item
+    // A shown location: a tint and left edge in its color. One turned off: a gray background and charcoal edge
+    // from timeline-legend.css (.legend-item.hidden), so the list has no gaps.
     function setItemSelectionStyle(item, color, visible) {
-        const bg = visible ? colorToRgba(color, 0.12) : 'transparent';
-        const border = visible ? color : 'transparent';
-        item.style.background = bg;
-        item.style.borderLeft = `4px solid ${border}`;
+        item.style.background = visible ? colorToRgba(color, 0.12) : '';
+        item.style.borderLeft = visible ? `4px solid ${color}` : '';
         item.classList.toggle('hidden', !visible);
     }
 
@@ -1770,21 +1777,33 @@ function buildFloatingLegendFromChart() {
             try { if (!color && labelMap && labelMap.has(label)) color = labelMap.get(label).color; } catch (e) {}
             if (color) sw.style.background = color;
             item.appendChild(sw);
+            // A checkbox takes the swatch's place on hover (timeline-legend.css), checked while the line shows.
+            // Clicks go to the item, which toggles the line.
+            const check = document.createElement('input');
+            check.type = 'checkbox'; check.className = 'bottom-legend-check'; check.tabIndex = -1;
+            check.setAttribute('aria-hidden', 'true');
+            if (color) check.style.accentColor = color;
+            item.appendChild(check);
+            const syncCheck = () => { check.checked = !item.classList.contains('hidden'); };
             const txt = document.createElement('span'); txt.className = 'legend-label'; txt.textContent = label; item.appendChild(txt);
             // Do not add a numeric value in the bottom legend; values are shown only in the floating legend
             // mirror selection
             try { const info = labelMap.get(label); const visible = info ? info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden) : true; if (!visible) item.classList.add('hidden'); } catch (e) {}
+            syncCheck();
             item.addEventListener('click', (ev) => {
                 const auth = document.querySelector(`#legend-content .legend-item[data-legend-label="${CSS.escape(label)}"]`);
                 if (auth) {
+                    check.checked = !check.checked; // At once, then confirmed from the chart below
                     auth.dispatchEvent(new MouseEvent('click', { bubbles: true }));
                     setTimeout(() => {
                         try { const info = labelMap.get(label); const nowVisible = info ? info.charts.some(({chart, index}) => !chart.getDatasetMeta(index).hidden) : true; item.classList.toggle('hidden', !nowVisible); } catch (e) {}
+                        syncCheck();
                     }, 40);
                 }
             });
             // Forward hover events to the authoritative legend item so highlighting also works from bottom legend
             item.addEventListener('mouseenter', (ev) => {
+                syncCheck(); // Other lists (More Locations) can hide the line too
                 const auth = document.querySelector(`#legend-content .legend-item[data-legend-label="${CSS.escape(label)}"]`);
                 if (auth) try { auth.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true })); } catch (e) {}
             });

@@ -82,6 +82,7 @@ document.addEventListener('hashChangeEvent', function (elem) {
             applyPerCapitaGoalSettings();
         });
     }
+    updateStateMenuVisibility(); // Top 5 in place of Top Economies for states, counties and zips, before the redraw below
     const stateChanged = setStateMenuFromHash(); // A state=XX set elsewhere, such as the header's state menu
     // Compare with the scope and goal last loaded, not priorHash, which starts with the include's scope=country
     if (hash.scope + '|' + (hash.goal || '') !== window._timelineSheetView) {
@@ -106,8 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
     applyPerCapitaGoalSettings();
     setStateMenuFromHash(); // state=XX in the URL, before the first chart. refreshTimeline() defaults to Georgia and writes state to the hash.
     //alert(hash.scope)
+    updateStateMenuVisibility(); // Before the first chart, which reads the which-lines radio
     updateDcidSelectFromSheet(hash.scope);
-    updateStateMenuVisibility();
     
     document.addEventListener('change', function(event) {
         if (event.target.name === 'whichLines') {
@@ -149,6 +150,17 @@ function updateStateMenuVisibility() {
   document.querySelectorAll('.scope-country').forEach(el => {
     el.style.display = (scope === 'country') ? '' : 'none';
   });
+  // Top Economies, the default, shows for countries only. States, counties and zips switch from it to Top 5,
+  // and countries switch back to it when Top 5 was chosen that way.
+  const topEconomies = document.querySelector('input[name="whichLines"][value="showSelected"]');
+  const top5 = document.querySelector('input[name="whichLines"][value="showTop5"]');
+  if (!topEconomies || !top5) return;
+  if (scope !== 'country') {
+    if (topEconomies.checked) { top5.checked = true; window._top5ForScope = true; }
+  } else {
+    if (window._top5ForScope && top5.checked) topEconomies.checked = true;
+    window._top5ForScope = false;
+  }
 }
 
 </script>
@@ -893,9 +905,9 @@ p.set('rs_dcid', list.join(','));
         
         <div class="whichLinesHolder" style="float:left; display: flex;">
           <div class="scope-country">
-              <label> <input value="showSelected" type="radio" name="whichLines"/>Top Economies &nbsp;</label>
+              <label> <input value="showSelected" type="radio" name="whichLines" checked />Top Economies &nbsp;</label>
           </div>
-          <label> <input value="showTop5" type="radio" name="whichLines" checked />Top 5 &nbsp;</label>
+          <label> <input value="showTop5" type="radio" name="whichLines" />Top 5 &nbsp;</label>
           <label> <input value="showBottom5" type="radio" name="whichLines" />Bottom 5 &nbsp;</label>
           <label> <input value="showAll" type="radio" name="whichLines" />All&nbsp;</label><!-- "All" and its non-breaking space match updateAllCountryLabel() and resetAllCountryLabel() in earthscape.js -->
           <label class="whichLines-mine" title="The locations saved with Save as My Locations" style="display:none"> <input value="showMine" type="radio" name="whichLines"/>My Locations</label>
