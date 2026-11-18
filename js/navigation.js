@@ -4596,12 +4596,7 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
     waitForVariable('L', function() { // Wait for Leaflet
 
     // Occurs twice in page
-    let modelsite = getModelsite();
-
-    // Allow URL parameter to override cookie for testing
-    if (hash.site) {
-        modelsite = hash.site;
-    }
+    let modelsite = getModelsite(); // Includes a #site= in the URL (getHashsite, localsite.js)
 
     // Without a state in the hash, only a state saved in the browser is the default (not the site, e.g. model.georgia)
     if (!stateAbbr) {
@@ -8307,16 +8302,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
     // To do: fetch the existing background-image.
 
     let hash = getHash();
-    let modelsite = getModelsite();
-
-    // Allow URL parameter to override cookie for testing
-    if (hash.site) {
-        modelsite = hash.site;
-        // Optionally set cookie for persistence across page loads
-        if (typeof Cookies != 'undefined') {
-            Cookies.set('modelsite', hash.site);
-        }
-    }
+    let modelsite = getModelsite(); // Includes a #site= in the URL, for this page only (getHashsite, localsite.js)
     const changeFavicon = link => { // var for Safari
       let $favicon = document.querySelector('link[rel="icon"]')
       // If a <link rel="icon"> element already exists,
@@ -8353,6 +8339,7 @@ function applyNavigation() { // Waits for localsite.js 'localStart' variable so 
         return window.loadWebrootYaml().then(function(result) {
             const sites = result.sites, defaultId = result.default;
             if (!sites) return modelsite;
+            modelsite = getModelsite(); // Now without a #site= that config.yaml doesn't list
             let matchedId = null, matchedSite = null, matchMethod = null;
             if (modelsite && sites[modelsite]) {
                 matchedId = modelsite; matchedSite = sites[modelsite]; matchMethod = 'modelsite cookie';

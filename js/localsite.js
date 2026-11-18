@@ -5172,7 +5172,8 @@ function setSitelook(siteLook) {
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
         siteLook = "dark"
       }
-    } else if (siteLook == "default" && (getModelsite() == "dreamstudio" || location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0)) {
+    } else if (siteLook == "default" && ((typeof param !== 'undefined' && param.defaultlook == "dark") || getModelsite() == "dreamstudio" || location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0)) {
+      // defaultlook=dark (a page or localsite.js param): dark until the visitor picks Light or Computer in Settings or with the dark mode toggle
       siteLook = "dark"
     }
     if (siteLook == "dark") {
@@ -5446,7 +5447,18 @@ function pagesiteKey() {
 function getSavedPagesite() {
   try { return localStorage.getItem(pagesiteKey()) || ''; } catch (e) { return ''; }
 }
+// A site in the URL hash (#site=maestro) applies to this page only, without changing the modelsite cookie, when
+// support/site/config.yaml lists it. Until config.yaml loads it's taken as listed. After that, one it doesn't list is
+// ignored (window.WEBROOT_SITES, set by loadWebrootYaml), so the page returns to its usual site.
+function getHashsite() {
+  const site = (typeof getHash === 'function' && getHash().site) ? String(getHash().site) : '';
+  if (!site) return '';
+  if (window.WEBROOT_SITES && !window.WEBROOT_SITES[site]) return '';
+  return site;
+}
 function getPagesite() {
+  const hashsite = getHashsite();
+  if (hashsite) return hashsite;
   const saved = getSavedPagesite();
   if (saved === 'cookie') return '';
   if (saved) return saved;
@@ -5463,10 +5475,20 @@ function savePagesite(value) { // value: a site id, or '' to stop applying a sit
     }
   } catch (e) {}
 }
-// The model site in effect on this page: the page-only site, else the modelsite cookie.
+// The model site in effect on this page: the page-only site (the hash's site, else param.pagesite or a saved choice),
+// else the modelsite cookie.
 function getModelsite() {
   return getPagesite() || ((typeof Cookies !== 'undefined' && Cookies.get('modelsite')) || '');
 }
+
+// A #site= change on an open page switches the site (modelsiteChanged), and so does removing it
+var priorHashsite = (typeof getHash === 'function' && getHash().site) || '';
+document.addEventListener('hashChangeEvent', function() {
+  const hashSite = getHash().site || '';
+  if (hashSite === priorHashsite) return;
+  priorHashsite = hashSite;
+  setModelsite(getModelsite());
+});
 
 function setModelsite(modelsite) {
   const nextModelsite = (typeof modelsite === 'string' && modelsite) ? modelsite : "";
@@ -9009,6 +9031,15 @@ function siteConfigPath() {
                     none(r.status === 404);
                 })
                 .catch(function() { none(false); });
+        });
+        // The sites config.yaml lists, which getHashsite() checks a #site= value against
+        _promise.then(function(result) {
+            window.WEBROOT_SITES = result.sites || {};
+            var hashSite = typeof getHash === 'function' ? getHash().site : '';
+            if (hashSite && !window.WEBROOT_SITES[hashSite]) {
+                console.warn('#site=' + hashSite + ' is not a site in support/site/config.yaml | Ignored');
+                setModelsite(getModelsite());
+            }
         });
         return _promise;
     };
