@@ -1677,6 +1677,14 @@ function loadLocalTemplate() {
       }
       $(theTemplate).appendTo(datascapeFileDiv);
 
+      // Console Log (#log_display, shown when Online is false in Settings): the page's load date and time after "LogText".
+      // Set as textContent rather than value, so lines appended later as text nodes still show.
+      const logText = document.getElementById("logText");
+      if (logText) {
+        const loadTime = new Date().toLocaleString(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit'});
+        logText.textContent = "LogText " + loadTime + "\n";
+      }
+
       // On pages with a hero (localsite/info), #hero_holder moves into #heroHolderPlaceholder (template-main.html),
       // after the header and filters and before the map display (#map1) and listings (#list_main), which stay in place
       const heroHolder = document.getElementById("hero_holder");
