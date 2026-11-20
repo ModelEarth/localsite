@@ -3233,14 +3233,14 @@ function placeEarthDisplay() {
   var earthDisplay = document.getElementById('mainEarthDisplay');
   if (fullscreen && earthDisplay && earthDisplay.parentElement !== fullscreen) fullscreen.appendChild(earthDisplay);
   if (fullscreen && earthDisplay && earthDisplay.parentElement === fullscreen) {
-    // The voice widget's floating words (engine/claude-voice.js) show over the map, which stays in view beneath them
+    // The voice widget's floating words (engine/js/voice-chat.js) show over the map, which stays in view beneath them
     // rather than fading out with the rest of #fullscreen's content.
     earthDisplay.setAttribute('data-words-stay', '');
     initEarthScrollCover(document.getElementById('globalMapHolder'));
     initEarthControls(earthDisplay);
     // .earthShown on #fullscreen while the map shows. When the map closes (#earthClose), #fullscreen closes too
     // (.fullscreenEmpty, base.css) unless something else in it still shows, like project/goals' hero photos or the
-    // voice widget (engine/claude-voice.js), whose words and controls stay so the conversation can go on.
+    // voice widget (engine/js/voice-chat.js), whose words and controls stay so the conversation can go on.
     // The play/pause button sits on the map, so it doesn't count. Each child's own computed style is checked, which
     // still reads true while #fullscreen is closed, and <html> class changes (the goals hero view) recheck it.
     if (!fullscreen.dataset.earthShownBound) {
@@ -6151,8 +6151,8 @@ function initAccountButton() {
   });
 }
 
-// Adds the voice widget (engine/claude-voice.js) to pages with #fullscreen when support/site/config.yaml names its
-// script at the top level, e.g. fullscreenVoice: /engine/claude-voice.js. Its canvas and floating words fill
+// Adds the voice widget (engine/js/voice-chat.js) to pages with #fullscreen when support/site/config.yaml names its
+// script at the top level, e.g. fullscreenVoice: /engine/js/voice-chat.js. Its canvas and floating words fill
 // #fullscreen, and its controls sit in its lower right, 12px up, scrolling with it (project/goals moves its photo
 // credit up above them). The play button (#earthPlayPauseButton) moves into them, where it also pauses
 // Claude's voice and motion while Claude replies. Claude's floating words also show over the Earth map, which stays
@@ -6164,7 +6164,7 @@ function initFullscreenVoice() {
     var src = m && m[1].trim();
     if (!src) { return; }
     waitForElm('#fullscreen').then(function () {
-      if (window.ClaudeVoice || document.querySelector('script[src*="claude-voice"]')) { return; } // The page loads it itself
+      if (window.VoiceChat || document.querySelector('script[src*="voice-chat"]')) { return; } // The page loads it itself
       var script = document.createElement('script');
       script.src = webrootPath(src);
       var names = voiceAgentNames(result);
@@ -6179,7 +6179,7 @@ function initFullscreenVoice() {
 }
 
 // The voice widget's names for the current site: agent_name in its support/site/config.yaml entry, a comma-separated list
-// whose first is the name shown, such as "Little Bird, Sparrow" for maestro (engine/claude-voice.js, data-agent-name).
+// whose first is the name shown, such as "Little Bird, Sparrow" for maestro (engine/js/voice-chat.js, data-agent-name).
 // Empty for the widget's default, Claude.
 function voiceAgentNames(config) {
   var sites = (config && config.sites) || {};
@@ -6191,14 +6191,14 @@ function voiceAgentNames(config) {
 // initFullscreenVoice() added it. A page that loads the widget itself keeps the name it gives it.
 var voiceNamedBySite = false;
 document.addEventListener('modelsiteChanged', function () {
-  if (!voiceNamedBySite || !window.ClaudeVoice || typeof window.ClaudeVoice.setNames !== 'function' || typeof window.loadWebrootYaml !== 'function') { return; }
-  window.loadWebrootYaml().then(function (config) { window.ClaudeVoice.setNames(voiceAgentNames(config)); });
+  if (!voiceNamedBySite || !window.VoiceChat || typeof window.VoiceChat.setNames !== 'function' || typeof window.loadWebrootYaml !== 'function') { return; }
+  window.loadWebrootYaml().then(function (config) { window.VoiceChat.setNames(voiceAgentNames(config)); });
 });
 
 // Play mode: while a voice conversation is under way (from "Ok Claude" or a typed question until "Thanks", a quiet spell or
 // the voice being turned off), <html> carries .playMode, and elements with .hideInPlayMode step aside for Claude's
-// floating words (base.css). Heard in the capture phase, since claude-voice.js's events don't bubble up from #fullscreen.
-document.addEventListener('claude-voice:state', function (e) {
+// floating words (base.css). Heard in the capture phase, since voice-chat.js's events don't bubble up from #fullscreen.
+document.addEventListener('voice-chat:state', function (e) {
   var state = e.detail && e.detail.state;
   document.documentElement.classList.toggle('playMode', state === 'listening' || state === 'thinking' || state === 'speaking');
 }, true);

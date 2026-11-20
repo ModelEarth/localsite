@@ -392,9 +392,9 @@ function EarthFilters(container, options) {
   if (this.mapContainer) {
     this.fitSavedMapPanelHeight();
   }
-  // A conversation starting in the page's voice controls (.claude-voice-ui, claude-voice.js) condenses the filters, without changing
+  // A conversation starting in the page's voice controls (.voice-chat-ui, voice-chat.js) condenses the filters, without changing
   // the saved choice. Heard in the capture phase, since the event doesn't bubble up from the element holding the voice controls.
-  document.addEventListener('claude-voice:start', function() {
+  document.addEventListener('voice-chat:start', function() {
     self.setCondensed(true, false);
   }, true);
 }

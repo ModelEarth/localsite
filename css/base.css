@@ -4955,7 +4955,7 @@ body.sidebar-hidden #openNav {
 }
 /* When the search filters are within #fullscreen (.filtersOverFullscreen, localsite.js computeTopNavOffset), their
    buttons (Locations, Topics, GO, the menu) and the search box take the voice widget's see-through dark background
-   (its .wrap buttons, engine/claude-voice.js). !important is over search-filters.css and inline styles in
+   (its .wrap buttons, engine/js/voice-chat.js). !important is over search-filters.css and inline styles in
    map/filter.html. */
 html.filtersOverFullscreen #mapFilters .filterClick,
 html.filtersOverFullscreen #mapFilters #goSearch,
