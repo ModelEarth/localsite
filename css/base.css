@@ -330,6 +330,18 @@ header, footer {
   font-family:'Amaze';font-weight:300;
   src:url("/localsite/css/fonts/ember.woff2") format("woff2"), url("/localsite/css/fonts/ember.woff") format("woff")
 }
+/* Archivo (SIL Open Font License, css/fonts/archivo/OFL.txt), the display face ArtCraft uses.
+   A variable font, Latin only, with weight and width axes. Used by #headerSiteTitle, and
+   only downloaded on pages that show it. */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url("fonts/archivo/archivo-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 * {box-sizing: border-box;}
 /* CAUSED SPACE in map/index.html WHEN #tableSide DIV EMPTY - SHOULD NOT NEED
 .hideMobile, .hideMobileWide {display:inline-block;}
@@ -2532,20 +2544,45 @@ a:has(> .logoTopPadding) {
 , #headerLocTitle
 */
 #headerSiteTitle {
-  font: 450 25px / 1.2 system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* ArtCraft's display face: Archivo, semi-bold and slightly expanded */
+  font: 620 23px / 1.2 "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-stretch: 106%;
   color: #777;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.02em;
   padding-bottom: 5px;
 
-  /* Align vertically */
+  /* Align vertically, 4px below center */
   position: absolute;
   top: 50%;
-  transform: translate(0%, -50%);
+  transform: translate(0%, calc(-50% + 4px));
 }
 @media (min-width: 601px) {
   #headerSiteTitle {
       min-width: 250px; /* Prevents being too narrow in OpenWebUI */
   }
+}
+/* Letter spacing of the site title's words: the first a little tighter than the second. */
+#headerSiteTitle a > span:not(#titleTwo) {
+  letter-spacing: 0;
+}
+#headerSiteTitle #titleTwo {
+  letter-spacing: 0.015em;
+}
+/* Light mode: the first word of the site title less bold and the second word darker.
+   The colors are inline (#777 and #bbb, js/navigation.js), so the color is important. */
+body:not(.dark) #headerSiteTitle a > span:not(#titleTwo) {
+  font-weight: 500;
+}
+body:not(.dark) #headerSiteTitle #titleTwo {
+  color: #9a9a9a !important;
+}
+/* Dark mode: both words of the site title a little lighter. The colors are inline
+   (#777 and #bbb, js/navigation.js), so these are important. */
+.dark #headerSiteTitle, .dark #headerSiteTitle a > span:not(#titleTwo) {
+  color: #999 !important;
+}
+.dark #headerSiteTitle #titleTwo {
+  color: #d4d4d4 !important;
 }
 /* A site logo with a dark mode version (logo_dark in support/site/config.yaml, js/navigation.js): the light one
    shows unless the body is .dark, and the dark one only then. Important, over the header's #headerLogo img. */
