@@ -4751,7 +4751,56 @@ function renderMapShapeAfterPromise(whichmap, hash, geoview, attempts) {
 
         if(req.readyState === XMLHttpRequest.DONE) {
 
-            topoob = JSON.parse(req.responseText)
+            // Offline (onlinemode false), topojson_root() is "", so the shapes load from a local clone of the topojson repo.
+            // Without that clone the server returns its HTML 404 page, so show a message in the map div instead.
+            let mapDiv = document.getElementById(whichmap);
+            let oldMessage = mapDiv && mapDiv.querySelector(".geomapMessage");
+            if (oldMessage) oldMessage.remove();
+            let topoText = req.responseText || "";
+            let topoMissing = req.status !== 200 || topoText.trim().charAt(0) === "<";
+            if (!topoMissing) {
+                try {
+                    topoob = JSON.parse(topoText);
+                } catch (e) {
+                    topoMissing = true;
+                }
+            }
+            if (topoMissing) {
+                let offlineTopo = url.indexOf("/topojson/") === 0;
+                let message = offlineTopo
+                    ? "You are currently in Offline Mode and " + url.substring(1) + " is not available locally. Clone ModelEarth/topojson into the webroot, or go online."
+                    : "Map shapes could not be loaded (" + req.status + "): " + url;
+                consoleLog(message);
+                waitForElm('#logText').then((logText) => { // The Console Log, shown in offline mode
+                    logText.textContent += message + "\n";
+                });
+                if (mapDiv) {
+                    let messageDiv = document.createElement("div");
+                    messageDiv.className = "geomapMessage";
+                    // Its own font-size, since #datascape has font-size 0 (base.css). Placed 40px down, below the close-X and toggles, so they stay clickable.
+                    messageDiv.style.cssText = "position:absolute; top:40px; left:0; right:0; z-index:1000; padding:16px 20px; font-size:15px; line-height:1.4; white-space:pre-line;";
+                    if (offlineTopo) {
+                        // Go Online: the same as choosing Online in Settings (#onlinemode), then the map loads its shapes from model.earth
+                        let goOnline = document.createElement("button");
+                        goOnline.type = "button";
+                        goOnline.className = "btn btn-primary";
+                        goOnline.style.cssText = "display:block; margin-bottom:12px; font-size:14px;";
+                        goOnline.textContent = "Go Online";
+                        goOnline.addEventListener("click", function() {
+                            Cookies.set('onlinemode', 'true');
+                            $("#onlinemode").val('true');
+                            setOnlinemode('true');
+                            messageDiv.remove();
+                            let currentHash = getHash();
+                            renderGeomapShapes(whichmap, currentHash, currentHash.geoview, 1);
+                        });
+                        messageDiv.appendChild(goOnline);
+                    }
+                    messageDiv.appendChild(document.createTextNode(message.replace(". Clone ", ".\n\nClone "))); // A blank line before the second sentence
+                    mapDiv.appendChild(messageDiv);
+                }
+                return;
+            }
             
             // Check if topojson library is loaded
             if (typeof topojson === 'undefined') {
