@@ -5180,9 +5180,10 @@ function setSitelook(siteLook) {
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
         siteLook = "dark"
       }
-    } else if (siteLook == "default" && ((typeof param !== 'undefined' && param.defaultlook == "dark") || getModelsite() == "dreamstudio" || location.host.indexOf("dreamstudio") >= 0 || location.host.indexOf("planet.live") >= 0)) {
-      // defaultlook=dark (a page or localsite.js param): dark until the visitor picks Light or Computer in Settings or with the dark mode toggle
-      siteLook = "dark"
+    } else if (siteLook == "default") {
+      // Dark until the visitor picks Light or Computer in Settings or with the dark mode toggle.
+      // defaultlook=light (a page or localsite.js param) starts a page light instead.
+      siteLook = (typeof param !== 'undefined' && param.defaultlook == "light") ? "light" : "dark";
     }
     if (siteLook == "dark") {
         // Set sitebasemap value and trigger change event
@@ -5203,9 +5204,6 @@ function setSitelook(siteLook) {
         if (searchTextHolder && searchTextMove) {
             searchTextHolder.appendChild(searchTextMove);
         }
-    } else if (siteLook == "default") {
-        document.body.classList.remove("dark");
-        ////removeElement(theroot + 'css/bootstrap.darkly.min.css');
     } else { // Light
         document.body.classList.remove("dark");
         ////removeElement(theroot + 'css/bootstrap.darkly.min.css');
@@ -5234,7 +5232,7 @@ function updateDarkModeToggles() {
     });
 }
 function toggleDarkMode() {
-    // "light" rather than "default", since default is dark on some sites
+    // "light" rather than "default", since default is dark
     const newLook = document.body.classList.contains("dark") ? "light" : "dark";
     if (typeof Cookies != 'undefined') {
         Cookies.set('sitelook', newLook);
