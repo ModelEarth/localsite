@@ -6162,7 +6162,8 @@ function initAccountButton() {
 // #fullscreen, and its controls sit in its lower right, 12px up, scrolling with it (project/goals moves its photo
 // credit up above them). The play button (#earthPlayPauseButton) moves into them, where it also pauses
 // Claude's voice and motion while Claude replies. Claude's floating words also show over the Earth map, which stays
-// in view beneath them (data-words-stay, placeEarthDisplay()).
+// in view beneath them (data-words-stay, placeEarthDisplay()). With data-voice="local" on #fullscreen (engine/index.html),
+// only on localhost or with view=local, as for .local elements.
 function initFullscreenVoice() {
   if (typeof window.loadWebrootYaml !== 'function') { return; }
   window.loadWebrootYaml().then(function (result) {
@@ -6170,7 +6171,9 @@ function initFullscreenVoice() {
     var src = m && m[1].trim();
     if (!src) { return; }
     waitForElm('#fullscreen').then(function () {
+      var fullscreen = document.getElementById('fullscreen');
       if (window.VoiceChat || document.querySelector('script[src*="voice-chat"]')) { return; } // The page loads it itself
+      if (fullscreen.getAttribute('data-voice') === 'local' && !(location.host.indexOf('localhost') >= 0 || (typeof param !== 'undefined' && param["view"] == "local"))) { return; }
       var script = document.createElement('script');
       script.src = webrootPath(src);
       var names = voiceAgentNames(result);

@@ -3478,6 +3478,34 @@ body.sidebar-hovered {
   padding: 12px 16px 12px 16px !important;
 }
 
+/* #fullscreen.fullscreen-fixed: fixed over the whole window, behind the localsite header and search filters, so it
+   stays in place as the page scrolls over it (project/care, project/goals). It holds the voice widget's canvas,
+   floating words and controls (engine/js/voice-chat.js), and on project/goals its hero photos and the Earth map
+   (placeEarthDisplay()). It has no z-index of its own, so what's in it keeps its place in the page's stacking order. */
+html #fullscreen.fullscreen-fixed { position: fixed; inset: 0; height: auto; box-sizing: border-box; }
+/* The page's search filters (#filterFieldsHolder, until they're fixed with their own z-index) and the topics panel
+   the .showApps button opens below them (#scenePanelHolder) are raised above it. */
+html:has(#fullscreen.fullscreen-fixed) #filterFieldsHolder:not(.filterFieldsHolderFixed),
+html:has(#fullscreen.fullscreen-fixed) #scenePanelHolder { position: relative; z-index: 3; }
+/* The Earth map's stack of circles in the upper right goes 22px below the header, since #fullscreen's top is behind
+   it: --header-h where the page sets it (project/goals: where #goalsPage starts), else the header's height
+   (--headerbar-offset, localsite.js). Not below the search filters too (--top-nav-offset), which sit at the left. */
+html #fullscreen.fullscreen-fixed > #mainEarthDisplay .earth-zoom-controls { top: calc(var(--header-h, var(--headerbar-offset, 0px)) + 22px) !important; }
+/* The footer (#main-footer) slides up over the fixed #fullscreen at the page's bottom edge, raised above the Earth
+   map, its play button (z-index 102) and the voice controls, so they're covered there too. */
+html:has(#fullscreen.fullscreen-fixed) #main-footer { position: relative; z-index: 103; }
+/* .over-fullscreen: page content that scrolls over #fullscreen, which comes before it. Its empty space lets clicks
+   through to the voice controls beneath, while its children take them. At least the window's height below the
+   header, so the footer starts below the fold. */
+.over-fullscreen { position: relative; box-sizing: border-box; min-height: calc(100vh - var(--top-nav-offset, 0px)); pointer-events: none; }
+.over-fullscreen > * { pointer-events: auto; }
+/* A talk circle's area (.talk-circle-area, engine/js/talk-circle.js) in .over-fullscreen fills the rest of the first
+   screen, with the circle centered in it, along with what's stacked below it (project/care: the title). */
+.over-fullscreen:has(> .talk-circle-area) { display: flex; flex-direction: column; }
+.over-fullscreen > .talk-circle-area { flex: 1; min-height: 0; pointer-events: none; }
+/* .after-fullscreen: content after the first screen (.over-fullscreen), which scrolls up over #fullscreen too. */
+.after-fullscreen { position: relative; }
+
 /* #detailmapMenu screen modes: Full Screen puts the detail map in #fullscreen (at the top of
    #main-content), Half Screen in #halfscreen (immediately before #main-content) */
 #fullscreen,
