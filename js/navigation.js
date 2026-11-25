@@ -338,8 +338,9 @@ function hashChanged() {
 
     if (hash.geoview == "earth") {
         let latLonZoom = getDefaultGlobeLatLonZoom("1037"); // The Map Center setting (North America by default), or My Location
+        let regionCentered = centerEarthOnHashRegion();
         testAlert("hashChanged earth: waiting for #globalMapHolder");
-        waitForElm('#globalMapHolder').then((elm) => {
+        Promise.all([regionCentered, waitForElm('#globalMapHolder')]).then(() => {
             testAlert("hashChanged earth: showGlobalMap");
             showGlobalMap(getEarthMapUrlFromHash(latLonZoom));
         });
@@ -1268,7 +1269,7 @@ function hashChanged() {
         });
         if (hash.geoview == "earth") {
             let latLonZoom = getDefaultGlobeLatLonZoom("1037"); // The Map Center setting (North America by default), or My Location
-            showGlobalMap(getEarthMapUrlFromHash(latLonZoom));
+            centerEarthOnHashRegion().then(() => showGlobalMap(getEarthMapUrlFromHash(latLonZoom)));
         } else if (hash.geoview && isValidGeoview) {
             loadGeomap = true;
             // if ((priorHash.sidetab == "locale" && hash.sidetab != "locale") || (priorHash.locpop  && !hash.locpop)) {
@@ -9595,9 +9596,13 @@ function autoCloseRightNavOnNarrow() {
 
 $(document).on("click", ".showEarth", function(event) {
     let latLonZoom = getDefaultGlobeLatLonZoom("511"); // The Map Center setting (North America by default), or My Location
+    let hashBefore = (typeof getHash === 'function') ? getHash() : {};
     showEarth("show");
     autoCloseRightNavOnNarrow();
-    updateHash({"sidetab":"","geoview":"earth","earth":getEarthHashValue((typeof getHash === 'function') ? getHash() : {}, latLonZoom)});
+    updateHash({"sidetab":"","geoview":"earth","earth":getEarthHashValue(hashBefore, latLonZoom)});
+    if (!hashBefore.earth && !hashBefore['']) {
+        centerEarthOnHashRegion(true).then((moved) => { if (moved) showGlobalMap(getEarthMapUrlFromHash(latLonZoom)); });
+    }
     event.stopPropagation();
 });
 

@@ -1609,7 +1609,15 @@ window.EarthFilters = {
   },
   parseHash: parseEarthFiltersHash,
   formatHash: formatEarthFiltersHash,
-  defaultHash: earthFiltersDefaultHash
+  defaultHash: earthFiltersDefaultHash,
+  options: {
+    modes: earthFiltersModes,
+    animations: earthFiltersAnimations,
+    heights: earthFiltersHeights,
+    overlays: earthFiltersOverlays,
+    annotations: earthFiltersAnnotations,
+    projections: earthFiltersProjections
+  }
 };
 
 })(window);

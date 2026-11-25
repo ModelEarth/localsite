@@ -5598,6 +5598,91 @@ function getDefaultGlobeLatLonZoom(locationZoom) {
   var center = globeCenters[chosen] || globeCenters[globeCenterDefault];
   return center.lon + ',' + center.lat + ',' + center.zoom;
 }
+// The 2-char state (US) or country in the hash that the Earth map centers on, as "state:GA" or "country:CN".
+function getEarthRegion(hash) {
+  var state = ((hash && hash.state) || '').split(',')[0].toUpperCase();
+  var country = ((hash && hash.country) || '').split(',')[0].toUpperCase();
+  if (/^[A-Z]{2}$/.test(state) && (!country || country == 'US')) return 'state:' + state;
+  if (/^[A-Z]{2}$/.test(country)) return 'country:' + country;
+  return '';
+}
+// The nullschool orthographic scale that fits a place of this area (square km) in the map.
+function earthScaleFromKm2(km2) {
+  if (!(km2 > 0)) return 1000;
+  return Math.round(Math.min(20000, Math.max(500, 1500000 / Math.sqrt(km2))));
+}
+// The "lon,lat,scale" for a region from getEarthRegion(), or "" when it isn't found.
+// States use the lat, lon and km (area) attributes of the #state_select options (map/filter.html) or the
+// .selected_state checkboxes (info/template-main.html). Countries use lookupSelectedLocationLatLon() (navigation.js),
+// with the name and SqMiles from countries-full.csv.
+var earthRegionCenters = {};
+function getEarthRegionCenter(region) {
+  if (earthRegionCenters[region]) return earthRegionCenters[region];
+  var code = region.split(':')[1];
+  function centerFrom(lat, lon, km2) {
+    lat = parseFloat(lat);
+    lon = parseFloat(lon);
+    return (Number.isFinite(lat) && Number.isFinite(lon)) ? lon.toFixed(2) + ',' + lat.toFixed(2) + ',' + earthScaleFromKm2(parseFloat(km2)) : '';
+  }
+  var found;
+  if (region.indexOf('state:') == 0) {
+    found = waitForElm('#state_select option[value="' + code + '"], input.selected_state[id="' + code + '"]').then(function(elm) {
+      return centerFrom(elm.getAttribute('lat'), elm.getAttribute('lon'), elm.getAttribute('km'));
+    });
+  } else {
+    found = fetch(localsitePath('info/data/map-filters/countries-full.csv'))
+      .then(function(r) { return r.text(); })
+      .then(function(csv) {
+        var row = (csv.match(new RegExp('^' + code + ',.*$', 'm')) || [''])[0].split(','); // Country,CountryName,Population,CO2,SqMiles
+        var name = row[1];
+        if (!name) {
+          try { name = new Intl.DisplayNames(['en'], {type: 'region'}).of(code); } catch (e) {}
+        }
+        if (!name) return '';
+        return new Promise(function(resolve) {
+          waitForVariable('lookupSelectedLocationLatLon', function() { resolve(); });
+        }).then(function() {
+          return lookupSelectedLocationLatLon({title: name, resultType: 'administrativeArea', address: {countryName: name}});
+        }).then(function(coords) {
+          return coords ? centerFrom(coords.lat, coords.lon, parseFloat(row[4]) * 2.59) : '';
+        });
+      });
+  }
+  earthRegionCenters[region] = found.catch(function(err) {
+    console.log('Earth map center for ' + region + ' not found: ' + err);
+    delete earthRegionCenters[region];
+    return '';
+  });
+  return earthRegionCenters[region];
+}
+// Centers the #earth hash on the state or country in the hash before the Earth map shows. Resolves true when moved.
+// Runs when the hash has no #earth yet, or when the state or country differs from the one last centered on.
+// An #earth that arrives with its own center (a shared link, or the voice agent) is kept. force skips those checks.
+var earthCenteredRegion = null;
+var earthCentering = null;
+function centerEarthOnHashRegion(force) {
+  var hash = getHash();
+  var region = getEarthRegion(hash);
+  if (!region) return Promise.resolve(false);
+  var earthBefore = hash.earth || hash[''];
+  if (earthCenteredRegion === null && earthBefore) earthCenteredRegion = region;
+  if (earthCentering && earthCentering.region == region) return earthCentering.promise;
+  if (!force && earthBefore && region == earthCenteredRegion) return Promise.resolve(false);
+  earthCenteredRegion = region;
+  var timeout = new Promise(function(resolve) { setTimeout(function() { resolve(''); }, 3000); });
+  var centering = Promise.race([getEarthRegionCenter(region), timeout]).then(function(orthographic) {
+    if (earthCentering && earthCentering.promise === centering) earthCentering = null;
+    var latest = getHash();
+    if (!orthographic || getEarthRegion(latest) != region) return false;
+    var earthHash = latest.earth || latest[''] || ('current/wind/surface/level/overlay=temp/orthographic=' + orthographic);
+    if (earthHash.indexOf('orthographic=') < 0) return false; // Another projection was chosen in the earth filters
+    earthHash = earthHash.replace(/orthographic=[^\/\s&#]+/, 'orthographic=' + orthographic);
+    updateHash({'earth': earthHash});
+    return true;
+  });
+  earthCentering = {region: region, promise: centering};
+  return centering;
+}
 function setGlobecenter(globecenter, promptForCurrentPosition) {
   // Invoked when page loads, and when user changes "Map Center" setting.
   if (globecenter == "me") {
@@ -6438,6 +6523,144 @@ document.addEventListener('voice-chat:state', function (e) {
   var state = e.detail && e.detail.state;
   document.documentElement.classList.toggle('playMode', state === 'listening' || state === 'thinking' || state === 'speaking');
 }, true);
+
+// Page tools: what an agent can change on the page, mostly through the hash (goHash()). The voice widget
+// (engine/js/voice-chat.js) lists them to Claude with each question and runs the ones its reply picks. Each tool is an
+// MCP tool (name, description, inputSchema as JSON Schema) plus execute(input), the shape WebMCP's
+// document.modelContext.registerTool() takes, so a browser's own agent can use them too where WebMCP is on.
+// execute returns a short sentence saying what changed, or throws with what was wrong.
+window.pageTools = window.pageTools || [];
+function registerPageTool(tool) {
+  window.pageTools = window.pageTools.filter(function (t) { return t.name !== tool.name; }).concat(tool);
+  var context = document.modelContext || navigator.modelContext;
+  if (context && typeof context.registerTool === 'function') {
+    try { context.registerTool(tool); } catch (e) { consoleLog('registerTool ' + tool.name + ': ' + e.message); }
+  }
+}
+window.registerPageTool = registerPageTool;
+
+// The Earth map's tools are on every page, since any page can show the map. Their options come from earth-filters.js,
+// loaded once the voice widget is first used. window.pageToolsLoading lets the widget wait for them before asking.
+function loadEarthTools() {
+  if (window.pageToolsLoading) return window.pageToolsLoading;
+  window.pageToolsLoading = new Promise(function (resolve) {
+    loadScript(theroot + 'js/earth-filters.js', function () {
+      waitForVariable('EarthFilters', function () { registerEarthTools(); resolve(); });
+    });
+  });
+  return window.pageToolsLoading;
+}
+document.addEventListener('voice-chat:state', loadEarthTools, true);
+
+function registerEarthTools() {
+  var EF = window.EarthFilters, o = EF && EF.options;
+  if (!o) return;
+  var names = function (list) { return list.map(function (x) { return x.name; }); };
+  var plain = function (text) { return String(text).replace(/<\/?sub>/g, ''); };
+  var allOverlays = [];
+  var overlayLines = Object.keys(o.overlays).map(function (mode) {
+    return mode + ': ' + o.overlays[mode].map(function (x) {
+      if (allOverlays.indexOf(x.name) < 0) allOverlays.push(x.name);
+      return x.name + ' (' + plain(x.title) + ')';
+    }).join(', ');
+  });
+  var modeOf = function (overlay) {
+    return Object.keys(o.overlays).find(function (mode) { return names(o.overlays[mode]).indexOf(overlay) >= 0; });
+  };
+  var check = function (field, value, list) {
+    if (value !== undefined && list.indexOf(value) < 0) throw new Error('Unknown ' + field + ' "' + value + '". Use one of: ' + list.join(', '));
+  };
+  var POINT_RE = /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/;
+  var CENTER_RE = /^-?\d+(\.\d+)?,-?\d+(\.\d+)?(,\d+(\.\d+)?)?$/;
+  var STEP_MS = 3 * 3600000;
+
+  registerPageTool({
+    name: 'show_earth',
+    description: 'Shows the Earth map (earth.nullschool.net) on this page, with current, forecast or past wind, weather, ocean, '
+      + 'air quality and space data, by setting the page hash (#geoview=earth&earth=...). Use it when the person asks about '
+      + 'wind, temperature, rain, humidity, storms, ocean currents, waves, sea temperature, air quality, smoke, dust, gases or '
+      + 'the aurora, or asks to see the globe or the map somewhere. Fields left out keep what the map shows now. The map shows '
+      + 'the data, but you can\'t read values from it, so say what is now on screen rather than giving readings.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        mode: {type: 'string', enum: names(o.modes), description: 'air (wind, temperature, rain, humidity), ocean, chem (gases), particulates (PM2.5, dust, smoke), space (aurora) or bio (coral bleaching).'},
+        overlay: {type: 'string', enum: allOverlays, description: 'The data the map colors in. Each mode has its own, and the mode follows the overlay. ' + overlayLines.join('; ') + '.'},
+        animation: {type: 'string', enum: names(o.animations), description: 'The flow animated over it: wind (air and the other modes), or currents or primary_waves (ocean).'},
+        height: {type: 'string', enum: names(o.heights), description: 'Height for wind and air data: surface, or a pressure level. 850hPa is about 1.5 km up, 500hPa about 5.5 km, 250hPa the jet stream.'},
+        time: {type: 'string', description: 'current, or a UTC time such as 2026-11-26T12:00Z for a forecast (up to 5 days ahead) or a past date (from 2013). Rounded to 3 hours.'},
+        center: {type: 'string', description: 'Where the globe faces and how close: longitude,latitude,scale, such as -67.66,31.71,913. Scale 900 shows the whole globe, about 2500 a continent, 5000 a large country, 10000 a state, 40000 a city.'},
+        projection: {type: 'string', enum: names(o.projections), description: 'Map projection. orthographic is the globe; equirectangular and patterson show the whole world flat.'},
+        location: {type: 'string', description: 'longitude,latitude of a spot to mark on the map, such as a city asked about.'},
+        annotation: {type: 'string', enum: names(o.annotations), description: 'fires shows active fires.'},
+        grid: {type: 'boolean', description: 'Show the latitude and longitude grid.'},
+        animate: {type: 'boolean', description: 'false pauses the animation.'}
+      },
+      additionalProperties: false
+    },
+    execute: function (input) {
+      input = input || {};
+      check('mode', input.mode, names(o.modes));
+      check('overlay', input.overlay, allOverlays);
+      check('animation', input.animation, names(o.animations));
+      check('height', input.height, names(o.heights));
+      check('projection', input.projection, names(o.projections));
+      check('annotation', input.annotation, names(o.annotations));
+      var state = EF.parseHash(getHash().earth || EF.defaultHash);
+      var mode = input.mode || (input.overlay && names(o.overlays[state.mode] || []).indexOf(input.overlay) < 0 ? modeOf(input.overlay) : state.mode);
+      var modeChanged = mode !== state.mode;
+      state.mode = mode;
+      if (input.animation) state.animation = input.animation;
+      else if (modeChanged) state.animation = mode === 'ocean' ? 'currents' : 'wind';
+      if (mode !== 'ocean') state.animation = 'wind';
+      else if (state.animation === 'wind') state.animation = 'currents';
+      if (input.height) state.height = input.height;
+      var overlays = names(o.overlays[mode] || []);
+      if (input.overlay) state.overlay = input.overlay;
+      else if (modeChanged) state.overlay = overlays[0];
+      if (overlays.indexOf(state.overlay) < 0) state.overlay = overlays[0];
+      if (input.time !== undefined) {
+        if (String(input.time).toLowerCase() === 'current') {
+          state.time = null;
+        } else {
+          var when = new Date(input.time);
+          if (isNaN(when)) throw new Error('Unknown time "' + input.time + '". Use current or a UTC time such as 2026-11-26T12:00Z');
+          state.time = new Date(Math.round(when.getTime() / STEP_MS) * STEP_MS);
+        }
+      }
+      if (input.projection) state.projection = input.projection;
+      if (input.center !== undefined) {
+        var center = String(input.center).replace(/\s+/g, '');
+        if (!CENTER_RE.test(center)) throw new Error('Unknown center "' + input.center + '". Use longitude,latitude,scale such as -67.66,31.71,913');
+        state.orientation = center;
+        if (!state.projection) state.projection = 'orthographic';
+      }
+      if (input.location !== undefined) {
+        var spot = String(input.location).replace(/\s+/g, '');
+        if (spot && !POINT_RE.test(spot)) throw new Error('Unknown location "' + input.location + '". Use longitude,latitude');
+        state.spotlight = spot || null;
+      }
+      if (input.annotation) state.annotation = input.annotation;
+      if (typeof input.grid === 'boolean') state.showGrid = input.grid;
+      if (typeof input.animate === 'boolean') state.animationEnabled = input.animate;
+      var earth = EF.formatHash(state);
+      goHash({'geoview': 'earth', 'earth': earth});
+      return 'The Earth map shows ' + earth;
+    }
+  });
+
+  registerPageTool({
+    name: 'hide_earth',
+    description: 'Closes the Earth map, as its close button does. Use it when the person asks to close or hide the map or the globe.',
+    inputSchema: {type: 'object', properties: {}, additionalProperties: false},
+    execute: function () {
+      var close = document.getElementById('earthClose');
+      if (!close || !close.getClientRects().length) return 'The Earth map isn\'t showing.';
+      close.click();
+      return 'The Earth map is closed.';
+    }
+  });
+}
 
 function showAuthModal() {
   if (typeof window.authModal !== 'undefined' && window.authModal) {
