@@ -3484,13 +3484,32 @@ body.sidebar-hovered {
    (placeEarthDisplay()). It has no z-index of its own, so what's in it keeps its place in the page's stacking order. */
 html #fullscreen.fullscreen-fixed { position: fixed; inset: 0; height: auto; box-sizing: border-box; }
 /* The page's search filters (#filterFieldsHolder, until they're fixed with their own z-index) and the topics panel
-   the .showApps button opens below them (#scenePanelHolder) are raised above it. */
-html:has(#fullscreen.fullscreen-fixed) #filterFieldsHolder:not(.filterFieldsHolderFixed),
+   the .showApps button opens below them (#scenePanelHolder) are raised above it. The search filters go one higher,
+   so their dropdowns, like the Locations list (#geoview_container), open over the topics panel. The countries, states
+   and counties panel that geoview opens (#locationFilterHolder) isn't raised: it pushes #fullscreen below it
+   (.fullscreenPushed). */
+html:has(#fullscreen.fullscreen-fixed) #filterFieldsHolder:not(.filterFieldsHolderFixed) { position: relative; z-index: 4; }
 html:has(#fullscreen.fullscreen-fixed) #scenePanelHolder { position: relative; z-index: 3; }
 /* The Earth map's stack of circles in the upper right goes 22px below the header, since #fullscreen's top is behind
    it: --header-h where the page sets it (project/goals: where #goalsPage starts), else the header's height
    (--headerbar-offset, localsite.js). Not below the search filters too (--top-nav-offset), which sit at the left. */
 html #fullscreen.fullscreen-fixed > #mainEarthDisplay .earth-zoom-controls { top: calc(var(--header-h, var(--headerbar-offset, 0px)) + 22px) !important; }
+/* While geoview's countries, states or counties panel (#locationFilterHolder) shows above it, #fullscreen is in the
+   page's flow below the panel instead, still the window's height below the header (.fullscreenPushed, localsite.js).
+   The transform keeps its fixed contents, like project/goals' photos, in it. The page content laid over it
+   (.over-fullscreen; project/goals' #goalsPage) moves up over it, and the controls in its upper right go 22px
+   below its top. */
+html.fullscreenPushed #fullscreen.fullscreen-fixed {
+  position: relative;
+  inset: auto;
+  height: calc(var(--fullscreen-height) - var(--earth-sliders-height, 0px) - var(--earth-browser-bars, 0px));
+  transform: translateZ(0);
+}
+html.fullscreenPushed #fullscreen.fullscreen-fixed ~ .over-fullscreen { margin-top: calc(-1 * var(--fullscreen-pushed-h, 0px)); }
+html.fullscreenPushed #fullscreen.fullscreen-fixed > #mainEarthDisplay .earth-zoom-controls { top: 22px !important; }
+html.fullscreenPushed #fullscreen.fullscreen-fixed > #filterFieldToggleHolder,
+html.fullscreenPushed #fullscreen.fullscreen-fixed > #filterFieldCloseX,
+html.fullscreenPushed #fullscreen.fullscreen-fixed > #filterFieldMenu { top: 22px; }
 /* The footer (#main-footer) slides up over the fixed #fullscreen at the page's bottom edge, raised above the Earth
    map, its play button (z-index 102) and the voice controls, so they're covered there too. */
 html:has(#fullscreen.fullscreen-fixed) #main-footer { position: relative; z-index: 103; }
@@ -3671,7 +3690,7 @@ html:has(#fullscreen.fullscreen-fixed) #main-footer { position: relative; z-inde
    tab order (stackEarthControls() in localsite.js): the search filters' section toggle (#filterFieldToggleHolder,
    whose menu opens to the stack's left), the close-X (#earthClose), zoom in, zoom out and, while the globe has the
    pointer, the scroll circle (#earthScrollButton). In the lower left, 10px in, a tune circle (#earthControlsToggle, initEarthControls()
-   in localsite.js), in a dark bar with the date to its right, opens and closes the filters panel (#mainEarthFilters).
+   in localsite.js), in a dark bar with the date to its right, opens and closes the filters panel (#beanPanel).
    A click on the date shows its picker in its place. While the filters panel is open, the clock replaces the tune circle. */
 #fullscreen > #mainEarthDisplay .earth-zoom-controls {
     right: 20px !important; /* Over the inline right, bottom and display from nouislider.min.js */
@@ -3696,8 +3715,11 @@ html:has(#fullscreen.fullscreen-fixed) #main-footer { position: relative; z-inde
     top: auto;
     right: auto;
 }
-#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder {
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder,
+#fullscreen > #filterFieldToggleHolder,
+#fullscreen > #filterFieldCloseX {
     float: none;
+    display: flex; /* Over the search filters' none at narrow widths */
     width: 32px;
     min-width: 32px;
     height: 32px;
@@ -3706,31 +3728,94 @@ html:has(#fullscreen.fullscreen-fixed) #main-footer { position: relative; z-inde
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 #fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder:hover,
-#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder:focus-visible {
+#fullscreen > #filterFieldToggleHolder:hover,
+#fullscreen > #filterFieldCloseX:hover,
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder:focus-visible,
+#fullscreen > #filterFieldToggleHolder:focus-visible,
+#fullscreen > #filterFieldCloseX:focus-visible {
     background-color: rgba(20, 20, 20, 0.85);
 }
-#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-toggle-circle {
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-toggle-circle,
+#fullscreen > #filterFieldToggleHolder .filter-toggle-circle,
+#fullscreen > #filterFieldCloseX .filter-toggle-circle {
     display: none; /* The stack's circle replaces it */
 }
+#fullscreen > #filterFieldCloseX .filter-close-icon {
+    color: #fff;
+}
 /* The dots wider in all (15.5px) than in the search filters' 13px: 3.5px each, 6px apart */
-#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-field-toggle-icon {
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-field-toggle-icon,
+#fullscreen > #filterFieldToggleHolder .filter-field-toggle-icon {
     width: 15.5px;
     height: 3.5px;
 }
-#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-toggle-dot {
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-toggle-dot,
+#fullscreen > #filterFieldToggleHolder .filter-toggle-dot {
     width: 3.5px;
     height: 3.5px;
     background: #fff;
 }
-#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-toggle-dot:nth-child(2) {
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-toggle-dot:nth-child(2),
+#fullscreen > #filterFieldToggleHolder .filter-toggle-dot:nth-child(2) {
     left: 6px;
 }
-#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-toggle-dot:nth-child(3) {
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldToggleHolder .filter-toggle-dot:nth-child(3),
+#fullscreen > #filterFieldToggleHolder .filter-toggle-dot:nth-child(3) {
     left: 12px;
 }
 #fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldMenu {
     top: 0;
     right: calc(100% + 8px);
+}
+/* The stack shows one circle, the search filters' toggle, until it's hovered or has focus or the toggle's menu is
+   open. Then the close-X and zoom in and out slide open below it. */
+#fullscreen > #mainEarthDisplay .earth-zoom-controls:has(> #filterFieldToggleHolder) > #earthClose,
+#fullscreen > #mainEarthDisplay .earth-zoom-controls:has(> #filterFieldToggleHolder) > .earth-control-zoom {
+    max-height: 0;
+    margin-top: -8px; /* Takes back the stack's gap */
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: max-height 0.2s ease, margin-top 0.2s ease, opacity 0.15s ease;
+}
+#fullscreen > #mainEarthDisplay .earth-zoom-controls:is(:hover, :focus-within, :has(> #filterFieldMenu:not([style*="none"]))) > #earthClose,
+#fullscreen > #mainEarthDisplay .earth-zoom-controls:is(:hover, :focus-within, :has(> #filterFieldMenu:not([style*="none"]))) > .earth-control-zoom {
+    max-height: 72px;
+    margin-top: 0;
+    opacity: 1;
+    overflow: visible;
+    pointer-events: auto;
+}
+/* On a page without the search filters (.filterToggleLone, addLoneFilterToggle() in localsite.js), their toggle
+   waits in #fullscreen's upper right while the map is closed, where the map's stack starts, with its menu to its left.
+   While the countries, states and counties panel shows, its close-X (#filterFieldCloseX) takes the corner, and the
+   toggle and menu move 40px left of it. */
+#fullscreen > #filterFieldToggleHolder,
+#fullscreen > #filterFieldCloseX {
+    position: absolute;
+    z-index: 101;
+    top: 22px;
+    right: 20px;
+}
+#fullscreen > #filterFieldMenu {
+    top: 22px;
+    right: 60px;
+}
+html.locationFilterOpen #fullscreen > #filterFieldToggleHolder { right: 60px; }
+html.locationFilterOpen #fullscreen > #filterFieldMenu { right: 100px; }
+html #fullscreen.fullscreen-fixed > #filterFieldToggleHolder,
+html #fullscreen.fullscreen-fixed > #filterFieldCloseX,
+html #fullscreen.fullscreen-fixed > #filterFieldMenu {
+    top: calc(var(--header-h, var(--headerbar-offset, 0px)) + 22px);
+}
+/* The close-X shows only while there's a panel to close, and not in the map's stack, which has the map's own close-X */
+html:not(.locationFilterOpen) #filterFieldCloseX,
+#fullscreen > #mainEarthDisplay .earth-zoom-controls > #filterFieldCloseX {
+    display: none !important;
+}
+#headerIcons > #filterFieldToggleHolder,
+#headerIcons > #filterFieldCloseX {
+    display: inline-flex;
 }
 #fullscreen > #mainEarthDisplay .earth-bar a {
     display: flex;
@@ -3767,8 +3852,7 @@ html:has(#fullscreen.fullscreen-fixed) #main-footer { position: relative; z-inde
     left: 10px;
     bottom: 10px;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-end;
     gap: 10px;
 }
 /* While the bar is open for the date's picker (.earthDateOpen, localsite.js), it comes in front of everything else on
@@ -3779,7 +3863,7 @@ html.earthDateOpen #earthControls {
 }
 /* Under the map in #fullscreen, after it in the page (#earthUnderMap, placeEarthDisplay() in localsite.js), the
    3-day time slider (#slider-full, in #earthSlidersUnder), large or small. The filters panel set to "Under Map"
-   (#mainEarthFilters) follows it. Positioned, so it paints over a fixed #fullscreen
+   (#beanPanel) follows it. Positioned, so it paints over a fixed #fullscreen
    (project/goals) like the page's other content. */
 #earthUnderMap {
     position: relative;
@@ -3877,19 +3961,84 @@ html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-touc
 html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-touch-area::after {
     content: attr(data-hour); /* Set by createFullSlider() in nouislider.min.js */
 }
-/* The dark bar: the tune circle with the date to its right, 127px wide or more. Clicks on the date open its picker. */
-#earthControlsBar {
+/* A dark pill in #earthControls, 5px above its place there: the controls bar and the mini nav pill to its right. */
+.mapPill {
     position: relative;
-    top: -5px; /* 5px above and 1px left of its place in #earthControls */
-    left: -1px;
+    top: -5px;
     display: flex;
     align-items: stretch;
-    gap: 0; /* #slider-toggle-wrap right against the circle */
     box-sizing: border-box;
-    min-width: 127px;
-    padding-right: 14px;
     border-radius: 20px;
     background-color: #333;
+}
+/* The dark bar: the tune circle with the date to its right, 127px wide or more. Clicks on the date open its picker. */
+#earthControlsBar {
+    left: -1px;
+    gap: 0; /* #slider-toggle-wrap right against the circle */
+    min-width: 127px;
+    padding-right: 14px;
+}
+/* Content over the Earth map (.mapoverlay) closes while the map is in use, or from the start on a page that begins
+   with it closed (html.mapoverlayHidden, localsite.js setMapOverlayHidden()), and the mini nav pill shows in its place:
+   the first few of its tabs, then an expand icon that brings it all back. Without the map, it's right of the bean in
+   #beanLayer, and steps aside with the bean while #beanPanel is open. */
+html.mapoverlayHidden .mapoverlay {
+    display: none;
+}
+#beanLayer > #mininavpill {
+    pointer-events: auto;
+    position: absolute;
+    top: auto;
+    left: 60px;
+    bottom: 12px;
+}
+html.beanPanelOpen #beanLayer > #mininavpill {
+    visibility: hidden;
+}
+#mininavpill {
+    display: none;
+    align-items: center;
+    gap: 2px;
+    height: 40px;
+    padding: 0 4px 0 6px;
+}
+html.mapoverlayHidden #mininavpill {
+    display: flex;
+}
+#mininavpill button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: 32px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 16px;
+    font: inherit;
+    font-size: 14px;
+    white-space: nowrap;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.75);
+    background: none;
+}
+#mininavpill button:hover,
+#mininavpill button:focus-visible {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+#mininavpill button[aria-current="true"] {
+    color: #fff;
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.16);
+}
+#mininavpill .mininav-expand {
+    width: 32px;
+    padding: 0;
+    border-radius: 50%;
+}
+#mininavpill .mininav-expand .material-icons {
+    font-size: 18px;
+    line-height: 1;
 }
 /* The column on the left: the tune circle, or the clock (#slider-toggle-btn) in its place while the filters panel is
    open. Above #earth-picker-backdrop, so the clock can close the picker. */
@@ -3919,8 +4068,10 @@ html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-touc
     color: #fff;
     background-color: rgba(20, 20, 20, 0.85);
 }
-/* The filters panel's three-dot button (earth-filters.js) at the right end of its tabs, in a 32px circle */
-#mainEarthFilters .ef-more {
+/* The filters panel's three-dot button (earth-filters.js) at the right end of its tabs, and the close-X to its
+   right, each in a 32px circle */
+#beanPanel .ef-more,
+#beanPanel .ef-close-panel {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
@@ -3933,17 +4084,20 @@ html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-touc
     background-color: rgba(40, 40, 40, 0.6);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
-#mainEarthFilters .ef-more .ef-md {
+#beanPanel .ef-more .ef-md,
+#beanPanel .ef-close-panel .ef-md {
     width: 24px;
     height: 24px;
 }
-#mainEarthFilters .ef-more .ef-md circle {
+#beanPanel .ef-more .ef-md circle {
     stroke: currentColor;
     stroke-width: 44; /* Bolder dots: their 46 radius out to 68, in the icon's 960 viewBox */
 }
-#mainEarthFilters .ef-more:hover,
-#mainEarthFilters .ef-more:focus-visible,
-#mainEarthFilters .ef-more[aria-expanded="true"] {
+#beanPanel .ef-more:hover,
+#beanPanel .ef-more:focus-visible,
+#beanPanel .ef-close-panel:hover,
+#beanPanel .ef-close-panel:focus-visible,
+#beanPanel .ef-more[aria-expanded="true"] {
     color: #fff;
     background-color: rgba(20, 20, 20, 0.85);
 }
@@ -4017,6 +4171,48 @@ html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-touc
 }
 /* The tune circle opens the filters panel here, so its own toggle over nullschool's "earth" button
    (.ef-map-toggle, earth-filters.js), which the bar would cover, is hidden. */
+/* The bean (initBeanToggle() in localsite.js): the lower left of a #fullscreen.fullscreen-fixed page, 10px in, where
+   it opens and closes #beanPanel. It and the panel it opens are in #beanLayer, fixed over the window, above the page
+   and the Earth map but below the header (1000). Its empty space lets clicks through. It hides while the panel is open
+   (html.beanPanelOpen), which the close-X beside the panel's three dots closes, and while the Earth map shows with its
+   own controls there (#earthControls). The panel's own toggle for nullschool's "earth" button has nothing to sit over
+   here, so it's hidden. */
+#beanLayer {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    pointer-events: none;
+}
+#beanToggle {
+    pointer-events: auto;
+    position: absolute;
+    z-index: 1000;
+    left: 10px;
+    bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(40, 40, 40, 0.6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+#beanToggle:hover,
+#beanToggle:focus-visible,
+#beanToggle[aria-expanded="true"] {
+    color: #fff;
+    background-color: rgba(20, 20, 20, 0.85);
+}
+html.beanPanelOpen #beanToggle,
+html:has(#fullscreen > #mainEarthDisplay:not([style*="display: none"]) #earthControls) #beanToggle,
+#beanLayer > .ef-map-toggle {
+    display: none;
+}
 #fullscreen > #mainEarthDisplay > .ef-map-toggle {
     display: none;
 }
@@ -5046,7 +5242,8 @@ html.filtersOverFullscreen #mapFilters .filterClick::placeholder {
 html.filtersOverFullscreen #mapFilters #showSideFromBar {
   opacity: 1 !important; /* Its own 0.3 would wash out the dark background */
 }
-#filterFieldToggleHolder {
+#filterFieldToggleHolder,
+#filterFieldCloseX {
   width: 54px;
   min-width: 54px;
   cursor: pointer;
@@ -5061,14 +5258,32 @@ html.filtersOverFullscreen #mapFilters #showSideFromBar {
   width: 42px;
 }
 #filterFieldToggleHolder i,
+#filterFieldCloseX i,
 #filterFieldToggleInHeader i {
   font-size: 32px;
   color: #888;
   cursor: pointer;
 }
 #filterFieldToggleHolder .filter-toggle-circle,
+#filterFieldCloseX .filter-toggle-circle,
 #filterFieldToggleInHeader .filter-toggle-circle {
   font-size: 32px;
+}
+/* While the close-X shows to its right in the search filters, the toggle moves 12px closer to it */
+html.locationFilterOpen #rightIcons > #filterFieldToggleHolder {
+  left: 12px;
+}
+#rightIcons > #filterFieldCloseX {
+  padding-right: 5px;
+}
+#rightIcons > #filterFieldCloseX .bar-centered-icon {
+  left: calc(50% - 2.5px); /* Centered before the padding */
+}
+/* The close-X's ✕ in the toggle's circle, colored as the toggle's dots */
+#filterFieldCloseX .filter-close-icon {
+  font-size: 18px;
+  font-weight: 700;
+  color: #666;
 }
 #filterFieldToggleIcon,
 #filterFieldToggleIconInHeader,
@@ -5098,6 +5313,7 @@ html.filtersOverFullscreen #mapFilters #showSideFromBar {
 }
 /* Dark: an outlined circle and dots matching #widgetToggleIcon (.dark .menuToggleHolder in search-filters.css) */
 .dark #filterFieldToggleHolder .filter-toggle-circle,
+.dark #filterFieldCloseX .filter-toggle-circle,
 .dark #filterFieldToggleInHeader .filter-toggle-circle {
   box-sizing: border-box;
   width: 26px;
@@ -5110,12 +5326,17 @@ html.filtersOverFullscreen #mapFilters #showSideFromBar {
 .dark .filter-field-toggle-icon .filter-toggle-dot {
   background: #ddd;
 }
+.dark #filterFieldCloseX .filter-close-icon {
+  color: #ddd;
+}
 @media (max-width: 400px) {
   #filterFieldToggleHolder i,
+  #filterFieldCloseX i,
   #filterFieldToggleInHeader i {
     font-size: 36px;
   }
   #filterFieldToggleHolder .filter-toggle-circle,
+  #filterFieldCloseX .filter-toggle-circle,
   #filterFieldToggleInHeader .filter-toggle-circle {
     font-size: 36px;
   }
@@ -5135,7 +5356,8 @@ html.filtersOverFullscreen #mapFilters #showSideFromBar {
   #filterFieldsDropdownToggle {
     display: block;
   }
-  #filterFieldToggleHolder {
+  #filterFieldToggleHolder,
+  #filterFieldCloseX {
     display: none;
   }
   #filterFieldToggleInHeader {

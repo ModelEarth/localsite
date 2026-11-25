@@ -480,10 +480,11 @@ EarthFilters.prototype.render = function() {
         {name: 'controls', label: 'Controls', title: 'Map controls'},
         {name: 'about', label: 'Overlays', title: 'About the overlays'} // Named about in the code
       ], 'tablist') +
-      // Three-dot menu. Its first item names the other place, which a click moves the filters to.
+      // Three-dot menu, with a close-X to its right. The menu's first item names the other place, which a click moves the filters to.
       (this.mapContainer ?
         '<div class="ef-panel-actions">' +
           '<button type="button" class="ef-more" data-action="toggle-panel-menu" aria-haspopup="menu" aria-expanded="false" title="More">' + earthFiltersIcons.more + '</button>' +
+          '<button type="button" class="ef-close-panel" data-action="close-panel" title="Close" aria-label="Close">' + earthFiltersIcons.close + '</button>' +
           '<div class="ef-panel-menu" role="menu" hidden>' +
             '<button type="button" role="menuitem" data-action="toggle-panel" data-field="panel-toggle"><span data-field="panel-icon"></span><span data-field="panel-label"></span></button>' +
             '<button type="button" role="menuitem" data-action="toggle-condensed" data-field="condense-toggle"><span data-field="condense-icon"></span><span data-field="condense-label"></span></button>' +
@@ -814,6 +815,11 @@ EarthFilters.prototype.handleAction = function(action, button) {
       break;
     case 'toggle-panel':
       this.setMapPanelOpen(!this.isOpen);
+      break;
+    case 'close-panel':
+      // As the bean and the map's tune circle close it (localsite.js toggleBeanPanel), so they show again to reopen it
+      if (typeof window.toggleBeanPanel === 'function') window.toggleBeanPanel(false);
+      else this.setMapPanelOpen(false);
       break;
     case 'toggle-condensed':
       var condense = !this.isCondensed();

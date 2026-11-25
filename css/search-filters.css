@@ -770,6 +770,13 @@ input.filterClick[type="text"] {
   background-color: rgb(85, 85, 85);
   z-index: 1000;
 }
+/* While the search filters show, with the close-X beside their section toggle (#filterFieldCloseX, localsite.js),
+   the map's own close-X hides. Not below 600px, where the search filters hide those two (base.css). */
+@media (min-width: 601px) {
+  html:has(#filterFieldsHolder:not(.filterFieldsHidden):not([style*="none"]) #filterFieldCloseX) #geomapHolder .hideAdvanced.close-X {
+    display: none;
+  }
+}
 #geomapHolder .geomapTopRight {
   position: absolute;
   top: 4px;

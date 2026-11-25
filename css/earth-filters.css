@@ -307,11 +307,15 @@
 }
 .earth-filters .ef-panel-actions {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px; /* The three dots, then the close-X to their right */
   align-self: center;
   margin-left: auto; /* Upper right, also when the bar wraps */
   margin-right: calc(-0.75rem + 3px); /* Out toward the panel's right edge */
 }
-.earth-filters button.ef-more {
+.earth-filters button.ef-more,
+.earth-filters button.ef-close-panel {
   display: flex;
   padding: 0 0.25rem;
 }

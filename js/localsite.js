@@ -1125,8 +1125,10 @@ function ensureHideWhenGeoviewStyle() {
   style.textContent = '.hash-has-geoview .hideWhenGeoview{display:none !important;}';
   document.head.appendChild(style);
 }
+// A nullschool map path: "current" or a time (2026/11/24/2100Z), then a mode, such as wind (Air) or ocean, at any height,
+// with any overlay and projection, as the #beanPanel filters write them (earth-filters.js formatEarthFiltersHash()).
 function isEarthHashValue(token) {
-  return typeof token === 'string' && token.indexOf('/wind/surface/') >= 0 && token.indexOf('orthographic=') >= 0;
+  return typeof token === 'string' && /^(current|\d{4}\/\d{1,2}\/\d{1,2}\/\d{3,4}Z)\/(wind|ocean|chem|particulates|space|bio)\//.test(token);
 }
 function syncDerivedHiddenhashFromHashOnly() {
   let hashOnly = getHashOnly();
@@ -3234,6 +3236,98 @@ function revealFilters() {
   $(".hideWhenPop").show();
   $('html,body').scrollTop(0);
 }
+// The search filters' section toggle (#filterFieldToggleHolder, map/filter.html) and its menu. While the Earth map
+// shows, they go first in the map's stack of controls (stackEarthControls in placeEarthDisplay()), and back to
+// where they were (filterToggleHome) once it closes. A page without the search filters, like project/goals, gets
+// them from load too, taken from filter.html (.filterToggleLone): in #fullscreen's upper right, where the map's
+// controls stack, else at the start of the header's icons. Once the search filters load, their own replace them.
+var filterToggleHome = null;
+var restackEarthControls = null;
+function readyFilterToggle(toggle) {
+  if (toggle.hasAttribute('tabindex')) return;
+  toggle.setAttribute('tabindex', '0');
+  toggle.setAttribute('role', 'button');
+  toggle.setAttribute('aria-label', toggle.title || 'Filter sections');
+  toggle.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
+  });
+}
+// A close-X to the toggle's right (#filterFieldCloseX) closes the countries, states and counties panel, as the
+// panel's own close-X does (.hideAdvanced in navigation.js). It shows while the panel does (.locationFilterOpen,
+// base.css), and follows the toggle where it goes.
+var filterCloseX = null;
+function placeFilterCloseX() {
+  var toggle = document.getElementById('filterFieldToggleHolder');
+  if (!toggle) return;
+  if (!filterCloseX) {
+    filterCloseX = document.createElement('div');
+    filterCloseX.id = 'filterFieldCloseX';
+    filterCloseX.className = 'hideAdvanced filterTopIconHolder';
+    filterCloseX.title = 'Close locations';
+    filterCloseX.innerHTML = '<i class="material-icons bar-centered-icon filter-toggle-circle">circle</i>' +
+      '<span class="material-icons bar-centered-icon filter-close-icon" aria-hidden="true">close</span>';
+    readyFilterToggle(filterCloseX);
+  }
+  if (toggle.nextSibling !== filterCloseX) toggle.after(filterCloseX);
+}
+waitForElm('#filterFieldToggleHolder').then(placeFilterCloseX);
+function addLoneFilterToggle() {
+  var hasFilters = function() {
+    return document.getElementById('filterFieldToggleHolder') || document.getElementById('filterFieldContent');
+  };
+  if (hasFilters()) return;
+  fetch(localsitePath('map/filter.html')).then(function(response) { return response.text(); }).then(function(html) {
+    var home = document.getElementById('fullscreen') || document.getElementById('headerIcons');
+    if (hasFilters() || !home) return;
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    var toggle = doc.getElementById('filterFieldToggleHolder'), menu = doc.getElementById('filterFieldMenu');
+    if (!toggle) return;
+    toggle.classList.add('filterToggleLone');
+    readyFilterToggle(toggle);
+    home.insertBefore(toggle, home.id === 'headerIcons' ? home.firstChild : null);
+    if (menu) {
+      menu.classList.add('filterToggleLone');
+      home.appendChild(menu);
+    }
+    placeFilterCloseX();
+    if (restackEarthControls) restackEarthControls();
+    waitForElm('#filterFieldContent').then(function() {
+      document.querySelectorAll('.filterToggleLone').forEach(function(el) { el.remove(); });
+      filterToggleHome = null;
+      placeFilterCloseX();
+      if (restackEarthControls) restackEarthControls();
+    });
+  }).catch(function() {});
+}
+if (document.readyState === 'complete') addLoneFilterToggle();
+else window.addEventListener('load', addLoneFilterToggle);
+
+// While geoview's countries, states or counties panel (#locationFilterHolder) shows, <html> has .locationFilterOpen,
+// and a fixed #fullscreen (.fullscreen-fixed) goes below the panel in the page instead of behind it
+// (.fullscreenPushed, base.css). On <html>, --fullscreen-pushed is the panel's height, and --fullscreen-pushed-h is
+// #fullscreen's, which the page content laid over it moves up by.
+function initLocationFilterWatch() {
+  if (typeof ResizeObserver !== 'function') return;
+  waitForElm('#locationFilterHolder').then(function(panel) {
+    var root = document.documentElement;
+    var fullscreen = null;
+    var observer = new ResizeObserver(function() {
+      var open = panel.offsetHeight;
+      root.classList.toggle('locationFilterOpen', open > 0);
+      if (!fullscreen) return;
+      root.classList.toggle('fullscreenPushed', open > 0);
+      root.style.setProperty('--fullscreen-pushed', open + 'px');
+      root.style.setProperty('--fullscreen-pushed-h', fullscreen.offsetHeight + 'px');
+    });
+    observer.observe(panel);
+    waitForElm('#fullscreen.fullscreen-fixed').then(function(el) {
+      fullscreen = el;
+      observer.observe(el);
+    });
+  });
+}
+initLocationFilterWatch();
+
 // The Earth map (#mainEarthDisplay) goes in the page's #fullscreen when it has one (as project/goals does),
 // over what's there, such as hero images. Otherwise it stays where info/template-main.html puts it.
 function placeEarthDisplay() {
@@ -3256,8 +3350,9 @@ function placeEarthDisplay() {
       var syncEarthShown = function() {
         var shown = earthDisplay.parentElement === fullscreen && earthDisplay.style.display !== 'none';
         fullscreen.classList.toggle('earthShown', shown);
+        homeMiniNavPill();
         var othersShow = Array.prototype.some.call(fullscreen.children, function(child) {
-          if (child === earthDisplay || child.id === 'earthPlayPauseButton') return false;
+          if (child === earthDisplay || child.id === 'earthPlayPauseButton' || child.id === 'filterFieldCloseX' || child.classList.contains('filterToggleLone')) return false;
           var style = getComputedStyle(child);
           return style.display !== 'none' && style.visibility !== 'hidden';
         });
@@ -3290,8 +3385,7 @@ function placeEarthDisplay() {
       if (document.readyState !== 'complete') window.addEventListener('load', placeUnderMap);
       // The map's controls in its upper right stack top to bottom in tab order (base.css): the search filters' section
       // toggle (#filterFieldToggleHolder) with its menu, the close-X, zoom in and out, then the scroll circle. The
-      // toggle and menu go back to the search filters while the map is closed, where they open it again.
-      var toggleHome = null;
+      // toggle and menu go back where they were while the map is closed (filterToggleHome).
       var stackEarthControls = function() {
         var stack = earthDisplay.querySelector('.earth-zoom-controls');
         var close = document.getElementById('earthClose');
@@ -3302,25 +3396,21 @@ function placeEarthDisplay() {
         if (scroll && scroll.parentElement !== stack) stack.appendChild(scroll);
         var toggle = document.getElementById('filterFieldToggleHolder'), menu = document.getElementById('filterFieldMenu');
         if (!toggle) return;
-        if (!toggle.hasAttribute('tabindex')) {
-          toggle.setAttribute('tabindex', '0');
-          toggle.setAttribute('role', 'button');
-          toggle.setAttribute('aria-label', toggle.title || 'Filter sections');
-          toggle.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
-          });
-        }
+        readyFilterToggle(toggle);
         var shown = fullscreen.classList.contains('earthShown');
         if (shown && toggle.parentElement !== stack) {
-          toggleHome = { parent: toggle.parentElement, next: toggle.nextSibling, menuParent: menu && menu.parentElement, menuNext: menu && menu.nextSibling };
+          var next = toggle.nextSibling === filterCloseX ? filterCloseX.nextSibling : toggle.nextSibling;
+          filterToggleHome = { parent: toggle.parentElement, next: next, menuParent: menu && menu.parentElement, menuNext: menu && menu.nextSibling };
           stack.insertBefore(toggle, stack.firstChild);
           if (menu) stack.appendChild(menu);
-        } else if (!shown && toggleHome && toggle.parentElement === stack) {
+        } else if (!shown && filterToggleHome && toggle.parentElement === stack) {
           var back = function(el, parent, next) { parent.insertBefore(el, next && next.parentNode === parent ? next : null); };
-          back(toggle, toggleHome.parent, toggleHome.next);
-          if (menu && toggleHome.menuParent) back(menu, toggleHome.menuParent, toggleHome.menuNext);
+          back(toggle, filterToggleHome.parent, filterToggleHome.next);
+          if (menu && filterToggleHome.menuParent) back(menu, filterToggleHome.menuParent, filterToggleHome.menuNext);
         }
+        placeFilterCloseX();
       };
+      restackEarthControls = stackEarthControls;
       waitForElm('#earthClose').then(stackEarthControls);
       waitForElm('#filterFieldToggleHolder').then(stackEarthControls);
       var syncUnderMap = function() {
@@ -3344,40 +3434,31 @@ function placeEarthDisplay() {
 }
 // In #fullscreen, the lower left of the map has a dark bar (#earthControlsBar) holding a tune circle
 // (#earthControlsToggle) and the date (#slider-toggle-wrap, nouislider.min.js) to its right, moved in once it's
-// created. The tune circle opens and closes the #mainEarthFilters panel. While it's open, <html> has
-// .earthControlsOpen, which a page can style by. A page's #earthFilterCatch holds the panel (earth-filters.js). The panel's own
+// created. The tune circle opens and closes the lower-left panel, #beanPanel (toggleBeanPanel() below). While it's
+// open, <html> has .earthControlsOpen, which a page can style by. A page's #earthFilterCatch holds the panel (earth-filters.js). The panel's own
 // toggle over nullschool's "earth" button (.ef-map-toggle, earth-filters.js) is hidden here (base.css).
 // A click on the date shows its picker in its place, in the wrap (.earthDateOpen on the bar and on <html>, which a page
 // can use to raise #fullscreen above its content, as project/goals does).
-// While the #mainEarthFilters panel shows in the window (.earthFiltersOpen), the clock (#slider-toggle-btn, moved out
+// While the #beanPanel panel shows in the window (.earthFiltersOpen), the clock (#slider-toggle-btn, moved out
 // of the wrap to #earthControlsIcons) takes the tune circle's place. It opens and closes the date's picker. While the
 // panel doesn't show, closed, hidden or scrolled out of view (as under the map), the tune circle is back to open it.
 function initEarthControls(earthDisplay) {
   if (document.getElementById('earthControls')) return;
   var controls = document.createElement('div');
   controls.id = 'earthControls';
-  controls.innerHTML = '<div id="earthControlsBar"><div id="earthControlsIcons">' +
-    '<div id="earthControlsToggle" role="button" tabindex="0" title="Map controls" aria-label="Map controls" aria-expanded="false" aria-controls="mainEarthFilters">' +
+  controls.innerHTML = '<div id="earthControlsBar" class="mapPill"><div id="earthControlsIcons">' +
+    '<div id="earthControlsToggle" role="button" tabindex="0" title="Map controls" aria-label="Map controls" aria-expanded="false" aria-controls="beanPanel">' +
     '<i class="material-icons" aria-hidden="true">tune</i></div></div></div>';
   earthDisplay.appendChild(controls);
   var bar = document.getElementById('earthControlsBar');
   var icons = document.getElementById('earthControlsIcons');
   var toggle = document.getElementById('earthControlsToggle');
-  var filtersInView = false; // #mainEarthFilters showing in the window (IntersectionObserver below)
+  var filtersInView = false; // #beanPanel showing in the window (IntersectionObserver below)
   // Closes the panel while it shows. Otherwise opens it, and scrolls to it when it's open out of view.
   toggle.addEventListener('click', function(e) {
     e.stopPropagation();
-    var filtersDiv = document.getElementById('mainEarthFilters');
-    var open = !(filtersInView && filtersDiv && !filtersDiv.classList.contains('ef-closed'));
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    document.documentElement.classList.toggle('earthControlsOpen', open);
-    // The filters panel (#mainEarthFilters, showEarthFilters() below)
-    if (mainEarthFilters && typeof mainEarthFilters.setMapPanelOpen === 'function') {
-      mainEarthFilters.setMapPanelOpen(open);
-    }
-    if (open && filtersDiv && filtersDiv.getClientRects().length) {
-      filtersDiv.scrollIntoView({behavior: 'smooth', block: 'nearest'});
-    }
+    var filtersDiv = document.getElementById('beanPanel');
+    toggleBeanPanel(!(filtersInView && filtersDiv && !filtersDiv.classList.contains('ef-closed')));
   });
   toggle.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
@@ -3390,7 +3471,7 @@ function initEarthControls(earthDisplay) {
       // Outside the wrap now, so its clicks are passed on to the wrap, which opens or closes the picker
       clock.addEventListener('click', function(e) { e.stopPropagation(); wrap.click(); });
     }
-    waitForElm('#mainEarthFilters').then(function(filtersDiv) {
+    waitForElm('#beanPanel').then(function(filtersDiv) {
       var syncFiltersOpen = function() {
         bar.classList.toggle('earthFiltersOpen', filtersInView && !filtersDiv.classList.contains('ef-closed')); // ef-closed: earth-filters.js
       };
@@ -3502,6 +3583,79 @@ function showEarthClickNote(e) {
   clearTimeout(earthClickNoteTimer);
   earthClickNoteTimer = setTimeout(function() { note.classList.remove('earthClickNoteShow'); }, 2000);
 }
+// A page's content floating over the Earth map (project/goals: .goals-row, with its tabs) has the class .mapoverlay.
+// The click that hands the map the pointer (initEarthScrollCover(), "Click twice to interact") or starts its playback
+// (the play button, .earthPlay) closes all of it (html.mapoverlayHidden, base.css) so the map can be seen and used, and a
+// page can start with it closed (project/goals). The mini nav pill (#mininavpill) shows in its place: right of the map's
+// controls bar (#earthControlsBar) while the map shows, else right of the bean (#beanLayer). It holds the first few tabs
+// from the first tab list (role="tablist") in the .mapoverlay content, other than #beanPanel's, keeping the selected
+// one, and an expand icon at its right end. Its tabs and the expand icon bring the .mapoverlay content back, a tab also
+// selecting itself there.
+var MININAV_TABS = 3;
+function setMapOverlayHidden(hidden) {
+  if (hidden && !document.querySelector('.mapoverlay')) return;
+  if (hidden) renderMiniNavPill();
+  document.documentElement.classList.toggle('mapoverlayHidden', hidden);
+}
+var miniNavPill = null;
+function homeMiniNavPill() {
+  var pill = miniNavPill;
+  if (!pill) return;
+  var fullscreen = document.getElementById('fullscreen');
+  var home = fullscreen && fullscreen.classList.contains('earthShown') && document.getElementById('earthControls') ||
+    document.getElementById('beanLayer');
+  if (!home) { waitForElm('#beanLayer').then(homeMiniNavPill); return; }
+  if (pill.parentElement !== home) home.appendChild(pill);
+}
+document.addEventListener('click', function(e) {
+  var play = e.target.closest && e.target.closest('#earthPlayPauseButton, .earthPlay');
+  var fullscreen = document.getElementById('fullscreen');
+  if (!play || !fullscreen || !fullscreen.classList.contains('earthShown')) return;
+  var icon = play.querySelector('.play-pause-icon');
+  if (icon && icon.textContent.trim() === 'play_arrow') setMapOverlayHidden(true); // Before the button's own handler makes it pause
+}, true);
+// A tab's own text, without the words in its child elements that a wide window adds (goals: "Quality Control" is Quality)
+function miniNavLabel(tab) {
+  var own = Array.prototype.filter.call(tab.childNodes, function(n) { return n.nodeType === 3; })
+    .map(function(n) { return n.textContent; }).join('').trim();
+  return own || tab.textContent.trim();
+}
+function renderMiniNavPill() {
+  var pill = miniNavPill;
+  if (!pill) {
+    pill = miniNavPill = document.createElement('nav');
+    pill.id = 'mininavpill';
+    pill.className = 'mapPill';
+    pill.setAttribute('aria-label', 'Sections');
+  }
+  var list = Array.prototype.filter.call(document.querySelectorAll('.mapoverlay [role="tablist"]'), function(l) { return !l.closest('#beanPanel'); })[0];
+  var tabs = list ? Array.prototype.filter.call(list.querySelectorAll('[role="tab"]'), function(t) { return !t.hidden; }) : [];
+  var shown = tabs.slice(0, MININAV_TABS);
+  var selected = tabs.filter(function(t) { return t.getAttribute('aria-selected') === 'true'; })[0];
+  if (selected && shown.indexOf(selected) < 0) shown[shown.length - 1] = selected;
+  pill.innerHTML = '';
+  shown.forEach(function(tab) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mininav-tab';
+    btn.textContent = miniNavLabel(tab);
+    if (tab === selected) btn.setAttribute('aria-current', 'true');
+    btn.addEventListener('click', function() {
+      setMapOverlayHidden(false);
+      if (tab !== selected) tab.click();
+    });
+    pill.appendChild(btn);
+  });
+  var expand = document.createElement('button');
+  expand.type = 'button';
+  expand.className = 'mininav-expand';
+  expand.title = 'Show all';
+  expand.setAttribute('aria-label', 'Show all');
+  expand.innerHTML = '<i class="material-icons" aria-hidden="true">open_in_full</i>';
+  expand.addEventListener('click', function() { setMapOverlayHidden(false); });
+  pill.appendChild(expand);
+  homeMiniNavPill();
+}
 function initEarthScrollCover(holder) {
   if (!holder || holder.classList.contains('earthScrollCover')) return;
   holder.classList.add('earthScrollCover');
@@ -3511,6 +3665,7 @@ function initEarthScrollCover(holder) {
     if (!holder.classList.contains('earthScrollActive')) {
       if (frame) setEarthClickCenter(frame, e);
       showEarthClickNote(e);
+      setMapOverlayHidden(true);
     }
     setEarthScrollActive(holder, true);
   });
@@ -3589,25 +3744,86 @@ function showGlobalMap(globalMap) { // Used by community/index.html, green-sah
   // Chem Currents NO2 - Since Wind makes NO2 clouds hard to see
   //loadIframe("mainframe","https://earth.nullschool.net/#current/chem/surface/currents/overlay=no2/orthographic=-115.84,31.09,1037");
 }
-// The earth.nullschool.net menu filters under the map. Each change loads the map and updates the #earth= page hash.
-// #mainEarthFilters is after #mainEarthDisplay rather than inside it, since the controls in the map's lower right are placed from the bottom of #mainEarthDisplay.
+// #beanPanel: the lower-left panel, opened and closed by the tune circle on the Earth map, or by the bean in the lower
+// left of a page with #fullscreen.fullscreen-fixed (initBeanToggle() below). It holds the earth.nullschool.net menu
+// filters (earth-filters.js), with room for more controls. Each filter change loads the map and updates the #earth= page
+// hash. Opened from the bean (project/care, project/goals), the panel is in the bean's layer (#beanLayer), over the page,
+// and on a page without the map its first change brings the Earth map into #fullscreen (showEarth()).
+// #beanPanel is after #mainEarthDisplay rather than inside it, since the controls in the map's lower right are placed from the bottom of #mainEarthDisplay.
+// While it's open over the page, <html> has .beanPanelOpen, so the talk circle (engine/js/talk-circle.js) moves up above it.
 var mainEarthFilters = null;
-function showEarthFilters() {
+function toggleBeanPanel(open) {
+  var toggle = document.getElementById('earthControlsToggle');
+  if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  var bean = document.getElementById('beanToggle');
+  if (bean) bean.setAttribute('aria-expanded', open ? 'true' : 'false');
+  document.documentElement.classList.toggle('earthControlsOpen', open);
+  if (open && !mainEarthFilters) {
+    showEarthFilters(function() { toggleBeanPanel(true); });
+    return;
+  }
+  if (!mainEarthFilters || typeof mainEarthFilters.setMapPanelOpen !== 'function') return;
+  if (open && !document.getElementById('mainframe') && (mainEarthFilters.inPageCatch() || mainEarthFilters.place !== 'over')) {
+    mainEarthFilters.setMapPanelPlace('over'); // Before the map, in the lower left, rather than a page's #earthFilterCatch or under the map
+  }
+  mainEarthFilters.setMapPanelOpen(open);
+  var filtersDiv = document.getElementById('beanPanel');
+  if (open && filtersDiv && filtersDiv.getClientRects().length) {
+    filtersDiv.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+  }
+}
+// The bean: a button in the lower left of a page with #fullscreen.fullscreen-fixed (project/care, project/goals) that
+// opens and closes #beanPanel, as the tune circle does on the Earth map. It's in its own layer over the page
+// (#beanLayer, base.css), where the panel it opens goes too, so the page's content (project/goals: its tabs) doesn't cover
+// them. It hides while the panel is open (closed with the close-X beside the panel's three dots, earth-filters.js), and
+// steps aside for the map's own controls there (#earthControls).
+var BEAN_SVG = '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.2 13.3C2.6 9 5.3 5.6 9 5.9c1.7.1 2.6 1.2 4.1 1.2 1.6 0 2.6-1.4 4.4-1.1 2.5.4 3.8 3 3.1 6-1 4.6-5.2 8.4-10 8.4-3.6 0-6.6-2.5-7.4-7.1z"/><path d="M6.6 11.2c.5-1.4 1.7-2.2 3.1-2.1"/></g></svg>';
+function initBeanToggle() {
+  waitForElm('#fullscreen').then(function() {
+    var fullscreen = document.getElementById('fullscreen');
+    if (!fullscreen || !fullscreen.classList.contains('fullscreen-fixed') || document.getElementById('beanToggle')) return;
+    var bean = document.createElement('button');
+    bean.type = 'button';
+    bean.id = 'beanToggle';
+    bean.title = 'Controls';
+    bean.setAttribute('aria-label', 'Controls');
+    bean.setAttribute('aria-expanded', 'false');
+    bean.setAttribute('aria-controls', 'beanPanel');
+    bean.innerHTML = BEAN_SVG;
+    bean.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var panel = document.getElementById('beanPanel');
+      toggleBeanPanel(!(panel && !panel.classList.contains('ef-closed') && panel.getClientRects().length));
+    });
+    var layer = document.createElement('div');
+    layer.id = 'beanLayer';
+    layer.appendChild(bean);
+    document.body.appendChild(layer);
+  });
+}
+function syncBeanPanelOpen() {
+  var panel = document.getElementById('beanPanel');
+  var open = !!panel && panel.classList.contains('ef-over') && !panel.classList.contains('ef-closed') && panel.getClientRects().length > 0;
+  document.documentElement.classList.toggle('beanPanelOpen', open);
+}
+function showEarthFilters(ready) {
   includeCSS3(theroot + 'css/earth-filters.css', '');
   loadScript(theroot + 'js/earth-filters.js', function() {
     waitForVariable('EarthFilters', function() {
-      var earthDisplay = document.getElementById('mainEarthDisplay');
+      // From the bean, the panel goes in its layer (#beanLayer, initBeanToggle()), over the page and the map
+      var earthDisplay = ready && document.getElementById('beanLayer') || document.getElementById('mainEarthDisplay');
       if (!earthDisplay) return;
-      var filtersDiv = document.getElementById('mainEarthFilters');
+      var filtersDiv = document.getElementById('beanPanel');
       if (!filtersDiv) {
         filtersDiv = document.createElement('div');
-        filtersDiv.id = 'mainEarthFilters';
+        filtersDiv.id = 'beanPanel';
         filtersDiv.style.padding = '0 16px 16px'; // Same as in info/template-main.html
         // After the 3-day #slider-full when it's already under the map
         (document.getElementById('slider-full') || earthDisplay).insertAdjacentElement('afterend', filtersDiv);
       }
       if (mainEarthFilters) {
         mainEarthFilters.setHash(getEarthFiltersHash());
+        if (ready) ready();
         return;
       }
       // With the map in #fullscreen, the panel's place under the map is below the time sliders, in #earthUnderMap
@@ -3626,10 +3842,21 @@ function showEarthFilters() {
         storagePrefix: 'mainEarthFilters',
         onChange: function(earthHash, filters) {
           if (typeof window.stopEarthSliderPlayback === 'function') window.stopEarthSliderPlayback();
+          var mapDisplay = document.getElementById('mainEarthDisplay');
+          var mapHidden = !document.getElementById('mainframe') || !mapDisplay || mapDisplay.style.display === 'none';
+          if (mapHidden && typeof showEarth === 'function') {
+            updateHash({'sidetab': '', 'geoview': 'earth', 'earth': earthHash}); // Read by showGlobalMap() for the map's view
+            showEarth("show"); // Before the map opens, or after it's closed: the map comes in with this choice, as .showEarth opens it
+            return;
+          }
           loadIframe("mainframe", filters.getUrl()); // getUrl() has the language folder, such as https://earth.nullschool.net/es/
           goHash({'earth': earthHash});
         }
       });
+      new MutationObserver(syncBeanPanelOpen).observe(filtersDiv, {attributes: true, attributeFilter: ['class', 'style']});
+      new MutationObserver(syncBeanPanelOpen).observe(earthDisplay, {attributes: true, attributeFilter: ['style']});
+      syncBeanPanelOpen();
+      if (ready) ready();
       // The time slider and zoom buttons change the #earth= hash
       document.addEventListener('hashChangeEvent', function() {
         mainEarthFilters.setHash(getEarthFiltersHash());
@@ -9055,4 +9282,5 @@ function siteConfigPath() {
 })();
 
 initFullscreenVoice();
+initBeanToggle();
 consoleLog("end localsite");
