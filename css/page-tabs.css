@@ -35,7 +35,7 @@ body.dark .pagetabs, :root[data-theme="dark"] .pagetabs {
 html.pagetabsAside .pagetabs { visibility: hidden; }
 .pagetabs *, .pagetabs *::before, .pagetabs *::after { box-sizing: border-box; }
 
-/* The tabs, then the minimize triangle (pointing left) and the close X at the right. */
+/* The tabs, then the close X at the right. The selected tab, clicked again, minimizes the set (page-tabs.js). */
 .pagetabs-bar { flex: none; display: flex; align-items: center; gap: 4px; border-bottom: 1px solid var(--pt-grid); }
 .pagetabs-list { display: flex; gap: 4px; flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; margin-bottom: -1px; }
 .pagetabs-list::-webkit-scrollbar { display: none; }
@@ -51,8 +51,6 @@ html.pagetabsAside .pagetabs { visibility: hidden; }
 .pagetabs-ctrls { flex: none; display: flex; align-items: center; gap: 2px; margin-right: -8px; }
 .pagetabs-ctrls > button { display: grid; place-items: center; padding: 8px; color: var(--pt-ink-2); opacity: 0.55; transition: opacity 0.15s; border-bottom: 0; }
 .pagetabs-ctrls > button:hover, .pagetabs-ctrls > button:focus-visible { color: var(--pt-ink); opacity: 1; }
-.pagetabs-min > span { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; transform: rotate(-90deg); }
-.pagetabs-min svg { display: block; width: 15px; height: 8px; fill: currentColor; }
 .pagetabs-close svg { display: block; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
 
 /* The selected tab's panel, scrolling within the set's height. */

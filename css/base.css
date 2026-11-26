@@ -3873,6 +3873,12 @@ html:not(.locationFilterOpen) #filterFieldCloseX,
 html.earthDateOpen #earthControls {
     z-index: 1005;
 }
+/* While the tune circle's panel (#beanPanel) is open over the map, the bar and the mini nav pill stay in front of it,
+   so they can still be clicked. A press on the pill closes the panel, and the click goes on to do what it does
+   (localsite.js renderMiniNavPill()). */
+html.earthControlsOpen #earthControls {
+    z-index: 1004;
+}
 /* Under the map in #fullscreen, after it in the page (#earthUnderMap, placeEarthDisplay() in localsite.js), the
    3-day time slider (#slider-full, in #earthSlidersUnder), large or small. The filters panel set to "Under Map"
    (#beanPanel) follows it. Positioned, so it paints over a fixed #fullscreen
@@ -3992,8 +3998,9 @@ html[data-earth-slider="onmap"] #earthSlidersUnder #slider-full-track .noUi-touc
 }
 /* Content over the Earth map (.mapoverlay) closes while the map is in use, or from the start on a page that begins
    with it closed (html.mapoverlayHidden, localsite.js setMapOverlayHidden()), and the mini nav pill shows in its place:
-   the first few of its tabs, then an expand icon that brings it all back. Without the map, it's right of the bean in
-   #beanLayer, and steps aside with the bean while #beanPanel is open. */
+   an expand icon, then a few of its tabs, or all or none of them. It also shows, as just the icon, once a set of page
+   tabs is closed by its × (html.mininavClosed). Without the map, it's right of the bean in #beanLayer, and steps aside
+   with the bean while #beanPanel is open. */
 html.mapoverlayHidden .mapoverlay {
     display: none;
 }
@@ -4012,9 +4019,10 @@ html.beanPanelOpen #beanLayer > #mininavpill {
     align-items: center;
     gap: 2px;
     height: 40px;
-    padding: 0 4px 0 6px;
+    padding: 0 4px;
 }
-html.mapoverlayHidden #mininavpill {
+html.mapoverlayHidden #mininavpill,
+html.mininavClosed #mininavpill {
     display: flex;
 }
 #mininavpill button {
@@ -4047,6 +4055,7 @@ html.mapoverlayHidden #mininavpill {
     width: 32px;
     padding: 0;
     border-radius: 50%;
+    touch-action: none;
 }
 #mininavpill .mininav-expand .material-icons {
     font-size: 18px;

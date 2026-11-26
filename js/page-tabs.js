@@ -9,9 +9,10 @@
 //   set.open("voices");  set.close();  set.toggle();  set.isOpen();  set.selected;
 //
 // A set is .mapoverlay (localsite.js setMapOverlayHidden): it minimizes to the mini nav pill (#mininavpill) with the page's
-// other tab sets, by its left-pointing triangle, or when the Earth map is clicked or played. The pill holds the tabs of
-// the set shown last. Its × closes it. With a hash key (hash: "info"), the selected tab is in the hash (#info=weather),
-// so a link opens it, and it closes when the key leaves the hash.
+// other tab sets, by a click on its selected tab, or when the Earth map is clicked or played. The pill holds the tabs of
+// the set shown last. Its × closes it, leaving it in the pill as just its expand icon (localsite.js miniNavClosed).
+// With a hash key (hash: "info"), the selected tab is in the hash (#info=weather), so a link opens it, and it closes
+// when the key leaves the hash.
 //
 // While a set is open, not minimized and not stepping aside for the lower-left panel, <html> has .pagetabsOpen, and PageTabs.side() is the clear space to its right,
 // where the talk circle (engine/js/talk-circle.js) moves.
@@ -118,18 +119,20 @@
     if (sets.has(opts.id)) return sets.get(opts.id);
     const id = opts.id;
     const list = el("div", { class: "pagetabs-list", role: "tablist", "aria-label": opts.label || "Sections" });
-    const tri = '<svg viewBox="0 0 15 8" aria-hidden="true"><path d="M7.5 0L15 8H0z"/></svg>';
-    const minimize = el("button", { type: "button", class: "pagetabs-min", title: "Minimize", "aria-label": "Minimize", html: `<span>${tri}</span>` });
     const close = el("button", { type: "button", class: "pagetabs-close", title: "Close", "aria-label": "Close",
       html: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>' });
-    const bar = el("nav", { class: "pagetabs-bar" }, list, el("div", { class: "pagetabs-ctrls" }, minimize, close));
+    const bar = el("nav", { class: "pagetabs-bar" }, list, el("div", { class: "pagetabs-ctrls" }, close));
     const body = el("div", { class: "pagetabs-body" });
     const root = el("div", { class: "pagetabs mapoverlay", id, hidden: true }, bar, body);
     const tabs = new Map();
     for (const t of opts.tabs) {
       const button = el("button", { type: "button", role: "tab", id: `${id}-tab-${t.name}`, "aria-controls": `${id}-${t.name}`, "aria-selected": "false", "data-tab": t.name, text: t.label });
       const panel = el("section", { class: "pagetabs-panel", role: "tabpanel", id: `${id}-${t.name}`, "aria-labelledby": button.id, hidden: true });
-      button.addEventListener("click", () => set.open(t.name));
+      // The selected tab, clicked again, minimizes the set to the mini nav pill.
+      button.addEventListener("click", () => {
+        if (set.isOpen() && !minimized() && set.selected === t.name) window.setMapOverlayHidden?.(true);
+        else set.open(t.name);
+      });
       list.append(button);
       body.append(panel);
       tabs.set(t.name, { ...t, button, panel, filled: false });
@@ -143,8 +146,7 @@
       set.open(next.name);
       next.button.focus();
     });
-    minimize.addEventListener("click", () => window.setMapOverlayHidden?.(true));
-    close.addEventListener("click", () => set.close());
+    close.addEventListener("click", () => { set.close(); window.miniNavClosed?.(root); });
     document.body.append(root);
 
     function fill(t) {
@@ -183,6 +185,7 @@
         fill(t);
         const wasOpen = set.isOpen();
         root.hidden = false;
+        if (html.classList.contains("mininavClosed")) window.miniNavClosed?.(null);
         root.dataset.shownAt = String(++shownAt);
         if (minimized()) window.setMapOverlayHidden?.(false);
         if (!wasOpen) closePanel();

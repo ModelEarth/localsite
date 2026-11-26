@@ -3618,11 +3618,24 @@ function showEarthClickNote(e) {
 // The click that hands the map the pointer (initEarthScrollCover(), "Click twice to interact") or starts its playback
 // (the play button, .earthPlay) closes all of it (html.mapoverlayHidden, base.css) so the map can be seen and used, and a
 // page can start with it closed (project/goals). The mini nav pill (#mininavpill) shows in its place: right of the map's
-// controls bar (#earthControlsBar) while the map shows, else right of the bean (#beanLayer). It holds the first few tabs
-// of one tab set (role="tablist") in the .mapoverlay content, other than #beanPanel's: the set shown last
-// (data-shown-at, page-tabs.js), else the first. It keeps the selected tab, and has an expand icon at its right end.
-// Its tabs and the expand icon bring the .mapoverlay content back, a tab also selecting itself there.
+// controls bar (#earthControlsBar) while the map shows, else right of the bean (#beanLayer). It holds the tabs of one
+// tab set (role="tablist") in the .mapoverlay content, other than #beanPanel's: the set shown last (data-shown-at,
+// page-tabs.js), else the first, keeping the selected tab. A set of page tabs closed by its × stays in the pill, as just
+// its expand icon (miniNavClosed(), html.mininavClosed). The expand icon, at the pill's left end, shows its first few tabs
+// (MININAV_TABS) when clicked, and hides them again; swiped right it shows all of them; swiped up or double-clicked it
+// brings the set back and the pill goes. Arrow keys on it do the same. A tab in the pill brings the set back on that tab.
 var MININAV_TABS = 3;
+var MININAV_SWIPE = 24; // px a swipe on the expand icon moves before it counts
+var MININAV_DOUBLE = 400; // ms between the clicks of a double-click on the expand icon
+var miniNavClickAt = 0; // When the expand icon was last clicked, kept as the pill redraws it
+var miniNavLevel = 'few'; // The pill's tabs: 'icon' (none), 'few' (MININAV_TABS) or 'all'
+var miniNavClosedSet = null; // A .mapoverlay set closed by its ×, which the pill still holds
+function miniNavClosed(overlay) {
+  miniNavClosedSet = overlay || null;
+  document.documentElement.classList.toggle('mininavClosed', !!miniNavClosedSet);
+  if (miniNavClosedSet) { miniNavLevel = 'icon'; renderMiniNavPill(); }
+}
+window.miniNavClosed = miniNavClosed;
 // Page tabs (js/page-tabs.js) for any page with #fullscreen, loaded when first asked for: loadPageTabs().then(function(PageTabs) {...})
 function loadPageTabs() {
   if (window.PageTabs) return Promise.resolve(window.PageTabs);
@@ -3633,10 +3646,15 @@ function loadPageTabs() {
 }
 function setMapOverlayHidden(hidden) {
   if (hidden && !document.querySelector('.mapoverlay:not([hidden])')) return;
-  if (hidden) renderMiniNavPill();
+  if (hidden) {
+    miniNavClosed(null);
+    miniNavLevel = 'few';
+    renderMiniNavPill();
+  }
   document.documentElement.classList.toggle('mapoverlayHidden', hidden);
 }
 var miniNavPill = null;
+var miniNavPillList = null; // The tablist the pill was drawn from
 function homeMiniNavPill() {
   var pill = miniNavPill;
   if (!pill) return;
@@ -3660,6 +3678,7 @@ function miniNavLabel(tab) {
   return own || tab.textContent.trim();
 }
 function miniNavTabList() {
+  if (miniNavClosedSet && miniNavClosedSet.isConnected) return miniNavClosedSet.querySelector('[role="tablist"]');
   var shownAt = function(list) { return Number(list.closest('.mapoverlay').dataset.shownAt) || 0; };
   return Array.prototype.filter.call(document.querySelectorAll('.mapoverlay:not([hidden]) [role="tablist"]'), function(l) { return !l.closest('#beanPanel'); })
     .sort(function(a, b) { return shownAt(b) - shownAt(a); })[0];
@@ -3671,35 +3690,88 @@ function renderMiniNavPill() {
     pill.id = 'mininavpill';
     pill.className = 'mapPill';
     pill.setAttribute('aria-label', 'Sections');
+    // The tune circle's panel closes as the pill is pressed, and the press goes on to the pill's button.
+    pill.addEventListener('pointerdown', function() {
+      if (document.documentElement.classList.contains('earthControlsOpen')) toggleBeanPanel(false);
+    }, true);
   }
   var list = miniNavTabList();
   pill.setAttribute('aria-label', list && list.getAttribute('aria-label') || 'Sections');
   var tabs = list ? Array.prototype.filter.call(list.querySelectorAll('[role="tab"]'), function(t) { return !t.hidden; }) : [];
-  var shown = tabs.slice(0, MININAV_TABS);
   var selected = tabs.filter(function(t) { return t.getAttribute('aria-selected') === 'true'; })[0];
-  if (selected && shown.indexOf(selected) < 0) shown[shown.length - 1] = selected;
+  var shown = miniNavLevel === 'all' ? tabs : miniNavLevel === 'icon' ? [] : tabs.slice(0, MININAV_TABS);
+  if (miniNavLevel === 'few' && selected && shown.indexOf(selected) < 0) shown[shown.length - 1] = selected;
+  // Drawn again only when it changes, so a press or swipe on it isn't cut short by its buttons being replaced
+  var drawn = JSON.stringify([miniNavLevel, tabs.length, shown.map(miniNavLabel), selected ? miniNavLabel(selected) : '']);
+  if (pill.dataset.drawn === drawn && pill.firstChild && list === miniNavPillList) { homeMiniNavPill(); return; }
+  pill.dataset.drawn = drawn;
+  miniNavPillList = list;
   pill.innerHTML = '';
+  pill.appendChild(miniNavExpand(selected || tabs[0], tabs.length));
   shown.forEach(function(tab) {
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'mininav-tab';
     btn.textContent = miniNavLabel(tab);
     if (tab === selected) btn.setAttribute('aria-current', 'true');
-    btn.addEventListener('click', function() {
-      setMapOverlayHidden(false);
-      if (tab !== selected) tab.click();
-    });
+    btn.addEventListener('click', function() { miniNavOpen(tab); });
     pill.appendChild(btn);
   });
+  homeMiniNavPill();
+}
+// The set back on this tab (a closed set opens on it), and the pill gone.
+function miniNavOpen(tab) {
+  var overlay = tab && tab.closest('.mapoverlay');
+  var closed = overlay && overlay.hidden;
+  miniNavClosed(null);
+  setMapOverlayHidden(false);
+  if (tab && (closed || tab.getAttribute('aria-selected') !== 'true')) tab.click();
+}
+function miniNavShow(level) {
+  miniNavLevel = level;
+  renderMiniNavPill();
+  var expand = miniNavPill && miniNavPill.querySelector('.mininav-expand');
+  if (expand) expand.focus({ preventScroll: true });
+}
+// The expand icon: a click shows a few tabs (or hides them), a swipe right shows all, a swipe left none, and a swipe up
+// or a double-click brings the set back on its selected tab.
+function miniNavExpand(tab, count) {
   var expand = document.createElement('button');
   expand.type = 'button';
   expand.className = 'mininav-expand';
-  expand.title = 'Show all';
-  expand.setAttribute('aria-label', 'Show all');
+  expand.title = 'Click for a few tabs, swipe right for all, swipe up to open';
+  expand.setAttribute('aria-label', 'Tabs: click for a few, swipe right or arrow right for all, swipe up or arrow up to open');
+  expand.setAttribute('aria-expanded', String(miniNavLevel !== 'icon'));
   expand.innerHTML = '<i class="material-icons" aria-hidden="true">open_in_full</i>';
-  expand.addEventListener('click', function() { setMapOverlayHidden(false); });
-  pill.appendChild(expand);
-  homeMiniNavPill();
+  var start = null, swiped = false;
+  expand.addEventListener('pointerdown', function(e) {
+    start = { x: e.clientX, y: e.clientY };
+    swiped = false;
+    if (expand.setPointerCapture) expand.setPointerCapture(e.pointerId);
+  });
+  expand.addEventListener('pointerup', function(e) {
+    if (!start) return;
+    var dx = e.clientX - start.x, dy = e.clientY - start.y;
+    start = null;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < MININAV_SWIPE) return;
+    swiped = true;
+    if (-dy > Math.abs(dx)) miniNavOpen(tab);
+    else if (Math.abs(dx) > Math.abs(dy)) miniNavShow(dx > 0 ? 'all' : 'icon');
+  });
+  expand.addEventListener('pointercancel', function() { start = null; });
+  expand.addEventListener('click', function(e) {
+    if (swiped) { swiped = false; return; }
+    var now = Date.now(), double = e.detail > 0 && now - miniNavClickAt < MININAV_DOUBLE;
+    miniNavClickAt = double ? 0 : now;
+    if (double) miniNavOpen(tab);
+    else miniNavShow(miniNavLevel === 'icon' && count ? 'few' : 'icon');
+  });
+  expand.addEventListener('keydown', function(e) {
+    var level = { ArrowRight: 'all', ArrowLeft: 'icon' }[e.key];
+    if (level) { e.preventDefault(); miniNavShow(level); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); miniNavOpen(tab); }
+  });
+  return expand;
 }
 function initEarthScrollCover(holder) {
   if (!holder || holder.classList.contains('earthScrollCover')) return;
