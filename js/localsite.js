@@ -3330,8 +3330,38 @@ initLocationFilterWatch();
 
 // The Earth map (#mainEarthDisplay) goes in the page's #fullscreen when it has one (as project/goals does),
 // over what's there, such as hero images. Otherwise it stays where info/template-main.html puts it.
-function placeEarthDisplay() {
+// Where the voice widget and talk circle show when a page limits them to local use (data-voice="local", and the #fullscreen
+// added below): on localhost (cloudroot.localhost too), with view=local in the URL, or in dev mode (devmode cookie, Settings).
+function agentsLocal() {
+  var view = typeof param !== 'undefined' && param["view"] == "local";
+  var dev = typeof Cookies !== 'undefined' && Cookies.get('devmode') == 'dev';
+  return location.hostname.indexOf('localhost') >= 0 || location.hostname == '127.0.0.1' || view || dev;
+}
+// Locally (agentsLocal()), a page without its own #fullscreen gets one when the Earth map first opens, as navigation.js adds #datascape: after
+// #datascape, the window's height below the header (base.css). It holds the map, the talk circle over it with
+// engine/talk-circle.yaml's questions (engine/js/talk-circle.js), and the voice widget, which initFullscreenVoice() adds to
+// any #fullscreen. It closes with the map (.fullscreenInserted, placeEarthDisplay()).
+function insertFullscreen() {
   var fullscreen = document.getElementById('fullscreen');
+  if (fullscreen || !document.getElementById('mainEarthDisplay') || !agentsLocal()) return fullscreen;
+  fullscreen = document.createElement('div');
+  fullscreen.id = 'fullscreen';
+  fullscreen.className = 'fullscreenInserted';
+  var datascape = document.getElementById('datascape');
+  if (datascape && datascape.parentElement) datascape.after(fullscreen);
+  else (document.getElementById('main-content') || document.body).prepend(fullscreen);
+  if (!window.TalkCircle && !document.querySelector('[data-talk-circle]')) {
+    var talk = document.createElement('div');
+    talk.className = 'fullscreenTalk';
+    talk.setAttribute('data-talk-circle', webrootPath('engine/talk-circle.yaml'));
+    fullscreen.appendChild(talk);
+    includeCSS3(webrootPath('engine/css/talk-circle.css'));
+    loadScript(webrootPath('engine/js/talk-circle.js'));
+  }
+  return fullscreen;
+}
+function placeEarthDisplay() {
+  var fullscreen = insertFullscreen();
   var earthDisplay = document.getElementById('mainEarthDisplay');
   if (fullscreen && earthDisplay && earthDisplay.parentElement !== fullscreen) fullscreen.appendChild(earthDisplay);
   if (fullscreen && earthDisplay && earthDisplay.parentElement === fullscreen) {
@@ -3356,7 +3386,7 @@ function placeEarthDisplay() {
           var style = getComputedStyle(child);
           return style.display !== 'none' && style.visibility !== 'hidden';
         });
-        fullscreen.classList.toggle('fullscreenEmpty', !shown && !othersShow);
+        fullscreen.classList.toggle('fullscreenEmpty', !shown && (!othersShow || fullscreen.classList.contains('fullscreenInserted')));
       };
       new MutationObserver(syncEarthShown).observe(earthDisplay, {attributes: true, attributeFilter: ['style']});
       new MutationObserver(syncEarthShown).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
@@ -3583,17 +3613,26 @@ function showEarthClickNote(e) {
   clearTimeout(earthClickNoteTimer);
   earthClickNoteTimer = setTimeout(function() { note.classList.remove('earthClickNoteShow'); }, 2000);
 }
-// A page's content floating over the Earth map (project/goals: .goals-row, with its tabs) has the class .mapoverlay.
+// A page's content floating over the Earth map has the class .mapoverlay: project/goals' .goals-row, with its tabs, and
+// each open set of page tabs (localsite/js/page-tabs.js, such as the talk circle's Weather, Voices and Locations).
 // The click that hands the map the pointer (initEarthScrollCover(), "Click twice to interact") or starts its playback
 // (the play button, .earthPlay) closes all of it (html.mapoverlayHidden, base.css) so the map can be seen and used, and a
 // page can start with it closed (project/goals). The mini nav pill (#mininavpill) shows in its place: right of the map's
 // controls bar (#earthControlsBar) while the map shows, else right of the bean (#beanLayer). It holds the first few tabs
-// from the first tab list (role="tablist") in the .mapoverlay content, other than #beanPanel's, keeping the selected
-// one, and an expand icon at its right end. Its tabs and the expand icon bring the .mapoverlay content back, a tab also
-// selecting itself there.
+// of one tab set (role="tablist") in the .mapoverlay content, other than #beanPanel's: the set shown last
+// (data-shown-at, page-tabs.js), else the first. It keeps the selected tab, and has an expand icon at its right end.
+// Its tabs and the expand icon bring the .mapoverlay content back, a tab also selecting itself there.
 var MININAV_TABS = 3;
+// Page tabs (js/page-tabs.js) for any page with #fullscreen, loaded when first asked for: loadPageTabs().then(function(PageTabs) {...})
+function loadPageTabs() {
+  if (window.PageTabs) return Promise.resolve(window.PageTabs);
+  return new Promise(function(resolve) {
+    loadScript(theroot + 'js/page-tabs.js', function() { resolve(window.PageTabs); });
+    waitForVariable('PageTabs', function() { resolve(window.PageTabs); });
+  });
+}
 function setMapOverlayHidden(hidden) {
-  if (hidden && !document.querySelector('.mapoverlay')) return;
+  if (hidden && !document.querySelector('.mapoverlay:not([hidden])')) return;
   if (hidden) renderMiniNavPill();
   document.documentElement.classList.toggle('mapoverlayHidden', hidden);
 }
@@ -3620,6 +3659,11 @@ function miniNavLabel(tab) {
     .map(function(n) { return n.textContent; }).join('').trim();
   return own || tab.textContent.trim();
 }
+function miniNavTabList() {
+  var shownAt = function(list) { return Number(list.closest('.mapoverlay').dataset.shownAt) || 0; };
+  return Array.prototype.filter.call(document.querySelectorAll('.mapoverlay:not([hidden]) [role="tablist"]'), function(l) { return !l.closest('#beanPanel'); })
+    .sort(function(a, b) { return shownAt(b) - shownAt(a); })[0];
+}
 function renderMiniNavPill() {
   var pill = miniNavPill;
   if (!pill) {
@@ -3628,7 +3672,8 @@ function renderMiniNavPill() {
     pill.className = 'mapPill';
     pill.setAttribute('aria-label', 'Sections');
   }
-  var list = Array.prototype.filter.call(document.querySelectorAll('.mapoverlay [role="tablist"]'), function(l) { return !l.closest('#beanPanel'); })[0];
+  var list = miniNavTabList();
+  pill.setAttribute('aria-label', list && list.getAttribute('aria-label') || 'Sections');
   var tabs = list ? Array.prototype.filter.call(list.querySelectorAll('[role="tab"]'), function(t) { return !t.hidden; }) : [];
   var shown = tabs.slice(0, MININAV_TABS);
   var selected = tabs.filter(function(t) { return t.getAttribute('aria-selected') === 'true'; })[0];
@@ -6475,7 +6520,7 @@ function initAccountButton() {
 // credit up above them). The play button (#earthPlayPauseButton) moves into them, where it also pauses
 // Claude's voice and motion while Claude replies. Claude's floating words also show over the Earth map, which stays
 // in view beneath them (data-words-stay, placeEarthDisplay()). With data-voice="local" on #fullscreen (engine/index.html),
-// only on localhost or with view=local, as for .local elements.
+// only on localhost, with view=local or in dev mode (agentsLocal()).
 function initFullscreenVoice() {
   if (typeof window.loadWebrootYaml !== 'function') { return; }
   window.loadWebrootYaml().then(function (result) {
@@ -6485,7 +6530,7 @@ function initFullscreenVoice() {
     waitForElm('#fullscreen').then(function () {
       var fullscreen = document.getElementById('fullscreen');
       if (window.VoiceChat || document.querySelector('script[src*="voice-chat"]')) { return; } // The page loads it itself
-      if (fullscreen.getAttribute('data-voice') === 'local' && !(location.host.indexOf('localhost') >= 0 || (typeof param !== 'undefined' && param["view"] == "local"))) { return; }
+      if (fullscreen.getAttribute('data-voice') === 'local' && !agentsLocal()) { return; }
       var script = document.createElement('script');
       script.src = webrootPath(src);
       var names = voiceAgentNames(result);

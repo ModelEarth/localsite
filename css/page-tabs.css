@@ -1,0 +1,80 @@
+/* Page tabs (localsite/js/page-tabs.js): a set of tabs and the selected one's panel over the left 2/3 of #fullscreen,
+   in project/goals' tab and glass panel style. page-tabs.js sets its place (top, left, width, max-height). Light,
+   or dark with localsite's body.dark or a data-theme stamp. */
+.pagetabs {
+  --pt-surface: rgba(255, 255, 255, 0.86);
+  --pt-ink: #0b0b0b;
+  --pt-ink-2: #52514e;
+  --pt-muted: #6f6e69;
+  --pt-grid: rgba(11, 11, 11, 0.12);
+  --pt-accent: #2a78d6;
+  --pt-accent-ink: #1c5cab;
+  --pt-code: rgba(11, 11, 11, 0.06);
+  --pt-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+  position: fixed; z-index: 102; box-sizing: border-box;
+  display: flex; flex-direction: column; min-height: 0;
+  color: var(--pt-ink); background: var(--pt-surface); box-shadow: var(--pt-shadow);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-radius: 16px; padding: 4px 20px 0;
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; text-align: left;
+}
+body.dark .pagetabs, :root[data-theme="dark"] .pagetabs {
+  --pt-surface: rgba(18, 20, 24, 0.82);
+  --pt-ink: #f4f3ef;
+  --pt-ink-2: #d4d3cc;
+  --pt-muted: #b3b2ab;
+  --pt-grid: rgba(255, 255, 255, 0.14);
+  --pt-accent: #4b93ea;
+  --pt-accent-ink: #9cc4f2;
+  --pt-code: rgba(255, 255, 255, 0.08);
+  --pt-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+.pagetabs[hidden] { display: none; }
+/* Aside while the lower-left panel (#beanPanel) open over the page leaves too little room above it (page-tabs.js). */
+html.pagetabsAside .pagetabs { visibility: hidden; }
+.pagetabs *, .pagetabs *::before, .pagetabs *::after { box-sizing: border-box; }
+
+/* The tabs, then the minimize triangle (pointing left) and the close X at the right. */
+.pagetabs-bar { flex: none; display: flex; align-items: center; gap: 4px; border-bottom: 1px solid var(--pt-grid); }
+.pagetabs-list { display: flex; gap: 4px; flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; margin-bottom: -1px; }
+.pagetabs-list::-webkit-scrollbar { display: none; }
+.pagetabs-bar button {
+  font: inherit; font-size: 15px; white-space: nowrap; cursor: pointer; color: var(--pt-ink-2);
+  background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 12px;
+}
+.pagetabs-list > button { flex: none; }
+.pagetabs-list > button[hidden] { display: none; }
+.pagetabs-list > button[aria-selected="true"] { color: var(--pt-ink); border-bottom-color: var(--pt-accent); font-weight: 600; }
+.pagetabs-list > button:hover { color: var(--pt-ink); }
+.pagetabs-bar button:focus-visible { outline: 2px solid var(--pt-accent); outline-offset: -2px; border-radius: 6px; }
+.pagetabs-ctrls { flex: none; display: flex; align-items: center; gap: 2px; margin-right: -8px; }
+.pagetabs-ctrls > button { display: grid; place-items: center; padding: 8px; color: var(--pt-ink-2); opacity: 0.55; transition: opacity 0.15s; border-bottom: 0; }
+.pagetabs-ctrls > button:hover, .pagetabs-ctrls > button:focus-visible { color: var(--pt-ink); opacity: 1; }
+.pagetabs-min > span { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; transform: rotate(-90deg); }
+.pagetabs-min svg { display: block; width: 15px; height: 8px; fill: currentColor; }
+.pagetabs-close svg { display: block; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+
+/* The selected tab's panel, scrolling within the set's height. */
+.pagetabs-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 14px 0 18px; overscroll-behavior: contain; }
+.pagetabs-panel[hidden] { display: none; }
+
+/* A README in a panel (loadMarkdown, which also gives it an inline display, position and overflow). */
+.pagetabs-readme { overflow: visible !important; font-size: 15px; color: var(--pt-ink-2); }
+.pagetabs-readme > :first-child { margin-top: 0; }
+.pagetabs-readme h1 { margin: 0 0 8px; font-size: 22px; font-weight: 600; line-height: 1.25; color: var(--pt-ink); }
+.pagetabs-readme h2 { margin: 22px 0 8px; padding-bottom: 4px; font-size: 17px; font-weight: 600; color: var(--pt-ink); border-bottom: 1px solid var(--pt-grid); }
+.pagetabs-readme h3 { margin: 16px 0 6px; font-size: 15px; font-weight: 600; color: var(--pt-ink); }
+.pagetabs-readme p { margin: 0 0 10px; }
+.pagetabs-readme ul, .pagetabs-readme ol { margin: 0 0 12px; padding-left: 20px; }
+.pagetabs-readme li { margin: 3px 0; }
+.pagetabs-readme strong { color: var(--pt-ink); }
+.pagetabs-readme a { color: var(--pt-accent-ink); }
+.pagetabs-readme code { font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 1px 5px; border-radius: 5px; background: var(--pt-code); color: var(--pt-ink); overflow-wrap: anywhere; }
+.pagetabs-readme pre { overflow-x: auto; padding: 10px 12px; border-radius: 8px; background: var(--pt-code); }
+.pagetabs-readme pre code { padding: 0; background: none; overflow-wrap: normal; }
+
+@media (max-width: 600px) {
+  .pagetabs { padding: 2px 14px 0; }
+  .pagetabs-bar button { padding: 10px 8px; }
+}

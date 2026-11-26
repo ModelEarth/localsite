@@ -3555,6 +3555,18 @@ html:has(#fullscreen.fullscreen-fixed) #main-footer { position: relative; z-inde
 #fullscreen.fullscreenEmpty {
     display: none;
 }
+/* A #fullscreen added when the Earth map opens on a page without one (insertFullscreen() in localsite.js), with the talk
+   circle's area (engine/js/talk-circle.js) covering the map, the circle centered. Clicks outside the circle reach the map. */
+#fullscreen.fullscreenInserted {
+    position: relative;
+}
+#fullscreen > .fullscreenTalk {
+    position: absolute;
+    inset: 0;
+    z-index: 101;
+    padding: 16px;
+    box-sizing: border-box;
+}
 #fullscreen > #mainEarthDisplay #mainframe {
     height: 100%;
     min-height: 0;
