@@ -9315,6 +9315,12 @@ $(document).on("change", "#sitelook", function(event) { // Dark mode
     }
     setSitelook($("#sitelook").val());
 });
+$(document).on("change", "#headerlayout", function(event) {
+    if (typeof Cookies != 'undefined') {
+        Cookies.set('headerlayout', $("#headerlayout").val());
+    }
+    setHeaderLayout($("#headerlayout").val());
+});
 $(document).on("change", "#accesslocal", function(event) {
     setAccesslocal($("#accesslocal").val());
 });
@@ -11087,6 +11093,11 @@ function scrolledFastTowardTop() {
 if (1==1) {
 $(window).scroll(function() {
   recordScroll();
+  if (document.documentElement.matches('.headerlayout-bar, .headerlayout-none')) { // Header Layout in Settings keeps the header as set
+    previousScrollTop = $(window).scrollTop();
+    lockSidemap(mapFixed);
+    return;
+  }
   if ($("#draggableSearch").is(":visible")) {
     // The header stays as is while the .popAdvanced popup is open. Choosing a state there reloads content,
     // and the resulting scroll position change otherwise toggled .filterFieldsHolderFixed, moving the page.

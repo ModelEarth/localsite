@@ -23,6 +23,12 @@ if (!document.getElementById('materialIconsHideStyle')) {
   document.head.appendChild(iconHideStyle);
 }
 
+// The Header Layout setting (setHeaderLayout) marks <html> right away from its cookie, so a hidden header doesn't flash in.
+(function() {
+  const layout = (document.cookie.match(/(?:^|;\s*)headerlayout=([^;]*)/) || [])[1];
+  if (layout === 'bar' || layout === 'none') document.documentElement.classList.add('headerlayout-' + layout);
+})();
+
 let localsiteTitle = "Localsite";
 var localStart = Date.now(); // A var so waitForVariableNav detects in navigation.js.
 
@@ -1789,6 +1795,58 @@ function showHeaderBar() {
   });
 }
 
+// Header Layout in Settings (#headerlayout), kept in the headerlayout cookie. "full" shows the header and the search
+// filters (#mapFilters) below it. "bar" shows only the search filters, fixed at the top of the window as when scrolled
+// down the page (.filterFieldsHolderFixed). "none" hides both, leaving a 9-dot button (#headerLayoutDots) that opens
+// Settings to bring them back. Except with "full", the scroll handler in navigation.js leaves the header as it is.
+function getHeaderLayout() {
+  const layout = typeof Cookies != 'undefined' ? Cookies.get('headerlayout') : null;
+  return layout === 'bar' || layout === 'none' ? layout : 'full';
+}
+function setHeaderLayout(layout) {
+  if (layout !== 'bar' && layout !== 'none') layout = 'full';
+  const root = document.documentElement;
+  root.classList.toggle('headerlayout-bar', layout === 'bar');
+  root.classList.toggle('headerlayout-none', layout === 'none');
+  waitForElm('#headerlayout').then((elm) => { elm.value = layout; });
+  if (layout !== 'full' && !document.getElementById('headerLayoutDots')) {
+    const dots = document.createElement('button');
+    dots.id = 'headerLayoutDots';
+    dots.type = 'button';
+    dots.title = 'Settings';
+    dots.setAttribute('aria-label', 'Settings');
+    dots.innerHTML = '<i class="material-icons" aria-hidden="true">&#xE5C3;</i>';
+    dots.addEventListener('click', function(event) {
+      event.stopPropagation();
+      const open = typeof getHash === 'function' && getHash().sidetab;
+      (typeof goHashNoHistory === 'function' ? goHashNoHistory : goHash)({'sidetab': open ? '' : 'settings'});
+      if (open && typeof closeSideTabs === 'function') closeSideTabs();
+    });
+    document.body.appendChild(dots);
+  }
+  if (layout === 'full') {
+    showHeaderBar();
+    if (window.scrollY === 0) {
+      $("#filterFieldsHolder").removeClass("filterFieldsHolderFixed filterFieldsUnderHeader").css("top", "");
+      $("body").removeClass("filterFieldsBodyTop");
+      $('#logoholderbar').hide();
+    }
+    return;
+  }
+  hideHeaderBar();
+  waitForElm('#filterFieldsHolder').then((holder) => {
+    const bar = getHeaderLayout() === 'bar';
+    $(holder).toggleClass("filterFieldsHolderFixed", bar).removeClass("filterFieldsUnderHeader").css("top", "");
+    $("body").toggleClass("filterFieldsBodyTop", bar);
+  });
+  waitForElm('#logoholderbar').then((elm) => { $(elm).toggle(getHeaderLayout() === 'bar'); }); // In map/filter.html, loaded later
+  if (layout === 'bar') {
+    waitForElm('#filterFieldContent').then(() => {
+      if (getHeaderLayout() === 'bar') $("#filterFieldsHolder").show().removeClass("filterFieldsHidden");
+    });
+  }
+}
+
 function loadSearchFilterCss() {
   includeCSS3(theroot + 'css/base.css',theroot);
   includeCSS3(theroot + 'css/menu.css',theroot);
@@ -3331,11 +3389,19 @@ initLocationFilterWatch();
 // The Earth map (#mainEarthDisplay) goes in the page's #fullscreen when it has one (as project/goals does),
 // over what's there, such as hero images. Otherwise it stays where info/template-main.html puts it.
 // Where the voice widget and talk circle show when a page limits them to local use (data-voice="local", and the #fullscreen
-// added below): on localhost (cloudroot.localhost too), with view=local in the URL, or in dev mode (devmode cookie, Settings).
+// added below): on localhost (cloudroot.localhost too), with view=local in the URL, or in dev mode (devmode cookie, Settings),
+// and on the sites with a backend for Claude's replies (agentsBackend()).
 function agentsLocal() {
   var view = typeof param !== 'undefined' && param["view"] == "local";
   var dev = typeof Cookies !== 'undefined' && Cookies.get('devmode') == 'dev';
-  return location.hostname.indexOf('localhost') >= 0 || location.hostname == '127.0.0.1' || view || dev;
+  return location.hostname.indexOf('localhost') >= 0 || location.hostname == '127.0.0.1' || view || dev || agentsBackend();
+}
+// The sites the CloudRoot Worker serves (routes in worker/wrangler.toml), whose /api/voice-chat answers the voice widget
+// and the talk circle. Elsewhere, the talk circle links to cloud.model.earth (engine/js/talk-circle.js showLinks).
+var AGENTS_BACKEND_HOSTS = ['cloud.model.earth', 'neighborhood.org'];
+function agentsBackend() {
+  var host = location.hostname.replace(/^www\./, '');
+  return AGENTS_BACKEND_HOSTS.indexOf(host) >= 0;
 }
 // Locally (agentsLocal()), a page without its own #fullscreen gets one when the Earth map first opens, as navigation.js adds #datascape: after
 // #datascape, the window's height below the header (base.css). It holds the map, the talk circle over it with
@@ -5362,6 +5428,7 @@ function initSitelook() {
     }
     syncAccesslocalControl();
     setSitelook(sitelook);
+    setHeaderLayout(getHeaderLayout());
     setStylelook(stylelook);
     setDevmode(devmode);
     setModelsite(modelsite);
@@ -6592,7 +6659,7 @@ function initAccountButton() {
 // credit up above them). The play button (#earthPlayPauseButton) moves into them, where it also pauses
 // Claude's voice and motion while Claude replies. Claude's floating words also show over the Earth map, which stays
 // in view beneath them (data-words-stay, placeEarthDisplay()). With data-voice="local" on #fullscreen (engine/index.html),
-// only on localhost, with view=local or in dev mode (agentsLocal()).
+// only on localhost, with view=local, in dev mode or on a site with a backend for Claude's replies (agentsLocal()).
 function initFullscreenVoice() {
   if (typeof window.loadWebrootYaml !== 'function') { return; }
   window.loadWebrootYaml().then(function (result) {
@@ -7948,6 +8015,7 @@ function initTopNavOffset() {
     waitForElm('#main-header').then(function(mh) {
       mainHeader = mh;
       computeTopNavOffset();
+      if (typeof ResizeObserver === 'function') new ResizeObserver(computeTopNavOffset).observe(mh); // Header Layout hides it
     });
 
     // #fullscreen's top is measured again when the search filters above it load, show or hide, and when

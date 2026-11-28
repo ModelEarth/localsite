@@ -2618,6 +2618,12 @@ body.dark .site-logo-light, body:not(.dark) .site-logo-dark {
 .filterFieldsHolderFixed #showSideTabsInBar {
   display: block !important;
 }
+/* Fixed at the top, the search filters bar is 48px tall, the space .filterFieldsBodyTop leaves for it. !important is over
+   inline styles in map/filter.html. */
+.filterFieldsHolderFixed .filterTopIconHolder { height: 48px; }
+.filterFieldsHolderFixed #rightIcons { max-height: 48px; }
+.filterFieldsHolderFixed .keywordField .searchField { margin-bottom: 6px !important; }
+.filterFieldsHolderFixed #showSideFromBar { padding-bottom: 5px !important; }
 .filterFieldsBodyTop {
   margin-top: 48px
 }
@@ -3797,6 +3803,12 @@ html:has(#fullscreen.fullscreen-fixed) #main-footer { position: relative; z-inde
     opacity: 1;
     overflow: visible;
     pointer-events: auto;
+}
+/* While its menu is open, the stack comes forward over the talk circle (z-index 101, or 102 beside page tabs), since the
+   menu's own z-index only counts within the stack. The footer (z-index 103) still covers it. !important is over the
+   stack's inline z-index of 100 from nouislider.min.js. */
+#fullscreen > #mainEarthDisplay .earth-zoom-controls:has(> #filterFieldMenu:not([style*="none"])) {
+    z-index: 103 !important;
 }
 /* On a page without the search filters (.filterToggleLone, addLoneFilterToggle() in localsite.js), their toggle
    waits in #fullscreen's upper right while the map is closed, where the map's stack starts, with its menu to its left.
@@ -5479,3 +5491,23 @@ html.playMode .hideInPlayMode {
   pointer-events: none;
   transition: opacity .6s ease, visibility 0s linear .6s;
 }
+/* Header Layout in Settings (setHeaderLayout in localsite.js). "bar" leaves only the search filters, fixed at the top,
+   and "none" hides them too, leaving a 9-dot button at the upper right that opens Settings. */
+html.headerlayout-bar #main-header, html.headerlayout-none #main-header, html.headerlayout-none #mapFilters { display: none !important; }
+html.headerlayout-none body.filterFieldsBodyTop { margin-top: 0; }
+#headerLayoutDots { display: none; }
+html.headerlayout-none #headerLayoutDots, html.headerlayout-bar:not(:has(#filterFieldContent)) #headerLayoutDots {
+  display: grid; place-items: center; position: fixed; top: 22px; right: 12px; z-index: 100002;
+  width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+  background: rgba(40, 40, 40, 0.55); color: #fff; opacity: 0.85;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+#headerLayoutDots:hover { opacity: 1; background: rgba(40, 40, 40, 0.75); }
+#headerLayoutDots:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+#headerLayoutDots i { font-size: 30px; }
+body.bodyRightMargin #headerLayoutDots { display: none !important; }
+/* The Earth map's controls at its upper right start below the 9-dot button. */
+html.headerlayout-none #fullscreen .earth-zoom-controls,
+html.headerlayout-none #fullscreen > #filterFieldToggleHolder,
+html.headerlayout-none #fullscreen > #filterFieldCloseX,
+html.headerlayout-none #fullscreen > #filterFieldMenu { margin-top: 52px; }
